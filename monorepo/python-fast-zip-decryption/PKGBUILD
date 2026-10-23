@@ -1,0 +1,66 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-fast-zip-decryption
+pkgver=3.0.0
+pkgrel=2
+pkgdesc='Read password-protected zip files 100x faster'
+arch=(x86_64)
+url='https://github.com/mxmlnkn/fast-zip-decryption'
+license=(MIT)
+depends=(
+  python
+  zip
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  remove-version-constraints.patch
+)
+sha512sums=('c55e273c54a8ee8246b47125d38540b85db68baa6d93c5d20396cec45fe2a77c9171fadfe35ca79fd70196ae13f92c474bf8b8f302fff1938aeaa8f49270e1fb'
+            '15fda57c286f99db24b4d17f2eda7e119cad292b55e9a7e5131650fad7ff5994889e6b9cfeada05287555abf9af363b25fb360027847a3f009f0a1409631b1e7')
+b2sums=('3cf41bdd6fe79a104a0e84cbcbebfe9522f57d7899efd274ab64aad5a40fbf7fad2de1cf33ab76fcc25fd5147535cf7c1e72208ce21953ab329b08956fd293af'
+        'cf1aa31b328208601da67e5276af6ff45b939a1b59d14a4b5b1dba2421a157c6b2e9ff8c6df3341d2ad27212f20343c27fb5939c69a362d36dfb6cca4f39344d')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/remove-version-constraints.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  pytest -v
+}
+
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,41 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Caltlgin Stsodaat <contact@fossdaily.xyz>
+
+pkgname=fx
+pkgver=40.0.1
+pkgrel=1
+pkgdesc='Command-line tool and terminal JSON viewer'
+arch=(x86_64)
+url="https://github.com/antonmedv/$pkgname"
+license=(MIT)
+depends=(glibc)
+makedepends=(go)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/$pkgver/$_archive.tar.gz")
+sha256sums=('311ca3f2ac2fe951c1f662b52e9fbf5ceeed74a2b7c52e8aa98c30001c2ffbb2')
+
+prepare() {
+	cd "$_archive"
+	go mod vendor
+}
+
+build() {
+	cd "$_archive"
+	export CGO_CPPFLAGS="$CPPFLAGS"
+	export CGO_CFLAGS="$CFLAGS"
+	export CGO_CXXFLAGS="$CXXFLAGS"
+	export CGO_LDFLAGS="$LDFLAGS"
+	export GOFLAGS="-buildmode=pie -trimpath -modcacherw -ldflags=-linkmode=external"
+	go build .
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	pushd internal/complete
+	install -Dm0644 complete.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+	install -Dm0644 complete.fish "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+	install -Dm0644 complete.zsh  "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}

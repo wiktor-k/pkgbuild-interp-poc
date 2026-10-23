@@ -1,0 +1,63 @@
+# Maintainer: Torsten Keßler <t dot kessler at posteo dot de>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=hipfort
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='Fortran interfaces for ROCm libraries'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/hipfort/en/latest/'
+license=('MIT')
+depends=(
+    'gcc-fortran'
+    'git'
+    'hip-runtime-amd'
+    'rocm-core'
+)
+makedepends=(
+    'cmake'
+    'hipblas'
+    'hipfft'
+    'hiprand'
+    'hipsolver'
+    'hipsparse'
+    'rocblas'
+    'rocfft'
+    'rocm-cmake'
+    'rocrand'
+    'rocsolver'
+    'rocsparse'
+)
+optdepends=(
+    'hipblas: Fortran bindings'
+    'hipfft: Fortran bindings'
+    'hiprand: Fortran bindings'
+    'hipsolver: Fortran bindings'
+    'hipsparse: Fortran bindings'
+    'rocfft: Fortran bindings'
+    'rocrand: Fortran bindings'
+    'rocsolver: Fortran bindings'
+)
+_git='https://github.com/ROCm/hipfort'
+source=("hipfort::git+$_git.git#tag=rocm-$pkgver")
+sha256sums=('24b91f534c0cef6088fd7a92b33a28cc1d86662e5fb61be0d38851b7613aaa9b')
+options=(!strip)
+
+build() {
+    local cmake_args=(
+        -Wno-dev
+        -B build
+        -S $pkgname
+        -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+        -D CMAKE_BUILD_TYPE=RELEASE
+        -D CMAKE_INSTALL_PREFIX=/opt/rocm
+    )
+    cmake "${cmake_args[@]}"
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+
+    install -Dm644 "$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

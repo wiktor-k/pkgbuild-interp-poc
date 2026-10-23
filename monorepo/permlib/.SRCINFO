@@ -1,0 +1,15 @@
+pkgbase = permlib
+	pkgdesc = A C++ library implementing permutation group algorithms
+	pkgver = 0.2.9
+	pkgrel = 2
+	url = http://www.math.uni-rostock.de/~rehn/software/permlib.html
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = boost
+	source = git+https://github.com/tremlin/PermLib#tag=v0.2.9
+	source = permlib-boost.patch
+	sha256sums = 42a227931d590a137fa91e4487a9de1da8501360c872a19444753b28309876fc
+	sha256sums = 03005c01596a1a6c2ec64431b109550e7891a11e0273d0142b20816063c006f1
+
+pkgname = permlib

@@ -1,0 +1,37 @@
+# Maintainer: Allan McRae <allan@archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+
+pkgname=chromium-bsu
+pkgver=0.9.16.1
+pkgrel=4
+pkgdesc="A fast paced top scrolling shooter"
+arch=('x86_64')
+url="http://chromium-bsu.sourceforge.net/"
+license=('LicenseRef-artistic')
+depends=('freealut' 'ftgl' 'fontconfig' 'glu' 'hicolor-icon-theme' 'libGL.so' 'openal' 'sdl2-compat' 'sdl2_image')
+makedepends=('automake')
+source=(https://downloads.sourceforge.net/project/chromium-bsu/Chromium%20B.S.U.%20source%20code/chromium-bsu-$pkgver.tar.gz use_fabs_for_floats.patch ax_check_gl_m4.patch)
+sha512sums=('1d202c0704e16b31d93c552ae6cfc17caf1182a9ec80730a981cd99c8ca8cb64d4e6e838691aa86e17ea23b7c2c0b1e7b1f4dab91bbc6129f9bf86801f2b27c8'
+            '78b0de083c1c11e56aa0e864900c0c2c163f9828505402e63d5eba6092cb2ce2449747c7d5dbd40b96e801f872795a57dc5f247818f4e3d142a3f3af0d4d188d'
+            '5878c439e2d193d15774ab4e976a7da59696fefd79e4f6c382f3ccb9f6ab1ffe2d9ae50801a3fbfb08097e6f25ac99eb4e67c126d84b998474f5fe2dc594d2da')
+
+prepare() {
+  cd "$srcdir"/$pkgname-$pkgver
+
+  patch -Np1 -i "$srcdir"/use_fabs_for_floats.patch
+  patch -Np1 -i "$srcdir"/ax_check_gl_m4.patch
+}
+
+build(){
+  cd "$srcdir"/$pkgname-$pkgver
+  autoreconf -fvi
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/chromium-bsu/LICENSE
+}

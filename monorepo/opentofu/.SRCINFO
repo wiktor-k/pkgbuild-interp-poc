@@ -1,0 +1,16 @@
+pkgbase = opentofu
+	pkgdesc = Lets you declaratively manage your cloud infrastructure
+	pkgver = 1.13.1
+	pkgrel = 1
+	url = https://github.com/opentofu/opentofu
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	provides = terragrunt-iac-provider
+	options = !lto
+	source = git+https://github.com/opentofu/opentofu.git#tag=v1.13.1
+	b2sums = 47fa6392dd40ebf1972bb9c78628d2a95e80c8228e38cf20386ea7ed72878132e16b2217a2ffc86ef9c6d8340cf388c4e8b46f3a84205b7e39327cf4032a1785
+
+pkgname = opentofu

@@ -1,0 +1,23 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=libmaa
+pkgver=1.5.1
+pkgrel=1
+pkgdesc="Provides many low-level data structures which are helpful for writing compilers"
+url="https://sourceforge.net/projects/dict/"
+license=('GPL')
+arch=('x86_64')
+depends=()
+makedepends=('flex' 'mk-configure' 'bmake')
+source=("https://downloads.sourceforge.net/dict/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('3a30e25f038e99c4715125545516490d991fe3a505825cc832b1a956e31bf669')
+
+build() {
+  cd "${srcdir}/$pkgname-$pkgver"
+  mkcmake PREFIX=/usr
+}
+
+package() {
+  cd "${srcdir}/$pkgname-$pkgver"
+  mkcmake PREFIX=/usr DESTDIR="${pkgdir}" install
+}

@@ -1,0 +1,76 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=pandoc
+pkgname=haskell-pandoc
+pkgver=3.11
+pkgrel=35
+pkgdesc='Conversion between markup formats'
+url='https://pandoc.org'
+license=('GPL-2.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-pretty' 'haskell-asciidoc' 'haskell-attoparsec'
+         'haskell-base64-bytestring' 'haskell-blaze-html' 'haskell-blaze-markup'
+         'haskell-case-insensitive' 'haskell-citeproc' 'haskell-commonmark'
+         'haskell-commonmark-extensions' 'haskell-commonmark-pandoc' 'haskell-crypton'
+         'haskell-crypton-connection' 'haskell-crypton-x509-system' 'haskell-data-default'
+         'haskell-djot' 'haskell-doclayout' 'haskell-doctemplates' 'haskell-emojis'
+         'haskell-file-embed' 'haskell-glob' 'haskell-gridtables' 'haskell-haddock-library'
+         'haskell-http-client' 'haskell-http-client-tls' 'haskell-http-types' 'haskell-ipynb'
+         'haskell-jira-wiki-markup' 'haskell-juicypixels' 'haskell-libyaml' 'haskell-mime-types'
+         'haskell-network' 'haskell-network-uri' 'haskell-pandoc-types' 'haskell-pretty-show'
+         'haskell-random' 'haskell-safe' 'haskell-scientific' 'haskell-skylighting'
+         'haskell-skylighting-core' 'haskell-split' 'haskell-syb' 'haskell-tagsoup'
+         'haskell-temporary' 'haskell-texmath' 'haskell-text-conversions' 'haskell-tls'
+         'haskell-typst' 'haskell-unicode-collation' 'haskell-unicode-data'
+         'haskell-unicode-transforms' 'haskell-vector' 'haskell-xml' 'haskell-xml-conduit'
+         'haskell-xml-types' 'haskell-yaml' 'haskell-zip-archive' 'haskell-zlib')
+optdepends=('pandoc-crossref: for numbering figures, equations, tables and cross-references to them with pandoc-crossref filter'
+            'texlive-context: for pdf output using context engine'
+            'groff: for pdf output using pdfroff engine'
+            'python-weasyprint: for pdf output using weasyprint engine'
+            'typst: for pdf output using typst engine'
+            'tectonic: for pdf output using tectonic engine'
+            'texlive-fontsrecommended: for pdf output using latex or xelatex engines'
+            'texlive-latex: for pdf output using pdflatex engine'
+            'texlive-xetex: for pdf output using xelatex engine')
+makedepends=('ghc' 'haskell-diff' 'haskell-tasty' 'haskell-tasty-golden' 'haskell-tasty-hunit'
+             'haskell-tasty-quickcheck' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('88baacf639c17da89df8ee2b24033deaf7a936472e69e8c64dddc01fab203cc229c77aea1d23616b79d6938de37e04ba7d2d22b106a3f2cd4a1b3663d037cc92')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+    uusi -u citeproc -u typst -u skylighting -u skylighting-core
+    # TODO: find a better solution
+    sed -i "s|let env' = dynlibEnv ++ |let env' = dynlibEnv ++ [(\"LD_LIBRARY_PATH\", \"$PWD/dist/build\")] ++ |" test/Tests/Command.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir="/usr/share/doc/$pkgname" --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-embed_data_files
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    LC_CTYPE=en_US.UTF-8 runhaskell Setup test --show-details=direct || echo "Tests failed"
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    install -D -m744 register.sh   "${pkgdir}/usr/share/haskell/register/${_hkgname}.sh"
+    install -D -m744 unregister.sh "${pkgdir}/usr/share/haskell/unregister/${_hkgname}.sh"
+    runhaskell Setup copy --destdir="${pkgdir}"
+    rm "${pkgdir}/usr/share/doc/${pkgname}/COPYING.md"
+}

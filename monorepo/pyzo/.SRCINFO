@@ -1,0 +1,21 @@
+pkgbase = pyzo
+	pkgdesc = Cross-platform Python IDE focused on interactivity and introspection, very suitable for scientific computing.
+	pkgver = 4.22.0
+	pkgrel = 1
+	url = https://pyzo.org
+	arch = any
+	license = BSD-2-Clause
+	checkdepends = python-pytest
+	checkdepends = pyside6
+	checkdepends = python-pyqt6
+	checkdepends = xorg-server-xvfb
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-flit-core
+	depends = python-packaging
+	optdepends = pyside6: Qt6 backend
+	optdepends = python-pyqt6: alternative Qt6 backend
+	source = https://github.com/pyzo/pyzo/archive/v4.22.0/pyzo-4.22.0.tar.gz
+	sha256sums = 980129cc1fbf5a371c59db2ea9d05017598d40a9d83345a4f8e59586e13431d9
+
+pkgname = pyzo

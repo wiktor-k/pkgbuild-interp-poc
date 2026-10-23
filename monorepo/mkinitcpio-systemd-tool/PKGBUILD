@@ -1,0 +1,44 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=mkinitcpio-systemd-tool
+pkgver=40
+pkgrel=1
+pkgdesc="Provisioning tool for systemd in initramfs (systemd-tool)"
+arch=(any)
+url="https://github.com/random-archer/mkinitcpio-systemd-tool"
+license=(Apache-2.0)
+depends=(
+  bash
+  mkinitcpio
+  systemd
+)
+optdepends=(
+  'busybox: for initrd-tinysshd.service'
+  'cryptsetup: for initrd-cryptsetup.service'
+  'dropbear: for initrd-dropbear.service'
+  'mc: for initrd-debug-progs.service'
+  'nftables: for initrd-nftables.service'
+  'tinyssh: for initrd-tinysshd.service'
+)
+conflicts=(
+  mkinitcpio-dropbear
+  mkinitcpio-tinyssh
+)
+backup=(
+  etc/$pkgname/config/crypttab
+  etc/$pkgname/config/fstab
+  etc/$pkgname/config/initrd-nftables.conf
+  etc/$pkgname/config/initrd-util-usb-hcd.conf
+  etc/$pkgname/config/ntp.conf
+  etc/$pkgname/$pkgname.conf
+  etc/$pkgname/network/initrd-network.network
+)
+source=(
+  $url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz
+)
+sha512sums=('00be091e4954ff58a8376a8a36d0946f6555a00c3b97bc10d5977c67ff42a6578bff42479fa43afd602d23a1483533b3ebe76b8d099cf2cd252e3e4b09fa1136')
+b2sums=('a1eae8562b8291bdefc8815f22c7003fb734afb823a26a9ef9c1ede2970098bf34e003180301bf1188035805bf1771c23d070ddb5d831ee9adcf5bd9993195db')
+
+package() {
+  make DESTDIR="$pkgdir/" PREFIX=/usr install -C $pkgname-$pkgver
+}

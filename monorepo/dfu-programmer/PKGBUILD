@@ -1,0 +1,34 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Eduardo Martins Lopes < edumlopes at gmail dot com >
+# Contributor: Poco <poco@atelo.org> (Patched 0.5.4 with atmega16u2 support)
+# Contributor: Eric Anderson <ejona86@gmail.com>
+
+pkgname=dfu-programmer
+pkgver=1.1.0
+pkgrel=1
+pkgdesc='Programmer for Atmel chips with a USB bootloader'
+url='https://github.com/dfu-programmer/dfu-programmer'
+arch=('x86_64')
+license=('GPL2')
+depends=('glibc' 'libusb' 'libusb-1.0.so')
+source=(${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('9d52b68023c6b38c93a3e8d4a04bcac9e9858f20d810a15bbcc9c37ab117d7799194363813bcc074585c86d7cc7877307e060f3b60655b7632f97421e23db30d')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  touch ./ChangeLog
+  autoreconf -fiv
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

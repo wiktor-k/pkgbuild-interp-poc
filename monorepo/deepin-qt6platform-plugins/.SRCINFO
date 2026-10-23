@@ -1,0 +1,31 @@
+pkgbase = deepin-qt6platform-plugins
+	pkgdesc = Qt 6 platform plugins for DDE
+	pkgver = 6.0.50
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/qt6platform-plugins
+	arch = x86_64
+	groups = deepin
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	makedepends = libglvnd
+	makedepends = gtest
+	makedepends = qt6-xcb-private-headers
+	makedepends = extra-cmake-modules
+	makedepends = dtkcommon
+	makedepends = cairo
+	depends = qt6-base
+	depends = libx11
+	depends = libxi
+	depends = libxcb
+	depends = xcb-util-wm
+	depends = xcb-util-cursor
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/linuxdeepin/qt6platform-plugins.git#tag=6.0.50
+	sha512sums = 3dc44c65afc6f6c197ef4396c33ff7e41977241e207f0c48c57dda0f189c70140fd5c5a941988964ac8c0c48176442aa8affe672b19ff7a65369d5d9c042d015
+
+pkgname = deepin-qt6platform-plugins

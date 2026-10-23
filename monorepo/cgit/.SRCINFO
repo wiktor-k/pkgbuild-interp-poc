@@ -1,0 +1,37 @@
+pkgbase = cgit
+	pkgdesc = A web interface for git written in plain C
+	pkgver = 1.3.1
+	pkgrel = 1
+	url = https://git.zx2c4.com/cgit/
+	install = cgit.install
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = curl
+	makedepends = asciidoc
+	depends = glibc
+	depends = luajit
+	depends = zlib-ng
+	depends = libz-ng.so
+	optdepends = groff: about page using man page syntax
+	optdepends = python-pygments: syntax highlighting support
+	optdepends = python-docutils: about page formatted with reStructuredText
+	optdepends = python-markdown: about page formatted with markdown
+	optdepends = lua51-luaossl: for lua filters
+	optdepends = gzip: gzip compressed snapshots
+	optdepends = bzip2: bzip2 compressed snapshots
+	optdepends = lzip: lzip compressed snapshots
+	optdepends = xz: xz compressed snapshots
+	optdepends = zstd: zstd compressed snapshots
+	optdepends = mime-types: serve file with correct content-type header
+	source = git+https://git.zx2c4.com/cgit.git#tag=v1.3.1
+	source = git+https://github.com/git/git.git
+	source = cgit.tmpfiles
+	source = apache.example.conf
+	validpgpkeys = AB9942E6D4A4CFC3412620A749FC7012A5DE03AE
+	sha256sums = b61d4ad4f2efc1cd25e93c8607e7831401be4545c0db7cdfc9f5c2fedde788e1
+	sha256sums = SKIP
+	sha256sums = 4004b72d433e5810b046fc6019171a11a0dae3e9c6b29a44f16ed41705c46c3d
+	sha256sums = 89927d462c0504863c163eb8a210e5d65db30ee6e4300ff6a2f92460e4f20a62
+
+pkgname = cgit

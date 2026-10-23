@@ -1,0 +1,22 @@
+pkgbase = python-pytest-mpl
+	pkgdesc = Pytest plugin to help with testing figures output from Matplotlib
+	pkgver = 0.19.0
+	pkgrel = 1
+	url = https://github.com/matplotlib/pytest-mpl
+	arch = any
+	license = BSD
+	checkdepends = python-pytest
+	checkdepends = python-jinja
+	makedepends = python-setuptools-scm
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = git
+	depends = python-pytest
+	depends = python-matplotlib
+	depends = python-jinja
+	depends = python-packaging
+	source = python-pytest-mpl::git+https://github.com/matplotlib/pytest-mpl.git#tag=v0.19.0
+	sha256sums = 5288db8fa97d3873018ae205a5cc53aba2e4a203bf3d83bae3b3ae980766c580
+
+pkgname = python-pytest-mpl

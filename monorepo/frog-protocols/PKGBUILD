@@ -1,0 +1,22 @@
+# Maintainer: Campbell Jones <serebit at archlinux dot org>
+
+pkgname=frog-protocols
+pkgver=0.01
+pkgrel=1
+pkgdesc="Frog protocols for Wayland"
+arch=("any")
+url="https://github.com/misyltoad/$pkgname"
+license=("MIT")
+makedepends=("meson")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('875940795480ade6c16375fa07d8550e7ed2841937d86cc762f77a2cec6bfac9')
+
+build() {
+    arch-meson "$pkgname-$pkgver" build
+    meson compile -C build
+}
+
+package() {
+    meson install -C build --destdir "$pkgdir"
+    install -Dm 00644 "${pkgname}-${pkgver}/LICENSE.md" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

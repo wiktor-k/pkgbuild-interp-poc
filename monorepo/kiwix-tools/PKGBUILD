@@ -1,0 +1,29 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+pkgname=kiwix-tools
+pkgver=3.8.2
+pkgrel=3
+pkgdesc="kiwix command line tools"
+license=('GPL-3.0-or-later')
+arch=('armv7h' 'i686' 'x86_64')
+depends=('libkiwix>=14.2.0' 'docopt')
+makedepends=('meson')
+url='https://github.com/kiwix/kiwix-tools'
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
+sha256sums=('7148522730a66cffb58a3b3674c6cbac548a1f95fd08c5f330565aad70c14d14')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	arch-meson build
+	ninja -C build
+}
+
+check() {
+	cd "${pkgname}-${pkgver}/build"
+	meson test
+}
+
+package() {
+	install -Dm644 "${pkgname}-${pkgver}/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+	cd "${pkgname}-${pkgver}/build"
+	DESTDIR="${pkgdir}" ninja install
+}

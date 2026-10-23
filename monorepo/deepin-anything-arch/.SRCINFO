@@ -1,0 +1,16 @@
+pkgbase = deepin-anything-arch
+	pkgdesc = Deepin Anything file search tool, kernel module for Arch kernel
+	pkgver = 7.0.10
+	pkgrel = 6
+	url = https://github.com/linuxdeepin/deepin-anything
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = linux-headers
+	makedepends = deepin-anything-dkms=7.0.10
+	provides = DEEPIN-ANYTHING-MODULE
+	conflicts = deepin-anything-module
+	conflicts = deepin-anything-dkms
+	replaces = deepin-anything-module
+
+pkgname = deepin-anything-arch
+	depends = linux

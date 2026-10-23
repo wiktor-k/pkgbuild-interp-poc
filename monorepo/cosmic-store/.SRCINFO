@@ -1,0 +1,28 @@
+pkgbase = cosmic-store
+	pkgdesc = Cosmic App Store
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-store
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = just
+	makedepends = mold
+	depends = archlinux-appstream-data
+	depends = cosmic-icon-theme
+	depends = flatpak
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = libxkbcommon
+	depends = openssl
+	depends = wayland
+	source = git+https://github.com/pop-os/cosmic-store.git#tag=epoch-1.10.0
+	source = cosmic-store-lto.patch
+	b2sums = 7d8bf48b01966a6e13a032aa2228a165479d53fd2d40a14467a7dae3e9e191dbf6b471cefb2021ac4aba3b13c8abadad91b0a86f5638336cc7cd477dbbfecbae
+	b2sums = ed4089dd1ded4a87307c50f38af03ff3742bfc54053a668416f713c9b27eb591e608166ce14f2f50f8303aaf06533963fd821d00522b77e7f965827035a7ff11
+
+pkgname = cosmic-store

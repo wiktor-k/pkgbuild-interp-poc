@@ -1,0 +1,57 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+pkgname='usage'
+pkgver=6.12.1
+pkgrel=1
+pkgdesc='A specification for CLIs'
+arch=('x86_64')
+url='https://github.com/jdx/usage'
+license=('MIT')
+makedepends=(
+  cargo
+)
+checkdepends=(
+  mise
+  nodejs
+)
+options=(
+  '!emptydirs'
+)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('9b2a9f2cc2d1863447e4d86e40209bc02fa9846c4ad128480235db8f51a9adbdb770752e32a5dae6e494df1cd2bd2cdacccd109e9342cf13efb03eb1ee395f84')
+b2sums=('5cf31af6fc672f9db727a90b2cd9830850ef1c4f5f1ba887f5f6e2656b69f290bd94ee9bba7711f48652532731f95767e3630fe037bb0d0029bdafd56b2d5f54')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  mise trust ~/usage/src/usage-6.12.1/mise.toml
+
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  # package
+  install --verbose -D --mode=0755 "target/release/${pkgname}" --target-directory "${pkgdir}/usr/bin/"
+
+  # license
+  install --verbose -D --mode=0644 LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  # docs
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

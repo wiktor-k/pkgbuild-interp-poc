@@ -1,0 +1,23 @@
+pkgbase = cosmic-initial-setup
+	pkgdesc = COSMIC Initial Setup
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-initial-setup
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = git-lfs
+	makedepends = just
+	depends = cosmic-icon-theme
+	depends = libinput
+	depends = libpulse
+	depends = libxkbcommon
+	depends = polkit
+	depends = systemd-libs
+	source = git+https://github.com/pop-os/cosmic-initial-setup.git#tag=epoch-1.10.0
+	sha256sums = 37dd888f6f02406b9227fde1f28b3ee4fb017137d867b1b3750f5f796132c243
+
+pkgname = cosmic-initial-setup

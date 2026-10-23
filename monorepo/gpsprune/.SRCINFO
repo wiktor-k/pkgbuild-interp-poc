@@ -1,0 +1,26 @@
+pkgbase = gpsprune
+	pkgdesc = View, edit and convert coordinate data from GPS systems
+	pkgver = 27
+	pkgrel = 1
+	url = https://activityworkshop.net/software/gpsprune/
+	arch = any
+	license = GPL-2.0-only
+	makedepends = imagemagick
+	depends = hicolor-icon-theme
+	depends = java-runtime>=11
+	optdepends = gnuplot: draw charts
+	optdepends = gpsbabel: load data directly from GPS receivers
+	optdepends = perl-image-exiftool: save coordinates into JPEG files
+	noextract = gpsprune_27.jar
+	source = https://activityworkshop.net/software/gpsprune/gpsprune_27.jar
+	source = https://activityworkshop.net/software/gpsprune/prunelogo.png
+	source = gpsprune.sh
+	source = gpsprune.desktop
+	source = gpsprune.appdata.xml
+	sha256sums = a49dc79ebdf8cd3ffd6cadddb18ed5687c0bbc5d3a93bd5a8c3e41e7b023be12
+	sha256sums = 9d08bebe643266d2be126597a6841b0364ab07b2d44fdde8c7ad2ec59088523c
+	sha256sums = cd8b8f8fc54df03e7435e4849d734e7d9ef5291d8f75c6abab0bfe809fe6abd9
+	sha256sums = 744f83c1c6d76c3d339b41450ddc79a7c15fbaf6d637741fb2c09529a65a0311
+	sha256sums = bba63de51deff95f3453bdacd8e34126c7cbbd33658fadad0b2c51b19855fdb9
+
+pkgname = gpsprune

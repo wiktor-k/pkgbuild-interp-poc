@@ -1,0 +1,305 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Konstantin Gizdov < arch at kge dot pw >
+# Contributor: Frank Siegert < frank.siegert at googlemail dot com >
+# Contributor: Scott Lawrence < bytbox at gmail dot com >
+# Contributor: Thomas Dziedzic < gostrc at gmail dot com >
+# Contributor: Sebastian Voecking < voeck at web dot de >
+
+pkgbase=root
+pkgname=(root root-cuda)
+pkgver=6.40.04
+pkgrel=1
+pkgdesc='C++ data analysis framework and interpreter from CERN'
+arch=(x86_64)
+url='https://root.cern'
+license=(
+  LGPL-2.1-or-later
+  BSD-2-Clause
+  BSD-3-Clause-LBNL
+  NCSA
+)
+options=(!lto)
+depends=(
+  blas
+  desktop-file-utils
+  fcgi
+  fftw
+  freetype2
+  ftgl
+  giflib
+  gl2ps
+  glew
+  glibc
+  graphviz
+  gsl
+  hicolor-icon-theme
+  libgcc
+  libgfortran
+  libglvnd
+  libjpeg-turbo
+  libpng
+  librsvg
+  libstdc++
+  libtiff
+  liburing
+  libxcrypt
+  libxft
+  libxml2
+  libxpm
+  lz4
+  ncurses
+  openssl
+  pcre2
+  python
+  python-numpy
+  tbb
+  tex-gyre-fonts
+  xxhash
+  xz
+  zlib
+  zstd
+)
+makedepends=(
+  cern-vdt
+  cfitsio
+  chromium
+  cmake
+  cuda
+  cudnn
+  gcc-fortran
+  git
+  go
+  ninja
+  nlohmann-json
+  ocaml
+  ocaml-ctypes
+  openmpi
+  pythia8
+  python-pygments
+  qt6-webengine
+  sqlite
+  unuran
+  vc
+  xrootd
+  z3
+)
+optdepends=(
+  'cern-vdt: Add a set of fast and vectorisable mathematical functions'
+  'cfitsio: Read images and data from FITS files'
+  'chromium: Support for WebGUI'
+  'gcc-fortran: Enable the Fortran components of ROOT'
+  'jupyter-metakernel: for Jupyter kernel'
+  'openmpi: Support for Message Passing Interface (MPI)'
+  'pythia8>=8.2.40-1: Pythia8 EG support'
+  'python-pygments: syntax highlighting in interactive console'
+  'qt6-webengine: Support for WebGUI'
+  'sqlite: SQLite support'
+  'tcsh: Legacy CSH support'
+  'unuran: Support non-uniform random numbers'
+  'vc: Add types for portable and intuitive SIMD programming'
+  'xrootd>5: Support remote file server and client'
+  'z3: Support the Z3 theorem prover'
+)
+# cppyy and ROOT have a weird relationship: Cling is developed as part of ROOT without
+# separate releases, so it is basically forked and patched in the cppyy-backend project.
+# On the other hand, ROOT has PyROOT which uses cppyy, so it forks it back to build it
+# against the ROOT-provided Cling. There are also some licensing reasons...
+# See details: https://github.com/wlav/cppyy-backend/issues/33#issuecomment-2598877502
+provides=(
+  python-cppyy
+  python-cppyy-backend
+  python-cpycppyy
+)
+conflicts=(
+  python-cppyy
+  python-cppyy-backend
+  python-cpycppyy
+)
+source=(
+  "https://root.cern.ch/download/root_v${pkgver}.source.tar.gz"
+  ROOFIT_LICENSE
+  root.xml
+  root.pc.tpl
+  settings.cmake
+  jupyter_notebook_config.py
+  nbman-for-arch.patch
+  thisroot.fail
+)
+b2sums=('995cee12c3da019ce3bdb0e0de9f5091df1aafa795c044ac343128cb8281494885f334cdc08797b5500cb3a1a5b01286b554c9fb9816c3acf28d9b7dcbc36ced'
+        '5da6218a171ee0fbd7b03518dde22787bb0e478a18dcf227eea4e65598c0a0bb299747c6503ad3026804e1a4dbcf4d2b674b83e6ed6e482dd3d14ceb4646dee8'
+        'b5defce795dbfeee75dab0cc4c20ac84fe55cb11e9acdd5e75831b6db98e6190621867a65427ab44d93b6fe30398db6fd191defb029a6dcd0af087c1e5115451'
+        '5e4c589fd9e226fcf7ff9ab880687c10ff0f7b7c03fdf12fc477622d6ec291e2dc62e7f5ce7b68856bccf37b64b2f4331f46788548d39fdca57fd832d1f3b437'
+        '5bab5dec4ab98538f8cef57be123d8a552963806cab1f2d298c868f5795230bcb054e7b98082b7b17656bc840ec219075dc07dcb990bde2be16cb96cbfab65b0'
+        '47a7b4491f1455ddb02c3793c7fbaf05184dba9a5fc9d7378608727e69c778dd5832c49f11f4d2c8204dcffc86fc4786b5616fb381c4e3e629d78db9c86913c5'
+        'fbf7a90d87d8cb0b8346861894dfb2fb62827b5080b27fdc1080057c3d52cfeb392557a459d9764e5768a0c4bece9f9bd03ed6f5c738b84ccbe80a71e9950120'
+        '3501c944e8cab13fe9f5c8ab75a7cdb4b59bc5b00df4bf45ad246ab8cd6cb1ebde19369bc688458c97ff5f5acd4e86fc19b4c8f57ab4cb422d0a5eacac081138')
+
+get_pyver () {
+  python -c 'import sys; print(str(sys.version_info[0]) + "." + str(sys.version_info[1]))'
+}
+
+prepare() {
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    echo "  -> Applying patch $src..."
+    patch -Np1 -i "../$src" -d "${srcdir}/${pkgbase}-${pkgver}"
+  done
+}
+
+build() {
+  local common_cmake_options=(
+    -S $pkgbase-$pkgver
+    -G Ninja
+    -W no-dev
+    -C settings.cmake
+    # needed by vc to link properly
+    -DTARGET_ARCHITECTURE:STRING=generic
+    # skip internet connection check (but cmake still git pulls clad)
+    -DNO_CONNECTION:BOOL=FALSE
+  )
+
+  # In general, we want to list all real archs (sm_XX) and the latest virtual arch (compute_XX) for future PTX compatibility.
+  # Valid values can be discovered from nvcc --help
+  local cuda_archs="75;80;86;87;88;89;90;100;103;110;120;121;121-virtual"
+
+  local cuda_cmake_options=(
+    -Dcuda=ON
+    -Dtmva-cpu=OFF
+    -Dtmva-gpu=ON
+    -Dtmva-cudnn=ON
+    -DCMAKE_CUDA_ARCHITECTURES="$cuda_archs"
+  )
+
+  # don't let ROOT play around with lib paths
+  export CPPFLAGS="${CPPFLAGS} -DIS_RPATH_BUILD=1"
+
+  # go flags for built-in clang
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
+
+  ## ROOT
+  cmake -B build "${common_cmake_options[@]}"
+  cmake --build build
+
+  ## ROOT with CUDA
+  cmake -B build-cuda "${common_cmake_options[@]}" "${cuda_cmake_options[@]}"
+  cmake --build build-cuda
+}
+
+_package() {
+  local bld_dir="${srcdir}/${1}"
+  cd "${bld_dir}"
+
+  DESTDIR="${pkgdir}" cmake --install .
+
+  # fix missing hardlinks for genreflex and rootcint
+  cd "${pkgdir}"/usr/bin
+  ln -f rootcling rootcint
+  ln -f rootcling genreflex
+  cd "${bld_dir}" # go back
+
+  # fix python env call
+  sed -e 's/@python@/python/' -i "${pkgdir}/usr/lib/root/cmdLineUtils.py"
+
+  # try to deal with weird PyROOT, PyMVA and JupyROOT stuff
+  rm -rf "${pkgdir}/usr/lib/root/__pycache__"
+  local _pyver=$(get_pyver)
+  local _pydir="${pkgdir}/usr/lib/python${_pyver}/site-packages"
+  install -d "${_pydir}"
+  find "${pkgdir}/usr/lib/root" -maxdepth 1 -mindepth 1 \( -iname '*py*' -or -name '*Js*' -or -name 'ROOT' -or -name 'DistRDF' \) \
+       ! \( -name '*EGPythia8*' -or -iname '*.rootmap' -or -iname '*.pcm' \) -print0 | while read -rd $'\0' _lib; do
+    _base=$(basename "${_lib}")
+    ln -sf "/usr/lib/root/${_base}" "${pkgdir}/usr/lib/python${_pyver}/site-packages/${_base}"
+  done
+
+  # recompile pycache to strip $pkgdir from embedded paths
+  python -m compileall -d "/usr/lib/python${_pyver}" \
+      "${pkgdir}/usr/lib/python${_pyver}"
+  python -O -m compileall -d "/usr/lib/python${_pyver}" \
+      "${pkgdir}/usr/lib/python${_pyver}"
+
+  # icon, shortcut and mime
+  install -Dm644 "${srcdir}/${pkgbase}-${pkgver}/icons/Root6Icon.png" \
+      "${pkgdir}/usr/share/icons/hicolor/48x48/apps/root.png"
+  install -Dm644 "${srcdir}/${pkgbase}-${pkgver}/etc/root.desktop" \
+      "${pkgdir}/usr/share/applications/root.desktop"
+  echo 'Icon=root.png' >> "${pkgdir}/usr/share/applications/root.desktop"
+  install -Dm644 "${srcdir}/root.xml" \
+      "${pkgdir}/usr/share/mime/packages/root.xml"
+
+  # use a file that pacman can track instead of adding directly to ld.so.conf
+  install -d "${pkgdir}/etc/ld.so.conf.d"
+  echo '/usr/lib/root' > "${pkgdir}/etc/ld.so.conf.d/root.conf"
+
+  # create pkg-config file
+  local _prefix _exec_prefix _bindir _libdir _incdir _pkg_ver _libs _cflags _requires
+  _prefix="$("${pkgdir}"/usr/bin/root-config --prefix)"
+  _exec_prefix="$("${pkgdir}"/usr/bin/root-config --exec-prefix)"
+  _bindir="$("${pkgdir}"/usr/bin/root-config --bindir)"
+  _libdir="$("${pkgdir}"/usr/bin/root-config --libdir)"
+  _incdir="$("${pkgdir}"/usr/bin/root-config --incdir)"
+  _pkg_ver="$(sed -n 's,.*ROOT_RELEASE *\"\(.*\)\".*,\1,p' < "${pkgdir}"/usr/include/RVersion.h)"
+  _libs="$("${pkgdir}"/usr/bin/root-config --libs)"
+  _cflags="$("${pkgdir}"/usr/bin/root-config --cflags)"
+  printf -v _requires '%s,' "${depends[@]}"
+  cp "${srcdir}/root.pc.tpl" "${bld_dir}"/
+  sed -e "s@_PREFIX@${_prefix}@" -e "s@_EXECPREFIX@${_exec_prefix}@" \
+      -e "s@_LIBDIR@${_libdir}@" -e "s@_INCDIR@${_incdir}@" \
+      -e "s@_PKGVERSION@${_pkg_ver}@" -e "s@_LIBRARIES@${_libs}@" \
+      -e "s@_CFLAGS@${_cflags}@" -e "s@_UPSTREAM_URL@${url}@" \
+      -e "s@_REQUIRES@${_requires}@" \
+      -i "${bld_dir}/root.pc.tpl"
+  install -Dm644 "${bld_dir}/root.pc.tpl" "${pkgdir}/usr/lib/pkgconfig/root.pc"
+
+  # install all licenses & docs
+  install -d "${pkgdir}/usr/share/licenses/roofit"
+  install "${srcdir}/ROOFIT_LICENSE" "${pkgdir}/usr/share/licenses/roofit/LICENSE"
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s '/usr/share/doc/root/LICENSE' "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  for _fold in fonts js; do
+    install -d "${pkgdir}/usr/share/licenses/${pkgname}/${_fold}"
+    ln -s "/usr/share/root/${_fold}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/${_fold}"/
+  done
+  ln -s '/usr/share/licenses/roofit' "${pkgdir}/usr/share/licenses/${pkgname}/roofit"
+  if [ "${pkgname}" != "root" ]; then
+    ln -s "/usr/share/licenses/${pkgname}" "${pkgdir}/usr/share/licenses/root"
+    ln -s "/usr/share/doc/root" "${pkgdir}/usr/share/doc/${pkgname}"
+  fi
+
+  # install jupyter kernels and `root --notebook` config
+  install -d "${pkgdir}/usr/share/jupyter/kernels"
+  ln -s '/etc/root/notebook/kernels/root' "${pkgdir}/usr/share/jupyter/kernels/root"
+  install "${srcdir}/jupyter_notebook_config.py" "${pkgdir}/etc/root/notebook"/
+
+  # drop thisroot.* shell files
+  rm -rf "${pkgdir}"/usr/bin/thisroot.*
+  install -Dm755 "${srcdir}/thisroot.fail" "${pkgdir}/usr/bin/thisroot.sh"
+  for suffix in csh fish; do
+    ln -s '/usr/bin/thisroot.sh' "${pkgdir}/usr/bin/thisroot.${suffix}"
+  done
+
+  # set correct LD_LIBRARY_PATH at runtime
+  sed -i.orig \
+      -e "s@#Unix.*.Root.DynamicPath:.*@Unix.*.Root.DynamicPath:    .:${_libdir}:/usr/lib@" \
+      "${pkgdir}/etc/root/system.rootrc"
+}
+
+package_root() {
+  _package build
+}
+
+package_root-cuda() {
+  pkgdesc='C++ data analysis framework and interpreter from CERN with GPU (CUDA) features enabled'
+  provides=(root)
+  conflicts=(root)
+  depends+=(
+    cuda
+    cudnn
+  )
+  _package build-cuda
+}
+
+# vim: ts=2 sw=2 et:

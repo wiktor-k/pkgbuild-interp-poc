@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-kms-ovhcloud
+	pkgdesc = OpenBao Plugin - Auto Unseal KMS using OVH Cloud
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://openbao.org/docs/next/configuration/seal/#plugins
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-kms-ovhcloud::git+https://github.com/openbao/openbao-plugins.git#tag=kms-ovhcloud-v0.0.1
+	sha256sums = bb17993f8e4e710cb17a7b69f077a4852d18c1f7b3e65a6785f0ac16362db2fa
+
+pkgname = openbao-plugin-kms-ovhcloud

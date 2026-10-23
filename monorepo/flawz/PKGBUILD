@@ -1,0 +1,46 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=flawz
+pkgver=0.4.1
+pkgrel=1
+pkgdesc="A Terminal UI for browsing security vulnerabilities (CVEs)"
+arch=('x86_64')
+url="https://github.com/orhun/flawz"
+license=('MIT' 'Apache-2.0')
+depends=('glibc' 'libgcc' 'openssl' 'sqlite')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('0aa74a024034d67e828a5fe8d2ecf9447d6405bf4f45adf1dfdb9059787d82903f056dd7a7c0cea4220342682cd1107289eb3208b89255f6a854871876d28812')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir completions/
+  mkdir man/
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  OUT_DIR=completions/ "./target/release/$pkgname-completions"
+  OUT_DIR=man/ "./target/release/$pkgname-mangen"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions"
+  install -Dm 644 "man/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

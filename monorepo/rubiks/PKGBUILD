@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=rubiks
+pkgver=20070912
+pkgrel=6
+pkgdesc="Several programs for working with Rubik's cubes"
+arch=(x86_64)
+url='https://www.sagemath.org'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         libgcc
+         libstdc++)
+source=(https://github.com/sagemath/sage-package/releases/download/tars/$pkgname-$pkgver-unix.tar.bz2
+        dietz-mcube-Makefile
+        dietz-cu2-Makefile
+        dietz-solver-Makefile
+        reid-Makefile)
+sha256sums=('aae4c88c0f1cf84718c1a6e31e027a2886e9eaea65051385339fd98be8693e07'
+            'f60ac0462c863da32943a005cd79f3e172f7856a53ceead5e6b62dcd033f0d11'
+            'bd3d65fdf729244ab389440e299d6b84fe89fbbdf986735531b331cf6170fb06'
+            '8e910825440dffe6fa73c3fd2d12eb4962ed86a512b848f39b58f1cc06411a78'
+            '0c97aac3b02f2dbd366af58de4e931b7764280fc733505742a11ae9ec4f424c6')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cp ../dietz-mcube-Makefile dietz/mcube/Makefile
+  cp ../dietz-solver-Makefile dietz/solver/Makefile
+  cp ../dietz-cu2-Makefile dietz/cu2/Makefile
+  cp ../reid-Makefile reid/Makefile
+  export CFLAGS+=" -Wno-implicit-function-declaration -Wno-implicit-int"
+  sed -e "s|^CFLAGS.*|CFLAGS = ${CFLAGS}|" -e 's|\$(CFLAGS)|\$(CFLAGS) \$(LDFLAGS)|g' -i dik/makefile
+}
+
+build() {
+  cd $pkgname-$pkgver
+  make PREFIX="$pkgdir"/usr
+}
+
+package() {
+  cd $pkgname-$pkgver
+  INSTALL=/usr/bin/install make PREFIX="$pkgdir"/usr install
+}

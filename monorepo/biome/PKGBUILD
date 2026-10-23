@@ -1,0 +1,59 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=biome
+pkgver=2.6.2
+pkgrel=1
+pkgdesc='Formatter, linter, and more for Javascript, Typescript, JSON, and CSS'
+arch=(x86_64)
+url=https://biomejs.dev
+_url="https://github.com/biomejs/$pkgname"
+license=(MIT)
+depends=(glibc
+         libgcc)
+makedepends=(cargo)
+replaces=(rome
+          "$pkgname-bin")
+_archive="$pkgname--biomejs-biome-$pkgver"
+source=("$_url/archive/@biomejs/biome@$pkgver/$_archive.tar.gz")
+sha256sums=('7325c9fef245c55e309bfbf220d0db85d5e9ab5e011f9d20dbd322929e330106')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -fno-lto'
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	export BIOME_VERSION="$pkgver"
+	cargo build -p "${pkgname}_cli" --frozen --release --all-features
+}
+
+check() {
+	_srcenv
+	export BIOME_VERSION="0.0.0" # upstream test expectations changed in 2.3.8
+	local skipped=(
+		cases::diagnostics::max_diagnostics_verbose
+		commands::explain::explain_help
+		commands::lint::lint_help
+		commands::lsp_proxy::lsp_proxy_help
+	)
+	cargo test -p "${pkgname}_cli" --frozen --all-features -- \
+		${skipped[@]/#/--skip }
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE-*
+}

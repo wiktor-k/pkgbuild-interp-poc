@@ -1,0 +1,29 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Matt Quintanilla <matt @ matt quintanilla .xyz>
+pkgname=mangowm
+_pkgname=mango
+pkgver=0.18.2
+pkgrel=1
+pkgdesc="Lightweight, feature rich modern wayland compositor"
+url="https://mangowm.github.io"
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=('glibc' 'wayland-protocols' 'pango' 'wayland' 'libinput' 'libdrm' 'cairo'
+         'pixman' 'libdisplay-info' 'libliftoff' 'seatd' 'xorg-xwayland' 'glib2'
+         'libxcb' 'libxkbcommon' 'pcre2' 'wlroots0.20' 'scenefx' 'cjson' 'xcb-util-wm')
+makedepends=('meson')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mangowm/mango/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('04c8a6bb168307360383670daf0f96ffa7587df6680b9030587f084121105dd3')
+
+build() {
+	arch-meson "${_pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+check() {
+	meson test -C build --print-errorlogs
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

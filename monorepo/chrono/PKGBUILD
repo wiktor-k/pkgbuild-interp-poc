@@ -1,0 +1,35 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=chrono
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Natural language date and time parser library for Vala/GLib applications'
+arch=(x86_64)
+url='https://github.com/alainm23/chrono'
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  glibc
+  libgee
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+source=("git+https://github.com/alainm23/chrono.git#tag=$pkgver")
+b2sums=(c2ba052bd2ea7c7f4acb53d529d27984064a440117cde048f65a8decff2496980e42e63d62f8a1fcfbaf12faf9b28f0615469d074b310fedaf9bc86893f27846)
+
+build() {
+  arch-meson $pkgname build \
+    -D tests=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

@@ -1,0 +1,40 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@vdwaa.nl>
+# Contributor: Marcin (CTRL) Wieczorek <marcin@marcin.co>
+# Contributor: Marcin Kornat <rarvolt+aur@gmail.com>
+# Contributor: MatejSpindler <spindler.matej@gmail.com>
+
+pkgname=esptool
+pkgver=5.5.0
+pkgrel=2
+pkgdesc='Espressif SoC serial bootloader utility'
+arch=(any)
+url='https://github.com/espressif/esptool'
+license=(GPL-2.0-only)
+makedepends=(git python-build python-installer python-wheel)
+depends=(
+  python
+  python-pyserial
+  python-bitstring
+  python-reedsolo
+  python-cryptography
+  python-yaml
+  python-intelhex
+  python-click
+  python-rich-click
+  python-esp-pylib
+  python-rich
+)
+optdepends=('python-python-pkcs11: Support for HSM devices')
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('7a1f1d7f6ccf4f5f9fc3b18eb98952419cb15ac261ba9d888e8ce4095970ab3dccc4ef17a6100508d4b70bc9a3ccc2992f4937860eb168beb5bac86d8d024b24')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

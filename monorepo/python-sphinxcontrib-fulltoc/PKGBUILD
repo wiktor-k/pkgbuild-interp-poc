@@ -1,0 +1,37 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-sphinxcontrib-fulltoc
+pkgver=1.3
+pkgrel=2
+pkgdesc='Sphinx extension to show full table of contents in the sidebar'
+arch=(any)
+url='https://github.com/sphinx-contrib/fulltoc'
+license=(Apache-2.0)
+depends=(python python-sphinx)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+  python-pbr
+)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('ef9d06836bea00bf631eab572add0b2eaf31da7db7dbe00aab0bfa23f090ea8baf32075508c5546d10a927044f605e124dbabb4eafe38f320e384072bf44bf62')
+b2sums=('62540ba1ca6fd23f2ece25629e24d1934dcebfcef6a2c51329a267bc116410f81232ad12275a1d1b6e2924b0cb3357baf1a98d023f1b7e8ee1e62784b2e0ff3b')
+
+build() {
+  cd "$pkgname"
+
+  # issue opened regarding deprecation warnings
+  # https://github.com/sphinx-contrib/fulltoc/issues/24
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et

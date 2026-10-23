@@ -1,0 +1,73 @@
+# vim:set ft=sh:
+# Maintainer: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+# Contributor: (sirocco AT ngs.ru)
+
+pkgbase=doublecmd
+pkgname=('doublecmd-qt5' 'doublecmd-qt6')
+pkgver=1.2.9
+pkgrel=1
+url="http://doublecmd.sourceforge.net/"
+arch=('x86_64')
+license=('GPL-2.0-or-later' 'LGPL-2.0-or-later' 'MIT' 'MPL-1.1' 'MPL-2.0' 'Apache-2.0' 'BSD-2-Clause' 'Zlib')
+provides=("$pkgbase")
+makedepends=('lazarus' 'qt5pas' 'qt6pas' 'imagemagick' 'ffmpegthumbnailer')
+optdepends=(
+    'lua: scripting'
+    'unzip: support extracting zip archives'
+    'zip: suport packing zip archives'
+    'p7zip: support for 7zip archives'
+    'libunrar: support for rar archives'
+    'imagemagick: preview xcf files'
+    'ffmpegthumbnailer: preview video files'
+    'mplayer: to make use of the wlxmplayer plugin'
+)
+source=(
+    "https://downloads.sourceforge.net/project/$pkgbase/Double%20Commander%20Source/$pkgbase-$pkgver-src.tar.gz"
+)
+sha512sums=('7c39cc28431a00b1869dbce4b4369e7dc596ad8d4e3e6b89897e17d6268b13f52092f2d96bd141d9788d7ca1513b9b06a8b425cc6f6c8ee20a43c4f2e1ef59de')
+
+prepare() {
+    cp -a /usr/lib/lazarus ./
+
+    cd "$pkgbase-$pkgver"
+    sed -e 's/LIB_SUFFIX=.*/LIB_SUFFIX=/g' -i install/linux/install.sh
+    sed -e "s@=\$(which lazbuild)@=\"\$(which lazbuild) --lazarusdir=$srcdir/lazarus\"@" -i build.sh
+    sed -e '/doublecmd.zdli/d' -i install/linux/install.sh
+}
+
+build() {
+    cd "$srcdir/$pkgbase-$pkgver"
+    cd "$srcdir"
+
+    cp -a "$pkgbase-$pkgver" "$pkgbase-qt5"
+    cp -a "$pkgbase-$pkgver" "$pkgbase-qt6"
+
+    # build qt5
+    cd "$srcdir/$pkgbase-qt5"
+    ./build.sh components qt5
+    ./build.sh plugins qt5
+    ./build.sh doublecmd qt5
+
+    # build qt6
+    cd "$srcdir/$pkgbase-qt6"
+    ./build.sh components qt6
+    ./build.sh plugins qt6
+    ./build.sh doublecmd qt6
+}
+
+package_doublecmd-qt5() {
+    pkgdesc="twin-panel (commander-style) file manager (Qt5)"
+    depends=('qt5pas' 'desktop-file-utils' 'hicolor-icon-theme' 'shared-mime-info')
+    conflicts=('doublecmd-gtk2' 'doublecmd-qt6')
+    replaces=('doublecmd-qt' 'doublecmd-qt4' 'doublecmd-gtk2')
+    cd "$srcdir/$pkgbase-qt5"
+    ./install/linux/install.sh --install-prefix="$pkgdir"
+}
+
+package_doublecmd-qt6() {
+    pkgdesc="twin-panel (commander-style) file manager (Qt6)"
+    depends=('qt6pas' 'desktop-file-utils' 'hicolor-icon-theme' 'shared-mime-info')
+    conflicts=('doublecmd-gtk2' 'doublecmd-qt5')
+    cd "$srcdir/$pkgbase-qt6"
+    ./install/linux/install.sh --install-prefix="$pkgdir"
+}

@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=primecount
+pkgver=8.8
+pkgrel=1
+pkgdesc='Fast C++ prime counting function implementation'
+arch=(x86_64)
+url='https://github.com/kimwalisch/primecount'
+license=(BSD-2-Clause)
+depends=(glibc
+         libgcc
+         libgomp
+         libquadmath
+         libstdc++
+         primesieve)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/kimwalisch/primecount#tag=v$pkgver)
+sha256sums=('ae91224ccb4499b8f130a8922e32dd8a46ba35f14e41036b4f71f829eb95f6ae')
+
+build() {
+  # WITH_MULTIARCH builds x86 CPU-dispatch variants (POPCNT/AVX512), invalid on
+  # non-x86; WITH_FLOAT128 needs x86 libquadmath. Keep the x86_64 behaviour; use the
+  # portable path on other architectures. Build system injects the target arch.
+  local _arch_opts=(-DWITH_FLOAT128=ON)
+  [[ "$CARCH" != x86_64 ]] && _arch_opts=(-DWITH_MULTIARCH=OFF)
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_LIBPRIMESIEVE=OFF \
+    -DBUILD_STATIC_LIBS=OFF \
+    -DBUILD_SHARED_LIBS=ON \
+    "${_arch_opts[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 $pkgname/COPYING -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

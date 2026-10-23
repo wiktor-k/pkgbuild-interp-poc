@@ -1,0 +1,25 @@
+pkgbase = zssh
+	pkgdesc = SSH and Telnet client with ZMODEM file transfer capability
+	pkgver = 1.5c
+	pkgrel = 15
+	url = http://zssh.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-only
+	depends = glibc
+	depends = readline
+	source = https://downloads.sourceforge.net/project/zssh/zssh/1.5/zssh-1.5c.tgz
+	source = fix_use_ptmx_on_arch.patch
+	source = fix_CPPsymlink.patch
+	source = zssh-1.5c-Use-GNU-openpty-library-for-pty.h.patch
+	source = zssh-1.5c-replace-CPPFunction-call-with-rl_completion_func_t.patch
+	source = reproducible-builds.patch
+	source = zssh-1.5c-c99.patch
+	sha512sums = 799ce3bbea5e94a800f61e6c38879746a579992396304861b7584b6bad967214b811b6bf9aecb36d9d60a15857377cb2fee80b495ad69778903fc45593efeebd
+	sha512sums = 2d68216fe859d1bcf35e316cf9bf8ed105afb15e27ea00e5ca2e66e433aebf13834fb648e70b544a54a2a135fe65169c6839a67180eb66c724766f4a5ab33725
+	sha512sums = 5e17325b65cd4f48bbb08d4c986ff5789a29d9657b3fb9828183ba489f231124371e37ef718d4793b52898ea1302f29ebad768866a2322f85a75ae8771ccd607
+	sha512sums = b3b0f860481cac27e2c966c5612afa50f23b0cf4dc8896fe5d59d3a6e8499612f90df0173c7b10d92690889ffcdaacacffb0ea5f0c2e784abf7f8ee1473b74f6
+	sha512sums = 4d1fd7e14d39c8d9162ddb7bdadeecce152e46e8202ae9527536b7081f22f0afece67345130dbe738a553df57415a554bc4bfc506b4cce696d39dca8fe43f94f
+	sha512sums = 090ceb8e83ae3b028ac8a9498f13a87ce70ac2c9fe8763aa451733e1f52de36cbf6341ac4d17806489556cd54466be8e171418bb3c6a625f198bdcb6d68579b8
+	sha512sums = bc07a4b3363d70a587044c0c9643c345e1a7da14cf8f0ebabb2e4b036aa811fbad61247998c4dfcff73682bc9429d8a63684d7e39648bd0f72e50dfbeb699c14
+
+pkgname = zssh

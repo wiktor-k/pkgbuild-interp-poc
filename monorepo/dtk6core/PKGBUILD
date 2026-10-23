@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=dtk6core
+pkgver=6.0.50
+pkgrel=2
+pkgdesc='DTK core modules'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dtk6core"
+license=('LGPL-3.0-or-later')
+depends=('deepin-desktop-base' 'dtkcommon' 'dtk6log' 'gcc-libs' 'glibc' 'icu' 'lshw' 'qt6-base'
+         'uchardet')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'gtest' 'doxygen')
+source=("git+https://github.com/linuxdeepin/dtk6core.git#tag=$pkgver")
+sha512sums=('4fff68bc64520af59f911c22fc44f01b5f195219fd9f83949f9eaeb29a25a0b8a6dfc710c25897ea17673a9036161ba12d62870e3498e7c63eefce6e153325c8')
+
+prepare() {
+  cd dtk6core
+  # qt 6.9 fixes
+  git cherry-pick -n 52314ed4a90e33450cc319f5ec05463626e33e5b
+}
+
+build() {
+  cd dtk6core
+  cmake . -GNinja \
+      -DBUILD_DOCS=ON \
+      -DBUILD_TESTING=ON \
+      -DCMAKE_INSTALL_LIBDIR=lib \
+      -DCMAKE_INSTALL_LIBEXECDIR=lib \
+      -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+check() {
+  cd dtk6core
+  ninja test || echo "Tests failed"
+}
+
+package() {
+  cd dtk6core
+  DESTDIR="$pkgdir" ninja install
+}

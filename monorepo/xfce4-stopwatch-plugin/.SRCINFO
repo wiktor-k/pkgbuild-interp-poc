@@ -1,0 +1,17 @@
+pkgbase = xfce4-stopwatch-plugin
+	pkgdesc = A simple stopwatch plugin for Xfce panel
+	pkgver = 0.6.0
+	pkgrel = 1
+	url = https://docs.xfce.org/panel-plugins/xfce4-stopwatch-plugin/start
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = git
+	makedepends = meson
+	makedepends = xfce4-dev-tools
+	depends = libxfce4ui
+	depends = libxfce4util
+	depends = xfce4-panel
+	source = git+https://gitlab.xfce.org/panel-plugins/xfce4-stopwatch-plugin.git#tag=xfce4-stopwatch-plugin-0.6.0
+	sha256sums = 49d632862d5c54683e67a3d27ab925b01a026f4f17860f5323e641f1b2108c63
+
+pkgname = xfce4-stopwatch-plugin

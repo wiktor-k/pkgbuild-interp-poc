@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-crypt-sysrandom
+pkgver=0.007
+pkgrel=1
+pkgdesc='Perl interface to system randomness'
+arch=('any')
+url='https://metacpan.org/release/Crypt-SysRandom'
+license=('Artistic-1.0-Perl OR GPL-1.0-or-later')
+depends=('perl')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/L/LE/LEONT/Crypt-SysRandom-$pkgver.tar.gz")
+sha256sums=('a5d49e98fca3c5266c79ae989a85eca22934b058803ee4b3e6eb08efca4eef46')
+
+build() {
+  cd Crypt-SysRandom-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Crypt-SysRandom-$pkgver
+  make test
+}
+
+package() {
+  cd Crypt-SysRandom-$pkgver
+  make DESTDIR="$pkgdir" install
+}

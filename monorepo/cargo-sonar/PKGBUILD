@@ -1,0 +1,47 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cargo-sonar
+pkgver=1.6.0
+pkgrel=1
+pkgdesc="Produce Sonar-compatible format from different Rust tools"
+arch=('x86_64')
+url="https://gitlab.com/woshilapin/cargo-sonar"
+license=('MIT')
+depends=('glibc' 'libgcc')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/-/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('c65fe9f62c3f8b58307973eee3227fd3b5b9aa966e4c7b880ccb7c386c2de00b')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir completions
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  cargo build --release --frozen --features codeclimate --bin "cargo-codeclimate"
+  local compgen="target/release/$pkgname --completion"
+  $compgen bash >"completions/$pkgname"
+  $compgen fish >"completions/$pkgname.fish"
+  $compgen zsh >"completions/_$pkgname"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 755 "target/release/cargo-codeclimate" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$pkgname" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions/"
+}
+
+# vim:set ts=2 sw=2 et:

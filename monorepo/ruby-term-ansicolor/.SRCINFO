@@ -1,0 +1,18 @@
+pkgbase = ruby-term-ansicolor
+	pkgdesc = A ruby library that colors strings using ANSI escape sequences
+	pkgver = 1.11.3
+	pkgrel = 1
+	url = https://github.com/flori/term-ansicolor
+	arch = any
+	license = Apache-2.0
+	checkdepends = ruby-test-unit
+	checkdepends = ruby-simplecov
+	makedepends = git
+	depends = ruby
+	depends = ruby-tins
+	depends = ruby-bigdecimal
+	options = !emptydirs
+	source = ruby-term-ansicolor::git+https://github.com/flori/term-ansicolor#tag=v1.11.3
+	sha256sums = d25339fe079be7ec61d285b28406c082e718657276faf805d6af1ed74dc287fd
+
+pkgname = ruby-term-ansicolor

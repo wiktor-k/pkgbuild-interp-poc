@@ -1,0 +1,30 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+
+pkgname=ser2net
+pkgver=4.6.8
+pkgrel=1
+pkgdesc="A proxy that allows telnet/tcp connections to be made to serial ports"
+arch=(x86_64)
+url="https://sourceforge.net/projects/ser2net"
+license=('GPL')
+depends=('gensio' 'libyaml')
+backup=(etc/ser2net/ser2net.yaml)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/cminyard/ser2net/archive/v$pkgver.tar.gz"
+	ser2net.service)
+sha256sums=('066790a7ed75534808a139d69840a89647e355b887be383b4b1704e2305601a8'
+            'aac37d4122ec4ed4efbbe0ee59b02b0a988429a5302c98409f87e88289de8fac')
+
+build() {
+  cd "$srcdir"/${pkgname}-${pkgver/rc/-rc}
+  test -x configure || ./reconf
+  ./configure --prefix=/usr --sbindir=/usr/bin --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd "$srcdir"/${pkgname}-${pkgver/rc/-rc}
+  make DESTDIR="$pkgdir" install
+  install -Dm0644 ser2net.yaml "$pkgdir"/etc/ser2net/ser2net.yaml
+  install -Dm0644 "$srcdir"/ser2net.service "$pkgdir"/usr/lib/systemd/system/ser2net.service
+}

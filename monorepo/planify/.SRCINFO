@@ -1,0 +1,37 @@
+pkgbase = planify
+	pkgdesc = Task manager with Todoist, Nextcloud and CalDAV support designed for GNOME
+	pkgver = 4.20.0
+	pkgrel = 2
+	url = https://useplanify.com/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = chrono
+	depends = dconf
+	depends = evolution-data-server
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gtksourceview5
+	depends = gxml
+	depends = hicolor-icon-theme
+	depends = icu
+	depends = json-glib
+	depends = libadwaita
+	depends = libgee
+	depends = libgoa
+	depends = libical
+	depends = libportal
+	depends = libportal-gtk4
+	depends = libsecret
+	depends = libsoup3
+	depends = libspelling
+	depends = pango
+	depends = sqlite
+	source = git+https://github.com/alainm23/planify.git#tag=v4.20.0
+	b2sums = 6109010d1d41d52c0484a5e1bb78b32850ef0ebeba80cb757e832333fde9f3b11570be83d88c1c72a7e22b489ec85cd1e9a6cc500df5cd2190283b7611105766
+
+pkgname = planify

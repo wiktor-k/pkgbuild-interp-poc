@@ -1,0 +1,29 @@
+pkgbase = gnome-console
+	pkgdesc = A simple user-friendly terminal emulator for the GNOME desktop
+	pkgver = 51.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Console/
+	arch = x86_64
+	groups = gnome
+	license = GPL-3.0-or-later
+	checkdepends = dbus
+	checkdepends = mutter
+	checkdepends = vulkan-swrast
+	makedepends = appstream
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	depends = dconf
+	depends = gtk4
+	depends = glib2
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libgtop
+	depends = pango
+	depends = vte4
+	source = gnome-console::git+https://gitlab.gnome.org/GNOME/console.git#tag=51.0
+	b2sums = 673bae633b2a113126c11cbb903cb14487c01f382901a8f78744bbacb93a4545610467d48a9a85172bc66cb8c303913ac06821787a83b7e01973f6fc5fcfe0e4
+
+pkgname = gnome-console

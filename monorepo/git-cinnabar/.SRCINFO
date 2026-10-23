@@ -1,0 +1,21 @@
+pkgbase = git-cinnabar
+	pkgdesc = Git remote helper to interact with Mercurial repositories
+	pkgver = 0.7.5
+	pkgrel = 1
+	url = https://github.com/glandium/git-cinnabar
+	arch = x86_64
+	license = GPL-2.0-only AND MPL-2.0
+	makedepends = cargo
+	makedepends = git
+	depends = bzip2
+	depends = curl
+	depends = glibc
+	depends = libgcc
+	depends = zlib
+	options = !lto
+	source = git+https://github.com/glandium/git-cinnabar#tag=0.7.5
+	source = glandium-git::git+https://github.com/glandium/git
+	b2sums = 0d69770c49d90ecd55025b8723497b86e3b11f9e76eb3bf86bbb8d2d8bf64ae58074ae6907e1937cda4dbe3f4fd9ed8a9aaf7a06bcddd73c8fde2cc01a9e421e
+	b2sums = SKIP
+
+pkgname = git-cinnabar

@@ -1,0 +1,16 @@
+pkgbase = mdk4
+	pkgdesc = A tool to exploit common IEEE 802.11 protocol weaknesses
+	pkgver = 4.2
+	pkgrel = 2
+	url = https://github.com/aircrack-ng/mdk4
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = glibc
+	depends = libpcap
+	depends = libnl
+	source = mdk4::git+https://github.com/aircrack-ng/mdk4#tag=4.2
+	sha512sums = 38efacb6eed057b1890223d8cbc3a65e5885b8118666271771260e47e9eb736cb0a3243553ca364f47f2a43bb80d2fd42e7dee215f7e4bb195aac68362c213af
+	b2sums = f004b87a11d45c1cb9c3618c932eb11066547ffe7edda2aa114de541560f301981264b19f75b012e0be58c8a6ae7ffb6fa04c8183b4e40d8bdde377f38823c9c
+
+pkgname = mdk4

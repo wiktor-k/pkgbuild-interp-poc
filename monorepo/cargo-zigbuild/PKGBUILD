@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: KokaKiwi <kokakiwi+aur at kokakiwi dot net>
+
+pkgname=cargo-zigbuild
+pkgver=0.24.0
+pkgrel=1
+pkgdesc="Compile Cargo project with zig as linker"
+arch=('x86_64')
+url="https://github.com/rust-cross/cargo-zigbuild"
+license=('MIT')
+depends=('cargo' 'glibc' 'libgcc' 'zig')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('611154096d2e751185bbab692600b7ff535fafb87c65c2e12e49da2d7d880bda')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,47 @@
+pkgbase = platformio-core
+	pkgdesc = An open source ecosystem for IoT development
+	pkgver = 6.2.0
+	pkgrel = 1
+	url = https://platformio.org
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-bottle
+	depends = python-click
+	depends = python-colorama
+	depends = python-pyserial
+	depends = python-requests
+	depends = python-semantic-version
+	depends = python-tabulate
+	depends = python-pyelftools
+	depends = python-marshmallow
+	depends = python-zeroconf
+	depends = python-ajsonrpc
+	depends = python-starlette
+	depends = python-wsproto
+	depends = uvicorn
+	optdepends = platformio-core-udev: Udev rules for PlatformIO supported boards/devices
+	source = platformio-core::git+https://github.com/platformio/platformio-core#tag=v6.2.0
+	source = disable-telemetry.patch
+	source = disable-self-upgrades.patch
+	source = remove-dependency-constraints.patch
+	sha512sums = 7f8eed8ee0a8538882134285a07efa7da41ee5b077a05d984b785c18642aa3ff81bd63265f723408851bc8dece12d5d3994f1e21ae9bf55ce387741277f97b0d
+	sha512sums = a48ed6f9fbcb057014673c95c0a30691e0e47ce63551d1fbea4bade30b1148392f90ea6d552c9bdf89d014fb149a5e85635ada51fb232b54a9d2206a638c8cbb
+	sha512sums = 3f0fe376efe0034a132f11c7096fda88bc97c595e15708463f391ae3b8b9508935a96534e2c6c674bdac18c5f8506d98bc45c9688101855f1c4522498bbfd932
+	sha512sums = 0d2a5646aecf8d2f7dc7bd3f9fe88fcb658b89e3b70f283a8dce184f0d8ba0d260565f2587ff8e570cf9882f691440eabc74f0ed9af63f71ae508d67b75a34dc
+	b2sums = 496450dba9c12c4d0b4f0727e5c77094f6659d9521c34b749e6eef74514790d386573381a24a8d076d31d83e4234d82fcb2933a200dc73b1739b239752663611
+	b2sums = 422987d6d114e5f1f06b86caaccfb5122102786a9fd140e5e4ada7b7745c206f3ab75b0e277532ac6d23a8ce61b5f963863bb16ad81beb87250f4ae5f80050c5
+	b2sums = 7137cfa185e3c424434e54de060b73041339a3b3620dad51751d9c9d531c0d001e97bcbbcd4f0edf0b15bae7a8683fe4838fb6e83be7de87e56aa39957f709f0
+	b2sums = 7b780ea8eae1773a5a4f1988cff64aba3f410be016df8bc5730f0ae3ea60cc8af8fe39859d28f46aab325cda4925772822d8880106500330175629f1b4ca141b
+
+pkgname = platformio-core
+
+pkgname = platformio-core-udev
+	pkgdesc = Udev rules for PlatformIO supported boards/devices
+	depends = udev
+	optdepends = 

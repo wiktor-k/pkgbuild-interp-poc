@@ -1,0 +1,62 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Enrico Morelli <morelli@cerm.unifi.it>
+
+pkgname=openmotif
+_pkgname=motif
+pkgver=2.3.8
+pkgrel=4
+pkgdesc="Open Motif"
+arch=('x86_64')
+url="https://motif.ics.com/"
+license=('LGPL-2.1-or-later')
+depends=(
+  fontconfig
+  glibc
+  libjpeg-turbo
+  libpng
+  libx11
+  libxext
+  libxft
+  libxmu
+  libxp
+  libxt
+)
+makedepends=(
+  xbitmaps
+  xorgproto
+)
+conflicts=(lesstif)
+source=(
+  "https://downloads.sourceforge.net/project/motif/Motif%20$pkgver%20Source%20Code/motif-$pkgver.tar.gz"
+  "no-demos.patch"
+  "add-wmluiltok-main-function.patch"
+)
+sha256sums=('859b723666eeac7df018209d66045c9853b50b4218cecadb794e2359619ebce7'
+            'ff55064ab36dba411599c9abef122b26d694ee11fd1d371378be08497448668c'
+            '2fb445edd29848a70555bbaea5362245aa50d69c7de9e4192285fb651f597ede')
+
+prepare() {
+  cd $_pkgname-$pkgver
+  patch -Np1 -i ../no-demos.patch # Don't build demos
+  patch -Np1 -i ../add-wmluiltok-main-function.patch # Doesn't build without it
+  touch NEWS AUTHORS
+  autoreconf -if
+}
+
+build() {
+  cd $_pkgname-$pkgver
+  export CFLAGS+=" \
+    -Wno-error=implicit-function-declaration  \
+    -Wno-error=format-security \
+  "
+  ./configure --prefix=/usr
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

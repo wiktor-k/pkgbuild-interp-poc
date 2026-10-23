@@ -1,0 +1,25 @@
+pkgbase = cmucl
+	pkgdesc = CMU Common Lisp
+	pkgver = 21e
+	pkgrel = 1
+	url = https://www.cons.org/cmucl/
+	arch = x86_64
+	license = custom
+	makedepends = sed
+	makedepends = bc
+	makedepends = lib32-gcc-libs
+	provides = common-lisp
+	provides = cl-asdf
+	source = https://common-lisp.net/project/cmucl/downloads/release/21e/cmucl-src-21e.tar.bz2
+	source = https://common-lisp.net/project/cmucl/downloads/release/21e/cmucl-src-21e.tar.bz2.asc
+	source = https://common-lisp.net/project/cmucl/downloads/release/21e/cmucl-21e-x86-linux.tar.bz2
+	source = https://common-lisp.net/project/cmucl/downloads/release/21e/cmucl-21e-x86-linux.tar.bz2.asc
+	validpgpkeys = 0EF50ED55514BFF6B72B9DAC06CE3819086C750B
+	sha256sums = 7dd5868d4091fd27f560b3ceab651547106f0331c7a7de29ffe18bcaece845d1
+	sha256sums = SKIP
+	sha256sums = bbeaa6a2f446896f0c171c9a1a4eb834df395f8922e4760285edcf6342f2544c
+	sha256sums = SKIP
+	depends_x86_64 = lib32-glibc
+	depends_x86_64 = openmotif
+
+pkgname = cmucl

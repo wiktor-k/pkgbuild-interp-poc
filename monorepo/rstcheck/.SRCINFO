@@ -1,0 +1,21 @@
+pkgbase = rstcheck
+	pkgdesc = Checks syntax of reStructuredText and code blocks nested within it
+	pkgver = 6.3.0
+	pkgrel = 1
+	url = https://github.com/rstcheck/rstcheck
+	arch = any
+	license = MIT
+	checkdepends = python-sphinx
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python-rstcheck-core
+	depends = python-typer
+	optdepends = python-sphinx: for Sphinx support
+	source = git+https://github.com/rstcheck/rstcheck.git#tag=v6.3.0
+	b2sums = 398fa37aa4ca99e579fb50cf5792d5fe1900b4c8a9d91b41a579ad4641d13c23817af38936b1c2c975d9dae6a08f3d0df03d4c899eaa5e69b6800cd6c1d26824
+
+pkgname = rstcheck

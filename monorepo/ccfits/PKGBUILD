@@ -1,0 +1,30 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: <clu>
+# Contributor: Jose San Juan <sanjuan@tng.iac.es>
+
+pkgname=ccfits
+pkgver=2.7
+pkgrel=1
+pkgdesc="Object Oriented Interface to the CFITSIO Library"
+arch=('x86_64')
+url="https://heasarc.gsfc.nasa.gov/docs/software/fitsio/ccfits/"
+license=('custom')
+depends=('cfitsio')
+source=(https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/${pkgname}/v${pkgver}/CCfits-${pkgver}.tar.gz)
+sha256sums=('f63546d2feecbf732cc08aaaa80a2eb5334ada37fb2530181b7363a5dbdeb01a')
+
+build() {
+  cd "${srcdir}"/CCfits-$pkgver
+
+  ./configure --with-cfitsio-libdir=/usr/lib --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}"/CCfits-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+
+#install license
+  install -Dm644 License.txt "${pkgdir}/usr/share/licenses/$pkgname/License.txt"
+}

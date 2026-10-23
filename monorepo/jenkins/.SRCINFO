@@ -1,0 +1,31 @@
+pkgbase = jenkins
+	pkgdesc = Extendable continuous integration server (latest)
+	pkgver = 2.587
+	pkgrel = 1
+	url = https://jenkins.io
+	arch = any
+	license = MIT
+	makedepends = java-environment=25
+	makedepends = git
+	makedepends = maven
+	depends = java-runtime=25
+	depends = ttf-dejavu
+	depends = fontconfig
+	provides = jenkins-ci
+	conflicts = jenkins-ci
+	replaces = jenkins-ci
+	backup = etc/conf.d/jenkins
+	source = git+https://github.com/jenkinsci/jenkins.git#tag=jenkins-2.587
+	source = jenkins.conf
+	source = jenkins.service
+	source = jenkins.tmpfiles
+	source = jenkins.sysusers
+	source = skip-failing-test.patch
+	sha512sums = 5431258222786fa248b09e113002ffd53a50af7aec847b3c4a2bc64c2a2c69c7ad2992538ad6d6079c71cdef8f8e6075d4dd95f4f1e6ffd30fd5f9f9b6bc7a50
+	sha512sums = 752b0cbc64f1a9406a5c9229194c1c0f20cc2fca6f7a0ac0d59edb5acd9ea97d165c44dd1a0a7d51acce9e368966e9ec9ad89eece1275f1eac986b82467e071c
+	sha512sums = c1e9a542bfd3db54ea0ef57acdac47ad5180330f9ffab44296762b0e69e75ce595d85a77d46025586fb507aedce4f1a032379dcd16b7b886fe475a99849fa4b2
+	sha512sums = 71bc4ad18cf1c65a6384f94529468b4f2cf318c81abb32bb59fc1f2d040739f021877607f58d4863d55d712df72e78ce3794fbab352224745e3cc2c01f498af7
+	sha512sums = d1118e1d20e499c88f3fbb6ac31a21200eeb46e77656dc9192fcdbaa2b132051a4e8acbeb5ba1ac357ff34dfd58d92d20e264dea4894210e00aa7019fc216442
+	sha512sums = 57e94c44f2bb9692349bb6e596fd7885832372bf11df0947b04c40b61a089491c6770cfbdf6ad42f2b4bcf222ad69ba0d8f5042ce27309f0f59c990c682fffcb
+
+pkgname = jenkins

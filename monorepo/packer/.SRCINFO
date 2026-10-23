@@ -1,0 +1,15 @@
+pkgbase = packer
+	pkgdesc = tool for creating machine images for platforms from a single source configuration
+	pkgver = 1.16.1
+	pkgrel = 1
+	url = https://github.com/hashicorp/packer
+	arch = x86_64
+	license = LicenseRef-BSL-1.1
+	makedepends = git
+	makedepends = go
+	makedepends = go-tools
+	depends = glibc
+	source = packer-1.16.1.tar.gz::https://github.com/hashicorp/packer/archive/v1.16.1.tar.gz
+	sha512sums = 92e69216d1db8c7aa0c19611d553284bdf86f432b4edd664d7fd0aba419fba47f9b771ca7649fe8ce9af4e2c36f50412a4d8443ec9c4db652e32eb19578ff57e
+
+pkgname = packer

@@ -1,0 +1,48 @@
+# Maintainer: Jonathan Steel <jsteel at archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Aaron Griffin <aaron@archlinux.org>
+# Contributor: Mathieu Clabaut <mathieu.clabaut@gmail.com>
+
+pkgname=lsdvd
+pkgver=0.21
+pkgrel=1
+pkgdesc="Console application that displays the content of a DVD"
+arch=('x86_64')
+url="https://sourceforge.net/projects/lsdvd/"
+license=('GPL-2.0-only')
+depends=(
+  'glibc'
+  'libdvdread'
+  'libxml2'
+)
+makedepends=('git')
+checkdepends=(
+  'cdrtools'
+  'dvdauthor'
+  'jq'
+  'k3b'
+  'ruby'
+)
+source=("$pkgname::git+https://git.code.sf.net/p/lsdvd/git#tag=$pkgver")
+sha512sums=('d1381de6ec2c0156576cd47b3c98e36672f0e8f4cb61cf8fe3eca1ea8e95876901603834fac04e541f84b46b4927fac1cb78cdb790c95d9b55727f8e49e3a43f')
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

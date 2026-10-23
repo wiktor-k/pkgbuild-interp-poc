@@ -1,0 +1,22 @@
+pkgbase = sbt
+	pkgdesc = The interactive build tool
+	pkgver = 2.0.11
+	pkgrel = 1
+	epoch = 1
+	url = https://www.scala-sbt.org/
+	install = sbt.install
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = jdk17-openjdk
+	depends = java-runtime-headless
+	depends = sh
+	optdepends = rsync: offline installation support
+	options = !debug
+	backup = etc/sbt/sbtopts
+	source = git+https://github.com/sbt/sbt.git#tag=v2.0.11
+	validpgpkeys = 2EE0EA64E40A89B84B2DF73499E82A75642AC823
+	sha256sums = 7243f4accdf810bf70a0f05197a18adef1190f777e88ca40cd34a7dfe7850c3b
+	b2sums = f2cad3adf4100a707fed590e43bd6b77e8228a4a90439c061936ada19fc3ec72ea316c9f63619f315ee264db05a0523a09fa520ccb42ffd7f1fdabe629c0ec9d
+
+pkgname = sbt

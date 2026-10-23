@@ -1,0 +1,34 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Contributor: Vasya Novikov <vnn91@yandex.ru>
+# Contributor: gato_lento
+# Contributor: Yaroslav <proniyaroslav@mail.ru>
+# Contributor: Frank Ickstadt (frank dot ickstadt at gmail dot com)
+# Contributor: mOLOk
+
+pkgname=xcalib
+pkgver=0.12
+pkgrel=1
+pkgdesc="Load 'vcgt'-tag profiles to X-server on the calibration stage"
+arch=('x86_64')
+url="https://codeberg.org/OpenICC/xcalib"
+license=('GPL2' 'custom:postcardware')
+depends=('libxxf86vm' 'libxrandr')
+makedepends=('cmake' 'git')
+source=(git+https://codeberg.org/OpenICC/xcalib.git#tag=${pkgver}?signed)
+validpgpkeys=('9A81DA0F2F18F096BE94577051F5D211EB7A04C8') # Kai-Uwe Behrmann
+sha256sums=('c0b0e441fb5c07e75bed20830c9740521cfb4661286a11cbdbde2a3b4a5f290c')
+
+build() {
+  cmake -B build -S "$pkgname" \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DCMAKE_BUILD_TYPE=None \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -Wno-dev
+  cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -m644 -Dt "${pkgdir}/usr/share/licenses/xcalib/" ${pkgname}/README.md
+}

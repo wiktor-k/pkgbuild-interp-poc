@@ -1,0 +1,87 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: svoufff <svoufff at gmail dot com>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+
+pkgname=gigedit
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="Gigasampler instrument editor"
+arch=(x86_64)
+url="https://www.linuxsampler.org/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+)
+makedepends=(
+  atkmm
+  cairomm
+  docbook-xsl
+  gendesk
+  glib2
+  glibmm
+  gtk3
+  gtkmm3
+  intltool
+  libgig
+  libsigc++
+  libsndfile
+  libxslt
+  linuxsampler
+  pangomm
+)
+provides=(libgigedit.so)
+source=(https://download.linuxsampler.org/packages/$pkgname-$pkgver.tar.bz2)
+sha512sums=('9bba5317e97141f0048ed7588c84aaa4319e1e6962a3bd90bf757b2c78e7d568b87c454182c14537438120318b1b2b7a664d19099eda844311f1b51da7ec5c1d')
+b2sums=('f0415ca95cf5c6a93ed1bda9a38ab11ae0961b98864d8d46393efb727fb2a6c8d32c94d74f3d5055147b9fdf77c61eaa3c33bf25f293c4e55a035698f0eae6e6')
+
+prepare() {
+  # generate XDG desktop file
+  gendesk -n \
+          --pkgname "$pkgname" \
+          --name "$pkgname" \
+          --genericname "Instrument Editor" \
+          --categories "AudioVideo;Audio"
+
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  depends+=(
+    atkmm libatkmm-1.6.so
+    cairomm libcairomm-1.0.so
+    glib2 libgobject-2.0.so libglib-2.0.so
+    glibmm libglibmm-2.4.so
+    gtk3 libgtk-3.so
+    gtkmm3 libgtkmm-3.0.so
+    libgig libgig.so
+    libsigc++ libsigc-2.0.so
+    libsndfile libsndfile.so
+    linuxsampler liblinuxsampler.so
+    pangomm libpangomm-1.4.so
+  )
+
+  make DESTDIR="$pkgdir" install -C $pkgname-$pkgver
+  # NOTE: Due to autotools obfuscating how to properly configure the installation location of the shared libraries in /usr/lib/, we have to move files manually... :(
+  #       In the past we have used patches to the Makefile.in files, but with running `autoreconf`, this no longer works.
+  mv -v "$pkgdir/usr/lib/$pkgname/lib$pkgname"* "$pkgdir/usr/lib/"
+  rmdir -v "$pkgdir/usr/lib/$pkgname/"
+
+  install -vDm 644 $pkgname.desktop -t "$pkgdir/usr/share/applications/"
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,ChangeLog,NEWS,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,16 @@
+pkgbase = urjtag
+	pkgdesc = Enhanced, modern tool for communicating over JTAG with flash chips, CPUs, and many more
+	pkgver = 2021.03
+	pkgrel = 6
+	url = http://urjtag.org
+	arch = x86_64
+	license = GPL
+	makedepends = python
+	makedepends = python-setuptools
+	depends = libftdi-compat
+	depends = libusb-compat
+	optdepends = python: Python bindings
+	source = https://downloads.sourceforge.net/sourceforge/urjtag/2021.03/urjtag-2021.03.tar.xz
+	sha512sums = baf203e556d1d41437539d3f5c018b35fbb496f71391c2bec2786ffa47bff33d38654b3e7d106e38bcf36d075d86fc02b18eaaf634cdb65e2840ff50ca0da8b2
+
+pkgname = urjtag

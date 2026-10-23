@@ -1,0 +1,23 @@
+pkgbase = libkkc
+	pkgdesc = Japanese Kana Kanji conversion library
+	pkgver = 0.3.5
+	pkgrel = 5
+	url = https://github.com/ueno/libkkc
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = vala
+	makedepends = gobject-introspection
+	makedepends = intltool
+	makedepends = python-marisa
+	depends = marisa
+	depends = json-glib
+	depends = libgee
+	optdepends = sh: to use kkc-package-data
+	source = https://github.com/ueno/libkkc/releases/download/v0.3.5/libkkc-0.3.5.tar.gz
+	source = libkkc-python3.patch::https://github.com/ueno/libkkc/commit/ba1c1bd3eb86d887fc3689c3142732658071b5f7.patch
+	source = vala-compat.patch
+	sha512sums = f611c3104a22ad38af29746870849d8937b6af2a7fee0952cc25f36ef845b5617a192df7ca63ff2a507384f7a6a13c9c1b4fa3b9a34f3f041bee8793d04b9236
+	sha512sums = ba74aa8e545d32d40244f86009a49dedb575a6a8dd171baa5fc3e9a7aeac0ea51e4a7e2064a3f2b62f09bfa4751e3a33454a996b0acfe0fab45413dd84881755
+	sha512sums = 443c845388c4d41c0e2d201dffd9ac102b87d234def312581b4bff25591ec2ece1e1478dee3c5d22f13e225e5bec30666523cf25ec9cdda1488390f5f6ed10eb
+
+pkgname = libkkc

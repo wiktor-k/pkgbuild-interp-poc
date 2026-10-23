@@ -1,0 +1,49 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+
+pkgname=elfio
+pkgver=3.12
+pkgrel=2
+pkgdesc='Header-only C++ library for reading and generating ELF files'
+arch=('any')
+url='https://github.com/serge1/ELFIO'
+license=('MIT')
+makedepends=('cmake' 'gtest')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/Release_$pkgver.tar.gz"
+        "$pkgname-stdint.patch::$url/commit/34d2c64237bb40f09879e7421db120e50e7e2923.patch")
+sha256sums=('e4ebc9ce3d6916461bc3e7765bb45e6210f0a9b93978bf91e59b05388c024489'
+            'a9ef3f57af26a6e4052fdf21b86d6bb3ab6e0f9d25ab8f5d7f1374de4d5de098')
+_dirname="ELFIO-Release_$pkgver"
+
+prepare() {
+  # Missing <stdint.h> include, https://github.com/serge1/ELFIO/pull/148
+  patch -d "$_dirname" -Np1 -i "$srcdir/$pkgname-stdint.patch"
+}
+
+build() {
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D ELFIO_BUILD_EXAMPLES=ON
+    -D ELFIO_BUILD_TESTS=ON
+    # Use the system gtest instead of downloading googletest
+    -D FETCHCONTENT_FULLY_DISCONNECTED=ON
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # README and LICENSE land in the non-standard share/docs
+  rm -r "$pkgdir/usr/share/docs"
+  install -Dm644 "$_dirname/README.md" "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 "$_dirname/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

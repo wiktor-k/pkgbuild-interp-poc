@@ -1,0 +1,120 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+# WARNING: This package needs to be kept in lock-step with deltachat-rpc-server!
+# The upstream project locks a specific version of deltachat-rpc-server as "stdio-rpc-server", see:
+# https://github.com/deltachat/deltachat-desktop/blob/main/pnpm-lock.yaml
+pkgname=deltachat-desktop
+pkgver=2.62.0
+pkgrel=1
+pkgdesc="Decentralized private messenger with chat-shared tools and games for Desktop"
+arch=(any)
+url="https://github.com/deltachat/deltachat-desktop"
+license=(GPL-3.0-or-later)
+_electronver=43
+depends=(
+  "electron$_electronver"
+  bash
+  hicolor-icon-theme
+)
+makedepends=(
+  deltachat-rpc-server
+  git
+  inkscape
+  npm
+  pnpm
+)
+source=(
+  "git+$url.git#tag=v$pkgver"
+  "$pkgname.desktop"
+  "$pkgname.sh.in"
+  "$pkgname.xml"
+)
+sha512sums=('606fcf153ff8566e9281d88413a24edc40919559c850ab22791efdab999d6eb04358d965f506f946a13af3e31d510f3d99b57e25ffe5f4a28c1721c9be358be1'
+            '8f3724d51d07ff03d3462c77b3eb58706bbe46adffeddff62fb9ca3750312e38fbcb436844547b17a6cfcfadd7a37f9421a3ca2954955561d725c3afe600c433'
+            '816597f5191fc5dc9ba47730a44e5d6868d65f961d38a726fab229d0f023e1b814e8401fadb28f06ea3a09aaf486a66007addf2f85357a70d5dc567ba3b949f8'
+            'd725ac91703cdfc4cb14e73cd786456eb4bfc374a591e9508edc70e59350915c365a367b84c1fafce225da01cfb716c516aa7159ecb484635d58467359fb89d7')
+b2sums=('ffb527e7516f024a14755660a9d1be20dab922137087c81a58c535219dc609ad1e3c347d3e4e84dcf4de55fb5a9fe0afd2c799c4177816bb18320fd282f1c89a'
+        '082913cd4ffddba689ba9a72869d138730f1bd9482518269202e92a95edb200ef4d78290e3550f438a5bdebdd0486c54dfbc6a5b4c247c94e67686fc07e50346'
+        'f828e1977fed389ecf0235cd10b823379b8c1ddee73cef4d90d2f83bf2814f83a0409c82d3989047695d95b9f6352d88af9b9c74b19c501ca3e0002794aa79b9'
+        '382dd6312e10d1881c39d74179f19d41beccb25a5e25a43aa9721fba30e3138ce521df483beed1b6101e1801233b0d189846b7614652d05c5d41feae03f1c5fe')
+
+_resolutions=( 16 32 48 64 96 128 256 512 1024 )
+
+prepare() {
+  cd $pkgname
+
+  local deltachat_rpc_server_version="$(deltachat-rpc-server --version 2>&1)"
+  grep -q "'@deltachat/stdio-rpc-server': $deltachat_rpc_server_version" pnpm-workspace.yaml \
+    || (echo "The deltachat-rpc-server version ($deltachat_rpc_server_version) does not match the targeted version in pnpm-workspace.yaml"; exit 1)
+  grep -q "\"version\": \"$pkgver\"" packages/target-electron/package.json \
+    || ( echo "Version mismatch in package.json"; exit 1 )
+  grep -q "\"electron\": \"^$_electronver\." packages/target-electron/package.json \
+    || ( echo "Electron version mismatch in package.json"; exit 1 )
+
+  local upstream_node="$(grep -oP '"node": ">=\K([0-9.]+)(?=")' packages/target-electron/package.json)"
+  local system_node="$(node --version | sed 's/v//g')"
+  (( $(vercmp "$upstream_node" "$system_node") < 0 )) || ( echo "Node version mismatch in package.json"; exit 1 )
+
+  # Set desktop name to match with the desktop file
+  npm --prefix packages/target-electron pkg set desktopName="$pkgname"
+
+  # Update pnpm version requirement
+  sed -i "s/\"pnpm\": \".*\"/\"pnpm\": \"^$(pnpm --version)\"/" package.json
+
+  # set electron version for start script
+  sed "s/@ELECTRON@/electron$_electronver/" ../$pkgname.sh.in > ../$pkgname.sh
+
+  # generate icons for XDG integration
+  for resolution in "${_resolutions[@]}"; do
+    inkscape -o "$pkgname-$resolution.png" -w "$resolution" -h "$resolution" images/tray/${pkgname/-desktop/}.svg
+  done
+
+  pnpm install --frozen-lockfile
+}
+
+build() {
+  local electron_builder_options=(
+    --linux
+    --dir
+    -c.electronDist=/usr/lib/electron$_electronver
+    -c.electronVersion=$_electronver
+  )
+  local filter="@deltachat-desktop/target-electron"
+
+  cd $pkgname
+  export NODE_ENV=production
+  pnpm --filter=$filter pack:asar
+  # Remove the prebuilt deltachat-rpc-server, as we are using a packaged one.
+  rm -v packages/target-electron/dist/linux-unpacked/resources/app.asar.unpacked/node_modules/@deltachat/stdio-rpc-server-linux-x64/deltachat-rpc-server
+}
+
+package() {
+  # When in build environment assign version specific dependency on deltachat-rpc-server.
+  # (This is added to the .PKGINFO of the package.)
+  # When not in build environment assign normal dependency on deltachat-rpc-server.
+  # (This is added to the .SRCINFO of the repository.)
+  if [[ "$BUILDTOOL" == devtools ]]; then
+    local deltachat_rpc_server_dep="deltachat-rpc-server=$(deltachat-rpc-server --version 2>&1)"
+    depends+=($deltachat_rpc_server_dep)
+  else
+    depends+=(deltachat-rpc-server)
+  fi
+
+  install -vDm 755 $pkgname.sh "$pkgdir/usr/bin/$pkgname"
+
+  cd $pkgname
+  install -vdm 755 "$pkgdir/usr/lib/$pkgname/"
+  cp -rv packages/target-electron/dist/linux-unpacked/resources/* "$pkgdir/usr/lib/$pkgname/"
+
+  # icons
+  install -vDm 644 images/tray/${pkgname/-desktop/}.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
+  for resolution in "${_resolutions[@]}"; do
+    install -vDm 644 "$pkgname-$resolution.png" "$pkgdir/usr/share/icons/hicolor/${resolution}x${resolution}/apps/$pkgname.png"
+  done
+
+  #XDG
+  install -vDm 644 ../$pkgname.desktop -t "$pkgdir/usr/share/applications/"
+  install -vDm 644 ../$pkgname.xml -t "$pkgdir/usr/share/mime/packages/"
+
+  install -vDm 644 {CHANGELOG,CONTRIBUTING,README,SECURITY}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

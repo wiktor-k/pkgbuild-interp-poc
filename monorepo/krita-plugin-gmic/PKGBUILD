@@ -1,0 +1,47 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=krita-plugin-gmic
+pkgver=3.7.4.1
+pkgrel=3
+pkgdesc='GMic plugin for Krita'
+arch=(x86_64)
+url='https://krita.org/'
+license=(CECILL-2.1
+         CECILL-C)
+depends=(fftw
+         glibc
+         gmic
+         kcoreaddons
+         krita
+         libgcc
+         libgomp
+         libstdc++
+         libx11
+         qt6-base
+         zlib)
+makedepends=(extra-cmake-modules
+             git
+             qt6-tools)
+source=(gmic-krita::git+https://github.com/vanyossi/gmic#tag=v$pkgver)
+sha256sums=('e0b9c268210b97e9f820667b5471e3e80c456d86693188bba0567a1ea70021c4')
+
+prepare() {
+# Remove bundled gmic, make sure to use system one
+  rm -r gmic-krita/src
+}
+
+build() {
+  export PATH+=":/usr/lib/qt6/bin"
+  cmake -B build -S gmic-krita/gmic-qt \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_SYSTEM_GMIC=ON \
+    -DBUILD_WITH_QT6=ON \
+    -DGMIC_QT_HOST=krita-plugin
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  rm "$pkgdir"/usr/share/gmic/gmic_cluts.gmz # Provided by gmic
+  install -Dm644 gmic-krita/COPYING -t "$pkgdir"/usr/share/licenses/$pkgname
+}

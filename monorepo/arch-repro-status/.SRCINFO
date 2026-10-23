@@ -1,0 +1,21 @@
+pkgbase = arch-repro-status
+	pkgdesc = Check the reproducibility status of your Arch Linux packages
+	pkgver = 1.4.3
+	pkgrel = 3
+	url = https://gitlab.archlinux.org/archlinux/arch-repro-status
+	arch = x86_64
+	groups = archlinux-tools
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libalpm.so
+	depends = libssl.so
+	options = !lto
+	source = git+https://gitlab.archlinux.org/archlinux/arch-repro-status.git#tag=v1.4.3
+	source = 0001-fix-deps-update-alpm-for-pacman-7.1.patch
+	sha512sums = c44e9ec2017827ebfdd1dc9f544600b2ed9a365c4136d2c69190e98b807842ec5a2963a8575af2ad98ce24e7eb3503440560cbc453f0bedd344ab76e559a4f39
+	sha512sums = bb711b046b21f8bdc9ae4531500791ce24f9e4a230087de9e716ae2b8f39bd5fc99cd62a9c92f547a0c880db003f02b6038a7b248fac82246aeda1a73248ba18
+
+pkgname = arch-repro-status

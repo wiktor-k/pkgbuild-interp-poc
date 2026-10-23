@@ -1,0 +1,77 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Stefan Tatschner <stefan@rumpelsepp.org>
+# Contributor: Gökberk Yaltıraklı <aur at gkbrk dot com>
+# Contributor: Drew DeVault <sir@cmpwn.com>
+
+pkgname=aerc
+pkgver=0.22.0
+pkgrel=1
+pkgdesc='Email Client for your Terminal'
+arch=('x86_64')
+url='https://git.sr.ht/~rjarry/aerc'
+license=('GPL-3.0-only')
+depends=(
+  'gawk'
+  'glibc'
+  'notmuch-runtime'
+)
+makedepends=(
+  'git'
+  'go'
+  'scdoc'
+)
+optdepends=(
+  'dante: for showing HTML messages'
+  'python: for carddav-query script'
+  'w3m: for showing HTML messages'
+)
+options=('!lto')
+source=("git+$url?signed#tag=$pkgver")
+sha512sums=('2a87b7eb86eb21396f0b8ccc14ce2ec41741d21269a37c94e7c20df5a8eee8b7ca4b839c286ff2d21fb5c873ac040a44258eed17a15996df26a1a659fccbbb38')
+validpgpkeys=('DC0718E322E2C7605EBDC83146957EC08FD0FE90') # Robin Jarry <robin@jarry.cc>
+
+prepare() {
+  cd "$pkgname"
+  GOFLAGS="-mod=readonly" go mod vendor -v
+
+  # Fix CVE-2025-49466, see:
+  # https://nvd.nist.gov/vuln/detail/CVE-2025-49466
+  # https://github.com/NixOS/nixpkgs/pull/414181
+  git cherry-pick -n 2bbe75fe0bc87ab4c1e16c5a18c6200224391629
+  git cherry-pick -n 93bec0de8ed5ab3d6b1f01026fe2ef20fa154329
+}
+
+build() {
+  cd "$pkgname"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -tags=notmuch"
+  export GOPATH="$srcdir"
+
+  make aerc \
+    DATE=NOTSET \
+    BUILD_OPTS= \
+    GO_EXTRA_LDFLAGS="-compressdwarf=false -linkmode=external" \
+    PREFIX=/usr \
+    LIBEXECDIR=/usr/lib/aerc
+
+  make doc
+}
+
+check() {
+  cd "$pkgname"
+  make tests
+}
+
+package() {
+  cd "$pkgname"
+  make install \
+    PREFIX=/usr \
+    LIBEXECDIR=/usr/lib/aerc \
+    DESTDIR="$pkgdir"
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,69 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: Dimitrios Vogiatzis
+# Contributor: physkets
+# Contributor: Justin Dray
+# Contributor: Bill Kolokithas
+
+pkgname=j4-dmenu-desktop
+pkgver=3.2
+pkgrel=7
+pkgdesc="Find .desktop files and offer you a menu to start an application using dmenu"
+arch=('x86_64')
+url="https://github.com/enkore/j4-dmenu-desktop"
+license=('GPL-3.0-only')
+depends=(
+    'fmt'
+    'glibc'
+    'libstdc++.so'
+    'libgcc_s.so'
+    'spdlog'
+)
+makedepends=(
+    'catch2'
+    'cmake'
+    'meson'
+)
+checkdepends=(
+    'python-pytest'
+)
+optdepends=(
+    'dmenu: The default backend'
+    'bemenu: An alternative backend'
+    'wmenu: An alternative backend'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/r$pkgver.tar.gz"
+        "$pkgname-$pkgver.tar.gz.sig::$url/releases/download/r$pkgver/r$pkgver.tar.gz.sig")
+validpgpkeys=('7B0F58A5E0F1A2EA11578A731A14CB3464CBE5BF')  # Meator <meator.dev@gmail.com>
+sha256sums=('99e2f394570f8fb0b1a2cde2926980fd9685ce60e1500b575057f8424c9ad555'
+            'SKIP')
+
+build() {
+    # Shell completions are already generated/provided by upstream.
+    arch-meson "$pkgname-r$pkgver" \
+        -Dgenerate-shell-completions=disabled \
+        build
+    meson compile -C build
+}
+
+check() {
+    meson test -C build
+}
+
+package() {
+    DESTDIR="$pkgdir" meson install -C build
+
+    cd "$pkgname-r$pkgver"
+    install -Dm0644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+    install -Dm0644 CHANGELOG -t "$pkgdir/usr/share/doc/$pkgname/"
+
+    install -Dm0644 etc/completions/j4-dmenu-desktop -t \
+        "$pkgdir/usr/share/bash-completion/completions"
+    install -Dm0644 etc/completions/_j4-dmenu-desktop -t \
+        "$pkgdir/usr/share/zsh/site-functions"
+    install -Dm0644 etc/completions/j4-dmenu-desktop.fish -t \
+        "$pkgdir/usr/share/fish/vendor_completions.d"
+
+
+    install -dm0755 "$pkgdir/usr/share/man/man1"
+    gzip < j4-dmenu-desktop.1 > "$pkgdir/usr/share/man/man1/j4-dmenu-desktop.1.gz"
+}

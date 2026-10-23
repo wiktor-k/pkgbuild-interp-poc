@@ -1,0 +1,28 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=wmfocus
+pkgver=1.5.0
+pkgrel=2
+pkgdesc="Visually focus window by label"
+url="https://github.com/svenstaro/wmfocus"
+arch=("x86_64")
+license=("MIT")
+depends=("xcb-util-keysyms" "cairo" "libxkbcommon-x11")
+makedepends=("rust" "python")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/svenstaro/$pkgname/archive/v$pkgver.tar.gz")
+sha512sums=('ba9dc8f43ea1e3b12801ed6a411aedfce529aa78301175994bca87fcc4e39fdd1c0700d33013cafef7653e893950062e7dbbffe7ca6b6f4e26294cd076500be0')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    cargo build --locked --release --features i3
+}
+
+check() {
+    cd "$srcdir/$pkgname-$pkgver"
+    cargo test --locked --release --features i3
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    install -Dm 644 "LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+    install -Dm 755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+}

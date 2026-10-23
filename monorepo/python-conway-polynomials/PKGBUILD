@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=conway-polynomials
+pkgname=python-$_pyname
+pkgver=0.10
+pkgrel=4
+pkgdesc="Python interface to Frank Lübeck's Conway polynomial database"
+arch=(any)
+url='https://github.com/sagemath/conway-polynomials'
+license=(GPL-3.0-or-later)
+depends=(python)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/sagemath/$_pyname#tag=$pkgver)
+sha256sums=('10abc9a9501618482224c214eb89358a00ddf949033862242a88748d67faad4a')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

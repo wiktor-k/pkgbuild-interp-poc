@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-services
+pkgver=1.0.47
+pkgrel=1
+pkgdesc='Manage DBus service on Deepin'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-services"
+license=('LGPL-3.0-or-later' 'GPL-3.0-or-later' 'CC0-1.0')
+depends=(glibc libgcc libstdc++ systemd-libs qt6-base qt6-wayland dtk6core dtk6gui glib2
+         libx11 libxcb libxext libxss libxtst polkit-qt6 python wayland xcb-util-keysyms
+         deepin-service-manager deepin-power-control)
+makedepends=(git cmake ninja qt6-tools treeland-protocols wayland-protocols wlr-protocols)
+checkdepends=(dbus xorg-server-xvfb xorg-xauth)
+optdepends=('deepin-daemon: for power-event sound effects'
+            'deepin-screensaver: for idle screensaver support')
+groups=(deepin)
+source=(git+https://github.com/linuxdeepin/dde-services.git#tag=$pkgver)
+sha512sums=('8f2d953bc74c8bcd43c56a3fa1c08f7b4c21fe2c116277ebcefd840121fb09069bc9c14a052e475f3210e782196f2005233b3bb1545481bb6ffa6335ead6d7f0')
+
+build() {
+  cd dde-services
+  cmake -GNinja . -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DENABLE_PLUGIN_IPWATCHD=OFF \
+    -DBUILD_SHORTCUT_DEBUG_BINARY=OFF
+  ninja
+
+  # The wallpaper regression suite is a separate CMake project.
+  cmake -GNinja -S src/plugin-qt/wallpapercache/tests -B build-wallpapercache
+  ninja -C build-wallpapercache
+}
+
+check() {
+  cd dde-services
+  xvfb-run -a ctest --output-on-failure
+  ctest --test-dir build-wallpapercache --output-on-failure
+}
+
+package() {
+  cd dde-services
+  DESTDIR="$pkgdir" ninja install
+}

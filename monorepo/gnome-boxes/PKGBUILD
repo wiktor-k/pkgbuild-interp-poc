@@ -1,0 +1,104 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Stefano Facchini <stefano.facchini@gmail.com>
+
+pkgname=gnome-boxes
+pkgver=50.0
+pkgrel=1
+pkgdesc='Simple GNOME application to access virtual systems'
+arch=(x86_64)
+url='https://apps.gnome.org/Boxes/'
+license=(LGPL-2.0-or-later)
+depends=(
+  cairo
+  cdrtools
+  dconf
+  edk2-ovmf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libarchive
+  libgcc
+  libgudev
+  libhandy
+  libosinfo
+  libportal
+  libportal-gtk3
+  libsoup3
+  libusb
+  libvirt-glib
+  libxml2
+  qemu-desktop
+  spice-gtk
+  webkit2gtk-4.1
+)
+makedepends=(
+  appstream
+  git
+  gobject-introspection
+  itstool
+  meson
+  vala
+)
+groups=(gnome-extra)
+source=(
+  # GNOME Boxes tags use SSH signatures which makepkg doesn't understand
+  "git+https://gitlab.gnome.org/GNOME/gnome-boxes.git#tag=${pkgver/[a-z]/.&}"
+  "git+https://gitlab.gnome.org/felipeborges/libovf-glib.git"
+  0001-Use-fallback-dirs-when-user-special-dirs-don-t-exist.patch
+  0002-Use-GApplication-to-parse-command-line-options.patch
+  0003-Present-existing-window-on-activation.patch
+  0004-Revert-spice-display-Only-downscale-displays.patch
+  0005-spice-display-Set-zoom-level-based-on-scale-factor.patch
+)
+b2sums=('3eb61e6c2d7f61a284f1bbeda810bd17536c59d4016c5d427dd569a907a64c5763d193672f70276132d980e4f1d43cd041074850baf48c98fc4ced7861d51596'
+        'SKIP'
+        '47eed5be1a5e051de69d53db5d00a0f063322ca96b1d9b7a3d4d2c62a07ce1f0a0cce68cee5ce0b5e18a8fb71a9b910c701c0349399435bb9644c9548cbf6128'
+        '3a31d169de01e16fbf43857137b74c0b0931dbbd1aec4a91a290bc2983118f3c7167141c686dbc29cddbe799fc2a49f9b7a6f098f4e84ae2698301d8c328442f'
+        '10d0eaa64a27ac0277e34991387199172c17853d459089f2ab19df18265a0db3429e8a52d8aaf850e64371629c8e13e91df0b7ef7e650dc0ae3496179d2e8f4b'
+        '1ae2e4e1826d9f7fd6da2bb4a2066a33b9bc90a128bdfb69ab2ab3027917802049e212ecd5be886ccc497adce149bc127d5d2d2097db6ef6ec71d8cc83b7c58b'
+        '753c8cc5cd08922f7cc57b573ac0f4a19b0b3b0b63208b1425a7ed1c7f59ce625dae28fc419c532253220de4a1fd1f1f31017f66131aa39e0e20cfcd68136c6d')
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url subprojects/libovf-glib "$srcdir/libovf-glib"
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update
+
+  # Use fallback dirs when user special dirs don't exist
+  # https://gitlab.gnome.org/GNOME/gnome-boxes/-/merge_requests/634
+  git apply -3 ../0001-Use-fallback-dirs-when-user-special-dirs-don-t-exist.patch
+
+  # Use GApplication to parse command line options
+  # https://gitlab.gnome.org/GNOME/gnome-boxes/-/merge_requests/677
+  git apply -3 ../0002-Use-GApplication-to-parse-command-line-options.patch
+
+  # Present existing window on activation
+  # https://gitlab.gnome.org/GNOME/gnome-boxes/-/merge_requests/678
+  git apply -3 ../0003-Present-existing-window-on-activation.patch
+
+  # Set zoom level based on scale factor
+  # https://gitlab.gnome.org/GNOME/gnome-boxes/-/merge_requests/684
+  git apply -3 ../0004-Revert-spice-display-Only-downscale-displays.patch
+  git apply -3 ../0005-spice-display-Set-zoom-level-based-on-scale-factor.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

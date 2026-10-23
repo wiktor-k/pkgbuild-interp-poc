@@ -1,0 +1,67 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: lukas <lukas <dot> graetz <at> web <dot>  de>
+# Contributor: Graham Edgecombe <graham@grahamedgecombe.com>
+
+pkgname=cfr
+pkgver=0.152
+pkgrel=4
+pkgdesc='Another Java decompiler'
+arch=(any)
+url='https://www.benf.org/other/cfr/'
+license=(MIT)
+depends=(sh java-runtime)
+makedepends=(git maven jdk8-openjdk)
+source=(
+  "$pkgname::git+https://github.com/leibnitz27/cfr#tag=$pkgver"
+  "github.com-leibnitz27-cfr_tests::git+https://github.com/leibnitz27/cfr_tests"
+  wrapper.sh
+  maven-repro.patch
+)
+sha512sums=('254d0678e97de90b6d58576441ad6c01b63be454388d5cc3fbd72db5ab7818d89d7982e84dbcfc10389a53980e9c0ad350965612583090e773fc2c7ac0aa02bf'
+            'SKIP'
+            '31560195373f5275cfdafb1cb268c0b24e62420bd4667e69015e4a23a30a8dff78f0e0c22e1fe254b85ee25fe82f0eacbcfbc317ab4f99eaf62f7e77c489f59a'
+            '8ab907d134771a718ffa357345dac38c2a3735166fbba539d5c6cdb1b3f77aef1183d27af48ebc7b40627553e7d1695cc2b4bd0d3788a96a14b167709d5b6e13')
+b2sums=('b9363078d1629cea9bd8594ad8c610312d696a17312f6720d21c5a55cac81736e77ddecdf4a4c52170fc9ba92c70e9b064960a295c54891ab8505a2e99991e11'
+        'SKIP'
+        'a64a64c44b790f87136bff0fda79ec077bfe156ff9b4cb4a47c77dede07dcb5334f5b6443e1228ebd8442b48c7a6f86dde99a299de7decb2aa7205de66e3b8ce'
+        '68c34fe8ea6a91ee58561b86cdb34020ef9a4ac3fda65f67c8a5eb3386546d5416a05f2a02f86c83eee4be9b63859297d563fe2908d8bec5fa1eacb616b2e573')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodules
+  git submodule init
+
+  git config submodule.decompilation-test/test-data.url "$srcdir/github.com-leibnitz27-cfr_tests"
+
+  git -c protocol.file.allow=always submodule update
+
+  # ensure reproducible builds
+  patch -p1 -i "$srcdir/maven-repro.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # Force the system to build the package using JDK 8
+  export PATH="/usr/lib/jvm/java-8-openjdk/bin/:$PATH"
+  export JAVA_HOME="/usr/lib/jvm/java-8-openjdk"
+
+  mvn package
+}
+
+package() {
+  cd "$pkgname"
+
+  # wrapper script
+  install -vDm755 "$srcdir/wrapper.sh" "$pkgdir/usr/bin/$pkgname"
+
+  # jar
+  install -vDm644 "target/$pkgname-$pkgver.jar" "$pkgdir/usr/share/java/$pkgname/$pkgname.jar"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

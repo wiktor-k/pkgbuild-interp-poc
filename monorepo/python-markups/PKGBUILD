@@ -1,0 +1,61 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Thomas Weißschuh <thomas t-8ch de>
+
+_pkgname=pymarkups
+pkgname=python-markups
+pkgver=4.1.1
+pkgrel=2
+pkgdesc='Wrapper around various text markups'
+arch=('any')
+url='https://github.com/retext-project/pymarkups'
+license=('BSD-3-Clause')
+depends=(
+  'python'
+  'python-markdown-math'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-docutils'
+  'python-installer'
+  'python-pygments'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pymdown-extensions'
+  'python-yaml'
+)
+optdepends=(
+  'python-docutils: for reStructuredText language support'
+  'python-pygments: for highlighting output style'
+)
+source=(
+  "git+$url#tag=$pkgver?signed"
+  "$pkgname-skip-failing-test.patch"
+)
+sha256sums=('e4d3ffa27c5223f465ec76e67bf1cc188df0d3697742018fa8d32bbd57316be2'
+            'beb8733a7a796aaf77565feb035f4b57677e4dd850306f1ea08239f50fb08e4b')
+validpgpkeys=('F24299FF1BBC9018B906A4CB6026936D2F1C8AE0') # Dmitry Shachnev <mitya57@debian.org>
+
+prepare() {
+  cd $_pkgname
+  patch -Np1 -i ../$pkgname-skip-failing-test.patch
+}
+
+build() {
+  cd $_pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pkgname
+  python -m unittest discover -v
+}
+
+package() {
+  cd $_pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

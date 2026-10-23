@@ -1,0 +1,45 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=tombi
+pkgver=1.9.0
+pkgrel=1
+pkgdesc='TOML Formatter / Linter / Language Server'
+arch=(x86_64)
+url=https://tombi-toml.github.io/tombi/
+license=(MIT)
+depends=(
+  libgcc
+)
+makedepends=(
+  git
+  cargo
+)
+options=(!lto)
+source=("git+https://github.com/tombi-toml/tombi.git#tag=v$pkgver")
+b2sums=('eeb1bc63ea1d16d0a0ccaf56e2e6dcdd02f1aa626bf16ec4526f8a830f53446c5b68104dbb04c92dce4514c47e0a07feb3e1e97664f7b287593758253bb827a9')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --frozen
+
+  mkdir -p "$srcdir"/completions
+  target/release/$pkgname completion bash > "$srcdir"/completions/$pkgname.bash
+  target/release/$pkgname completion zsh > "$srcdir"/completions/$pkgname.zsh
+  target/release/$pkgname completion fish > "$srcdir"/completions/$pkgname.fish
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dt "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+
+  install -Dm644 "$srcdir"/completions/$pkgname.bash "$pkgdir"/usr/share/bash-completion/completions/$pkgname
+  install -Dm644 "$srcdir"/completions/$pkgname.zsh "$pkgdir"/usr/share/zsh/site-functions/_$pkgname
+  install -Dm644 "$srcdir"/completions/$pkgname.fish "$pkgdir"/usr/share/fish/vendor_completions.d/$pkgname.fish
+}

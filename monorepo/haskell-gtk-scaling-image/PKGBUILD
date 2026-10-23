@@ -1,0 +1,45 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+
+_hkgname=gtk-scaling-image
+pkgname=haskell-gtk-scaling-image
+pkgver=0.1.0.1
+pkgrel=36
+pkgdesc='Generic GTK image scaling helpers for haskell-gi'
+url='https://github.com/taffybar/gtk-scaling-image#readme'
+license=("BSD-3-Clause")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-gi-cairo-connector' 'haskell-gi-cairo-render' 'haskell-gi-gdk3' 'haskell-gi-gdkpixbuf' 'haskell-gi-gtk3' 'haskell-hslogger')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha256sums=('fb18aa6b98028fb431691280aa593d5fc7f00b1bef3b8b2e065a7b9d22a53c1a')
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' 
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

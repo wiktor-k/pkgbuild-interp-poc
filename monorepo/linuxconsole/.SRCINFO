@@ -1,0 +1,27 @@
+pkgbase = linuxconsole
+	pkgdesc = Set of utilities for joysticks and serial devices
+	pkgver = 1.8.1
+	pkgrel = 3
+	url = https://sourceforge.net/projects/linuxconsole/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = sdl2
+	optdepends = sdl2: for ffmvforce utility
+	provides = joystick
+	provides = inputattach
+	replaces = joystick
+	replaces = inputattach
+	backup = etc/conf.d/inputattach
+	source = https://prdownloads.sourceforge.net/linuxconsole/linuxconsoletools-1.8.1.tar.bz2
+	source = https://prdownloads.sourceforge.net/linuxconsole/linuxconsoletools-1.8.1.tar.bz2.sig
+	source = inputattach.conf.d
+	source = inputattach.service
+	source = inputattachctl
+	validpgpkeys = 79D9C58C50D6B5AA65D530C1759778A9A36B494F
+	sha256sums = 4da29745c782b7db18f5f37c49e77bf163121dd3761e2fc7636fa0cbf35c2456
+	sha256sums = SKIP
+	sha256sums = 3807b2b34bea40c6d6036629ac3eaee31b44549c81fac62e922eb6524f0b203e
+	sha256sums = 18d976d3101ed8f5923132dd5e0004847db87016060994e6ab2df184f1d1e1d4
+	sha256sums = 908e3a6cec41bd4fbe7066fb54213a80c96d91b219ca045399a54e65c0995c8c
+
+pkgname = linuxconsole

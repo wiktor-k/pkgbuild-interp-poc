@@ -1,0 +1,20 @@
+pkgbase = git-delta
+	pkgdesc = Syntax-highlighting pager for git and diff output
+	pkgver = 0.20.1
+	pkgrel = 1
+	url = https://dandavison.github.io/delta/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libgit2
+	depends = libgit2.so
+	depends = oniguruma
+	source = git-delta::git+https://github.com/dandavison/delta#tag=0.20.1
+	sha512sums = 5672b4d8f97eee1e9dffede6f71646285c88329fc677f5790157752ef6bbeae0b0d687cf6917af5727922f4b971ce1536a0ec67e0e1a81d73ce4622c05c26589
+	b2sums = d9edfcdb80f9bba696874d97096a543cd65658346f72ac1a43f7197ca8ed2bbb38a31ef3b050e81b8e31f9950deb7a02e58e80d06ac56d20fcae718e56363886
+
+pkgname = git-delta

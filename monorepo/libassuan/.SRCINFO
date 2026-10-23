@@ -1,0 +1,23 @@
+pkgbase = libassuan
+	pkgdesc = IPC library used by some GnuPG related software
+	pkgver = 3.0.0
+	pkgrel = 1
+	url = https://www.gnupg.org/related_software/libassuan/
+	arch = x86_64
+	license = FSFULLR
+	license = GPL-2.0-or-later
+	license = LGPL-2.1-or-later
+	depends = glibc
+	depends = libgpg-error
+	depends = sh
+	provides = libassuan.so
+	source = https://gnupg.org/ftp/gcrypt/libassuan/libassuan-3.0.0.tar.bz2
+	source = https://gnupg.org/ftp/gcrypt/libassuan/libassuan-3.0.0.tar.bz2.sig
+	validpgpkeys = 6DAA6E64A76D2840571B4902528897B826403ADA
+	validpgpkeys = AC8E115BF73E2D8D47FA9908E98E9B2D19C6C8BD
+	sha512sums = 7c5c95c1b85bef2d4890c068a5a8ea8a1fe0d8def6ab09e5f34fc2746d8808bbb0fc168e3bd66d52ee5ed799dcf9f258f4125cda98c8384f6411bcad8d8b3139
+	sha512sums = SKIP
+	b2sums = c86f7d62413c6f7a228deb47abe0388790a7c0e3c89b5ee7a7a72f72bea6502d5cbe199b10f06efc885af6fefab358dbe0e61a6f798493dcfcc63df0cfacdb55
+	b2sums = SKIP
+
+pkgname = libassuan

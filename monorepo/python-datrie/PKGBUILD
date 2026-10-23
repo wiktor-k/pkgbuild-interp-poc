@@ -1,0 +1,43 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: Michael Schubert <mschu.dev at gmail>
+# Contributor: alienzj <alienchuj@gmail.com>
+
+pkgname=python-datrie
+_pkgname=datrie
+pkgver=0.8.3
+pkgrel=1
+pkgdesc="Fast, efficiently stored Trie for Python. Uses libdatrie"
+arch=('x86_64')
+url="https://github.com/pytries/datrie"
+license=('LGPL-2.0-only')
+depends=('libdatrie' 'glibc')
+makedepends=('python-build' 'python-wheel' 'python-installer' 'python-setuptools' 'cython')
+checkdepends=('python-pytest' 'python-hypothesis')
+options=(!emptydirs)
+source=(
+  "$_pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz"
+)
+sha256sums=('0c1b2e7cff1ba03449d355a9e65318098f0be95ac5d6d122b9eac611f00d4684')
+
+prepare() {
+  cd "$srcdir"/$_pkgname-$pkgver
+  sed -i 's|../libdatrie/||g' src/cdatrie.pxd src/datrie.pyx
+}
+
+build() {
+  cd "$srcdir"/$_pkgname-$pkgver
+  ./update_c.sh
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$srcdir"/$_pkgname-$pkgver
+  local python_version=$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')
+  PYTHONPATH="build/lib.linux-$CARCH-cpython-${python_version}" python -m pytest
+}
+
+package() {
+  cd "$srcdir"/$_pkgname-$pkgver
+
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

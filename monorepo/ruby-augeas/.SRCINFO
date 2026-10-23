@@ -1,0 +1,19 @@
+pkgbase = ruby-augeas
+	pkgdesc = Provides Ruby bindings for augeas
+	pkgver = 0.6.0
+	pkgrel = 3
+	url = https://augeas.net
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = rubygems
+	makedepends = ruby-rdoc
+	makedepends = ruby-rake
+	makedepends = zip
+	depends = ruby
+	depends = augeas
+	noextract = ruby-augeas-0.6.0.gem
+	options = !emptydirs
+	source = ruby-augeas-0.6.0.tar.gz::https://github.com/hercules-team/ruby-augeas/archive/release-0.6.0.tar.gz
+	sha512sums = 1ab073215cb7a6cc85ca492199f83d4a5c36cd8bbffff026aa65fc1b13843b5a2cb32fc37be9ee885f8f88f1ae377f200035fcc2420ba483a480cdc988f5a47e
+
+pkgname = ruby-augeas

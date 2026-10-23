@@ -1,0 +1,62 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=hitori
+pkgver=44.0
+pkgrel=5
+pkgdesc="Play the eponymous puzzle game"
+url="https://wiki.gnome.org/Apps/Hitori"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  pango
+)
+makedepends=(
+  git
+  meson
+  yelp-tools
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/hitori.git?signed#tag=$pkgver"
+  0001-Add-D-Bus-service-file.patch
+)
+b2sums=('57c5e93536d15f12a7b63013235a1644c8db1c899b3b68837f25f602374d79459af16b9b0ddf12972bc52933ff2faba48c4b179cededd1bd5ff9c6655bb16b1f'
+        '6f711b43d54738e2f85993b9054e20435163c4f33e39546d9a3c1a71d8644f2c90b655df4c994bcb42e92fc5b90523e25f30adfd25213aed1b75cfe1dfc9414f')
+validpgpkeys=(923B7025EE03C1C59F42684CF0942E894B2EAFA0) # Philip Withnall <philip@tecnocode.co.uk>
+
+prepare() {
+  cd hitori
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/hitori/-/merge_requests/47
+  git cherry-pick -n e1231f826f32e169f81a2cdb60e809c3e5519d28
+
+  # Use GApplication to parse command line options
+  # https://gitlab.gnome.org/GNOME/hitori/-/merge_requests/49
+  git cherry-pick -n e76f20ebc3fdf361a2d775fe66c1b787dcf8a6a9
+
+  # Add D-Bus service file
+  # https://gitlab.gnome.org/GNOME/hitori/-/merge_requests/48
+  git apply -3 ../0001-Add-D-Bus-service-file.patch
+}
+
+build() {
+  arch-meson hitori build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

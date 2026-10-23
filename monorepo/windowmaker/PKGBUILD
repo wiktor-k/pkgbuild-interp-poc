@@ -1,0 +1,66 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Daniel Isenmann <daniel@archlinux.org>
+# Contributor: Judd Vinet <jvinet@zeroflux.org>
+
+pkgname=windowmaker
+pkgver=0.96.0
+pkgrel=5
+pkgdesc='X11 window manager with a NeXTSTEP look and feel'
+arch=(x86_64)
+url='https://www.windowmaker.org/'
+license=('GPL-2.0-or-later AND WTFPL')
+depends=(
+  bash
+  fontconfig
+  giflib
+  glibc
+  imagemagick
+  libexif
+  libjpeg-turbo
+  libpng
+  libtiff
+  libwebp
+  libx11
+  libxext
+  libxft
+  libxinerama
+  libxmu
+  libxpm
+  libxrandr
+  pango
+  perl
+  xorg-xset
+)
+makedepends=(git)
+source=("git+https://repo.or.cz/wmaker-crm.git#tag=wmaker-$pkgver")
+b2sums=(e5d8bbdb253765533ab6191e74f57b04e36c6e7b4d37d840d0bb8b6ae31d099f9449255e7a683ed4d8b9985242ae61f9b1a8137813ea86f644b7110b4895a595)
+
+prepare() {
+  cd wmaker-crm
+
+  # Don't set X-GDM-SessionRegisters to true
+  sed -i '/X-GDM-SessionRegisters/d' WindowMaker/wmaker.desktop
+
+  autoreconf -fiv
+}
+
+build() {
+  cd wmaker-crm
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-modelock \
+    --enable-wmreplace \
+    --enable-xinerama \
+    --enable-randr \
+    --enable-usermenu \
+    LINGUAS="`(cd po ; echo *.po | sed 's/.po//g')`"
+  make
+}
+
+package() {
+  cd wmaker-crm
+  make DESTDIR="$pkgdir" install
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING.WTFPL
+}

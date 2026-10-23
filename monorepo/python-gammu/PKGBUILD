@@ -1,0 +1,48 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux>
+
+pkgname=python-gammu
+pkgver=3.5.0
+pkgrel=1
+pkgdesc="Python bindings for Gammu library"
+arch=('x86_64')
+url="https://wammu.eu/python-gammu/"
+license=('GPL-2.0-or-later')
+depends=(
+  'gammu'
+  'glibc'
+  'python'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest'
+  'libdbi-drivers'
+)
+source=("git+https://github.com/gammu/python-gammu.git?signed#tag=$pkgver")
+b2sums=('8bd90f1e25d1b68ac18ff507209557ced9d9ca02c8406b2bfc88a07a90f57121191149089b7aaf99428d9a6bb1bf28fba233e6693c62ca19e0498e42b28f0f9a')
+validpgpkeys=('63CB1DF1EF12CF2AC0EE5A329C27B31342B7511D') # Michal Čihař <michal@cihar.com>
+
+build() {
+  cd $pkgname
+  export CFLAGS+=" -Wno-error=return-mismatch"
+  python -m build --no-isolation
+}
+
+check() {
+  cd $pkgname
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -Pm pytest
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

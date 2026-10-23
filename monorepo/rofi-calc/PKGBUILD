@@ -1,0 +1,25 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=rofi-calc
+pkgver=2.5.1
+pkgrel=1
+pkgdesc="Do calculations in rofi"
+arch=('x86_64')
+url="https://github.com/svenstaro/rofi-calc"
+license=(MIT)
+depends=(rofi libqalculate)
+makedepends=(meson)
+install=$pkgname.install
+source=($pkgname-$pkgver.tar.gz::https://github.com/svenstaro/rofi-calc/archive/v${pkgver}.tar.gz)
+sha512sums=('da5c5d5db06f2918bba40f405f23c575c09d9c3414a6ebaf643749d48e4ee7731c2fb8065ade9c5217a4e0cfea7eed6b9cad328cd95f04b03211e925b0b72f99')
+
+build() {
+  arch-meson rofi-calc-$pkgver build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+  install -Dm644 rofi-calc-$pkgver/LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,29 @@
+# Maintainer: Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Peter Lewis <plewis@aur.archlinux.org>
+# Contributor: Grigorios Bouzakis <grbzks@xsmail.com>
+# Contributor: Damir Perisa <damir.perisa@bluewin.ch>
+
+pkgname=ascii
+pkgver=3.32
+pkgrel=1
+pkgdesc="Utility for conversion between various byte representations and the ASCII character table"
+arch=('x86_64')
+url='http://www.catb.org/~esr/ascii'
+license=('BSD-2-Clause')
+depends=('glibc')
+makedepends=('asciidoctor')
+source=("$url/$pkgname-$pkgver.tar.gz")
+b2sums=('196323576b93982a86569e54c8c7171c5b86e9d72ca48f05956ae9a953a4b1d54c90f51f677cbbcc81b19e4ca836b0070c5d807588f8c0affcfb274e78108d0d')
+
+build() {
+  cd $pkgname-$pkgver
+  make CFLAGS="$CFLAGS $LDFLAGS"
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" ascii
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" ascii.1
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

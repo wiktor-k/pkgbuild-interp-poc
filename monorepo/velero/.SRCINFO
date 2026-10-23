@@ -1,0 +1,16 @@
+pkgbase = velero
+	pkgdesc = Backup and migrate Kubernetes applications and their persistent volumes
+	pkgver = 1.18.4
+	pkgrel = 1
+	url = https://velero.io
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = kubectl
+	options = !lto
+	source = git+https://github.com/vmware-tanzu/velero#tag=v1.18.4
+	b2sums = a25889471843ba92d4e56ee2bacae08279e3b329032608bdaf67dacd181465a638d21a58077f02dd57d97a8bde37daa07aeef9a4e86bfa5077a7f28e3be28db5
+
+pkgname = velero

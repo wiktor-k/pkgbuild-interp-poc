@@ -1,0 +1,29 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=sowing
+pkgver=1.1.26.12
+#pkgver=${_pkgver/-/.}
+pkgrel=2
+pkgdesc="Tools for documenting and improving portability"
+arch=(x86_64)
+url="http://wgropp.cs.illinois.edu/projects/software/sowing/"
+license=(GPL)
+depends=(bash gcc-libs glibc perl)
+options=(!makeflags)
+source=(${pkgname}-${pkgver}.tar.gz::https://bitbucket.org/petsc/pkg-sowing/get/v${pkgver}.tar.gz)
+sha256sums=('e2fd8980ffe20056dca84aa93b523bcb389d155bf9702b882d2d68a9b87ff235')
+
+prepare() {
+  mv petsc-pkg-sowing-* ${pkgname}-${pkgver}
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr --datadir=/usr/share/sowing
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make prefix="${pkgdir}"/usr datadir="${pkgdir}"/usr/share/sowing install
+}

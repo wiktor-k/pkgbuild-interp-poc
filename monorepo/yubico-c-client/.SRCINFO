@@ -1,0 +1,18 @@
+pkgbase = yubico-c-client
+	pkgdesc = Yubico YubiKey client C library
+	pkgver = 2.15
+	pkgrel = 7
+	url = https://github.com/Yubico/yubico-c-client
+	arch = x86_64
+	license = BSD
+	makedepends = git
+	makedepends = help2man
+	depends = curl
+	depends = yubico-c
+	provides = ykclient
+	conflicts = ykclient
+	source = git+https://github.com/Yubico/yubico-c-client.git#tag=ykclient-2.15?signed
+	validpgpkeys = 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
+	sha256sums = 3dd6eef72917bb0a07e89c862a6a5f4c80ba5e5a7dc55b223971f5912554f96c
+
+pkgname = yubico-c-client

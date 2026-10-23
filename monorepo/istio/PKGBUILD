@@ -1,0 +1,60 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: Arturo Penen <apenen@gmail.com>
+# Contributor: jtagcat <arch-3ff61201@jtag.cat>
+
+pkgname=istio
+pkgver=1.31.1
+pkgrel=1
+pkgdesc="Istio configuration command line utility for service operators to debug and diagnose their Istio mesh"
+arch=(x86_64)
+url="https://github.com/istio/istio"
+license=(Apache-2.0)
+depends=(glibc)
+makedepends=(go)
+options=(!lto)
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('4dc5776ee4c8736537474c28173721f284bf458686de83d5dd49fb04c5e8226018aa525668e32f2369eafc37d69d074407b52b80f0c2918bc6cc11733c5d82a1')
+b2sums=('b0a64402a843b7a4be7c25f468bab70f1ef3792833676a9cb29f578b4f853290807d5ece0a57f88c33e3d06382de182d78ca62ed5fcc8b323dc69292101d68ec')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+  local ld_flags=" \
+    -compressdwarf=false  \
+    -linkmode=external  \
+    -X istio.io/istio/pkg/version.buildVersion=$pkgver \
+    -X istio.io/istio/pkg/version.buildTag=$pkgver \
+    -X istio.io/istio/pkg/version.buildHub=docker.io/istio \
+  "
+  go build -v -buildvcs=false -ldflags="$ld_flags" -o build/istioctl \
+    ./istioctl/cmd/istioctl
+}
+
+check() {
+  cd $pkgname-$pkgver
+  # Test that the exectuble reports the correct version.
+  test "$(./build/istioctl version --remote=false)" = "client version: $pkgver"
+
+  go test -v ./istioctl/...
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" build/istioctl
+
+  ./build/istioctl collateral --bash
+  ./build/istioctl collateral --zsh
+  install -vDm644 istioctl.bash "$pkgdir/usr/share/bash-completion/completions/istioctl"
+  install -vDm644 _istioctl "$pkgdir/usr/share/zsh/site-functions/_istioctl"
+}

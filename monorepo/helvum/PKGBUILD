@@ -1,0 +1,57 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Jonas Witschel <diabonas@archlinux.org>
+
+pkgname=helvum
+pkgver=0.6.2
+pkgrel=2
+pkgdesc='GTK patchbay for PipeWire'
+arch=(x86_64)
+url='https://gitlab.freedesktop.org/pipewire/helvum'
+license=(GPL-3.0-only)
+depends=(
+  cairo
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libpipewire
+  pipewire
+)
+makedepends=(
+  cargo
+  clang
+  meson
+)
+# LTO suddenly breaks linking stage: https://gitlab.freedesktop.org/pipewire/helvum/-/issues/111
+options=(!lto)
+source=($url/-/archive/$pkgver/helvum-$pkgver.tar.gz)
+sha512sums=('0c1fd8d1c8081f8e6a3ef3db4f7e74e211a41b7d3c6bf3ef7fa9da714bd0b31f9778376c56147c8ee623fd7c62c073e21d07b3f832c40f9f3dd47d9e65ed0a20')
+b2sums=('2079ee149795b5d010f79c27b6e530fd117e649640561eb0df8fdc1210fcc9a87d2f0d5c6d27bbdfbff717826c8239fc9669c3c98c00f9a5a692e583cd72edd5')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson "$pkgname-$pkgver" build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --no-rebuild --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}

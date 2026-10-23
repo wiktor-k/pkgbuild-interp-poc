@@ -1,0 +1,19 @@
+pkgbase = go-ethereum
+	pkgdesc = Official Go implementation of the Ethereum protocol
+	pkgver = 1.17.9
+	pkgrel = 1
+	url = https://geth.ethereum.org/
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	provides = geth
+	conflicts = geth
+	replaces = geth
+	source = git+https://github.com/ethereum/go-ethereum.git#tag=v1.17.9
+	source = geth-user.service
+	sha256sums = f4fb30a25e0ca1d7c2f24dbe4dfa0451f4c6cc2691a093274916280260f07f7d
+	sha256sums = 806ab43221f0c203e663a78afced694786a5adb033f06fab07d07904384d7645
+
+pkgname = go-ethereum

@@ -1,0 +1,108 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: robertfoster
+# Contributor: kurych
+# Contributor: redfish
+# Contributor: atommixz
+# Contributor: denn
+# Contributor: post-factum
+# Contributor: wrdcrrtmnstr
+# Contributor: r4sas
+
+pkgname=i2pd
+pkgver=2.61.0
+pkgrel=2
+pkgdesc='A full-featured C++ implementation of the I2P router'
+arch=('x86_64')
+url='https://i2pd.website/'
+license=('BSD-3-Clause')
+depends=(
+    'boost-libs'
+    'glibc'
+    'libgcc'
+    'libminiupnpc.so'
+    'libstdc++'
+    'openssl'
+    'zlib')
+makedepends=(
+    'boost'
+    'check'
+    'cmake')
+provides=('i2p-router')
+backup=('etc/i2pd/i2pd.conf'
+        'etc/i2pd/tunnels.conf'
+        'etc/logrotate.d/i2pd')
+source=("https://github.com/PurpleI2P/i2pd/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+        '005-i2pd-tests-use-arch-flags.patch'
+        '010-i2pd-config.patch'
+        '020-i2pd-do-not-override-config.patch'
+        '030-i2pd-systemd-service-hardening.patch'
+        '040-i2pd-tunnels-d-readme.patch'
+        'i2pd.sysusers'
+        'i2pd.tmpfiles')
+sha256sums=('409cd3c0257491286611ab6aaf690940c7248fb898377c13fadb65a836e2a0ab'
+            '2ddf15f1c1cdf5d747a0af667145238023fd126ab00c65f2897cacae935015b1'
+            'ed1bde650139731921bf3c8091b3332620404e7700fb9c486a4a806fe34e2d3b'
+            '3168e9bc1b15885b1658fac6efcd0741f7f82b571798380ecffa54eaa84aadde'
+            'cd5c67d1b6eed0f314c2f78cbbdc815925fe0c7141d742df40fa3be3a5e81d37'
+            'cfcb6b07b67aff3e3af12767f4649d88b9320dc71907b6c01b465e5c138cdaa3'
+            '2f91fd455ea801df9a9bcc5f3f83def231d9149eec8b206588c8be21654e5b7c'
+            'fe8cc2ec83cb5b5c2b2ec8cce9a989e0cb6fd347e00b84e03a17b12efd152fac')
+
+prepare() {
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/005-i2pd-tests-use-arch-flags.patch"
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/010-i2pd-config.patch"
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/020-i2pd-do-not-override-config.patch"
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/030-i2pd-systemd-service-hardening.patch"
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/040-i2pd-tunnels-d-readme.patch"
+}
+
+build() {
+    cmake \
+        -B build \
+        -S "${pkgname}-${pkgver}/build" \
+        -G 'Unix Makefiles' \
+        -DCMAKE_BUILD_TYPE:STRING='None' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DBUILD_SHARED_LIBS:BOOL='ON' \
+        -DWITH_UPNP:BOOL='ON' \
+        -DBUILD_TESTING:BOOL='ON' \
+        -Wno-dev
+    cmake --build build
+}
+
+check() {
+    ctest --test-dir build --output-on-failure
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    cd "${pkgname}-${pkgver}"
+    
+    # config
+    install -D -m644 contrib/{i2pd,tunnels}.conf -t "${pkgdir}/etc/i2pd"
+    install -d -m755 "${pkgdir}/etc/i2pd/tunnels.d"
+    
+    # certificates
+    install -d -m755 "${pkgdir}/usr/share/i2pd"
+    cp -dr --no-preserve='ownership' contrib/certificates "${pkgdir}/usr/share/i2pd"
+    
+    # systemd
+    install -D -m644 contrib/i2pd.service   -t "${pkgdir}/usr/lib/systemd/system"
+    install -D -m644 "${srcdir}/i2pd.sysusers" "${pkgdir}/usr/lib/sysusers.d/i2pd.conf"
+    install -D -m644 "${srcdir}/i2pd.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/i2pd.conf"
+    
+    # logrotate
+    install -D -m644 contrib/i2pd.logrotate "${pkgdir}/etc/logrotate.d/i2pd"
+    
+    # tunnels.d examples
+    install -D -m644 contrib/tunnels.d/{*.conf,README} -t "${pkgdir}/usr/share/doc/i2pd/tunnels.d"
+    
+    # headers
+    install -D -m644 {i18n,libi2pd{,_client}}/*.h -t "${pkgdir}/usr/include/i2pd"
+    
+    # man page
+    install -D -m644 debian/i2pd.1 -t "${pkgdir}/usr/share/man/man1"
+    
+    # license
+    install -D -m644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

@@ -1,0 +1,26 @@
+pkgbase = fretboard
+	pkgdesc = Look up guitar chords
+	pkgver = 9.1
+	pkgrel = 3
+	url = https://apps.gnome.org/Fretboard/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://github.com/bragefuglseth/fretboard.git#tag=v9.1
+	source = fretboard-dbus-activatable.patch
+	b2sums = 3cabacce964d8c657a139bd8acbb86387307c5b32b4fb177bc10d9682c30ade9dded097225dd6eea91c9b4a59b9537829365d883fb8282d796ecfda07927fdcf
+	b2sums = 08e41505312019891fb7d3e4e321b5f8a21cfa2837dd1c7aceb74264dc6bf2d3885a4b3a3e5dd926c9a9712d8c8d8f1accc52d6d8ea154365428589f0665f34b
+
+pkgname = fretboard

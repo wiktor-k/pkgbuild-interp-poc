@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-visualization-waveform
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="Waveform visualizer for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/visualization.waveform'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-visualization')
+makedepends=('cmake' 'glu' 'glm' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/visualization.waveform/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('d79fdbebedbe14df24c383b3eed84371cc744ecbe8c56311d5df654c0d3d50b81938eea4a898102fb91173b0f12106d38d174a7d6ca20270b233a4fe39e46972')
+
+build() {
+    cd "visualization.waveform-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi' 'glu' 'glm')
+    cd "visualization.waveform-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

@@ -1,0 +1,111 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Philipp Überbacher <hollunder at gmx dot at>
+
+pkgname=qtractor
+pkgver=1.6.4
+pkgrel=1
+pkgdesc="Audio/MIDI multitrack sequencer"
+arch=(x86_64)
+url="https://qtractor.sourceforge.io/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libmad
+  libstdc++
+  libxcb
+  qt6-base
+  qt6-svg
+  zlib
+)
+makedepends=(
+  alsa-lib
+  clap
+  cmake
+  dssi
+  git
+  jack
+  ladspa
+  liblo
+  libogg
+  libsamplerate
+  libsndfile
+  libvorbis
+  lilv
+  lv2
+  qt6-tools
+  rubberband
+  suil
+  vst3sdk
+)
+optdepends=(
+  'new-session-manager: for session management'
+)
+provides=(
+  clap-host
+  dssi-host
+  ladspa-host
+  lv2-host
+  vst-host
+  vst3-host
+)
+source=(
+  $pkgname::git+https://github.com/rncbc/qtractor.git#tag=v$pkgver
+  minibpm::git+https://github.com/breakfastquay/minibpm.git
+)
+sha512sums=('ca4d247059f7153074605a47176c5e0f33222f3a2c5ff3da92c27e6ccc91e8f5230d10115085aa027ba14a3ea0ebf9cd63e1f91a2d926b83fc14a1a8ac46d8bb'
+            'SKIP')
+b2sums=('657e71c68ee424b32aa06b3f39e9caa37022136e1d4e5f000d19f4324cee6100f960caef62e76f6d9dfe255de36675291fa10dcabb37d2f1fec2299b42306923'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.src/minibpm.url "$srcdir/minibpm"
+  git submodule deinit src/clap
+  git submodule deinit src/vst3/base
+  git submodule deinit src/vst3/pluginterfaces
+  git submodule deinit src/vst3/public.sdk
+  git -c protocol.file.allow=always submodule update
+
+  # symlink vst3sdk into place
+  rm -frv src/vst3
+  ln -fsv /usr/src/vst3sdk/ src/vst3
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CONFIG_QT6=ON
+    -D CONFIG_LV2_UI_GTK2=OFF
+    -D CONFIG_LV2_UI_GTKMM2=OFF
+    -S $pkgname
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    jack libjack.so
+    liblo liblo.so
+    libogg libogg.so
+    libsamplerate libsamplerate.so
+    libsndfile libsndfile.so
+    libvorbis libvorbisenc.so libvorbisfile.so libvorbis.so
+    lilv liblilv-0.so
+    rubberband librubberband.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname/README* -t "$pkgdir/usr/share/doc/$pkgname/"
+}

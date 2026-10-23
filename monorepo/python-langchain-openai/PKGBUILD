@@ -1,0 +1,86 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langchain-openai
+pkgver=1.6.4
+pkgrel=1
+pkgdesc="An integration package connecting OpenAI and LangChain"
+arch=('any')
+url="https://github.com/langchain-ai/langchain"
+license=('MIT')
+depends=(
+  'python'
+  'python-certifi'
+  'python-httpx'
+  'python-langchain-core'
+  'python-openai'
+  'python-pydantic'
+  'python-tiktoken'
+  'python-typing_extensions'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-freezegun'
+  'python-httpx2'
+  'python-langchain'
+  'python-langchain-tests'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-pytest-cov'
+  'python-pytest-mock'
+  'python-pytest-recording'
+  'python-pytest-retry'
+  'python-pytest-socket'
+  'python-pytest-xdist'
+  'python-syrupy'
+  'python-vcrpy'
+)
+source=(
+  "git+https://github.com/langchain-ai/langchain.git"
+  "cl100k_base.tiktoken::https://openaipublic.blob.core.windows.net/encodings/cl100k_base.tiktoken"
+  "o200k_base.tiktoken::https://openaipublic.blob.core.windows.net/encodings/o200k_base.tiktoken"
+)
+sha512sums=('SKIP'
+            '83726b3f82f1cb2825d96c3b17a099b721b093347b34cdae4f6ea97dfc764d7ca92aac03a8ac8b666fbc692f97926155e757b893528ff151b55782a34aa0fe90'
+            'fb2d684af5c6da402c3e05f97e2150761eff157223235ba1f2abd4f70506a71d5a36698fde284c903f60915a7b86ceef8cee28fbc671da42f7b02e5523d6ef75')
+
+prepare() {
+  cd langchain
+
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "langchain-openai==$pkgver"
+}
+
+build() {
+  cd langchain/libs/partners/openai
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langchain/libs/partners/openai
+
+  mkdir -p tiktoken_cache
+  cp "$srcdir"/cl100k_base.tiktoken tiktoken_cache/9b5ad71b2ce5302211f9c61530b329a4922fc6a4
+  cp "$srcdir"/o200k_base.tiktoken tiktoken_cache/fb374d419588a4632f3f557e76b4b70aebbca790
+
+  TIKTOKEN_CACHE_DIR=tiktoken_cache python -m pytest \
+    --disable-socket --allow-unix-socket \
+    tests/unit_tests/
+
+  # The Azure ignore matches upstream's test_vcr target.
+  OPENAI_API_KEY=test TIKTOKEN_CACHE_DIR=tiktoken_cache python -m pytest \
+    --record-mode=none -m vcr \
+    --ignore=tests/integration_tests/chat_models/test_azure_standard.py \
+    tests/integration_tests/
+}
+
+package() {
+  cd langchain/libs/partners/openai
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

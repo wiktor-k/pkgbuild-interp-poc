@@ -1,0 +1,48 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=cl-fiveam
+_pkgname="${pkgname#cl-}"
+pkgver=1.4.3
+pkgrel=1
+pkgdesc='A regression testing framework for Common Lisp'
+arch=(any)
+url='https://fiveam.common-lisp.dev'
+license=(MIT)
+depends=(
+  cl-asdf
+  common-lisp
+  cl-alexandria
+  cl-asdf-flv
+  cl-trivial-backtrace
+)
+makedepends=(git)
+checkdepends=(sbcl)
+source=(
+  "$pkgname::git+https://github.com/lispci/fiveam#tag=v$pkgver"
+  run-tests.lisp
+)
+b2sums=('877e567c26273567fcad643f63314ff7d08ea114f1ab9db4412474f26c41f1c500ef44a53eaa4fb7fa7c70ce9568025c9b5deed25f44c0ca1bd0f2e449206bf1'
+        '40143c74430fb552a0cf7e9c309da2e25f0ed969c28b67206b4c60e2fd73d32cafc3e53e16fcde16326b9376aca7d5bc9cb5f472de2576c9d3958af7a93dd4f9')
+
+check() {
+  cd "$pkgname"
+
+  sbcl --script ../run-tests.lisp
+}
+
+package() {
+  cd "$pkgname"
+
+  # library
+  install -vd "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+  cp -vr \
+    src t \
+    fiveam.asd version.sexp \
+    "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

@@ -1,0 +1,44 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=osv-scanner
+pkgver=2.7.0
+pkgrel=1
+pkgdesc="Vulnerability scanner written in Go which uses the data provided by https://osv.dev"
+url='https://github.com/google/osv-scanner'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=(https://github.com/google/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('acd8ebbf345a9a04eb299cb8e1339512fd4f2ad402f8f40972edcffa3eb45109')
+b2sums=('9921d4a51092ebb43f827d35eda2e1d5ffaecf8e11b5e8e2365edace503e59b18f5d3494d0472fb940dd7a5aab899b5c9fdaa9bfc833354c1d334d028f387bed')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags '-compressdwarf=false -linkmode=external' \
+    ./cmd/osv-scanner
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  ./osv-scanner --help || true
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    osv-scanner
+}
+
+# vim: ts=2 sw=2 et:

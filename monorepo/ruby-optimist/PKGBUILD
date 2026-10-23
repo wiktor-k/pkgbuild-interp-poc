@@ -1,0 +1,48 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+_gemname=optimist
+pkgname=ruby-${_gemname}
+pkgver=3.2.1
+pkgrel=1
+pkgdesc='Commandline option parser for Ruby that just gets out of your way'
+url='https://github.com/ManageIQ/optimist'
+arch=('any')
+license=('MIT')
+depends=('ruby')
+makedepends=('ruby-rdoc' 'ruby-rake' 'ruby-bundler')
+checkdepends=('ruby-minitest' 'ruby-chronic')
+options=('!emptydirs')
+source=(https://github.com/ManageIQ/optimist/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('3c3c4a62728033713aee36cd2d105a4aab5e725df56c775001d932381177aa7dde00d5bceb58ddd4d19f6c29e041a178a90b6165e134b526e41f88f7e907de06')
+b2sums=('838afe6d176efa9eeba24afd5772ee95c874738b24614c145ba42b8523e2cf83192ef6ec2b5d4eba178aeddd060fc734aaecdc5ac10d6da321447d163d3cfe79')
+
+prepare() {
+  cd ${_gemname}-${pkgver}
+  sed -r 's|~>|>=|g' -i ${_gemname}.gemspec
+  sed 's|git ls-files -z|find -print0|' -i ${_gemname}.gemspec
+}
+
+build() {
+  cd ${_gemname}-${pkgver}
+  gem build ${_gemname}.gemspec
+}
+
+check() {
+  cd ${_gemname}-${pkgver}
+  MT_COMPAT="true" rake test
+}
+
+package() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}${_gemdir}" \
+    -n "${pkgdir}/usr/bin" ${_gemname}-${pkgver}.gem
+  install -Dm 644 README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  cd "${pkgdir}/${_gemdir}"
+  rm "${pkgdir}/${_gemdir}/cache/${_gemname}-${pkgver}.gem"
+  rm -r "${pkgdir}/${_gemdir}/gems/${_gemname}-${pkgver}/test"
+}
+
+# vim: ts=2 sw=2 et:

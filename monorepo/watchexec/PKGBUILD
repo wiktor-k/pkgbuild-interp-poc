@@ -1,0 +1,52 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Vlad M. <vlad@archlinux.net>
+
+pkgname=watchexec
+pkgver=2.8.0
+pkgrel=1
+pkgdesc="Executes commands in response to file modifications"
+url='https://github.com/watchexec/watchexec'
+depends=('libgcc' 'glibc')
+makedepends=('cargo')
+arch=('x86_64')
+license=('Apache-2.0')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/watchexec/watchexec/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('861496cd1e7d8546f770551893077e9b898fef1a6623d5e2207cf28c932e7738')
+
+_srcenv() {
+  cd "watchexec-$pkgver"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=true
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  _srcenv
+  cargo build --frozen --release
+}
+
+check() {
+  _srcenv
+  cargo test --frozen -- --skip scopes
+}
+
+package() {
+  cd "watchexec-$pkgver"
+  install -Dm644 doc/watchexec.1 "$pkgdir/usr/share/man/man1/$pkgname.1"
+  install -Dm644 completions/bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -Dm644 completions/zsh "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+  install -Dm644 completions/fish "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+  install -Dm644 completions/elvish "$pkgdir/usr/share/elvish/lib/$pkgname.elv"
+  install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

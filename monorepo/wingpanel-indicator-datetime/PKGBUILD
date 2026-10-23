@@ -1,0 +1,39 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=wingpanel-indicator-datetime
+pkgver=2.4.2
+pkgrel=4
+pkgdesc='Date & Time indicator for Wingpanel'
+arch=(x86_64)
+url=https://github.com/elementary/wingpanel-indicator-datetime
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  evolution-data-server
+  glib2
+  glibc
+  gtk4
+  libadwaita
+  libgee
+  granite7
+  libical
+  wingpanel
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+#source=(git+https://github.com/elementary/wingpanel-indicator-datetime.git#tag=${pkgver})
+source=(git+https://github.com/elementary/wingpanel-indicator-datetime.git#commit=182a225c1bc632bd4c85e82471dd61879f58cfc1)
+b2sums=('b6464c6a9c2d1441e5325659eee52f14ba684f6a9d3a1ab1c933331beeb9b8f27108022ec835175358520014bf0ad70c1e9996567a9dce8d4acabfec8e14b706')
+
+build() {
+  arch-meson wingpanel-indicator-datetime build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

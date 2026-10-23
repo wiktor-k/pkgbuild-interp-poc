@@ -1,0 +1,22 @@
+pkgbase = prjtrellis
+	pkgdesc = Documentation and definitions for the Lattice ECP5 bit-stream format
+	pkgver = 1.4
+	pkgrel = 11
+	url = https://github.com/YosysHQ/prjtrellis
+	arch = x86_64
+	license = custom:ISC
+	license = MIT
+	makedepends = cmake
+	makedepends = prjtrellis-db
+	makedepends = boost
+	makedepends = python
+	depends = boost-libs
+	optdepends = python: Python support
+	provides = libtrellis
+	conflicts = libtrellis
+	source = prjtrellis-1.4.tar.gz::https://github.com/YosysHQ/prjtrellis/archive/1.4.tar.gz
+	source = boost-1.89.patch
+	sha512sums = 3fd8bf533da98f3cdf6a0fe92ee4b2cb5d58fcc568e3365a1927fae392a4aaeec80b1f53e26ccd6c7afd7efb17b749cd8bac6d3ec2d17f9ad2c33da592a213d9
+	sha512sums = f8e0460a96096c2f19052347b26b989c54c0c30804ceaab5429b6c19c61748f71da90eb1fb8873d3a250003dfa6570c43c367061f23601e2cff733ff8f497f1b
+
+pkgname = prjtrellis

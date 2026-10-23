@@ -1,0 +1,41 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=committed
+pkgver=1.1.11
+pkgrel=2
+pkgdesc="Nitpicking your commit history"
+arch=('x86_64')
+url="https://github.com/crate-ci/committed"
+license=('Apache-2.0' 'MIT')
+depends=('glibc' 'libgcc' 'libgit2' 'zlib')
+makedepends=('cargo')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('416aab32bf0cc2012259ee3ba264f3db0493164272694c6c4bef15e9258d4244')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen -- --skip "in_repo"
+}
+
+package() {
+  depends+=(libgit2.so
+    libz.so)
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

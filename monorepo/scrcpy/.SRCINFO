@@ -1,0 +1,20 @@
+pkgbase = scrcpy
+	pkgdesc = Display and control your Android device
+	pkgver = 5.0.1
+	pkgrel = 1
+	url = https://github.com/Genymobile/scrcpy
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = meson
+	depends = android-tools
+	depends = ffmpeg
+	depends = sdl3
+	depends = glibc
+	depends = libusb
+	source = git+https://github.com/Genymobile/scrcpy#tag=v5.0.1
+	source = scrcpy-server-5.0.1.apk::https://github.com/Genymobile/scrcpy/releases/download/v5.0.1/scrcpy-server-v5.0.1
+	b2sums = 2eb702f0d046175ecf56abe3a8a4c1da991016f7232cf2d8083c36a74f64502eda571ff1df104474cc8f646b4940ecd688b09cbb116211bd726bbe285428bd94
+	b2sums = d28bcadb1c8b82f49d2c7a97f36284a29d7ddcfac17b89c3627d95ff0f149839bd25914d02dfaad543acf6fbc5c3fee4f2a4893016f8dbc4213e777bc09cf6f6
+
+pkgname = scrcpy

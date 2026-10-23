@@ -1,0 +1,36 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Laurent Carlier <lordheavym@gmail.com>
+# Contributor: Brad Fanella <bradfanella@archlinux.us>
+# Contributor: SpepS <dreamspepser at yahoo dot it>
+# Contributor: Jeff Mickey <jeff@archlinux.org>
+# Contributor: tardo <tardo@nagi-fanboi.net>
+
+pkgname=chuck
+pkgver=1.5.5.8
+pkgrel=1
+pkgdesc='Concurrent, on-the-fly audio programming language'
+arch=(x86_64)
+url='https://chuck.cs.princeton.edu/'
+license=(GPL-2.0-or-later MIT)
+depends=(jack libsndfile)
+groups=(pro-audio)
+source=("https://chuck.cs.princeton.edu/release/files/$pkgname-$pkgver.tgz")
+b2sums=('44183219a9d03f383805b2d88695da34da174e66bf0e069cb40930dc6396920461005a977a3dea54dc7c5a68519a6d51804a92ec264825bce55e173080b5be9b')
+
+build() {
+  make -C $pkgname-$pkgver/src linux-jack
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  # Executable
+  install -Dm755 src/$pkgname "$pkgdir/usr/bin/$pkgname"
+
+  # Examples
+  install -d "$pkgdir/usr/share/doc/$pkgname"
+  cp -r examples "$pkgdir/usr/share/doc/$pkgname"
+
+  # License (no need to package the GPL license)
+  install -Dm644 LICENSE.MIT "$pkgdir/usr/share/licenses/$pkgname/LICENSE.MIT"
+}

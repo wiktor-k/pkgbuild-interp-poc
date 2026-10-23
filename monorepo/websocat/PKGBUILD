@@ -1,0 +1,49 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Stefan Tatschner <stefan@rumpelsepp.org>
+# Contributor: kpcyrd <git@rxv.cc>
+
+pkgname=websocat
+pkgver=1.14.1
+pkgrel=2
+pkgdesc='Command-line client for web sockets, like netcat/curl/socat for ws://'
+url='https://github.com/vi/websocat/'
+arch=(x86_64)
+license=(MIT)
+depends=(
+  glibc
+  openssl
+  libgcc
+)
+makedepends=(
+  cargo
+  help2man
+)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('668fc221eac88b2d9cb385cdd7e06f0593b7570d0316aa096f6711d817b6886793c08ff05daeddee6d3845c62432593cb1939196cf182bc58104c5f2ed218d43')
+b2sums=('ab5219aa5fd6c82e54305e5bbe46997464af5143afd1a3dacd17434f1fd3f8685a9bf0589abebf228526cdedebd96ee787224cc5983a063821f51a57b1c6948c')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release --features=ssl
+  help2man --name websocat --no-info target/release/websocat > websocat.1
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen --features=ssl
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 target/release/websocat -t "${pkgdir}/usr/bin"
+  install -Dm 644 websocat.1 -t "${pkgdir}/usr/share/man/man1"
+  install -Dm 644 README.md doc.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

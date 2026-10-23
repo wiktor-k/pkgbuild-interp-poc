@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-widgets
+pkgver=6.0.25
+pkgrel=1
+pkgdesc='Desktop widgets service/implementation for DDE'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-widgets"
+license=('GPL-3.0-or-later')
+# startdde: org.deepin.dde.Display1
+depends=('qt5-base' 'dtkcore' 'dtkgui' 'dtkwidget' 'glibc' 'libgcc' 'libstdc++' 'startdde')
+makedepends=('git' 'cmake' 'ninja' 'gtest' 'qt5-tools')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dde-widgets.git#tag=$pkgver")
+sha512sums=('b67de555105880e887d67aad6135e32081f61f62e0f03b9fa64de62d259cdd61c9b88c25a37ad76971f68d18653d54c8339ad8ab2c6f5a0759bc83d1d646a178')
+
+prepare() {
+  cd dde-widgets
+  # Link against the in-tree interface target so the build does not resolve
+  # symbols from an incompatible installed libdde-widgets.
+  sed -i 's/PRIVATE dde-widgets/PRIVATE interface/' app/CMakeLists.txt calendar/CMakeLists.txt
+}
+
+build() {
+  cd dde-widgets
+  cmake . -GNinja
+  ninja
+}
+
+package() {
+  cd dde-widgets
+  DESTDIR="$pkgdir" ninja install
+}

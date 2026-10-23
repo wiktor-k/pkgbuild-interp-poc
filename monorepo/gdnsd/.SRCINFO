@@ -1,0 +1,24 @@
+pkgbase = gdnsd
+	pkgdesc = an Authoritative-only DNS server which does geographic balancing, redirection, weighting, and service-state-conscious failover at the DNS layer
+	pkgver = 3.8.3
+	pkgrel = 2
+	url = https://gdnsd.org/
+	arch = x86_64
+	license = GPL3
+	checkdepends = perl-socket6
+	checkdepends = perl-io-socket-inet6
+	checkdepends = perl-http-daemon
+	checkdepends = perl-libwww
+	checkdepends = perl-net-dns
+	makedepends = ragel
+	depends = libev
+	depends = libmaxminddb
+	depends = libsodium
+	depends = libunwind
+	depends = liburcu
+	source = https://github.com/gdnsd/gdnsd/releases/download/v3.8.3/gdnsd-3.8.3.tar.xz
+	source = gdnsd.sysusers
+	sha512sums = ba47f8258dabc6f50ce3bfe32e2722392880257787bafec0ff7199799275a47a3527c646415337f95542aa4aec02632f0f8429da26c5cc5a4b189961bba7c18b
+	sha512sums = 8f39c0bed725d298314675b97610d37fc4dee31600c7f096deb38c63dba96e1b0c12239855154ea2c34f0ac3e8f5b7f1a86d9652210859982ab2339949b66e05
+
+pkgname = gdnsd

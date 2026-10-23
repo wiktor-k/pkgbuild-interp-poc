@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: justforlxz <justforlxz@gmail.com>
+
+pkgname=deepin-shell
+pkgver=2.0.59
+pkgrel=1
+pkgdesc='New DDE shell'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-shell"
+license=('CC-BY-4.0' 'CC0-1.0' 'GPL-3.0-or-later' 'LGPL-2.0-or-later' 'LGPL-3.0-or-later' 'MIT')
+depends=('deepin-application-manager' 'deepin-tray-loader' 'dtk6core' 'dtk6gui' 'dtk6widget'
+         'dtk6declarative' 'glibc' 'icu' 'libgcc' 'libstdc++' 'libx11' 'libxcb' 'libxtst' 'qt6-5compat'
+         'qt6-base' 'qt6-declarative' 'qt6-wayland' 'xcb-util-wm' 'wayland' 'yaml-cpp')
+makedepends=('git' 'extra-cmake-modules' 'cmake' 'ninja' 'qt6-tools' 'wayland-protocols'
+             'treeland-protocols' 'gtest')
+groups=('deepin')
+replaces=('deepin-dock')
+conflicts=('deepin-dock')
+source=("git+https://github.com/linuxdeepin/dde-shell.git#tag=$pkgver")
+sha512sums=('c36df81329f44cecceb75e62deae97c03f2e55239e0710310d6797ecb708f6df423ba0c8f9c777ff6c7c919157d5b33310f1a87860ad74758262d270ac63315a')
+
+prepare() {
+  cd dde-shell
+  # Qt 6.10 support: https://github.com/linuxdeepin/dde-shell/pull/1735
+  git cherry-pick -n fb18e7a4eca9daf917cf367f903f66d6f8be982a
+  # The dock consumes the frame library and must not define its export macro.
+  sed -i '/target_compile_definitions(dde-shell-dock PRIVATE DS_LIB)/d' panels/dock/frame/CMakeLists.txt
+}
+
+build() {
+  cd dde-shell
+  # Coverage defaults to -O0, which conflicts with Arch's _FORTIFY_SOURCE under upstream -Werror.
+  # https://github.com/linuxdeepin/dde-shell/pull/1730
+  cmake . -GNinja \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
+    -DFRAME_BUILD_COVERAGE=OFF \
+    -DAPPLETS_BUILD_COVERAGE=OFF \
+    -DDOCK_BUILD_COVERAGE=OFF
+  cmake --build .
+}
+
+check() {
+  ctest --test-dir dde-shell --output-on-failure
+}
+
+package() {
+  cd dde-shell
+  DESTDIR="$pkgdir" ninja install
+}

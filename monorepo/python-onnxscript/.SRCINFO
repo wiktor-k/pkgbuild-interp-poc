@@ -1,0 +1,23 @@
+pkgbase = python-onnxscript
+	pkgdesc = Author ONNX functions and models
+	pkgver = 0.7.0
+	pkgrel = 1
+	url = https://microsoft.github.io/onnxscript/
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-numpy
+	depends = python-ml-dtypes
+	depends = python-onnx
+	depends = python-onnx-ir
+	depends = python-typing_extensions
+	depends = python-rich
+	source = python-onnxscript::git+https://github.com/microsoft/onnxscript.git#tag=v0.7.0
+	sha512sums = 083f442f0c438ecae9e1a5a05d7ce310fdd232fcc903b1d2e5a0848eca90c251421c12b6733c7d03ed62b0066e4253d3572328b074474f1554842782bede6061
+
+pkgname = python-onnxscript

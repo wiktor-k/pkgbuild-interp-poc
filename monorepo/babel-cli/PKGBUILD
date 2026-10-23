@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Mario Finelli <mario dot finelli at yahoo dot com>
+# Contributor: Andy Weidenbaum <archbaum at gmail dot com>
+# Contributor: Peter Wu <lekensteyn at gmail dot com>
+
+pkgname=babel-cli
+pkgver=8.0.6
+pkgrel=1
+pkgdesc="A compiler for writing next generation JavaScript"
+arch=('any')
+url="https://babeljs.io/"
+license=('MIT')
+depends=('nodejs' 'babel-core')
+makedepends=('npm')
+provides=('nodejs-babel-cli')
+conflicts=('nodejs-babel-cli' 'openbabel<3')
+replaces=('nodejs-babel-cli')
+source=("$pkgname-$pkgver.tgz::https://registry.npmjs.org/@babel/cli/-/cli-$pkgver.tgz")
+noextract=($pkgname-$pkgver.tgz)
+sha512sums=('ba6f25fec899e978a818dc5b984af2d59deeefb61ee9b903920ea55dec2d64369c18d0be30b87ce4259c9cc57f035da2e1e87bec7921912295959b64e09b2e70')
+
+package() {
+  npm install -g --legacy-peer-deps --prefix "$pkgdir"/usr "$srcdir"/$pkgname-$pkgver.tgz
+  tar xf $pkgname-$pkgver.tgz package/LICENSE
+  install -Dm644 package/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  # Non-deterministic race in npm gives 777 permissions to random directories.
+  # See https://github.com/npm/npm/issues/9359 for details.
+  chmod -R u=rwX,go=rX "$pkgdir"
+
+  # npm installs package.json owned by build user
+  # https://bugs.archlinux.org/task/63396
+  chown -R root:root "$pkgdir"
+}

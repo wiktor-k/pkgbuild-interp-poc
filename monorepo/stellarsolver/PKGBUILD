@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=stellarsolver
+pkgver=2.8
+pkgrel=1
+pkgdesc='The cross platform Sextractor and Astrometry.net-Based internal astrometric solver'
+arch=(x86_64)
+url='https://github.com/rlancaste/stellarsolver'
+license=(GPL-3.0-or-later)
+depends=(cfitsio
+         glibc
+         gsl
+         libgcc
+         libstdc++
+         qt6-base
+         wcslib)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/rlancaste/stellarsolver#tag=$pkgver)
+sha256sums=('bb0e5324e6eac61c55a453c1c411db6c00eb947a923eb448c0512e7689d18ad5')
+
+prepare() {
+  cd $pkgname
+  git cherry-pick -n e8d809b183d1f752cd683e1dcad02678cac552f0 # Fix build with Qt 6.9
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTER=ON \
+    -DUSE_QT5=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

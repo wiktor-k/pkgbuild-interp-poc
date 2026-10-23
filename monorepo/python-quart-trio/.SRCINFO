@@ -1,0 +1,22 @@
+pkgbase = python-quart-trio
+	pkgdesc = Extension for Quart to support the Trio event loop
+	pkgver = 0.13.0
+	pkgrel = 1
+	url = https://github.com/pgjones/quart-trio
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-trio
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-pdm-backend
+	makedepends = python-wheel
+	depends = hypercorn
+	depends = python
+	depends = python-quart
+	depends = python-trio
+	depends = python-werkzeug
+	source = https://github.com/pgjones/quart-trio/archive/0.13.0/quart-trio-0.13.0.tar.gz
+	sha256sums = a383e17d912e512d20de0bb096d8c21331bd28e1c8a9273e6e75f3c48c7ee85c
+
+pkgname = python-quart-trio

@@ -1,0 +1,80 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: mrxx <mrxx at cyberhome dot at>
+# Contributor: Limao Luo <luolimao+AUR@gmail.com>
+# Contributor: sausageandeggs <sausageandeggs@archlinux.us>
+
+pkgname=playitslowly
+pkgver=1.5.1
+pkgrel=15
+pkgdesc='Play back audio files at a different speed or pitch'
+arch=(any)
+url='https://29a.ch/playitslowly'
+license=(GPL-3.0-or-later)
+depends=(
+  bash
+  glib2
+  gst-plugins-bad
+  gst-plugins-base
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  python
+  python-gobject
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=(
+  'gst-libav: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+)
+source=(
+  "http://29a.ch/$pkgname/$pkgname-$pkgver.tar.gz"
+  playitslowly-python310.patch
+  playitslowly-gtk-version.patch
+  playitslowly-prgname.patch
+  playitslowly.appdata.xml
+)
+b2sums=(
+  53654659e4fba4024c818a9796613dcd409362017cca6243a1fae4f934863f4ed33218650c75282119846c0464914b074d3df6f1f9cdb9084d3bbd1bfa82bce9
+  83603570b7e25d1b9fe8bd04d127ee23e66489a1522efc9b7a823fa304ce7dcc5e3119bfed09196b61e378de1de80eba8cea809792f79fd229711b5674c88ef4
+  f771d79c3f8bd133737a10c983042ee3abfead8122ff8f8fdc47ff2f53184380b82cdc2c4bc2cd4c3d56d975de77d8c5567307e3a1d03d72ea46b6aed5730c07
+  7ded7b8a004cc9d9628840a0dc453bb035f735396508b84a2f5f0d775160328c72063d11a18d747bd0371002ecda73b6f92cc1dab1b311b35451788fc57d32e0
+  85104aab533789827b43376ed955a0926d4e9af5415cb0107c0187d53816c779135a8eb6a37a8a00abdb015062fdd92fbf26c796799d58c6e4b18adb87712464
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Correct 'site-packages/playitslowly-py3.1.install-info' filename
+  patch -Np1 -i ../playitslowly-python310.patch
+
+  # Specify required GTK version
+  patch -Np1 -i ../playitslowly-gtk-version.patch
+
+  # Set prgname
+  patch -Np1 -i ../playitslowly-prgname.patch
+
+  # Move files to their right places
+  mkdir -p share/icons/hicolor/{32x32,128x128,scalable}/apps share/metainfo
+  mv share/icons/hicolor/32x32/playitslowly.png share/icons/hicolor/32x32/apps/playitslowly.png
+  mv share/pixmaps/playitslowly.png share/icons/hicolor/128x128/apps/playitslowly.png
+  mv share/icons/hicolor/scalable/playitslowly.svg share/icons/hicolor/scalable/apps/playitslowly.svg
+  cp ../playitslowly.appdata.xml share/metainfo/playitslowly.appdata.xml
+  rm -r share/pixmaps
+}
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

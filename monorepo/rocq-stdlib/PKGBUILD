@@ -1,0 +1,39 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=rocq-stdlib
+pkgver=9.2.0
+pkgrel=1
+pkgdesc="Stdlib for the Rocq Prover"
+arch=('any')
+url="https://rocq-prover.org/"
+license=('LGPL-2.1-only')
+depends=('rocq')
+makedepends=(
+  'dune'
+  'ocaml'
+  'ocaml-compiler-libs'
+  'ocaml-findlib'
+  'ocaml-zarith'
+  'pango'
+)
+options=(
+  '!debug'
+  'staticlibs'
+)
+source=("https://github.com/rocq-prover/stdlib/archive/V$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('95711c7379556c709b7f1bae605c4d8db4435a2d9869384795b6063431b7a6d4b87a5136915a727a048915a48489f8aa418877c5a8c0d22302f37616e5abee84')
+
+build() {
+  cd stdlib-$pkgver
+  dune build -p rocq-stdlib
+}
+
+package() {
+  cd stdlib-$pkgver
+  dune install rocq-stdlib \
+    --prefix=/usr \
+    --destdir="$pkgdir" \
+    --mandir=/usr/share/man \
+    --docdir=/usr/share/doc \
+    --libdir=/usr/lib/ocaml
+}

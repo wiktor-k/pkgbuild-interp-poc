@@ -1,0 +1,32 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Contributor: American_Jesus <american.jesus.pt AT gmail DOT com>
+
+pkgname=nano-syntax-highlighting
+pkgver=2025.07.01.r0.g256995b
+_pkgver=2025.07.01
+pkgrel=2
+pkgdesc="Nano editor syntax highlighting enhancements"
+url="https://github.com/galenguyer/nano-syntax-highlighting"
+license=('GPL-3.0-or-later')
+arch=('any')
+depends=('nano')
+makedepends=('git')
+source=(nano-syntax-highlighting::git+https://github.com/galenguyer/nano-syntax-highlighting.git#tag=$_pkgver)
+b2sums=('26e61a51b0eeb537bfaec2e874da9eb76be007ff1a7de6c3532f4a1ded1495aabf9edfef2fc37d2314cd7d699cd18dbcb91e01d41c87d48b27b51c79409e3ffa')
+
+pkgver() {
+  cd "$pkgname"
+  git describe --long --abbrev=7 | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+	cd "$pkgname"
+	find *.nanorc -type f | sed "s@^@include /usr/share/${pkgname}/@" > nanorc.sample
+}
+
+package() {
+	cd "$pkgname"
+	mkdir -p "$pkgdir/usr/share/$pkgname"
+	find . -name '*.nanorc' | xargs install -D -m644 -t "$pkgdir/usr/share/$pkgname/"
+	install -D -m644 "nanorc.sample" "$pkgdir/usr/share/$pkgname/nanorc.sample"
+} 

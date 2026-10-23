@@ -1,0 +1,44 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Paul Mattal <paul@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=ncftp
+pkgver=3.3.0
+pkgrel=2
+pkgdesc="A set of free application programs implementing FTP"
+url="https://www.ncftp.com/"
+arch=('x86_64')
+license=('ClArtistic')
+depends=('ncurses')
+source=(https://www.ncftp.com/public_ftp/ncftp/ncftp-$pkgver-src.tar.gz
+        ncftp-reproducible.patch)
+sha256sums=('7920f884c2adafc82c8e41c46d6f3d22698785c7b3f56f5677a8d5c866396386'
+            'd5df31ab43f1573a86a842fdc69d7ae84f20afd22c74336264cc4e1e39e2f44d')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  # Make ncftp reproducible by not compiling in the kernel version
+  patch -Np1 -i "${srcdir}/ncftp-reproducible.patch"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+
+  # FS#39211
+  unset CPPFLAGS
+
+  CPP=/usr/bin/cpp ./configure --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -d "${pkgdir}/usr/share"
+  make prefix="${pkgdir}/usr" mandir="${pkgdir}/usr/share/man" install
+  install -Dm644 doc/LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

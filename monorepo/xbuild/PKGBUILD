@@ -1,0 +1,56 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=xbuild
+pkgver=0.2.0
+pkgrel=2
+pkgdesc='Cross compile rust to any platform'
+url='https://github.com/rust-mobile/xbuild'
+arch=('x86_64')
+license=('Apache-2.0 OR MIT')
+depends=(
+  android-tools
+  bzip2 libbz2.so
+  clang
+  gcc-libs
+  glibc
+  gradle
+  gtk3
+  jdk-openjdk
+  kotlin
+  libimobiledevice
+  lld
+  lldb
+  llvm
+  openssl libssl.so
+  squashfs-tools
+)
+makedepends=(
+  cargo
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://crates.io/api/v1/crates/${pkgname}/${pkgver}/download")
+sha256sums=('f006de3e08cc8a6bb7c67df83b28d63dddb38a4fcd31565f294b7a51b777c82e')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  depends+=('rustup')
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/x
+}
+
+# vim: ts=2 sw=2 et:

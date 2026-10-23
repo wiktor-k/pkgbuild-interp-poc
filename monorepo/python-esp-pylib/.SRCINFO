@@ -1,0 +1,27 @@
+pkgbase = python-esp-pylib
+	pkgdesc = Logging, utilities and constants shared by Espressif's Python tools
+	pkgver = 1.2.0
+	pkgrel = 1
+	url = https://github.com/espressif/esp-pylib
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-click
+	checkdepends = python-pyserial
+	checkdepends = python-pytest
+	checkdepends = python-rich-click
+	checkdepends = python-websockets
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-rich
+	optdepends = python-click: CLI option types and helpers
+	optdepends = python-rich-click: CLI option types and helpers
+	optdepends = python-pyserial: serial port discovery and reset
+	optdepends = python-websockets: IDE integration
+	source = git+https://github.com/espressif/esp-pylib.git#tag=v1.2.0
+	b2sums = 9dcbe35e572a3b868bf52d557a1406bafdea69204d42a2b81ba4d06bde9fe4e57db4b1739238d9e177a92ca43fcb16707c6f26a0f77f463410cd7be0517e0666
+
+pkgname = python-esp-pylib

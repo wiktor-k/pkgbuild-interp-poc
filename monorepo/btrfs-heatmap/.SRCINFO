@@ -1,0 +1,17 @@
+pkgbase = btrfs-heatmap
+	pkgdesc = Visualize the layout of data on your btrfs filesystem over time
+	pkgver = 9
+	pkgrel = 4
+	url = https://github.com/knorrie/btrfs-heatmap
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = python
+	depends = python-btrfs
+	provides = python-btrfs-heatmap
+	conflicts = python-btrfs-heatmap
+	replaces = python-btrfs-heatmap
+	source = btrfs-heatmap::git+https://github.com/knorrie/btrfs-heatmap.git#tag=v9
+	sha256sums = e9dc00e62ce628745c892c14eb7869d45ffbe7d598c98ebf88df29ceafe3a965
+
+pkgname = btrfs-heatmap

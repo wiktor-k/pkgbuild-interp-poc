@@ -1,0 +1,69 @@
+# Maintainer: Remi Gacogne <rgacogne at archlinux dot org>
+pkgname=dnsdist
+pkgver=2.1.3
+pkgrel=1
+pkgdesc='Highly DNS-, DoS- and abuse-aware loadbalancer'
+arch=('x86_64')
+url='https://dnsdist.org/'
+license=('GPL-2.0-only')
+source=(https://downloads.powerdns.com/releases/${pkgname}-${pkgver}.tar.xz{,.asc}
+        sysusers.conf)
+sha512sums=('9847a2b233014e961a442477477b2cf33a2c0ec7a29632854b1ae2d310f16b70c40fccaf8e7c4444938196b23415d073186ebc9e30ef47ed83556a08811f28d7'
+            'SKIP'
+            'd55ccd612cbe08b353815027d30a3b0f0ec7bf6b0d74a0a634939be53ce6e6b41d23e54c2328946f00738c03e9f306ce4f2dabe5e4b11d9fb28d0abf49917893')
+validpgpkeys=('D6300CABCBF469BBE392E503A208ED4F8AF58446'  # Remi Gacogne <remi.gacogne@powerdns.com>
+              'FBAE0323821C7706A5CA151BDCF513FA7EED19F3') # van Dijk, Peter <peter.van.dijk@powerdns.com>
+makedepends=('boost' 'boost-libs' 'cargo' 'clang' 'meson' 'lld' 'python-yaml' 'systemd') # remove 'boost-libs' once https://github.com/mesonbuild/meson/issues/15470 has been fixed
+depends=('fstrm' 'gnutls' 'libbpf' 'libcap' 'libedit' 'libgcc' 'libnghttp2' 'libsodium' 'libstdc++' 'libsystemd' 'libxdp' 'lmdb<1.0.0' 'luajit' 'net-snmp' 'openssl' 'quiche>=0.20.1' 're2' 'tinycdb')
+# We are actually enabling LTO via meson, but the -flto=auto option set up by makepkg conflicts with our -flto=thin
+options=(!lto)
+
+build() {
+  # Note that adding RUSTFLAGS="-Z cf-protection=full" does not help with the
+  # "ELF file ('usr/bin/dnsdist') lacks GNU_PROPERTY_X86_FEATURE_1_SHSTK" warning
+  # because Rust's standard library does not ship with CET enabled by default:
+  # https://doc.rust-lang.org/beta/unstable-book/compiler-flags/cf-protection.html
+  CC=clang \
+  CXX=clang++ \
+  CXX_LD=lld \
+  CC_LD=lld \
+  meson setup "${pkgname}-${pkgver}" build \
+    --prefix        /usr \
+    --libexecdir    lib \
+    --sbindir       bin \
+    --auto-features enabled \
+    --wrap-mode     nodownload \
+    -Ddebug=true \
+    -Dhardening-fortify-source=disabled \
+    -Doptimization=3 \
+    -Db_lto=true \
+    -Db_lto_mode=thin \
+    -Db_pie=true \
+    -Dauto-var-init=zero \
+    -Ddns-over-http3=enabled \
+    -Ddns-over-https=enabled \
+    -Ddns-over-tls=enabled \
+    -Ddns-over-quic=enabled \
+    -Ddnscrypt=enabled \
+    -Ddnstap=enabled \
+    -Debpf=enabled \
+    -Dfuzz-targets=true \
+    -Dre2=enabled \
+    -Dreproducible=true \
+    -Dsnmp=enabled \
+    -Dunit-tests=true \
+    -Dxsk=enabled \
+    -Dyaml=enabled
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  cd "${srcdir}"
+  install -D -m644 sysusers.conf "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+}

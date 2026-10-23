@@ -1,0 +1,28 @@
+pkgbase = python-dateparser
+	pkgdesc = Python parser for human readable dates
+	pkgver = 1.4.3
+	pkgrel = 1
+	url = https://github.com/scrapinghub/dateparser
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-parameterized
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-sphinx_rtd_theme
+	makedepends = python-wheel
+	depends = python
+	depends = python-dateutil
+	depends = python-pytz
+	depends = python-regex
+	depends = python-tzlocal
+	source = git+https://github.com/scrapinghub/dateparser.git#tag=v1.4.3
+	b2sums = 86085b8c232d90a70e1b219d700cd16f37a790f0cb0977c7bf3bb8b27dc8800820880a775346d89877eb62cc48ba1fc5cc3f665f17be963212e7d754882ce28b
+
+pkgname = python-dateparser
+
+pkgname = python-dateparser-docs
+	pkgdesc = Developer documentation for python-dateparser
+	depends = 

@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+
+pkgname=vco-plugins
+_name=VCO-plugins
+pkgver=0.3.0
+pkgrel=9
+pkgdesc="LADSPA anti-aliased oscillator plugins"
+arch=(x86_64)
+url="https://kokkinizita.linuxaudio.org/linuxaudio/ladspa/"
+license=(GPL-2.0-or-later)
+groups=(
+  ladspa-plugins
+  pro-audio
+)
+depends=(
+  glibc
+  libstdc++
+)
+makedepends=(ladspa)
+source=(
+  https://kokkinizita.linuxaudio.org/linuxaudio/downloads/$_name-$pkgver.tar.bz2
+  $pkgname-0.3.0-makefile.patch
+)
+sha512sums=('44e066acdda38137dcc6a6b504a8453f8d0d25c90ba091e71a48554b47e60365a1e6b0bad694ec7340d399951b8b0592507be153370d1b4924d399310cf106c5'
+            '97d71e7b6692a78563b95b90cb347a2d656c11df247314f5b04584b073a2b09603285b82cd468a84bfc7f0c98a727f00537b23c6f78c0cd08a18bc3d585c81ed')
+b2sums=('8b85f16ec0a118531f68f6fe3223250a9786d9b8e75c2cbdafd868eee00883a49eac2a15fcd7e238d50eb40165ddc2f1ff8f202e76715260bccd6d43fb943dc0'
+        '6686002535498e473c4c1368e7114a5b6606a6a8857d2e896840682ed6c9277773c3de88730057a00ecb1d6811ba17ba22c857dddb748269f227ebf6b617dc6e')
+
+prepare() {
+  patch -Np1 -d $_name-$pkgver -i ../$pkgname-0.3.0-makefile.patch
+}
+
+build() {
+  make -C $_name-$pkgver
+}
+
+package() {
+  cd $_name-$pkgver
+
+  # libs
+  install -vDm 755 blvco.so "$pkgdir/usr/lib/ladspa/blvco.so"
+  ln -sv blvco.so "$pkgdir/usr/lib/ladspa/vco_sawpulse.so"
+  # docs
+  install -vDm 644 {AUTHORS,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

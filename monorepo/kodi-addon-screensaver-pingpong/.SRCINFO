@@ -1,0 +1,20 @@
+pkgbase = kodi-addon-screensaver-pingpong
+	pkgdesc = Ping-pong screensaver for Kodi
+	pkgver = 21.0.2
+	pkgrel = 6
+	epoch = 1
+	url = https://github.com/xbmc/screensaver.pingpong
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-screensaver
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = glm
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-screensaver-pingpong-21.0.2.tar.gz::https://github.com/xbmc/screensaver.pingpong/archive/21.0.2-Omega.tar.gz
+	sha512sums = d36cbc411e912e902f4d91f319b452bdb249b14285498d5e8b9f7bbfc5e7da529f11a27887313a78beab1ad60f4fa511f93c98835c7ca87e43fcd9da38f0071c
+
+pkgname = kodi-addon-screensaver-pingpong
+	depends = kodi
+	depends = glm

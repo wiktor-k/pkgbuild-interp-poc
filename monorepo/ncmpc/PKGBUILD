@@ -1,0 +1,60 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org> 
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+# Contributor: Daniel Bainton <dpb [at] backarrow.org>
+
+pkgname=ncmpc
+pkgver=0.54
+pkgrel=1
+pkgdesc="Fully featured MPD client which runs in a terminal"
+arch=(x86_64)
+url=https://www.musicpd.org/clients/ncmpc/
+_url=https://github.com/MusicPlayerDaemon/ncmpc
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  lirc
+)
+makedepends=(
+  boost
+  fmt
+  freetype2
+  git
+  libmpdclient
+  meson
+  ncurses
+  pcre2
+  python-sphinx
+)
+optdepends=(
+  'python-beautifulsoup4: for lyrics scripts'
+  'python-requests: for lyrics scripts'
+)
+source=(git+$_url.git?signed#tag=v$pkgver)
+sha512sums=('92a3a616e5bf681845f8943d7b82cc5b3ce3a7b183c1c6f14acdd12aa0f14b1c9b3ed8ae82b8a1f4df24f3efe53369b006c53c33d4a250bc855bc9d7cc150718')
+b2sums=('bb471ea7a60406c672b9b98bcb00836a12aaef53e2d559dfa05b9e2e798e369f35e65a6ee5a8510d5efadd101c757d3fcb879b3d134db47c682a12f2de1f8b56')
+validpgpkeys=('0392335A78083894A4301C43236E8A58C6DB4512') # Max Kellermann <max@blarg.de>
+
+build() {
+  arch-meson -D lyrics_screen=true -D chat_screen=true build $pkgname
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(
+    fmt libfmt.so
+    libmpdclient libmpdclient.so
+    ncurses libncursesw.so
+    pcre2 libpcre2-8.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+}

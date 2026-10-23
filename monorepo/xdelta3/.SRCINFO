@@ -1,0 +1,19 @@
+pkgbase = xdelta3
+	pkgdesc = Diff utility for binary files
+	pkgver = 3.2.2
+	pkgrel = 1
+	url = https://github.com/jmacd/xdelta
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = xz
+	provides = libxdelta3.so
+	source = xdelta3::git+https://github.com/jmacd/xdelta#tag=v3.2.2
+	sha512sums = e1c0cd33ba9b951e3d48e9144f3553ccbee6e10dc30f29d61b363b8ba9907495cb86bcdfb1c5e1f976d3d3b0ade1fa7b0933efa84968ae10c1f9fb0e55b4a2d0
+	b2sums = 0a0438e5b0b822b21319fa5c770cef313b9ccd80755b67089cdec8a9a4c386077bff29fc45f9abbc6e7be4905c806b9729b5d66916f71a81bcddaa125e71bcc2
+
+pkgname = xdelta3
+	depends = xz
+	depends = glibc

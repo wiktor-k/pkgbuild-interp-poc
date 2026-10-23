@@ -1,0 +1,25 @@
+pkgbase = python-faust-cchardet
+	pkgdesc = Fork of the original cChardet
+	pkgver = 3.2.0
+	pkgrel = 1
+	url = https://github.com/faust-streaming/cChardet
+	arch = x86_64
+	license = GPL-2.0-only OR LGPL-2.1-only OR MPL-1.1
+	makedepends = cython
+	makedepends = git
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	provides = python-cchardet=3.2.0
+	conflicts = python-cchardet
+	source = faust-cchardet::git+https://github.com/faust-streaming/cChardet#tag=v3.2.0
+	source = git+https://gitlab.freedesktop.org/uchardet/uchardet.git
+	b2sums = 560ab9d1cd5ac7f785e335c9cd12b08b39c9d7de47f9165fa37cdea30f1dbebac737620ed56f21c04baf1d30d618827e3ee611dd987c4c8bf005cf69b24fc5aa
+	b2sums = SKIP
+
+pkgname = python-faust-cchardet

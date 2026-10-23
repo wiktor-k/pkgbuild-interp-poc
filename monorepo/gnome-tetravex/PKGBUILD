@@ -1,0 +1,53 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-tetravex
+pkgver=3.38.3
+pkgrel=1
+pkgdesc="Complete the puzzle by matching numbered tiles"
+url="https://gitlab.gnome.org/GNOME/gnome-tetravex"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+)
+makedepends=(
+  appstream
+  git
+  gobject-introspection
+  meson
+  vala
+  yelp-tools
+)
+source=(
+  "git+$url.git#tag=$pkgver"
+)
+b2sums=('ec0c9a12df0d0bc689c68e79ed84b2cb3c5037a1d9c5f5822d053d408c2409c580051522925e65a96acef89187f26990bf0f37cfa41c2570d62042d382fcb6a6')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  local meson_options=(
+    -D build_cli=true
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

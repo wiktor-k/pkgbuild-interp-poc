@@ -1,0 +1,49 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=soapyuhd
+pkgver=0.4.1
+pkgrel=15
+pkgdesc='Soapy SDR plugin for UHD supported SDR devices'
+arch=('x86_64')
+url='https://github.com/pothosware/SoapyUHD'
+license=('GPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+  'libstdc++'
+  'libuhd'
+  'soapysdr'
+)
+makedepends=(
+  'boost'
+  'cmake'
+  'git'
+)
+source=(
+  "$pkgname::git+$url.git#tag=soapy-uhd-$pkgver"
+  "$pkgname-remove-boost-system-component.patch"
+)
+b2sums=('76795447230b4f3475e42092443d1e862f3cf29d4aa93adc618eb6e4f59319678f66d6a2d7b922ead67e20147b25621e086d2ba4a239304ac3601eb68e17d434'
+        'c3c1239a2b377b255bc524f2dd3ee8b4bbbd44b016dfc73742dfc26b0484766edc5c7b9182b5d5af85aa9597343a773453af439f71b2e681f8a861a654833ec1')
+
+prepare() {
+  cd $pkgname
+  # UHD 4.8 compatibility
+  git cherry-pick -n 6eeee4fd3217166199068bbe05c555c2bccb2a7b
+  # Boost 1.89 compatibility
+  patch -Np1 < ../$pkgname-remove-boost-system-component.patch
+}
+
+build() {
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake -B build -S $pkgname \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

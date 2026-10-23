@@ -1,0 +1,26 @@
+pkgbase = python-opentelemetry-exporter-otlp-proto-grpc
+	pkgdesc = OpenTelemetry Collector Protobuf over gRPC Exporter
+	pkgver = 1.45.1
+	pkgrel = 2
+	url = https://github.com/open-telemetry/opentelemetry-python/tree/main/exporter/opentelemetry-exporter-otlp-proto-grpc
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-opentelemetry-test-utils
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-googleapis-common-protos
+	depends = python-grpcio
+	depends = python-opentelemetry-api
+	depends = python-opentelemetry-exporter-otlp-common
+	depends = python-opentelemetry-exporter-otlp-proto-common
+	depends = python-opentelemetry-proto
+	depends = python-opentelemetry-sdk
+	depends = python-typing_extensions
+	source = git+https://github.com/open-telemetry/opentelemetry-python.git#tag=v1.45.1
+	sha256sums = c56494b52a4241a2a34e0a6d0f3eb539fddecdd8ebf92f6cd7fda21ee1111851
+
+pkgname = python-opentelemetry-exporter-otlp-proto-grpc

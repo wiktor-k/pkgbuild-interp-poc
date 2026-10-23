@@ -1,0 +1,27 @@
+# Maintainer: Johannes Löthberg <johannes@kyriasis.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=dex
+pkgver=0.10.1
+pkgrel=1
+pkgdesc='Program to generate and execute DesktopEntry files of type Application'
+arch=('any')
+url='https://github.com/jceb/dex'
+license=('GPL-3.0-only')
+depends=(
+  'man'
+  'python'
+)
+makedepends=(
+  'git'
+  'python-sphinx'
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('4832e60416f07b90d4f4d03d6493322ccd44a73270edf289d80136587859d137cf39db12fc5cf38d3bdfa46aae3a4d1353c7776e702240b560a287190bdc2b57')
+b2sums=('97d39251d67f89880b7c6252ec1da77f9188b432bce1e6f7e66205363cd3aa876b1a192f4e2e7193e41a0ae7835e6da499c6e64b7f9bae0359028f539d11753b')
+
+package() {
+  cd "$pkgname-$pkgver"
+  make install PREFIX=/usr MANPREFIX=/usr/share/man DESTDIR="$pkgdir"
+  rm -v "$pkgdir/usr/share/doc/dex/LICENSE"
+}

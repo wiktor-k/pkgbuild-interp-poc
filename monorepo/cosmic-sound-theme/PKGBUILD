@@ -1,0 +1,31 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=cosmic-sound-theme
+pkgver=1.10.0
+pkgrel=1
+pkgdesc='Sound theme for the COSMIC desktop environment'
+arch=(any)
+url=https://github.com/pop-os/cosmic-sound-theme
+license=(CC-BY-SA-4.0)
+groups=(cosmic)
+provides=(pop-sound-theme)
+replaces=(pop-sound-theme)
+makedepends=(
+  git
+  meson
+)
+options=(!strip)
+source=(git+https://github.com/pop-os/cosmic-sound-theme.git#tag=epoch-${pkgver})
+b2sums=('5f2976511d8f321edb1d0779dbea77ec26c066a008156aef76b06922697f046be57827be6462dce2b439b6c31306fea20df6fabb804c57033b923f9d4d4f1e20')
+
+build() {
+  arch-meson cosmic-sound-theme build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

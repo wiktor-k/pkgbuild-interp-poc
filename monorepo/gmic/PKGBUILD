@@ -1,0 +1,108 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Jan "heftig" Steffens <jan.steffens@gmail.com>
+# Contributor: farid <farid at archlinuc-br.org>
+# Contributor: Archie <Mymaud@gmail.com>
+
+pkgbase=gmic
+pkgname=(gmic
+         gimp-plugin-gmic)
+pkgver=4.0.6
+pkgrel=1
+arch=(x86_64)
+url='https://gmic.eu/'
+license=(CECILL-C)
+depends=(fftw
+         glibc
+         libgcc
+         libgomp
+         libstdc++
+         libx11
+         zlib)
+makedepends=(cmake
+             eigen
+             gimp
+             graphicsmagick
+             opencv
+             openexr
+             qt6-base
+             qt6-tools)
+source=(https://gmic.eu/files/source/gmic_$pkgver.tar.gz
+        opencv-5.patch)
+sha256sums=('4463f82277f800e81d56f43b82c8736994bd24ac1115320b965b67091d1366df'
+            '6abf00f622ea89ec126c4180532be8f7204e00ca56305b5d10c013d908721f53')
+
+prepare() {
+  patch -d gmic-$pkgver -p1 < opencv-5.patch
+}
+
+build() {
+  cmake -B build -S gmic-$pkgver \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_DYNAMIC_LINKING=ON \
+    -DBUILD_LIB_STATIC=OFF \
+    -DENABLE_OPENCV=ON
+  cmake --build build
+# Temp install to link gmic-qt
+  DESTDIR="tmp-install" cmake --install build
+
+  export LDFLAGS="$LDFLAGS -L../build"
+  cmake -B build-qt -S gmic-$pkgver/gmic-qt \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_DYNAMIC_LINKING=ON \
+    -DCMAKE_PREFIX_PATH="$srcdir"/tmp-install/usr \
+    -DBUILD_WITH_QT6=ON \
+    -DGMIC_QT_HOST=none
+  cmake --build build-qt
+
+  cmake -B build-gimp -S gmic-$pkgver/gmic-qt \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_DYNAMIC_LINKING=ON \
+    -DCMAKE_PREFIX_PATH="$srcdir"/tmp-install/usr \
+    -DBUILD_WITH_QT6=ON \
+    -DGMIC_QT_HOST=gimp3
+  cmake --build build-gimp
+}
+
+package_gmic() {
+  pkgdesc="GREYC's Magic Image Converter: image processing framework"
+  depends+=(curl
+            graphicsmagick
+            imath
+            libjpeg-turbo
+            libpng
+            libtiff
+            opencv
+            openexr)
+  optdepends=('qt6-base: for the Qt UI')
+  conflicts=(cimg)
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 gmic-$pkgver/COPYING "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+# .cpp is included by .h
+  install -Dm644 gmic-$pkgver/src/gmic.cpp -t "$pkgdir"/usr/include
+
+  DESTDIR="$pkgdir" cmake --install build-qt
+
+  install -Dm644 gmic-$pkgver/resources/gmic_cluts.gmz -t "$pkgdir"/usr/share/gmic
+
+# Install icons and desktop file
+  for size in 16 32 48 64; do
+    install -Dm644 gmic-$pkgver/gmic-qt/icons/application/${size}-gmic_qt.png "$pkgdir"/usr/share/icons/hicolor/${size}x${size}/apps/gmic_qt.png
+  done
+  install -Dm644 gmic-$pkgver/gmic-qt/icons/application/gmic_qt.svg "$pkgdir"/usr/share/icons/hicolor/scalable/apps/gmic_qt.svg
+  install -Dm644 gmic-$pkgver/gmic-qt/gmic_qt.desktop "$pkgdir"/usr/share/applications/gmic_qt.desktop
+}
+
+package_gimp-plugin-gmic() {
+  pkgdesc="Gimp plugin for the G'MIC image processing framework"
+  depends+=(babl
+            gegl
+            gimp
+            glib2
+            gmic
+            qt6-base)
+
+  DESTDIR="$pkgdir" cmake --install build-gimp
+  install -Dm644 gmic-$pkgver/COPYING "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

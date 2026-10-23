@@ -1,0 +1,30 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+
+_pkgname=gpxpy
+pkgname="python-$_pkgname"
+pkgver=1.6.2
+pkgrel=3
+pkgdesc='Python GPX (GPS eXchange format) file parser'
+arch=(any)
+url="https://github.com/tkrajina/${_pkgname}"
+license=('Apache-2.0')
+depends=(python)
+optdepends=('python-lxml: faster XML parsing')
+makedepends=(python-build python-installer python-setuptools python-wheel)
+source=("${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('ae9523ba4ea7ebe40b2d769800262f102cde924286a08b559d0f9476119717d3')
+
+build() {
+	cd "${_pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd "${_pkgname}-${pkgver}"
+	python -m unittest test
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}"
+	python -m installer --destdir="$pkgdir" dist/*.whl
+}

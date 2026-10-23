@@ -1,0 +1,97 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Konstantin Gizdov < arch at kge dot pw >
+# Contributor: Jan Kašpar < jan.kaspar at gmail dot com >
+# Contributor: Alex Pearce < alex at alexpearce dot me >
+
+pkgname=xrootd
+pkgver=6.1.1
+pkgrel=1
+pkgdesc="Software framework for fast, low latency, scalable and fault tolerant data access."
+arch=(x86_64)
+url="https://xrootd.slac.stanford.edu/"
+license=(LGPL-3.0-or-later)
+depends=(
+  bash
+  curl
+  e2fsprogs libcom_err.so
+  fuse2
+  glibc
+  krb5 libkrb5.so
+  libgcc
+  libstdc++
+  libxcrypt libcrypt.so
+  libxml2 libxml2.so
+  libzip libzip.so
+  openssl libssl.so libcrypto.so
+  perl
+  python
+  readline libreadline.so
+  systemd-libs libsystemd.so
+  util-linux-libs libuuid.so
+  zlib libz.so
+)
+makedepends=(
+  cmake
+  git
+  gtest
+  ninja
+  nlohmann-json
+  python-build
+  python-installer
+  python-setuptools
+  yasm
+)
+checkdepends=(
+  procps-ng  # some tests use ps
+)
+source=("$pkgname::git+https://github.com/$pkgname/$pkgname.git#tag=v$pkgver")
+b2sums=('f5a4dd4d40cda51a482dc73a8ad0cbfc7c319c7021d636afe8f356cb33aea3f90eb20d53ac4e648c12e6c3822e0fde6b1a9c192a1c3a356255423dce47b488bc')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname
+    -G Ninja
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_LIBDIR=lib
+    # fail CMake configuration if enabled components cannot be built
+    -D FORCE_ENABLED=ON
+    -D ENABLE_TESTS=ON
+    # disable plugins that have unpackaged dependencies
+    -D ENABLE_MACAROONS=OFF
+    -D ENABLE_SCITOKENS=OFF
+    -D ENABLE_VOMS=OFF
+    -D ENABLE_XRDEC=OFF
+    # Python wheel is installed separately from CMake
+    -D INSTALL_PYTHON_BINDINGS=OFF
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+
+  # build the Python wheel separately from CMake to avoid pip warnings
+  python -m build --wheel --no-isolation build/python
+}
+
+check() {
+  local excluded_tests=""
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel $(nproc)
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_flags[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  python -m installer --destdir="$pkgdir" build/python/dist/*.whl
+  install -vDm 644 $pkgname/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,75 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-fcitx5configtool-plugin
+pkgver=6.0.40
+pkgrel=1
+pkgdesc='DDE Control Center plugin for Fcitx 5 configuration'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-fcitx5configtool-plugin"
+license=('CC-BY-4.0' 'CC0-1.0' 'GPL-2.0-or-later' 'GPL-3.0-or-later')
+depends=(
+  'deepin-control-center'
+  'dtk6core'
+  'dtk6widget'
+  'fcitx5'
+  'fcitx5-qt'
+  'glibc'
+  'icu'
+  'iso-codes'
+  'kitemviews'
+  'kwidgetsaddons'
+  'libgcc'
+  'libstdc++'
+  'libx11'
+  'libxkbfile'
+  'polkit-qt6'
+  'qt6-base'
+  'qt6-declarative'
+  'systemd-libs'
+  'xkeyboard-config'
+)
+makedepends=(
+  'cmake'
+  'extra-cmake-modules'
+  'gettext'
+  'git'
+  'ninja'
+  'qt6-tools'
+)
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-fcitx5configtool-plugin.git#tag=$pkgver")
+sha512sums=('351563fdc74a5f5db7134a7cc2457c92973dcc648e152a0e521d7227079d03a878938b80e42504e261d0360c02672921179250b83928a4e283b1e13a2bf21d88')
+
+prepare() {
+  cd deepin-fcitx5configtool-plugin
+  # Arch ships fcitx5 directly, without Deepin's fcitx5-start wrapper.
+  # https://github.com/linuxdeepin/deepin-fcitx5configtool-plugin/pull/89
+  sed -i 's|/usr/bin/fcitx5-start|/usr/bin/fcitx5|' src/fcitx5helper/processmonitor.cpp
+
+  # Explicitly include the header declaring stringutils::joinPath.
+  # https://github.com/linuxdeepin/deepin-fcitx5configtool-plugin/pull/38
+  grep -q '#include <fcitx-utils/stringutils.h>' src/lib/configwidgetslib/optionwidget.cpp ||
+    sed -i '/#include <fcitx-utils\/i18n.h>/a #include <fcitx-utils/stringutils.h>' src/lib/configwidgetslib/optionwidget.cpp
+
+  # Match Fcitx's C++20 requirement and preserve Arch's compiler flags.
+  # https://github.com/fcitx/fcitx5/pull/1273
+  sed -i \
+    -e 's/set(CMAKE_CXX_STANDARD 17)/set(CMAKE_CXX_STANDARD 20)/' \
+    -e '/set(CMAKE_CXX_FLAGS "-g -Wall")/d' \
+    src/CMakeLists.txt \
+    src/dcc-fcitx5configtool/CMakeLists.txt \
+    src/dcc-fcitx5configtool-exec/CMakeLists.txt \
+    src/fcitx5helper/CMakeLists.txt
+}
+
+build() {
+  cmake -B build -S deepin-fcitx5configtool-plugin -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCONFIGTOOL_EXEC_DIR=/usr/lib
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+}

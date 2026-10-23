@@ -1,0 +1,28 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Dennis Herbrich (Gyroplast) <dennis.herbrich@veloxis.de>
+# Contributor: Yamada Hayao <hayao@fascode.net>
+# Contributor: Bernhard Landauer <oberon@manjaro.org>
+
+pkgname=xfce4-calculator-plugin
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="Simple command line based calculator for the XFCE panel"
+arch=('x86_64')
+url="https://docs.xfce.org/panel-plugins/xfce4-calculator-plugin"
+license=('GPL-2.0-or-later')
+depends=('xfce4-panel')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/panel-plugins/xfce4-calculator-plugin.git#tag=$pkgname-$pkgver")
+sha256sums=('6200f381f85221eeba8e9ac31e3ef02099d594dbe28d91bf1a36e27c6783a235')
+
+build() {
+  arch-meson $pkgname build \
+    --localstatedir=/var
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

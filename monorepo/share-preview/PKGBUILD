@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=share-preview
+pkgver=1.0.0
+pkgrel=3
+pkgdesc='Preview and debug websites metadata tags for social media share'
+arch=(x86_64)
+url='https://apps.gnome.org/SharePreview/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  curl
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=("git+https://github.com/rafaelmardojai/share-preview.git#tag=$pkgver")
+b2sums=(983ea936791760a37f386e424c815ae855cf58fe5a363b6bf5c8f4aa4c904327d0da80c819a3ec451b1840abdb81b1af29392457ce864b7114bd0c694fd0a7fc)
+
+prepare() {
+  cd $pkgname
+
+  # Update cargo.lock
+  git cherry-pick -n cacc49175c3288099939ad359fb93f4ce34f0b70
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://github.com/rafaelmardojai/share-preview/pull/96
+  git cherry-pick -n 519d15fedb035afc831ac9e86e2186d16fabe7c7
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,49 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=parser-combinators
+pkgname=haskell-parser-combinators
+pkgver=1.3.1
+pkgrel=2
+pkgdesc="Lightweight package providing commonly useful parser combinators"
+url="https://github.com/mrkkrp/parser-combinators"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('3c843dac60c0d9b493f08edcda2125dea5598217897df5a999803882ffc44b26ee489fa1c70a2d4f45c8a949b7859ff81a786da76c577a77749f78b88cb551eb')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-dev
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.md
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.md
+}

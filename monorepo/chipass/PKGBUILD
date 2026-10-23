@@ -1,0 +1,59 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=chipass
+pkgver=2026.09.0
+pkgrel=6
+pkgdesc="A cross-platform password manager for people with extremely high demands on secure personal data management"
+url="https://chipass.org"
+arch=('x86_64')
+license=('GPL-2.0-only OR GPL-3.0-only')
+depends=('argon2' 'botan' 'glibc' 'hicolor-icon-theme' 'libgcc' 'libstdc++' 'libusb' 'libxtst' 'libx11'
+         'minizip' 'pcsclite' 'qrencode' 'qt6-base' 'qt6-svg' 'qt6-translations' 'qt6-5compat' 'readline' 'zlib')
+# openssh needed to verify SSH signatures
+makedepends=('appstream' 'asciidoctor' 'cmake' 'git' 'qt6-tools' 'openssh')
+checkdepends=('xclip' 'xorg-server-xvfb')
+optdepends=('xclip: chipass-cli clipboard support under X server'
+            'wl-clipboard: chipass-cli clipboard support under Wayland')
+provides=('org.freedesktop.secrets')
+install="${pkgname}.install"
+source=("${pkgname}::git+https://codeberg.org/ChiPass/ChiPass.git#tag=v${pkgver}"
+        'ssh_allowed_signers'
+        'TestEntryModel.patch')
+sha256sums=('8f884379af81d318075fc8ea592a72cb0781bbeab5d4e62a99622717bac7e448'
+            'adde37709cf37431cbe149f73cd1844932f63afcaf635249168965e09a965ed0'
+            '717b50153354131f92b5788e7b733762376d6053f67f24149d44f4f6ca4c5cec')
+
+prepare() {
+	# Move to verify() once devtools supports it
+	# https://gitlab.archlinux.org/archlinux/devtools/-/issues/224
+	git -C "${pkgname}" -c gpg.ssh.allowedSignersFile="${srcdir}/ssh_allowed_signers" verify-tag "v${pkgver}"
+
+	# Work around some test failures with the TestEntryModel test
+	# See https://gitlab.alpinelinux.org/alpine/aports/-/blob/df401d633cb8812c52c2a33f699b9bdaadff27a1/community/keepassxc/tests.patch
+	cd "${pkgname}"
+	patch -Np1 -i "${srcdir}/TestEntryModel.patch"
+}
+
+build() {
+	cmake -S "${pkgname}" -B build \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCHIPASS_BUILD_TYPE=Release \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_VERBOSE_MAKEFILE=ON \
+		-DCHIPASS_WITH_GUI_TESTS=ON \
+		-DCHIPASS_WITH_UPDATE_CHECK=OFF
+	cmake --build build
+}
+
+check() {
+	xvfb-run --auto-servernum cmake --build build --target test
+}
+
+package() {
+	cmake --build build --target install -- DESTDIR="${pkgdir}"
+	install -Dm 644 "${pkgname}/README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 "${pkgname}/CHANGELOG.md" "${pkgdir}/usr/share/doc/${pkgname}/CHANGELOG.md"
+
+	# Move man pages to the correct directory
+	mv "${pkgdir}/usr/share/ChiPass/man" "${pkgdir}/usr/share/"
+}

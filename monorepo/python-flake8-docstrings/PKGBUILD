@@ -1,0 +1,46 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Pieter Goetschalckx <3.14.e.ter <at> gmail <dot> com>
+
+pkgname=python-flake8-docstrings
+pkgver=1.7.0
+pkgrel=4
+pkgdesc='Plugin to flake8 to include checks provided by pydocstyle'
+arch=('any')
+url='https://github.com/pycqa/flake8-docstrings'
+license=('MIT')
+depends=('python' 'flake8' 'python-pydocstyle')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+_commit='cd8a6e79f276b8b9d085776e5c2d8fc256f77e30'
+source=("$pkgname::git+$url#commit=$_commit")
+b2sums=('SKIP')
+
+pkgver() {
+  cd "$pkgname"
+
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir/usr/share/licenses/$pkgname"
+  ln -s "$site_packages/flake8_docstrings-$pkgver.dist-info/LICENSE" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

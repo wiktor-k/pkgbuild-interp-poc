@@ -1,0 +1,16 @@
+pkgbase = mlton
+	pkgdesc = Whole-program optimizing Standard ML compiler
+	pkgver = 20241230
+	pkgrel = 1
+	url = http://mlton.org/
+	arch = x86_64
+	license = HPND
+	license = MIT
+	makedepends = git
+	makedepends = mlton
+	depends = gmp
+	options = staticlibs
+	source = git+https://github.com/MLton/mlton#tag=on-20241230-release
+	b2sums = be2850460ce452f029714303d9d812b34e7330e645f5c1ed10be9e760cfbb77a451fe049681e521a8efde8b8a80bebb5d4b8046474618541244205244953ab32
+
+pkgname = mlton

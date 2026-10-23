@@ -1,0 +1,77 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: Mark Wagie <mark dot wagie at proton dot me>
+
+pkgname=mission-center
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Monitor your CPU, Memory, Disk, Network and GPU usage"
+arch=(x86_64)
+url="https://missioncenter.io"
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  dmidecode
+  libgcc
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gtk4
+  libadwaita
+  mesa
+  nvtop
+  systemd
+  systemd-libs
+)
+makedepends=(
+  blueprint-compiler
+  cargo
+  cmake
+  git
+  meson
+)
+source=("git+https://gitlab.com/mission-center-devs/mission-center.git#tag=v${pkgver}"
+        "git+https://gitlab.com/mission-center-devs/gng.git"
+        "git+https://gitlab.com/mission-center-devs/app-detection.git")
+sha256sums=('e358a5064222a60c36ea2d78b49266ca0069c06470a95617da653aea9962f1a4'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  git submodule init
+  git config submodule.subprojects/magpie.url "${srcdir}/gng"
+  git -c protocol.file.allow=always submodule update
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  cd subprojects/magpie
+
+  git submodule init
+  git config submodule.platform-linux/crates/app-rummage.url "${srcdir}/app-detection"
+  git -c protocol.file.allow=always submodule update
+
+  CARGO_HOME="$srcdir/build/subprojects/magpie/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  CFLAGS+=" -ffat-lto-objects"
+  arch-meson "$pkgname" build --buildtype=release
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --no-rebuild --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}

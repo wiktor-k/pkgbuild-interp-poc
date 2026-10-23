@@ -1,0 +1,36 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=msolve
+pkgver=0.11.0
+pkgrel=1
+pkgdesc='Library for polynomial system solving through algebraic methods'
+url='https://msolve.lip6.fr/'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(flint
+         glibc
+         gmp
+         libgcc
+         libgomp)
+makedepends=(git)
+source=(git+https://github.com/algebraic-solving/msolve#tag=v$pkgver)
+sha256sums=('9de3c0fd3c1b2e9acbb8a43410647efc625d1d9c2c0ad55e190965bf261f9878')
+
+prepare() {
+  cd $pkgname
+  sed -e '/AX_EXT/d' -i configure.ac # Disable CPU autodetection
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool # Fix overlinking
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

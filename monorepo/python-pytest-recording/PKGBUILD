@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-pytest-recording
+pkgver=0.14.0
+pkgrel=1
+pkgdesc="A pytest plugin powered by VCR.py to record and replay HTTP traffic"
+arch=('any')
+url="https://github.com/kiwicom/pytest-recording"
+license=('MIT')
+depends=(
+  'python'
+  'python-pytest'
+  'python-vcrpy'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest-httpbin'
+  'python-pytest-mock'
+  'python-requests'
+  'python-werkzeug'
+)
+source=("git+https://github.com/kiwicom/pytest-recording.git#tag=v$pkgver")
+sha512sums=('4d65bb983d217ddd7a49046e3b9bfa92780a13e9f897c9ae1eddfa4a930aec749dfcfa2e652144bf04707a13d6dda9ecee9b07415ab33b741e69b828b6482e6f')
+
+build() {
+  cd pytest-recording
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pytest-recording
+  python -m venv tmpenv --system-site-packages
+  tmpenv/bin/python -m installer dist/*.whl
+  tmpenv/bin/python -m pytest
+}
+
+package() {
+  cd pytest-recording
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

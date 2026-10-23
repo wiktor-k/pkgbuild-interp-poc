@@ -1,0 +1,53 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=gala
+pkgver=8.6.2
+pkgrel=1
+pkgdesc='The Pantheon Window Manager'
+arch=(x86_64)
+url=https://github.com/elementary/gala
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop-4
+  granite
+  granite7
+  graphene
+  gtk3
+  gtk4
+  json-glib
+  libgee
+  libgl
+  libhandy
+  libibus
+  libxext
+  libxfixes
+  mutter49
+  pango
+  sqlite
+  systemd-libs
+  wayland
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+provides=(libgala.so)
+source=(git+https://github.com/elementary/gala.git#tag=${pkgver})
+b2sums=('f73780753e177d227d24042a94d129b8292953f76aec4254911e8125740b61dc8621b482cdcc0be2342684a024f2dec0fb829b514e4412a9b6034ffa737c2a6c')
+
+build() {
+  arch-meson gala build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

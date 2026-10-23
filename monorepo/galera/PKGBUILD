@@ -1,0 +1,61 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+# Contributor: Rustam Tsurik <rustam.tsurik@gmail.com>
+# Contributor: Nico Suarez <nicodoggie@gmail.com>
+
+pkgname=galera
+pkgver=26.4.28
+pkgrel=1
+pkgdesc='write set replication (WSREP) provider for MariaDB cluster'
+arch=('x86_64')
+license=('GPL-2.0-or-later' 'custom:OpenSSL Linking Exception')
+depends=('glibc'
+         'boost-libs' 'libboost_program_options.so' # required for garbd!
+         'libgcc' 'libgcc_s.so'
+         'libstdc++' 'libstdc++.so'
+         'mariadb-server'
+         'openssl' 'libcrypto.so' 'libssl.so')
+makedepends=('git' 'boost' 'check' 'cmake')
+optdepends=('rsync: State Snapshot Transfers with rsync'
+            'socat: State Snapshot Transfers with mariabackup')
+url='https://galeracluster.com/'
+options=('!libtool')
+validpgpkeys=('177F4010FE56CA3336300305F1656F24C74CD1D8') # MariaDB Signing Key <signing-key@mariadb.org>
+source=("git+https://github.com/mariadb/galera.git#tag=mariadb-${pkgver}"
+        'git+https://github.com/codership/wsrep-API.git')
+sha256sums=('fac02dba957eb9f70f992f3a54759dcb409559e8663a306ac8963594568db21c'
+            'SKIP')
+
+prepare() {
+  cd galera/
+
+  # setup git submodules
+  git config --file=.gitmodules submodule.wsrep-API.url ../wsrep-API/
+  git submodule init
+  git -c protocol.file.allow=always submodule update
+
+  sed -i '/find_package/s| system||' cmake/boost.cmake
+}
+
+build(){
+  mkdir build
+  cd build/
+
+  cmake ../galera/
+  make
+}
+
+package(){
+  cd build/
+
+  install -D -m0755 libgalera_smm.so "${pkgdir}"/usr/lib/galera/libgalera_smm.so
+  ln -s galera/libgalera_smm.so "${pkgdir}"/usr/lib/libgalera_smm.so
+
+  install -D -m0755 garb/garbd "${pkgdir}"/usr/bin/garbd
+
+  cd ../galera/
+
+  install -D -m0644 scripts/packages/README "${pkgdir}"/usr/share/doc/galera/README
+  install -D -m0644 scripts/packages/README-MySQL "${pkgdir}"/usr/share/doc/galera/README-MySQL
+  install -D -m0644 scripts/mysql/README "${pkgdir}"/usr/share/doc/galera/mysql/README
+  install -D -m0644 COPYING "${pkgdir}"/usr/share/doc/galera/COPYING
+}

@@ -1,0 +1,28 @@
+pkgbase = dcd
+	pkgdesc = D Completion Daemon: auto-complete for the D programming language
+	pkgver = 0.16.3
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/dlang-community/DCD
+	arch = x86_64
+	groups = dlang
+	license = GPL-3.0-only
+	makedepends = ldc
+	makedepends = git
+	depends = liblphobos
+	source = git+https://github.com/dlang-community/DCD#commit=44e576fb77ee78ff259a5915b343ca1c3e65fcf9
+	source = git+https://github.com/msgpack/msgpack-d
+	source = git+https://github.com/dlang-community/libdparse
+	source = git+https://github.com/dlang-community/d-test-utils
+	source = git+https://github.com/dlang-community/containers
+	source = dcd.service
+	source = dcd.conf
+	sha512sums = 1fc24ea1960d0f3910059ca305d7f24b38f02e2a5cf55dda8d88fb37adf12e5e71b315717f6cf35f331a22af52d53601a555bf2baa739bdd42f6b7c6a34a6ab8
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = 563e660058721fdacdfa365a774e58b0e9cdb962e14198112a5d971aa4e35025529266130474212834d78ad1c11901e2f8208176a3891ce6ffc9a2ffd9c8c1e0
+	sha512sums = 1480d4d66b6732f198fcaae52861b06c8bfcee7f622a546d643a4e8fb259aa0350415fb2f87b1bc4d301ad11af866d7962faf2bcfc0587971a86a73265676703
+
+pkgname = dcd

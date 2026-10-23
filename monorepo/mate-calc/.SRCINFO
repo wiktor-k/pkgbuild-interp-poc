@@ -1,0 +1,25 @@
+pkgbase = mate-calc
+	pkgdesc = Calculator for the MATE desktop environment
+	pkgver = 1.28.0
+	pkgrel = 4
+	url = https://github.com/mate-desktop/mate-calc
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = mate-common
+	makedepends = yelp-tools
+	depends = at-spi2-core
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libmpc
+	depends = libxml2
+	depends = mpfr
+	depends = pango
+	source = git+https://github.com/mate-desktop/mate-calc.git#tag=v1.28.0
+	b2sums = c45549851b0115e558a5ff764b36bd5dbfd6f19e7d99e3da5577be8cd46aa6a0a92bd2812a59bd9e8cb1cd9118c55b50cd17521fe92ee91df14f9a5c5b3f9c2c
+
+pkgname = mate-calc

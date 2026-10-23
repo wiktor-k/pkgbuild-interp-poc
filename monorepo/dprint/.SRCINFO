@@ -1,0 +1,19 @@
+pkgbase = dprint
+	pkgdesc = Pluggable and configurable code formatting platform
+	pkgver = 0.63.0
+	pkgrel = 1
+	url = https://github.com/dprint/dprint
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = bzip2
+	depends = xz
+	depends = libgcc
+	depends = glibc
+	depends = zstd
+	options = !lto
+	source = git+https://github.com/dprint/dprint#tag=0.63.0
+	sha256sums = 5d84012850bf04fa2425169803b447f0d98de64e0170510481ece2c5a6dbfa99
+
+pkgname = dprint

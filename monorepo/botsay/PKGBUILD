@@ -1,0 +1,25 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=botsay
+pkgver=1.4.4
+pkgrel=1
+pkgdesc='Like cowsay, but with randomly generated ASCII robots and color support'
+arch=(x86_64)
+url='https://github.com/xyproto/botsay'
+license=(BSD-3-Clause)
+depends=(glibc)
+makedepends=(git go)
+source=("git+$url#tag=v$pkgver")
+b2sums=('ad560487ce587795f12c493ed0a956bbc666f4ad0aee4b955890a2a17c8f3a003c3f34baef8bc81679f4b58c242876467c40b2cddd3b33e6b911bc2a78c369e7')
+
+build() {
+  cd $pkgname
+  go build -v -mod=vendor -buildmode=pie -trimpath -ldflags="-s -w -extldflags \"${LDFLAGS}\""
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 $pkgname "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 $pkgname.1 "$pkgdir/usr/share/man/man1/$pkgname.1"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

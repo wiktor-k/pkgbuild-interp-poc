@@ -1,0 +1,22 @@
+pkgbase = tempo
+	pkgdesc = A high volume, minimal dependency distributed tracing backend
+	pkgver = 3.1.1
+	pkgrel = 1
+	url = https://grafana.com/oss/tempo
+	arch = x86_64
+	license = AGPL-3.0-or-later
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	backup = etc/tempo/config.yml
+	source = git+https://github.com/grafana/tempo.git#tag=v3.1.1
+	source = tempo.yaml
+	source = tempo.sysusers
+	source = tempo.tmpfiles
+	sha512sums = 5f76d75dc6e2d975bc28f0b62cc5a4f1ac5a7ca5f53e7d8b43d73234f8d861322967e618534606f75db235db6bdeb610ebc3ffd19d0b27af60adf9b3bafc8b4d
+	sha512sums = 43cb9e7a3f0ca09a559280a8da5000ef71c4f7d37b910942ba30303480a7137e0fd0077b75105cb5c7987e436fd929848a8abcabc10b2f36e41e5a5cbbb57f3a
+	sha512sums = 9c4b8e4afc9325fa4f000f1a431e1e0c667fb7b192eda83d6a1bf3f4bbcd39217b9745c0723b9b954cad3c6281279d6d92eaaf7146c9de80aff18c24a0c761a6
+	sha512sums = 8fcf1737b82f1b89041882c8210430d36b89b61f9cd487c29ef411159e3c67e1c233f4f2fba8ebb318dc9bbd05ef38d201e660d32a5e71ee72e7e6430c5bcae4
+
+pkgname = tempo

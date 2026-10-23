@@ -1,0 +1,34 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=xtensor
+pkgver=0.27.1
+pkgrel=1
+pkgdesc="C++ tensors with broadcasting and lazy computing"
+arch=(any)
+url="https://github.com/xtensor-stack/xtensor/"
+license=(BSD-3-Clause)
+makedepends=(
+  cmake
+  xtl
+)
+source=("$pkgname-$pkgver.tar.gz::${url}/archive/refs/tags/$pkgver.tar.gz")
+sha512sums=('3f3fe2391df91518cfef4983ff66bf3b79940136582bb99c6270f87481bf9d2cc15605b13f9b70b6ee9a7a89b389037dd2b26362fcae0fdc49f5204872ee5291')
+b2sums=('d64c7ed51b88bf476a8804462d26b97cb743bf1b6b61e92f25949e9007e6f11a01832b52bc92bb420609bb44f55573819b52337e2d7edb2ae714326b44345d0d')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname-$pkgver"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

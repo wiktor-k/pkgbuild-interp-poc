@@ -1,0 +1,18 @@
+pkgbase = rbw
+	pkgdesc = Unofficial Bitwarden CLI
+	pkgver = 1.15.0
+	pkgrel = 2
+	url = https://git.tozt.net/rbw
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = pinentry
+	options = !lto
+	source = rbw::git+https://github.com/doy/rbw.git#tag=1.15.0
+	sha512sums = a4d38bf7c95e72ad8c4986cdeff07a8d2bdc79bf1577164381f6a119c21a98889da021ce0370b8b0372bf8d180f52824502ef16e92e90f63d8efe56d25058eb9
+	b2sums = 16a11c30f7d23f3d2f25410e48b3cb7b2747e4198be5692330d8b037bd709523f3cb70dd79411151f1d2b396a853d1b4ba5c2e62a5fea46b9d15d3e383cc0aa0
+
+pkgname = rbw

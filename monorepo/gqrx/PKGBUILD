@@ -1,0 +1,50 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Misaka13514 <Misaka13514 at gmail dot com>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Dominik Heidler <dheidler@gmail.com>
+
+pkgname=gqrx
+pkgver=2.17.7
+pkgrel=2
+pkgdesc="Software defined radio receiver powered by GNU Radio and Qt."
+arch=(x86_64)
+url="https://www.gqrx.dk/"
+license=('GPL-3.0-or-later AND GPL-2.0-or-later AND Apache-2.0 AND BSD-2-Clause')
+depends=(
+  glibc
+  gnuradio
+  gnuradio-osmosdr
+  hicolor-icon-theme
+  libgcc
+  libpulse
+  libstdc++
+  libvolk
+  qt6-base
+  qt6-svg
+)
+makedepends=(
+  boost
+  cmake
+)
+source=("https://github.com/gqrx-sdr/$pkgname/archive/v$pkgver/$pkgname-v$pkgver.tar.gz")
+sha256sums=('4aaab8a3c185cd99d6dda56d95b8f1b20128a6acfd2e86e0349d432a5fdcbce4')
+
+build() {
+  cd $pkgname-$pkgver
+  cmake -S . -B build \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev
+  cmake --build build
+}
+
+check() {
+  cd $pkgname-$pkgver
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  cd $pkgname-$pkgver
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE-CTK
+}

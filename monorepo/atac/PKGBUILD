@@ -1,0 +1,49 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=atac
+pkgver=0.24.0
+pkgrel=1
+pkgdesc="A simple API client (postman like) in your terminal"
+arch=('x86_64')
+url="https://github.com/Julien-cpsn/ATAC"
+license=('MIT')
+depends=('glibc' 'libgcc' 'oniguruma')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('6f2d370b64eee3b7c7d345360d4119854a22cab7d20ef7952d87dead5ce4a14350759da172fcb0abb00ae353a89703c92e340048f2e76ce07395d590d6be991f')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname^^}-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir completions/
+}
+
+build() {
+  cd "${pkgname^^}-$pkgver"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  cargo build --release --frozen --features clipboard
+  local compgen="target/release/$pkgname completions"
+  $compgen bash "completions"
+  $compgen fish "completions"
+  $compgen zsh "completions"
+  target/release/$pkgname man
+}
+
+check() {
+  cd "${pkgname^^}-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname^^}-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 "$pkgname.1" -t "$pkgdir/usr/share/man/man1/$pkgname"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 "completions/$pkgname.bash" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions/"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-language-data
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="Supplementary data about languages used by the langcodes module"
+arch=('any')
+url="https://github.com/georgkrause/language_data"
+license=('MIT')
+depends=(
+  'python'
+  'python-marisa-trie'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-setuptools-scm'
+  'python-wheel'
+)
+checkdepends=('python-pytest')
+source=("git+https://github.com/georgkrause/language_data.git#tag=v$pkgver")
+sha512sums=('71d87829995d01a419a179ce40e69fdd373435df710ec81d4ccb07d56531222afe217c0311ef9a28e16f0704a7e0ec191726a0e4898195ec7b187e5c8500845d')
+
+build() {
+  cd language_data
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd language_data
+  PYTHONPATH="$PWD" pytest
+}
+
+package() {
+  cd language_data
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

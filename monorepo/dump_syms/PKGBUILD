@@ -1,0 +1,50 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=dump_syms
+pkgver=2.3.9
+pkgrel=1
+pkgdesc="Symbol dumper for Firefox"
+url="https://github.com/mozilla/dump_syms"
+arch=(x86_64)
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  cargo
+  git
+)
+options=(!lto)
+source=("git+$url#tag=v$pkgver")
+b2sums=('1fc00ada1f63c44d160e24110a27754526349e6eac737dcbd702914ba3a9821b572765c26eee42d71b75b15a112ca90e35cebeaf4c6f3f8c5299d9525b3788c7')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --frozen
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir/usr/bin" target/release/dump_syms
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 LICENSE-MIT
+}
+
+# vim:set sw=2 sts=-1 et:

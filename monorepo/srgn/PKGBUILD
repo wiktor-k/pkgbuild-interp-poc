@@ -1,0 +1,51 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=srgn
+pkgver=0.14.2
+pkgrel=1
+pkgdesc="A code surgeon for precise text and code transplantation"
+url="https://github.com/alexpovel/srgn"
+arch=(x86_64)
+license=('MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  cargo
+  git
+)
+options=(!lto)
+source=("git+$url.git#tag=srgn-v$pkgver")
+b2sums=('4fb9b3a01bfd68a8c918fa1a86228523a09fc3b338c0e69e2f9faade070f935a0e2cc0176237772af63e86247dbc7ccce7aed1334fcd0005170d820350b783a2')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen --all-features -- \
+    --skip test_regex_scoping_randomly
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/srgn
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  cp -va -t "$pkgdir/usr/share/doc/$pkgname" docs
+
+  ./target/release/srgn --completions bash \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/srgn"
+  ./target/release/srgn --completions fish \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/srg.fish"
+  ./target/release/srgn --completions zsh \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_srgn"
+}

@@ -1,0 +1,21 @@
+pkgbase = cargo-update
+	pkgdesc = A cargo subcommand for checking and applying updates to installed executables
+	pkgver = 22.1.1
+	pkgrel = 1
+	url = https://github.com/nabijaczleweli/cargo-update
+	arch = x86_64
+	license = MIT
+	depends = cargo
+	depends = curl
+	depends = glibc
+	depends = libgcc
+	depends = libgit2
+	depends = openssl
+	depends = zlib
+	options = !lto
+	source = cargo-update-22.1.1.tar.gz::https://github.com/nabijaczleweli/cargo-update/archive/v22.1.1.tar.gz
+	source = Cargo.lock
+	sha256sums = 570d009f6ddd83d54ea478b63f369e08617feddb7119a9cb1d5c6a050d213c28
+	sha256sums = f162794756551836a38364cd507dc026541c51f7ccbce3ca528731d55843bac5
+
+pkgname = cargo-update

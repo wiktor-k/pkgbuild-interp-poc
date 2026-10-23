@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=refinery
+pkgname=haskell-refinery
+pkgver=0.4.0.0
+pkgrel=387
+pkgdesc="Toolkit for building proof automation systems"
+url="https://github.com/totbwf/refinery#readme"
+license=("BSD")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-mmorph')
+makedepends=('ghc' 'haskell-quickcheck' 'haskell-checkers' 'haskell-hspec')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz"
+        "$pkgname-ghc9.6.patch::https://github.com/TOTBWF/refinery/commit/859fd4df32ed6ec574a74b215dd9f8283938eaa3.patch")
+sha512sums=('5b174c80409df39d16291fa2456677331b83c14396aacd55802f22b6d68eb06092a4c269c62610f8b078503cad7862b377e3ebb71d8c7efba0725c9a7a05ebf1'
+            '45bfabc1ad1956250d973fd9837d351a0485643a37ddd3b5bff9e35f11703c1853d1f7d5180504ad8871b6a1a20214b6def4b15cf591e69e19a1ef90dc0e6c97')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  patch -p1 -i ../$pkgname-ghc9.6.patch
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

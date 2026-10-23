@@ -1,0 +1,29 @@
+pkgbase = vector
+	pkgdesc = A high-performance observability data pipeline
+	pkgver = 0.57.0
+	pkgrel = 1
+	url = https://vector.dev
+	arch = x86_64
+	license = MPL-2.0
+	checkdepends = cargo-nextest
+	checkdepends = tcl
+	makedepends = rust
+	makedepends = protobuf
+	makedepends = python
+	makedepends = perl
+	makedepends = cmake
+	makedepends = git
+	makedepends = clang
+	depends = libgcc
+	depends = zlib
+	options = !lto
+	backup = etc/vector/vector.yaml
+	backup = etc/default/vector
+	source = git+https://github.com/vectordotdev/vector#tag=v0.57.0
+	source = vector.sysusers
+	source = vector.tmpfiles
+	sha512sums = 134022d652357762cb2704fbfa411859f238e41d80d58b1da9bdfb481d97b9169f7f10b507e33d41f739e31a3eb431f96b1510e9d5fffdb821a544186e5d4010
+	sha512sums = 9179cf571762819773d8f14ce457d20a54e5a7dcaf24ea88a11723af63c31775a3b59fc17fca41de547fc0cc3a72bf7501a8abfb4a95558f1e8789b12b951733
+	sha512sums = c192492df09d131f9174d2acbb7f265c280eb6d678589b8c93bacc47ae55c51573a5477d715897f8580ced420730992fb68bee78b374f1cc042888ea6b5512fd
+
+pkgname = vector

@@ -1,0 +1,37 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Ivy Foster <iff@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Firmicus <francois.archlinux.org>
+
+_name=junicode
+pkgbase=$_name-font
+pkgname=(otf-$_name ttf-$_name ttf-$_name-variable)
+pkgver=2.226
+pkgrel=1
+pkgdesc='Font for medievalists'
+arch=(any)
+url="https://github.com/psb1558/${pkgbase^}"
+license=(OFL-1.1-no-RFN)
+source=("$url/releases/download/v$pkgver/${_name^}_$pkgver.zip")
+sha256sums=('dae8ebc04a8592445c1878db8451838dd2f49d7c9912b3d4f3cab84c1516c5fe')
+
+package_otf-junicode() {
+    provides=("$pkgbase")
+    cd "${_name^}"
+    install -Dm0644 -t "$pkgdir/usr/share/fonts/OTF/" OTF/*.otf
+    install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}
+
+package_ttf-junicode() {
+    provides=("$pkgbase")
+    cd "${_name^}"
+    install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" TTF/*.ttf
+    install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}
+
+package_ttf-junicode-variable() {
+    provides=("$pkgbase-variable")
+    cd "${_name^}"
+    install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" VAR/*.ttf
+    install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}

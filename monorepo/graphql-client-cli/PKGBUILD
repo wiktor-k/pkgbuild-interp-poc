@@ -1,0 +1,33 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=graphql-client-cli
+pkgver=0.16.0
+pkgrel=2
+pkgdesc='CLI for graphql-client'
+license=('Apache-2.0' 'MIT')
+arch=('x86_64')
+url="https://github.com/graphql-rust/graphql-client"
+depends=('glibc' 'libgcc' 'openssl')
+makedepends=('rust')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/graphql-rust/graphql-client/archive/refs/tags/${pkgver}.tar.gz")
+sha512sums=('1fdbfe7e43471167e25d4748028828d99d7ecc67fd38fd4d2f33da18bfecc6827d9ebfceabaa545e8959c61ea8f94967943696d8ba359d9bacd5fd7535554caf')
+options=('!lto')
+
+build() {
+    cd "graphql-client-$pkgver"
+    cargo build --package graphql_client_cli --release
+}
+
+check() {
+    cd "graphql-client-$pkgver"
+    cargo test --package graphql_client_cli
+}
+
+package() {
+    cd "graphql-client-$pkgver"
+    install -Dm755 -t "$pkgdir/usr/bin" \
+        "target/release/graphql-client"
+
+    # install license files
+    install -Dm644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/LICENSE-APACHE"
+    install -Dm644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/LICENSE-MIT"
+}

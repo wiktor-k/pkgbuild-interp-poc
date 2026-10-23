@@ -1,0 +1,52 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Luis Martinez <luis dot martinez at tuta dot io>
+# Contributor: Michal Wojdyla < micwoj9292 at gmail dot com >
+# Contributor: arno <apithon.AT.free.DOT.fr>
+# Contributor: Pierre Bourdon <delroth@gmail.com>
+# Contributor: ianux <ianux AT free DOT fr>
+
+pkgname=python-hachoir
+pkgver=3.4.0
+pkgrel=1
+pkgdesc='A Python library to view and edit a binary stream field by field'
+arch=(any)
+url='https://hachoir.readthedocs.io/'
+license=(GPL-2.0-only)
+depends=(
+  python
+  python-darkdetect
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+  python-urwid
+  python-wxpython
+)
+optdepends=(
+  'python-urwid: required for hachoir-urwid'
+  'python-wxpython: required for hachoir-wx'
+)
+source=("$pkgname::git+https://github.com/vstinner/hachoir.git#tag=$pkgver")
+sha512sums=('25152ac57767a139d0767c352a0caa6c74a18d612874d30ac0614015564fab676f79b07b526044d3bbc44db94a4267eef872ff6a6a9cb5fd31e64c3fc1a21565')
+b2sums=('0dda4d998fe1e36f9c8157cec765d43914427c44915ac9d55f3100b6089aa84f34e66256d3a098af411a35cd93c5d6384d28a8370a233c4cadd78fee7e5ac626')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  python runtests.py
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

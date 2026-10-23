@@ -1,0 +1,72 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Sam L. Yes <samlukeyes123 at gmail dot com>
+# Contributor: Andre Klitzing <aklitzing () gmail () com>
+
+pkgname=msitools
+pkgver=0.106
+pkgrel=3
+pkgdesc='Set of programs to inspect and build Windows Installer (.MSI) files'
+arch=(x86_64)
+url='https://wiki.gnome.org/msitools'
+license=(
+  GPL-2.0-or-later  # utilities
+  LGPL-2.1-or-later # library
+)
+depends=(
+  bash
+  gcab
+  libgcc
+  glib2
+  glibc
+  libgsf
+  libxml2
+)
+makedepends=(
+  bats
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+  vala
+)
+provides=(libmsi-1.0.so)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/msitools.git?signed#tag=v$pkgver"
+  0001-Use-system-bats.patch
+)
+sha512sums=('1fb8293621ed3b3ab3058e7e500330f7624a5d6d17123f08fc4493bbeeea2e98ee413cae52342cf558f18206b44cf7f110a73ae2d98b2483093cbdcbbd059217'
+            '5b66435789b4e286f38de7e4d792b556b6ce303d6f00aca903087427bc1d30bc95e13633f027d2c3225c3f08bebf0bbf4229a4d4cb1997ec3437debe78004128')
+b2sums=('91b9a76cd34d1de541fad46e242de52ad2ba01a40f5f8b79f27c857150ba8edd2fa87a74659274f1581103f1050a928c9e084bbd9a72f89decd5a8d9bb282666'
+        '79ce5a1f856b6163a000938d9c140962b8a68a52cfede41b6ca10e1379e9aa0b870d647f450a1b2dad98f60920a173e0ad3f28844a5de039274db47bf080e11e')
+validpgpkeys=(
+  87A9BD933F87C606D276F62DDAE8E10975969CE5 # Marc-André Lureau <marcandre.lureau@redhat.com>
+)
+
+prepare() {
+  cd "$pkgname"
+
+  # Fixate version
+  local v="$(build-aux/git-version-gen .tarball-version)"
+  echo "$v" > .tarball-version
+
+  # Use system bats (bash-bats)
+  git apply -3 "$srcdir"/0001-Use-system-bats.patch
+}
+
+build() {
+  arch-meson "$pkgname" build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/copyright"
+}
+
+# vim:set sw=2 sts=-1 et:

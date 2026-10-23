@@ -1,0 +1,27 @@
+pkgbase = zathura-pdf-mupdf
+	pkgdesc = PDF support for Zathura (MuPDF backend) (Supports PDF, ePub, and OpenXPS)
+	pkgver = 2026.07.18
+	pkgrel = 5
+	url = https://pwmt.org/projects/zathura-pdf-mupdf/
+	arch = x86_64
+	license = Zlib
+	makedepends = meson
+	makedepends = ninja
+	makedepends = git
+	makedepends = appstream
+	makedepends = desktop-file-utils
+	depends = cairo
+	depends = gumbo-parser
+	depends = jbig2dec
+	depends = libjpeg-turbo
+	depends = libmupdf
+	depends = openjpeg2
+	depends = openssl
+	depends = zathura
+	conflicts = zathura-pdf-poppler
+	source = zathura-pdf-mupdf-2026.07.18.tar.gz::https://github.com/pwmt/zathura-pdf-mupdf/archive/refs/tags/2026.07.18.tar.gz
+	source = 0001-Remove-mupdf-linking-detection.patch
+	sha512sums = cec5771582475d2379507e91ea571b203a8fbd4861d86754108746603e4ec58a441442e0b5e6c9c707c8c8f45a05571b0535acc0bc2023631c8955e1112dda0d
+	sha512sums = 5b8df69e68b4117b0363927b3efc7f07daeeb6ac72d24c14fae9417800ab28f9e786f92589bbeb4b4df4007832addf74bc313576cde6a14533316ffc6bf03824
+
+pkgname = zathura-pdf-mupdf

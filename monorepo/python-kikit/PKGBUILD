@@ -1,0 +1,59 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=python-kikit
+pkgver=1.8.1
+pkgrel=1
+pkgdesc='Automation tools for KiCAD'
+arch=(any)
+url='https://github.com/yaqwsx/KiKit'
+license=(MIT)
+depends=(
+  python
+  kicad
+  python-numpy
+  python-shapely
+  python-click
+  python-markdown2
+  python-pybars3
+  python-solidpython
+  python-pcbnewtransition
+  python-commentjson
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  remove-versioneer.patch
+)
+sha512sums=('3e43af3730413fd015cf4d68e1b905cf1dc2668e04b59a6b28ed6f22cf88218699e8ec5565e6f533efbf996d05a4564ff244c335ad146269aafe046db3ef22a0'
+            '98bcab9ec12a61c2204ef3448847c006bda865b5ed3a6e6e7ae20eadcbbcb233d8773f25126a314af8a7fd01aae75f2e5a321d9d667be24ca6008f118c49f513')
+b2sums=('fd1fb03249d594a6f72fd87b5005e129f4d8153deb6facdd611145c4ab3365c2e7c2ce9f1b545bfaf1d15c1592e14d4621decb4dc38cdb9666ca420f94c90ffe'
+        'ce388c4969bb5231ea6dae40c2b439d870bc2a6d82d3283ab43121f1aac013a543f600f599751cf05c6945fd2ea8e587594ea9077e6b161200c56c823ef2cacd')
+
+prepare() {
+  cd "$pkgname"
+
+  # do not require versioneer for build
+  patch -p1 -i "$srcdir/remove-versioneer.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENCE
+}

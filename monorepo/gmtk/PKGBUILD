@@ -1,0 +1,45 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Lukas Fleischer <lfleischer@archlinux.org>
+
+pkgname=gmtk
+pkgver=1.0.9
+pkgrel=8
+pkgdesc='Common functions for gnome-mplayer and gecko-mediaplayer'
+arch=(x86_64)
+url='https://github.com/kdekorte/gmtk'
+license=(GPL-2.0-or-later)
+depends=(
+  alsa-lib
+  cairo
+  glib2
+  glibc
+  gtk3
+  libpulse
+  mplayer
+)
+makedepends=(
+  git
+  intltool
+)
+source=("git+https://github.com/kdekorte/gmtk.git#tag=v$pkgver")
+b2sums=(c1f70a77b256a30a18c425cb9c1139b54ca2f5c015bed35c7f1e8bd3a0ebad860370bb2a0375642bf3800f0cf71fff6e9cdd92f30e29ac57843ffee2ffe75769)
+
+prepare() {
+  cd $pkgname
+  sed -i '/AM_GCONF_SOURCE_2/d' configure.ac
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

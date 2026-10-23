@@ -1,0 +1,33 @@
+pkgbase = sequoia-chameleon-gnupg
+	pkgdesc = A re-implementation and drop-in replacement of gpg and gpgv
+	pkgver = 0.13.1
+	pkgrel = 2
+	url = https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg
+	arch = x86_64
+	groups = sequoia
+	license = GPL-3.0-or-later
+	checkdepends = gnupg
+	checkdepends = sequoia-sq
+	makedepends = bzip2
+	makedepends = cargo
+	makedepends = clang
+	makedepends = git
+	makedepends = openssl
+	makedepends = sqlite
+	depends = libgcc
+	depends = glibc
+	source = git+https://gitlab.com/sequoia-pgp/sequoia-chameleon-gnupg?signed#tag=v0.13.1
+	validpgpkeys = CBCD8F030588653EEDD7E2659B7DD433F254904A
+	sha512sums = fb41f084b079c0bedaf7ee1a7da109f90cdaeaaffa12febd63246eee1d6967cda023cb6e804272f8bd0e470f87a0c06f461f175544d9cd7f06a47eafe1f7b5a3
+	b2sums = d7eaa5d4b10a9e087baa17fab48a01b94061fc2c95c3a1addf1f1bd0e7e71c4a12e49718e0985782d4281d126b5cb78c8a34fa6f2c8677cdfae8333897d18406
+
+pkgname = sequoia-chameleon-gnupg
+	depends = libgcc
+	depends = glibc
+	depends = bzip2
+	depends = libbz2.so
+	depends = openssl
+	depends = libcrypto.so
+	depends = libssl.so
+	depends = sqlite
+	depends = libsqlite3.so

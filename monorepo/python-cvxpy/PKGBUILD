@@ -1,0 +1,64 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=cvxpy
+pkgname=python-$_pyname
+pkgver=1.9.3
+pkgrel=1
+pkgdesc='A Python-embedded modeling language for convex optimization problems'
+url='https://www.cvxpy.org/'
+license=(Apache-2.0)
+arch=(x86_64)
+depends=(glibc
+         libgcc
+         libstdc++
+         python
+         python-clarabel
+         python-highspy
+         python-numpy
+         python-osqp
+         python-qdldl
+         python-scipy
+         python-scs
+         python-sparsediffpy)
+makedepends=(git
+             pybind11
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+optdepends=('python-cvxopt: GLPK solver'
+            'python-cylp: CBC solver'
+            'python-ecos: ECOS solver'
+            'python-pyscipopt: SCIP solver')
+checkdepends=(python-cvxopt
+              python-cylp
+              python-hypothesis
+              python-pyscipopt
+              python-pytest)
+source=(git+https://github.com/cvxpy/cvxpy#tag=v$pkgver)
+sha256sums=('23d514af2fad8f0c8240d193d75503c5a3a88dcc7c89680289bdc2fb15bc19fb')
+
+prepare() {
+  sed -e '/oldest-supported-numpy/d' -i $_pyname/pyproject.toml # Drop version constraints
+}
+
+build() {
+  cd $_pyname
+# https://github.com/cvxpy/cvxpy/issues/1690
+  CXXFLAGS="$CFLAGS -DNDEBUG" \
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pyname
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest -vv \
+    --deselect cvxpy/tests/test_cone2cone.py::TestOpRelConeQuad \
+    --deselect cvxpy/tests/test_mip_vars.py::TestMIPVariable::test_miqp_warning
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

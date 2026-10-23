@@ -1,0 +1,61 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=pantry
+pkgname=haskell-pantry
+pkgver=0.9.3.1
+pkgrel=13
+pkgdesc="Content addressable Haskell package management"
+url="https://github.com/commercialhaskell/pantry"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-warning-parser' 'haskell-ansi-terminal'
+         'haskell-casa-client' 'haskell-casa-types' 'haskell-companion' 'haskell-conduit'
+         'haskell-conduit-extra' 'haskell-crypton' 'haskell-crypton-conduit' 'haskell-digest'
+         'haskell-filelock' 'haskell-generic-deriving' 'haskell-hackage-security' 'haskell-hpack'
+         'haskell-http-client' 'haskell-http-client-tls' 'haskell-http-conduit'
+         'haskell-http-download' 'haskell-http-types' 'haskell-memory' 'haskell-network-uri'
+         'haskell-path' 'haskell-path-io' 'haskell-persistent' 'haskell-persistent-sqlite'
+         'haskell-primitive' 'haskell-resourcet' 'haskell-rio' 'haskell-rio-orphans'
+         'haskell-rio-prettyprint' 'haskell-static-bytes' 'haskell-tar-conduit'
+         'haskell-text-metrics' 'haskell-unix-compat' 'haskell-unliftio'
+         'haskell-unordered-containers' 'haskell-vector' 'haskell-yaml' 'haskell-zip-archive')
+makedepends=('ghc' 'uusi' 'haskell-hedgehog' 'haskell-hspec' 'haskell-hspec-discover'
+             'haskell-quickcheck' 'haskell-raw-strings-qq')
+checkdepends=('git' 'mercurial')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('922aa1aec96fff5df67e9d0d6b55a7e96363f80fac420d61a70b448ba80bdebc4e6f23b6f2558d4b02d1bfbe9b515b4f02bac682f672f7fd4fb0274c5f8f4ab5')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+    uusi -d persistent-template
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        -f-test-pretty-exceptions
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    LANG=en_US.UTF-8 runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

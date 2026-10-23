@@ -1,0 +1,26 @@
+pkgbase = stardict
+	pkgdesc = International dictionary software
+	pkgver = 3.0.7
+	pkgrel = 4
+	url = http://stardict-4.sourceforge.net/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = enchant
+	makedepends = espeak-ng
+	makedepends = intltool
+	makedepends = mariadb-libs
+	makedepends = yelp-tools
+	depends = gtk3
+	depends = libsigc++
+	depends = libcanberra
+	optdepends = enchant: spell checker plugin
+	optdepends = espeak-ng: text to speech plugin
+	options = !emptydirs
+	source = https://downloads.sourceforge.net/project/stardict-4/3.0.7/stardict-3.0.7-2-src.7z
+	source = mariadb.patch
+	source = fix-gcc14.patch
+	sha256sums = 53d59fcb3d1e577930ee4ed796f044b875cfaeaa3eadd84fedfbef89261fc907
+	sha256sums = f66b916c358bddf48fcb91a7d0190a7109fe92a1388ec982c47dfa9ac1ee69cf
+	sha256sums = 2b5889deb585019a58552e15359cce867a043982743eadb51effe79256f25e04
+
+pkgname = stardict

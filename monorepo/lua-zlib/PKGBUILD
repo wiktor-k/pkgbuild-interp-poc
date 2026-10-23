@@ -1,0 +1,70 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgbase=lua-zlib
+_rockname=${pkgbase##lua-}
+pkgname=(lua-$_rockname lua54-$_rockname lua53-$_rockname lua52-$_rockname lua51-$_rockname)
+epoch=1
+pkgver=1.4
+pkgrel=2
+_rockrel=0
+url="https://github.com/brimworks/$pkgbase"
+pkgdesc='Simple streaming interface to zlib'
+arch=(x86_64)
+license=(MIT)
+depends=(glibc
+         zlib)
+makedepends=(lua
+             lua51
+             lua52
+             lua53
+             lua54
+             luarocks)
+_archive="$pkgbase-$pkgver"
+_rock="$_archive-$_rockrel.linux-$CARCH.rock"
+source=("$url/archive/v$pkgver/$_archive.tar.gz"
+        "https://luarocks.org/manifests/brimworks/$_archive-$_rockrel.rockspec")
+sha256sums=('c2a59e96d2df6e192cf0bf6f19b312977ce24020c4072426c0cf8b6594767308'
+            '0408a96b1b6b4c368ada6dfa6df9468ed1842af79761bb8fb5244ecd04bcddb1')
+
+build() {
+	cd "$_archive"
+	for LUAVER in 5.{1,2,3,4,5}; do
+		# https://github.com/lunarmodules/luafilesystem/issues/183
+		rm -f zlib.so
+		luarocks --lua-version "$LUAVER" \
+			make --pack-binary-rock --deps-mode none -- "$srcdir/${source[1]##*/}"
+		install -Dm0644 -t "lua-$LUAVER/" "$_rock"
+	done
+}
+
+_package() {
+	cd "$_archive"
+	pkgdesc+=" for Lua $1"
+	conflicts=("lua${1/./}-lzlib")
+	luarocks --lua-version "$1" --tree "$pkgdir/usr/" \
+		install --deps-mode none --no-manifest -- "lua-$1/$_rock"
+	install -Dm0664 -t "$pkgdir/usr/share/licenses/$pkgname/" README.md
+}
+
+package_lua-zlib() {
+	_package 5.5
+	conflicts=(lua-lzlib)
+}
+
+package_lua51-zlib() {
+	_package 5.1
+}
+
+package_lua52-zlib() {
+	_package 5.2
+}
+
+package_lua53-zlib() {
+	_package 5.3
+}
+
+package_lua54-zlib() {
+	_package 5.4
+}

@@ -1,0 +1,42 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-unicode-segmentation-rs
+pkgver=0.3.3
+pkgrel=1
+pkgdesc='Unicode segmentation and width for Python using Rust'
+arch=('x86_64')
+url='https://github.com/WeblateOrg/unicode-segmentation-rs'
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+  'python'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-maturin'
+  'python-wheel'
+)
+checkdepends=('python-pytest')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('2e9f62afd474f3559ef9e672194fbf25cb7cef1a109d4eb6fd229554e04ba5a700cf023eff819a73abe0b99b22dfa25cddf9b171f42abc81fb20f5df1da94888')
+b2sums=('ed16c325efa0bfb556491f2653f33b782685808192aa25d3e50afedd1ac797b5e68022d7e102a8404d3fb91d281c61cd32a234d123f4ebcf48921bcc51f5dce5')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest -v --override-ini="addopts="
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,53 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=sphinx-sitemap
+pkgname=python-sphinx-sitemap
+pkgver=2.9.0
+pkgrel=2
+pkgdesc="Sphinx extension to generate a multi-lingual, multi-version sitemap for HTML builds"
+arch=(any)
+url="https://github.com/jdillard/sphinx-sitemap"
+license=(MIT)
+depends=(
+  python
+  python-sphinx
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-defusedxml
+  python-gitpython
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('00620150c0492b70597da6a695208013eaad7ae1d2a8ba4e298425888b4003f228362000afd9323399d0eacac5a80f9298383717ac794fc8a5f5ba6466a58547')
+b2sums=('951a98744741b2d54106535539649950b0884916ef9c0ce3f09b35c32ad81170a1232ec5cffc0300db2c470540499d0e01e234ecf9bc282726a8f9ce84961d5d')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  # install to temporary location, as importlib is used
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {CHANGELOG,README}.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+}

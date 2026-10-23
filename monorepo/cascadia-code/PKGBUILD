@@ -1,0 +1,47 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Jerome Leclanche <jerome@leclan.ch>
+
+pkgbase=cascadia-code
+pkgname=("ttf-${pkgbase}" "otf-${pkgbase}" "woff2-${pkgbase}")
+pkgver=2407.24
+pkgrel=2
+pkgdesc="A monospaced font by Microsoft that includes programming ligatures"
+arch=("any")
+url="https://github.com/microsoft/cascadia-code"
+license=("custom:OFL")
+source=(
+    "${pkgname}-${pkgver}-release.zip::https://github.com/microsoft/${pkgbase}/releases/download/v${pkgver}/CascadiaCode-${pkgver}.zip"
+    "${pkgname}-${pkgver}.tar.gz::https://github.com/microsoft/${pkgbase}/archive/v${pkgver}.tar.gz"
+)
+sha256sums=('e67a68ee3386db63f48b9054bd196ea752bc6a4ebb4df35adce6733da50c8474'
+            '4ea145a56f35a61d8b5523b949df166b21e5db57313ba4223c490accbf816822')
+
+function prepare() {
+    cd "${srcdir}/otf/static"
+    cp ./*.otf ../
+}
+
+function _package() {
+    cd "${srcdir}/"
+
+    local ext="${1%%-*}"
+    local installdir="${ext^^}"
+    local fonts=("${srcdir}/${ext}"/*."${ext}")
+
+    [[ $ext == ttf ]] && provides+=(ttf-font-nerd)
+
+    # Install fonts
+    install -d "${pkgdir}/usr/share/fonts/${installdir}"
+    local font
+    for font in "${fonts[@]}"; do
+        install -m644 "${font}" "${pkgdir}/usr/share/fonts/${installdir}"
+    done
+
+    # Install license
+    install -Dm644 "${srcdir}/${pkgbase}-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+for _pkgname in ${pkgname[@]}; do
+    eval "function package_$_pkgname() { _package $_pkgname; }"
+done

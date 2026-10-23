@@ -1,0 +1,30 @@
+pkgbase = prometheus-ssl-exporter
+	pkgdesc = Prometheus exporter for TLS certificates
+	pkgver = 2.9.2
+	pkgrel = 1
+	url = https://github.com/piotrkochan/ssl_exporter
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	options = !lto
+	backup = etc/prometheus/ssl-exporter.yml
+	backup = etc/prometheus/ssl-exporter.env
+	source = prometheus-ssl-exporter::git+https://github.com/piotrkochan/ssl_exporter.git#tag=v2.9.2
+	source = systemd.service
+	source = sysusers.conf
+	source = config.yml
+	source = config.env
+	sha512sums = 455fd3cbefe14f32cb3a8a720040e9cc4a144ac74da88181da9ec7876484c114bbdbc30372ac043446d5d368a857090c165d4be1262f3ee8344ae046228102bd
+	sha512sums = 5e88141b1003d4b7bf9a3897d44e1a7d569d53288ac4e830223aceee46c50a2129318d56c6489803fd3caadb8805af025d9eddeca7bde9e2a5a87208ed22a2df
+	sha512sums = 1a1df654e6844494b7038d7870a22022caba3274aa0968d37277520908adafa926ba33ceaab3aa80091b35363a003690df2b0dc7927f95308c67236dffb7f1c5
+	sha512sums = 43fdd3ef97d8bff6824542399a9b51f8ca5803dbd9ea3024bc8d3122738c9d31f517a000270ed070f9161d6d51775e883d9b7364ccc8ec862de6bf51e514d71d
+	sha512sums = f335e30de0d5b33122a0893d1347465439c36e6042c672901ecf7b598a17be1087b7258bab3b70c4b8fb08854ffbe3ceeff29902d6c3d80f111c7e08146a6e45
+	b2sums = a207ef20942c56aaf306e7a667617028dc63029814c9f3b47cc24627aac703c97829d4af9c73f7e8a43196444c071905624586e39e475defd9db562348b49af3
+	b2sums = 10f26b573b4f855c90dfa18c8e47fbbe84ffd7df43deb0e130295628a0b479c922ef4dd60ac5908d1aae6509751a04ffe8e94ea475b61a48542c25a320c14721
+	b2sums = 972d9da77e3a889245ea990585e5594254e0951adc9a81c37fd21a5fba23aad0ab8a8eefb74fe03ee0a7798c22574de434c26e1e052eb5a45e501ed3ccc8ce2b
+	b2sums = 7fd776e40f03f68898cf5de67cf87c99bdab504eafa89a55a20ad408f46ccf4e7a18ab2b430144e5b9a201e4eef48e5b8dd75aca9ab2984988f07acf22e4f3f6
+	b2sums = 577bf04e1d9ac5e0c92629a08f37cd38f049984789464de7babeb467ef8f87d17befa8c9b4187404851bf453867d96694391ce62061d9ac2a4ffcb013bc7ee4e
+
+pkgname = prometheus-ssl-exporter
+	depends = glibc

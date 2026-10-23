@@ -1,0 +1,24 @@
+pkgbase = pythia8
+	pkgdesc = High-energy physics events generator
+	pkgver = 8.3.18
+	pkgrel = 1
+	url = https://pythia.org
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = root
+	depends = bash
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = zlib
+	optdepends = root: integrated examples with CERN ROOT data analysis framework
+	replaces = python-pythia8
+	source = https://pythia.org/releases/pythia83/pythia8318.tgz
+	source = pythia8.sh
+	source = fix-rpath.patch
+	b2sums = 415f45844bdcd2198e353ee4009b0859cada0c532cb9fffb2332f9c5a69138e264aedfaa679be7693b9c8f5b6a17a87e2fbad2b56a0cd99dc4ae891b9a088539
+	b2sums = 133b72411c3e60a6f0165212dadfa457a69706f045c21d217ac0bb78f84133a9daada0836633f62f8bffc7c70cacd86ffe7f34b2b8a444ea24149261852001e0
+	b2sums = a429cf0c1bda300dc05e395454b2810896a26e98714a2d40520ea8399e89b674762d033bd76f364acf99020898860cf621e891577966db2def99a5d7e065fe93
+
+pkgname = pythia8

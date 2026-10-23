@@ -1,0 +1,95 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=guestfs-tools
+pkgver=1.56.1
+pkgrel=1
+pkgdesc="Tools for accessing and modifying guest disk images"
+arch=(x86_64)
+url="https://libguestfs.org/"
+license=(
+  GPL-2.0-or-later
+  LGPL-2.1-or-later
+)
+depends=(
+  libgcc
+  glibc
+  json-c
+  libosinfo
+  perl
+)
+makedepends=(
+  bash-completion
+  cdrtools
+  libguestfs
+  libisoburn
+  libvirt
+  libxcrypt
+  libxml2
+  ncurses
+  ocaml-findlib
+  ocaml-libguestfs
+  openssl
+  perl-libintl-perl
+  perl-module-build
+  xz
+)
+checkdepends=(
+  linux
+  lvm2
+  mdadm
+  ntfs-3g
+  ntfsprogs
+  perl-libguestfs
+  procps-ng
+  rpm-tools
+  xfsprogs
+)
+backup=(
+  etc/virt-builder/repos.d/libguestfs.conf
+  etc/virt-builder/repos.d/libguestfs.gpg
+  etc/virt-builder/repos.d/opensuse.conf
+  etc/virt-builder/repos.d/opensuse.gpg
+)
+source=(
+  https://download.libguestfs.org/$pkgname/${pkgver%.*}-stable/$pkgname-$pkgver.tar.gz{,.sig}
+)
+sha512sums=('841cab7bfcc0b5475d6756c714459f63eaaa36774736df3aeb196a85e44f45ffd55e4fb42565b338ece3bc4b05d6e3a5029545b52d58c5539e462fe95d754c7a'
+            'SKIP')
+b2sums=('ef8e4b47f9693813c6ca9ef8476d2869ceaf83fee7ba81893685a60f2e41a825456bf33628d3de3a2efffeb9227bcb2e987c72c87e3692619205a137dc0a4934'
+        'SKIP')
+validpgpkeys=('F7774FB1AD074A7E8C8767EA91738F73E1B768A0')  # Richard W.M. Jones <rjones@redhat.com>
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  local configure_options=(
+    --prefix=/usr
+    --sysconfdir=/etc
+  )
+
+  cd $pkgname-$pkgver
+  ./configure "${configure_options[@]}"
+  make
+}
+
+check() {
+  LIBGUESTFS_DEBUG=1 LIBGUESTFS_TRACE=1 make -k check -C $pkgname-$pkgver
+}
+
+package() {
+  depends+=(
+    glib2 libgobject-2.0.so libglib-2.0.so
+    libguestfs libguestfs.so
+    libvirt libvirt.so
+    libxcrypt libcrypt.so
+    libxml2 libxml2.so
+    ncurses libncursesw.so
+    pcre2 libpcre2-8.so
+    xz liblzma.so
+  )
+
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver
+}

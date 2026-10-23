@@ -1,0 +1,26 @@
+pkgbase = emblem
+	pkgdesc = Generate projects avatars for your Matrix rooms and git forges from a symbolic icon
+	pkgver = 1.7.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Emblem/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = librsvg
+	source = git+https://gitlab.gnome.org/World/design/emblem.git#tag=1.7.0
+	b2sums = 6e722dd480c8be9cc8a281578f061f050bba31d6b580b89b856142c89da2477a0fed61d160e5bd66689da985ecc0d68b49d55b1f99974c616159b428aad6d217
+
+pkgname = emblem

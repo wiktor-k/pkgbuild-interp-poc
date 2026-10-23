@@ -1,0 +1,67 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Contributor: Christian Rebischke <chris.rebischke@archlinux.org>
+
+_gemname='sync'
+pkgname="ruby-${_gemname}"
+pkgver=0.5.0
+pkgrel=10
+pkgdesc='A Ruby module packaged as a gem that provides a two-phase lock with a counter.  Was in Ruby core until 2.7'
+arch=('any')
+url='https://github.com/ruby/sync'
+license=('BSD')
+depends=(
+  ruby
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-rake
+  ruby-test-unit
+)
+options=(!emptydirs)
+source=(
+  "${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+  "${url}/commit/8f2821d0819ee7c08506f204c7676f12c5ab1397.patch"
+)
+sha512sums=('5f887d9169e0be834c7fa17ae42b71078f25ce3d83e695490cd136adc1799d6b92e4aed41ce3f3d57b3ad193a1ac4de940b37212c2864bbf6331ba3582128166'
+            '9b639bafaf262d5ccd4f851ad5969e83b5e8d296a98daa4d12373e714aa0f80b7e242d508149be3da1cbad7d51ac6daf4f326a5f5043c7fcf828c8fc352e5bfc')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  patch --verbose --strip=1 --input="../8f2821d0819ee7c08506f204c7676f12c5ab1397.patch"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "${pkgdir}/${_gemdir}" \
+    --bindir "${pkgdir}/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

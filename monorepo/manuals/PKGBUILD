@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=manuals
+pkgver=50.1
+pkgrel=2
+pkgdesc='Developer documentation browser for GNOME'
+arch=(x86_64)
+url='https://apps.gnome.org/Manuals/'
+license=(GPL-3.0-or-later)
+groups=(gnome-extra)
+depends=(
+  dconf
+  foundry
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libdex
+  libgcc
+  libpanel
+  pango
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=("git+https://gitlab.gnome.org/GNOME/manuals.git#tag=${pkgver/[a-z]/.&}")
+b2sums=(01c1aeb3235a7c08e8f7b5043150535ccb40c6ec68f5713b69e095232a8042a99d22eb03250a27b1ba162fc93b6e392411ce56af6d6f8c52a47f689d073e2589)
+
+prepare() {
+  cd $pkgname
+
+  # Fix start with libdex 1.2.0
+  git cherry-pick -n e516710da9e9d586a0b3fa08cf82d7f2e02afb78
+
+  # Minor fixes
+  git cherry-pick -n c9b345b1970f2d4b1c85a5c0d68a440b4a45c220
+  git cherry-pick -n b7e4aa470d3667657ebd0a713d2ee1fe0ba1d07a
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

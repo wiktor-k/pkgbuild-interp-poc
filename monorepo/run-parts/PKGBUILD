@@ -1,0 +1,39 @@
+# Maintainer: Pierre Schmitz <pierre@archlinux.de>
+
+pkgname=run-parts
+pkgver=5.24
+pkgrel=1
+pkgdesc='run scripts or programs in a directory'
+arch=('x86_64')
+url='https://salsa.debian.org/debian/debianutils'
+license=('GPL-2.0-or-later')
+depends=('glibc')
+makedepends=('git' 'po4a')
+validpgpkeys=('B3131A451DBFDF7CA05B4197054BBB9F7D806442'  # Niels Thykier <niels@thykier.net>
+              'FA26CA784BE188927F22B99F6570EA01146F7354') # Ileana Dumitrescu <ileanadumi95@protonmail.com>
+source=("git+https://salsa.debian.org/debian/debianutils.git?signed#tag=debian/${pkgver}")
+sha256sums=('7f335ea46bc5ff795944cb687ca04926cb4d36313c0dcd96317ca65d799e0002')
+
+prepare() {
+  cd 'debianutils/'
+
+  autoreconf -fi
+}
+
+build() {
+  cd 'debianutils/'
+
+  ./configure --prefix=/usr
+  make run-parts
+  make -C po4a
+}
+
+package() {
+  cd 'debianutils/'
+
+  install -D -m0755 run-parts "${pkgdir}/usr/bin/run-parts"
+  install -D -m0644 run-parts.8 "${pkgdir}/usr/share/man/man8/run-parts.8"
+  for MAN in $(find po4a/ -name run-parts.8); do
+   install -D -m644  "${MAN}" "$pkgdir/usr/share/man/${MAN:5:2}/man8/run-parts.8"
+  done
+}

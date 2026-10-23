@@ -1,0 +1,75 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=velero
+pkgver=1.18.4
+pkgrel=1
+pkgdesc="Backup and migrate Kubernetes applications and their persistent volumes"
+arch=(x86_64)
+url="https://velero.io"
+license=(Apache-2.0)
+depends=(
+  glibc
+  kubectl
+)
+makedepends=(
+  git
+  go
+)
+# we cannot use LTO as otherwise we do not get reproducible package with full RELRO
+options=('!lto')
+source=("git+https://github.com/vmware-tanzu/velero#tag=v$pkgver")
+b2sums=('a25889471843ba92d4e56ee2bacae08279e3b329032608bdaf67dacd181465a638d21a58077f02dd57d97a8bde37daa07aeef9a4e86bfa5077a7f28e3be28db5')
+
+prepare() {
+  cd $pkgname
+
+  # create folder for build output
+  mkdir build
+
+  # download dependencies
+  GOPATH="$srcdir" go mod download -modcacherw
+}
+
+build() {
+  cd $pkgname
+
+  # set flags for cgo
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+
+  # set GOPATH so makepkg puts source files into the debug package
+  export GOPATH="$srcdir"
+
+  # set project flags
+  local _pkg=github.com/vmware-tanzu/velero
+  local _ldflags=""
+  _ldflags+=" -X $_pkg/pkg/buildinfo.Version=v$pkgver"
+  _ldflags+=" -X $_pkg/pkg/buildinfo.ImageRegistry=velero"
+  _ldflags+=" -X $_pkg/pkg/buildinfo.GitSHA=$(git rev-parse HEAD)"
+  _ldflags+=" -X $_pkg/pkg/buildinfo.GitTreeState=clean"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode external $_ldflags" \
+    -o build ./cmd/velero
+}
+
+package() {
+  cd $pkgname
+
+  # binary
+  install -vDm 755 build/$pkgname -t "$pkgdir"/usr/bin
+
+  # generate shell completions
+  build/$pkgname completion bash | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/bash-completion/completions/$pkgname.bash
+  build/$pkgname completion fish | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/fish/vendor_completions.d/$pkgname.fish
+  build/$pkgname completion zsh  | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/zsh/site-functions/_$pkgname
+
+  # documentation
+  install -vDm 644 README.md -t "$pkgdir"/usr/share/doc/$pkgname/
+  cp -arv examples "$pkgdir"/usr/share/doc/$pkgname/
+}

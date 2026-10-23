@@ -1,0 +1,73 @@
+# Maintainer: Mark Wagie <mark dot wagie at tutanota dot com>
+# Co-Maintainer: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Phillip Smith <pkgbuild@phs.id.au>
+# Contributor: Nathan Owe <ndowens04 at gmail>
+
+pkgname=freeipmi
+pkgver=1.6.20
+pkgrel=1
+pkgdesc='IPMI remote console and system management software'
+arch=(x86_64)
+url='https://www.gnu.org/software/freeipmi'
+license=(GPL-3.0-or-later)
+depends=(
+  bash
+  glibc
+  libgcrypt
+)
+optdepends=('perl: for contrib scripts')
+backup=(
+  "etc/$pkgname/$pkgname.conf"
+  "etc/$pkgname/${pkgname}_interpret_sel.conf"
+  "etc/$pkgname/${pkgname}_interpret_sensor.conf"
+  "etc/$pkgname/ipmidetect.conf"
+  "etc/$pkgname/ipmidetectd.conf"
+  "etc/$pkgname/ipmiseld.conf"
+  "etc/$pkgname/libipmiconsole.conf"
+)
+options=(!libtool)
+source=(
+  "https://ftp.gnu.org/gnu/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig}
+  tmpfiles.conf
+)
+sha512sums=('fdb9884f40e4178d8d86f1ba2c68879791d640b247e5532c5b9d153571e96a28ddf9bac981c38401b6d4af52ed001064c6cf05b025b85cae65c9a13489886c5a'
+            'SKIP'
+            '3516d972d0b078e2cdedc1362f98bd061fbee583c7ac97c1c728baf2dbe41b62847dbe04e0381422d70c55101240176443ce15e422dbc6d6a583321bb0d39b22')
+b2sums=('f7860113c6741e1c157c2556759c35149c531446032e5789712bc5c64bddc673b5976d712ceab106e891ca403d0814c941fa42b0d1a3c1418964507077ae5ac8'
+        'SKIP'
+        '5354e0b716b0806ac6f82dbbae533cb86f302d1952b948df6b5ab5bd41bf194ec927c9c39fd4d5969c2f4de8cfdbf3b66a4a1c1faaee4e5768201eaef83ca991')
+validpgpkeys=('A865A9FB6F0387624468543A3EFB7C4BE8303927') # Albert Chu <chu11@llnl.gov>
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  autoreconf -fvi
+
+  ./configure \
+    --prefix=/usr \
+    --exec-prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --mandir=/usr/share/man \
+    --sbindir=/usr/bin \
+    --disable-init-scripts \
+    --with-systemdsystemunitdir=/usr/lib/systemd/system \
+    --with-systemconfigdir=/etc/conf.d
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+
+  # systemd-tmpfiles integration
+  install -Dm644 "$srcdir/tmpfiles.conf" "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+
+  # delete cache
+  rm -rf "$pkgdir/var/cache"
+}

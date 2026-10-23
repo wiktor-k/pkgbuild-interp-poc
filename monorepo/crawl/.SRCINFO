@@ -1,0 +1,68 @@
+pkgbase = crawl
+	pkgdesc = Dungeon Crawl Stone Soup: open-source, single-player, role-playing roguelike game of exploration and treasure-hunting
+	pkgver = 0.34.1
+	pkgrel = 1
+	url = https://crawl.develz.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = ncurses
+	makedepends = freetype2
+	makedepends = glu
+	makedepends = libglvnd
+	makedepends = sdl2
+	makedepends = sdl2_image
+	makedepends = sdl2_mixer
+	makedepends = ttf-dejavu
+	makedepends = bison
+	makedepends = flex
+	makedepends = git
+	makedepends = imagemagick
+	makedepends = mesa
+	makedepends = perl
+	makedepends = pngcrush
+	makedepends = python-yaml
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = lua54
+	depends = sqlite
+	depends = zlib
+	source = git+https://github.com/crawl/crawl#tag=0.34.1
+	b2sums = c1bcaf017c5d4b7cd1edea177e5e85d76177ed839389bae70bb620a0f1e2ea25e2106fce102d8550676cedaa5c5907582093b1444e5a14972285d301c8f6db6f
+
+pkgname = crawl-data
+	pkgdesc = Dungeon Crawl Stone Soup: open-source, single-player, role-playing roguelike game of exploration and treasure-hunting - game data
+	depends = 
+	optdepends = crawl-ncurses: ncurses user interface
+	optdepends = crawl-tiles: graphical user interface
+
+pkgname = crawl-ncurses
+	pkgdesc = Dungeon Crawl Stone Soup: open-source, single-player, role-playing roguelike game of exploration and treasure-hunting - ncurses version (terminal)
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = lua54
+	depends = sqlite
+	depends = zlib
+	depends = crawl-data=0.34.1-1
+	depends = ncurses
+
+pkgname = crawl-tiles
+	pkgdesc = Dungeon Crawl Stone Soup: open-source, single-player, role-playing roguelike game of exploration and treasure-hunting - graphical version (SDL)
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = lua54
+	depends = sqlite
+	depends = zlib
+	depends = crawl-data=0.34.1-1
+	depends = freetype2
+	depends = glu
+	depends = libglvnd
+	depends = sdl2
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = ttf-dejavu

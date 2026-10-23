@@ -1,0 +1,44 @@
+pkgbase = intel-media-sdk
+	pkgdesc = Legacy API for hardware video acceleration on Intel GPUs (Broadwell to Rocket Lake)
+	pkgver = 23.2.2
+	pkgrel = 6
+	url = https://github.com/Intel-Media-SDK/MediaSDK/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = intel-media-driver
+	makedepends = libdrm
+	makedepends = libpciaccess
+	makedepends = libva
+	makedepends = libx11
+	makedepends = libxcb
+	makedepends = python
+	makedepends = wayland
+	source = https://github.com/Intel-Media-SDK/MediaSDK/archive/intel-mediasdk-23.2.2.tar.gz
+	source = 010-intel-media-sdk-fix-reproducible-build.patch::https://github.com/Intel-Media-SDK/MediaSDK/pull/2688/commits/f6925886f27a39eed2e43c5b7b6c342d00f7a970.patch
+	source = 020-intel-media-sdk-libcttmetrics-static-only.patch
+	source = 030-intel-media-sdk-gcc13-fix.patch
+	source = 040-intel-media-sdk-gcc15-fix.patch
+	sha256sums = 12f23a78104edc1c9bfa755effd2723866d107ad752f72d3839fcc8db0503cec
+	sha256sums = f1d8a4edf953cfec1516f1a8383c5ee033245aba16cfae0bc79b7de1a6365fcc
+	sha256sums = a473fd7dbd3c7240a3511471cfad6a39dc462b102c88cd23c35e25f2e8ec0246
+	sha256sums = 38fc06cdc31372d26f1dc2a7e5b1ea57c22f8f83fbf84e0af5638a8040aa7f4e
+	sha256sums = 4a7bab16e6d90f1f6e4a365328c0edd08dd8ea02d38687fcb0c2248bb69171d2
+
+pkgname = intel-media-sdk
+	depends = glibc
+	depends = intel-media-driver
+	depends = libdrm
+	depends = libgcc
+	depends = libmfx=23.2.2
+	depends = libstdc++
+	depends = libva
+	depends = wayland
+	provides = vpl-runtime
+	options = !emptydirs
+
+pkgname = libmfx
+	pkgdesc = Intel Media SDK dispatcher library
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++

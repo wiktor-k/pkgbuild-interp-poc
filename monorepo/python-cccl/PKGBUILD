@@ -1,0 +1,67 @@
+# Maintainer: Jakub Klinkovský <lahwaacz@archlinux.org>
+
+_name=cccl
+pkgname=python-$_name
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="CUDA Core Compute Libraries for Python"
+arch=(x86_64)
+url="https://github.com/NVIDIA/cccl"
+license=("Apache-2.0 WITH LLVM-exception")
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  python
+  python-cuda-bindings
+  python-cuda-core
+  python-cuda-pathfinder
+  python-llvmlite
+  python-numba
+  python-numba-cuda-mlir
+  python-numpy
+  python-typing_extensions
+)
+makedepends=(
+  cmake
+  cython
+  nlohmann-json
+  python-build
+  python-installer
+  python-scikit-build-core
+  python-setuptools-scm
+  python-wheel
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/python-$pkgver.tar.gz
+        pyproject.patch
+        cuda-13.4.patch)
+b2sums=('ab9f04f93cefa9ef0ee3cee2af7419c1208c921c68b8eb98226bce7d28ee6bfa32eb7f500c6a0d7b2f733bc5b20c09e48b041b35d0b6796ebf5d4c1617df8840'
+        '53669f3a6596d65374ff9a6dd10c21586e9b5a24dd0fa832564ff95395ff6b0dbd1e849d0d7c22f6b7bf9e6ff4fa6d3d73b43a2a6a16022100e73b9c3df9a57d'
+        '17677af1ea0ed91736a4b2638e317bf2f30f23cc0b2d17e2b74a7c4e8b96320fa619352177b50cd5f563e1b06d357cc33552bac5f931aef7287c1903306f1605')
+
+prepare() {
+  cd $_name-python-$pkgver
+  # disable CPM dependency
+  sed -i 's|CPMAddPackage("gh:nlohmann/json@3.12.0")|find_package(nlohmann_json REQUIRED)|' cmake/CCCLGetDependencies.cmake
+
+  # support CUDA 13.4 on sm_120 (NVBug 6235538, https://github.com/NVIDIA/cccl/pull/9770)
+  patch -p1 < "$srcdir"/cuda-13.4.patch
+
+  # drop cmake dependency from pyproject.toml
+  cd python/cuda_cccl
+  patch -p1 < "$srcdir"/pyproject.patch
+}
+
+build() {
+  cd $_name-python-$pkgver/python/cuda_cccl
+  # cccl requires CXX compiler to match CUDA host compiler
+  SKBUILD_CMAKE_ARGS="-DCMAKE_CXX_COMPILER=$NVCC_CCBIN" \
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver \
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-python-$pkgver/python/cuda_cccl
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 ../../LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

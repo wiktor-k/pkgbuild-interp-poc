@@ -1,0 +1,97 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: David Dent <thewinch@gmail.com>
+# Contributor: orbisvicis <orbisvicis@gmail.com>
+
+pkgname=mapnik
+pkgver=4.3.2
+pkgrel=1
+pkgdesc="Open source toolkit for developing mapping applications"
+arch=('x86_64')
+url="https://mapnik.org/"
+_url="https://github.com/mapnik/mapnik"
+license=('LGPL-2.1-only')
+depends=(
+  'boost-libs'
+  'cairo'
+  'freetype2'
+  'gdal'
+  'glibc'
+  'harfbuzz'
+  'icu'
+  'libavif'
+  'libgcc'
+  'libjpeg-turbo'
+  'libpng'
+  'libstdc++'
+  'libtiff'
+  'libwebp'
+  'libxml2'
+  'openssl'
+  'postgresql-libs'
+  'proj'
+  'qt6-base'
+  'sqlite'
+  'zlib'
+)
+makedepends=(
+  'boost'
+  'cmake'
+  'git'
+  'protozero'
+)
+source=(
+  "git+$_url.git#tag=v$pkgver"
+  "mapnik-test-data::git+https://github.com/mapnik/test-data.git"
+  "mapnik-test-data-visual::git+https://github.com/mapnik/test-data-visual.git"
+  "mapbox-variant::git+https://github.com/mapbox/variant.git"
+  "mapbox-geometry::git+https://github.com/mapbox/geometry.hpp.git"
+  "mapbox-polylabel::git+https://github.com/mapnik/polylabel.git"
+  "git+https://github.com/mapnik/mapnik-vector-tile.git"
+)
+b2sums=('a0667986d0da3d05d1ab7183b866c56be654d942e3ff725009d6c76c18cac60d237719cc0bcd3dbc3f23a09e5a157ff735a5c27e1ad75a2e3b99d7d82df2e267'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.test/data.url ../mapnik-test-data
+  git config submodule.test/data-visual.url ../mapnik-test-data-visual
+  git config submodule.deps/mapbox/variant.url ../mapbox-variant
+  git config submodule.deps/mapbox/geometry.url ../mapbox-geometry
+  git config submodule.deps/mapbox/polylabel.url ../mapbox-polylabel
+  git config submodule.deps/mapbox/mapnik-vector-tile.url ../mapnik-vector-tile
+  git -c protocol.file.allow=always submodule update \
+    test/data \
+    test/data-visual \
+    deps/mapbox/variant \
+    deps/mapbox/geometry \
+    deps/mapbox/polylabel \
+    deps/mapbox/mapnik-vector-tile
+}
+
+build() {
+  cd $pkgname
+  cmake -S . -B build \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev \
+    -D USE_EXTERNAL_MAPBOX_PROTOZERO=ON
+  cmake --build build
+}
+
+check() {
+  cd $pkgname
+  ctest --test-dir build --output-on-failure
+}
+
+package(){
+  cd $pkgname
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,27 @@
+pkgbase = antimicrox
+	pkgdesc = Graphical program used to map keyboard buttons & mouse controls to a gamepad
+	pkgver = 3.6.1
+	pkgrel = 1
+	url = https://github.com/AntiMicroX/antimicrox
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	makedepends = itstool
+	makedepends = qt6-tools
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libxtst
+	depends = libxi
+	depends = libx11
+	depends = libgcc
+	depends = libstdc++
+	depends = sdl2-compat
+	depends = qt6-base
+	source = antimicrox::git+https://github.com/AntiMicroX/antimicrox#tag=3.6.1
+	sha512sums = bbdf167e97966bb7777b15f173b002e0456e8c989c37ee15d9b0c5d773ee316a22b835480112f88a610150badc244c11c81ec814182138e44be85a5c3f5f3045
+	b2sums = a72953d4fd0d63195e8344c79a4121adbf8c33f0fc70fe1c9c452f1e6b8e60b5b893ccdc027f9cb1b420ef03c556997dfd7e05cf88c0d06b263f422e5ea2659f
+
+pkgname = antimicrox

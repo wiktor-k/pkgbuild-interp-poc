@@ -1,0 +1,70 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Haochen Tong <i at hexchain dot org>
+# Contributor: Qi Xiao <xiaqqaix at gmail dot com>
+
+pkgname=elvish
+pkgver=0.21.0
+pkgrel=1
+pkgdesc='Versatile interactive shell & powerful scripting language in one'
+arch=('x86_64')
+url="https://elv.sh"
+license=('BSD')
+depends=('glibc')
+makedepends=('git' 'go')
+install="$pkgname.install"
+options=('!lto')
+source=("$pkgname::git+https://github.com/elves/elvish.git#tag=v$pkgver")
+sha256sums=('8d131b17181b810d52b37038664146f774160c3a298762d5ea054529a03aa5b6')
+
+_variant="archlinux$pkgrel"
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+
+  # See https://github.com/elves/elvish/blob/master/PACKAGING.md for the
+  # src.elv.sh/pkg/buildinfo.BuildVariant variable
+  go build -v \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"$LDFLAGS\" \
+      -X src.elv.sh/pkg/buildinfo.BuildVariant=$_variant" \
+    -o build \
+    ./cmd/...
+}
+
+check() {
+  cd "$pkgname"
+  build/elvish --version | grep -Fqx "$pkgver+$_variant"
+  go test -v -race ./...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/elvish
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

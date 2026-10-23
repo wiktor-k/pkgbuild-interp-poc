@@ -1,0 +1,18 @@
+pkgbase = arp-scan
+	pkgdesc = A tool that uses ARP to discover and fingerprint IP hosts on the local network
+	pkgver = 1.10.0
+	pkgrel = 5
+	url = https://github.com/royhills/arp-scan
+	arch = x86_64
+	license = GPL-3.0-or-later
+	depends = libpcap
+	depends = perl-libwww
+	optdepends = perl-text-csv: get-oui script
+	optdepends = perl-lwp-protocol-https: get-oui script
+	backup = etc/arp-scan/mac-vendor.txt
+	source = https://github.com/royhills/arp-scan/archive/1.10.0/arp-scan-1.10.0.tar.gz
+	source = arp-scan-eacces.patch
+	sha256sums = 204b13487158b8e46bf6dd207757a52621148fdd1d2467ebd104de17493bab25
+	sha256sums = 25b433fdbffadadb007fe07ea10daeb68b5e27f1f5d469634a093aee69de8da7
+
+pkgname = arp-scan

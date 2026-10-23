@@ -1,0 +1,32 @@
+pkgbase = ruby-byebug
+	pkgdesc = A simple to use and feature rich debugger for Ruby
+	pkgver = 13.0.0
+	pkgrel = 1
+	url = https://github.com/deivid-rodriguez/byebug
+	arch = x86_64
+	license = BSD-2-Clause
+	checkdepends = markdownlint
+	checkdepends = ruby-bundler
+	checkdepends = ruby-faraday
+	checkdepends = ruby-faraday-retry
+	checkdepends = ruby-minitest
+	checkdepends = ruby-pry
+	checkdepends = ruby-rake-compiler
+	checkdepends = ruby-rexml
+	checkdepends = ruby-simplecov
+	checkdepends = ruby-yard
+	makedepends = git
+	makedepends = ruby-rake
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-irb
+	depends = ruby-reline
+	options = !emptydirs
+	source = git+https://github.com/deivid-rodriguez/byebug.git#tag=v13.0.0
+	source = ruby-byebug_fix_tests.patch
+	sha512sums = b6dc8ccee8d615c54ad5c196a171e9e0530db3d33aabca5b3e41308302a23608aa33bf82d94439f6f8e875b0bf74a47c90983a1ed147273d849017fbe9168b02
+	sha512sums = fc97d570a1e0fd4ab3419a6351495e59dfe1ca5b954be7d9a0234ea69b4a207f6d7fd16add03e4fb76e9da364e8918694f37873c804457b96a8692321281fab9
+	b2sums = 413e79e15ca73290f5a25d74b872f4097bf96aece75a1ffb1a43a3f89100071def0a2377d72ebf456c0dcc5e688632ce5979d023ded4d0e064fb381ace6cc063
+	b2sums = 1ecdb6928d68033a45822c959d5d273a426dc117892ff443b46bc7d3e02585c63fd06d7763910a1ca55453070131b5dbbce045fbefe1547fd480249bd07bb91b
+
+pkgname = ruby-byebug

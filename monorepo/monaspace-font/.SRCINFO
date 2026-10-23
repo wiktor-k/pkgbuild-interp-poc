@@ -1,0 +1,30 @@
+pkgbase = monaspace-font
+	pkgdesc = An innovative superfamily of fonts for code, by GitHub
+	pkgver = 1.400
+	pkgrel = 1
+	url = https://github.com/githubnext/monaspace
+	arch = any
+	license = OFL-1.0-RFN
+	source = https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-frozen-v1.400.zip
+	source = https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-nerdfonts-v1.400.zip
+	source = https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-static-v1.400.zip
+	source = https://github.com/githubnext/monaspace/releases/download/v1.400/monaspace-variable-v1.400.zip
+	source = monaspace-1.400-LICENSE::https://github.com/githubnext/monaspace/raw/refs/tags/v1.400/LICENSE
+	sha256sums = f4a846421d1d6bb1233e5cb748d2afb85c7111b3da994a200504eaffd97a3a05
+	sha256sums = 9b7f9505d977601d8819dfdb57fa4b49bdab61132b6d1131c2e8d092066edc5a
+	sha256sums = ab66d71be751495f679727332a3345597943bd4d7beebca03f5cde04bf994de7
+	sha256sums = b69a7f2a3c455c89dcb6cc23b61bb3fb8beecba728ccdebeccd80577e58de0c8
+	sha256sums = 0e84e5f7dd6f05e74a00f2fb828ca43e489d954f5509ff0fa439ea18c0d35fe9
+
+pkgname = otf-monaspace
+	provides = monaspace-font
+
+pkgname = otf-monaspace-nerdfonts
+	provides = monaspace-font
+	provides = ttf-font-nerd
+
+pkgname = ttf-monaspace-frozen
+	provides = monaspace-font
+
+pkgname = ttf-monaspace-variable
+	provides = monaspace-font-variable

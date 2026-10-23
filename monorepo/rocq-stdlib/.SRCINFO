@@ -1,0 +1,20 @@
+pkgbase = rocq-stdlib
+	pkgdesc = Stdlib for the Rocq Prover
+	pkgver = 9.2.0
+	pkgrel = 1
+	url = https://rocq-prover.org/
+	arch = any
+	license = LGPL-2.1-only
+	makedepends = dune
+	makedepends = ocaml
+	makedepends = ocaml-compiler-libs
+	makedepends = ocaml-findlib
+	makedepends = ocaml-zarith
+	makedepends = pango
+	depends = rocq
+	options = !debug
+	options = staticlibs
+	source = https://github.com/rocq-prover/stdlib/archive/V9.2.0/rocq-stdlib-9.2.0.tar.gz
+	b2sums = 95711c7379556c709b7f1bae605c4d8db4435a2d9869384795b6063431b7a6d4b87a5136915a727a048915a48489f8aa418877c5a8c0d22302f37616e5abee84
+
+pkgname = rocq-stdlib

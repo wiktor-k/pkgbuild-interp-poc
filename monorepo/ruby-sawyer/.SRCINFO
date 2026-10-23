@@ -1,0 +1,23 @@
+pkgbase = ruby-sawyer
+	pkgdesc = Secret User Agent of HTTP
+	pkgver = 0.9.3
+	pkgrel = 1
+	url = https://github.com/lostisland/sawyer
+	arch = any
+	license = MIT
+	checkdepends = ruby-minitest
+	checkdepends = ruby-rake
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-faraday
+	depends = ruby-addressable
+	options = !emptydirs
+	source = git+https://github.com/lostisland/sawyer.git#tag=v0.9.3
+	source = ruby-sawyer_fix_tests.patch
+	sha512sums = d5ebd250cb4e1feed66bca3c68e30a26ed13d0eee52bfeac05731e76bac15832bc5bcb177812198beeef2bb71eb38c842d37a862e69f333724b220f699d558df
+	sha512sums = 47e30e4516a71af4ebde60bc2dcf0780a78ae952987b48afd35f4e344927afefd21e32965f79673fcea89fa809e50feee77ecf253b860451838eceb06be3898b
+	b2sums = 7c641f183be81a0fbf9cd7bae8f2c23a3d7a2b33ac6b5a890ffa2d00bf991528d1a7e6f27de6dd96a2a26d72a8ffa25e9d25a1e77cfb5c6769e8e9148dca89ba
+	b2sums = 4bf11f8b55b2d0e413fbf37b98e03f5cf7fe62ae75fd9ce3991256aecdcef08fc89a27668a4527446e711f70e504d55602b00aa25ffdc353edf778865521d2af
+
+pkgname = ruby-sawyer

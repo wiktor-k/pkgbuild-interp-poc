@@ -1,0 +1,24 @@
+pkgbase = acme-redirect
+	pkgdesc = Tiny http daemon that answers acme challenges and redirects everything else to https
+	pkgver = 0.8.1
+	pkgrel = 1
+	url = https://github.com/kpcyrd/acme-redirect
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	makedepends = scdoc
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = openssl
+	depends = libssl.so
+	backup = etc/acme-redirect.conf
+	source = https://github.com/kpcyrd/acme-redirect/archive/v0.8.1/acme-redirect-0.8.1.tar.gz
+	source = https://github.com/kpcyrd/acme-redirect/releases/download/v0.8.1/acme-redirect-0.8.1.tar.gz.asc
+	validpgpkeys = 64B13F7117D6E07D661BBCE0FE763A64F5E54FD6
+	sha256sums = 42a655393238bbb257c26e7306f58f9cb8404c618061913236630495dd30f42f
+	sha256sums = SKIP
+	b2sums = 245d96f57bf7be112cb330337c63ea62c47dc55b9205eba31b2eba2fd98f3233763de8858ddc01793e6136be6080e43a1d6f8c6a31d4385dcd5416cf20fd14e5
+	b2sums = SKIP
+
+pkgname = acme-redirect

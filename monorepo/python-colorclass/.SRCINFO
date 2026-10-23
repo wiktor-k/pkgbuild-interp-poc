@@ -1,0 +1,19 @@
+pkgbase = python-colorclass
+	pkgdesc = Yet another ANSI color text library for colorful worry-free console applications
+	pkgver = 2.2.2
+	pkgrel = 5
+	url = https://github.com/matthewdeanmartin/colorclass
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-docopt
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-poetry-core
+	depends = python
+	source = python-colorclass-2.2.2.tar.gz::https://github.com/matthewdeanmartin/colorclass/archive/v2.2.2.tar.gz
+	source = python-colorclass-poetry-core.patch::https://github.com/matthewdeanmartin/colorclass/pull/2.patch
+	sha512sums = c38b58d4122e794654a8ac71adb2be0fb679eb10bd70c9d8f5dee06b3c978c1530bb3fb8fd6530d88aa35311a46a2590b709e4dcc6e3a81d14b90bf8cb74ebc1
+	sha512sums = d7806ffb6356ef4b9ac12526df316066fa0d79ba259acc10f09c27e241079914cce93f2666f89007ed7517a0ba3b4eaf61a33020ce025c2609bf1641078147c1
+
+pkgname = python-colorclass

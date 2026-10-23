@@ -1,0 +1,28 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=libzdb
+pkgver=3.6.0
+pkgrel=1
+pkgdesc="Zild Database Library"
+arch=('x86_64')
+url="https://www.tildeslash.com/libzdb/"
+license=('GPL')
+depends=('postgresql-libs' 'sqlite' 'mariadb-libs')
+source=(https://www.tildeslash.com/libzdb/dist/libzdb-$pkgver.tar.gz)
+sha256sums=('c29712aba58ce3c428e6fcf4c96f86c853dde5449da9adfaedbe69e6116e2e17')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i '1,1i#include <cassert>' test/zdbpp.cpp
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  ./configure --prefix=/usr ac_cv_cxx_compile_cxx20=yes
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}

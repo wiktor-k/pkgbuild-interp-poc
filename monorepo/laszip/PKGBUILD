@@ -1,0 +1,29 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Maciej Sieczka <msieczka at sieczka dot org>
+# Contributor: Michael <mbostwick89@gmail.com>
+
+pkgname=laszip
+pkgver=3.4.4
+pkgrel=1
+pkgdesc='ASPRS LAS lossless compression library'
+arch=('x86_64')
+url='https://laszip.org'
+license=('Apache-2.0')
+depends=('gcc-libs')
+makedepends=('cmake' 'ninja')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/LASzip/LASzip/archive/refs/tags/${pkgver}.tar.gz")
+sha512sums=('163204a4d0bb4b4371a1a63eb8ba9477dc504d7e171ec3d75c3120ace7ab682df517b4583efd951c8c7ac1be03bde8c8c327586e36c8884cbf7e98ec1e1c27bf')
+
+build() {
+  export CXXFLAGS="$CXXFLAGS -Wno-error=format-security"
+  cmake \
+      -B build \
+      -G Ninja \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      "LASzip-${pkgver}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+}

@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Thomas Schneider <maxmusterm@gmail.com>
+
+pkgname=svt-vp9
+pkgver=0.3.1
+pkgrel=1
+pkgdesc='Scalable Video Technology VP9 encoder'
+arch=(x86_64)
+url=https://github.com/OpenVisualCloud/SVT-VP9
+license=(BSD-2-Clause-Patent)
+depends=(glibc)
+makedepends=(
+  cmake
+  git
+  nasm
+  ninja
+)
+_tag=290fb8c3662ed76a8887b587a9b8201878ba71ed
+source=(git+https://github.com/OpenVisualCloud/SVT-VP9.git#tag=${_tag})
+sha256sums=('c51933db9b17f5368c9afb3d9862eb7eb3ca9e62057f0aaf6bee5d913742d595')
+
+pkgver() {
+  cd SVT-VP9
+
+  git describe --tags | sed 's/^v//'
+}
+
+prepare() {
+  sed '/CMAKE_BUILD_TYPE Release/d' -i SVT-VP9/CMakeLists.txt
+}
+
+build() {
+  cmake -S SVT-VP9 -B build -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON \
+    -DNATIVE=OFF
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+  install -Dm 644 SVT-VP9/LICENSE.md -t "${pkgdir}"/usr/share/licenses/svt-vp9/
+}
+
+# vim: ts=2 sw=2 et:

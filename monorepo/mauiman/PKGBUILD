@@ -1,0 +1,26 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=mauiman
+pkgver=4.0.2
+pkgrel=2
+pkgdesc='Maui Manager Library. Server and public library API.'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         libstdc++
+         qt6-base)
+makedepends=(extra-cmake-modules)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('81f9f25fbc959040b7efcca1d9d127c5894c6a6baf2ffe53ccba42d682258f00'
+            'SKIP')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

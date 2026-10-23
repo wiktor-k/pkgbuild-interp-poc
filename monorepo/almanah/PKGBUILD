@@ -1,0 +1,61 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=almanah
+pkgver=0.12.4
+pkgrel=8
+pkgdesc='Small GTK application to allow you to keep a diary of your life'
+arch=(x86_64)
+url='https://wiki.gnome.org/Apps/Almanah_Diary'
+license=(GPL-3.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  evolution-data-server
+  gcr-4
+  glib2
+  glibc
+  gpgme
+  gtk3
+  gtksourceview4
+  gtkspell3
+  hicolor-icon-theme
+  libgcc
+  libical
+  pango
+  sqlite
+)
+makedepends=(
+  appstream
+  git
+  glib2-devel
+  meson
+)
+# Jan Tojnar uses SSH signatures which makepkg doesn't understand
+source=("git+https://gitlab.gnome.org/GNOME/almanah.git#tag=$pkgver"
+         libical-4.patch)
+b2sums=('b2903482386f19664534bb0d2827a60c60d398478a6ccd858107330625fb1b8ddf54e0479ca49fc6669f588ff6fd79bd2fba837d2ed887fa28b650ce76950a40'
+        'd409d8365dba4df7339404de4aa5f8af42991aa83ab8e5495b42e7276042537f892e7bb0dd9b15f6c98f56cb20610d31a87f62fd04453d66f62d4f02b39408ae')
+validpgpkeys=(923B7025EE03C1C59F42684CF0942E894B2EAFA0) # Philip Withnall
+
+prepare() {
+  cd $pkgname
+
+  # Apply fixes from git master
+  git cherry-pick -n 0.12.4..63d0302fd6bfe65f7e95a04248f434b40ab8f57f
+
+  patch -p1 -i ../libical-4.patch # Fix build with libical 4
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

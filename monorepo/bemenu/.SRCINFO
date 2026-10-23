@@ -1,0 +1,55 @@
+pkgbase = bemenu
+	pkgdesc = Dynamic menu library and client program inspired by dmenu
+	pkgver = 0.6.23
+	pkgrel = 1
+	url = https://github.com/Cloudef/bemenu
+	arch = x86_64
+	license = GPL-3.0-or-later
+	license = LGPL-3.0-or-later
+	makedepends = libxinerama
+	makedepends = libxkbcommon
+	makedepends = ncurses
+	makedepends = pango
+	makedepends = scdoc
+	makedepends = wayland
+	makedepends = wayland-protocols
+	source = https://github.com/Cloudef/bemenu/releases/download/0.6.23/bemenu-0.6.23.tar.gz
+	source = https://github.com/Cloudef/bemenu/releases/download/0.6.23/bemenu-0.6.23.tar.gz.asc
+	validpgpkeys = 16B6B7CACAF339DECE9F154729317348D687B86B
+	sha256sums = 7cd336fb827b50a12c398a5daf6d2e6a07e291217116e725e7f1e021d9e0cdd9
+	sha256sums = SKIP
+
+pkgname = bemenu
+	depends = bemenu-renderer
+	depends = glibc
+	provides = libbemenu.so
+
+pkgname = bemenu-ncurses
+	pkgdesc = ncurses renderer for bemenu
+	depends = glibc
+	depends = libbemenu.so
+	depends = ncurses
+	provides = bemenu-renderer
+
+pkgname = bemenu-wayland
+	pkgdesc = Wayland (wlroots-based compositors) renderer for bemenu
+	install = bemenu-wayland.install
+	depends = glibc
+	depends = cairo
+	depends = glib2
+	depends = libbemenu.so
+	depends = libxkbcommon
+	depends = pango
+	depends = wayland
+	provides = bemenu-renderer
+
+pkgname = bemenu-x11
+	pkgdesc = X11 renderer for bemenu
+	depends = glibc
+	depends = cairo
+	depends = glib2
+	depends = libbemenu.so
+	depends = libx11
+	depends = libxinerama
+	depends = pango
+	provides = bemenu-renderer

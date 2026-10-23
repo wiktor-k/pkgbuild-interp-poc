@@ -1,0 +1,72 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Tobias Kieslich <tobias@justdreams.de>
+
+pkgbase=ghex
+pkgname=(
+  ghex
+  ghex-docs
+)
+pkgver=50.4
+pkgrel=1
+pkgdesc="Hex editor for the GNOME desktop"
+url="https://wiki.gnome.org/Apps/Ghex"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  pango
+)
+makedepends=(
+  gi-docgen
+  git
+  gobject-introspection
+  meson
+  vala
+  yelp-tools
+)
+source=("git+https://gitlab.gnome.org/GNOME/ghex.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('fb7f6929112ebca42220eb0b4451ab4d6d54cf344c5c84d1060824c2e039cfebea8cbab683247b2a8c9a170b1504a6cb53dce72de60d6311a9b33f9ee1501bf8')
+
+prepare() {
+  cd ghex
+}
+
+build() {
+  local meson_options=(
+    -D gtk_doc=true
+    -D vapi=true
+  )
+
+  arch-meson ghex build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package_ghex() {
+  provides=(libgtkhex-4.so)
+  groups=(gnome-extra)
+
+  meson install -C build --destdir "$pkgdir"
+
+  mkdir -p doc/usr/share
+  mv {"$pkgdir",doc}/usr/share/doc
+}
+
+package_ghex-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+
+  mv doc/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

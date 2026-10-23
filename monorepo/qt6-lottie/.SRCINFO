@@ -1,0 +1,25 @@
+pkgbase = qt6-lottie
+	pkgdesc = A family of player software for a certain json-based file format for describing 2d vector graphics animations
+	pkgver = 6.12.0
+	pkgrel = 1
+	url = https://www.qt.io
+	arch = x86_64
+	groups = qt6
+	license = GPL-3.0-only
+	license = LGPL-3.0-only
+	license = LicenseRef-Qt-Commercial
+	license = Qt-GPL-exception-1.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = qt6-declarative
+	makedepends = qt6-quicktimeline
+	makedepends = qt6-svg
+	depends = glibc
+	depends = libstdc++
+	depends = qt6-base
+	optdepends = qt6-declarative: QML bindings
+	source = git+https://code.qt.io/qt/qtlottie#tag=v6.12.0
+	sha256sums = bae319d7fd7189b1160c9b4a2b680108ebf31952ba5c1948ac740b83588436ec
+
+pkgname = qt6-lottie

@@ -1,0 +1,19 @@
+pkgbase = dae
+	pkgdesc = A high-performance transparent proxy solution based on eBPF
+	pkgver = 2.1.1
+	pkgrel = 1
+	url = https://github.com/daeuniverse/dae
+	install = dae.install
+	arch = x86_64
+	license = AGPL-3.0-or-later
+	makedepends = clang
+	makedepends = go
+	depends = glibc
+	depends = v2ray-domain-list-community
+	depends = v2ray-geoip
+	options = !lto
+	backup = etc/dae/config.dae
+	source = dae-2.1.1.tar.xz::https://github.com/daeuniverse/dae/releases/download/v2.1.1/dae-full-src.tar.xz
+	sha256sums = 7c91494a999a24e91869e8e20e26ed8171dd4eedbcb847d1b04d15a6aeb54f44
+
+pkgname = dae

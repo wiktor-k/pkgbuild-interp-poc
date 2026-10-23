@@ -1,0 +1,51 @@
+pkgbase = yabridge
+	pkgdesc = A modern and transparent way to use Windows VST2 and VST3 plugins on Linux
+	pkgver = 5.1.1
+	pkgrel = 10
+	url = https://github.com/robbert-vdh/yabridge
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = asio
+	makedepends = bitsery
+	makedepends = clap
+	makedepends = cmake
+	makedepends = function2
+	makedepends = ghc-filesystem
+	makedepends = git
+	makedepends = libxcb
+	makedepends = meson
+	makedepends = rust
+	makedepends = tomlplusplus
+	makedepends = wine
+	options = !lto
+	source = git+https://github.com/robbert-vdh/yabridge#tag=5.1.1
+	source = yabridge-vst3sdk::git+https://github.com/robbert-vdh/vst3sdk.git#commit=3ff02a8fb91f8e14f61c4e26130841b51d601575
+	source = yabridge-vst3_base::git+https://github.com/steinbergmedia/vst3_base.git
+	source = yabridge-vst3_pluginterfaces::git+https://github.com/steinbergmedia/vst3_pluginterfaces.git
+	source = yabridge-vst3_public_sdk::git+https://github.com/steinbergmedia/vst3_public_sdk.git
+	sha512sums = 679b63e8dfd686f8f3199f1e65cb9794446bf17819039458ce2d15b769573b8176e96fb51075076371663394e5b8479532fe450a9a115b8df27f4065ed7f8a96
+	sha512sums = 39d8b7188aa5b07442e9bf998644bce5d54e3c30000dbf3922cee76c4864e859ff850abe6699d178399948d3d73f3b4a639738429320aa2ebc4b1e0c85d63792
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	b2sums = 378ba811ac3676b4a122030c9d1260a95b062e614d17efc29ed047b7fa72f0945914544ae8526ed424108c18094ea4408fe784df5a6690eac5232e5bc571a302
+	b2sums = 3f09ff6929db53a5387661be68a363726edbd966346605444191e791565cf596503e9f88138b7921d15366d1aa1688a41730e3d4163bdc694448269855d982a9
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = yabridge
+	groups = pro-audio
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libxcb
+	depends = sh
+	depends = wine
+	optdepends = libnotify: for notification integration
+	optdepends = yabridgectl: for optional setup and management utility
+
+pkgname = yabridgectl
+	pkgdesc = Optional utility to help set up and manage yabridge
+	depends = glibc
+	depends = libgcc

@@ -1,0 +1,33 @@
+# Maintainer: David Runge <dave@sleepmap.de>
+# Contributor: Lieven Moors <lievenmoors@gmail.com>
+pkgname=njconnect
+pkgver=1.7
+pkgrel=1
+pkgdesc="Curses JACK connection manager"
+arch=(x86_64)
+url="https://sourceforge.net/projects/njconnect/"
+license=(GPL-2.0-only)
+groups=(pro-audio)
+depends=(
+  glibc
+)
+makedepends=(
+  jack
+  ncurses
+)
+source=(https://sourceforge.net/projects/$pkgname/files/$pkgname-$pkgver.tar.xz)
+sha512sums=('cd5eec651bb6300040729a8e1cc14ebfc51ff7e6bead04b3bb792e0b7c50eba6dc62e61a09e1614beb3a69c015cdc1c386509d20ccebfe4bd319f140adfaa18e')
+
+build() {
+  make -C $pkgname-$pkgver LDFLAGS="$LDFLAGS"
+}
+
+package() {
+  depends+=(
+    jack libjack.so
+    ncurses libncursesw.so
+  )
+
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/README -t "$pkgdir/usr/share/doc/$pkgname/"
+}

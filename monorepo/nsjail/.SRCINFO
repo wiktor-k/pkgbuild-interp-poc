@@ -1,0 +1,21 @@
+pkgbase = nsjail
+	pkgdesc = Light-weight process isolation tool
+	pkgver = 3.6
+	pkgrel = 7
+	url = https://nsjail.com
+	arch = x86_64
+	license = Apache
+	makedepends = git
+	depends = abseil-cpp
+	depends = glibc
+	depends = protobuf
+	depends = libgcc
+	depends = libnl
+	depends = libstdc++
+	options = !lto
+	source = git+https://github.com/google/nsjail#tag=3.6
+	source = git+https://github.com/google/kafel.git
+	sha256sums = 40992e9ff7a1e4e32ae1bcf44228de652af2221bbd2121083bf2b40237854dd8
+	sha256sums = SKIP
+
+pkgname = nsjail

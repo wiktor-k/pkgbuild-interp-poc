@@ -1,0 +1,103 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=element
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="A modular audio plugin host"
+arch=(x86_64)
+url="https://github.com/kushview/element"
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+depends=(
+  alsa-lib
+  fontconfig
+  freetype2
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+)
+makedepends=(
+  boost
+  clang
+  cmake
+  curl
+  git
+  gtk3
+  jack
+  juce
+  ladspa
+  ldoc
+  libglvnd
+  libxcomposite
+  libxcursor
+  libxinerama
+  lv2
+  ttf-roboto
+  webkit2gtk-4.1
+  xorg-xrandr
+)
+# TODO: package sol2 for lua support
+# optdepends=('lua: for LUA scripting')
+provides=(
+  ladspa-host
+  lv2-host
+  vst3-host
+)
+source=(
+  git+https://github.com/kushview/$pkgname#tag=$pkgver
+  git+https://github.com/free-audio/clap-juce-extensions.git
+  git+https://github.com/free-audio/clap.git  # submodule of clap-juce-extensions
+  git+https://github.com/free-audio/clap-helpers.git  # submodule of clap-juce-extensions
+)
+sha512sums=('1dd79317ecdfe155661a9d74f858c251f5b566602eb9927778339c6491c3fbdc0d2c46d29eed4d85608d3a601686bfbb4097b514b69cce8cea43fa7a29bdcae2'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('c1332fd14f14dfa44934203ba1bafd1a52346ab6b0c9bf7fbfc84ab673d8a094f29ced5079b4e0129611eb4b2842ff3b7b49a298521df3de532e745da98c6e00'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.deps/clap-juce-extensions.url "$srcdir/clap-juce-extensions"
+  git config submodule.deps/clap-juce-extensions.url "$srcdir/clap-juce-extensions"
+  git -c protocol.file.allow=always submodule update
+
+  cd deps/clap-juce-extensions
+  git submodule init
+  git config submodule.clap-libs/clap.url "$srcdir/clap"
+  git config sbumodule.clap-libs/clap-helpers.url "$srcdir/clap-helpers"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel "$(nproc)"
+  )
+  ctest "${ctest_flags[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname/{AUTHORS,CHANGELOG,CODE_OF_CONDUCT,CONTRIBUTING,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,66 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=libpillowfight
+pkgname=(
+  libpillowfight
+  python-pillowfight
+)
+pkgver=0.3.1
+pkgrel=4
+pkgdesc='Small library containing various image processing algorithms'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/OpenPaperwork/libpillowfight'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  python
+  python-pillow
+)
+makedepends=(
+  cmake
+  git
+  ninja
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("git+https://gitlab.gnome.org/World/OpenPaperwork/libpillowfight.git#tag=$pkgver")
+b2sums=(a9e696f1d36581ec4e426901529fb18a3319b0aa1f8a27b6f8c49c3a6aa848fb4fa2a2d392e689685234298717a8b8dff6047c54e1d574707b12b2672fbd7bf0)
+
+build() {
+  make -C $pkgbase src/pillowfight/_version.h
+  cmake -S $pkgbase -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake --build build
+
+  cd $pkgbase
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgbase
+  # NOTE: Canny and SWT tests fail - https://gitlab.gnome.org/World/OpenPaperwork/libpillowfight/-/issues/26
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')" \
+    pytest -k "not test_canny and not test_swt and not test_swt2"
+}
+
+package_libpillowfight() {
+  depends=(glibc)
+
+  DESTDIR="$pkgdir" cmake --install build
+}
+
+package_python-pillowfight() {
+  pkgdesc+=' (Python bindings)'
+  depends=(
+    glibc
+    python
+    python-pillow
+  )
+
+  cd $pkgbase
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

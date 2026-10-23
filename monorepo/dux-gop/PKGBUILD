@@ -1,0 +1,34 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=dux-gop
+_pkgname=dgop
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='System monitoring CLI + REST API'
+arch=(x86_64 aarch64 armv7h)
+url="https://github.com/duxlabs-dev/$pkgname"
+license=(MIT)
+depends=(glibc)
+provides=("dgop=$pkgver")
+conflicts=(dgop)
+replaces=(dgop)
+makedepends=(go)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('e5d2cee5b34c9be5098423b4ee5b602c0cc1503adbfe227df1d732c5d614837e')
+
+prepare() {
+	cd "$_archive"
+	export CGO_CPPFLAGS="$CPPFLAGS"
+	export CGO_CFLAGS="$CFLAGS"
+	export CGO_CXXFLAGS="$CXXFLAGS"
+	export CGO_LDFLAGS="$LDFLAGS"
+	export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+	go build "./cmd/$_pkgname"
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$_pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

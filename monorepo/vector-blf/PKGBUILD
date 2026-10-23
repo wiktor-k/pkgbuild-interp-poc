@@ -1,0 +1,32 @@
+# Maintaier: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=vector-blf
+pkgver=2.4.2
+pkgrel=2
+pkgdesc='A library to access Binary Log File (BLF) files from Vector Informatik'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+url='https://github.com/Technica-Engineering/vector_blf'
+depends=(glibc
+         libgcc
+         zlib)
+makedepends=(cmake
+             doxygen)
+source=(https://github.com/Technica-Engineering/vector_blf/archive/v$pkgver/$pkgname-$pkgver.tar.gz
+        fix-build.patch)
+sha256sums=('02d4bdccc2a4bfa93a3d2f62d95c77c3166bc94d2df55dd49298e8099dc7c090'
+            '904614c3265bc586eafad16fffb977ba162f0e3881d67a0d7797e1a8bc55b8c8')
+
+prepare() {
+  patch -d ${pkgname//-/_}-$pkgver -p1 < fix-build.patch
+}
+
+build() {
+  cmake -B build -S ${pkgname//-/_}-$pkgver \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

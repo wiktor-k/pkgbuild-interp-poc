@@ -1,0 +1,81 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Ding Xiao <tinocodfcdsa10@mails.tsinghua.edu.cn>
+# Contributor: Firmy <firmianay@gmail.com>
+
+pkgname=python-pwntools
+_pyname=pwntools
+pkgver=4.15.0
+pkgrel=2
+pkgdesc='CTF framework and exploit development library'
+url='https://github.com/Gallopsled/pwntools'
+arch=('any')
+license=('BSD-2-Clause AND GPL-2.0-or-later AND GPL-3.0-or-later AND MIT')
+depends=(
+  'python'
+  'python-capstone'
+  'python-colored-traceback'
+  'python-dateutil'
+  'python-intervaltree'
+  'python-mako'
+  'python-packaging'
+  'python-paramiko'
+  'python-psutil'
+  'python-pyelftools'
+  'python-pygments'
+  'python-pyserial'
+  'python-pysocks'
+  'python-requests'
+  'python-rpyc'
+  'python-six'
+  'python-sortedcontainers'
+  'python-unicorn'
+  'python-zstandard'
+  'ropgadget'
+)
+makedepends=(
+  'pandoc'
+  'python-build'
+  'python-installer'
+)
+backup=('etc/pwn.conf')
+source=(https://github.com/Gallopsled/pwntools/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz
+        pwn.conf)
+sha256sums=('f1a4c05349cf252e66a96cef6c821bdb07440f52dae4fde1ad8cdeafb4713f1f'
+            '50916e4e45d026422cd6bfe8de50e7246c61b0b1e0007571e7c04a994282fe89')
+b2sums=('4965df904514e4e77f7219f813a23d55c6ffe5d1b3168140a4af43cb74bf4f74401d0b246d77464284247bf09cef253324be6c87c815ecec269ebc37295f3bee'
+        'cac0a12eea8abd3d2ee21632e7f2281e7e35c2d7839cfbcba83ae5d0e8f427e9cc2462a6d17d187252b99d9dbbb14393b9d5a63996c42043f553e9b66bfe9e07')
+
+build() {
+  cd ${_pyname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir=test_dir dist/*.whl
+
+  PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH" PWNLIB_NOTERM=true python -c 'import pwn'
+}
+
+package() {
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  find "${pkgdir}/usr/bin" -type f ! -name pwn -delete
+
+  install -Dm 644 "${srcdir}/pwn.conf" -t "${pkgdir}/etc"
+  install -Dm 644 LICENSE-pwntools.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  # https://github.com/Gallopsled/pwntools/issues/2150
+  install -d "${pkgdir}/usr/share/doc/"
+  mv -v "${pkgdir}/usr/pwntools-doc" "${pkgdir}/usr/share/doc/"
+
+  install -Dm 644 extra/bash_completion.d/pwn -t  "${pkgdir}/usr/share/bash-completion/completions/"
+  install -Dm 644 extra/zsh_completion/_pwn -t "${pkgdir}/usr/share/zsh/site-functions/"
+
+  install -Dm 644 LICENSE-pwntools.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

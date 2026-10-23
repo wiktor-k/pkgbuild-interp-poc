@@ -1,0 +1,71 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Snowstorm64
+
+pkgname=ares-emu
+pkgver=148
+pkgrel=2
+pkgdesc='Multi-system emulator, focusing on accuracy and preservation'
+arch=(x86_64)
+url='https://ares-emu.net'
+license=(ISC)
+depends=(
+  alsa-lib
+  libgcc
+  libstdc++
+  libao
+  libgl
+  libpulse
+  librashader
+  libretro-shaders
+  systemd-libs
+  libx11
+  libxrandr
+  openal
+  sdl3
+  vulkan-driver
+  vulkan-icd-loader
+  zlib
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  pango
+)
+makedepends=(
+  git
+  cmake
+  ninja
+  mesa
+)
+source=("$pkgname::git+https://github.com/ares-emulator/ares#tag=v$pkgver")
+sha512sums=('fc9da6cbe0faa71be0315670c7c3449439c8d958f457d6641864212051f65529064a5257004fe27a291b5a333f87c44752b88a92edeb90ec788321ce42a61d45')
+b2sums=('ee9f453a9f3deb9fbe4e6ce673c5d75afb8c4fa35f06463965946b3e9fd7a7bb8ca39b5b065d782c1a3130032c86717a6e366b04b90e1323f9c88e8731309996')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D ARES_BUILD_LOCAL=OFF
+    -D ARES_ENABLE_MINIMUM_CPU=OFF
+    -D ARES_BUNDLE_SHADERS=OFF
+    -D ARES_SKIP_DEPS=ON
+    -D ARES_BUILD_OFFICIAL=YES
+    -G Ninja
+    )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build "build"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE"
+}

@@ -1,0 +1,24 @@
+pkgbase = linbox
+	pkgdesc = A template library for exact, high-performance linear algebra computation with dense, sparse, and structured matrices over the integers and over finite fields
+	pkgver = 1.7.1
+	pkgrel = 2
+	url = https://linalg.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	license = LGPL-2.1-or-later
+	makedepends = iml
+	makedepends = flint
+	makedepends = fplll
+	makedepends = git
+	makedepends = lapack
+	makedepends = m4rie
+	makedepends = ntl
+	depends = fflas-ffpack
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = sh
+	source = git+https://github.com/linbox-team/linbox#tag=v1.7.1
+	sha256sums = 4bf588e21058c7220a257076db1dada34259138d23190466cef1885227e1cfc1
+
+pkgname = linbox

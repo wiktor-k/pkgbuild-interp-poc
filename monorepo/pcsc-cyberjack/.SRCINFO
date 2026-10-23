@@ -1,0 +1,18 @@
+pkgbase = pcsc-cyberjack
+	pkgdesc = PCSC Driver for Reiner SCT cyberjack Cardreaders
+	pkgver = 3.99.5_SP17
+	pkgrel = 4
+	url = https://help.reiner-sct.com/de/support/solutions/articles/101000480008
+	arch = x86_64
+	license = GPL-2.0-or-later AND LGPL-2.0-or-later AND LGPL-2.1-or-later
+	depends = glibc
+	depends = libusb
+	depends = pcsclite
+	depends = libgcc
+	depends = libstdc++
+	source = https://support.reiner-sct.de/downloads/LINUX/V3.99.5_SP17/pcsc-cyberjack-3.99.5final.SP17.tar.bz2
+	source = libifd-cyberjack6.udev
+	sha256sums = f1a8e15db3a4268b0d79c32a76195b34d79518bb891685443e253311f9e9d30a
+	sha256sums = d0f0587aef5f15f44178140e28844cad0d003cae59adede078fb890688135a8b
+
+pkgname = pcsc-cyberjack

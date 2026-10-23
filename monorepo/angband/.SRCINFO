@@ -1,0 +1,29 @@
+pkgbase = angband
+	pkgdesc = A roguelike dungeon exploration game based on the writings of JRR Tolkien
+	pkgver = 4.2.6
+	pkgrel = 1
+	url = https://rephial.org/
+	arch = x86_64
+	license = GPL-2.0-only
+	license = CC-BY-3.0
+	license = CC-BY-4.0
+	makedepends = git
+	makedepends = python-docutils
+	depends = glibc
+	depends = sdl2
+	depends = sdl2_ttf
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = ncurses
+	depends = xorg-fonts-misc
+	depends = xorg-mkfontscale
+	depends = hicolor-icon-theme
+	depends = libx11
+	source = angband::git+https://github.com/angband/angband#tag=4.2.6
+	source = remove-dirty-version.patch
+	sha512sums = e6caae1b4caa66c116e86876353fd2f08b9919afa4e2590676468a8b57f11767ca8e9421480b5c2b6b92b8e59c317d9622331322567a8738e6db3ff1bd379ab2
+	sha512sums = de2bddb3824d581cf6827b9e86f409f9100245b9ce800611e982fa4a80986b4b9a01aea59a3b60f430ece5425977ce5074843ebf4e3cc91c52b175778f86dbc5
+	b2sums = 40574c9367956af9ba89dbfcd0467f618a8da52d6ae1b13c6420d3c1fbde6c3efc68e7ee92d477ae44f2db8277811a37d29c8e2320735b7add2319f0aeb03a7a
+	b2sums = 84e2a3f0a959072167aaf55718e02643d0b5793da18bc60d5464de0477fe9237e5f6e3374ee0919ca7079fb86a65c011db979e7d9dbe052af8caa883bf16e906
+
+pkgname = angband

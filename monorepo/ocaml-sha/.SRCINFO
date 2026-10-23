@@ -1,0 +1,18 @@
+pkgbase = ocaml-sha
+	pkgdesc = SHA1 and SHA2 implementations for OCaml
+	pkgver = 1.15.4
+	pkgrel = 1
+	url = https://github.com/djs55/ocaml-sha
+	arch = x86_64
+	license = ISC
+	makedepends = dune
+	depends = glibc
+	depends = ocaml
+	depends = ocaml-stdlib-shims
+	options = !strip
+	options = !makeflags
+	options = !debug
+	source = ocaml-sha-1.15.4.tar.gz::https://github.com/djs55/ocaml-sha/archive/refs/tags/v1.15.4.tar.gz
+	b2sums = 1658a99384de4de4063ede9f41191b27ce34a0c5a303fda4bbd0a7185a0ce1419f8207249cda3a606e525ec1f68a83b548352374f76727a15ab0c685f8f77190
+
+pkgname = ocaml-sha

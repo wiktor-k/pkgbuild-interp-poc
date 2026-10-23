@@ -1,0 +1,25 @@
+pkgbase = galculator
+	pkgdesc = GTK based scientific calculator
+	pkgver = 2.1.4
+	pkgrel = 12
+	url = https://github.com/galculator/galculator
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = intltool
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libquadmath
+	depends = pango
+	source = git+https://github.com/galculator/galculator.git#tag=v2.1.4
+	source = 0001-Fix-multiple-definition-of-prefs-compile-error-with-.patch
+	source = 0002-Declare-function-parameters-as-required-by-C23.patch
+	source = galculator-sign-accel.patch
+	b2sums = 4a204b3d459f0f9e9e7014e39d1420f975f3569e8f36acefd5b5ceb9bcec153435e5f7dd40aa9d678f98a54e979739b44494bad1f8910b645719c4946bfe6bbf
+	b2sums = 9ab69d9ab67edde7a2cc962013a7156194d822601429a7f62066c02a078c7fdc8d0811ca6400e72e35184e83c941a6c270c6976fd5cf75a7800194bd123b6c9d
+	b2sums = 8085ef6f869396f29d8385eccb2d14ff58ca99ab2a67de60ded3ba60a6ed0ad5601a76cc46528f617e9c97d52920e297eb777711bdff92c4a6a0866ece6e766b
+	b2sums = 0624ea8ea25432b9eef08ada9a88f3ca17695a72e7c14ef85ed0feaec7b5f09d76f58f4bf7993caf518061fdc22cc2bb2772ca7559489df1682d75315e299c87
+
+pkgname = galculator

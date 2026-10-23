@@ -1,0 +1,51 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=qmidinet
+pkgver=1.0.2
+pkgrel=1
+pkgdesc="A MIDI Network Gateway via UDP/IP Multicast"
+arch=(x86_64)
+url="https://qmidinet.sourceforge.io"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-base
+  qt6-svg
+)
+makedepends=(
+  alsa-lib
+  cmake
+  jack
+  qt6-tools
+)
+source=(https://downloads.sourceforge.net/project/$pkgname/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz)
+sha512sums=('b40b5f56b3f17a71d4c64dde3cc96962ab3714a9f3cfdf15d155ec861b8db35f5f464493866a60cc13c636030f8777354f8b60e8a5d0ec556c2ca5200d9cdcbf')
+b2sums=('ae15e75f24a0b9de70eb6dc1fe375d6157592aebe59a18d6dec4ecfdd2c83134145dfd89db4f158de1c89a4428c2c6752cad6017bdc9230ba95f9761aa26fd64')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CONFIG_QT6=ON
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    jack libjack.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}

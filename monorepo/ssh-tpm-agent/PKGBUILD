@@ -1,0 +1,26 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+
+pkgname=ssh-tpm-agent
+pkgver=0.9.0
+pkgrel=2
+pkgdesc="ssh-agent for TPMs"
+arch=("x86_64")
+url="https://github.com/Foxboron/ssh-tpm-agent"
+license=("MIT")
+depends=("glibc")
+makedepends=("go" "git" "systemd" "asciidoctor")
+source=("https://github.com/Foxboron/ssh-tpm-agent/releases/download/v${pkgver}/${pkgname}-v${pkgver}.tar.gz"{,.gpg})
+validpgpkeys=("C100346676634E80C940FB9E9C02FF419FECBE16")
+sha256sums=('74682d750b3dfa97388d9334fd9f48b797c688642bec0f30d192bb5085c12577'
+            '9d48fcdf4c286dbfa1bff8a6321f49efdd3382cf3492fbca9316ded35a293b6b')
+
+build(){
+    cd "${pkgname}-v${pkgver}"
+    export GOFLAGS="-buildmode=pie -modcacherw"
+    make
+}
+
+package(){
+    cd "${pkgname}-v${pkgver}"
+    make DESTDIR="$pkgdir" PREFIX="/usr" install
+}

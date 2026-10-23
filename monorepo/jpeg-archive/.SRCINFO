@@ -1,0 +1,21 @@
+pkgbase = jpeg-archive
+	pkgdesc = Utilities for archiving JPEGs for long term storage
+	pkgver = 2.2.0
+	pkgrel = 4
+	url = https://github.com/danielgtaylor/jpeg-archive/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = nasm
+	depends = bash
+	optdepends = parallel: for jpeg-archive
+	optdepends = dcraw: for jpeg-archive
+	optdepends = perl-image-exiftool: for jpeg-archive
+	source = git+https://github.com/danielgtaylor/jpeg-archive.git#commit=f51c5cefeb9fe5207835cc9cc2422f3950ab787a
+	source = git+https://github.com/mozilla/mozjpeg.git#commit=72d249b89ca348c991d5e27c82cf32ba0f12d05a
+	source = parallel.config
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = 6a79ff5ed4b473f0515092b2a0105d6c8e38935020369e336a6a486f89de7a01
+
+pkgname = jpeg-archive

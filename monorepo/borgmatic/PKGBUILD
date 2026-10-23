@@ -1,0 +1,84 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Kr1ss $(echo \<kr1ss+x-yandex+com\>|sed s/\+/./g\;s/\-/@/)
+# Contributor: Alexander Görtz <aur@nyloc.de>
+# Contributor: Dan Beste <dan.ray.beste@gmail.com>
+# Contributor: Julien Nicoulaud <julien dot nicoulaud at gmail dot com>
+# Contributor: stef204 <https://aur.archlinux.org/account/stef204>
+
+pkgname=borgmatic
+pkgver=2.1.10
+pkgrel=1
+pkgdesc='Simple, configuration-driven backup software for servers and workstations'
+arch=(any)
+url=https://torsion.org/borgmatic
+license=(GPL-3.0-or-later)
+depends=(
+  borg
+  python
+  python-binaryornot
+  python-jsonschema
+  python-packaging
+  python-psutil
+  python-requests
+  python-rich
+  python-ruamel-yaml
+  python-textual
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  apprise
+  python-flexmock
+  python-pytest
+  python-pytest-asyncio
+)
+optdepends=(
+  'apprise: for Apprise notifications'
+  'python-pyfuse3: for mount action'
+)
+source=("git+https://projects.torsion.org/borgmatic-collective/borgmatic.git#tag=$pkgver")
+b2sums=('fbe8323466c99a782215668dcac1cbe927ced38312abab9352ba42ab0bb344f0c9af8aff4fc2113bad5ef7caaca4ba8dd7be7531c64e34451b2f6ccf9edd3b1c')
+
+prepare() {
+  cd $pkgname
+  sed -i 's,root/.local,usr,' sample/systemd/borgmatic{,-user}.service
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+
+  # Build shell completions
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  mkdir completions
+  ./test-env/bin/borgmatic --bash-completion > completions/bash
+  ./test-env/bin/borgmatic --fish-completion > completions/fish
+}
+
+check() {
+  cd $pkgname
+  # Override addopts as they invoke coverage testing
+  PATH="$PWD/test-env/bin:$PATH" test-env/bin/python -m pytest \
+    --override-ini="addopts=--asyncio-mode=auto" --ignore=tests/end-to-end
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir"/usr/lib/systemd/system \
+    sample/systemd/borgmatic.{service,timer}
+  install -Dm644 -t "$pkgdir"/usr/lib/systemd/user \
+    sample/systemd/borgmatic-user.{service,timer}
+
+  install -Dm644 completions/bash \
+    "$pkgdir"/usr/share/bash-completion/completions/$pkgname
+  install -Dm644 completions/fish \
+    "$pkgdir"/usr/share/fish/vendor_completions.d/$pkgname.fish
+}

@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=attoparsec-iso8601
+pkgname=haskell-attoparsec-iso8601
+pkgver=1.1.1.0
+pkgrel=88
+pkgdesc="Parsing of ISO 8601 dates, originally from aeson"
+url="https://github.com/haskell/aeson"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-attoparsec' 'haskell-integer-conversion' 'haskell-time-compat')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('119de2c14a5ac4a21041e513410561dbbc82a62279854fb4a5f2d5631e75e6cd148fbba0ab3ccf202cc162ab9142c8a44e85a9a07d027b7c38a5638b964c52f0')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-developer -f-fast
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

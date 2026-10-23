@@ -1,0 +1,76 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Tobias Kieslich <tobias@justdreams.de>
+
+pkgname=gthumb
+pkgver=3.12.12
+pkgrel=1
+pkgdesc="Image browser and viewer for the GNOME Desktop"
+url="https://wiki.gnome.org/Apps/Gthumb"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  exiv2
+  gdk-pixbuf2
+  glib2
+  glibc
+  gsettings-desktop-schemas
+  gst-plugin-gtk
+  gst-plugins-base-libs
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  lcms2
+  libcolord
+  libgcc
+  libheif
+  libjpeg-turbo
+  libjxl
+  libpng
+  libstdc++
+  librsvg
+  libtiff
+  libwebp
+  libx11
+  pango
+  zlib
+)
+makedepends=(
+  appstream
+  brasero
+  docbook-xsl
+  git
+  glib2-devel
+  libraw
+  meson
+  yelp-tools
+)
+optdepends=(
+  'brasero: burn discs'
+  'libraw: read RAW files'
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gthumb.git#tag=$pkgver"
+)
+b2sums=('f355bbf01681301ce2d1fd2e2bba25f13d31ca023cf554e29d94795fffa65a23b7b77cd911292b2d379334dc2f07d3b06be1039c872969b670a55a5097aa28df')
+
+prepare() {
+  cd gthumb
+}
+
+build() {
+  arch-meson gthumb build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

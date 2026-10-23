@@ -1,0 +1,74 @@
+# Maintainer: Sébastien Luttringer
+# Contributor: Patrik Cyvoct <patrik at ptrk dot io>
+# Contributor: Mikkel Oscar Lyderik <mikkeloscar at gmail dot com>
+
+pkgname=scaleway-cli
+pkgver=2.65.1
+pkgrel=1
+pkgdesc='Command line interface for Scaleway Cloud'
+arch=('x86_64')
+url='https://www.scaleway.com/en/cli/'
+license=('Apache-2.0')
+depends=('glibc')
+options=(!debug)
+makedepends=('go' 'git')
+source=("git+https://github.com/scaleway/scaleway-cli.git#tag=v$pkgver"
+        '0001-Disable-version-check-and-error-reporting.patch')
+sha256sums=('8a827198ee06f5eb3820f3f107bb1d72a59dc371671414f40655dec18e207454'
+            '6bbf4ef56bafe74ea53d3116436cd872eea81d6fc07e6a8b955b52405f959502')
+
+prepare() {
+  cd $pkgname
+  # apply patch from the source array (should be a pacman feature)
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    echo "Applying patch $src..."
+    patch -Np1 < "../$src"
+  done
+  # remove online check tests
+  rm -vf core/build_info_test.go
+  :
+}
+
+build() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  go build \
+    -buildmode=pie \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" -X main.Version=$pkgver-$pkgrel -X main.BuildDate=$(date -u '+%Y-%m-%dT%I:%M:%S%p')" \
+    -o scw ./cmd/scw/main.go
+  PATH=. scw autocomplete script shell=zsh > zshcomp
+  PATH=. scw autocomplete script shell=bash > bashcomp
+}
+
+check() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  go test ./... \
+    -buildmode=pie \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" -X main.Version=$pkgver-$pkgrel -X main.BuildDate=$(date -u '+%Y-%m-%dT%I:%M:%S%p')"
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 scw "$pkgdir"/usr/bin/scw
+  install -Dm644 bashcomp "$pkgdir"/usr/share/bash-completion/completions/scw
+  install -Dm644 zshcomp "$pkgdir"/usr/share/zsh/site-functions/_scw
+}
+
+# vim:set ts=2 sw=2 ft=PKGBUILD et:

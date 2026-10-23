@@ -1,0 +1,24 @@
+pkgbase = bazel
+	pkgdesc = Correct, reproducible, and fast builds for everyone
+	pkgver = 9.3.1
+	pkgrel = 1
+	url = https://bazel.build/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = protobuf
+	makedepends = python
+	depends = java-environment=21
+	depends = libarchive
+	depends = zip
+	depends = unzip
+	depends = which
+	options = !debug
+	options = !strip
+	source = https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-dist.zip
+	source = https://github.com/bazelbuild/bazel/releases/download/9.3.1/bazel-9.3.1-dist.zip.sig
+	validpgpkeys = 71A1D0EFCFEB6281FD0437C93D5919B448457EE0
+	b2sums = d6ed8e48833404c249c59a75e2e3182ce06099c343eba17299e4c0563d753b49e6f6a9115b10f40ad2a5b65e5baa7286c58c6ab648752639da426be83a40b42d
+	b2sums = SKIP
+
+pkgname = bazel

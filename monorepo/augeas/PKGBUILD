@@ -1,0 +1,36 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Thomas S Hatch <thatch45@gmail.com>
+# Contributor: Jon Nordby <jononor@gmail.com>
+
+pkgname=augeas
+pkgver=1.15.0
+pkgrel=1
+pkgdesc="A configuration editing tool that parses config files and transforms them into a tree"
+arch=(x86_64)
+url="https://augeas.net"
+license=('LGPL-2.1-or-later')
+depends=(
+  glibc
+  libgcc
+  libxml2
+  readline
+)
+source=("https://github.com/hercules-team/augeas/releases/download/release-$pkgver/augeas-$pkgver.tar.gz")
+b2sums=('9d6b83c9724d0558857949772456789d5bedaf3496d2fccba585efe09d66deb6cc3324196e0017b39ef554d7732831c28a8b26db4808a84842900120b2eac1a8')
+validpgpkeys=('AED6E2A185EEB379F17476D2E012D07AD0E3CC30') # David Lutterkort <lutter@watzmann.net>
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

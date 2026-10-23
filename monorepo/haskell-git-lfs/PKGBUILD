@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=git-lfs
+pkgname=haskell-git-lfs
+pkgver=1.2.5
+pkgrel=168
+pkgdesc="An implementation of the git-lfs protocol"
+url="https://hackage.haskell.org/package/git-lfs"
+license=('AGPL-3.0-only')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-case-insensitive' 'haskell-http-client'
+         'haskell-http-types' 'haskell-network-uri')
+makedepends=('ghc' 'uusi')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('3d5a8535846dde1ee453bbed4e6c2b1dd38bd43bae49fb86a0b017606f90786ac9ecfc0d13f5bcc130bf64631f7e865e629523ba103b0f71933615c6d9ea8f86')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver    
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

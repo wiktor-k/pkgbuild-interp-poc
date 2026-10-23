@@ -1,0 +1,52 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=libpd
+pkgver=0.16.1
+pkgrel=1
+pkgdesc="Pure Data embeddable audio synthesis library"
+arch=(x86_64)
+url="https://github.com/libpd/libpd/"
+license=('BSD-3-Clause')
+depends=(glibc)
+makedepends=(git)
+source=(
+  "git+$url#tag=$pkgver"
+  "${pkgname}-opensl_stream::git+https://github.com/nettoyeurny/opensl_stream.git"
+  "${pkgname}-pure-data::git+https://github.com/pure-data/pure-data.git"
+)
+sha512sums=('a691a8d1a4f26d997f5a5b866ff440e4631108bc4aa18d65bbf447a9e900a975dc70a4f06b54cf90dd6f3e295ee1ec9fa64fc98dbb8876ddf8d09c954355e899'
+            'SKIP'
+            'SKIP')
+b2sums=('fb2e360be06b2782be41964c6b21f1fe0a777586417c5b6a714356a9d6016792ec91e06a07ae1cfdb3a996f7ead7d8ad703cbab790034ddc73aea1dcdae791bd'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+
+  git config submodule."jni/opensl_stream".url "${srcdir}/${pkgname}"-opensl_stream
+  git config submodule."pure-data".url "${srcdir}/${pkgname}"-pure-data
+
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  local make_options=(
+    ADDITIONAL_CFLAGS="$CFLAGS"
+    ADDITIONAL_LDFLAGS="$LDFLAGS"
+    DOUBLE=true
+    EXTRA=true
+    MULTI=true
+    UTIL=true
+    -C "$pkgname"
+  )
+
+  make "${make_options[@]}" libpd
+}
+
+package() {
+  make install -C "$pkgname" prefix="$pkgdir"/usr
+  install -vDm 644 "$pkgname/LICENSE.txt" -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 "$pkgname/CHANGES.txt" -t "$pkgdir/usr/share/doc/$pkgname/"
+}

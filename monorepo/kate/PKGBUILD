@@ -1,0 +1,89 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+
+pkgname=kate
+pkgver=26.08.2
+pkgrel=1
+arch=(x86_64)
+license=(GPL-2.0-or-later LGPL-2.0-or-later)
+pkgdesc='Advanced text editor'
+groups=(kde-applications
+        kde-utilities)
+url='https://apps.kde.org/kate/'
+depends=(glibc
+         gpgmepp
+         karchive
+         kbookmarks
+         kcolorscheme
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         kguiaddons
+         ki18n
+         kiconthemes
+         kio
+         knewstuff
+         kparts
+         kservice
+         ktexteditor
+         kuserfeedback
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libstdc++
+         qt6-base
+         sh
+         syntax-highlighting)
+optdepends=('bash-language-server: Bash LSP support'
+            'blueprint-compiler: GTK Blueprint LSP support'
+            'clang: C and C++ LSP support'
+            'dart: Dart LSP support'
+            'dockerfile-language-server: Dockerfile LSP support'
+            'git: git-blame plugin' 
+            'gleam: Gleam LSP support'
+            'gopls: GO LSP support'
+            'haskell-language-server: Haskell LSP support'
+            'konsole: open a terminal in Kate'
+            'julia: Julia LSP support'
+            'lua-language-server: LUA LSP support'
+            'marksman: Markdown LSP support'
+            'python-lsp-server: Python LSP support'
+            'qt6-declarative: RBQL plugin, QML LSP support'
+            'qtkeychain-qt6: SQL plugin'
+            'rust-analyzer: Rust LSP support'
+            'shellcheck: Bash linting'
+            'texlab: LaTeX LSP support'
+            'tinymist: Typst LSP support'
+            'typescript-language-server: JavaScript LSP support'
+            'vscode-css-languageserver: CSS LSP support'
+            'vscode-html-languageserver: HTML LSP support'
+            'vscode-json-languageserver: JSON LSP support'
+            'vue-language-server: Vue LSP support'
+            'yaml-language-server: YAML LSP support'
+            'zls: Zig LSP support')
+makedepends=(extra-cmake-modules
+             kdoctools
+             qtkeychain-qt6)
+conflicts=(kwrite)
+provides=(kwrite)
+replaces=(kwrite)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('6fad08032362300d8de646c6d45f11dac72c9c7c6dfea2261c844a42a17a8652'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

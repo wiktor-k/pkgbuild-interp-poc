@@ -1,0 +1,25 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=ocaml-gen
+pkgver=1.1
+pkgrel=5
+pkgdesc='Simple, efficient iterators'
+arch=(x86_64)
+url='https://github.com/c-cube/gen'
+license=(BSD-2-Clause)
+depends=(ocaml ocaml-seq)
+makedepends=(dune)
+options=(!strip !makeflags !debug)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('f5314ecba43523ebde487740eae1df7e058ea0fa47ef676aa19d76e90f21b08464da6b1dafe8f0d10e7720dd48d72f6b7a40397545adf874698d6cddc47c0a72')
+
+build() {
+  cd gen-$pkgver
+  dune build
+}
+
+package() {
+  cd gen-$pkgver
+  dune install --prefix="$pkgdir/usr" --libdir="$pkgdir/usr/lib/ocaml"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

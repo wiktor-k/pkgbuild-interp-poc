@@ -1,0 +1,27 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+# Contributor: Andrew Steinke <rkcf@rkcf.me>
+
+pkgname=python-lxc
+_pkgname=python3-lxc
+pkgver=7.0.0
+pkgrel=1
+pkgdesc="Python3 bindings for LXC"
+url="https://github.com/lxc/python3-lxc"
+arch=('x86_64')
+license=('LGPL-2.1-only')
+depends=('python' 'lxc' 'glibc')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools' 'python-poetry-core')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha512sums=('9e0bb692b2c92b3e9e022ef99602ec059ee1bb1bfcb8d3498ff5e4f164759a70e202293c012fa92dfcb59336ff6bd7b073e31593cdd86312e3ab92bf3154cb8f')
+
+build() {
+	cd "${_pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+}
+

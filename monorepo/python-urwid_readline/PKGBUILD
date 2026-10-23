@@ -1,0 +1,38 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-urwid_readline
+pkgver=0.15.1
+pkgrel=3
+pkgdesc='Readline text edit for urwid'
+arch=('any')
+url='https://github.com/rr-/urwid_readline'
+license=('MIT')
+depends=(
+  'python'
+  'python-urwid'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=('python-pytest')
+source=("$url/archive/$pkgver/${pkgname#python-}-$pkgver.tar.gz")
+sha512sums=('91fd2e1fabf65755cc0fb28b772f72cc1cb533f3a1d30099f4aad2d6a68ca7b4e2476f33029b31ff772533ecb2c47e0caa049634d99e760eea831a502f224f86')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  pytest
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,47 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Ronald van Haren <ronald.archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+
+pkgname=netcdf-fortran
+pkgver=4.6.4
+pkgrel=1
+pkgdesc="NetCDF fortran bindings"
+arch=(x86_64)
+url="https://github.com/Unidata/netcdf-fortran"
+license=(custom)
+depends=(
+  libgcc
+  libgfortran
+  netcdf
+  curl
+)
+makedepends=(cmake gcc-fortran git doxygen)
+checkdepends=(valgrind)
+options=(!makeflags staticlibs)
+source=(git+${url}#tag=v${pkgver})
+sha256sums=('47d8f0e950531c30db616d2584bee722950f1a75bc740c431185a2b6a69a1028')
+
+build() {
+  cmake -B build -S ${pkgname} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DENABLE_FILTER_TEST=ON \
+    -DENABLE_LARGE_FILE_TESTS=ON \
+    -DTEST_WITH_VALGRIND=ON
+  make -C build
+}
+
+check() {
+  make -C build test
+}
+
+package() {
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm644 ${pkgname}/COPYRIGHT -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+  # Remove unwanted artifacts https://github.com/Unidata/netcdf-fortran/issues/338
+  rmdir "${pkgdir}"/usr/include/CMakeFiles/{netcdff{,_c}.dir,}
+  rm "${pkgdir}"/usr/lib/objects-RelWithDebInfo/{nf_,f}test_c/f03lib.c.o
+  rmdir "${pkgdir}"/usr/lib/objects-RelWithDebInfo/{{nf_,f}test_c,}
+  rm "${pkgdir}"/usr/lib/objects-Release/netcdff_c/nf_{lib,v2compat}.c.o
+  rmdir "${pkgdir}"/usr/lib/objects-Release/{netcdff_c,}
+}

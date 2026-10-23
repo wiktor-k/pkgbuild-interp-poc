@@ -1,0 +1,52 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: BrainDamage
+
+_pkgname=python-readability
+pkgbase=python-readability-lxml
+pkgname=(
+  python-readability-lxml
+  python-readability-lxml-docs
+)
+pkgver=0.9
+pkgrel=1
+pkgdesc='Fast html to text parser (article readability tool) python library'
+arch=(any)
+url='https://github.com/buriy/python-readability'
+license=(Apache-2.0)
+depends=(
+  python
+  python-chardet
+  python-cssselect
+  python-lxml
+  python-lxml-html-clean
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-myst-parser
+  python-poetry-core
+  python-sphinx_rtd_theme
+  python-wheel
+)
+source=("git+https://github.com/buriy/python-readability.git#tag=$pkgver")
+b2sums=(c3d5d2a250890e5c715c93afb64df8d420f70ab59f1d922cd895b732e63663f555f1066bc182bccc96bfeed3f05d26e4aff4083dbd1f1931452ab966bdd44007)
+
+build() {
+  cd $_pkgname
+  python -m build --wheel --no-isolation
+}
+
+package_python-readability-lxml() {
+  cd $_pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+package_python-readability-lxml-docs() {
+  pkgdesc="Developer documentation for python-readability-lxml"
+  depends=()
+
+  cd $_pkgname
+  python -m sphinx -b html doc/source "$pkgdir/usr/share/doc/$pkgbase/html"
+  rm -r "$pkgdir/usr/share/doc/$pkgbase/html/.doctrees"
+}

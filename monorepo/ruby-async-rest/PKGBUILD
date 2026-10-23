@@ -1,0 +1,77 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-async-rest
+pkgver=0.20.0
+pkgrel=1
+pkgdesc='A library for RESTful clients (and hopefully servers)'
+arch=(any)
+url='https://github.com/socketry/async-rest'
+license=(MIT)
+depends=(
+  ruby
+  ruby-async-http
+  ruby-protocol-http
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-decode
+  ruby-sus
+  ruby-sus-fixtures-async-http
+)
+options=(!emptydirs)
+source=(https://github.com/socketry/async-rest/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha512sums=('68e978b210a105265203f8024a8e1c10ad728bb9ae6fc9b773acea6375bcade248480a0e2f0805ff8de2a2072c04cd84eba98bcd0e5efd0f5b1d019e360632e8')
+b2sums=('ba69917f12349c45cfff7309a2d698b93a8b906b14701f7702f8e68f5e1d05eaf528164a83fc4e090600d140ce5e5b61c4d394ada19e535ebf599057c91a9696')
+
+prepare() {
+  cd async-rest-$pkgver
+  sed -r -i \
+    -e 's|~>|>=|g' \
+    -e '/signing_key/d' \
+    async-rest.gemspec
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-rest-$pkgver
+  gem build async-rest.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    async-rest-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-rest-$pkgver
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd async-rest-$pkgver
+  cp -a tmp_install/* "$pkgdir"/
+}

@@ -1,0 +1,25 @@
+pkgbase = avrdude
+	pkgdesc = Download/upload/manipulate the ROM and EEPROM contents of AVR microcontrollers
+	pkgver = 8.3
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/avrdudes/avrdude/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = ninja
+	depends = elfutils
+	depends = hidapi
+	depends = libftdi
+	depends = libusb-compat
+	depends = readline
+	source = avrdude-8.3.tar.gz::https://github.com/avrdudes/avrdude/archive/refs/tags/v8.3.tar.gz
+	source = https://github.com/avrdudes/avrdude/releases/download/v8.3/avrdude-8.3.tar.gz.sig
+	validpgpkeys = EF497ABE47ED91B3FC3D7EA54D902FF7723BDEE9
+	validpgpkeys = 5E84F980C3CAFD4BB5841070F48CA81B69A85873
+	validpgpkeys = 56628323218C669FF578705C7E9EADC3030D34EB
+	validpgpkeys = 8FBDC99556F7C22A77DC3E1145684AB70D286F63
+	b2sums = d2d7b048737a587839ffe7e5c98e7e72038db8fe413c9fb85d968a8980e28affd87fd97273e91ee69a9cf06cd137811f0d6d46da2a539616c3c36fbbc0ebbf82
+	b2sums = SKIP
+
+pkgname = avrdude

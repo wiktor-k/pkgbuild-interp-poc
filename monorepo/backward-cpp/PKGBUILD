@@ -1,0 +1,27 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=backward-cpp
+pkgver=1.6
+pkgrel=2
+pkgdesc='A beautiful stack trace pretty printer for C++'
+arch=(any)
+url='https://github.com/bombela/backward-cpp'
+license=(MIT)
+depends=()
+makedepends=(cmake
+             git)
+source=(git+https://github.com/bombela/backward-cpp#tag=v$pkgver)
+sha256sums=('8f6cee4a4bd302996898d5c02337215fb01abd637abb58ce9da51b696075d491')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib/cmake \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 $pkgname/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname
+}

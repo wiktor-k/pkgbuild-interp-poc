@@ -1,0 +1,34 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=markdown-oxide
+pkgver=0.25.12
+pkgrel=1
+pkgdesc='PKM oriented Markdown Language Server with Obsidian syntax support'
+arch=(x86_64)
+url="https://github.com/Feel-ix-343/$pkgname"
+license=(Apache-2.0)
+depends=(
+  libgcc
+  glibc
+)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('fc7c472c2bd93a9b8f58848d71f054ed02442310f5328081f3036a7ce79040cb')
+
+prepare() {
+	cd "$_archive"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "$_archive"
+	cargo build --release --frozen
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}
+

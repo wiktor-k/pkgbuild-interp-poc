@@ -1,0 +1,71 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-m
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='Run test/unit tests by line number. Metal!'
+arch=(any)
+url='https://github.com/qrush/m'
+license=(MIT)
+depends=(
+  ruby
+  ruby-rake
+)
+makedepends=(
+  git
+  ruby-activesupport
+  ruby-rdiscount
+  ruby-rdoc
+  ruby-mutex_m
+)
+checkdepends=(
+  ruby-bundler
+)
+options=(!emptydirs)
+source=(git+https://github.com/qrush/m.git#tag=v$pkgver)
+sha256sums=('38d5c5bc41590b1ac6fb79c25a4f113cbec0de4c1d932b2e4f37b384f4d48563')
+
+prepare() {
+  cd m
+  sed -i 's/task default: \[:test, "standard:fix"\]/task default: [:test]/' Rakefile
+  sed '/[rR]occo/d;/appraisal/d;/coveralls/d;/standard/d' -i m.gemspec Rakefile
+  echo -e "gemspec\ngem 'logger'\ngem 'mutex_m'\ngem 'base64'\ngem 'bigdecimal'\ngem 'drb'" > Gemfile
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd m
+  gem build m.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    m-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd m
+  MT_COMPAT="true" GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd m
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

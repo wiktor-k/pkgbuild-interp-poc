@@ -1,0 +1,25 @@
+pkgbase = python-gaphas
+	pkgdesc = Diagramming widget library for Python
+	pkgver = 5.1.2
+	pkgrel = 1
+	url = https://github.com/gaphor/gaphas
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-pytest-asyncio
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-poetry-core
+	makedepends = python-sphinx-furo
+	makedepends = python-wheel
+	depends = glib2
+	depends = graphene
+	depends = gtk4
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	source = git+https://github.com/gaphor/gaphas.git#tag=5.1.2
+	b2sums = 0c9e536a1016189b525ec1ae10806ab76602f7bb891c5193a57710929cd5a809ca0bf651574b1999337e784e0156d4d80f0e94c5cf8c969efb9b0d9c665786cd
+
+pkgname = python-gaphas

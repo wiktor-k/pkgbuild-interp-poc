@@ -1,0 +1,61 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Snowstorm64
+
+pkgname=librashader
+pkgver=0.12.1
+pkgrel=1
+pkgdesc="A preprocessor, compiler, and runtime for RetroArch 'slang' shaders"
+arch=(x86_64)
+url='https://github.com/SnowflakePowered/librashader'
+license=(GPL-3.0-only MPL-2.0)
+depends=(
+  glibc
+  libgcc
+  libgl
+  libstdc++
+  vulkan-driver
+  vulkan-icd-loader
+)
+makedepends=(
+  git
+  rust
+  ninja
+)
+options=(!lto)
+source=("$pkgname::git+$url#tag=librashader-v$pkgver")
+sha512sums=('4e322c5d8402dfad6a98edb626ec945c632910b128365fd8976742911591d0743213a09d7e8170bd24ee3f6804d25a14198f0a9fe419217a1d3f62248be399bd')
+b2sums=('52ae2a22da5ce4dc72454d3db87e64e52aebe4873532932e8225a83b7a759eb9733e4a75c1eafdc4c111c7bcaaeccfb75f65f0e7b3677bcc15fd323aeab292ef')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo run \
+    -p librashader-build-script \
+    -- \
+    --stable \
+    --profile optimized \
+    -- \
+    --no-default-features \
+    --features=runtime-vulkan,runtime-opengl
+}
+
+package() {
+  cd "$pkgname"
+
+  # library
+  install -vDm755 target/optimized/librashader.so "$pkgdir/usr/lib/librashader.so.${pkgver}"
+  ln -rs "$pkgdir/usr/lib/librashader.so.${pkgver}" "$pkgdir/usr/lib/librashader.so"
+
+  # headers
+  install -vDm644 -t "$pkgdir/usr/include/librashader" include/*.h
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+}

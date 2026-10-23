@@ -1,0 +1,76 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=glaxnimate
+pkgver=0.6.0
+pkgrel=2
+pkgdesc='Vector animation and motion design application'
+arch=(x86_64)
+url='https://glaxnimate.org/'
+license=(GPL-3.0-or-later)
+depends=(
+  ffmpeg
+  glibc
+  hicolor-icon-theme
+  karchive
+  kcolorscheme
+  kcompletion
+  kconfig
+  kconfigwidgets
+  kcoreaddons
+  kcrash
+  ki18n
+  kiconthemes
+  kwidgetsaddons
+  kxmlgui
+  libarchive
+  libgcc
+  libstdc++
+  potrace
+  python
+  qt6-base
+  qt6-svg
+  qt6-tools
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  git
+  ninja
+)
+source=(
+  "git+https://invent.kde.org/graphics/glaxnimate.git#tag=v$pkgver"
+  git+https://gitlab.com/mattbas/CMake-Lib.git
+  git+https://gitlab.com/mattbas/Qt-Color-Widgets.git
+  git+https://github.com/pybind/pybind11.git
+  git+https://gitlab.com/mattbas/python-lottie.git
+)
+b2sums=(
+  41953a1535aee88fe2aae4acd91607bffbcd6beaa5244aae60c96ec02dacf621270a3ea3afcf1494a8eeff76aa5ceb7554b55c3b3ec33eeae19740bb28e96120
+  SKIP
+  SKIP
+  SKIP
+  SKIP
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url cmake "$srcdir/CMake-Lib"
+  git submodule set-url external/Qt-Color-Widgets "$srcdir/Qt-Color-Widgets"
+  git submodule set-url external/QtAppSetup/external/pybind11 "$srcdir/pybind11"
+  git submodule set-url data/lib/python-lottie "$srcdir/python-lottie"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None \
+    -D BUILD_WITH_QT6=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

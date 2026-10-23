@@ -1,0 +1,30 @@
+pkgbase = python-imageio
+	pkgdesc = Python library for reading and writing image data
+	pkgver = 2.38.1
+	pkgrel = 1
+	url = https://github.com/imageio/imageio
+	arch = any
+	license = BSD-2-Clause
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = python
+	depends = python-numpy
+	depends = python-pillow
+	optdepends = python-av: for the PyAV plugin
+	optdepends = python-opencv: for the OpenCV plugin
+	optdepends = python-tifffile: for the TIFF plugin
+	optdepends = python-rawpy: for the RawPy plugin
+	optdepends = freeimage: for the FreeImage plugin (legacy)
+	optdepends = python-astropy: for the FITS plugin (legacy)
+	optdepends = python-imageio-ffmpeg: for the FFMPEG plugin (legacy)
+	optdepends = python-gdal: for the GDAL plugin (legacy)
+	optdepends = python-simpleitk: for the ITK plugin (legacy)
+	source = python-imageio-2.38.1.tar.gz::https://github.com/imageio/imageio/archive/v2.38.1.tar.gz
+	source = python-imageio-test-images::git+https://github.com/imageio/test_images.git#commit=f676c96b1af7e04bb1eed1e4551e058eb2f14acd
+	b2sums = bbd0e039b4cb487667f89233dc30acf8afae7c30b41bbbccf0e5fd824c6bff9243e6bf83c63d24c3d9de8e492fab62a5f039f5e3485b3a9cab149555f0db7500
+	b2sums = b48440fbd50d12e0138a6c19676b57029b48905cd6e24ea310ce0ad309275eec6bbf8c58604d5854989d795aa9d4a4c420f586d56f9b313ffdef6dcfb5482aa6
+
+pkgname = python-imageio

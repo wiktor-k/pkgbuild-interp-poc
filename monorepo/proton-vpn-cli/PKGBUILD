@@ -1,0 +1,42 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=proton-vpn-cli
+pkgver=1.0.5
+pkgrel=1
+pkgdesc="Official ProtonVPN CLI Linux app"
+arch=('any')
+url="https://github.com/ProtonVPN/proton-vpn-cli"
+license=('GPL-3.0-only')
+depends=(
+  python
+  python-click
+  python-dbus-fast
+  python-packaging
+  python-proton-core
+  python-proton-vpn-api-core
+  python-proton-keyring-linux
+  python-proton-vpn-network-manager
+  python-proton-vpn-local-agent
+  proton-vpn-daemon
+  python-sentry_sdk
+  python-tabulate
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+)
+source=("git+https://github.com/ProtonVPN/proton-vpn-cli.git#tag=v$pkgver")
+sha256sums=('c355a60f724062cccf0a755d27a9c575e187f827d2b8f46088392b67af4ebbb7')
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

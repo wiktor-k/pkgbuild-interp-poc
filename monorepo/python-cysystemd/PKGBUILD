@@ -1,0 +1,36 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: Dmitry Orlov <me@mosquito.su> <me@mosquito.su>
+
+pkgname=python-cysystemd
+_gitname=cysystemd
+pkgver=2.0.5
+pkgrel=1
+pkgdesc="SystemD wrapper on Cython"
+arch=(x86_64)
+url="http://github.com/mosquito/cysystemd"
+license=(Apache-2.0)
+depends=(
+  glibc
+  python
+  systemd-libs
+)
+makedepends=(
+  cython
+  git
+  python-packaging
+  python-setuptools
+  python-installer
+  python-build
+)
+source=("git+https://github.com/mosquito/cysystemd.git#tag=${pkgver}")
+sha256sums=('068fb8f7c16519d23c9ac329651592bd82891f94dbb0b3550348078544d97d06')
+
+build() {
+  cd "${srcdir}/${_gitname}"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${srcdir}/${_gitname}"
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

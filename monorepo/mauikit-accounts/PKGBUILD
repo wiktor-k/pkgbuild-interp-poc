@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=mauikit-accounts
+pkgver=4.0.2
+pkgrel=2
+pkgdesc='MauiKit utilities to handle User Accounts'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         kcoreaddons
+         libstdc++
+         mauikit
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('ba3616e9151d4838a1083765e3cf5241bd97e4c6796ead22493f4de91f286427'
+            'SKIP')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>                                    
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

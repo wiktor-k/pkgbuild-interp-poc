@@ -1,0 +1,55 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=prometheus-redis-exporter
+pkgver=1.95.0
+pkgrel=1
+
+pkgdesc='Prometheus exporter for ValKey & Redis metrics'
+url='https://github.com/oliver006/redis_exporter'
+arch=('x86_64')
+license=('MIT')
+
+depends=('glibc')
+makedepends=('go')
+
+backup=('etc/conf.d/prometheus-redis-exporter')
+
+source=("$pkgname-$pkgver.tar.gz::https://github.com/oliver006/redis_exporter/archive/v$pkgver.tar.gz"
+        prometheus-redis-exporter.conf
+        prometheus-redis-exporter.service
+        prometheus-redis-exporter.sysusers)
+
+sha256sums=('395a72cc03215ab7d497659ec1c1b49d4396173cc59d7beefd5e98188cc3af48'
+            '011b0175cd87600050e33f6e32e0f95bc862f8ac69d46da135f3276beca5a0ea'
+            '1df609cb49fb7eabb00cc1f17f8a98962a050464e31bf414dc4007f894dd3470'
+            '6188327303095e80a6e71d0fdfccc6a6dec3ce487cf538387830bd77c05bfb31')
+
+build() {
+  cd redis_exporter-$pkgver
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" \
+      -X main.BuildVersion=${pkgver} \
+      -X main.BuildCommitSha=v${pkgver} \
+      -X main.BuildDate=$(date -u '+%Y%m%d-%H:%M:%S' --date=@${SOURCE_DATE_EPOCH})" \
+    .
+}
+
+# Note: tests need running redis/valkey instances
+
+package()  {
+  install -Dm644 prometheus-redis-exporter.conf "${pkgdir}/etc/conf.d/prometheus-redis-exporter"
+  install -Dm644 prometheus-redis-exporter.service "${pkgdir}/usr/lib/systemd/system/prometheus-redis-exporter.service"
+  install -Dm644 prometheus-redis-exporter.sysusers "${pkgdir}/usr/lib/sysusers.d/prometheus-redis-exporter.conf"
+
+  cd redis_exporter-$pkgver
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+
+  install -Dm755 redis_exporter "${pkgdir}/usr/bin/prometheus-redis-exporter"
+}

@@ -1,0 +1,70 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Robert Knauer <robert@privatdemail.net>
+# Contributor: xav <xav at ethertricks dot net>
+
+pkgname=umurmur
+pkgver=0.5.1
+pkgrel=1
+pkgdesc='Minimalistic Mumble server'
+url="https://github.com/umurmur/umurmur"
+arch=(x86_64)
+license=(BSD-3-Clause)
+depends=(
+  glibc
+  openssl
+)
+makedepends=(
+  cmake
+  libconfig
+  protobuf-c
+)
+backup=(etc/umurmur/umurmur.conf)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  umurmur.sysusers
+  umurmur.service
+  umurmur.tmpfiles
+)
+sha512sums=('4c5514190a0916b8c3f7ef58b9e6892dbde6b548b7024d6bc4e25487c26b61a4f5d282d1b296ce9d59299434ebc616a43cd42a3f9bc71db86d79cd1637ee9b7f'
+            '0b965915585d03e9b461adfa1f25c655e470c53ca043f91a55267f11bc00cac34f5f3a206097a100eea92e48a71672a2ce2eb06c7af38827b373233dc261c426'
+            '0d34548ce1d1b3bc240664f5538d8b7dc31969731ef6ce04c99c9fab011e1d946eb5d5e91b14d66242d4a4955936f08752de9dd9ac7244886a53628079e8cfac'
+            'b49b65a1e87cba9d8b453dee23f9f1e89d9eeb326e9ce98a32605ac62f72d36c1efbca70ed1a87efe9294ef137d3f673429cd70b5051e03e0e85db310943c39e')
+b2sums=('9766c557d29416eae526435e70e426bedd92a86c19d5df5b2436ad8cefb9bc3da8b5479722e0a74d9fbe17f1904650443a091c2834155c350564c2baae75a547'
+        '9963646f3020b35e0064c8334fef40b59efa38d335a117b2e5095dc64e5331323ce3ad3489afd88661fb1500fe0d276f957dcb9954e5470fe4c18764648bf780'
+        '82783532ec4c21bdd8484175b8eeba53a593c86a92e11d441ee2f92410df90fab132a9bf7d5de24af48ed42eec57ece97b5399545094558d73a370827bbe4118'
+        '935f8ea09c8cbb32dc508959181b707bfadd564c038b2c7a4ce213372242cdefaf75c7f3d76644f28246b666c93a0d89c5b4741f12f63261f19b99d8c0603219')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  depends+=(
+    libconfig libconfig.so
+    protobuf-c libprotobuf-c.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -vdm 750 "$pkgdir/etc/$pkgname/"  # ensure the mode matches our tmpfiles.d integration
+  install -vDm 644 $pkgname.service -t "$pkgdir/usr/lib/systemd/system/"
+  install -vDm 644 $pkgname.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm 644 $pkgname.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+
+  cd $pkgname-$pkgver
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {AUTHORS,{CHANGELOG,README}.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+# vim: ts=2 sw=2 et:

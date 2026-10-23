@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-screen-recorder
+pkgver=6.5.32
+pkgrel=1
+pkgdesc='Deepin Screen Recorder'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-screen-recorder"
+license=('GPL-3.0-or-later')
+depends=('deepin-qt6integration' 'deepin-tray-loader' 'dtk6core' 'dtk6gui' 'dtk6widget'
+         'qt6-base' 'qt6-multimedia' 'qt6-svg' 'qt6-wayland' 'deepin-turbo' 'ffmpeg4.4' 'ffmpegthumbnailer' 'libxtst' 'opencv'
+         'dconf' 'libprocps' 'libxext' 'libx11' 'libxfixes' 'libxinerama' 'portaudio'
+         'glibc' 'libgcc' 'libstdc++' 'wayland' 'hicolor-icon-theme')
+makedepends=('git' 'qt6-tools')
+optdepends=('deepin-shortcut-viewer: for shortcut display')
+provides=('deepin-screenshot')
+conflicts=('deepin-screenshot')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-screen-recorder.git#tag=$pkgver"
+         libv4l-1.30.patch)
+sha512sums=('2440dc56d68e662ec22792e73a1f6bbfeb231b5430e920369c3afa172c2d1d22a1d5658b501d1bb34f3d48bc679c71e7658042912732bd65b4fa5f1570a8fee1'
+            'b8527bbf18b78b530507ed7725218db88f3ae4ed6abb700f6430903421e188456d7f0695f680461376d403c9227bc0234578d909f29399a4072a13a042d524cb')
+
+prepare() {
+  cd deepin-screen-recorder
+
+  # Revert opencv -> opencv-mobile change, because opencv-mobile is not available in Arch
+  sed -i 's|opencv_mobile|opencv5|;s|-lopencv_small|-lopencv_core -lopencv_imgproc|' src/src.pro
+  # OpenCV 5 removed these old C API compatibility aliases/helpers.
+  sed -i -e '/opencv2\/imgproc\/types_c.h/d' \
+         -e 's|CV_BGR2GRAY|cv::COLOR_BGR2GRAY|g' \
+         -e 's|CV_TM_CCOEFF_NORMED|cv::TM_CCOEFF_NORMED|g' \
+         -e 's|CV_THRESH_TOZERO|cv::THRESH_TOZERO|g' \
+         -e 's|cvSize(|cv::Size(|g' \
+         src/utils/pixmergethread.cpp
+
+  # https://github.com/linuxdeepin/developer-center/issues/3035
+  sed -i "s|/etc/os-version|/etc/uos-version|" src/src.pro
+
+  patch -p1 -i ../libv4l-1.30.patch
+}
+
+build(){
+  cd deepin-screen-recorder
+  export PKG_CONFIG_PATH='/usr/lib/ffmpeg4.4/pkgconfig'
+  qmake6 PREFIX=/usr
+  CFLAGS+=" -Wno-implicit-function-declaration -I/usr/include/ffmpeg4.4/" \
+  make
+}
+
+package() {
+  cd deepin-screen-recorder
+  make INSTALL_ROOT="$pkgdir" install
+}

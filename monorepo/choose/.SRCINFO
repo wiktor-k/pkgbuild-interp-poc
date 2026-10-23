@@ -1,0 +1,17 @@
+pkgbase = choose
+	pkgdesc = A human-friendly and fast alternative to cut and (sometimes) awk
+	pkgver = 1.3.7
+	pkgrel = 2
+	url = https://github.com/theryangeary/choose
+	arch = x86_64
+	license = GPL-3.0-only
+	checkdepends = diffutils
+	makedepends = git
+	makedepends = rust
+	depends = libgcc
+	options = !lto
+	source = choose::git+https://github.com/theryangeary/choose.git#tag=v1.3.7
+	sha512sums = 98d4529595f8773f762b1add90c1c2709d2b5f4da94fbbe64c1febf3e3e73dd0cc480aa40d54635a073adaadd460c09b086bb4cd94557307391c58f2836c8838
+	b2sums = f5cf53f677d132927ecbf8be27a79fc2b3856816525cabdd8c7a8cbed1aea965e220f11eac472572876bd8c39e6c3de366f84a786bacb0087ad9109ce5524a31
+
+pkgname = choose

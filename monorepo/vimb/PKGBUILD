@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Robert Timm <mail@rtti.de>
+# Contributor: Jason Ryan <jasonwryan@gmail.com>
+# Contributor: Daniel M. Capella <polyzen@archlinux.info>
+
+pkgname=vimb
+pkgver=4.0.0
+pkgrel=1
+pkgdesc='The vim like browser'
+arch=(x86_64)
+url=https://fanglingsu.github.io/vimb/
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  glib2
+  gtk4
+  libsoup3
+  webkitgtk-6.0
+)
+makedepends=(
+  git
+)
+_tag=7679de36556c6519c37da915ec770fac7a9b841c
+source=(git+https://github.com/fanglingsu/vimb.git#tag=${_tag})
+b2sums=('8d69dc849545dd23254318fa456b1f2fdc8b5c332fa05d37aab64250aff0ff470be16dfa088fcbadae0bfe4bcb7eaf82e3d852176d60e23300203af83fbea213')
+
+pkgver() {
+  cd vimb
+  git describe --tags
+}
+
+build() {
+  make PREFIX=/usr -C vimb
+}
+
+package() {
+  make DESTDIR="${pkgdir}" PREFIX=/usr -C vimb install
+}
+
+# vim: ts=2 sw=2 et:

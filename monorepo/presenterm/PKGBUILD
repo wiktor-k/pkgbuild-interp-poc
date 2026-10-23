@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=presenterm
+pkgver=0.16.1
+pkgrel=1
+pkgdesc="A markdown terminal slideshow tool"
+arch=('x86_64')
+url="https://github.com/mfontanini/presenterm"
+license=('BSD-2-Clause')
+depends=('gcc-libs' 'libsixel' 'oniguruma')
+makedepends=('cargo')
+optdepends=('python-weasyprint: PDF export support')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('8de6abefc4a905c248efc8334b2f576b13b47dcc3ebee471111a9f34f282eb7307cd2b7c67ddd2023e519b81debd075053185e7088a7af603ac498f21f33eca3')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

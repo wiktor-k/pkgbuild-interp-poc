@@ -1,0 +1,83 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Allan McRae <mcrae_allan@hotmail.com>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=gnome-mplayer
+pkgver=1.0.9
+pkgrel=11
+pkgdesc='GTK interface around MPlayer'
+arch=(x86_64)
+url='https://github.com/kdekorte/gnome-mplayer'
+license=(GPL-2.0-or-later)
+depends=(
+  alsa-lib
+  cairo
+  dbus
+  dbus-glib
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gmtk
+  gtk3
+  hicolor-icon-theme
+  libnotify
+  libx11
+  libxss
+)
+makedepends=(
+  git
+  glib2-devel
+)
+source=(
+  "git+https://github.com/kdekorte/gnome-mplayer.git#tag=v$pkgver"
+  0001-Fix-incompatible-pointer-type.patch
+  0001-Disable-Wayland-backend-as-it-s-not-supported.patch
+  0001-Make-Keyboard-Shortcuts-page-scrollable.patch
+  gnome-mplayer.appdata.xml
+)
+b2sums=(
+  eb4a2008ba86f9ba99aa5b96e590212c7d3d15594f618276da08e2c1434962a0d62ff5215ea7e88214565ca22b96fa3bbd33791be51044b000970871a4fccf8f
+  ea4f41e24ce87354a72102f6c78157193566156f132bb1306b9700c035a71dedf833d91c05f8543ac94efff591c832b063003c7c46f4f9941501775b0df41bb2
+  12307ebc0785f1ac46b3d4b07d4d85ab0d2a6451ffcdc2edf595173c2f21b72c942f665ab3137d0d593551e8932bcc2c4a3d6d4a295034d3b4a3e2a5bac9e6c9
+  014e03bfb8a5aa8af9fcadc4673a7f69b6df8eff93e655e4c7bdd4e5a6b6f2c37c02341d637524870c74bb67569c998d040fd711c111259e6ea0107d7f085528
+  051182948b3a8917ebe8c768246ad5ad8a7797111c9a6f2155f8bd53e41b9b0ad69f9882cbfd456b36fe6f543e298131813731018e6abccbb2e02f3aaefa28ee
+)
+
+prepare() {
+  cd $pkgname
+
+  # Add support for mate screensaver
+  git cherry-pick -n 626caf4cf2ea9c69ea27113d0087dc3871d10169
+
+  # Fix incompatible pointer type
+  git apply -3 ../0001-Fix-incompatible-pointer-type.patch
+
+  # Disable Wayland backend as it's not supported
+  git apply -3 ../0001-Disable-Wayland-backend-as-it-s-not-supported.patch
+
+  # Make Keyboard Shortcuts page scrollable
+  git apply -3 ../0001-Make-Keyboard-Shortcuts-page-scrollable.patch
+
+  # Remove leftover of gconf
+  sed -i '/AM_GCONF_SOURCE_2/d' configure.in
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    CFLAGS="$CFLAGS -fcommon"
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../gnome-mplayer.appdata.xml "$pkgdir/usr/share/metainfo/gnome-mplayer.appdata.xml"
+}

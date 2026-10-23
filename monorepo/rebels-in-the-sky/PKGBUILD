@@ -1,0 +1,41 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=rebels-in-the-sky
+pkgver=1.8.1
+pkgrel=1
+pkgdesc="P2P terminal game about spacepirates playing basketball across the galaxy"
+url="https://github.com/ricott1/rebels-in-the-sky"
+depends=(
+  'libgcc'
+  'alsa-lib'
+)
+makedepends=('cargo' 'cmake')
+arch=('x86_64')
+license=('GPL-3.0')
+source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('734eced2c3a8566b78672dee7c1051d92a4a37a603e044ed608d89033ff4957aa4d0561ce4d0b9589017cbf44a17bc40bac5e017b9c700793a79330817b65fb2')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --target "$(rustc --print host-tuple)" # --locked
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  # aws-lc-sys builds jitterentropy C sources that must not be optimized.
+  CFLAGS+=" -O0" cargo build --release --frozen
+}
+
+# check() {
+#   cd "${pkgname}-${pkgver}"
+#   cargo test --frozen -- --skip "test_game"
+# }
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 "target/release/rebels" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

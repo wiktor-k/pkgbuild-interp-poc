@@ -1,0 +1,29 @@
+pkgbase = dmtcp
+	pkgdesc = Distributed MultiThreaded CheckPointing
+	pkgver = 4.2.0
+	pkgrel = 1
+	url = https://dmtcp.sourceforge.io
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = dash
+	makedepends = emacs
+	makedepends = gdb
+	makedepends = java-environment
+	makedepends = openmpi
+	makedepends = procps-ng
+	makedepends = python
+	makedepends = screen
+	makedepends = strace
+	makedepends = tcsh
+	makedepends = vim
+	makedepends = zsh
+	depends = bash
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/dmtcp/dmtcp.git#tag=v4.2.0
+	sha256sums = 328338570b7112fab3582a72d3d28b96379c8259b2f117c4050f2698fb392c9f
+	b2sums = ebd9072844075295cddb0e1f291dfc6279c41f603470242650032f5de1b382034bb238c7f5a269b49231a73399b31a2dfd20b1381849d08da35911aa6d884f48
+
+pkgname = dmtcp

@@ -1,0 +1,79 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=metacity
+pkgver=3.58.1
+pkgrel=1
+pkgdesc='Window manager of GNOME Flashback'
+arch=(x86_64)
+url='https://wiki.gnome.org/Projects/Metacity'
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gsettings-desktop-schemas
+  gtk3
+  libcanberra
+  libgtop
+  libice
+  libsm
+  libx11
+  libxcomposite
+  libxcursor
+  libxdamage
+  libxext
+  libxfixes
+  libxinerama
+  libxpresent
+  libxrandr
+  libxrender
+  libxres
+  pango
+  startup-notification
+)
+makedepends=(
+  autoconf-archive
+  git
+  glib2-devel
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/$pkgname.git?signed#tag=$pkgver"
+  metacity-38.patch
+)
+b2sums=(
+  2be389ba9bec9ce9df147c43ea5ee633ca2f37d00e77f3f37dcd9d6cdb6532cd6964d5dcc5970675da6e2e99c921a990c998d5cd1510d6d08856b773138bd238
+  cbd72f4af01408db5d7c1fa14a2116ceec2367f1f4755bc51efc014cfa00106c6c188f25dc7479206d32f2de32d3e0d2dd40fb01eae7c83302e81d04e17fe42a
+)
+validpgpkeys=(7B44FD78E49334EC10B3B288A3D013EC303E1894) # Alberts Muktupāvels <alberts.muktupavels@gmail.com>
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/GNOME/metacity/-/merge_requests/38
+  git apply -3 ../metacity-38.patch
+
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --libexecdir=/usr/lib \
+    --disable-debug \
+    --enable-compile-warnings \
+    --disable-vulkan
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

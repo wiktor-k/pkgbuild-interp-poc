@@ -1,0 +1,24 @@
+pkgbase = python-piexif
+	pkgdesc = To simplify exif manipulations with python. Writing, reading, and more
+	pkgver = 1.1.3
+	pkgrel = 11
+	url = https://github.com/hMatoba/Piexif
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pillow
+	checkdepends = libwebp
+	checkdepends = python-sphinx
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = python-piexif-1.1.3.tar.gz::https://github.com/hMatoba/Piexif/archive/1.1.3.tar.gz
+	source = pillow-7.2.patch
+	source = unittest-makesuite-removal.patch
+	sha512sums = bae3a51603bf46e9a8170db180a298c70c77537cb405582eb53ade2b29907fbaeeb4d890a124e0a54de53077b7631c007be088c690f81fb3eda1cd3ccb1ca0d2
+	sha512sums = be1ee541e3bb6c219d6fd9ab68e9143c2131f695a2001d36a0d63b0566d71a542a09d58dc0bcbdb8c1353297156ea7853d483b9a44407cb31c30acc4252310bf
+	sha512sums = e8b3742524f43e82d55ec2044367cd0c1a42e2741ef734a7d90c81dd118d9e204a521e49b98b60556703eaaec060e42de06c0ac43fbaf383996840e3d62cd97c
+
+pkgname = python-piexif

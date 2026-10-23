@@ -1,0 +1,67 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Bernardo Ferrari Mendonca <bernardo.mferrari@gmail.com>
+
+pkgname=coin-or-lemon
+pkgver=1.3.1
+pkgrel=7
+pkgdesc="A C++ template library providing many common graph algorithms"
+arch=('x86_64')
+url="http://lemon.cs.elte.hu/trac/lemon"
+license=('BSL-1.0')
+depends=('coin-or-cbc' 'coin-or-clp' 'glpk')
+makedepends=('cmake' 'ninja' 'doxygen' 'graphviz' 'python')
+options=('staticlibs')
+source=("http://lemon.cs.elte.hu/pub/sources/lemon-${pkgver}.tar.gz"
+        "cmake_version.patch"
+        "remove-register.patch"
+        "update_cxx20.patch")
+sha256sums=('71b7c725f4c0b4a8ccb92eb87b208701586cf7a96156ebd821ca3ed855bad3c8'
+            '494bc19eeb975d19ef9ef7099251de5e368b371f00d32eaa7ba4ebd7e1ae246f'
+            'b5286514995aadba6609799d3b9621b6303224d1d7e53289dc92fdb86d106312'
+            'c216e9e5a4543695de9188dc78ad3e54a881f581b9c1997c2e9cb77c06019065')
+
+prepare() {
+  cd "$srcdir/lemon-$pkgver"
+
+  patch -Np1 -i "$srcdir/cmake_version.patch"
+  patch -Np1 -i "$srcdir/remove-register.patch"
+  patch -Np1 -i "$srcdir/update_cxx20.patch"
+}
+
+build() {
+  cd "$srcdir/lemon-$pkgver"
+
+  # static build
+  cmake \
+    -Bbuild_static \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DLEMON_ENABLE_GLPK=ON \
+    -DLEMON_ENABLE_ILOG=OFF \
+    -DLEMON_ENABLE_COIN=ON \
+    -DLEMON_ENABLE_SOPLEX=OFF \
+    -DCMAKE_CXX_FLAGS="$CXXFLAGS -ffat-lto-objects -fPIC"
+  ninja -C build_static
+
+  # shared build
+  cmake \
+    -Bbuild_shared \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DBUILD_SHARED_LIBS=ON \
+    -DLEMON_ENABLE_GLPK=ON \
+    -DLEMON_ENABLE_ILOG=OFF \
+    -DLEMON_ENABLE_COIN=ON \
+    -DLEMON_ENABLE_SOPLEX=OFF
+  ninja -C build_shared
+}
+
+package() {
+  cd "$srcdir/lemon-$pkgver"
+  DESTDIR="$pkgdir" ninja -C build_static install
+  DESTDIR="$pkgdir" ninja -C build_shared install
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

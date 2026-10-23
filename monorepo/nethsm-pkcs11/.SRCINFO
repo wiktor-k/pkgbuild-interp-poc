@@ -1,0 +1,15 @@
+pkgbase = nethsm-pkcs11
+	pkgdesc = PKCS#11 driver for NetHSM
+	pkgver = 3.0.1
+	pkgrel = 1
+	url = https://github.com/Nitrokey/nethsm-pkcs11
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = rust
+	depends = glibc
+	options = !lto
+	source = nethsm-pkcs11-3.0.1.tar.gz::https://github.com/Nitrokey/nethsm-pkcs11/archive/refs/tags/v3.0.1.tar.gz
+	sha512sums = 9b11153dcc61a0ad7f7f32c6d76aa4b3b1f35692f410560b09278652a841dac2c1809a1e20d186016985e739b7d2e965127cd2d963340a57218461ec4af38ed3
+	b2sums = 12e589ad3a07036f71eca3e33834863a25dc808a4114fa4265aa766f1fb55452b5c61052d612efd20ad3ddee8b9601fbdce7c91cf3cdaa00bd01d2c97e29dda3
+
+pkgname = nethsm-pkcs11

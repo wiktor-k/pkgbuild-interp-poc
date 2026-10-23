@@ -1,0 +1,17 @@
+pkgbase = nextcloud-app-mail
+	pkgdesc = An email app for NextCloud
+	pkgver = 5.12.5
+	pkgrel = 1
+	url = https://github.com/nextcloud/mail
+	arch = any
+	groups = nextcloud-apps
+	license = AGPL-3.0-or-later
+	makedepends = nextcloud
+	makedepends = yq
+	optdepends = kitinerary: for kitinerary-extractor
+	options = !strip
+	source = mail-5.12.5.tar.gz::https://github.com/nextcloud-releases/mail/releases/download/v5.12.5/mail-v5.12.5.tar.gz
+	sha512sums = b38041146f59f9a23aff02359dad48c41c966a13623107bb0dc0cf87e6337ee8d18389e4bf94ac9334d8eb6444f8dfed8bfd238255c6e773697cf1fa47167ff3
+	b2sums = c4935133189bb4453f28bba724b776df50e3debeb00cec7a5555e8908d0b0979e08eba3bff48823f34f0f537f69ce3cb003c62d874390b2f71da3a474536de43
+
+pkgname = nextcloud-app-mail

@@ -1,0 +1,31 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Maintainer: Christian Heusel <christian@heusel.eu>
+# Contributor: Andrew Rabert <ar@nullsum.net>
+
+pkgname=scrcpy
+pkgver=5.0.1
+pkgrel=1
+pkgdesc='Display and control your Android device'
+arch=(x86_64)
+url='https://github.com/Genymobile/scrcpy'
+license=(Apache-2.0)
+depends=(android-tools ffmpeg sdl3 glibc libusb)
+makedepends=(git meson)
+source=("git+$url#tag=v$pkgver"
+        "$pkgname-server-$pkgver.apk::$url/releases/download/v$pkgver/$pkgname-server-v$pkgver")
+b2sums=('2eb702f0d046175ecf56abe3a8a4c1da991016f7232cf2d8083c36a74f64502eda571ff1df104474cc8f646b4940ecd688b09cbb116211bd726bbe285428bd94'
+        'd28bcadb1c8b82f49d2c7a97f36284a29d7ddcfac17b89c3627d95ff0f149839bd25914d02dfaad543acf6fbc5c3fee4f2a4893016f8dbc4213e777bc09cf6f6')
+
+build() {
+  mkdir -p build
+  arch-meson build $pkgname --buildtype release \
+    -D b_lto=true \
+    -D b_ndebug=true \
+    -D prebuilt_server=../$pkgname-server-$pkgver.apk
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 $pkgname/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

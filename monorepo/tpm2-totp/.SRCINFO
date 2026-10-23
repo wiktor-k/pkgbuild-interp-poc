@@ -1,0 +1,44 @@
+pkgbase = tpm2-totp
+	pkgdesc = Attest the trustworthiness of a device against a human using time-based one-time passwords
+	pkgver = 0.3.0
+	pkgrel = 3
+	url = https://github.com/tpm2-software/tpm2-totp
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = iproute2
+	checkdepends = oath-toolkit
+	checkdepends = swtpm
+	checkdepends = tpm2-tools
+	makedepends = autoconf-archive
+	makedepends = doxygen
+	makedepends = dracut
+	makedepends = git
+	makedepends = glibc
+	makedepends = mkinitcpio
+	makedepends = qrencode
+	makedepends = tpm2-tss
+	source = git+https://github.com/tpm2-software/tpm2-totp.git?signed#tag=v0.3.0
+	validpgpkeys = D6B4D8BAC7E0CC97DCD4AC7272E88B53F7A95D84
+	validpgpkeys = FE2E6249201CA54A4FB90D066E80CA1446879D04
+	sha512sums = 396f56913a4911efddc6e03ec44974f3cc9f352da1843dd35935279e7d9108f38989526c8ac9baa3ca03e0f477c03b02c3c4e9615ca046c99d407f8933aa4ef1
+
+pkgname = tpm2-totp
+	depends = bash
+	depends = glibc
+	depends = qrencode
+	depends = tpm2-tss
+	depends = libtss2-esys.so
+	depends = libtss2-mu.so
+	depends = libtss2-tctildr.so
+
+pkgname = dracut-tpm2-totp
+	pkgdesc = Dracut integration to display TOTP during boot using tpm2-totp
+	depends = bash
+	depends = dracut
+	depends = tpm2-totp
+
+pkgname = mkinitcpio-tpm2-totp
+	pkgdesc = Mkinitcpio integration to display TOTP during boot using tpm2-totp
+	depends = bash
+	depends = mkinitcpio
+	depends = tpm2-totp

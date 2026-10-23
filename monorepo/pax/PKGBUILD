@@ -1,0 +1,40 @@
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+
+pkgname=pax
+pkgver=20240817
+pkgrel=1
+pkgdesc='Portable Archive Interchange - the POSIX standard archive tool for cpio and tar formats'
+arch=('x86_64')
+url='https://mbsd.evolvis.org/pax.htm'
+license=('BSD-3-Clause')
+depends=('glibc')
+source=("https://mbsd.evolvis.org/MirOS/dist/mir/cpio/paxmirabilis-${pkgver}.tgz")
+noextract=("paxmirabilis-${pkgver}.tgz")
+sha256sums=('e955d5d3af97aede0a3f463a9a59b83e8d1083aaf142eb6f388c549a7d182e6b')
+
+prepare() {
+    mkdir -p "${pkgname}-${pkgver}" build
+    bsdtar -x -f "paxmirabilis-${pkgver}.tgz" -C "${pkgname}-${pkgver}" --strip-components='1'
+}
+
+build() {
+    cd build
+    sh "../${pkgname}-${pkgver}/Build.sh" -r -tpax
+    
+    # license
+    sed -n '5,36p' "../${pkgname}-${pkgver}/pax.h" > LICENSE # create file
+    sed -i '1,32s/^.\{,3\}//' LICENSE # erase C comments
+}
+
+package(){
+    # executables
+    install -D -m755 build/pax -t "${pkgdir}/usr/bin"
+    ln -s pax "${pkgdir}/usr/bin/paxcpio"
+    ln -s pax "${pkgdir}/usr/bin/paxtar"
+    
+    # man pages
+    install -D -m644 build/mans/*.1 -t "${pkgdir}/usr/share/man/man1"
+    
+    # license
+    install -D -m644 build/LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

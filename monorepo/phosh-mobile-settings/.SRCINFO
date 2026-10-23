@@ -1,0 +1,42 @@
+pkgbase = phosh-mobile-settings
+	pkgdesc = A settings app for mobile specific things
+	pkgver = 0.57.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/Phosh/phosh-mobile-settings
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	makedepends = python-packaging
+	makedepends = wayland-protocols
+	depends = cellbroadcastd
+	depends = dconf
+	depends = feedbackd
+	depends = glib2
+	depends = glibc
+	depends = gnome-desktop-4
+	depends = gobject-introspection
+	depends = gsound
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libadwaita
+	depends = libgcc
+	depends = libgmobile
+	depends = libportal
+	depends = libportal-gtk4
+	depends = libpulse
+	depends = libyaml
+	depends = lm_sensors
+	depends = pango
+	depends = phoc
+	depends = phosh
+	depends = wayland
+	source = git+https://gitlab.gnome.org/World/Phosh/phosh-mobile-settings.git?signed#tag=v0.57.0
+	source = git+https://gitlab.gnome.org/guidog/libgnome-volume-control.git#commit=1cdc1cb2d622d64e9ad2781093bcc63719c5ea5b
+	validpgpkeys = 0DB3932762F78E592F6522AFBB5A2C77584122D3
+	b2sums = 3bcac469919b804a074011fcf547e5141044ae3581a061730d77c8f08f961b4c33217ad1f8e542c90ad15c0e77023be182cd21daff415689c76d750aed4afcbf
+	b2sums = 6f92aa86fa6c72d9a4e230593a696f918ab8515f1501b91c1121d250fb3a0415207ce68e23f2199b5f0a3e69299af01650a75c0c733fe7e02cb62014c5d4de1f
+
+pkgname = phosh-mobile-settings

@@ -1,0 +1,82 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Henrik Ronellenfitsch <searinox@web.de>
+# Contributor: Alessio Sergi <sergi.alessio {at} gmail.com>
+# Contributor: Dario 'Dax' Vilardi <dax [at] deelab [dot] org>
+# Contributor: Anatol Pomozov <anatol.pomozov@gmail.com>
+
+pkgname=amule
+epoch=1
+pkgver=3.1.0
+pkgrel=3
+pkgdesc='An eMule-like client for ed2k p2p network'
+arch=(x86_64)
+url='https://amule-org.github.io/'
+license=(GPL-2.0-or-later)
+depends=(binutils
+         crypto++
+         curl
+         gd
+         glib2
+         glibc
+         gtk3
+         libayatana-appindicator
+         libgcc
+         libmaxminddb
+         libpng
+         libstdc++
+         libupnp
+         readline
+         wxwidgets-common
+         wxwidgets-gtk3
+         zlib
+         zstd)
+makedepends=(boost
+             cmake
+             git
+             po4a)
+provides=(amule-daemon)
+source=(git+https://github.com/amule-org/amule#tag=$pkgver
+        amuled.systemd
+        amuleweb.systemd
+        amule.sysusers
+        amule.tmpfiles)
+options=(!lto)
+sha256sums=('4ed1c1464cca012cfc68947ac908d9cd8743e74b952b367fba67f4852a7cac37'
+            '20ac6b60c5f3bf49c0b080dfc02409da3c9d01b154344188008c6a75ca69681e'
+            'f4f43b1154ddccc9036a4291a58c6715f097b171fec62ea7aead0c9d9fa654f2'
+            '1a1780d3010f338b16ace33fac6af8480bb0830402001f95f12c2e98afbd1b60'
+            'e9d1b7019c7075b0f8616c6507a767b87de8f899936680e9ff5829d8cbba224d')
+
+prepare() {
+  cd $pkgname
+  rm -fr .git
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_ALC=ON \
+    -DBUILD_ALCC=ON \
+    -DBUILD_AMULEAPI=ON \
+    -DBUILD_AMULECMD=ON \
+    -DBUILD_CAS=ON \
+    -DBUILD_DAEMON=ON \
+    -DBUILD_REMOTEGUI=ON \
+    -DBUILD_WEBSERVER=ON \
+    -DBUILD_WXCAS=ON \
+    -DBUILD_FILEVIEW=ON \
+    -DENABLE_IP2COUNTRY=ON \
+    -DENABLE_NLS=ON \
+    -DENABLE_UPNP=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$srcdir"/amuled.systemd "$pkgdir"/usr/lib/systemd/system/amuled.service
+  install -Dm644 "$srcdir"/amuleweb.systemd "$pkgdir"/usr/lib/systemd/system/amuleweb.service
+  install -Dm644 "$srcdir"/amule.sysusers "$pkgdir"/usr/lib/sysusers.d/amule.conf
+  install -Dm644 "$srcdir"/amule.tmpfiles "$pkgdir"/usr/lib/tmpfiles.d/amule.conf
+}

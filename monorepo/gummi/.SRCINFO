@@ -1,0 +1,35 @@
+pkgbase = gummi
+	pkgdesc = Simple LaTeX editor
+	pkgver = 0.8.3
+	pkgrel = 4
+	epoch = 2
+	url = https://alexandervdm.github.io/gummi/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = intltool
+	depends = bash
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = gtksourceview4
+	depends = gtkspell3
+	depends = libgcc
+	depends = libsynctex
+	depends = pango
+	depends = poppler-glib
+	depends = texlive-latex
+	source = git+https://github.com/alexandervdm/gummi.git#tag=0.8.3
+	source = gummi-fix-close-prefs.patch
+	source = gummi-gcc15.patch
+	source = gummi-gtksourceview4.patch
+	source = app.gummi.gummi.appdata.xml
+	b2sums = 6a0f90a007b2b10f84ccb5ae1c765640d104573479f6dc501865ed2c5d055bfd2e08c95e5af628e579e6e13a9051f8097795cb0f18118b029e4d9f40b90ecb5d
+	b2sums = aa27ede2d6b2984fca27b3c007f50536cc8080817b6dc0795125477ffad7407d98d2c614b1906a4ea28887008cb30b465d753ac5a1e6658a4bbafc932aa67932
+	b2sums = 246713c129b9476043fd33adf54f5becc7d6a8294dc5118f4cbc79e468341588050adde5102fdf48c8f97fc573c5dc835cfa4651e8262fb8863ac374e164207a
+	b2sums = 11500ed2a2c530c0f4944fbe4ad77886b70f77b98256e71fa7a4ff71028d471d8b4f4dc0834993a1343fec9674ee244f3e8c49fd4318e7940c553fb37979b8d4
+	b2sums = 60a90843c49b1eb96ac61774fabf76f37b67b8e94873867b391cab2578c1117874566205467b771a35c9f9caa9ed3f83cc7788a5f36c8e096f99021df2eb1f26
+
+pkgname = gummi

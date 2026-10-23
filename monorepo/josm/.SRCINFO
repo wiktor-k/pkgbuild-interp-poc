@@ -1,0 +1,20 @@
+pkgbase = josm
+	pkgdesc = Editor for OpenStreetMap written in Java
+	pkgver = 19613
+	pkgrel = 1
+	url = https://josm.openstreetmap.de/
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = ant
+	makedepends = strip-nondeterminism
+	makedepends = subversion
+	depends = hicolor-icon-theme
+	depends = java-runtime>=11
+	depends = libxtst
+	depends = ttf-font
+	options = !emptydirs
+	backup = etc/default/josm
+	source = josm::svn+https://josm.openstreetmap.de/svn/trunk#revision=19613
+	b2sums = SKIP
+
+pkgname = josm

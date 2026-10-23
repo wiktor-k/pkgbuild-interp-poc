@@ -1,0 +1,21 @@
+pkgbase = popsift
+	pkgdesc = Realtime GPU implementation of SIFT
+	pkgver = 1.0.0.git5
+	pkgrel = 1
+	url = https://github.com/alicevision/popsift
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = boost
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = git
+	makedepends = cuda
+	depends = boost-libs
+	options = staticlibs
+	options = !lto
+	source = git+https://github.com/alicevision/popsift.git#commit=36d704d39b4cc065839d84f3706b3fa88eff2518
+	source = boost-1.89.patch
+	sha256sums = 73d98132fcfc668f96be8da8cb362f535bf05575f9bd68e26e3bd514929168ab
+	sha256sums = 606ba3d19d1472090c15ad0766ef5f66dabaf40b8ff4f1da20a0b8bd0d56b991
+
+pkgname = popsift

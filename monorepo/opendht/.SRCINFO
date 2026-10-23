@@ -1,0 +1,36 @@
+pkgbase = opendht
+	pkgdesc = C++17 Distributed Hash Table (DHT) implementation
+	pkgver = 4.4.1
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/savoirfairelinux/opendht
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = cppunit
+	makedepends = asio
+	makedepends = cmake
+	makedepends = cython
+	makedepends = git
+	makedepends = msgpack-cxx
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = restinio
+	depends = argon2
+	depends = fmt
+	depends = glibc
+	depends = gnutls
+	depends = jsoncpp
+	depends = libgcc
+	depends = libstdc++
+	depends = llhttp
+	depends = nettle
+	depends = openssl
+	depends = readline
+	depends = simdutf
+	optdepends = python: to use the Python bindings
+	optdepends = msgpack-cxx: linking against opendht
+	source = git+https://github.com/savoirfairelinux/opendht#tag=v4.4.1
+	sha256sums = 84aa49f98923d3dcf99169f5ecedb739991c53b0577fa19cfbfaaea9c6e90fcb
+
+pkgname = opendht

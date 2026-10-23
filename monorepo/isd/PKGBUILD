@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=isd
+pkgver=0.6.2
+pkgrel=1
+pkgdesc='An interactive systemd TUI'
+arch=('any')
+url='https://kainctl.github.io/isd/'
+license=(GPL-3.0-or-later)
+depends=(
+  systemd
+  python
+  python-xdg-base-dirs
+  python-pfzy
+  python-textual
+  python-pydantic
+  python-pydantic-settings
+  python-rich
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+  python-editables
+  python-setuptools
+  python-wheel
+)
+source=("$pkgname::git+https://github.com/kainctl/isd#tag=v$pkgver")
+sha512sums=('c7565b95aaa4f2470a74317299610153dbeab6864be14c947b6fa18789ba23d6641930569c2f77ea869da4a3fa7882625e86e3d0227bb3b2d71a2fedec7eb225')
+b2sums=('23fdd7f8a447b8391fa244f59193aca2fee726c6b86136a23f1be9f6219cdfdf27afa216aa739dd00e7d5f198f42f8a48f5eef509a6218cbe8936d351293bf58')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

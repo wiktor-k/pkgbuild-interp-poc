@@ -1,0 +1,43 @@
+# Maintainer: christian rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=git-credential-gopass
+pkgver=1.17.4
+pkgrel=1
+pkgdesc="git-credentials helper for gopass"
+arch=('x86_64')
+url="https://github.com/gopasspw/git-credential-gopass"
+license=('MIT')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('9f6b852d1d0950a0fd9217248277908a5aa49f97219aec343890e29dce1aa3ea431845e93337980156bf60dbe24ba9cfe147b6e97957da6307cae2adb8aa8cac')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build(){
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="$srcdir"
+
+  local ld_flags="
+    -compressdwarf=false
+    -linkmode=external
+    -X main.version=$pkgver
+  "
+  go build -v -ldflags="$ld_flags" -o git-credential-gopass
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" git-credential-gopass
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

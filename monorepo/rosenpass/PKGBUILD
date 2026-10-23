@@ -1,0 +1,41 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+pkgname=rosenpass
+pkgver=0.2.2
+pkgrel=2
+pkgdesc="formally verified and post-quantum secure VPN over WireGuard"
+url="https://rosenpass.eu"
+arch=('x86_64')
+license=(MIT APACHE)
+makedepends=('cargo' 'git' 'cmake' 'pkg-config' 'rust-bindgen')
+depends=('libsodium' 'gawk' 'wireguard-tools' 'findutils')
+provides=('rp' 'rosenpass')
+source=("${pkgname}-${pkgver}::https://github.com/rosenpass/rosenpass/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('5087914327b1339808f2c27d61ba77ce00fbb886d0c20450ba7c35040226edbcbf01c1c0317e8ce89f811595129171ff68a8c26a970043fae44ad2a2a717403f')
+b2sums=('5465515a609824527251a53810d50ac763c879b9992f7fbe99b89549511d689d5d7bf9c695081b4cdc125a098ac9a30f10731318a1c5ac86844af1d4f0f8cadb')
+options=(!lto)
+
+_bin=rosenpass
+_script=rp
+
+prepare() {
+    cd "${pkgname}-${pkgver}"
+    cargo fetch --locked --target $CARCH-unknown-linux-gnu
+}
+
+build() {
+    cd "${pkgname}-${pkgver}"
+    cargo build --release --frozen
+}
+
+#check() {
+#    cd "${pkgname}-${pkgver}"
+#    cargo test --frozen
+#}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+    install -Dm 0755 "target/release/${_bin}" "${pkgdir}/usr/bin/${_bin}"
+    install -Dm 0755 "${_script}" "${pkgdir}/usr/bin/${_script}"
+    install -Dm 0644 LICENSE-MIT "${pkgdir}/usr/share/licenses/${_pkgname}/LICENSE-MIT"
+    install -Dm 0644 LICENSE-APACHE "${pkgdir}/usr/share/licenses/${_pkgname}/LICENSE-APACHE"
+}

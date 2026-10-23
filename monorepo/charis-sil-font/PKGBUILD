@@ -1,0 +1,27 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Markus Weimar <mail@markusweimar.de>
+
+_pkgname=charis
+pkgbase=$_pkgname-sil-font
+pkgname=ttf-$_pkgname
+pkgver=7.000
+pkgrel=1
+pkgdesc='Font family supporting Latin and Cyrillic designed for legibility and publishing'
+url="https://software.sil.org/$_pkgname"
+arch=(any)
+license=(OFL-1.1-RFN)
+_archive="${_pkgname^}-$pkgver"
+source=("https://software.sil.org/downloads/r/$_pkgname/$_archive.zip")
+sha256sums=('e3237b1303c5d31af8f59b1d1914886c5e873b77c71390e4742fb3bc1c187666')
+
+package_ttf-charis() {
+	cd "$_archive"
+	# replaces=(ttf-charis-sil)
+	provides=(#ttf-charis-sil
+	          #"$pkgbase=$pkgver"
+	          "$_pkgname-font=$pkgver"
+	          "$pkgname=$pkgver")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" ${_pkgname^}-*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.txt FONTLOG.txt documentation/pdf/*
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}

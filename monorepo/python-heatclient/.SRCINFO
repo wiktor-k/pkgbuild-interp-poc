@@ -1,0 +1,30 @@
+pkgbase = python-heatclient
+	pkgdesc = OpenStack Orchestration API Client Library
+	pkgver = 5.3.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-heatclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-stestr
+	checkdepends = python-testscenarios
+	checkdepends = python-requests-mock
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	depends = python-pbr
+	depends = python-cliff
+	depends = python-iso8601
+	depends = python-osc-lib
+	depends = python-prettytable
+	depends = python-oslo-i18n
+	depends = python-oslo-serialization
+	depends = python-oslo-utils
+	depends = python-keystoneauth1
+	depends = python-swiftclient
+	depends = python-yaml
+	depends = python-requests
+	depends = python-openstackclient
+	source = git+https://github.com/openstack/python-heatclient.git#tag=5.3.0
+	sha512sums = 76b65f18396dee40099ebcc4cbde8a06c63851d5e92b91d981c8406ec780a48b427f294780b0984e79ec8f4a0c66d98c29eb39b8726bde412d19347df80f7b40
+
+pkgname = python-heatclient

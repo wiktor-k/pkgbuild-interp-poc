@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=cryptonite
+pkgname=haskell-cryptonite
+pkgver=0.30
+pkgrel=240
+pkgdesc="Cryptography Primitives sink"
+url="https://github.com/vincenthz/cryptonite"
+license=("BSD")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-basement' 'haskell-memory')
+makedepends=('ghc' 'haskell-tasty' 'haskell-tasty-hunit' 'haskell-tasty-kat'
+             'haskell-tasty-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('519120263fb7c2b9f910e48cf43feaca07f7e705ea70c578da362dafa637b654cab90e3b9484497e33a6fdd5b8f867c0ede60d0dddba02602044b9b3de502d16')
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    # x86 SIMD accel (support_sse=SSE2 BLAKE2/ARGON2, support_aesni=AES-NI,
+    # support_rdrand) is x86-only — the BLAKE2 C pulls emmintrin.h, absent on
+    # non-x86. Keep exactly as-is on x86_64; use cryptonite's portable C
+    # fallback elsewhere (these flags default False upstream). Build injects arch.
+    local _simd=(-f-support_rdrand -f-support_aesni -f-support_sse)
+    [[ "$CARCH" == x86_64 ]] && _simd=(-fsupport_rdrand -fsupport_aesni -fsupport_sse)
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -fsupport_deepseq -finteger-gmp -f-support_pclmuldq \
+            -f-old_toolchain_inliner -f-check_alignment \
+            "${_simd[@]}"
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

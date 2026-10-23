@@ -1,0 +1,64 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=oo7
+pkgver=0.6.0
+pkgrel=5
+pkgdesc='A Secret Service provider'
+arch=(x86_64)
+url='https://linux-credentials.github.io/oo7/oo7/'
+license=(MIT)
+depends=(glibc
+         libgcc)
+makedepends=(git
+             meson
+             python-build
+             python-installer
+             python-maturin
+             rust)
+conflicts=(gnome-keyring)
+provides=(org.freedesktop.secrets)
+source=(git+https://github.com/linux-credentials/oo7#tag=$pkgver)
+sha256sums=('83ba6e03392471f1381d756a10af20915ecab99cea8533bbd42aac995c5fc118')
+
+export CARGO_PROFILE_RELEASE_DEBUG=2 \
+       CARGO_PROFILE_RELEASE_STRIP=false \
+       CARGO_PROFILE_RELEASE_LTO=true \
+       CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd oo7
+  export CARGO_HOME="$srcdir"/cargo-home
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd oo7
+  export CARGO_HOME="$srcdir"/cargo-home
+  cargo build --release --frozen
+
+  for _dir in server portal pam; do
+    meson build-$_dir $_dir --prefix=/usr --libexecdir=lib
+    # Each meson project build Rust sources with 'cargo --target-dir ${build}/src', which
+    # doesn't allow sharing built artifacts between projects. This symlink fixes that.
+    rmdir build-$_dir/src
+    ln -sr target build-$_dir/src
+    meson compile -C build-$_dir
+  done
+
+  export MATURIN_PEP517_ARGS="--target $(rustc --print host-tuple)"
+  python -m build --wheel --no-isolation python
+}
+
+package() {
+  cd oo7
+  for _dir in server portal pam; do
+    meson install -C build-$_dir --destdir="$pkgdir"
+  done
+
+  install -Dm755 -t "$pkgdir"/usr/bin \
+    target/release/cargo-credential-oo7 \
+    target/release/oo7-cli
+  python -m installer --destdir="$pkgdir" python/dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

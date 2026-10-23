@@ -1,0 +1,56 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+
+pkgname='ameba-ls'
+pkgver=0.2.0
+pkgrel=1
+pkgdesc='Language server for the Ameba linter'
+arch=(x86_64)
+url='https://github.com/crystal-ameba/ameba-ls'
+license=(MIT)
+depends=(
+  'glibc'
+  'gc'
+  'pcre2'
+  'libgcc'
+  'libyaml'
+)
+makedepends=(
+  'crystal'
+  'shards'
+)
+checkdepends=(
+)
+optdepends=(
+)
+source=(
+  "${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+)
+sha256sums=('66b966a5c90c40e30e68002e82884048ef972a626b7a54b4dc6a4f977f93dfb0')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  shards install --production
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  shards build --production --release
+  crystal docs
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  crystal spec
+}
+
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm755 "bin/ameba-ls" "${pkgdir}/usr/bin/ameba-ls"
+
+  install -D -dm755 "${pkgdir}/usr/share/doc"
+  cp -r docs "${pkgdir}/usr/share/doc/${pkgname}"
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-wand
+pkgver=0.7.2
+pkgrel=1
+pkgdesc="Ctypes-based simple MagickWand API binding for Python"
+url="https://github.com/emcconville/wand"
+license=('MIT')
+arch=('any')
+depends=('imagemagick' 'python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('libjpeg-turbo' 'python-pytest')
+source=("git+https://github.com/emcconville/wand.git#tag=$pkgver")
+sha512sums=('acf7adfb6104f90d3e56b0e22bbcc6d9c09c40e0c95b62dee3e9dba4633b24d66cd655716f0641bbafbd394a8ab8fb35027c69a713ec4c0e5d3231da9aa222a9')
+
+build() {
+  cd wand
+  PYTHONPATH="$PWD" python -m build --wheel --no-isolation
+}
+
+check() {
+  cd wand
+  pytest
+}
+
+package() {
+  cd wand
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

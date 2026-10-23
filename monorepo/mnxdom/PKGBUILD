@@ -1,0 +1,68 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=mnxdom
+pkgver=3.0.1
+pkgrel=1
+pkgdesc='Document object model for the MNX music interchange format'
+arch=(x86_64)
+url='https://github.com/rpatters1/mnxdom'
+license=(MIT)
+depends=(
+  glibc
+  libgcc_s.so
+  libstdc++.so
+  libnlohmann_json_schema_validator.so
+  nlohmann-json
+)
+makedepends=(
+  git
+  cmake
+  ninja
+  tinyxxd
+)
+checkdepends=(gtest)
+provides=(libmnxdom.so)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('5bc808fd855eba71258a08c92a7ef81a3f5488f310090391bf045c24d0aed2af400919c13b6acfe12c22cdd68234c3813c031e485c67757965817ad6646ace00')
+b2sums=('49864578145999cf1ba45ef354338e272eecb9c7a2346c0ce8e4338645b51e7b3c5c2af9dff20c814b7a499c235636ce2723a13e11492aca0c0115d6e94ccfe6')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -W no-dev
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D USE_SYSTEM_NLOHMANN_JSON=ON
+    -D USE_SYSTEM_JSON_SCHEMA_VALIDATOR=ON
+    -D USE_SYSTEM_GOOGLETEST=ON
+    -D BUILD_SHARED_LIBS=ON
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+check() {
+  local excluded_tests=""
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel $(nproc)
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_flags[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE"
+}

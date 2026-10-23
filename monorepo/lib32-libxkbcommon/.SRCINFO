@@ -1,0 +1,37 @@
+pkgbase = lib32-libxkbcommon
+	pkgdesc = Keymap handling library for toolkits and window systems (32-bit)
+	pkgver = 1.13.2
+	pkgrel = 1
+	url = https://xkbcommon.org/
+	arch = x86_64
+	license = MIT
+	checkdepends = libgl
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = lib32-glibc
+	makedepends = lib32-libxcb
+	makedepends = lib32-libxml2
+	makedepends = lib32-wayland
+	makedepends = meson
+	makedepends = wayland-protocols
+	makedepends = xkeyboard-config
+	makedepends = xorgproto
+	source = git+https://github.com/xkbcommon/libxkbcommon#tag=xkbcommon-1.13.2
+	b2sums = c5d8814cb27709b1318a4c0af2e67b96753203c17ee83479d82c2b1aded6cad237b14a9a8a362079f4553232560322f36bc781287a41ce0291dfa844b0620b9b
+
+pkgname = lib32-libxkbcommon
+	depends = lib32-glibc
+	depends = lib32-libxml2
+	depends = xkeyboard-config
+	depends = libxkbcommon
+	provides = libxkbcommon.so
+	provides = libxkbregistry.so
+
+pkgname = lib32-libxkbcommon-x11
+	pkgdesc = Keyboard handling library using XKB data for X11 XCB clients (32-bit)
+	depends = lib32-glibc
+	depends = lib32-libxcb
+	depends = lib32-libxkbcommon
+	depends = libxkbcommon.so
+	depends = libxkbcommon-x11
+	provides = libxkbcommon-x11.so

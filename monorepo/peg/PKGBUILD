@@ -1,0 +1,31 @@
+# Maintainer: Jelle van der Waa <jelle@vdwaa.nl>
+# Contributor: Nicolas F. <aur@fratti.ch>
+
+pkgname=peg
+pkgver=0.1.19
+pkgrel=1
+arch=(x86_64)
+pkgdesc='recursive-descent parser generators for C'
+url='http://piumarta.com/software/peg/'
+license=('MIT')
+source=("http://piumarta.com/software/peg/peg-${pkgver}.tar.gz"
+        '0000-dont-strip.patch')
+sha256sums=('0013dd83a6739778445a64bced3d74b9f50c07553f86ea43333ae5fab5c2bbb4'
+            'b5ca5f4028651990d30735db1093be08c5cc5d214fc0f73f3a7c7314906c1c1e')
+
+prepare() {
+    cd "$pkgname-$pkgver"
+    patch -Np1 -i "${srcdir}/0000-dont-strip.patch"
+}
+
+build() {
+    cd "$pkgname-$pkgver"
+    make
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    make ROOT="${pkgdir}" PREFIX="/usr" MANDIR="${pkgdir}/usr/share/man/man1" install
+
+    install -Dm644 LICENSE.txt "$pkgdir/usr/share/licenses/${pkgname}/LICENSE.txt"
+}

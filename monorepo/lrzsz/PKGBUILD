@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Jeremie Dimino <jeremie@dimino.org>
+# Contributor: bender02 at gmx dot com
+
+pkgname=lrzsz
+pkgver=0.13.1
+pkgrel=1
+pkgdesc="xmodem, ymodem and zmodem file transfer protocols"
+url="https://www.ohse.de/uwe/software/lrzsz.html"
+license=('GPL-2.0-only')
+arch=('x86_64')
+source=(https://www.ohse.de/uwe/releases/$pkgname-$pkgver.tar.gz)
+sha512sums=('3742fed1b8d7ad78551eb55ebe5f179a7a93d8e600f74c9e8541abf1dbd48651f886e96f0307479de7b20016772533dce756329526f5dc779fc40b983357b61c')
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+  ./configure --prefix=/usr --mandir=/usr/share/man \
+    --program-transform-name=s/l/lrzsz-/
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,58 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Yigit Sever <yigit at yigitsever dot com>
+
+pkgname=ouch
+pkgver=0.8.3
+pkgrel=1
+pkgdesc="A command line utility for easily compressing and decompressing files and directories"
+arch=('x86_64')
+url="https://github.com/ouch-org/ouch"
+license=('MIT')
+depends=('bzip3' 'glibc' 'libgcc' 'libstdc++' 'zstd')
+makedepends=('cargo' 'clang')
+checkdepends=('git')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('f695393cbbd89cf5a2095c32235e585a85432ccfb902c78d2a2e9787abbb439c')
+options=('!lto')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i '/^bzip3 =/s/"bundled"//' Cargo.toml
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  export OUCH_ARTIFACTS_FOLDER=artifacts
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+  install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm0644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+
+  cd "$srcdir/$pkgname-$pkgver/artifacts"
+
+  # install manpages
+  install -Dm0644 "${pkgname}.1" -t "${pkgdir}/usr/share/man/man1"
+  install -Dm0644 "${pkgname}-compress.1" -t "${pkgdir}/usr/share/man/man1"
+  install -Dm0644 "${pkgname}-decompress.1" -t "${pkgdir}/usr/share/man/man1"
+  install -Dm0644 "${pkgname}-list.1" -t "${pkgdir}/usr/share/man/man1"
+
+  # install shell completions
+  install -Dm0644 "${pkgname}.bash" "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  install -Dm0644 "${pkgname}.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+  install -Dm0644 "_${pkgname}" "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

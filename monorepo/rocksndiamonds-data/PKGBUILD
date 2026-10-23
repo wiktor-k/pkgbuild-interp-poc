@@ -1,0 +1,27 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# contributor: Jacek Poplawski <jacekpoplawski@gmail.com>
+
+pkgname=rocksndiamonds-data
+pkgver=4.4.2.4
+pkgrel=1
+arch=(any)
+pkgdesc='rockndiamonds game data and levels'
+url="https://www.artsoft.org/rocksndiamonds/"
+license=('GPL-2.0-only')
+options=('!strip')
+source=(https://www.artsoft.org/RELEASES/linux/rocksndiamonds/rocksndiamonds-$pkgver-linux.tar.gz)
+sha256sums=('59ebdc8985923919a3f3cd7ceb2e9a073ca5b4755ffda0f908f4bf498bc61f99')
+
+package() {
+  cd "$srcdir"/rocksndiamonds-$pkgver
+
+  install -d "$pkgdir"/usr/share/rocksndiamonds
+  cp -R graphics "$pkgdir"/usr/share/rocksndiamonds
+  cp -R levels "$pkgdir"/usr/share/rocksndiamonds
+  cp -R sounds "$pkgdir"/usr/share/rocksndiamonds
+  cp -R music "$pkgdir"/usr/share/rocksndiamonds
+
+  chown -R root:root "$pkgdir"/usr/share/rocksndiamonds
+  find "$pkgdir"/usr/share/rocksndiamonds -type d -exec chmod 0755 {} \;
+  find "$pkgdir"/usr/share/rocksndiamonds -type f -exec chmod 0644 {} \;
+}

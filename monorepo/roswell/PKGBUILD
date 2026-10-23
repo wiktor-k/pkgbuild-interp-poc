@@ -1,0 +1,36 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Thayne McCombs <bytecurry.software@gmail.com>
+
+pkgname=roswell
+pkgver=26.10.118
+pkgrel=1
+pkgdesc='Environment for Common Lisp development'
+arch=(x86_64)
+url='https://roswell.github.io'
+license=(MIT)
+depends=(glibc bash curl)
+makedepends=(git)
+source=("$pkgname::git+https://github.com/roswell/roswell#tag=v$pkgver")
+sha512sums=('f6dba81aa5973258863a27b6cbe3c5d757a46ff0ecd8693e99493fb1142dc09ba396fe902b47fc35478a17f44d71b76457a9fde81745f419c62b19699538dff4')
+b2sums=('fd9a305c5ab16f3e2889672abae39fb7623285821bdf5c3de1984154b975bdeadc574f0d05b3294c55d3e3778872b9860bee11fc9433a97997b18c32be1f5daa')
+
+build() {
+  cd "$pkgname"
+
+  ./bootstrap
+
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

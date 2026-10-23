@@ -1,0 +1,102 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=papers
+pkgname=(
+  papers
+  papers-lib-docs
+)
+pkgver=51.1
+pkgrel=1
+pkgdesc='Document viewer for PDF and other document formats aimed at the GNOME desktop'
+arch=(x86_64)
+url='https://apps.gnome.org/Papers/'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  djvulibre
+  exempi
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libarchive
+  libgcc
+  libnautilus-extension
+  libspelling
+  libtiff
+  pango
+  poppler-glib
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  itstool
+  libsysprof-capture
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/papers.git#tag=${pkgver/[a-z]/.&}"
+  git+https://github.com/gtk-rs/gir.git
+  git+https://github.com/gtk-rs/gir-files.git
+  git+https://gitlab.gnome.org/lbaudin/papers-test-data.git
+)
+b2sums=(
+  20b9c182df0b6efb4a8d167eb557f8de752111361e6a6f4a9a51ed6086f5681ed1792bb4c778c8dfed471a991b4dd9c47424e9edd3ea029a0bfae3ed33c57a0f
+  SKIP
+  SKIP
+  SKIP
+)
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgbase
+
+  git submodule init
+  git submodule set-url rust/gir "$srcdir/gir"
+  git submodule set-url rust/gir-files "$srcdir/gir-files"
+  git submodule set-url test-data "$srcdir/papers-test-data"
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update --checkout
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+  arch-meson $pkgbase build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package_papers() {
+  groups=(gnome)
+
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+
+  mkdir -p doc/usr/share
+  mv {"$pkgdir",doc}/usr/share/doc
+}
+
+package_papers-lib-docs() {
+  pkgdesc+=" (library API documentation)"
+  depends=()
+
+  mv doc/* "$pkgdir"
+}

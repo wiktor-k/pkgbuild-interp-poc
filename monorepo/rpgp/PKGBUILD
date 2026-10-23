@@ -1,0 +1,41 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=rpgp
+_name="${pkgname}ie"
+pkgver=0.12.0
+pkgrel=1
+pkgdesc="An experimental OpenPGP CLI tool"
+arch=(x86_64)
+url="https://codeberg.org/heiko/rpgpie"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('9bcccbb15836efa9811bd8cecf0838df5af4bc7f9721919727968b03f7e0e8624d48741ed9ca35529542338f97d62934a32532ec74186714cbb00cd3b0712085')
+b2sums=('c1cca0e4c82c79a25914130b5ec80b446c4749f13a85f3f9b4ba12fce41e4997ca90f82bdcedf17351bf93b8d092006e9579fa28b788e2ba79a84c7c34db6302')
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  export CARGO_TARGET_DIR=target
+
+  cd $_name
+  cargo build --frozen --release --features=cli
+}
+
+check() {
+  cd $_name
+  cargo test --frozen --features=cli
+}
+
+package() {
+  install -vDm 755 $_name/target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_name/LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,78 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=merkuro
+pkgver=26.08.2
+pkgrel=2
+pkgdesc='Application suite designed to handle emails, calendars, contacts and tasks'
+arch=(x86_64)
+url='https://apps.kde.org/merkuro/'
+license=(GPL-2.0-or-later)
+depends=(akonadi
+         akonadi-calendar
+         akonadi-contacts
+         akonadi-mime
+         akonadi-search
+         glibc
+         gpgmepp
+         kcalendarcore
+         kcodecs
+         kconfig
+         kconfigwidgets
+         kcontacts
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         kdeclarative
+         kdepim-runtime
+         kholidays
+         ki18n
+         kiconthemes
+         kidentitymanagement
+         kio
+         kirigami
+         kirigami-addons
+         kitemmodels
+         kmailtransport
+         kmbox
+         kmime
+         knotifications
+         ksvg
+         kwidgetsaddons
+         kwindowsystem
+         libgcc
+         libkdepim
+         libkleo
+         libplasma
+         libstdc++
+         mailcommon
+         messagelib
+         mimetreeparser
+         pimcommon
+         prison
+         qqc2-desktop-style 
+         qt6-5compat
+         qt6-base
+         qt6-declarative
+         qt6-location
+         qt6-positioning)
+makedepends=(extra-cmake-modules)
+conflicts=(kalendar)
+replaces=(kalendar)
+groups=(kde-applications
+        kde-pim)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('ca036db50a0e3daaac96be9e1da48f1e8d73ce5dfb942bcbaedf3785cb66a91f'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

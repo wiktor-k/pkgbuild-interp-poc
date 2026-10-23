@@ -1,0 +1,62 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: cubercsl <2014cais01 at gmail dot com>
+
+pkgname=dae
+pkgver=2.1.1
+pkgrel=1
+pkgdesc="A high-performance transparent proxy solution based on eBPF"
+arch=('x86_64')
+url="https://github.com/daeuniverse/${pkgname}"
+license=('AGPL-3.0-or-later')
+depends=('glibc' 'v2ray-domain-list-community' 'v2ray-geoip')
+makedepends=('clang' 'go')
+backup=("etc/${pkgname}/config.${pkgname}")
+source=("${pkgname}-${pkgver}.tar.xz::${url}/releases/download/v${pkgver}/${pkgname}-full-src.tar.xz")
+install="${pkgname}.install"
+sha256sums=('7c91494a999a24e91869e8e20e26ed8171dd4eedbcb847d1b04d15a6aeb54f44')
+options=('!lto')
+
+prepare() {
+	sed -i '/^BUILD_ARGS :=/d' Makefile
+
+	export GOPATH="${srcdir}"
+	go mod download -modcacherw -x
+}
+
+build() {
+	# Remove unsupported flags for the eBPF target
+	shopt -s extglob
+	CFLAGS=${CFLAGS/-march=+([^[:space:]])/}
+	CFLAGS=${CFLAGS/-mtune=+([^[:space:]])/}
+	CFLAGS=${CFLAGS/-mabi=+([^[:space:]])/}
+	CFLAGS=${CFLAGS/-fno-plt/}
+	CFLAGS=${CFLAGS/-fstack-clash-protection/}
+	CFLAGS=${CFLAGS/-fcf-protection/}
+
+	export CGO_ENABLED=1
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOEXPERIMENT=nodwarf5
+
+	local _ldflags=(
+		"-compressdwarf=false"
+		"-linkmode=external"
+		"-X github.com/daeuniverse/dae/cmd.Version=${pkgver}"
+		"-X github.com/daeuniverse/dae/common/consts.MaxMatchSetLen_=1024"
+	)
+	export BUILD_ARGS="-buildmode=pie -mod=readonly -modcacherw -ldflags=\"${_ldflags[@]}\""
+	make
+}
+
+package() {
+	install -Dm755 "${pkgname}" -t "${pkgdir}/usr/bin/"
+	install -Dm644 "install/${pkgname}.service" -t "${pkgdir}/usr/lib/systemd/system/"
+	install -Dm640 "install/empty.${pkgname}" "${pkgdir}/etc/${pkgname}/config.${pkgname}"
+	install -Dm644 "example.${pkgname}" "${pkgdir}/etc/${pkgname}/config.${pkgname}.example"
+
+	install -d "${pkgdir}/usr/share/${pkgname}/"
+	ln -vs /usr/share/v2ray/geo{ip,site}.dat "${pkgdir}/usr/share/${pkgname}/"
+}

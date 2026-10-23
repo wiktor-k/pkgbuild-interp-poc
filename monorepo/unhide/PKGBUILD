@@ -1,0 +1,31 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+
+pkgname=unhide
+pkgver=20240510
+pkgrel=1
+pkgdesc='A forensic tool to find processes hidden by rootkits, LKMs or by other techniques.'
+arch=('x86_64')
+url='https://github.com/YJesus/Unhide/'
+license=('GPL3')
+depends=('iproute2' 'lsof' 'psmisc' 'net-tools' 'procps-ng')
+source=("https://github.com/YJesus/Unhide/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+        "Makefile")
+md5sums=('533a3701a631ada3b677a04bc9bd3a7f'
+         '68ec8dcd2f25d4d5dad089a8535d462f')
+sha256sums=('72fb0f38450b71f80ca5331cff2b7b2024ffc9eb6178b6109bbd9638ccd4f771'
+            '6d2a37133a5cb05995bf0c8f8230820ce24b6f3369c49e84a6da7684d2bb6579')
+
+prepare() {
+  cp -f Makefile Unhide-$pkgver/
+}
+
+build() {
+  cd Unhide-$pkgver
+  make
+}
+
+package() {
+  cd Unhide-$pkgver
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+  ln -s unhide-linux "$pkgdir/usr/bin/unhide"
+}

@@ -1,0 +1,177 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Damir Perisa <damir.perisa@bluewin.ch>
+# Contributor: Ben <ben@benmazer.net>
+
+pkgname=mpd
+pkgver=0.24.17
+pkgrel=1
+pkgdesc="Flexible, powerful, server-side application for playing music"
+arch=(x86_64)
+url="https://www.musicpd.org/"
+_url="https://github.com/MusicPlayerDaemon/MPD"
+license=(
+  BSD-2-Clause
+  GPL-2.0-or-later
+  ISC
+  LGPL-2.1-only
+)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libcdio
+  libcdio-paranoia
+  libgcc
+  libgme
+  libmad
+  libmms
+  libmodplug
+  libmpcdec
+  libnfs
+  libshout
+  libsidplayfp
+  libsoxr
+  libstdc++
+  # smbclient  # disabled because of https://bugzilla.samba.org/show_bug.cgi?id=11413
+  pcre2
+  wavpack
+  wildmidi
+  zlib
+  zziplib
+)
+makedepends=(
+  alsa-lib
+  avahi
+  bzip2
+  chromaprint
+  curl
+  dbus
+  expat
+  faad2
+  ffmpeg
+  flac
+  fluidsynth
+  fmt
+  git
+  icu
+  jack
+  lame
+  libao
+  libid3tag
+  libmikmod
+  libmpdclient
+  libogg
+  libopenmpt
+  libpulse
+  libsamplerate
+  libsndfile
+  libupnp
+  libvorbis
+  meson
+  mpg123
+  nlohmann-json
+  openal
+  opus
+  libpipewire
+  python-sphinx
+  python-sphinx_rtd_theme
+  sqlite
+  systemd
+  twolame
+)
+checkdepends=(gtest)
+backup=(etc/$pkgname.conf)
+source=(
+  $pkgname::git+$_url?signed#tag=v${pkgver}
+  $pkgname.conf
+  $pkgname.sysusers
+  $pkgname.tmpfiles
+  $pkgname.service.override
+)
+sha512sums=('a6f749bdc8e14a6c96b98d2b543159c2e18982e5429b6f640722780144b7359953a4f09448276f8b2b48c7505ddd4a688fe78fb8db21597181245019d5fb3256'
+            '25a823740d92da8e186916701413114142eb6ad91a172c592e68b569c8e4f50fa99580e555ccf6cd31fc4f55a09bfe0278efa46e4e76ee0fe02846292fadf3c1'
+            'd66c1d771160ee1781a05e57f383acc466babb29924c07d83ac0e763c14380dd1f279ba7b4aec508dc70245370d9732b4bc6287df1a2e06a920f3b73551d3032'
+            'db473db27cd68994c3ee26e78e0fb34d13126301d8861563dcc12a22d62ecb14c4ffb1e0798c6aaccdff34e73bae3fbeeff7b42606c901a2d35e278865cdf35d'
+            'c1782b82f9db1d30aece43a07230c5d57370f2494a16e108af03815d83968805472f10f53ea5495cf0e08ff8f245430c3c3bc44025af43aaf9ecd12fcd6afc6c')
+b2sums=('3c26be75948efe298530a2c59e1297e8953d8db01b5978bfc8feb7b2dcdc6dc7ec34c0eeca40fc8f24a888528e8ad951e705934fdb432232a607ab437893063c'
+        '0969a3c477b6a3f34b44e067e515d7f306414dd14e0163584417b9d071e3cc825898219f7ff66ead7905b15429b8411304052d3b2b14a72e560bfabf9bf0adcf'
+        '814c2314de6040e895657a8c8d62f11bc38c224a3c0ef5cbf280c0e141c80f04b0ac5026be06fd5dc4a4b764f3d91ab46f365da0a7bd466abc3aed02b0612165'
+        'd7b587c25dd5830c27af475a8fdd8102139d7c8fdd6f04fe23b36be030e4411582e289f575c299255ff8183096f7d47247327276f9a24641cbd032d9675b837a'
+        '753664445d7d5cc0b36f51ac66549beea403b9731cbcb81b0a782974a0a73d90559ba93e6afcaa470b6f2f5a844c09ef695bdf3b1e6dfee97aa080f41b7fe513')
+validpgpkeys=('0392335A78083894A4301C43236E8A58C6DB4512') # Max Kellermann <max@blarg.de>
+
+build() {
+  local _meson_options=(
+    -D documentation=enabled
+    -D adplug=disabled
+    -D audiofile=disabled
+    -D io_uring=disabled  # liburing support broken: https://github.com/MusicPlayerDaemon/MPD/issues/2241
+    -D sndio=disabled
+    -D shine=disabled
+    -D tremor=disabled
+    -D b_ndebug=true
+    -D test=true
+  )
+
+  # NOTE: sndio conflicts with alsa
+  # TODO: package adplug
+  # TODO: package shine
+  arch-meson $pkgname build "${_meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    avahi libavahi-{client,common}.so
+    bzip2 libbz2.so
+    chromaprint libchromaprint.so
+    curl libcurl.so
+    dbus libdbus-1.so
+    expat libexpat.so
+    faad2 libfaad.so
+    ffmpeg libav{codec,filter,format,util}.so
+    flac libFLAC.so
+    fluidsynth libfluidsynth.so
+    fmt libfmt.so
+    icu libicui18n.so libicuuc.so
+    jack libjack.so
+    lame libmp3lame.so
+    libao libao.so
+    libid3tag libid3tag.so
+    libmikmod libmikmod.so
+    libmpdclient libmpdclient.so
+    libogg libogg.so
+    libopenmpt libopenmpt.so
+    libpipewire libpipewire-0.3.so
+    libpulse libpulse.so
+    libsamplerate libsamplerate.so
+    libsndfile libsndfile.so
+    libupnp libixml.so libupnp.so
+    libvorbis libvorbis{,enc}.so
+    mpg123 libmpg123.so
+    openal libopenal.so
+    opus libopus.so
+    sqlite libsqlite3.so
+    systemd-libs libsystemd.so
+    twolame libtwolame.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+  install -vDm 644 $pkgname/doc/${pkgname}conf.example -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $pkgname/LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $pkgname.service.override "$pkgdir/usr/lib/systemd/system/mpd.service.d/00-arch.conf"
+  install -vDm 644 $pkgname.conf -t "$pkgdir/etc/"
+  install -vDm 644 $pkgname.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm 644 $pkgname.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}
+
+# vim:set sw=2 sts-=1 et:

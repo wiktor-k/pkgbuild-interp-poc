@@ -1,0 +1,43 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: A. Klitzing <aklitzing@gmail.com>
+
+pkgname=ausweisapp
+pkgver=2.6.1
+pkgrel=1
+pkgdesc="official client for using the German electronic ID card (eID)"
+arch=('x86_64')
+license=('EUPL-1.2')
+url="https://www.ausweisapp.bund.de/"
+depends=(
+	'qt6-declarative' 'qt6-svg' 'qt6-websockets' 'qt6-scxml' 'pcsclite' 'llhttp'
+	'hicolor-icon-theme' 'openssl' 'libstdc++' 'glibc' 'systemd-libs' 'qt6-base'
+)
+makedepends=('cmake' 'qt6-tools' 'ninja' 'pkgconf')
+optdepends=(
+	'ccid: driver for generic smart card readers'
+	'acsccid: driver for ACS card readers'
+	'pcsc-cyberjack: driver for CyberJack card readers'
+)
+source=(
+	"https://github.com/Governikus/AusweisApp2/releases/download/${pkgver}/AusweisApp-${pkgver}.tar.gz"{,.asc}
+)
+validpgpkeys=('699BF3055B0A49224EFDE7C72D7479A531451088') # Governikus (AusweisApp2) <ausweisapp2@governikus.de>
+sha256sums=('754acde7b37bd774ccbd588f155dd4bd555e2d141dcc9747c4697ef12a3cc6b0'
+            'SKIP')
+
+build() {
+	local cmake_options=(
+		-B build
+		-S AusweisApp-$pkgver
+		-G Ninja
+		-DCMAKE_BUILD_TYPE=MinSizeRel # "None" is not supported
+		-DCMAKE_INSTALL_PREFIX=/usr
+	)
+	cmake "${cmake_options[@]}"
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+	install -Dm644 AusweisApp-${pkgver}/LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

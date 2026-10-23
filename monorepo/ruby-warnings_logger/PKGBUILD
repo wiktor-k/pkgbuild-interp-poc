@@ -1,0 +1,75 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-warnings_logger
+pkgver=0.1.1
+pkgrel=8
+pkgdesc='Easily log warnings in your gems'
+arch=(any)
+url='https://github.com/mcmire/warnings_logger'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+)
+checkdepends=(
+  ruby-bundler
+  ruby-irb
+  ruby-pry-byebug
+  ruby-rake
+  ruby-rspec
+  ruby-snowglobe
+)
+options=(!emptydirs)
+source=("git+${url}#tag=v${pkgver}")
+sha512sums=('0cd1d3a161aef5987732008bcfd6de050f19c2aac86a09c9f8f1878d0ac0e70879c5b19494145ca127700dbc3198f7168ae48a37bbbe2336d32ae1d1cf32c7cf')
+b2sums=('b3aa856987fedf84dd2db42c93b7b62d8009cbc264c2441d16ed9ef37bbcd652b019bb9ebfaf757aed749f737ce9efcabc25634450e43a0b769f48b693f5de8d')
+
+prepare() {
+  cd warnings_logger
+
+  sed --in-place \
+    --expression '/super_diff/d' \
+    --expression '/rubocop/d' \
+    Gemfile
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd warnings_logger
+  gem build warnings_logger.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    warnings_logger-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd warnings_logger
+  # https://github.com/mcmire/warnings_logger/issues/1
+  GEM_HOME="tmp_install/$_gemdir" rake || echo "Tests failed"
+}
+
+package() {
+  cd warnings_logger
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

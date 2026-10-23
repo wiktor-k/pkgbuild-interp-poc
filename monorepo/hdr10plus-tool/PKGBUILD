@@ -1,0 +1,56 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Norbert Preining <norbert@preining.info>
+
+pkgname=hdr10plus-tool
+pkgver=1.7.2
+pkgrel=1
+pkgdesc="CLI utility to work with HDR10+ in HEVC files"
+arch=(x86_64)
+url=https://github.com/quietvoid/hdr10plus_tool
+license=(MIT)
+depends=(fontconfig)
+makedepends=(
+  cargo
+  git
+  gnu-free-fonts
+)
+_tag=faa437e52b317d08f5d0df43278640623d318479
+source=(git+https://github.com/quietvoid/hdr10plus_tool.git#tag=${_tag})
+b2sums=('4ddb5d4f22e564b914bf47ff03d5b8e4eb005e91be2b1700480aed11b29bfbe9ecee6fac82311bbf25d8f4f721f0a0ef261d5aae95f7899d502a33852d960896')
+
+prepare() {
+  cargo fetch \
+    --locked \
+    --manifest-path hdr10plus_tool/Cargo.toml
+}
+
+pkgver() {
+  cd hdr10plus_tool
+  git describe --tags
+}
+
+build() {
+  cargo build \
+    --release \
+    --frozen \
+    --manifest-path hdr10plus_tool/Cargo.toml
+}
+
+check() {
+  cargo test \
+    --release \
+    --frozen \
+    --manifest-path hdr10plus_tool/Cargo.toml
+}
+
+package() {
+  cargo install \
+    --frozen \
+    --offline \
+    --no-track \
+    --path hdr10plus_tool \
+    --root "${pkgdir}"/usr
+  install -Dm 644 hdr10plus_tool/LICENSE -t "${pkgdir}"/usr/share/licenses/hdr10plus-tool/
+}
+
+# vim: ts=2 sw=2 et:

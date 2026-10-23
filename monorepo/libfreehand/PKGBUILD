@@ -1,0 +1,34 @@
+# Maintainer: AndyRTR <andyrtr@archlinux.org>
+
+pkgname=libfreehand
+pkgver=0.1.4
+pkgrel=1
+pkgdesc="a library for import of Aldus/Macromedia/Adobe FreeHand documents"
+arch=('x86_64')
+url="https://wiki.documentfoundation.org/DLP/Libraries/libfreehand"
+license=('MPL-2.0')
+depends=('librevenge' 'lcms2' 'zlib' 'glibc' 'libstdc++' 'libgcc')
+makedepends=('boost' 'cppunit' 'gperf' 'doxygen')
+source=("https://dev-www.libreoffice.org/src/libfreehand/$pkgname-$pkgver.tar.xz")
+sha256sums=('350b10d24a76d7e8c8ae98b74c2d432a2c8ddec08935d09856d20b695a35e600')
+
+prepare() {
+	cd "$pkgname-$pkgver"
+    autoreconf -vfi
+}
+
+build() {
+	cd "$pkgname-$pkgver"
+	./configure --prefix=/usr --disable-werror
+	make
+}
+
+check() {
+	cd "$pkgname-$pkgver"
+	make check
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	make DESTDIR="$pkgdir/" install
+}

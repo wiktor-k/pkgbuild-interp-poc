@@ -1,0 +1,23 @@
+pkgbase = jupyter-server-fileid
+	pkgdesc = A Jupyter Server extension providing an implementation of the File ID service
+	pkgver = 0.10.0
+	pkgrel = 1
+	url = https://jupyter.org/
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest-jupyter
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = jupyter-server
+	depends = python
+	depends = python-click
+	depends = python-jupyter-core
+	depends = python-jupyter-events
+	depends = python-tornado
+	depends = python-traitlets
+	source = git+https://github.com/jupyter-server/jupyter_server_fileid#tag=v0.10.0
+	sha256sums = cd255cb3fc03441af5eb28179ddf41c432b6e0402b48c8dfae873ea3074a3302
+
+pkgname = jupyter-server-fileid

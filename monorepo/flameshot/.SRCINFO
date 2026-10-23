@@ -1,0 +1,21 @@
+pkgbase = flameshot
+	pkgdesc = Powerful yet simple to use screenshot software
+	pkgver = 14.0.0
+	pkgrel = 1
+	url = https://github.com/flameshot-org/flameshot
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = qt6-tools
+	makedepends = cmake
+	makedepends = git
+	depends = qt6-svg
+	depends = hicolor-icon-theme
+	depends = kguiaddons
+	optdepends = gnome-shell-extension-appindicator: for system tray icon if you are using Gnome
+	optdepends = grim: for wlroots wayland support
+	optdepends = xdg-desktop-portal: for wayland support, you will need the implementation for your wayland desktop environment
+	optdepends = qt6-imageformats: for additional export image formats (e.g. tiff, webp, and more)
+	source = https://github.com/flameshot-org/flameshot/archive/refs/tags/v14.0.0/flameshot-14.0.0.tar.gz
+	sha256sums = 31a9419089aee8570fa0a996515b97d165a23672b2da1e3a0b5ed2f7f68a3631
+
+pkgname = flameshot

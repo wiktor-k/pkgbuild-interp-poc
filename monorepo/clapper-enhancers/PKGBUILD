@@ -1,0 +1,47 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=clapper-enhancers
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="Plugins enhancing Clapper library capabilities"
+arch=(x86_64)
+url="https://github.com/Rafostar/clapper-enhancers"
+license=('LGPL-2.1-or-later')
+depends=(
+  glib2
+  glibc
+  gst-plugins-base-libs
+  gstreamer
+  json-glib
+  libclapper-0.0.so
+  libmicrodns
+  libpeas-2
+  libsoup3
+  python
+  python-gobject
+  sqlite
+  yt-dlp
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+source=("git+https://github.com/Rafostar/clapper-enhancers.git?signed#tag=$pkgver")
+b2sums=('100b7215c5980560e4c392b9792bcaaac9c040f0f1944fa3f03ceacedb839b280b948c7d64c1f7f36c0a4c22b5d35e41c5f99357d6e2b2ede0c1741e6ab7001a')
+validpgpkeys=(
+  '0E0DC8F450DBFADF5BA08B117D6F9EA15BAE2562'    # Rafał Dzięgiel <rafostar.github@gmail.com>
+)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

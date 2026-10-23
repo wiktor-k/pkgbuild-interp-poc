@@ -1,0 +1,16 @@
+pkgbase = sqlc
+	pkgdesc = Compile SQL to type-safe Go
+	pkgver = 1.31.1
+	pkgrel = 1
+	url = https://sqlc.dev
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = sqlc::git+https://github.com/sqlc-dev/sqlc.git#tag=v1.31.1
+	sha512sums = 266faa6cd947893d39729b0a806f4035c8a32c411b1113acc0fa02bd017437844bc37fae3c903fcb70f0785b4d5fd38911625c1d58201108df35498394180a2e
+	b2sums = 3280ace5da831be3a9b222d1bb7a3f857cc2dc5c78b0c662b57a91285f3d5495b7ca97302ab48bf7d798982eee1cbaee7a5f7a456af228a35c1856f2ba18e766
+
+pkgname = sqlc

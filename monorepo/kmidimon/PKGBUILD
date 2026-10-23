@@ -1,0 +1,54 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=kmidimon
+pkgver=1.4.1
+pkgrel=2
+pkgdesc="A MIDI monitor for Linux using ALSA sequencer"
+arch=(x86_64)
+url="https://kmidimon.sourceforge.io/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-5compat
+  qt6-base
+)
+makedepends=(
+  alsa-lib
+  cmake
+  drumstick
+  pandoc
+  qt6-tools
+)
+source=($pkgname-$pkgver.tar.gz::https://github.com/pedrolcl/$pkgname/archive/refs/tags/RELEASE_${pkgver//./_}.tar.gz)
+sha512sums=('c38434d8fe7535425d2ca5d4f2bf1d55bdd305372fd5ba3d195e15e4e41cf0896f0abe9abbbe8b1d426c7cd705bfb650f58ef65d95d2e7dc155ac47c09b2fc7d')
+b2sums=('571876e35c9f97410bfe231fccb33ebdcd3c466bd6b9b64a1cfe1905c372031a9ec755308cb079334342f918ea5bc46cc25b6a3b9acdfa60ce00cd78ad6292ed')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-RELEASE_${pkgver//./_}
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    drumstick libdrumstick-alsa.so libdrumstick-file.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-RELEASE_${pkgver//./_}/{AUTHORS,ChangeLog,{INSTALL,NEWS,README,TODO}.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,63 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=xandikos
+pkgver=0.4.7
+pkgrel=1
+pkgdesc='Lightweight yet complete CardDAV/CalDAV server that backs onto a Git repository'
+arch=(any)
+url=https://www.xandikos.org
+license=(GPL-3.0-or-later)
+depends=(
+  python-aiohttp
+  python-defusedxml
+  python-dulwich
+  python-icalendar
+  python-jinja
+  python-multidict
+  python-vobject
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=(
+  'python-aiohttp-openmetrics: for metrics with the standalone server'
+  'python-qrcode: for QR codes on the homepage'
+  'python-systemd: for systemd socket activation'
+  'python-aiosmtpd: for imip-listen'
+  'python-bcrypt: for htpasswd'
+  'uwsgi-plugin-python: for the WSGI interface'
+)
+source=(
+  "git+https://github.com/jelmer/$pkgname.git#tag=v$pkgver"
+  sysusers.conf
+  tmpfiles.conf
+)
+b2sums=('6482413050231e27088076815cefcd773be4cb4125412fd9d980fe05b2795007cd0ef53a2e6df8354bfe7af1893dc5f84e2435addc9da3fc70e6e3acefba76c9'
+        '66e31fa7cb6e363df4411eed424ee1ffba1151d504eb957d0fa079d9d19ac34e7b0de76dd781dc6a3802140410428403e77c9cf0ea34e3961e305c154996d8b9'
+        'be8df371a3cdd55e2efd4549251b44cbb5699762f14aa3dcb0e85cdbb3710d75fae8e38b615057f6da37fe744019aabc2c366136ca577a152cd03d380db189c2')
+#validpgpkeys=('DC837EE14A7E37347E87061700806F2BD729A457') # Jelmer Vernooĳ <jelmer@jelmer.uk>
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  install -Dm644 sysusers.conf "$pkgdir"/usr/lib/sysusers.d/$pkgname.conf
+  install -Dm644 tmpfiles.conf "$pkgdir"/usr/lib/tmpfiles.d/$pkgname.conf
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.rst
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname/examples examples/*
+  install -Dm644 -t "$pkgdir"/usr/share/man/man8 man/$pkgname.8
+}

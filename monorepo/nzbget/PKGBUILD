@@ -1,0 +1,64 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+
+pkgname=nzbget
+pkgver=26.3
+pkgrel=1
+pkgdesc="Efficient usenet downloader"
+arch=('x86_64')
+url="https://nzbget.com"
+license=('GPL-2.0-or-later')
+depends=(
+  'boost-libs'
+  'glibc'
+  'libgcc'
+  'libstdc++'
+  'libxml2'
+  'ncurses'
+  'openssl'
+  'zlib'
+)
+makedepends=(
+  'boost'
+  'cmake'
+  'git'
+)
+optdepends=(
+  'python: to run included scripts'
+  'unrar: unpacking archives'
+  '7zip: unpacking archives'
+)
+source=(
+  "https://github.com/nzbgetcom/nzbget/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "git+https://github.com/nzbgetcom/par2cmdline-turbo.git"
+  "$pkgname-use-par2cmdline-turbo-from-sources.patch"
+)
+b2sums=('c689b477ee7026698910d45c04a3fbd29d646082ac36df008a2cc81588ae7e90381229b9a8828ff3c10dca6ddd362eecf2fab7b2488e22f7e25140d61074f1bd'
+        'SKIP'
+        '3937728d35be9406956b75e5812995545a2484059ea41eaccb9f84c9429ca4e23ca3340c4d595dbc91f17803886e67dabea60f10044550f12f68ea4aeb3d21f9')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 < ../$pkgname-use-par2cmdline-turbo-from-sources.patch
+}
+
+build() {
+  cmake -S $pkgname-$pkgver -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DENABLE_TESTS=ON
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  cd $pkgname-$pkgver
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" linux/pkg/$pkgname.service
+}

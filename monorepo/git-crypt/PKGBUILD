@@ -1,0 +1,35 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Daniel Perez <tuvistavie@gmail.com>
+# Contributor: AGWA
+# Contributor: Hugo Osvaldo Barrera <hugo@barrera.io>
+# Contributor: noirbizarre <noirbizarre@gmail.com>
+# Contributor: Wael Nasreddine <wael.nasreddine@gmail.com>
+
+pkgname=git-crypt
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='Transparent file encryption in Git'
+arch=(x86_64)
+url="https://www.agwa.name/projects/$pkgname"
+_url="https://github.com/AGWA/$pkgname"
+license=(GPL3)
+depends=(git openssl)
+makedepends=(libxslt docbook-xsl)
+_archive="$pkgname-$pkgver"
+# Upstream has temporarily lost access to PGP keys, see:
+# https://github.com/AGWA/git-crypt/issues/245
+source=("$_url/archive/$pkgver/$_archive.tar.gz") #{,.asc}
+sha256sums=('786199c24f8b79a54d62b98c24b1113606c4ebd83125e642b228704686305e69')
+# validpgpkeys=('EF5D84C1838F2EB6D8968C0410378EFC2080080C') # Andrew Ayer <agwa@andrewayer.name>
+
+build() {
+	cd "$_archive"
+	make ENABLE_MAN=yes PREFIX=/usr \
+		DOCBOOK_XSL=/usr/share/xml/docbook/xsl-stylesheets-*/manpages/docbook.xsl
+}
+
+package() {
+	cd "$_archive"
+	make ENABLE_MAN=yes PREFIX=/usr DESTDIR="$pkgdir" install
+}

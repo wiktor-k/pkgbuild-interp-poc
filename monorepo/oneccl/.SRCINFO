@@ -1,0 +1,43 @@
+pkgbase = oneccl
+	pkgver = 2022.0.0
+	pkgrel = 1
+	url = https://uxlfoundation.github.io/oneCCL/index.html
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = cmake
+	makedepends = procps-ng
+	makedepends = level-zero-headers
+	makedepends = intel-oneapi-dpcpp-cpp
+	depends = intel-oneapi-common
+	depends = level-zero-loader
+	depends = intel-oneapi-openmp
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = openmpi
+	depends = libdrm
+	options = !lto
+	source = oneccl::git+https://github.com/uxlfoundation/oneCCL#tag=2022.0.0
+	source = oneccl-googletest::git+https://github.com/google/googletest.git
+	source = oneccl-ittapi::git+https://github.com/intel/ittapi.git
+	source = oneccl-oneCCL::git+https://github.com/uxlfoundation/oneCCL.git
+	source = fix-legacy-sycl-level-zero-interface.patch
+	sha256sums = 01c30ef874745c9daba6ea84a51dd0da83f87ef9f745242075ec29122622311d
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = 7e98525fa4189b4c246f432dfc027f56fd42a875b020f12e07db8d89b047c9a8
+
+pkgname = oneccl
+	pkgdesc = oneAPI Collective Communications Library for CPUs
+
+pkgname = oneccl-arc
+	pkgdesc = oneAPI Collective Communications Library for Intel ARC GPUs
+	provides = oneccl=2022.0.0
+	conflicts = oneccl
+
+pkgname = oneccl-bmg
+	pkgdesc = oneAPI Collective Communications Library for Intel BMG GPUs
+	provides = oneccl=2022.0.0
+	conflicts = oneccl

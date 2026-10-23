@@ -1,0 +1,26 @@
+pkgbase = peek
+	pkgdesc = Simple screen recorder with an easy to use interface
+	pkgver = 1.5.1
+	pkgrel = 5
+	url = https://github.com/phw/peek
+	arch = x86_64
+	license = GPL3
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	makedepends = txt2man
+	makedepends = gst-plugin-gtk
+	makedepends = gst-plugins-ugly
+	depends = gtk3
+	depends = libkeybinder3
+	depends = ffmpeg
+	depends = which
+	optdepends = gst-plugin-gtk: Recording under Gnome Shell
+	optdepends = gst-plugins-ugly: MP4 output under Gnome Shell
+	optdepends = gifski: High quality GIF animations with thousands of colors
+	source = git+https://github.com/phw/peek.git?signed#tag=1.5.1
+	validpgpkeys = 9FD61CE6F154EC5A3531D0DE23A723D6417E5D5A
+	sha512sums = SKIP
+
+pkgname = peek

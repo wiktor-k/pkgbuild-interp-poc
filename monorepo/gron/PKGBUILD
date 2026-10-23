@@ -1,0 +1,66 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Stefan Tatschner <stefan@rumpelsepp.org>
+
+pkgname=gron
+pkgver=0.7.1
+pkgrel=3
+pkgdesc='Makes JSON greppable'
+arch=(x86_64)
+url='https://github.com/tomnomnom/gron'
+license=(MIT)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+https://github.com/tomnomnom/gron.git#tag=v$pkgver")
+sha512sums=('6d7c4d332dc202bdded36da53a1137410bfb9541c69e99a3fba57d2a6be95753b017ac2812d4822d03bfc50b96dce534aec67c81a5bcbdace466e56f14917d24')
+b2sums=('b0dcaafbdb850d1109cad4a4d32de61775e41c0f01ca50553f1fbf6bba5421f84b530392f31f1f5d741a9deff597d94a227bfa649bc5cd93ae4bc6a11f3c1663')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+
+  go build -v \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags '$LDFLAGS'" \
+    -o build \
+    .
+}
+
+check() {
+  cd "$pkgname"
+
+  go test -v ./...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/gron
+
+  # shell completion
+  install -vDm644 -t "$pkgdir/usr/share/fish/vendor_completions.d" completions/gron.fish
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" {README,ADVANCED}.mkd
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

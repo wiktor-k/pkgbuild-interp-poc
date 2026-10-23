@@ -1,0 +1,30 @@
+# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: ushi <ushi+arch@honkgong.info>
+
+pkgname=whitedb
+pkgver=0.7.3
+pkgrel=12
+pkgdesc='Lightweight NoSQL database library operating fully in main memory'
+arch=('x86_64')
+url='https://github.com/priitj/whitedb'
+license=('GPL')
+makedepends=('python')
+optdepends=('python: for python bindings')
+source=(https://github.com/priitj/whitedb/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+md5sums=('b9fcdc765442b08d90446a00eb3af4ca')
+sha256sums=('e6c59d4c9059386bae30d33c9f111b7db025bd943b1bdb05a80d3e7f68c5b28d')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -vif
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --with-python
+  make
+}
+
+package() {
+  make -C $pkgname-$pkgver DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,43 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Darshit Shah <darnir@gmail.com>
+
+pkgname=vint
+pkgver=0.3.21
+pkgrel=6
+pkgdesc='Lint tool for Vim script Language'
+arch=('any')
+url=https://github.com/Vimjas/vint
+license=('MIT')
+depends=('python-ansicolor' 'python-chardet' 'python-setuptools' 'python-yaml')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-pytest')
+source=("git+$url.git#tag=v$pkgver"
+         vint-0.3.21-remove-pkg_resources.patch)
+b2sums=('0bf6770ecbf60d148c9ee269de4ca5a3b84e44e517b8a7001c06096c7acd902e686d3afe88d4d1a5ebe5d99a8b9186a394669b543af601a208e543f31d29c7d9'
+        '020066ddf7ef5d5fb29c8a42ae85c2dbfe109f6e1d0b94b065287fa86988b5bba728ab40233835c4306df4ca06a5f437f207b5806550f3ec0fcde82d63d0fe6e')
+
+prepare() {
+  cd $pkgname
+  patch -p1 -i ../vint-0.3.21-remove-pkg_resources.patch
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd $pkgname
+  pytest
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Symlink license file
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/vim_$pkgname-$pkgver.dist-info/LICENSE.txt \
+    "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.txt
+}

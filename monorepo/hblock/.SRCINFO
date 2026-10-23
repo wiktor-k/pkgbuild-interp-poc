@@ -1,0 +1,16 @@
+pkgbase = hblock
+	pkgdesc = Adblocker that creates a hosts file from multiple sources
+	pkgver = 3.5.1
+	pkgrel = 1
+	url = https://hblock.molinero.dev/
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = sh
+	depends = curl
+	depends = systemd
+	source = hblock::git+https://github.com/hectorm/hblock#tag=v3.5.1
+	sha512sums = 68de8a3734da8353017f9b5ea48f0067c79150b9d10b1272c84cabce9364dbb76d2f42d38ca131738efbb27ab6f97bde0241590a3958debe3ee6ca18f43ca3ad
+	b2sums = ca64a02cd76eb84a9cb529d75412beea307f9a1aba1bcf5465513c0c32156e43dacad6bd1d8c422a0ed49435c38c24effe5c2fc499f4ffa926f1bca5a8ee558e
+
+pkgname = hblock

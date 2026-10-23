@@ -1,0 +1,48 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+# Contributor: a821 at (nospam) mail de
+# Contributor: Luis Martinez <luis dot martinez at disroot dot org>
+# Contributor: John Hamelink <me@johnhame.link>
+
+pkgname=python-tidalapi
+_pkgname=${pkgname#python-}
+pkgver=0.8.11
+pkgrel=2
+pkgdesc="Unofficial API for TIDAL music streaming service"
+arch=("any")
+url="https://github.com/tamland/python-tidal"
+license=("LGPL-3.0-or-later")
+depends=(
+	"python"
+	"python-requests"
+	"python-dateutil"
+	"python-isodate"
+	"python-mpegdash"
+	"python-pyaes"
+	"python-typing_extensions"
+)
+makedepends=(
+	"python-build"
+	"python-installer"
+	"python-poetry-core"
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/EbbLabs/python-tidal/releases/download/v${pkgver}/tidalapi-${pkgver}.tar.gz")
+sha256sums=('c8dea8c382be37be12413665c8b81a516ecd6e97c0997a565f2ae1b21a2ed165')
+
+build() {
+	cd "${_pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	# Tests require an active Tidal session
+	# Just check that we can import tidalapi
+	cd "${_pkgname}-${pkgver}"
+	python -c "import tidalapi"
+}
+
+package() {
+	export PYTHONHASHSEED=0
+	cd "${_pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}/" dist/*.whl
+	install -Dm644 README.rst HISTORY.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+}

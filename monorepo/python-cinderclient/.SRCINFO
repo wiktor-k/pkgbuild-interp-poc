@@ -1,0 +1,29 @@
+pkgbase = python-cinderclient
+	pkgdesc = OpenStack Block Storage API Client Library
+	pkgver = 9.10.0
+	pkgrel = 1
+	url = https://docs.openstack.org/developer/python-cinderclient
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-ddt
+	checkdepends = python-fixtures
+	checkdepends = python-requests-mock
+	checkdepends = python-testtools
+	checkdepends = python-stestr
+	checkdepends = python-oslo-serialization
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-pbr
+	depends = python-prettytable
+	depends = python-keystoneauth1
+	depends = python-oslo-i18n
+	depends = python-oslo-utils
+	depends = python-requests
+	depends = python-stevedore
+	source = git+https://github.com/openstack/python-cinderclient.git#tag=9.10.0
+	sha512sums = 4a66dcfb6a1dd20a36d27b2ae1f6fd7beaac25014cff37615de4a8241a10658a403b42f6bd5c1101903bedef99755a61c37fb1509ba48c55b4f63fe976c9276b
+
+pkgname = python-cinderclient

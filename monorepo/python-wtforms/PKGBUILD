@@ -1,0 +1,54 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: nblock <nblock [/at\] archlinux DOT us>
+# Contributor: neithere <neithere at gmail>
+# Contributor: mitsuse <mitsuse at gmail>
+
+_pyname=wtforms
+pkgname=python-wtforms
+pkgver=3.2.2
+pkgrel=1
+pkgdesc='Flexible forms validation and rendering library for python web development'
+url='https://wtforms.readthedocs.io/'
+arch=(any)
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-markupsafe
+)
+makedepends=(
+  python-babel
+  python-build
+  python-hatchling
+  python-installer
+  python-setuptools
+)
+checkdepends=(
+  python-email-validator
+  python-pytest
+)
+optdepends=(
+  'python-email-validator: Email validation'
+)
+source=(https://github.com/wtforms/wtforms/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('cb8366d82ad1f1b43ba10164f99ad8d9f014be6540febd12ba04cafb0d46e15b84f2cb3f3fc09ff641411ee1da2f9fd820d7ef34e783c6d126ec26eafa00d7d4')
+b2sums=('ae0c2696079b23a324b2075d5e21d5edb2d30d51d09f5ec5cba3f5ec2626c6782c096dd08a650e32b9d3048355be71ae54535edfb27b488b48a4d15665e969dd')
+
+build() {
+  cd ${_pyname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pyname}-${pkgver}
+  PYTHONPATH="$PWD/src" pytest
+}
+
+package() {
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  find "$pkgdir" -type f -name \*.po -delete
+  install -Dm 644 LICENSE.rst -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 CHANGES.rst README.rst  -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

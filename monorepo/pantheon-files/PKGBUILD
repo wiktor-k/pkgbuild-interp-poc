@@ -1,0 +1,54 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-files
+pkgver=7.3.2
+pkgrel=2
+pkgdesc='The Pantheon File Browser'
+arch=(x86_64)
+url=https://github.com/elementary/files
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  bash
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  libcanberra
+  libcloudproviders
+  libgee
+  libgit2-glib
+  libgranite.so
+  libhandy-1.so
+  libportal
+  libportal-gtk3
+  pango
+  poppler-glib
+  sqlite
+  zeitgeist
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+optdepends=(
+  'contractor: Various context menu entries'
+  'tumbler: Thumbnails generation'
+)
+source=(pantheon-files::git+https://github.com/elementary/files.git#tag=${pkgver})
+b2sums=('2eda765fcad6409f926d8194783c894d28775ce1218106599b418d07d4420a6e97cb883877363b994ac522504d0414972180474482fd75cbd579c0b59f308b8a')
+
+build() {
+  export CFLAGS+=" -Wno-implicit-function-declaration"
+  arch-meson pantheon-files build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

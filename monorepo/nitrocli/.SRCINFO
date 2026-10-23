@@ -1,0 +1,16 @@
+pkgbase = nitrocli
+	pkgdesc = A command line tool for interacting with Nitrokey devices
+	pkgver = 0.4.1
+	pkgrel = 3
+	url = https://github.com/d-e-s-o/nitrocli
+	arch = x86_64
+	license = GPL3
+	makedepends = cargo
+	makedepends = git
+	depends = gnupg
+	depends = libnitrokey.so
+	optdepends = bash-completion: Bash completion support
+	source = git+https://github.com/d-e-s-o/nitrocli.git#tag=8a8250f262100a95164a7b0ff8e1ea7d5c17e3a6
+	b2sums = SKIP
+
+pkgname = nitrocli

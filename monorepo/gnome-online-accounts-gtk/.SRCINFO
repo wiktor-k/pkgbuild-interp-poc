@@ -1,0 +1,22 @@
+pkgbase = gnome-online-accounts-gtk
+	pkgdesc = GTK frontend for GNOME Online Accounts
+	pkgver = 3.50.11
+	pkgrel = 1
+	url = https://github.com/linuxmint/gnome-online-accounts-gtk
+	arch = x86_64
+	groups = x-apps
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = glib2
+	depends = glibc
+	depends = gnome-online-accounts
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgoa
+	depends = xapp-symbolic-icons
+	source = git+https://github.com/linuxmint/gnome-online-accounts-gtk.git#tag=3.50.11
+	b2sums = a37ad3ed63caee15244740c4bfe75fbd81c1d04d75f0a0b79b0074a20fd2754281f92de79e2122dedfd2f341f625a87a4f971ffcf87f103aaeabfccc470cd5c0
+
+pkgname = gnome-online-accounts-gtk

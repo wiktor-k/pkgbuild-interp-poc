@@ -1,0 +1,104 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='slim'
+pkgname="ruby-${_gemname}"
+pkgver=5.2.1
+pkgrel=5
+pkgdesc='A template language whose goal is reduce the syntax to the essential parts without becoming cryptic'
+arch=('any')
+url="https://github.com/slim-template/${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-temple
+  ruby-tilt
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-erb
+  ruby-kramdown
+  ruby-minitest
+  ruby-rack-test
+  ruby-rake
+# Upstream has disabled sass tests for now
+# https://github.com/slim-template/slim/commit/bd9d4601cd8142aa9fdbc0d87c9f9132a9a56cda
+#  ruby-sass-embedded
+  ruby-sinatra
+)
+options=('!emptydirs')
+source=("${pkgname}::git+${url}.git#tag=v${pkgver}")
+sha512sums=('8a9d206ad05883a573f9c9f0fd0f11a6afcaf84f0f467391d225b9594aa36d86c835bcd8f2a2666439c7687f71278603aafd22f97b85ecaf5811e37019f8d7ed')
+b2sums=('ff8584d93db9eebdc87a0cb3710b486be9583a8b2cbc5594a2fe68ac77e2a853f604748f91fd4444d4aa30d6b55b235750914a208871271be93c8d3f85205e04')
+
+prepare() {
+  cd "${pkgname}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # remove rails tests
+  sed --in-place '/def test_rails/,+14d' test/core/test_commands.rb
+}
+
+build() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  MT_COMPAT="true" GEM_HOME="tmp_install/${_gemdir}" rake test
+}
+
+package() {
+  cd "${pkgname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

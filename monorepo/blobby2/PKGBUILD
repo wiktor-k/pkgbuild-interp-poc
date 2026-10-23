@@ -1,0 +1,36 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Urs Wolfer <uwolfer @ fwo.ch>
+
+pkgname=blobby2
+pkgver=1.1.1
+arch=('x86_64')
+pkgrel=3
+pkgdesc="A beach ball game with blobs of goo"
+url="http://sourceforge.net/projects/blobby/"
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libgl' 'libgcc' 'libstdc++' 'physfs' 'sdl2')
+makedepends=('cmake' 'boost' 'mesa' 'zip' 'strip-nondeterminism')
+source=(https://downloads.sourceforge.net/blobby/$pkgname-linux-$pkgver.tar.gz
+        0001-support-for-clang19.patch)
+sha512sums=('4061de21586ed8404c1cfb5284820e5e0835d10270de12d5e336c1fd9bb080f27a732d9d6cd3a98cbf1eb9d674791d028692f8031b56a9e0be09fcadb2e64c03'
+            'd381235dc7fb73105dc4eeb71897d2a2b798374a3c1c5603252f15fa7f4c7e9704efe2a76541b7e66e6a773acdbe4c52dd8be35b77a99d1fad5563facf311bf2')
+
+prepare() {
+        cd "$srcdir"/blobby-$pkgver
+        patch -Np1 -i ../0001-support-for-clang19.patch
+}
+
+build() {
+  cd "$srcdir"/blobby-$pkgver
+  cmake -DCMAKE_INSTALL_PREFIX=/usr
+  make
+
+  # Strip non-deterministic information from zip files (e.g. timestamps)
+  # This is required for reproducible builds
+  find . -name "*.zip" -exec strip-nondeterminism {} +
+}
+
+package() {
+  cd "$srcdir"/blobby-$pkgver
+  make DESTDIR="$pkgdir" install
+}

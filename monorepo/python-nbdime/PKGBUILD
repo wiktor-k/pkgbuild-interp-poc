@@ -1,0 +1,76 @@
+# Maintainer: Chih-Hsuan Yen <yan12125@archlinux.org>
+# Contributor: j605 on AUR
+# Contributor: Phil A. <flying-sheep@web.de>
+# Contributor: Dominik Stańczak <stanczakdominik at gmail dot com>
+
+pkgname=python-nbdime
+pkgver=4.0.4
+pkgrel=2
+pkgdesc='Diff and merge of Jupyter Notebooks'
+url='https://github.com/jupyter/nbdime'
+makedepends=(python-build python-installer
+             # PEP 517 requires=
+             python-hatchling jupyterlab
+             # used in pyproject.toml
+             python-hatch-jupyter-builder
+             # for building frontend
+             npm
+             # optional deps
+             python-tabulate jupyter-notebook python-packaging)
+# Dependencies follow the order in pyproject.toml
+depends=(python jupyter-nbformat python-colorama python-pygments python-tornado
+         python-requests python-gitpython jupyter-server
+         python-jinja
+         # following are detected by namcap and not listed in pyproject.toml
+         python-traitlets python-jupyter-core)
+checkdepends=(mercurial
+              python-jsonpatch python-pytest python-pytest-timeout python-pytest-tornado)
+optdepends=(
+  'python-tabulate: for nbdime.profiling'
+  'jupyter-notebook: support for notebook 6'
+  'python-packaging: support for notebook 6'
+)
+provides=(jupyterlab-extension-nbdime jupyter-nbdime)
+# https://github.com/jupyter/nbdime/blob/4.0.1/LICENSE.md
+license=(BSD-3-Clause)
+arch=(any)
+source=(https://github.com/jupyter/nbdime/archive/v$pkgver/nbdime-$pkgver.tar.gz)
+sha256sums=('9ff1963446d06748a0e9419f6137cbe7d4134af9fea54b8659a355d6c48046c4')
+
+prepare() {
+  cd nbdime-$pkgver
+
+  # Many tests need a valid git config
+  cat > gitconfig <<EOF
+[user]
+    name = builduser
+    email = builduser@archlinux
+EOF
+}
+
+build() {
+  cd nbdime-$pkgver
+
+  # Many indirect dependencies are not declared in PKGBUILDs of dependent packages
+  # jupyterlab is included in pyproject.toml as the jupyter command is needed for builds
+  # https://github.com/jupyter/nbdime/pull/572#discussion_r611501164
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd nbdime-$pkgver
+
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m installer --destdir="$PWD/tmp_install" dist/*.whl
+
+  PYTHONPATH="$PWD/tmp_install$site_packages" PATH="$PATH:$PWD/tmp_install/usr/bin" GIT_CONFIG_GLOBAL="$PWD/gitconfig" pytest nbdime
+}
+
+package() {
+  cd nbdime-$pkgver
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  mv "$pkgdir"/usr/etc "$pkgdir"/etc
+
+  install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+}

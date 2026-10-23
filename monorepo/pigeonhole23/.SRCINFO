@@ -1,0 +1,21 @@
+pkgbase = pigeonhole23
+	pkgdesc = Sieve implementation for Dovecot
+	pkgver = 0.5.21.1
+	pkgrel = 2
+	url = https://pigeonhole.dovecot.org/
+	arch = x86_64
+	license = LGPL-2.1-only
+	depends = dovecot23=2.3.21.1
+	provides = pigeonhole
+	conflicts = dovecot>=2.4
+	conflicts = pigeonhole
+	conflicts = dovecot-sieve
+	conflicts = pigeonhole-hg
+	source = https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.21.1.tar.gz
+	source = https://pigeonhole.dovecot.org/releases/2.3/dovecot-2.3-pigeonhole-0.5.21.1.tar.gz.sig
+	validpgpkeys = 42F3CD50D4F25A41833BEE3704D62B1E3DFBB4F4
+	validpgpkeys = 2BE74AAB3EE754DFB9C80D3318A348AEED409DA1
+	sha256sums = 0377db284b620723de060431115fb2e7791e1df4321411af718201d6925c4692
+	sha256sums = SKIP
+
+pkgname = pigeonhole23

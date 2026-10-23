@@ -1,0 +1,24 @@
+pkgbase = ruby-fakefs
+	pkgdesc = A fake filesystem. Use it in your tests.
+	pkgver = 3.2.1
+	pkgrel = 1
+	url = https://github.com/fakefs/fakefs
+	arch = any
+	license = MIT
+	checkdepends = less
+	checkdepends = ruby-bundler
+	checkdepends = ruby-csv
+	checkdepends = ruby-irb
+	checkdepends = ruby-maxitest
+	checkdepends = ruby-mutex_m
+	checkdepends = ruby-pry
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/fakefs/fakefs.git#tag=v3.2.1
+	b2sums = 018c198988472990d37b70813e6705b2a6b86d2ef5de61c8f2fa09b0929e2daf48e9706079f12abedbdad293293dddbae3f1ef78d615f481caa56c3c2cb603ea
+
+pkgname = ruby-fakefs

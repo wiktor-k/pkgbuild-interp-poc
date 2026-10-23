@@ -1,0 +1,22 @@
+pkgbase = python-pysolr
+	pkgdesc = Python Solr client
+	pkgver = 3.11.0
+	pkgrel = 2
+	url = https://github.com/django-haystack/pysolr
+	arch = any
+	license = BSD-3-Clause
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-setuptools
+	depends = python-requests
+	optdepends = python-kazoo: for solrcloud
+	optdepends = python-simplejson: for JSON support
+	optdepends = solr: for interfacing a local solr instance
+	source = python-pysolr-3.11.0.tar.gz::https://github.com/django-haystack/pysolr/archive/refs/tags/v3.11.0.tar.gz
+	sha512sums = 09471b3d0b8b0211b66a94e4d46794ef48eea0fb904254a39755be15b97d00fa97a0ae61df335446c9cccf2b855092c572da8160f7ad433906205f899fa3b649
+	b2sums = d18f64e1188847b7e832a1e914487aa02164f3322f398f7e0ba41f7ae10b425779fdf3ef654686a10bb18052bb4db384e43f553d4addf892dfd53188f886d9d8
+
+pkgname = python-pysolr

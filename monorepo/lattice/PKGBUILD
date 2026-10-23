@@ -1,0 +1,65 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+
+pkgname='lattice'
+pkgver=0.9.2
+pkgrel=1
+pkgdesc='Editor-agnostic language server for the Crystal programming language'
+arch=(x86_64)
+url='https://codeberg.org/DaZhi-the-Revelator/lattice'
+license=(GPL-3.0-or-later)
+depends=(
+  'openssl'
+  'glibc'
+  'gc'
+  'pcre2'
+  'libgcc'
+  'libyaml'
+  'zlib'
+)
+makedepends=(
+  'crystal'
+  'shards'
+  'git'
+)
+checkdepends=(
+)
+optdepends=(
+)
+source=(
+  "git+https://codeberg.org/DaZhi-the-Revelator/lattice.git#tag=v${pkgver}"
+  "git+https://codeberg.org/DaZhi-the-Revelator/tree-sitter-crystal.git"
+)
+sha256sums=('0c4dcd703041ca3621356277e66ef4cdc5136ec62b1773eea0dc8928fa37787b'
+            'SKIP')
+
+prepare() {
+  cd "${pkgname}"
+  git submodule init
+  git config submodule.tree_sitter_crystal.url ../tree-sitter-crystal
+  git -c protocol.file.allow=always submodule update \
+    tree_sitter_crystal
+}
+
+build() {
+  cd "${pkgname}"
+  shards build --production --release
+}
+
+check() {
+  cd "${pkgname}"
+  crystal spec
+}
+
+
+package() {
+  cd "${pkgname}"
+
+  install -Dm755 "bin/lattice" "${pkgdir}/usr/bin/lattice"
+
+  install -D -dm755 "${pkgdir}/usr/share/doc/${pkgname}"
+  install -m0644 -t "${pkgdir}/usr/share/doc/${pkgname}/" \
+    README.md \
+    CHANGELOG.md
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,47 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=darkstat
+pkgver=3.0.722
+pkgrel=1
+pkgdesc='Network statistics gatherer (packet sniffer)'
+url='https://unix4lyfe.org/darkstat/'
+license=('GPL')
+arch=('x86_64')
+depends=('libpcap' 'zlib' 'gcc-libs')
+backup=('etc/conf.d/darkstat.conf')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/emikulic/${pkgname}/archive/refs/tags/${pkgver}.tar.gz"
+	'darkstat.sysusers'
+	'darkstat.tmpfiles'
+	'darkstat.service'
+	'darkstat.conf')
+sha256sums=('5c8e66d4c478b6d7e58f4c842823a09125509bf6851017ff70e32b32ce95b01b'
+            '06cdbb13a8f0cfdfbdfe604950a404534ef7e87e2a02827cd90deb75a3613c1e'
+            'ccc508237a3aa5b1b2cff271877f6a92a0a189ff578ed2128731f7d8379a9fca'
+            '81a29ba0fca9430f1a220fece1e88e8e80657fc1970b9327b6680e5f212e51df'
+            '7ee7e3a04672bec76e10a65d3b2bc7cf3c41992652a7252d2bbefa79f7679923')
+
+prepare() {
+  cd "${srcdir}/darkstat-${pkgver}"
+
+  autoreconf -fi
+}
+
+build() {
+  cd "${srcdir}/darkstat-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin
+  make
+}
+
+package() {
+  cd "${srcdir}/darkstat-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+
+  install -D -m0644 "${srcdir}"/darkstat.sysusers "${pkgdir}"/usr/lib/sysusers.d/darkstat.conf
+  install -D -m0644 "${srcdir}"/darkstat.tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/darkstat.conf
+  install -D -m0644 "${srcdir}"/darkstat.service "${pkgdir}"/usr/lib/systemd/system/darkstat.service
+  install -D -m0644 "${srcdir}"/darkstat.conf "${pkgdir}"/etc/conf.d/darkstat.conf
+}

@@ -1,0 +1,20 @@
+pkgbase = opensearch-dashboards-maps-plugin
+	pkgdesc = OpenSearch Dashboards Maps Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://opensearch.org/docs/latest/dashboards/geojson-regionmaps/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = git
+	depends = opensearch-dashboards=3.9.0
+	depends = coffeescript
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/dashboards-maps.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = 07d947eec97be5c65f3fb86e28055fad524eba5e29c4a62b2e1ac242378ae161
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-maps-plugin

@@ -1,0 +1,38 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Tharre <tharre3@gmail.com>
+
+pkgname=python-enlighten
+pkgver=1.14.1
+pkgrel=3
+pkgdesc='Progress bar for Python console apps'
+url=https://github.com/Rockhopper-Technologies/enlighten
+arch=(any)
+license=(MPL-2.0)
+depends=(
+  python
+  python-blessed
+  python-prefixed
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(git+https://github.com/Rockhopper-Technologies/enlighten.git#tag=${pkgver})
+b2sums=('41635333bb2a37a3fae9a3d2c9ffb193bf2c920b93359ced2624785cc72e539c2065adbd2030edd9eb7e235209ecde30fc1495337d5fc667192eeb379b0cbac5')
+
+prepare() {
+  rm -rf enlighten/benchmarks
+}
+
+build() {
+  cd enlighten
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd enlighten
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

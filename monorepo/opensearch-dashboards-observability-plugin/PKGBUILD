@@ -1,0 +1,57 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname='opensearch-dashboards-observability-plugin'
+_pluginname='observability-dashboards-plugin'
+pkgver=3.9.0.0
+_dashboardsver=3.9.0
+pkgrel=2
+pkgdesc='OpenSearch Dashboards Observability Plugin'
+url='https://docs.opensearch.org/latest/observing-your-data/'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=("opensearch-dashboards=${_dashboardsver}" 'gnuplot')
+makedepends=('yarn' 'npm' 'python' 'git')
+options=('!strip' 'emptydirs')
+source=(
+  "git+https://github.com/opensearch-project/dashboards-observability.git#tag=${pkgver}"
+  "git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=${_dashboardsver}"
+)
+sha256sums=('00ca23bf38680fec3926eb63a4c4c03a76ce1e72b17221dade10a14165d4e85b'
+            'aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7')
+
+prepare() {
+  nodeVersion="$(node -v)"
+  # Yes, you support this version. You just don't know it yet.
+  sed -i "s/    \"node\": \"[0-9\.]*\",/    \"node\": \"${nodeVersion:1}\",/" "OpenSearch-Dashboards/package.json"
+  cd "OpenSearch-Dashboards"
+  local filename
+  for filename in "${source[@]}"; do
+    if [[ "$filename" =~ \.patch$ ]]; then
+      patch -p1 -N -l -i "$srcdir/${filename##*/}"
+    fi
+  done
+}
+
+build() {
+  mv "dashboards-observability" "OpenSearch-Dashboards/plugins/${_pluginname}"
+  cd "OpenSearch-Dashboards/plugins/${_pluginname}"
+  yarn osd bootstrap
+  yarn build --skip-archive
+}
+
+# This breaks in release 2.16.0 - check on next one
+# check() {
+#   cd "OpenSearch-Dashboards/plugins/${_pluginname}"
+#   yarn test
+# }
+
+package() {
+  install -Dm644 "${srcdir}/OpenSearch-Dashboards/plugins/${_pluginname}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -dm755 "${pkgdir}/usr/share/opensearch-dashboards/plugins/"
+
+  cp -r "${srcdir}/OpenSearch-Dashboards/plugins/${_pluginname}/build/opensearch-dashboards/"* "${pkgdir}/usr/share/opensearch-dashboards/plugins/"
+
+  find "${pkgdir}/usr/share/opensearch-dashboards/plugins" -type d -empty -delete
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,17 @@
+pkgbase = libtsm
+	pkgdesc = Terminal-emulator State Machine
+	pkgver = 4.8.0
+	pkgrel = 1
+	url = https://github.com/kmscon/libtsm
+	arch = x86_64
+	license = MIT
+	makedepends = check
+	makedepends = git
+	makedepends = meson
+	makedepends = libxkbcommon
+	depends = glibc
+	options = !libtool
+	source = git+https://github.com/kmscon/libtsm.git#tag=v4.8.0
+	b2sums = 587c4dde1a2c3ae1049baceef2c6b5485f3d1425036880f7720bab49e95fe09d4d70d73773d96c5cd35de2a09a550dd9cc6dee0c4f42da1bc81cc538a7c05588
+
+pkgname = libtsm

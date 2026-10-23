@@ -1,0 +1,57 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=resources
+pkgver=51.0
+pkgrel=2
+pkgdesc='Monitor for system resources and processes'
+arch=(x86_64)
+url='https://apps.gnome.org/Resources/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libsoup3
+  polkit
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=("git+https://gitlab.gnome.org/GNOME/Incubator/resources.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('86ce9b5a1c93affe5e33ee2068142618cd9fa795dcac4e81c8959c63fa92725edfcb6bbc7a141138e626f4e7c76afe5e0931788a56db3536082751bc66217e51')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo" \
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --no-rebuild --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}

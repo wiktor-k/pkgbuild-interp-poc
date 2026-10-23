@@ -1,0 +1,51 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Luis Aranguren <pizzaman@hotmail.com>
+
+pkgname=mdk4
+pkgver=4.2
+pkgrel=2
+pkgdesc='A tool to exploit common IEEE 802.11 protocol weaknesses'
+arch=(x86_64)
+url='https://github.com/aircrack-ng/mdk4'
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  libpcap
+  libnl
+)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('38efacb6eed057b1890223d8cbc3a65e5885b8118666271771260e47e9eb736cb0a3243553ca364f47f2a43bb80d2fd42e7dee215f7e4bb195aac68362c213af')
+b2sums=('f004b87a11d45c1cb9c3618c932eb11066547ffe7edda2aa114de541560f301981264b19f75b012e0be58c8a6ae7ffb6fa04c8183b4e40d8bdde377f38823c9c')
+
+prepare() {
+  cd "$pkgname"
+
+  # fix FTBFS
+  git cherry-pick --no-commit \
+    b27e9b4f0db4fc38697ea8cbf68f62f9b5f47600 \
+    9e595b2f72b9c6cf12cc688e46e3eba3bac1b4d3 \
+    45755e9f2b2a79f26b9fb2dd69bfb2147c207456 \
+    4cb00cb72b9c3f6f569c7d144fa43b1267685f4c \
+    7106e38db19b72a123ebf09b771312cbeee2298f \
+    16e5152104bd71ab2ae82542d6f180b86322cc65 \
+    cd1970635d2a9bf2b5e89585d6f28a909c03ff63
+}
+
+build() {
+  cd "$pkgname"
+  make
+}
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" src/mdk4
+
+  # man page
+  install -vDm644 man/mdk4.2 "$pkgdir/usr/share/man/man8/mdk4.8"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr useful_files "$pkgdir/usr/share/doc/$pkgname"
+}

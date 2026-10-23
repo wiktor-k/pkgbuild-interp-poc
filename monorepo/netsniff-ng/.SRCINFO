@@ -1,0 +1,32 @@
+pkgbase = netsniff-ng
+	pkgdesc = High performance Linux network sniffer for packet inspection
+	pkgver = 0.6.9
+	pkgrel = 2
+	url = http://netsniff-ng.org/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = bison
+	makedepends = cmake
+	makedepends = flex
+	makedepends = git
+	depends = geoip
+	depends = glibc
+	depends = libcli
+	depends = libcli.so
+	depends = libgcc
+	depends = libnet
+	depends = libnetfilter_conntrack
+	depends = libnl
+	depends = libpcap
+	depends = libpcap.so
+	depends = libsodium
+	depends = liburcu
+	depends = ncurses
+	depends = libncursesw.so
+	depends = zlib
+	source = git+https://github.com/netsniff-ng/netsniff-ng.git#tag=v0.6.9?signed
+	validpgpkeys = C3DE742283C246F2D7887AB4236B0FE9B5510F47
+	validpgpkeys = D1E0DA88E90F7E03B314C5D18A59A09E92628B77
+	b2sums = f1d3208568e6b84670e19d2ad9620ae32985cbc4101bae3477893190859fea3c7754dffd9d3889d1c125308c4df1df045275948eca0206103afd2fb23822d35e
+
+pkgname = netsniff-ng

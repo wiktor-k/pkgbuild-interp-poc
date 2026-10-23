@@ -1,0 +1,22 @@
+pkgbase = sundials
+	pkgdesc = Suite of nonlinear differential/algebraic equation solvers
+	pkgver = 7.9.0
+	pkgrel = 1
+	url = https://computing.llnl.gov/projects/sundials
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cmake
+	makedepends = gcc-fortran
+	makedepends = git
+	makedepends = python
+	depends = glibc
+	depends = lapack
+	depends = libgomp
+	depends = openmpi
+	depends = suitesparse
+	optdepends = python-matplotlib: for some examples
+	optdepends = python-numpy: for some examples
+	source = git+https://github.com/LLNL/sundials#tag=v7.9.0
+	sha256sums = 07235d2ba2c65518d5095390432601f668bb1d95bb3a3e517f2336dcf6c8b0e3
+
+pkgname = sundials

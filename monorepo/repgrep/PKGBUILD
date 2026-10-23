@@ -1,0 +1,58 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=repgrep
+_pkgname=rgr
+pkgver=0.17.1
+pkgrel=1
+pkgdesc="An interactive command line replacer for ripgrep"
+arch=('x86_64')
+url="https://github.com/acheronfail/repgrep"
+license=('MIT' 'Apache' 'Unlicense')
+depends=(
+  'libgcc'
+  'ripgrep'
+)
+makedepends=('cargo' 'asciidoctor')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('39562cb62bb34035efc3b24cb9778e8c9f19ec2af7458b0751ae6a12314037ecc18a4b90e92dfd1935b50007f5b45de3599b1b92d61a33d3c0d72738ec01d2f9')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+# Upstream v0.15.0 started cheating and stopped generating their own completions and
+# started just repackaging `rg`'s completions using these sed incantations in CI.
+# https://github.com/acheronfail/repgrep/commit/fae1ed5fe9a464fbc7367e441ccc0a2999a72e70
+_reuse_rg_completions () {
+  echo 'complete -F _rg rgr' |
+    install -Dm 644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/$_pkgname"
+  echo 'compdef $_comps[rg] rgr' |
+    install -Dm 644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_$_pkgname"
+  rg --generate complete-fish |
+    sed -e 's/-c rg/-c rgr/' |
+    install -Dm 644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/$_pkgname.fish"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  out_dir=$(find target -name repgrep-stamp -print0 | xargs -0 ls -t | head -n1 | xargs dirname)
+  install -Dm 644 "$out_dir/$_pkgname.1" -t "$pkgdir/usr/share/man/man1"
+  _reuse_rg_completions
+}
+
+# vim: ts=2 sw=2 et:

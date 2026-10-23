@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Nagy <danielnagy at gmx de>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+
+pkgname=haskell-aeson
+_hkgname=aeson
+pkgver=2.2.4.0
+pkgrel=11
+pkgdesc="A JSON parsing and encoding library optimized for ease of use and high performance"
+url="https://github.com/haskell/aeson"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-character-ps' 'haskell-data-fix' 'haskell-dlist' 'haskell-generically'
+         'haskell-hashable' 'haskell-indexed-traversable' 'haskell-integer-conversion'
+         'haskell-integer-logarithms' 'haskell-network-uri' 'haskell-onetuple' 'haskell-primitive'
+         'haskell-quickcheck' 'haskell-scientific' 'haskell-semialign' 'haskell-strict'
+         'haskell-tagged' 'haskell-text-iso8601' 'haskell-text-short' 'haskell-th-abstraction'
+         'haskell-these' 'haskell-time-compat' 'haskell-unordered-containers' 'haskell-uuid-types'
+         'haskell-vector' 'haskell-witherable')
+makedepends=('ghc' 'uusi' 'haskell-base-compat' 'haskell-base-orphans' 'haskell-base16-bytestring'
+             'haskell-diff' 'haskell-generic-deriving' 'haskell-nothunks'
+             'haskell-quickcheck-instances' 'haskell-tasty' 'haskell-tasty-golden'
+             'haskell-tasty-hunit' 'haskell-tasty-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-${pkgver}.tar.gz")
+sha512sums=('c59577e54d624250cb3b31c054e87438c6c52e3f7f728c6f43f716f8b2aed1447552da10450d60e84dd17bcfd05e224a27e4db564f32fdae3d5c0469650b8703')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  uusi -u Diff
+}
+
+build() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -fordered-keymap
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

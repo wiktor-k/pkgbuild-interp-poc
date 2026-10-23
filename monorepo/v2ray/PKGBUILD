@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: pandada8 <pandada8@gmail.com>
+
+pkgname=v2ray
+pkgver=5.53.0
+pkgrel=1
+pkgdesc="A platform for building proxies to bypass network restrictions"
+arch=('x86_64')
+url="https://github.com/v2fly/v2ray-core"
+license=('MIT')
+depends=('glibc' 'v2ray-domain-list-community' 'v2ray-geoip')
+makedepends=('go' 'git')
+backup=(etc/v2ray/config.json)
+source=("git+https://github.com/v2fly/v2ray-core.git#tag=v$pkgver")
+sha512sums=('c3c1903a60f6911ab4d0e40080fd1592e306497b097759ce848d52c8e7d3a3cb1e1a8d962201826fb39ae9ba349c8d03477179aae4c91ca37033a27a82d80a5a')
+
+prepare() {
+  cd v2ray-core
+  sed -i 's|/usr/local/bin|/usr/bin|;s|/usr/local/etc|/etc|' release/config/systemd/system/*.service
+
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw -x
+}
+
+build() {
+  cd v2ray-core
+  export GOPATH="${srcdir}"
+  export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  go build -ldflags "-compressdwarf=false -linkmode external" -o v2ray ./main
+}
+
+check() {
+  cd v2ray-core
+  go test -tags json -v -timeout 30m ./...
+}
+
+package() {
+  cd v2ray-core
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/v2ray/
+  install -Dm644 release/config/systemd/system/v2ray.service -t "$pkgdir"/usr/lib/systemd/system/
+  install -Dm644 release/config/systemd/system/v2ray@.service -t "$pkgdir"/usr/lib/systemd/system/
+  install -Dm644 release/config/*.json -t "$pkgdir"/etc/v2ray/
+  install -Dm755 v2ray -t "$pkgdir"/usr/bin/
+}

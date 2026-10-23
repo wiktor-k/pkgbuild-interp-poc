@@ -1,0 +1,24 @@
+# Maintainer: Muflone http://www.muflone.com/contacts/english/
+# Contributor: jose <jose1711 [at] gmail (dot) com>
+
+pkgname=gwakeonlan
+pkgver=0.8.6
+pkgrel=4
+pkgdesc="GTK+ utility to awake machines using the Wake on LAN."
+url="http://www.muflone.com/gwakeonlan/"
+arch=('any')
+license=('GPL-3.0-or-later')
+makedepends=('gettext' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+depends=('gtk3' 'python-pyxdg' 'python-gobject')
+source=("${pkgname}-${pkgver}.tar.gz"::"https://github.com/muflone/${pkgname}/archive/${pkgver}.tar.gz")
+sha256sums=('0af6e1706e1ee7a5ec94ccd939b1ad2583c89d7878426199f86e625aee5bc127')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

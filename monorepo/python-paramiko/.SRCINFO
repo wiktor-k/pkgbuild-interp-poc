@@ -1,0 +1,22 @@
+pkgbase = python-paramiko
+	pkgdesc = Python module that implements the SSH2 protocol
+	pkgver = 5.1.0
+	pkgrel = 1
+	url = https://github.com/paramiko/paramiko/
+	arch = any
+	license = LGPL-2.1-only
+	checkdepends = python-pytest-relaxed
+	checkdepends = python-icecream
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python-bcrypt
+	depends = python-cryptography
+	depends = python-pynacl
+	depends = python-invoke
+	source = git+https://github.com/paramiko/paramiko.git#tag=5.1.0
+	sha512sums = 1a9204a2a24f416ab077dd227ec1cde987185d82a403a80fdf76236d0e55af1205dc60d41ed9521c6491524eeecfb2292c54b4738e56129486378a396e31a71e
+
+pkgname = python-paramiko

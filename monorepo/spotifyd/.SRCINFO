@@ -1,0 +1,19 @@
+pkgbase = spotifyd
+	pkgdesc = Lightweight spotify streaming daemon with spotify connect support
+	pkgver = 0.4.2
+	pkgrel = 1
+	url = https://github.com/Spotifyd/spotifyd
+	arch = x86_64
+	license = GPL3
+	makedepends = clang
+	makedepends = cmake
+	makedepends = rust
+	depends = alsa-lib
+	depends = dbus
+	depends = libogg
+	depends = libpulse
+	options = !lto
+	source = https://github.com/Spotifyd/spotifyd/archive/v0.4.2/spotifyd-0.4.2.tar.gz
+	b2sums = bf61c133252cddc79ef492836a99da8ab099527f0dc508f8ea29d6057f4dd4ac5603bd4e38e69f748bb3ac7bb14e03341377cfd4889f0d8c3667e85562518303
+
+pkgname = spotifyd

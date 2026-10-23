@@ -1,0 +1,14 @@
+pkgbase = byacc
+	pkgdesc = Berkeley reimplementation of the Unix parser generator Yacc
+	pkgver = 20260126
+	pkgrel = 1
+	url = https://invisible-island.net/byacc/
+	arch = x86_64
+	license = custom
+	makedepends = git
+	depends = glibc
+	replaces = byacc-noconflict
+	source = byacc::git+https://github.com/ThomasDickey/byacc-snapshots.git#tag=t20260126
+	sha512sums = f95631b5cd1a52b31e0750a255d3d28a62f9b45031d1bb40fa1d22bdf12dba92364e35567dc4f95c21c5ab8cc0a0d322be6ac47055483075b34e50fe8e3ae847
+
+pkgname = byacc

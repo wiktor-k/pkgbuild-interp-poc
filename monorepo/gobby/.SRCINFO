@@ -1,0 +1,36 @@
+pkgbase = gobby
+	pkgdesc = Collaborative text editor
+	pkgver = 0.6.0
+	pkgrel = 4
+	epoch = 1
+	url = https://gobby.github.io/
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = intltool
+	makedepends = yelp-tools
+	depends = atkmm
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = glibmm
+	depends = gnutls
+	depends = gtk3
+	depends = gtkmm3
+	depends = gtksourceview4
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libinfinity
+	depends = libsigc++
+	depends = libstdc++
+	depends = libxml++2.6
+	depends = pangomm
+	source = git+https://github.com/gobby/gobby.git?signed#tag=v0.6.0
+	source = gobby-gtksourcedrawspacesflags-declaration.patch
+	source = gobby-no-appmenu.patch
+	validpgpkeys = 728834F3B8D552ED25CC1B1FB1C71544BF1D92C7
+	b2sums = e184629169000f92e308ed9321edecac012d601f83d90ecfc9401deb6e21c50c26c4f137b746693a7ae278c0a2d8324d18537b86db186b84521be74599504151
+	b2sums = 9ab880bf78c65b5a5bce843d2c8c6c7dbbc441589a17ecd7a78c6a942bb6bafbf9cdfc0728ef6bb69f5d3737850c6bd89bfe869b12ac4cf86b1081b8553e8ddf
+	b2sums = a2096cfaa03aebbf8f90e193ab2464ee6492fc1dfa430b29c2945d892e71a36f69fe397aeea45f7a3c660e317430256bb5bf4807560010ad985ee2a803a21369
+
+pkgname = gobby

@@ -1,0 +1,37 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=libuecc
+pkgver=7
+pkgrel=4
+pkgdesc="Very small Elliptic Curve Cryptography library"
+url="https://github.com/neocturne/libuecc"
+arch=("x86_64")
+license=('BSD-2-Clause')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'cmake'
+)
+source=("https://github.com/neocturne/libuecc/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('ccb65e9eeea5147ec42b4ae7d004af3c58bbc26706f20c07b917fd56cd4c5adcd4173bf743efe8f1c6df0fbe76fca2ff86ece5e72b17365d30957fd37b602381')
+
+build() {
+  mkdir -p "$srcdir/build-${pkgver}"
+  cd "$srcdir/build-${pkgver}"
+
+  cmake \
+    -D CMAKE_BUILD_TYPE=RELEASE \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    "../${pkgname}-${pkgver}"
+  make
+}
+
+package() {
+  cd "$srcdir/build-${pkgver}"
+  make install DESTDIR="${pkgdir}"
+  install -Dm644 "$srcdir/${pkgname}-${pkgver}/COPYRIGHT" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+# vim: ts=2 sw=2 et:

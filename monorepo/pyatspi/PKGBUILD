@@ -1,0 +1,47 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgbase=pyatspi
+pkgname=(python-atspi)
+pkgver=2.58.2
+pkgrel=1
+pkgdesc="Python bindings for D-Bus AT-SPI"
+url="https://gitlab.gnome.org/GNOME/pyatspi2"
+arch=(any)
+license=(LGPL-2.0-only)
+depends=(
+  at-spi2-core
+  glib2
+  python
+  python-gobject
+)
+makedepends=(
+  git
+  meson
+  python-dbus
+)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('83882f44b12d6f5ad4b777d5af8d83bb229881f8faa9ebfb417847b2a9e9e8694d5bce13a0d425dd31de472af93818c4f43383b29294b360c0d5a57625db4b97')
+
+prepare() {
+  cd pyatspi2
+}
+
+build() {
+  local meson_options=(
+    -D enable_tests=true
+  )
+
+  arch-meson pyatspi2 build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  dbus-run-session meson test -C build --print-errorlogs
+}
+
+package_python-atspi() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

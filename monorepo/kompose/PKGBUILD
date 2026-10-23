@@ -1,0 +1,52 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=kompose
+pkgver=1.38.0
+pkgrel=1
+pkgdesc="Docker compose to Kubernetes transformation tool"
+arch=('x86_64')
+url="https://github.com/kubernetes/kompose"
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=(
+  'git' # git binary is needed for test scripts
+  'go'
+  'jq'
+)
+options=('!lto')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('67f5ef32d97b43d45b3ec0b459e13396b97ee26446361cfaea65a66345831d4c239a53db021601a50c170c25479abdd17d0978f59a62c89c2012dd3664e9b6e3')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="$srcdir"
+  local ld_flags="-compressdwarf=false -linkmode=external"
+  go build -v -o build -ldflags="$ld_flags" .
+}
+
+check() {
+  cd $pkgname-$pkgver
+  go test -v ./...
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" ./build/kompose
+  build/kompose completion bash \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/kompose"
+  build/kompose completion zsh \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_kompose"
+  build/kompose completion fish \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/kompose.fish"
+}

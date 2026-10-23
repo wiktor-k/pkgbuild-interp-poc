@@ -1,0 +1,35 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=mdserve
+pkgver=1.1.0
+pkgrel=2
+pkgdesc="Fast markdown preview server with live reload and theme support"
+arch=('x86_64')
+url="https://github.com/jfernandez/mdserve"
+license=('MIT')
+depends=('libgcc')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/jfernandez/mdserve/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('d6166da1068a78a9ede316a9e58f97c905f23c009091dfef23eb4730665bb8850f1b301763a707e967b3963ca57cf39e1088c51ae7d0c5c86a319e63c84803f9')
+
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 "$srcdir/$pkgname-$pkgver/target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm0644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

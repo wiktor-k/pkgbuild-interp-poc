@@ -1,0 +1,81 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=health
+pkgver=0.95.0
+pkgrel=6
+pkgdesc='Health tracking app for the GNOME desktop'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/Health'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libsecret
+  pango
+  tinysparql
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+checkdepends=(xorg-server-xvfb)
+options=(!lto)
+source=(
+  "git+https://gitlab.gnome.org/World/Health.git#tag=$pkgver"
+  health-disable-plugin.patch
+)
+b2sums=(
+  7cae069263f1fb0da21f42cbf96f21ac5c810f156666e6ff23f5269d64f895caaa5355a0ccc555249a26f8d42c69218d3213182b96a36ec2f2c9be35f64269ad
+  63704226756ce80f21fe007231e87ef3a7d104faf44c9a54ab5ae07b696bc414a0099c34de2d778e68efb9ed895103139b937736507e24d463b1ca4562dd4a40
+)
+
+prepare() {
+  cd Health
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.gnome.org/World/Health/-/merge_requests/205
+  git cherry-pick -n 2b8b165107501e8eddc784841f4c219a20a822f1
+
+  # https://gitlab.gnome.org/World/Health/-/merge_requests/208
+  git cherry-pick -n 6d2c26f3e15357056f03de39681510bd20472cd8
+
+  # https://gitlab.gnome.org/World/Health/-/merge_requests/210
+  git cherry-pick -n 6deea67cec526ba5043491cd9126997eb4bd3d02
+
+  # Remove broken 'Disable Current Plugin' menu item
+  # https://gitlab.gnome.org/World/Health/-/issues/187
+  git apply -3 ../health-disable-plugin.patch
+}
+
+build() {
+  arch-meson Health build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  dbus-run-session xvfb-run \
+    -s '-screen 0 1920x1080x24 -nolisten local' \
+    meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+  ln -s dev.Cogitri.Health "$pkgdir/usr/bin/health"
+}

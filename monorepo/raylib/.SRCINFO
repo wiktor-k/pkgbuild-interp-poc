@@ -1,0 +1,22 @@
+pkgbase = raylib
+	pkgdesc = Simple and easy-to-use game programming library
+	pkgver = 6.2
+	pkgrel = 1
+	url = https://www.raylib.com
+	arch = x86_64
+	license = Zlib
+	makedepends = cmake
+	makedepends = git
+	makedepends = libx11
+	makedepends = libxcursor
+	makedepends = libxinerama
+	makedepends = libxrandr
+	makedepends = vulkan-headers
+	makedepends = xorg-server-devel
+	makedepends = xorg-xinput
+	depends = glibc
+	depends = libx11
+	source = git+https://github.com/raysan5/raylib#tag=6.2
+	b2sums = 5d4ef7f4650eda6b048167ba82202dbae7964ba1af668678444c1bbd4e0158352f93eb786cfd18c80532610658b5e5c7b0c15407832bc47f9467c42d0760b3a9
+
+pkgname = raylib

@@ -1,0 +1,22 @@
+pkgbase = python-pyx
+	pkgdesc = Python library for the creation of PostScript and PDF files
+	pkgver = 0.18
+	pkgrel = 1
+	url = https://pyx-project.org/
+	arch = any
+	license = GPL-2.0-or-later
+	checkdepends = ghostscript
+	checkdepends = python-pillow
+	checkdepends = python-testfixtures
+	checkdepends = texlive-fontsrecommended
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = texlive-latex
+	source = git+https://github.com/pyx-project/pyx.git#tag=0.18
+	sha512sums = c40470934aec906d7c0c72cedc4575a260b8db36d98d7ea76268128e120b200f160f1b537570da030a44523c641e3251a833ddf1d1a06747bc1aaeb125b555d4
+
+pkgname = python-pyx

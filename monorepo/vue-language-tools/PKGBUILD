@@ -1,0 +1,59 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Yufan You <ouuansteve at gmail>
+
+pkgbase=vue-language-tools
+pkgname=vue-language-server
+pkgver=3.3.13
+pkgrel=1
+pkgdesc='Language server for Vue'
+arch=(any)
+url="https://github.com/vuejs/language-tools/tree/master/packages/language-server"
+license=(MIT)
+depends=(nodejs)
+makedepends=(git pnpm)
+checkdepends=(npm)
+optdepends=('typescript-language-server: provides a typescript lsp')
+provides=(vue-typescript-plugin)
+replaces=(vue-typescript-plugin)
+options=(!emptydirs)
+source=("$pkgbase::git+https://github.com/vuejs/language-tools.git#tag=v$pkgver")
+b2sums=('1c4fddc40e53cdf57b9dc1d5878d1a9ef704873f184ec7160b82a10a0700a1997424926120d932a9a109a9bb23743ae3da3e26072c731ad216283e1658482816')
+
+prepare() {
+	cd $pkgbase
+	pnpm install --frozen-lockfile
+}
+
+build() {
+	cd $pkgbase
+	COREPACK_ENABLE_STRICT=0 pnpm build
+}
+
+check() {
+	cd $pkgbase
+	COREPACK_ENABLE_STRICT=0 pnpm test
+}
+
+package() {
+	cd $pkgbase
+	local mod_dir=/usr/lib/node_modules/@vue/language-server
+
+	install -d \
+		"$pkgdir/usr/bin" \
+		"$pkgdir/usr/share/doc/$pkgname" \
+		"$pkgdir/usr/share/licenses/$pkgname" \
+		"$pkgdir/$mod_dir"
+
+	pnpm --filter @vue/language-server --prod deploy --legacy "$pkgdir/$mod_dir"
+	# fix broken symlink
+	ln -sfn $mod_dir "$pkgdir/$mod_dir/node_modules/.pnpm/node_modules/@vue/language-server"
+	# Remove $pkgdir prefixes from scripts in node_modules/.bin/
+	find "$pkgdir/$mod_dir/node_modules" -type f -path '*/.bin/*' -exec sed -i "s|$pkgdir||g" {} +
+	# unneeded file that breaks reproducibility
+	rm "$pkgdir/$mod_dir/node_modules/.modules.yaml"
+
+	ln -s $mod_dir/bin/$pkgname.js "$pkgdir"/usr/bin/$pkgname
+	ln -s $mod_dir/README.md "$pkgdir/usr/share/doc/$pkgname/"
+	ln -s $mod_dir/LICENSE "$pkgdir/usr/share/licenses/$pkgname/"
+}

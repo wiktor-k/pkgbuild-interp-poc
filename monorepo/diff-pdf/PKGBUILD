@@ -1,0 +1,43 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Marcell Meszaros < marcell.meszaros AT runbox.eu >
+
+pkgname=diff-pdf
+pkgver=0.5.3
+pkgrel=1
+pkgdesc="A simple tool for visually comparing two PDF files"
+arch=(x86_64)
+url="http://vslavik.github.io/diff-pdf"
+license=(GPL-2.0-only)
+depends=(
+  cairo
+  glib2
+  glibc
+  libgcc
+  libstdc++
+  poppler-glib
+  wxwidgets-common
+  wxwidgets-gtk3
+)
+source=(https://github.com/vslavik/diff-pdf/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('dc4004fe1199eebf381b5e0f2a60b6b59ff73434730e4f0aae1e0d02fa171b98')
+
+prepare() {
+  cd $pkgname-$pkgver
+  ./bootstrap
+  # Use /usr/share/aclocal/wxwin.m4 from wxwidgets-common
+  rm -f admin/wxwin.m4
+  cp /usr/share/aclocal/wxwin.m4 admin
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix /usr \
+    --with-wx-config=wx-config
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

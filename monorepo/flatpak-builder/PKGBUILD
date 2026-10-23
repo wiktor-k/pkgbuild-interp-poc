@@ -1,0 +1,79 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=flatpak-builder
+pkgver=1.4.12
+pkgrel=1
+pkgdesc="Tool to build flatpaks from source"
+url="https://flatpak.org"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  7zip
+  appstream
+  binutils
+  breezy
+  cpio
+  curl
+  debugedit
+  elfutils
+  flatpak
+  fuse3
+  git
+  glib2
+  glibc
+  json-glib
+  libarchive
+  libelf
+  libgcc
+  libxml2
+  libyaml
+  ostree
+  patch
+  rpmextract
+  tar
+)
+makedepends=(
+  docbook-xsl
+  git
+  gobject-introspection
+  meson
+  xmlto
+)
+replaces=('flatpak<0.9.10')
+source=(
+  "git+https://github.com/flatpak/flatpak-builder#tag=$pkgver"
+  "git+https://gitlab.gnome.org/GNOME/libglnx.git"
+  0001-Support-versioned-fusermount.patch
+)
+b2sums=('65de64eb6db541548a45a378fe3ac2e623b15adaaca2bc259befbda5c43f82a0e87ad9737210343355c0d263ecc4a7818a412c2762f36d789f7092809e213ae5'
+        'SKIP'
+        '6cc29d172f2d8c6a334e99ee0cf81433f4e9bb8c3fe52a890dcbd00be12432d903784cd9b3724842afd74282a9a2c62cf99fff48c3a8d09023b10d87e1fb4bd4')
+
+prepare() {
+  cd $pkgname
+
+  # https://bugs.archlinux.org/task/75649
+  git apply -3 ../0001-Support-versioned-fusermount.patch
+
+  git submodule init subprojects/libglnx
+  git submodule set-url subprojects/libglnx "$srcdir/libglnx"
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update subprojects/libglnx
+}
+
+build() {
+  local meson_options=(
+    -D fuse=3
+
+    # bubblewrap is broken in our build containers
+    -D tests=false
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

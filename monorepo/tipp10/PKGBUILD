@@ -1,0 +1,30 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Florian Pritz <flo@xinu.at>
+# Contributor: toliman <altergan@hs-albsig.de>
+
+pkgname=tipp10
+pkgver=3.3.4
+pkgrel=1
+pkgdesc='Intelligent touch typing tutor'
+arch=(x86_64)
+url=https://gitlab.com/tipp10/tipp10
+license=(GPL-2.0-only)
+depends=(qt6-multimedia)
+makedepends=(
+  cmake
+  git
+  qt6-tools
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('7a398e388a3f148fe3100173dca71d11350b667d873dfe5da6198eee4f571f768cd36b2574c25ecc213065d99769f3e9b5e28517c815927fe2f1ca8ef39c6332')
+
+build() {
+  cd tipp10
+  cmake -DCMAKE_INSTALL_PREFIX=/usr .
+  make
+}
+
+package() {
+  cd tipp10
+  make DESTDIR="$pkgdir" install
+}

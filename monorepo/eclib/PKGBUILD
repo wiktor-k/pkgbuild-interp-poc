@@ -1,0 +1,45 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=eclib
+pkgver=20250627
+pkgrel=11
+pkgdesc='Includes mwrank (for 2-descent on elliptic curves over Q) and modular symbol code used to create the elliptic curve database'
+arch=(x86_64)
+url='https://github.com/JohnCremona/eclib/'
+license=(GPL-2.0-or-later)
+depends=(boost-libs
+         flint
+         glibc
+         libgcc
+         libstdc++
+         ntl
+         pari)
+makedepends=(boost
+             git)
+source=(git+https://github.com/JohnCremona/eclib#tag=v$pkgver
+        boost-1.89.patch)
+sha256sums=('f60f6b2c6f0cc76f4e52540382d3cbcd93053c3f28473b484d577c7198fcbd72'
+            '683124d0493457ee9f4ab47e2a057c6705754244e91562c8e13b8a53a0810c44')
+
+prepare() {
+  cd $pkgname
+  patch -p1 -i ../boost-1.89.patch
+  autoreconf -vif
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --with-flint=/usr --with-boost
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool # Fix overlinking
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make install DESTDIR="$pkgdir"
+}

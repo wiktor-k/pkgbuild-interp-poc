@@ -1,0 +1,59 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=zypper
+pkgver=1.14.101
+pkgrel=1
+pkgdesc="openSUSE's most powerful command line package manager"
+arch=(x86_64)
+url="https://github.com/openSUSE/zypper"
+license=('GPL-2.0-or-later')
+depends=(
+    augeas
+    boost-libs
+    glibc
+    libgcc
+    libxml2
+    libzypp
+    readline
+)
+makedepends=(
+    asciidoctor
+    boost
+    cmake
+    git
+)
+source=("git+https://github.com/openSUSE/zypper.git#tag=${pkgver}")
+sha256sums=('fb2777944ec167f08de5bc3cb22cf261d2e6925d21989c57316f5e7fdb84f2e6')
+
+build() {
+    local cmake_options=(
+        -B build
+        -S $pkgname
+        -W no-dev
+        -D CMAKE_BUILD_TYPE=None
+        -D CMAKE_INSTALL_PREFIX=/usr
+        -D ENABLE_BUILD_TESTS=ON
+    )
+    cmake "${cmake_options[@]}"
+    cmake --build build
+}
+
+check() {
+    local excluded_tests=""
+    local ctest_flags=(
+        --test-dir build
+        # show the stdout and stderr when the test fails
+        --output-on-failure
+        # execute tests in parallel
+        --parallel $(nproc)
+        # exclude problematic tests
+        --exclude-regex "$excluded_tests"
+    )
+    ctest "${ctest_flags[@]}"
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    rm -v "${pkgdir}/usr/bin/"{apt,apt-get,aptitude}
+    rm -vr "${pkgdir}/usr/sbin/"
+}

@@ -1,0 +1,66 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+
+pkgname=wl-mirror
+pkgver=0.18.5
+pkgrel=1
+pkgdesc="a simple Wayland output mirror client"
+url="https://github.com/Ferdi265/wl-mirror"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  bash
+  glibc
+  libdrm
+  libglvnd
+  mesa
+  wayland
+)
+makedepends=(
+  cmake
+  ninja
+  scdoc
+)
+optdepends=(
+  'dmenu: for interactive selection of options and wl-present'
+  'pipectl: for wl-present'
+  'rofi: for interactively selecting options and wl-present'
+  'slurp: for selecting regions and outputs and wl-present'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz"
+        "$pkgname-$pkgver.tar.gz::$url/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz.sig")
+sha512sums=('2e92f027495fd43c16ef911b103a154bb635a1ed5844a20c526d09ee8a5bbbf2dd70b722c3e7d060082b2fe2bcade1ec1cd40bdbdc9a3c8eba5ab5793aa8ac7a'
+            '2e92f027495fd43c16ef911b103a154bb635a1ed5844a20c526d09ee8a5bbbf2dd70b722c3e7d060082b2fe2bcade1ec1cd40bdbdc9a3c8eba5ab5793aa8ac7a')
+b2sums=('f3b2bf218547783f23370f6f32535871eaa31e7123d56b83a68e49c51ea7aa9f9d988073478c5ada8c2d6f520fb0e0b89d475b6d01d414340d824cc1c47ce60b'
+        'f3b2bf218547783f23370f6f32535871eaa31e7123d56b83a68e49c51ea7aa9f9d988073478c5ada8c2d6f520fb0e0b89d475b6d01d414340d824cc1c47ce60b')
+validpgpkeys=('087489B679A69AD292EE5FDEA4FAD9CEDA213AF3')  # Ferdinand Bachmann
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D INSTALL_EXAMPLE_SCRIPTS=ON
+    -D INSTALL_DOCUMENTATION=ON
+    -D WITH_GBM=ON
+    -G Ninja
+    -S $pkgname-$pkgver
+    -W no-dev
+    )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -dm755 "$pkgdir/usr/share/zsh/site-functions" \
+                 "$pkgdir/usr/share/bash-completion/completions"
+
+  cd "$pkgname-$pkgver"
+  install -Dm644 scripts/completions/zsh-completions/* \
+    -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -Dm644 scripts/completions/bash-completions/* \
+    -t "$pkgdir/usr/share/bash-completion/completions"
+}

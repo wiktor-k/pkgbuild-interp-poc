@@ -1,0 +1,28 @@
+# Maintainer: Evangelos Foutras <foutrelis@archlinux.org>
+
+_name=show-in-file-manager
+pkgname=python-$_name
+pkgver=1.1.6
+pkgrel=1
+pkgdesc="Python module to open the system file manager and select files in it"
+arch=('any')
+url="https://github.com/damonlynch/showinfilemanager"
+license=('MIT')
+depends=('python' 'python-pyxdg' 'python-packaging')
+makedepends=('python-build' 'python-installer' 'python-hatchling'
+             'python-hatch-argparse-manpage' 'git')
+source=(git+https://github.com/damonlynch/showinfilemanager#tag=v$pkgver)
+sha256sums=('c4aa6052240dfff3dd228991c82dc31cfd3383b9e8dbd9566f6cfc1b0648e24c')
+
+build() {
+  cd showinfilemanager
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd showinfilemanager
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

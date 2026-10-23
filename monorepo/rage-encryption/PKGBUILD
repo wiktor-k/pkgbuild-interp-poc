@@ -1,0 +1,66 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Daniel Peukert <daniel@peukert.cc>
+
+pkgname=rage-encryption
+_pkgname=${pkgname%-*}
+pkgver=0.12.1
+pkgrel=1
+pkgdesc='Rust implementation of the age encryption tool'
+arch=(x86_64 i686 arm armv6h armv7h aarch64)
+url="https://github.com/str4d/$_pkgname"
+license=(Apache-2.0 MIT)
+depends=(bzip2 libbz2.so
+         fuse3 # libfuse3.so
+         glibc # libc.so libm.so
+         libgcc libgcc_s.so)
+makedepends=(cargo)
+conflicts=(rage)
+replaces=(rust-rage)
+provides=("rust-rage=$pkgver")
+_archive="$_pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('3684e7e269a677180db116cb8115b008ea462dbb6f223f6983dd6750a863afaa')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	export CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	_srcenv
+	cargo test --frozen --all-features
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE-MIT
+	pushd target/release
+	for bin in "$_pkgname"{,-keygen,-mount}; do
+		install -Dm0755 -t "$pkgdir/usr/bin/" "$bin"
+		pushd completions
+		install -Dm0644 "$bin.bash" "$pkgdir/usr/share/bash-completion/completions/$bin"
+		install -Dm0644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "$bin.fish"
+		install -Dm0644 -t "$pkgdir/usr/share/zsh/site-functions/" "_$bin"
+		install -Dm0644 -t "$pkgdir/usr/share/elvish/lib/" "$bin.elv"
+		popd
+		pushd manpages
+		find . -name "$bin.1.gz" -exec install -Dm0644 "{}" "$pkgdir/usr/share/man/{}" \;
+		popd
+	done
+}

@@ -1,0 +1,50 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=angelfish
+pkgver=26.08.2
+pkgrel=1
+pkgdesc='Web browser for Plasma Mobile'
+url='https://apps.kde.org/angelfish/'
+arch=(x86_64)
+license=(GPL-2.0-or-later LGPL-2.0-or-later)
+depends=(futuresql
+         glibc
+         kconfig
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         ki18n
+         kirigami
+         kirigami-addons
+         knotifications
+         kwindowsystem
+         libgcc
+         libstdc++
+         purpose
+         qcoro
+         qqc2-desktop-style
+         qt6-5compat
+         qt6-base
+         qt6-declarative
+         qt6-webengine)
+makedepends=(corrosion
+             extra-cmake-modules)
+groups=(kde-applications
+        kde-network)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('0ba812724148200a738e063989467412082285f08c93178288cc447a6c64027a'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+options=(!lto)
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

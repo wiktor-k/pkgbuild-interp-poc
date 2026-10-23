@@ -1,0 +1,27 @@
+pkgbase = esptool
+	pkgdesc = Espressif SoC serial bootloader utility
+	pkgver = 5.5.0
+	pkgrel = 2
+	url = https://github.com/espressif/esptool
+	arch = any
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-pyserial
+	depends = python-bitstring
+	depends = python-reedsolo
+	depends = python-cryptography
+	depends = python-yaml
+	depends = python-intelhex
+	depends = python-click
+	depends = python-rich-click
+	depends = python-esp-pylib
+	depends = python-rich
+	optdepends = python-python-pkcs11: Support for HSM devices
+	source = git+https://github.com/espressif/esptool.git#tag=v5.5.0
+	b2sums = 7a1f1d7f6ccf4f5f9fc3b18eb98952419cb15ac261ba9d888e8ce4095970ab3dccc4ef17a6100508d4b70bc9a3ccc2992f4937860eb168beb5bac86d8d024b24
+
+pkgname = esptool

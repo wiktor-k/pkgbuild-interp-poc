@@ -1,0 +1,38 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=fping
+pkgver=5.5
+pkgrel=1
+pkgdesc='Utility to ping multiple hosts at once'
+url='https://www.fping.org/'
+arch=('x86_64')
+license=('custom')
+depends=('glibc')
+install=${pkgname}.install
+validpgpkeys=('8D1E89B8FBA920A5A609F2615A11A22BC5A1F734') # David Schweikert <david@schweikert.ch>
+source=("https://www.fping.org/dist/${pkgname}-${pkgver}.tar.gz"{,.asc})
+sha512sums=('80fddfb9462b4ed7231d96d21340e75a42a4c481b78fd70f4889422eab86405b1e4b2ee25162478f4c35f273d4a6b1ff81309af9f09121c574509bfd73b1afde'
+            'SKIP')
+b2sums=('3b1707ce73d0f55dd02466091321adb8b91b9d77a0a1145347cf25527f90052702fac70411cd5a91fdc840e32ac2ad32232bac5e4ded73a254127bbe59d54ae0'
+        'SKIP')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --mandir=/usr/share/man \
+    --enable-ipv4 \
+    --enable-ipv6
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  install -Dm 644 COPYING -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

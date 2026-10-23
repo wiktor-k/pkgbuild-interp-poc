@@ -1,0 +1,99 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Lex Black <autumn-wind@web.de>
+# Contributor: Alex Gentilucci <alexander.gentilucci@gmail.com>
+
+pkgname=ft2-clone
+pkgver=2.26.1
+pkgrel=1
+pkgdesc='Portable Fasttracker II clone'
+arch=(x86_64)
+url='https://16-bits.org/ft2.php'
+license=(
+  BSD-3-Clause
+  MIT
+  CC-BY-NC-SA-4.0
+)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  alsa-lib
+  sdl2
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  libicns
+  cmake
+  ninja
+  gendesk
+)
+source=(
+  "$pkgname::git+https://github.com/8bitbubsy/ft2-clone#tag=v$pkgver"
+  templatify-build-date.patch
+)
+sha512sums=('93490b4f64c2f5d292115d3ee624a07be0a79e5bc61fda1d515b3a485d7e5918b0f9c0e3bd00e038c50fbd27e672233e96b404f608a58961d93053a66a427c89'
+            '2489200d5dde49119c6f506d89275f7632afe55424ff51273ec2be3023ac8c4a801d694556f5862afef67cbf14873ab9f8a0ec6129dda15e92f350974b7c8e63')
+b2sums=('ac280aa9654533e28690b3b6937e191912e259796c9dc6d6a03ab8334b7804ffd1fa80d96f9835ccfa7f39aa85742c44c55f647793513427d39bf8497ac0d74d'
+        '6fb37a4996324b654298d0566387dba1e9926404bd7a9c98aa02fa5ac063765dbdf6b0428f1d85fa068b41133f6e665611238d5c54a4d00931a9509614d958eb')
+
+prepare() {
+  cd "$pkgname"
+
+  # convert icons
+  icns2png -x \
+    release/macos/ft2-clone-macos.app/Contents/Resources/ft2-clone-macos.icns
+
+  # generate desktop file
+  gendesk -n \
+    --exec "$pkgname" \
+    --name 'Fasttracker II Clone' \
+    --pkgname "$pkgname" \
+    --pkgdesc "$pkgdesc" \
+    --icon "$pkgname" \
+    --genericname 'Music Tracker'
+
+  # attempt repro build by using commit date as build date
+  local commit_date="$(git show --no-patch --format=%cd --date=format:'%d %B %Y')"
+
+  # modify + apply template
+  sed -e "s/2.26/2.26.1/" -i src/ft2_header.h # current workaround due to mismatching versions
+  sed -e "s/@PKGVER@/$pkgver/" -i "$srcdir/templatify-build-date.patch"
+  patch -p1 -i "$srcdir/templatify-build-date.patch"
+
+  # patch in commit date
+  sed -e "s/@DATE@/$commit_date/" -i src/ft2_header.h
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-author
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  cd "$pkgname"
+
+  # application icon
+  install -vDm644 ft2-clone-macos_512x512x32.png "$pkgdir/usr/share/icons/hicolor/512x512/apps/$pkgname.png"
+
+  # desktop file
+  install -vDm644 -t "$pkgdir/usr/share/applications" ft2-clone.desktop
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # licensing
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+}

@@ -1,0 +1,22 @@
+pkgbase = ruby-sass-embedded
+	pkgdesc = Embedded Sass Host for Ruby
+	pkgver = 1.105.1
+	pkgrel = 1
+	url = https://github.com/sass-contrib/sass-embedded-host-ruby
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rspec
+	makedepends = ruby-rake
+	makedepends = ruby-rdoc
+	makedepends = protobuf
+	depends = dart-sass
+	depends = ruby
+	depends = ruby-google-protobuf
+	depends = ruby-rake
+	source = ruby-sass-embedded-1.105.1::https://github.com/sass-contrib/sass-embedded-host-ruby/archive/refs/tags/v1.105.1.tar.gz
+	source = no-rubocop-build.patch
+	sha256sums = b109a7bd54d59a29bbdf81e24f78ce8c7fba53a54cf5015419a538b351b2235a
+	sha256sums = 400bf05b863d1e29245c48a211b524b12ec72e0f11ee65cca2e5a5fc052ea042
+
+pkgname = ruby-sass-embedded

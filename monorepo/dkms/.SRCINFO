@@ -1,0 +1,34 @@
+pkgbase = dkms
+	pkgdesc = Dynamic Kernel Modules System
+	pkgver = 3.4.4
+	pkgrel = 1
+	url = https://github.com/dkms-project/dkms
+	install = dkms.install
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = bash
+	depends = coreutils
+	depends = gawk
+	depends = gcc
+	depends = kmod
+	depends = make
+	depends = patch
+	depends = sed
+	optdepends = linux-headers: build modules against the Arch kernel
+	optdepends = linux-lts-headers: build modules against the LTS kernel
+	optdepends = linux-zen-headers: build modules against the ZEN kernel
+	optdepends = linux-hardened-headers: build modules against the HARDENED kernel
+	backup = etc/dkms/framework.conf
+	source = git+https://github.com/dell/dkms.git#tag=v3.4.4
+	source = hook.install
+	source = hook.remove
+	source = hook.upgrade
+	source = hook.sh
+	sha256sums = 0a892ede740a779ca4289df406f705045b2a301ed155c3fbf708e7a3d6dbde6f
+	sha256sums = da2dd53bdb427c3ffbe793fd05f898d8a0545e6dbd346c85fad1717b0f838c62
+	sha256sums = 497422e72b2f10a71caae40c44a07b215425d393acb365700e38944e09f9a554
+	sha256sums = cc04280e8eb095f4950f5e3c6b2997fbc8d5862d79c5ae29d5943b8ac204d0d4
+	sha256sums = 4fb4dded9f0b74f40e6543b6d05e7dc03712bd3ff1a2bd1f82f559a808060d10
+
+pkgname = dkms

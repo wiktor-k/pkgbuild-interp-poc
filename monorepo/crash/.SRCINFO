@@ -1,0 +1,26 @@
+pkgbase = crash
+	pkgdesc = Linux kernel crashdump analysis tool
+	pkgver = 9.0.3
+	pkgrel = 1
+	url = https://crash-utility.github.io/
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = wget
+	depends = glibc
+	depends = gmp
+	depends = guile
+	depends = libelf
+	depends = libgcc
+	depends = libstdc++
+	depends = lzo
+	depends = mpfr
+	depends = ncurses
+	depends = source-highlight
+	depends = xxhash
+	depends = xz
+	depends = zstd
+	optdepends = binutils: offline vmcore loading functionality
+	source = https://github.com/crash-utility/crash/archive/9.0.3/crash-9.0.3.tar.gz
+	b2sums = a233064ba4fec7722aa5756100cfd52f279a6b8fb3bdfd520258821d80b70accefff4d9f0b1c76fc4f877891e50e9bbc30be1574db338db3bcb837fbc5a00a99
+
+pkgname = crash

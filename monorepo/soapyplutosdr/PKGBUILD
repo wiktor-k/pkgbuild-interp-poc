@@ -1,0 +1,38 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=soapyplutosdr
+pkgver=0.2.2
+pkgrel=2
+pkgdesc='Soapy SDR plugin for PlutoSDR'
+arch=('x86_64')
+url='https://github.com/pothosware/SoapyPlutoSDR'
+license=('LGPL-2.1-only')
+depends=(
+  'glibc'
+  'libad9361'
+  'libgcc'
+  'libiio.so'
+  'libstdc++'
+  'libusb'
+  'soapysdr'
+)
+makedepends=(
+  'cmake'
+  'git'
+)
+source=("$pkgname::git+$url.git#tag=soapy-plutosdr-$pkgver")
+b2sums=('6c78ac1644ed8bc9eac5c02d3340deba5720440318264c78381e513f4e44f43b583d956c32e7e2727f065f9974ced2e5e13d70ba175472427ea1e585e358d79a')
+
+build() {
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake -S $pkgname -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,30 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Alois Nespor <alois.nespor@gmail.com>
+
+pkgname=qstardict
+pkgver=4.0.0
+pkgrel=1
+pkgdesc="Qt clone of StarDict with full support of StarDict dictionaries"
+provides=('stardict')
+depends=('hicolor-icon-theme' 'qt6-base')
+makedepends=('qt6-tools')
+arch=('x86_64')
+url="http://qstardict.ylsoftware.com/index.php"
+license=('GPL2')
+changelog=$pkgname.changelog
+source=($pkgname-$pkgver.tar.gz::https://github.com/a-rodin/qstardict/archive/$pkgver.tar.gz)
+sha256sums=('92b73bb2c2c1f24cce8579ff2ab03f84e3f55976c06f1682393a272390b3790e')
+
+build() {
+  cd $pkgname-$pkgver
+
+  qmake6 ENABLED_PLUGINS="stardict web"
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  make INSTALL_ROOT="${pkgdir}" install
+}
+

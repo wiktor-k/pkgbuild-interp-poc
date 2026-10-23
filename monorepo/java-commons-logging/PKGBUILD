@@ -1,0 +1,29 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Simon Lipp <sloonz+aur@gmail.com>
+# Maintainer: Stefan Husmann < stefan-husmann@t-online.de>
+
+pkgname=java-commons-logging
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="Wrapper interface for logging APIs in Java"
+arch=('any')
+url="https://commons.apache.org/logging/"
+license=(APACHE)
+depends=('java-runtime')
+source=("https://archive.apache.org/dist/commons/logging/binaries/commons-logging-$pkgver-bin.tar.gz"
+        "https://archive.apache.org/dist/commons/logging/source/commons-logging-$pkgver-src.tar.gz")
+sha512sums=('c3de9cf4381cb38e1cf6d753f8326fe8a40307f79a41a982b5225658947c919598baaa5582f1060023c7fbb90714bdd02db4e298b72fb20c47b9c3d452405cee'
+            '92d698301b601b1af76739e445f90f338ceeafe59c5fe6a247e9d4684a967a659d1908e7a211d2616344ddbf3f53433e512e0b160cf6ac9a40ac9b29431dc2a2')
+
+
+build() {
+  # TODO: build from sources
+  true
+}
+
+package() {
+  cd "$srcdir"/commons-logging-$pkgver/
+  install -d "$pkgdir"/usr/share/java/commons-logging/
+  install -m0644 commons-logging-$pkgver.jar \
+    "$pkgdir"/usr/share/java/commons-logging/commons-logging.jar
+}

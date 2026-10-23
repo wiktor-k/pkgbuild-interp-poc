@@ -1,0 +1,44 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=proxmark3
+pkgver=4.20142
+pkgrel=2
+pkgdesc='Software for the the Proxmark3, an RFID swiss-army tool'
+arch=('x86_64')
+url='https://github.com/RfidResearchGroup/proxmark3'
+license=('GPL2')
+depends=('qt5-base' 'bluez-libs' 'jansson')
+makedepends=('arm-none-eabi-gcc' 'arm-none-eabi-newlib' 'lua52' 'python')
+optdepends=('lua52: lua scripts'
+            'python: some scripts')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('cee17dcf875cd6227dc867e688cdb81616f329a7d8e4c9755c73dcdf7ecbc87f5414b54eca8561412e799c1341e490ba64f3f60293acfeb4887f32ce45d22ac0')
+
+prepare() {
+  cp -r $pkgname-$pkgver{,-rdv4}
+}
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+
+  make PLATFORM=PM3GENERIC SKIPQT=0 DONT_BUILD_NATIVE=y all
+
+  cd "$srcdir"/$pkgname-$pkgver-rdv4
+
+  make PLATFORM=PM3RDV4 FWTAG=rdv4 DONT_BUILD_NATIVE=y common bootrom recovery fullimage
+}
+
+package() {
+  export PREFIX=/usr
+  export DESTDIR="$pkgdir"
+  export UDEV_PREFIX=/usr/lib/udev/rules.d
+  export INSTALLTOOLSRELPATH=bin
+
+  cd "$srcdir"/$pkgname-$pkgver-rdv4
+
+  make PLATFORM=PM3RDV4 FWTAG=rdv4 {bootrom,recovery,fullimage}/install
+
+  cd "$srcdir"/$pkgname-$pkgver
+
+  make PLATFORM=PM3GENERIC install
+}

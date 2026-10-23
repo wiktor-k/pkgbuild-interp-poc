@@ -1,0 +1,59 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: AlphaJack <alphajack at tuta dot io>
+# Contributor: Pieter Goetschalckx <3.14.e.ter <at> gmail <dot> com>
+
+pkgname=apprise
+pkgver=2.0.1
+pkgrel=1
+pkgdesc='Push Notifications that work with just about every platform'
+arch=(any)
+url=https://github.com/caronc/apprise
+license=(BSD-2-Clause)
+depends=(
+  python-certifi
+  python-click
+  python-markdown
+  python-requests-oauthlib
+  python-yaml
+)
+makedepends=(
+  git
+  python-babel
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  dbus-python
+  python-paho-mqtt
+  python-pytest-mock
+)
+optdepends=(
+  'dbus-python: for Linux DBus Notifications'
+  'python-gobject: for Linux DBus Notifications'
+  'python-paho-mqtt: for MQTT support'
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('597a254941f43bdbe1e17db750a219c67e891bf435d5be5baf008636f847ec7efc2b46196b90dcabb2835b641b98e1c4ccf1ac073312fe341e1eefe52881ea17')
+
+build(){
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check(){
+  cd $pkgname
+  PYTHONPATH="$pwd/$pkgname:$PYTHONPATH" pytest
+}
+
+package(){
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/$pkgname-$pkgver.dist-info/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

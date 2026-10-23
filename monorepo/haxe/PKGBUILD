@@ -1,0 +1,81 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Andy Li <andy@onthewings.net>
+# Contributor: Daichi Shinozaki <dsdseg@gmail.com>
+# Contributor: Kyle Brady  <kyle at spark-gap dot com>
+# Contributor: Patrick Hof <courts@offensivethinking.org>
+# Contributor: Michael Fellinger <mf@rubyists.com>
+# Contributor: Tobi Laskowski
+
+pkgname=haxe
+pkgver=4.3.7
+pkgrel=7
+# The haxelib git submodule commit hash can be found here:
+# https://github.com/HaxeFoundation/haxe/tree/4.3.7/extra
+_haxelib_commit=4000137b822989eacb1e1c370470ee1c9ecdf4b8
+# The hx3compat commit can be found here (replace $_haxelib_commit with the git commit hash)
+# https://github.com/HaxeFoundation/haxelib/tree/$_haxelib_commit
+_hx3compat_commit=f1f18201e5c0479cb5adf5f6028788b37f37b730
+pkgdesc='Cross-platform toolkit and programming language'
+arch=(x86_64)
+url='https://haxe.org/'
+license=(GPL-2.0-or-later MIT)
+depends=(mbedtls3 neko)
+makedepends=(camlp5 git ocaml opam ocaml-ptmap ocaml-sha perl-ipc-system-simple perl-string-shellquote)
+optdepends=(java-environment mono php python)
+source=("haxelib_src::git+https://github.com/HaxeFoundation/haxelib#commit=$_haxelib_commit"
+        "hx3compat::git+https://github.com/HaxeFoundation/hx3compat#commit=$_hx3compat_commit"
+        "$pkgname-$pkgver::git+https://github.com/HaxeFoundation/haxe#tag=$pkgver"
+         mbedtls3.patch)
+b2sums=('12e8ab333a1b64056b88346e2dcd97b81d7b7acae0b9a57a9c5f8ef174d5413632436a3975990103d74a2deb99862ddbde6d1c88839c0db926b0faafcb3ca1e8'
+        'b938572cefb9a4398e0076b4450fd681d9d15be978fe3865d16aa26984ef6265965f18a97f93f8b1f6e589b75814ad1c19b60c5c8817b0deb07a41239fc19341'
+        'd4606e594a424573d8ab67055de51c14d46aa659039ddbf03b114dabeb0782b1e2d86cb4b8e60b1734ef20cccfb634fac2abe3ada1ca3a7c4b30dabfc6df83ba'
+        '2ed093f58f9833f5ba4c6df04027e6dab7012a81fa86fb53cbbed28b6084d824c01beb54bd8b15e86b748103fd3b22857b8352ceabe513084197b507d953ded1')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  rm -rf extra/haxelib_src{,/hx3compat}
+  cp -rv "$srcdir/haxelib_src" extra/
+  cp -rv "$srcdir/hx3compat" extra/haxelib_src
+
+  # Build against mbedtls3
+  patch -p1 -i ../mbedtls3.patch
+
+  # Prepare opam and ocamlfind before building
+  export HOME="$srcdir"
+  opam init -a --disable-sandboxing --compiler=ocaml-system
+  eval $(opam env)
+
+  # TODO: Package all required OCaml packages in [extra]
+  opam install -y extlib luv ocamlfind sedlex xml-light
+
+  # Create the script that will be placed in /etc/profile.d
+  echo 'export HAXE_STD_PATH=/usr/share/haxe/std' > haxe.sh
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  # Prepare opam and ocamlfind before building
+  eval $(opam env --switch=ocaml-system)
+
+  export CFLAGS+=" -I/usr/include/mbedtls3"
+  export OCAMLPARAM="_,w=-a"
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  ./haxe -version
+  ./haxelib version
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -d "$pkgdir/usr/"{bin,share/haxe}
+  install -m755 haxe{,lib} "$pkgdir"/usr/bin/
+  cp -rf std "$pkgdir/usr/share/$pkgname/"
+  install -Dm644 haxe.sh "$pkgdir/etc/profile.d/haxe.sh"
+  install -Dm644 extra/LICENSE.txt \
+    "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.txt
+}

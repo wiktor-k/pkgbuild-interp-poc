@@ -1,0 +1,89 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Florijan Hamzic <florijanh at gmail dot com>
+
+pkgname=python-weasyprint
+pkgver=70.0
+pkgrel=1
+pkgdesc='Utility to render HTML and CSS to PDF'
+arch=(any)
+url='https://weasyprint.org/'
+license=(BSD-3-Clause)
+depends=(
+  pango
+  python
+  python-brotli
+  python-cffi
+  python-cssselect2
+  python-fonttools
+  python-html5lib
+  python-pillow
+  python-pydyf
+  python-pyphen
+  python-tinycss2
+  python-tinyhtml5
+  python-zopfli
+  ttf-font
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-flit-core
+)
+checkdepends=(
+  python-pytest
+  ghostscript
+  ttf-dejavu
+)
+source=(
+  "$pkgname::git+https://github.com/Kozea/WeasyPrint.git#tag=v$pkgver"
+  remove-version-constraint.patch
+)
+sha512sums=('e748585146591ca8fd340c8374f9bf2af079edca936dca93a0218fdb83131393f09ba6bdd9b626ffc855fcc741a6f09aada7eda5358e5a5864bd01e4121cbdf6'
+            '5685d1bcb9c51ab1295f1f4a566e2d9140141bda3bb420db0d851c3f983f8bac5e0513bbc7a40d4df1aee1a07fcd8c367fa7b7e7e6e0bcdc4e7ce311923ee86c')
+b2sums=('c2068e55ad7ad143c5507046e6f6689eb3f76fa31c07ed818f4d0d2315edee531211f3c7d140db8c25904737ab0c9eae12c46041d07aeeebdf8576a3b6291249'
+        'c5cb824ed16177ba61e321d894c5c5f38be09a39fc7f1f15fbda2152df7b7c179655d54d48deb0cb0232e0e1d01e68881ac9e4b1ba2070e2088c6f2e2aeaef81')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/remove-version-constraint.patch"
+}
+
+build(){
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  local deselected=(
+    tests/draw/test_gradient.py::test_linear_gradients_5
+    tests/draw/test_gradient.py::test_linear_gradients_12
+    tests/draw/test_column.py::test_column_rule_normal
+    tests/draw/test_transform.py::test_2d_transform_1
+    tests/draw/test_transform.py::test_2d_transform_2
+    tests/draw/test_transform.py::test_2d_transform_3
+    tests/draw/test_transform.py::test_2d_transform_4
+    tests/draw/test_visibility.py::test_visibility_1
+    tests/draw/test_visibility.py::test_visibility_3
+    tests/draw/test_visibility.py::test_visibility_4
+    tests/draw/svg/test_text.py::test_emoji_text_svg
+
+  )
+
+  pytest ${deselected[@]/#/--deselect }
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

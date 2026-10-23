@@ -1,0 +1,30 @@
+pkgbase = buildbtw-client
+	pkgdesc = CLI client for buildbtw (bbtw)
+	pkgver = 0.0.7
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/archlinux/buildbtw/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	makedepends = git
+	makedepends = just
+	makedepends = cargo-nextest
+	makedepends = just
+	depends = libgcc
+	depends = glibc
+	depends = libgit2
+	depends = openssh
+	depends = openssl
+	depends = sqlite
+	depends = sqlx-cli
+	provides = bbtw
+	options = !lto
+	source = buildbtw::git+https://gitlab.archlinux.org/archlinux/buildbtw.git#tag=v0.0.7
+	source = buildbtw-client-archlinux-common-style::git+https://gitlab.archlinux.org/archlinux/archlinux-common-style.git
+	validpgpkeys = E240B57E2C4630BA768E2F26FC1B547C8D8172C8
+	validpgpkeys = AAE2599CE2DFD58B8E884726B4EFE6DC59FAE118
+	validpgpkeys = 8FC15A064950A99DD1BD14DD39E4B877E62EB915
+	sha256sums = e434e6ff919c2901dc28f11ffec74bcb5d4a4968ff0ba8dc352a3f4783a2011e
+	sha256sums = SKIP
+
+pkgname = buildbtw-client

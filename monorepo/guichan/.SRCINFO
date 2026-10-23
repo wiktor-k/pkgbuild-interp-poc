@@ -1,0 +1,19 @@
+pkgbase = guichan
+	pkgdesc = A portable C++ GUI library designed for games using Allegro, SDL and/or OpenGL.
+	pkgver = 0.8.3
+	pkgrel = 2
+	url = http://guichan.sourceforge.net/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = sdl_image
+	makedepends = allegro4
+	makedepends = libgl
+	makedepends = glut
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	options = !strip
+	source = https://github.com/darkbitsorg/guichan/releases/download/v0.8.3/guichan-0.8.3.tar.gz
+	sha256sums = 2f3b265d1b243e30af9d87e918c71da6c67947978dcaa82a93cb838dbf93529b
+
+pkgname = guichan

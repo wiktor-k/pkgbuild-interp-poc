@@ -1,0 +1,29 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+
+pkgname=smplayer-skins
+pkgver=20.11.0
+pkgrel=4
+epoch=1
+pkgdesc='Skins for SMPlayer'
+arch=('any')
+url='https://smplayer.info/'
+license=(
+    'CC-BY-2.5'
+    'CC-BY-SA-2.5'
+    'CC-BY-SA-3.0'
+    'GPL-2.0-or-later'
+    'LGPL-3.0-only')
+depends=('smplayer')
+source=("https://github.com/smplayer-dev/smplayer-skins/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('e2c63bb9c35a3ff7de5293fdcccec893471783f4eb382b50540e9e58e196a581e24e5abea05e373c7510aec50312f64c335efc9c1308e9e0c4537988e7a0c411')
+b2sums=('2c1e2bf2e313755d80f259e986c17eb1826c5b23894dc593eaf41705bc44ad1f273bf7edda68b34364a6614ae98919f604dd4163f931e25b26da54373df5c1a7')
+
+build() {
+    make PREFIX='/usr' -C "${pkgname}-${pkgver}"
+}
+
+package() {
+    make DESTDIR="$pkgdir" PREFIX='/usr' install -C "${pkgname}-${pkgver}"
+}

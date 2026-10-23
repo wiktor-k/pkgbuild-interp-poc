@@ -1,0 +1,106 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='language_server-protocol'
+pkgname="ruby-${_gemname}"
+pkgver=3.17.0.6
+pkgrel=1
+pkgdesc='A Language Server Protocol SDK'
+arch=('any')
+url="https://github.com/mtsmfm/${_gemname}-ruby"
+license=('MIT')
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-activesupport
+  ruby-benchmark-ips
+  ruby-bundler
+  ruby-m
+  ruby-minitest
+  ruby-minitest-power_assert
+  ruby-pry-byebug
+  ruby-rake
+)
+options=('!emptydirs')
+source=("git+${url}#tag=v${pkgver}")
+sha512sums=('d5d7e39baa9525346d4e2cbb5431f79a700354063427222d5cf74c2cfaae1436af7344cacc7afd2000648e663c115d31797a4cc2600afe96575a3d05165b5dd1')
+b2sums=('b01dd3e32f59cbc50f03159cd323d4426970f26f68c11b6b48f6a84aa8ceb06b2eaff5d35562edf62ff89a5e196783443bd0dbb92214b4871f62c293fb81ab4d')
+
+prepare() {
+  cd "${_gemname}-ruby"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  sed --in-place --regexp-extended \
+    --expression '/steep/d' \
+    Gemfile
+
+  rm --verbose Steepfile
+}
+
+build() {
+  cd "${_gemname}-ruby"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_gemname}-ruby"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rake test
+}
+
+package() {
+  cd "${_gemname}-ruby"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

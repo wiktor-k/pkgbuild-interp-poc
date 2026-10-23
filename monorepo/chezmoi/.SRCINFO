@@ -1,0 +1,17 @@
+pkgbase = chezmoi
+	pkgdesc = Manage your dotfiles across multiple machines
+	pkgver = 2.73.3
+	pkgrel = 1
+	url = https://www.chezmoi.io/
+	arch = x86_64
+	license = MIT
+	checkdepends = zip
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	optdepends = git: clone remote dotfiles over ssh
+	options = !lto
+	source = chezmoi-2.73.3.tar.gz::https://github.com/twpayne/chezmoi/archive/v2.73.3.tar.gz
+	sha512sums = 6f983083a7a3db69caf62e3a72413942f632f6baa6453499c74a2e710f2b9374421c466ded218e3a1cbd8d193f00787e9104030bd64a058669a7da8990d70d73
+
+pkgname = chezmoi

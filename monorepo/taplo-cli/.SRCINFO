@@ -1,0 +1,17 @@
+pkgbase = taplo-cli
+	pkgdesc = TOML toolkit written in Rust
+	pkgver = 0.10.0
+	pkgrel = 1
+	url = https://taplo.tamasfe.dev/cli/introduction.html
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = gcc-libs
+	depends = openssl
+	provides = taplo
+	options = !lto
+	source = git+https://github.com/tamasfe/taplo.git#tag=0.10.0
+	b2sums = feeca936e65be30109cc4fa6fa3eb915082d1b1d2e44ed05ee9d9e20a0151320e850d240d9d9b5caf05562dbff6a87091c0c4b7c58dc0f4d001b40e1d96b17ad
+
+pkgname = taplo-cli

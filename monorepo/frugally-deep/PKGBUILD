@@ -1,0 +1,29 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+pkgname=frugally-deep
+pkgver=0.20.0
+pkgrel=1
+pkgdesc='Header-only library for using Keras models in C++.'
+arch=('x86_64')
+url='https://github.com/Dobiasd/frugally-deep'
+license=('MIT')
+depends=('functional-plus' 'eigen' 'nlohmann-json')
+makedepends=('cmake')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('79a1f400523d629a5f7545f23c152f5b2ba17668a0e07edf8949658ee4066002')
+
+build() {
+	local cmake_args=(
+		-S $pkgname-$pkgver
+		-B build
+		-Wno-dev
+		-D CMAKE_BUILD_TYPE=None
+		-D CMAKE_POLICY_VERSION_MINIMUM=3.5
+		-D CMAKE_INSTALL_PREFIX=/usr)
+	cmake "${cmake_args[@]}"
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+	install -Dm644 $pkgname-$pkgver/LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

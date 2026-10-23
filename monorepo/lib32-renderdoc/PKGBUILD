@@ -1,0 +1,65 @@
+# Maintainer: Campbell Jones <arch at serebit dot com>
+# Contributor: Joshua Ashton <joshua at froggi dot es>
+
+_pkgname=renderdoc
+pkgname=lib32-$_pkgname
+pkgver=1.46
+pkgrel=1
+pkgdesc="OpenGL and Vulkan debugging tool (capture-only, 32-bit)"
+arch=(x86_64)
+url="https://github.com/baldurk/renderdoc"
+license=("MIT")
+makedepends=("cmake" "git" "ninja" "pcre")
+depends=("lib32-libx11" "lib32-libxcb" "lib32-mesa" "lib32-libgl" "lib32-xcb-util-keysyms")
+provides=("lib32-renderdoc-minimal")
+conflicts=("lib32-renderdoc-minimal")
+replaces=("lib32-renderdoc-minimal")
+options=("!lto")
+source=("${pkgname}::git+https://github.com/baldurk/${_pkgname}.git#tag=v${pkgver}?signed"
+        "lib32-vulkan-layer.patch")
+validpgpkeys=('1B039DB9A4718A2D699DE031AC612C3120C34695')
+b2sums=('5cf67702e73ebf4c736bbc71a663327bfb889b7159f7f7ada3be8812538e38ca5125110fe5cf6e93ecd44f5fb3eb5799732d45b72fde8c57b299b7c09e8da0b2'
+        'ec4ebcf362729832d6eb8aeee2c6ca4a6870979c1bebc212157fb79265eafc41bb61919741625f7313d60ca9931860b89c15447aea707482a83597a3ea1214cb')
+
+prepare() {
+    cd "$pkgname"
+
+    patch -p1 < "$srcdir/lib32-vulkan-layer.patch"
+}
+
+build() {
+    cd "$pkgname"
+
+    export CC="gcc -m32"
+    export CXX="g++ -m32"
+    export PKG_CONFIG="${CARCH}-pc-linux-gnu-pkg-config"
+
+    cmake -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib32 \
+        -DLIB_SUFFIX=32 \
+        -DVULKAN_JSON_SUFFIX=".32" \
+        -DENABLE_RENDERDOCCMD=OFF \
+        -DENABLE_QRENDERDOC=OFF \
+        -DENABLE_PYRENDERDOC=OFF \
+        -DBUILD_VERSION_STABLE=ON \
+        -DBUILD_VERSION_DIST_CONTACT="https://archlinux.org/packages/$pkgname" \
+        -DBUILD_VERSION_DIST_NAME="Arch" \
+        -DBUILD_VERSION_DIST_VER="$pkgver" \
+        -DVULKAN_LAYER_FOLDER="/etc/vulkan/implicit_layer.d" \
+        -B build
+
+    cmake --build build
+}
+
+package() {
+    cd "$pkgname"
+
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm 0644 "LICENSE.md" "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
+
+    # Remove these or they conflict with the base renderdoc package.
+    rm -r "$pkgdir/usr/share/doc"
+    rm -r "$pkgdir/usr/include"
+}

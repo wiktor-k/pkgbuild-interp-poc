@@ -1,0 +1,35 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: PelPix <kylebloss@pelpix.info>
+
+pkgname=fdkaac
+pkgver=1.0.9
+pkgrel=1
+pkgdesc='Command line encoder frontend for libfdk-aac'
+arch=(x86_64)
+url=https://github.com/nu774/fdkaac
+license=(Zlib)
+depends=(
+  glibc
+  libfdk-aac.so
+)
+makedepends=(git)
+source=(git+https://github.com/nu774/fdkaac.git#tag=v${pkgver})
+b2sums=('99ee0aeb29c5cdaff078e60b280705f9d2c19aea640c34ef3a6ed02fa68745f1e8bb8ef5aca6bdf7a8494b033b86d9b1b044f787789029ca22e6892493f9c33f')
+
+prepare() {
+  cd fdkaac
+  autoreconf -fiv
+}
+
+build() {
+  cd fdkaac
+  ./configure \
+    --prefix=/usr \
+    --disable-rpath
+  make
+}
+
+package() {
+  make DESTDIR="${pkgdir}" -C fdkaac install
+  install -Dm 644 fdkaac/COPYING -t "${pkgdir}"/usr/share/licenses/fdkaac/
+}

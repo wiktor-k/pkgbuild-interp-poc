@@ -1,0 +1,36 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Radoslaw Mejer <radmen@radmen.info>
+pkgname=silicon
+pkgver=0.5.3
+pkgrel=2
+pkgdesc="Create beautiful images of your code"
+depends=('fontconfig' 'freetype2' 'glibc' 'harfbuzz' 'libgcc' 'libxcb' 'oniguruma')
+makedepends=('cargo' 'python')
+optdepends=('xclip: X11 clipboard support'
+            'wl-clipboard: Wayland clipboard support')
+arch=('x86_64')
+license=('MIT')
+url="https://github.com/Aloxaf/silicon"
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Aloxaf/silicon/archive/v$pkgver.tar.gz")
+sha256sums=('56e7f3be4118320b64e37a174cc2294484e27b019c59908c0a96680a5ae3ad58')
+
+prepare() {
+    cd "$srcdir/silicon-$pkgver"
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+    cd "$srcdir/silicon-$pkgver"
+    RUSTONIG_DYNAMIC_LIBONIG=1 cargo build --frozen --release --all-features
+}
+
+check() {
+    cd "$srcdir/silicon-$pkgver"
+    RUSTONIG_DYNAMIC_LIBONIG=1 cargo test --frozen --all-features
+}
+
+package() {
+    cd "$srcdir/silicon-$pkgver"
+    install -Dm755 "target/release/silicon" "$pkgdir/usr/bin/$pkgname"
+    install -Dm644 "LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

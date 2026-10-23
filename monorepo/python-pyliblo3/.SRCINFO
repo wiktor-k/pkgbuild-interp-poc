@@ -1,0 +1,24 @@
+pkgbase = python-pyliblo3
+	pkgdesc = Fork of the original bindings for liblo
+	pkgver = 0.16.3
+	pkgrel = 2
+	url = https://github.com/gesellkammer/pyliblo3
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cython
+	makedepends = liblo
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = liblo
+	depends = python
+	source = python-pyliblo3-0.16.3.tar.gz::https://github.com/gesellkammer/pyliblo3/archive/refs/tags/v0.16.3.tar.gz
+	source = python-pyliblo3-0.16.3-cython3.patch
+	sha512sums = 3271b563a98d4da268c40b96c67595b0b5c835c17d69c39aa4f32ad6f4ec77fa91be9ad58552b69b5092a6ac6a3ad83a33391506ed57075aaa30a9ac3a89fb16
+	sha512sums = e111865b106cb341a52cce485547b021906461a10fdd75a4eea8576e04b147a4510fe07efbf3f0989502e53ce7100b1eb537b016c71f68a9fb6aa29c6ff2bb9f
+	b2sums = 4c617483e32ac6760bfcd29af8c936ceff6b4ad0c34dd3bb0b39f4e6b5f58cb5f297d3c61276e280a39c1c523521d2a2bb6e7917841037bb89fe17587e62c18c
+	b2sums = 22180d5b899cea415c8594ce63159093cb8846ecafed3c72341e3c5917aa51c278209d0134a7ad22703456f29bb7b1ffe5e2880aefd968a175e8be9dc16c5a93
+
+pkgname = python-pyliblo3

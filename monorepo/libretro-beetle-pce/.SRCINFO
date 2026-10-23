@@ -1,0 +1,18 @@
+pkgbase = libretro-beetle-pce
+	pkgdesc = NEC PC Engine/SuperGrafx/CD core
+	pkgver = 20260926.103044.gb96c11e095b6
+	pkgrel = 1
+	url = https://github.com/libretro/beetle-pce-libretro
+	arch = x86_64
+	groups = libretro
+	license = GPL-2.0-only
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libretro-core-info
+	depends = libstdc++
+	depends = zlib
+	source = libretro-beetle-pce::git+https://github.com/libretro/beetle-pce-libretro.git#commit=b96c11e095b6
+	b2sums = 03241c6ffb1c27c2fc65d4557f9d904910e092de445134bfa30322396f71e1469cea6d79da25ba442dd68d45ea146a6ac957ee58a47122cc654f117d9177b201
+
+pkgname = libretro-beetle-pce

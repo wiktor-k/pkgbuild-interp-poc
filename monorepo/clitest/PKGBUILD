@@ -1,0 +1,24 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=clitest
+pkgver=0.5.0
+pkgrel=2
+pkgdesc='Perform automatic testing in Unix command lines'
+arch=(any)
+url=https://github.com/aureliojargas/clitest
+license=(MIT)
+depends=(bash)
+makedepends=(git)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('d64e7615eb0b23681d8b2516f5c12e691b12a1d53eb559f5dabca9c7fa0f9660d8ab6ada5b8a7557e047a3709f12ccf66ea679af8d0ae1075f82488505da14d0')
+
+check() {
+  cd $pkgname
+  ./clitest test.md
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin clitest
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE.txt
+}

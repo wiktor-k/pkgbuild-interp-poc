@@ -1,0 +1,65 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# contributor: Daniele Basso <d dot bass05 at proton dot me>
+
+pkgname=rustic
+pkgver=0.11.4
+pkgrel=1
+pkgdesc='Fast, encrypted, deduplicated backups powered by Rust (reads and writes restic repos)'
+arch=(x86_64)
+url="https://github.com/rustic-rs/$pkgname"
+license=(Apache-2.0 MIT)
+depends=(glibc # libc.so libm.so
+         libgcc)
+makedepends=(cargo)
+replaces=(rustic-rs
+          rustic-bin)
+options=(!lto)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('ea1796a66c22e2cd0232ee4d3e18cf95c7eb8608a465481023a6422f4720d2c3')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		# Assumes system has a locale not generated in our chroot
+		test_backup_and_check_passes
+	)
+	cargo test --frozen --release -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$_archive"
+	local _bin="target/release/$pkgname"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$_bin"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE-MIT
+	"$_bin" completions bash | install -Dm0644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+	"$_bin" completions fish | install -Dm0644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+	"$_bin" completions zsh  | install -Dm0644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+	# Config files in the default system-wide config directory may contain passphrases.
+	install -vdm 750 "$pkgdir/etc/$pkgname/"
+	install -vDm 644 util/systemd/*.{service,timer} -t "$pkgdir/usr/lib/systemd/system/"
+	install -vDm 644 {CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+	install -vDm 644 config/*.{md,toml} -t "$pkgdir/usr/share/doc/$pkgname/config/"
+	install -vDm 644 config/services/*.toml -t "$pkgdir/usr/share/doc/$pkgname/config/services/"
+}

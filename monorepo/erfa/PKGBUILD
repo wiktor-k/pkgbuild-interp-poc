@@ -1,0 +1,30 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Médéric Boquien <mboquien@free.fr>
+
+pkgname=erfa
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="Essential Routines for Fundamental Astronomy"
+arch=(x86_64)
+url="https://github.com/liberfa/erfa"
+license=(BSD)
+depends=(glibc)
+source=(${url}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.xz)
+sha256sums=('45111f0addf6ef69345aaf093bd054705b41ac2db7541dd3f0e105362c8e20e4')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  ./bootstrap.sh
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

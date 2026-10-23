@@ -1,0 +1,27 @@
+pkgbase = qcustomplot
+	pkgdesc = Qt C++ widget for plotting and data visualization
+	pkgver = 2.1.1
+	pkgrel = 2
+	url = https://www.qcustomplot.com/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = doxygen
+	makedepends = graphviz
+	makedepends = qt5-tools
+	source = qcustomplot-2.1.1.tar.bz2::https://gitlab.com/ecme2/QCustomPlot/-/archive/v2.1.1/QCustomPlot-v2.1.1.tar.bz2
+	source = qcustomplot-2.1.1-source.tar.gz::https://www.qcustomplot.com/release/2.1.1/QCustomPlot-source.tar.gz
+	sha512sums = a9c0fe0c2393858b5de66e78606ef96e57b00e405e0417df7d59d5e93a89f706a1d4767316bf015c76514aedd69553229fd347569b9d68e387103486ee29988f
+	sha512sums = 1feb4f45ef90d7709edb26c9964f0ec85ef4aa30f0a7e9fcd803fae586875e8d6744dbcfe08b21f461816ca426c8a6612f8e9c7ef9d3f5a7150c3de8fa5ee57d
+	b2sums = 6525e5ca60ba978c2c09e86786339bd92ff4a995a170f3bc30e17e183134acb9d8d7515259eb65cb006f2cd713f1ed6bce69248fe228e8bd8a913857b0800170
+	b2sums = 985ce5fbfe2888ac2346a8c694e832f8d9e3d20ae1c2f93af8757f6a7c803e24ae429c11240aeaf9e79625d8eb0e8a835dca023b73eac4ca1338d21434bd3c67
+
+pkgname = qcustomplot
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt5-base
+	provides = libqcustomplot.so
+	replaces = qcustomplot-qt5
+
+pkgname = qcustomplot-doc
+	pkgdesc = Qt C++ widget for plotting and data visualization (docs)

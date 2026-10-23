@@ -1,0 +1,99 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Myles English <myles at tdma dot co>
+
+pkgname=pastix
+pkgver=6.4.0
+pkgrel=5
+pkgdesc="High performance parallel solver for very large sparse linear systems based on direct methods"
+arch=(x86_64)
+url="https://gitlab.inria.fr/solverstack/pastix"
+license=(LGPL-3.0-only)
+depends=(
+  cblas
+  glibc
+  hwloc
+  lapacke
+  libgcc
+  libgfortran
+  libgomp
+  openmpi
+  scotch
+)
+makedepends=(
+  gcc-fortran
+  cmake
+  ninja
+  doxygen
+  git
+  python
+)
+checkdepends=(
+  python-numpy
+  python-mpi4py
+  python-scipy
+)
+optdepends=(
+  'python-numpy: for Python interface'
+  'python-mpi4py: for Python interface'
+  'python-scipy: for Python interface'
+)
+provides=(
+  libpastix.so
+  libpastix_kernels.so
+  # also provide the SpM library (internal module)
+  libspm.so
+  libspmf.so
+)
+source=("https://files.inria.fr/pastix/releases/v${pkgver%%.*}/pastix-${pkgver}.tar.gz")
+b2sums=('a3b8bf29cd4db82a8a6622486024d01f72210157068b4fd82a7e68d3e2ddcd8a66849bd25f7a730ce82365e779f25cc2b6ea8334dbba6f742ad88e776e2cb994')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-$pkgver
+    -G Ninja
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BUILD_SHARED_LIBS=ON
+    -D BUILD_DOCUMENTATION=ON
+    -D PASTIX_ORDERING_METIS=OFF
+    -D PASTIX_WITH_MPI=ON
+    -D PASTIX_INT64=OFF   # because scotch is not compiled with int64
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check(){
+  local excluded_tests=""
+  # skip due to frequent segfaults or hangs
+  excluded_tests+=".*_mpi_dst_example_.*"
+  # core_slrmm: Assertion `C->rk <= C->rkmax' failed.
+  excluded_tests+="|mpi_dst_example_simple_lap_s_facto1_sched1_kwayprojections_rqrrtend"
+  # core_dlrmm: Assertion `C->rk <= C->rkmax' failed.
+  excluded_tests+="|shm_example_simple_lap_d_facto2_sched1_not_tqrcpbegin"
+  # fails with current scipy version (TypeError: solve() got an unexpected keyword argument 'sym_pos')
+  excluded_tests+="|python_shm_schur_obj"
+  # fails with current scipy version (AttributeError: module 'scipy.linalg' has no attribute 'tril')
+  excluded_tests+="|python_shm_schur"
+
+  local ctest_options=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel $(nproc)
+    # limit execution time for each test
+    --timeout 200
+    # re-run failed tests
+    --repeat until-pass:3
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_options[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

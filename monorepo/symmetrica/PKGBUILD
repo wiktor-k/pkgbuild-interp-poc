@@ -1,0 +1,32 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <oudomphe@clipper.ens.fr>
+
+pkgname=symmetrica
+pkgver=3.1.0
+pkgrel=1
+pkgdesc='Algorithms for symmetric groups and classical groups'
+arch=(x86_64)
+url='http://www.algorithm.uni-bayreuth.de/en/research/SYMMETRICA'
+depends=(glibc)
+makedepends=(git)
+license=(LicenseRef-symmetrica)
+source=(git+https://gitlab.com/sagemath/symmetrica#tag=$pkgver)
+sha256sums=('7a5770fc5038ef5fcb2a2713daa2c318837c7af36607b572069ebebf6d4029f3')
+
+prepare() {
+  cd $pkgname
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/symmetrica
+}

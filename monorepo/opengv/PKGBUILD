@@ -1,0 +1,58 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=opengv
+pkgver=1.0.git1
+_commit=91f4b19c73450833a40e463ad3648aae80b3a7f3
+pkgrel=9
+pkgdesc="An efficient C++ library for calibrated camera pose computation using geometric computer vision algorithms"
+arch=('x86_64')
+url="https://laurentkneip.github.io/opengv/"
+license=('BSD')
+depends=('python-numpy')
+makedepends=('cmake' 'git' 'ninja' 'python-setuptools' 'eigen' 'pybind11')
+source=("git+https://github.com/laurentkneip/opengv.git#commit=$_commit"
+        https://salsa.debian.org/science-team/opengv/-/raw/master/debian/patches/no-march-options.patch
+        https://salsa.debian.org/science-team/opengv/-/raw/master/debian/patches/use-system-pybind11.patch
+        https://salsa.debian.org/science-team/opengv/-/raw/master/debian/patches/cmake-wider-range-supported.patch
+        eigen-5.patch)
+sha256sums=('e6eb3bb3698861ade8a3178bd03ba0a1c387a1752104899de558658a62c49684'
+            'e483d0c1a4a76920ac3260999978154b12422c42e9991e69afc9230643d5c24a'
+            '20832cd52808bd7ef2f6bee8a5c85f69fc0fe6c82169e2b2297781f4bdcdd3ae'
+            '42b9196aa881e5fd8df17352199108b3fe5b6a313ee7b4ffefd4d23481110f17'
+            'b67025ceb518a6261e1dc940fe973130db61f3ed82f934c984f538bb98e00f48')
+
+prepare() {
+  cd opengv
+
+  patch -Np1 -i "${srcdir}/no-march-options.patch"
+  patch -Np1 -i "${srcdir}/use-system-pybind11.patch"
+  patch -Np1 -i "${srcdir}/cmake-wider-range-supported.patch"
+  patch -Np1 -i "${srcdir}/eigen-5.patch"
+}
+
+build() {
+  cd opengv
+
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_PYTHON=ON \
+    -DPYTHON_EXECUTABLE="/usr/bin/python"
+  ninja -C build
+}
+
+check() {
+  cd opengv
+
+  ninja -C build test
+}
+
+package() {
+  cd opengv
+
+  DESTDIR="$pkgdir/" ninja -C build install
+
+  install -Dm644 License.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

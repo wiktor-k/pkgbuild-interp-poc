@@ -1,0 +1,20 @@
+pkgbase = alpm-docs
+	pkgdesc = Specifications for Arch Linux Package Management
+	pkgver = 0.13.0
+	pkgrel = 1
+	url = https://alpm.archlinux.page/
+	arch = any
+	groups = alpm
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = just
+	makedepends = lowdown
+	makedepends = rust
+	makedepends = rust-script
+	source = alpm::git+https://gitlab.archlinux.org/archlinux/alpm/alpm.git?signed#tag=alpm-types/0.13.0
+	validpgpkeys = 3051329B47B855C4F888F975CC9408F679023B65
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 74ce782e2ecd3b0b37be59154ef1425dd1de28b164f9cefb167e15c6212fa69436ed3bda05127580a671d4b41301f94a17f546494b663271c15c27fc06d6a9eb
+	b2sums = 6892c8d927cbe31881e252fcecb3af3b4c7c10d0d215d9f7b680f8e40e9463c95237154fe0547c3c94118fd8a20644abdc6616700cdfa91b1bd80cc06c6aed26
+
+pkgname = alpm-docs

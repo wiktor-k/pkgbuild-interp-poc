@@ -1,0 +1,26 @@
+pkgbase = helvum
+	pkgdesc = GTK patchbay for PipeWire
+	pkgver = 0.6.2
+	pkgrel = 2
+	url = https://gitlab.freedesktop.org/pipewire/helvum
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = meson
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libpipewire
+	depends = pipewire
+	options = !lto
+	source = https://gitlab.freedesktop.org/pipewire/helvum/-/archive/0.6.2/helvum-0.6.2.tar.gz
+	sha512sums = 0c1fd8d1c8081f8e6a3ef3db4f7e74e211a41b7d3c6bf3ef7fa9da714bd0b31f9778376c56147c8ee623fd7c62c073e21d07b3f832c40f9f3dd47d9e65ed0a20
+	b2sums = 2079ee149795b5d010f79c27b6e530fd117e649640561eb0df8fdc1210fcc9a87d2f0d5c6d27bbdfbff717826c8239fc9669c3c98c00f9a5a692e583cd72edd5
+
+pkgname = helvum

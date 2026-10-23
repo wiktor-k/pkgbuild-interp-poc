@@ -1,0 +1,54 @@
+# Maintainer: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Damir Perisa <damir.perisa@bluewin.ch>
+
+pkgname=kile
+pkgver=2.9.94
+pkgrel=3
+pkgdesc='A user friendly TeX/LaTeX frontend for KDE'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+url='https://apps.kde.org/kile/'
+depends=(glibc
+         kcodecs
+         kcolorscheme
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         kguiaddons
+         ki18n
+         kiconthemes
+         kio
+         kparts
+         kservice
+         ktexteditor
+         ktextwidgets
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libgcc
+         libstdc++
+         okular
+         perl
+         poppler-qt6
+         qt6-5compat
+         qt6-base
+         qt6-declarative
+         texlive-basic)
+makedepends=(extra-cmake-modules
+             kdoctools)
+optdepends=('imagemagick: for some file type conversions'
+            'konsole: embedded terminal')
+source=(https://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.bz2)
+sha256sums=('53c6742bd83fb095cbdc898b03fdf8e15ab680a81693ccaf9c5076b93ad1a3ca')
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

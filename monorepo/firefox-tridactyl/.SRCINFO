@@ -1,0 +1,18 @@
+pkgbase = firefox-tridactyl
+	pkgdesc = Replace Firefox's control mechanism with one modelled on Vim
+	pkgver = 1.25.0
+	pkgrel = 1
+	url = https://github.com/tridactyl/tridactyl
+	arch = any
+	groups = firefox-addons
+	license = Apache-2.0
+	makedepends = git
+	makedepends = node-gyp
+	makedepends = python
+	makedepends = strip-nondeterminism
+	makedepends = yarn
+	source = git+https://github.com/tridactyl/tridactyl.git#commit=1.25.0?signed
+	validpgpkeys = 15D03C86837936A0A638AA2D2BB8C36BB504BFF3
+	b2sums = 1b9164b5ef0d4a0ef955882f6b4078f2542d67293b3319484692b1f14bab43ea5da27cf7fc3c848a8f5eb7865916385109437d269cc561059c1a3833a895cb3f
+
+pkgname = firefox-tridactyl

@@ -1,0 +1,30 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Daniel Plaza <daniel.plaza.espi@gmail.com>
+
+pkgname=ccid
+pkgver=1.8.4
+pkgrel=1
+pkgdesc='A generic USB Chip/Smart Card Interface Devices driver'
+arch=('x86_64')
+url='https://ccid.apdu.fr/'
+license=('LGPL-2.1-or-later')
+depends=('pcsclite' 'libusb' 'flex')
+makedepends=('git' 'meson')
+backup=('etc/reader.conf.d/libccidtwin')
+validpgpkeys=('F5E11B9FFE911146F41D953D78A1B4DFE8F9C57E') # Ludovic Rousseau <ludovic.rousseau@free.fr>
+source=("${pkgname}::git+https://salsa.debian.org/rousseau/CCID.git#tag=${pkgver}?signed")
+sha256sums=('efa693ca2ea52f33744580319242ed19643481df4430e8a4735fa48f1ad943d6')
+
+build() {
+  arch-meson "${pkgname}" build \
+    -Dclass=true \
+    -Dserial=true
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+
+  install -D -m0644 "${pkgname}/src/92_pcscd_ccid.rules" "${pkgdir}/usr/lib/udev/rules.d/92_pcscd_ccid.rules"
+}

@@ -1,0 +1,23 @@
+pkgbase = pypy3
+	pkgdesc = A Python3 implementation written in Python, JIT enabled
+	pkgver = 8.0.1
+	pkgrel = 1
+	url = https://pypy.org
+	arch = x86_64
+	license = MIT
+	makedepends = pypy
+	makedepends = sqlite
+	makedepends = tk
+	depends = expat
+	depends = bzip2
+	depends = gdbm
+	depends = openssl
+	depends = libffi
+	depends = zlib
+	depends = ncurses
+	optdepends = sqlite: sqlite module
+	optdepends = tk: tk module
+	source = https://downloads.python.org/pypy/pypy3.12-v8.0.1-src.tar.gz
+	sha512sums = bb60f8107079188b9214907c1bdd8d8aebb912cf4beb55f6c8cf80e16029d5e677f18a2f13d3fe3bd11676944e8dca7335a0f52ae1d47dec9b6b4312ac6c1604
+
+pkgname = pypy3

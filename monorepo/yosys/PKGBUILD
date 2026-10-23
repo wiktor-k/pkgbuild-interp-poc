@@ -1,0 +1,74 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Benoît Allard <benoit dot allard at gmx dot de>
+# Contributor: killruana <killruana@gmail.com>
+
+pkgname=yosys
+pkgver=0.66
+pkgrel=1
+pkgdesc='A framework for RTL synthesis'
+arch=('x86_64')
+url='https://yosyshq.net/yosys/'
+license=('ISC')
+depends=('abc' 'bash' 'glibc' 'libffi' 'libgcc' 'python' 'protobuf' 'readline' 'tcl' 'zlib' 'libstdc++')
+makedepends=('boost' 'git' 'pybind11' 'python-cxxheaderparser')
+checkdepends=('gmock' 'iverilog' 'gtkwave')
+optdepends=('graphviz: Schematics display support'
+            'xdot: Display netlists'
+            'yices: default solver for yosys-smtbmc'
+            'cvc4: alternative solver for yosys-smtbmc'
+            'z3: alternative solver for yosys-smtbmc')
+options=('!lto') # getting SIGSEGV when running the tests with LTO
+source=(git+https://github.com/YosysHQ/yosys#tag=v$pkgver
+        git+https://github.com/jarro2783/cxxopts)
+sha512sums=('bedfe50db1e51b3c385df4a243590c558dffae124ef0625ea73ef908000a9271febee5ddeef0523e8d7eba49bdf25bc5a4e005535f483ed240d8e62a4477797e'
+            'SKIP')
+
+prepare() {
+  cd yosys
+  git submodule init
+  git submodule set-url libs/cxxopts "$srcdir"/cxxopts
+  git -c protocol.file.allow=always submodule update libs/cxxopts
+
+  # Fix pybind11 unused-parameter failures with -Werror=unused without taking
+  # the broader CMake migration commit: https://github.com/YosysHQ/yosys/commit/afc0e78d1161480824f867f3aa8d87349519a5da
+  git show --format= afc0e78d1161480824f867f3aa8d87349519a5da -- kernel/yosys.cc pyosys/hashlib.h |
+    git apply -3
+
+  # Unit tests don't inherit Python embed libs correctly and link them before -lyosys.
+  sed -e 's/LIBS="$(LIBS)"/LIBS="$(EXE_LIBS) $(LIBS)"/' -i Makefile
+  sed -e 's/\$(LIBS) \\/\$(GTEST_LDFLAGS) \$(EXTRAFLAGS) \$(LIBS)/' \
+      -e '/\$(GTEST_LDFLAGS) $(EXTRAFLAGS)$/d' -i tests/unit/Makefile
+}
+
+_make() {
+    make \
+        PREFIX="/usr" \
+        CONFIG=gcc \
+        LINKFLAGS="$LDFLAGS -rdynamic" \
+        ENABLE_TCL=1 \
+        ENABLE_ABC=1 \
+        ENABLE_GLOB=1 \
+        ENABLE_PLUGINS=1 \
+        ENABLE_PROTOBUF=1 \
+        ENABLE_ZLIB=1 \
+        ENABLE_PYOSYS=1 \
+        ABCEXTERNAL=/usr/bin/abc \
+        PYOSYS_USE_UV=0 $@
+}
+
+build() {
+    cd $pkgname
+    _make
+}
+
+check() {
+    cd $pkgname
+    _make test
+}
+
+package() {
+    cd $pkgname
+    _make DESTDIR="$pkgdir" PYTHON_PREFIX="$pkgdir/usr" install
+
+    install -Dm644 COPYING -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

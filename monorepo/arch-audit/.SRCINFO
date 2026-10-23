@@ -1,0 +1,27 @@
+pkgbase = arch-audit
+	pkgdesc = A utility like pkg-audit based on Arch Security Team data
+	pkgver = 0.2.0
+	pkgrel = 5
+	url = https://gitlab.archlinux.org/archlinux/arch-audit
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	makedepends = pkg-config
+	makedepends = scdoc
+	depends = ca-certificates
+	depends = glibc
+	depends = libgcc
+	depends = pacman
+	depends = libalpm.so
+	options = !lto
+	backup = etc/arch-audit/settings.toml
+	source = git+https://gitlab.archlinux.org/archlinux/arch-audit.git?signed#tag=v0.2.0
+	source = 0001-fix-deps-Update-alpm-for-pacman-7.1.patch
+	validpgpkeys = E240B57E2C4630BA768E2F26FC1B547C8D8172C8
+	sha512sums = 238b2ce6c8f8d8024a2b5ef7156ddc11b1c934922d3e208209814bff2a317ce9e7c28d6d4509ca77792f3581f742e672211c26ea8545a82c106e26fc83a1ef1c
+	sha512sums = 8c39b9695a54b0a178ca296dc15604b1fcf5c1e9a778ef3dca3b02231a6c95cfd14c1eed0e66c0456c8898f070418e89436ae30cdd5594ee382f308307f745bf
+	b2sums = 6abea121d7e54b0e077ab65cc28f331f6cd6d5e5b0a480c91a1d53a0b8a91281bf08bfaed8217f63e754f6cff105b7ab520f3f0cda57a2892f6cef4d6a952505
+	b2sums = fe9adef97239e78acd4e5043306779a0830c37d3c28deb97819eddffe72c5a15cdfb127b194688d29c72edea79b2ba6e0403fdae662fec9c16aa01863b0cb5e0
+
+pkgname = arch-audit

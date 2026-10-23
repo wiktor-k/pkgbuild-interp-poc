@@ -1,0 +1,36 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cargo-ratcn
+pkgver=0.0.6
+pkgrel=1
+pkgdesc="Initialize Ratatui projects and copy customizable ratcn components"
+arch=('x86_64')
+url="https://github.com/kristoferlund/ratcn"
+license=('MIT')
+depends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('8080ccf8234134b9836901fc92a747e79669d919437caf7de941c0578c4c918d')
+
+prepare() {
+  cd "ratcn-$pkgver"
+  cargo fetch --locked
+}
+
+build() {
+  cd "ratcn-$pkgver"
+  cargo build --release --frozen --package "$pkgname"
+}
+
+check() {
+  cd "ratcn-$pkgver"
+  cargo test --frozen --package "$pkgname"
+}
+
+package() {
+  cd "ratcn-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

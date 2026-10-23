@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=mauikit-documents
+pkgver=4.0.2
+pkgrel=2
+pkgdesc='MauiKit QtQuick plugins for text editing'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         karchive
+         kcoreaddons
+         kfilemetadata
+         kguiaddons
+         ki18n
+         kio
+         libgcc
+         libstdc++
+         mauikit
+         poppler-qt6
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig}
+        https://invent.kde.org/maui/mauikit-documents/-/commit/ac754704.patch)
+sha256sums=('0f65615d96dd1283f9ee471589ec85783dc129cf844b4eac247cd69130e1b6d3'
+            'SKIP'
+            'ff38a7d563fb7f76ad49327dae1b40c76867c65d292f4e5d963c1892d4837efe')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>                                    
+
+prepare() {
+  patch -d $pkgname-$pkgver -p1 < ac754704.patch # Fix build with Qt 6.10
+}
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

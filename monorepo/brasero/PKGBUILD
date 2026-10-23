@@ -1,0 +1,73 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+
+pkgname=brasero
+pkgver=3.12.4
+pkgrel=1
+pkgdesc="CD/DVD mastering tool"
+url="https://wiki.gnome.org/Apps/Brasero"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  cdrtools
+  dconf
+  dvd+rw-tools
+  gdk-pixbuf2
+  glib2
+  glibc
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk3
+  gvfs
+  hicolor-icon-theme
+  libcanberra
+  libnotify
+  libxml2
+  pango
+  tinysparql
+  totem-pl-parser
+)
+makedepends=(
+  git
+  glib2-devel
+  libburn
+  libisofs
+  libsm
+  meson
+  yelp-tools
+)
+optdepends=(
+  'cdrdao: Alternative backend to copy, burn and blank CDs'
+  'dvdauthor: Create disc images suitable for video DVDs'
+  'libburn: Alternative backend to burn, blank and format CDs, DVDs and BDs'
+  'libdvdcss: Copy CSS encrypted video DVDs to a disc image'
+  'libisofs: Alternative backend to create disc images from a file selection'
+  'vcdimager: Create disc images suitable for SVCDs'
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/brasero.git#tag=$pkgver"
+)
+b2sums=('9091ba100dd9ef18df5f120e3b0c4dbc4370de80635e86031ea201216aaaa9f0cae442da8f5e7d9b9800a9c7196977afada63b9e082f71c590ec7e7d2dbc2681')
+
+prepare() {
+  cd brasero
+}
+
+build() {
+  local meson_options=(
+  )
+
+  arch-meson brasero build "${meson_options[@]}"
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

@@ -1,0 +1,108 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=bespokesynth
+pkgver=1.3.0
+pkgrel=5
+pkgdesc="A software modular synth"
+arch=(x86_64)
+url="https://www.bespokesynth.com/"
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libglvnd
+  libpng
+  libstdc++
+  python
+  zlib
+)
+makedepends=(
+  abletonlink
+  alsa-lib
+  cmake
+  flac
+  freetype2
+  git
+  jack
+  jsoncpp
+  juce
+  libjpeg-turbo
+  libogg
+  libvorbis
+  libusb
+  libx11
+  libxcursor
+  libxinerama
+  pybind11
+  tuning-library
+  xorg-xrandr
+)
+optdepends=(
+  'jack: to use with JACK'
+  'python-jedi: for code completion'
+)
+provides=(vst3-host)
+source=(
+  $pkgname::git+https://github.com/$pkgname/$pkgname#tag=v$pkgver
+  MTS-ESP::git+https://github.com/ODDSound/MTS-ESP
+)
+sha512sums=('143d6e088abd737afe6fe490ce9b6aae9fb1f395abd793b9f4b231fafc7629311fbec947824c1f1d0334bba35b58a5ca85ea6bb9dc587d8ac00e1aa9eaa4a881'
+            'SKIP')
+b2sums=('25a46db560fa3fec217f6eb4c2bbcdb2a5551fb4314d1e2a18c94be59affbc5947f43115d48d9a32dab2271ece34ec53d65569e1a304d8d92666ad9ed7a273ec'
+        'SKIP')
+
+pkgver() {
+  cd $pkgname
+  git describe --exclude Nightly --tags | sed 's/v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.libs/oddsound-mts/MTS-ESP.url "$srcdir/MTS-ESP"
+  git submodule deinit libs/JUCE
+  git submodule deinit libs/pybind11
+  git submodule deinit libs/tuning-library
+  git submodule deinit libs/json/jsoncpp
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BESPOKE_DEVENDORED_SYSTEM_JUCE=ON
+    -D BESPOKE_SYSTEM_ABLETONLINK=ON
+    -D BESPOKE_SYSTEM_PYBIND11=ON
+    -D BESPOKE_SYSTEM_JSONCPP=ON
+    -D BESPOKE_SYSTEM_TUNING_LIBRARY=ON
+    -D BESPOKE_SYSTEM_JUCE=ON
+    -S $pkgname
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    flac libFLAC.so
+    freetype2 libfreetype.so
+    jsoncpp libjsoncpp.so
+    libjpeg-turbo libjpeg.so
+    libogg libogg.so
+    libvorbis libvorbis.so
+    libusb libusb-1.0.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,75 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=ibus-typing-booster
+pkgver=2.31.2
+pkgrel=1
+pkgdesc="Predictive input method for the IBus platform"
+url="https://mike-fabian.github.io/ibus-typing-booster/"
+arch=(any)
+license=(
+  Apache-2.0
+  GPL-3.0-or-later
+)
+depends=(
+  bash
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk4
+  hicolor-icon-theme
+  ibus
+  libibus
+  libsoup3
+  m17n-db
+  m17n-lib
+  pango
+  python
+  python-atspi
+  python-dbus
+  python-distro
+  python-gobject
+  python-httpx
+  python-nltk
+  python-pyaudio
+  python-pycountry
+  python-pyenchant
+  python-pykakasi
+  python-pyxdg
+  python-rapidfuzz
+  python-regex
+  sqlite
+  wl-clipboard
+)
+makedepends=(
+  git
+)
+source=("git+https://github.com/mike-fabian/ibus-typing-booster#tag=$pkgver")
+b2sums=('4b625c59239f7d6887ffd90a3794025e4e9d6788f4033283bfd61b08d5001f7f7afb8ff39086a9e0c2f01f7cb6b5c26d79998d1a6d0c397cee5a4225f1e82878')
+
+prepare() {
+  cd $pkgname
+  autoreconf -fvi
+}
+
+build() {
+  local configure_options=(
+    --prefix=/usr
+    --sysconfdir=/etc
+    --localstatedir=/var
+    --libexecdir=/usr/lib/ibus
+  )
+
+  cd $pkgname
+  ./configure "${configure_options[@]}"
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+
+  cd "$pkgdir/usr/share/$pkgname/data"
+  gzip -nf --best *.{txt,json} annotations{,Derived}/*.xml
+}
+
+# vim:set sw=2 sts=-1 et:

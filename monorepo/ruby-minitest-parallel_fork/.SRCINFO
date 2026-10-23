@@ -1,0 +1,20 @@
+pkgbase = ruby-minitest-parallel_fork
+	pkgdesc = Fork-based parallelization for minitest
+	pkgver = 2.1.1
+	pkgrel = 1
+	url = https://github.com/jeremyevans/minitest-parallel_fork
+	arch = any
+	license = MIT
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = ruby-minitest-global_expectations
+	makedepends = ruby-minitest-hooks
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-minitest
+	options = !emptydirs
+	source = git+https://github.com/jeremyevans/minitest-parallel_fork.git#tag=2.1.1
+	sha256sums = b2fec3c38b4889de1726af6b478bd1d71d20cc0097b200427a02373be0669415
+
+pkgname = ruby-minitest-parallel_fork

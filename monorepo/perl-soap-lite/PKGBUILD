@@ -1,0 +1,33 @@
+# Maintainer: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: François Charette <firmicus ατ gmx δοτ net>
+
+pkgname=perl-soap-lite
+pkgver=1.27
+pkgrel=13
+pkgdesc="Client and server side SOAP implementation"
+arch=('any')
+url="https://search.cpan.org/dist/SOAP-Lite"
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=('perl' 'perl-mime-lite' 'perl-libwww' 'perl-uri'
+         'perl-mime-tools' 'perl-io-socket-ssl' 'perl-xml-parser' 'perl-fcgi'
+         'perl-class-inspector' 'perl-io-sessiondata')
+makedepends=('perl-test-warn' 'perl-xml-parser-lite')
+options=('!emptydirs')
+source=("https://search.cpan.org/CPAN/authors/id/P/PH/PHRED/SOAP-Lite-${pkgver}.tar.gz")
+sha256sums=('e359106bab1a45a16044a4c2f8049fad034e5ded1517990bc9b5f8d86dddd301')
+
+build() {
+  cd  "${srcdir}/SOAP-Lite-${pkgver}"
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd  "${srcdir}/SOAP-Lite-${pkgver}"
+  make test
+}
+
+package() {
+  cd  "${srcdir}/SOAP-Lite-${pkgver}"
+  make install DESTDIR="${pkgdir}"
+}

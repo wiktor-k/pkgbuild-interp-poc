@@ -1,0 +1,41 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+
+pkgname=mdformat
+pkgver=1.0.0
+pkgrel=2
+pkgdesc='CommonMark compliant Markdown formatter'
+arch=(any)
+url=https://github.com/hukkin/mdformat
+license=(MIT)
+depends=(python-markdown-it-py)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('bc8e6aef35b3727bd2836ee557dfc0c6d2feae2f59090d3c8a42da8c79030fded50961a943b92253cdb9ec5914909d26ea31fb58cf2aefe6e1d465be7a789a2a')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd $pkgname
+  PYTHONPATH=build/lib pytest
+}
+
+package() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/$pkgname-$pkgver.dist-info/licenses/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

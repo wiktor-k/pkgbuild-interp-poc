@@ -1,0 +1,20 @@
+pkgbase = gist
+	pkgdesc = Potentially the best command line gister
+	pkgver = 6.1.0
+	pkgrel = 1
+	url = https://github.com/defunkt/gist
+	arch = any
+	license = custom:MIT
+	makedepends = ruby-rake
+	makedepends = ruby-ronn
+	depends = ruby
+	optdepends = xclip: put pasted gist's url into X selection automagically
+	optdepends = xsel: put pasted gist's url into X selection automagically
+	source = https://github.com/defunkt/gist/archive/v6.1.0/gist-6.1.0.tar.gz
+	source = ronn-ng-fix.patch
+	sha512sums = b69022a5c5cfbc319924743da481f674cbb97f6390d29a9dea356f557c343389d7914dc2a6d43ba7e390b1b6747c869c48aaf39e67e06c5ed658c39f6b63027c
+	sha512sums = e2140264c6ca789f1362a675ecfeaf26ac3bd7093e053ec7121c2cb7011c981c2715e4f2df177cbae7079176847ab318f2ee221cd1bf1832153e003fe56e2384
+	b2sums = b0dace81d2d0edc7318172b66ac5f45c2eb43357f80ecbd69e029df56f3d06d81f879dd3968f76843e5b4b06ca1a3d20492a0affb84b865594ae41c30f337fb2
+	b2sums = 585f6d52bae202176a2a1545850e9e4805ba82af416ad4d27b3ff487e78eb94e253b200f0599878dc772d900f0b02acd70e775209e4342f732649573c7b31461
+
+pkgname = gist

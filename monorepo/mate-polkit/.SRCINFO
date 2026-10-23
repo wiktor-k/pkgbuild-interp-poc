@@ -1,0 +1,21 @@
+pkgbase = mate-polkit
+	pkgdesc = PolicyKit integration for the MATE desktop
+	pkgver = 1.28.1
+	pkgrel = 4
+	url = https://github.com/mate-desktop/mate-polkit
+	arch = x86_64
+	groups = mate
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = mate-common
+	depends = accountsservice
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libappindicator
+	depends = polkit
+	source = git+https://github.com/mate-desktop/mate-polkit.git#tag=v1.28.1
+	b2sums = 0c1b5f170f4368570bfb41473394ce7fe00d5d0a9f100dbacb3f2324ebf73dcd27906db416bdb0992a942f55a4550332ad891de081cad2d3614821adfd522ecb
+
+pkgname = mate-polkit

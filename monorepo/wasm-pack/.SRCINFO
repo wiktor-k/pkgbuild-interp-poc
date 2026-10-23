@@ -1,0 +1,19 @@
+pkgbase = wasm-pack
+	pkgdesc = Your favorite rust -> wasm workflow tool!
+	pkgver = 0.15.0
+	pkgrel = 2
+	url = https://github.com/rustwasm/wasm-pack
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	depends = bzip2
+	depends = glibc
+	depends = libgcc
+	depends = xz
+	depends = zstd
+	options = !lto
+	source = wasm-pack-0.15.0.tar.gz::https://github.com/rustwasm/wasm-pack/archive/v0.15.0.tar.gz
+	sha384sums = 297859652721b439d04bd6cfcfc5920c9be19eb825c73123511739869308445776b1b95e2f6c2efd6b62e15c2d819afb
+
+pkgname = wasm-pack

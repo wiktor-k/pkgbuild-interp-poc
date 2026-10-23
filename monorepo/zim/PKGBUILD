@@ -1,0 +1,54 @@
+# Maintainer: Florian Pritz <bluewind@xinu.at>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Kevin Piche <kevin@archlinux.org>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=zim
+pkgver=0.77.2
+pkgrel=2
+pkgdesc='A WYSIWYG text editor that aims at bringing the concept of a wiki to the desktop'
+arch=(any)
+license=(GPL-2.0-or-later)
+url=https://zim-wiki.org/
+depends=(gtk3
+         python
+         python-gobject
+         python-pyxdg
+         ttf-font)
+makedepends=(python-{build,installer,wheel}
+             python-setuptools)
+checkdepends=(xorg-server-xvfb)
+optdepends=('breezy: Version Control plugin'
+            'ditaa: Insert Ditaa plugin'
+            'git: Version Control plugin'
+            'gnuplot: Insert Gnuplot plugin'
+            'graphviz: Insert Diagram plugin'
+            'gtksourceview4: Source View plugin'
+            'gtkspell3: Spell Checker plugin'
+            'libappindicator: StatusNotifierItem support'
+            'lilypond: Insert Score plugin'
+            'mercurial: Version Control plugin'
+            'r: Insert GNU R Plot plugin'
+            'scrot: Insert Screenshot plugin'
+            'texlive-bin: Insert Equation plugin'
+            'xdot: Link Map plugin')
+_archive="$pkgname-$pkgver"
+source=("$url/downloads/$_archive.tar.gz")
+sha256sums=('5561bed05a5fe4208da2ef8d5f8747ebc49e8cb32b46df2559cc73fb11fa65eb')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+check() {
+	cd "$_archive"
+	xvfb-run -w0 ./test.py
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -dm755 "$pkgdir/usr/share/icons/"
+	cp -r xdg/hicolor/ "$pkgdir/usr/share/icons/"
+}

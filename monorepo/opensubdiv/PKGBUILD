@@ -1,0 +1,53 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=opensubdiv
+pkgver=3.7.0
+pkgrel=1
+pkgdesc="An Open-Source subdivision surface library"
+arch=(x86_64)
+url="http://graphics.pixar.com/opensubdiv"
+license=('Apache-2.0')
+depends=('ptex' 'intel-tbb' 'libxcursor' 'xorg-xrandr' 'libxinerama' 'libxi')
+makedepends=('cmake' 'doxygen' 'glfw' 'glew' 'python' 'python-pygments' 'python-docutils' 'opencl-headers' 'cuda' 'libglvnd')
+source=("https://github.com/PixarAnimationStudios/OpenSubdiv/archive/v${pkgver//./_}.tar.gz")
+sha512sums=('947ec6312c224fba3da7dffa863cabb252493c38f22c516ba16b7523883f8ac8cbf353cbc502d406064db71c561e7b1abaff8c0485f4cbb54b182bd871ab0ea0')
+options=(!lto staticlibs)
+
+prepare() {
+  cd "OpenSubdiv-${pkgver//./_}"
+  # replace deprecated function https://github.com/PixarAnimationStudios/OpenSubdiv/issues/997
+  sed -i 's|cudaThreadSynchronize|cudaDeviceSynchronize|g' opensubdiv/osd/cudaEvaluator.cpp
+}
+
+build() {
+  cd "OpenSubdiv-${pkgver//./_}"
+
+  cmake \
+      -Bbuild \
+      -DNO_EXAMPLES=ON \
+      -DNO_REGRESSION=ON \
+      -DNO_TUTORIALS=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DOSD_CUDA_NVCC_FLAGS="-gencode=arch=compute_75,code=sm_75 \
+                             -gencode=arch=compute_80,code=sm_80 \
+                             -gencode=arch=compute_86,code=sm_86 \
+                             -gencode=arch=compute_87,code=sm_87 \
+                             -gencode=arch=compute_88,code=sm_88 \
+                             -gencode=arch=compute_89,code=sm_89 \
+                             -gencode=arch=compute_90,code=sm_90 \
+                             -gencode=arch=compute_100,code=sm_100 \
+                             -gencode=arch=compute_103,code=sm_103 \
+                             -gencode=arch=compute_110,code=sm_110 \
+                             -gencode=arch=compute_120,code=sm_120 \
+                             -gencode=arch=compute_121,code=sm_121 \
+                             -gencode=arch=compute_121,code=compute_121" \
+      -DCUDA_HOST_COMPILER="$NVCC_CCBIN" \
+      -DCMAKE_INSTALL_PREFIX=/usr
+
+  make -C build
+}
+
+package() {
+  cd "OpenSubdiv-${pkgver//./_}"
+
+  DESTDIR="$pkgdir/" make -C build install
+}

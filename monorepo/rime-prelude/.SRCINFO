@@ -1,0 +1,25 @@
+pkgbase = rime-prelude
+	pkgdesc = Essential files for building up your Rime configuration
+	pkgver = 0.0.0.20251229
+	pkgrel = 1
+	url = https://github.com/rime/rime-prelude
+	arch = any
+	license = LGPL
+	makedepends = git
+	source = git+https://github.com/rime/rime-prelude.git#commit=db691d2420b8e656a79692a94f9db0fb3e7aa12b
+	sha512sums = e5d6e93b7ceb440d2b15c388086f60df48bd0e990b1726bd4c155833f56b4c251ca7dde4360b3e0f405a820231952a21f7e42950c77c5ef23d02631d041744ed
+
+pkgname = rime-prelude
+	pkgdesc = Essential files for building up your Rime configuration
+
+pkgname = librime-data
+	pkgdesc = Meta package of preset librime data
+	depends = rime-prelude
+	depends = rime-essay
+	depends = rime-luna-pinyin
+	depends = rime-bopomofo
+	depends = rime-cangjie
+	depends = rime-stroke
+	depends = rime-terra-pinyin
+	conflicts = brise
+	replaces = brise

@@ -1,0 +1,29 @@
+pkgbase = feedbackd
+	pkgdesc = A daemon to provide haptic feedback on events
+	pkgver = 0.8.9
+	pkgrel = 2
+	url = https://gitlab.freedesktop.org/agx/feedbackd
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = gi-docgen
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = python-docutils
+	makedepends = umockdev
+	makedepends = vala
+	depends = dconf
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = gsettings-desktop-schemas
+	depends = gsound
+	depends = json-glib
+	depends = libgmobile
+	depends = libgudev
+	source = git+https://gitlab.freedesktop.org/agx/feedbackd.git?signed#tag=v0.8.9
+	validpgpkeys = 0DB3932762F78E592F6522AFBB5A2C77584122D3
+	b2sums = b10b0787b1bc2f50bad5f3f00b49aaa912c5116eacaa97bb48ba16e5a11518b7bf7ac496dfd9a57b2bd8476a6a952767431462e1e2bb122a0dbf67453dbb7d4c
+
+pkgname = feedbackd

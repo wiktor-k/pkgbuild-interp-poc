@@ -1,0 +1,24 @@
+pkgbase = bpython
+	pkgdesc = Fancy ncurses interface to the Python interpreter
+	pkgver = 0.26
+	pkgrel = 2
+	url = https://bpython-interpreter.org/
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-curtsies
+	depends = python-greenlet
+	depends = python-pygments
+	depends = python-pyxdg
+	depends = python-requests
+	optdepends = python-urwid: for bpython-urwid
+	optdepends = python-jedi: multiline completion
+	optdepends = python-watchdog: module reloading
+	source = https://files.pythonhosted.org/packages/source/b/bpython/bpython-0.26.tar.gz
+	sha256sums = f79083e1e3723be9b49c9994ad1dd3a19ccb4d0d4f9a6f5b3a73bef8bc327433
+
+pkgname = bpython

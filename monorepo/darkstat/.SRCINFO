@@ -1,0 +1,23 @@
+pkgbase = darkstat
+	pkgdesc = Network statistics gatherer (packet sniffer)
+	pkgver = 3.0.722
+	pkgrel = 1
+	url = https://unix4lyfe.org/darkstat/
+	arch = x86_64
+	license = GPL
+	depends = libpcap
+	depends = zlib
+	depends = gcc-libs
+	backup = etc/conf.d/darkstat.conf
+	source = darkstat-3.0.722.tar.gz::https://github.com/emikulic/darkstat/archive/refs/tags/3.0.722.tar.gz
+	source = darkstat.sysusers
+	source = darkstat.tmpfiles
+	source = darkstat.service
+	source = darkstat.conf
+	sha256sums = 5c8e66d4c478b6d7e58f4c842823a09125509bf6851017ff70e32b32ce95b01b
+	sha256sums = 06cdbb13a8f0cfdfbdfe604950a404534ef7e87e2a02827cd90deb75a3613c1e
+	sha256sums = ccc508237a3aa5b1b2cff271877f6a92a0a189ff578ed2128731f7d8379a9fca
+	sha256sums = 81a29ba0fca9430f1a220fece1e88e8e80657fc1970b9327b6680e5f212e51df
+	sha256sums = 7ee7e3a04672bec76e10a65d3b2bc7cf3c41992652a7252d2bbefa79f7679923
+
+pkgname = darkstat

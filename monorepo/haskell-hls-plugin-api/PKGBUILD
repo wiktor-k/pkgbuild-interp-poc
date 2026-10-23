@@ -1,0 +1,57 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hls-plugin-api
+pkgname=haskell-hls-plugin-api
+pkgver=2.4.0.0
+pkgrel=28
+pkgdesc="Haskell Language Server API for plugin communication"
+url="https://github.com/haskell/haskell-language-server/hls-plugin-api"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-diff' 'haskell-aeson' 'haskell-co-log-core' 'haskell-data-default'
+         'haskell-dependent-map' 'haskell-dependent-sum' 'haskell-dlist' 'haskell-extra'
+         'haskell-ghc' 'haskell-hashable' 'haskell-hls-graph' 'haskell-hw-fingertree' 'haskell-lens'
+         'haskell-lens-aeson' 'haskell-lsp' 'haskell-megaparsec' 'haskell-optparse-applicative'
+         'haskell-opentelemetry' 'haskell-prettyprinter' 'haskell-regex-tdfa' 'haskell-row-types'
+         'haskell-unliftio' 'haskell-unordered-containers')
+makedepends=('ghc' 'uusi' 'haskell-lsp-types' 'haskell-tasty' 'haskell-tasty-hunit'
+             'haskell-tasty-quickcheck' 'haskell-tasty-rerun')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('f72ab893945ccb1f58533014c3e3d522aedf9384ead3c3d8388040cff0844aba763a8d4e5482f36c6ac793c355c39e19515b38ce5d856808d00be07df2653660')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+  uusi -u Diff
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

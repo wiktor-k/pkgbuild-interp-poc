@@ -1,0 +1,49 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgbase=radare2-r2pipe
+pkgname=(python-r2pipe)
+pkgver=6.1.2
+pkgrel=1
+pkgdesc='Access radare2 via pipe from any programming language'
+url='https://github.com/radareorg/radare2-r2pipe'
+arch=('any')
+license=('MIT')
+makedepends=(
+  git
+  python
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx
+  python-wheel
+  radare2
+)
+checkdepends=(python-pytest)
+source=("$pkgbase::git+$url.git#tag=$pkgver")
+sha512sums=('c234248ad67cb1837ee20692c1beb37f0f5c49d5d982bb54d26a17ce5039ec1e492d056225060f07c7de0e873faa89d4cb8bc5c6db6f39a247fa3431b8fa26f3')
+b2sums=('d8e8cbc2c2fa299d4288e000b593dae3f19dd2006548ab610c63ab6d17f4233aab24fc0674e68087d9a2bd3c089240bedaa3c3a8c6761118cb59c38307a3b647')
+
+build() {
+  cd $pkgbase/python
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgbase/python
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest
+}
+
+package_python-r2pipe() {
+  depends=(
+    'python'
+    'radare2'
+  )
+
+  cd $pkgbase/python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

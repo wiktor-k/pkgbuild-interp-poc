@@ -1,0 +1,46 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=python-flask-talisman
+_pyname=${pkgname/python-/}
+pkgver=1.1.0
+pkgrel=7
+pkgdesc='HTTP security headers for Flask'
+url='https://github.com/wntrblm/flask-talisman'
+arch=(any)
+license=(Apache-2.0)
+depends=(
+  python
+  python-flask
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+)
+source=(https://github.com/wntrblm/flask-talisman/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('02829a008f7127166d66f3731a57e5cd0bcbb6182e7b8fea30a6cb115d3726a4')
+b2sums=('7e832ede4ae103ce74a3a2fdc3f5d8c48fa34a86eaaf661a9ef4543b8174c16a8ad90b09469b53104820f7587e696072978ab3ef8ccca06fc0e15788385cd083')
+
+build() {
+  cd ${_pyname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pyname}-${pkgver}
+  pytest flask_talisman
+}
+
+package() {
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

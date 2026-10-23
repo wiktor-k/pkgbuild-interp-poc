@@ -1,0 +1,31 @@
+pkgbase = toot
+	pkgdesc = A Mastodon CLI client
+	pkgver = 0.52.1
+	pkgrel = 1
+	url = https://github.com/ihabunek/toot
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-requests
+	depends = python-beautifulsoup4
+	depends = python-wcwidth
+	depends = python-urwid
+	depends = python-urwidgets
+	depends = python-tomlkit
+	depends = python-click
+	depends = python-typing_extensions
+	depends = python-dateutil
+	depends = python-pysocks
+	optdepends = python-term-image: image support
+	optdepends = python-pillow: image support
+	source = toot::git+https://github.com/ihabunek/toot#tag=0.52.1
+	sha512sums = 160cc2a6c7d7638db734296d0ba7606dc67e0d031fe53e9d598a496ba83cfe0fdaa2a6caf5636950d9fff115e922de549d73af07a7bc196d604f7d8e034168bc
+	b2sums = 365ad6fa900239d017d18a665b0ee007f451beb2cc847ac6d1afb8a42af0742db5e90e969a05677a33a273487503450cdc48c5d48ba612768706350110e67fd2
+
+pkgname = toot

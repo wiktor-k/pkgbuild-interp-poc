@@ -1,0 +1,53 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=function2
+pkgver=4.2.5
+pkgrel=1
+pkgdesc="An improved drop-in replacement to std::function"
+arch=(any)
+url="https://naios.github.io/function2/"
+license=(BSL-1.0)
+makedepends=(
+  cmake
+  gtest
+)
+source=(
+  $pkgname-$pkgver.tar.gz::https://github.com/Naios/$pkgname/archive/refs/tags/$pkgver.tar.gz
+  $pkgname-4.2.4-system_gtest.patch
+  $pkgname-4.2.0-skip_docs.patch
+)
+sha512sums=('59ae559854eab40d65bfa24b41953333ce76e1e91af6232ff4f134514a044adf1d1fa4ffa0b33d49085b3f59c671c301aa1e69e4fbb3490c7099dc8ce34dac88'
+            'f0e831210d48c76d17974569dc8a19d0b37e61078394f15d0ae6e64fc251c125047f91befaffc6ab47ada2794b0c8d323c2f53f82e64fcf0be91e55f0dc37253'
+            'fec342025298f2a74e1b1daf381ff80b13cdc6238577379a1d805f3e38e26c8d40a24e7894d943fcb1a1dd27dafb22b521c8e6847e0d155400871bcec0e15681')
+b2sums=('ac59253d7d52871045f83037a14f12844ea4e7da23ff5f867e3be03a0b31f9d3925de11685af6dbcac7e8bbd17ae730e9e06c6c04001af36dc9f3a74b931506e'
+        '7f733abf9279d42210cf288d2c6f9ae20792f4264104d395e8a2080b96fedeaeccb5516557e49f0fb1e64f5f4f8e6a88cac89de3db4959355d17de45e02a4185'
+        '83f7efdbaa4032716cc6a3718c8c6a1028961862c1305ebd39c2665da705fbe2ed66cd9d1806697436bdbedc2e60aa86403547e7f47fb1edfe01361253e36b20')
+
+prepare() {
+  # use the system installed gtest
+  patch -Np1 -d $pkgname-$pkgver -i ../"$pkgname-4.2.4-system_gtest.patch"
+  # skip installing docs (to a wrong location)
+  patch -Np1 -d $pkgname-$pkgver -i ../"$pkgname-4.2.0-skip_docs.patch"
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 "$pkgname-$pkgver/Readme.md" -t "$pkgdir/usr/share/doc/$pkgname/"
+}

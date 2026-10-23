@@ -1,0 +1,16 @@
+pkgbase = evolution-on
+	pkgdesc = Tray plugin for the Evolution email client
+	pkgver = 3.24.2
+	pkgrel = 4
+	url = https://github.com/acidrain42/evolution-on
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = intltool
+	depends = evolution
+	depends = libnotify
+	source = evolution-on-3.24.2.tar.gz::https://github.com/acidrain42/evolution-on/archive/v3.24.2.tar.gz
+	source = fix-build.patch
+	sha512sums = 7f6c048c052ecab2efefaeddaba9db8f7f63035c5505fce0b9c260b5cf2044fe0c4d90a2e7461e1643f507daa1d3a871be9c16e58311d229697d9ce11faa82cf
+	sha512sums = b581e106804ef201fe8230c52c3b76b67fe92b41406f58f46908d52cdb600433cdf01d72ee7eea1c3a39c70f5677993f8659a0741df0a2922ab8e87f237c59f6
+
+pkgname = evolution-on

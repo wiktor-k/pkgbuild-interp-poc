@@ -1,0 +1,48 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: waterbear <st92.at.freeshell.org>
+
+pkgname=simh
+pkgver=3.12.5
+_pkgver=${pkgver//./-}
+_pkgver=${_pkgver/-/}
+pkgrel=2
+pkgdesc="simulator for assorted historical computers, from Altair to VAX"
+arch=('x86_64')
+url="http://simh.trailing-edge.com"
+license=("BSD")
+depends=("libpcap")
+makedepends=("linux-api-headers")
+install=simh.install
+#source=("$pkgname-$pkgver.tar.gz::https://github.com/open-simh/simh/archive/v${_pkgver}.tar.gz"
+source=("http://simh.trailing-edge.com/sources/simhv${_pkgver}.zip"
+	"build-fix.patch"
+	"license-from-upstream")
+sha512sums=('6c70f3155b73b669d4b87ede7f0e7e116cebbc5063646a7f17bdca6fd6e6fcf9ed0833b2b2fc0bb345e37284c73c809f4ab0a8b1bd9459b24ee12387487af92b'
+            '34d75e24dd07aaf6e45aff91b9fef9d1881ac27a6178069cde13f7c5463dc834606170adafd687c4006d4977bb3e0bc21c98e68544a8ac1c9e29260a4906a44e'
+            '084faf8a66c95cb337bca19a6116c916aa04fc23ec5d57d5d8c2fc168231272123a705e83f8da2bf38f404da51727a69db68ffd87b36028e0cde52b54b92b2dd')
+
+prepare() {
+  cd "$srcdir/sim"
+  sed -i '/Retry your build without specifying USE_NETWORK/d' makefile
+  patch -p1 -i "$srcdir"/build-fix.patch
+}
+
+build() {
+  cd "$srcdir/sim"
+  mkdir -p BIN
+  make USE_SHARED=1 USE_NETWORK=1 NETWORK_OPT='-DUSE_NETWORK -DHAVE_TAP_NETWORK'
+}
+
+package() {
+  cd "$srcdir/sim/BIN"
+  rmdir buildtools || true
+  for i in *; do
+    install -D $i "$pkgdir/usr/bin/simh-$i"
+  done
+
+  cd "../VAX"
+  mkdir -p "$pkgdir/usr/lib/simh"
+  cp *.bin "$pkgdir/usr/lib/simh"
+
+  install -Dm644 "$srcdir/license-from-upstream" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

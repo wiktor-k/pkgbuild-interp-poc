@@ -1,0 +1,88 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=hypre
+pkgver=3.2.0
+pkgrel=1
+pkgdesc="Parallel solvers for sparse linear systems featuring multigrid methods"
+arch=(x86_64)
+url="https://github.com/hypre-space/hypre"
+license=("Apache-2.0 OR MIT")
+depends=(
+  blas
+  glibc
+  lapack
+  libgcc
+  libgomp
+  openmpi
+  superlu
+  superlu_dist
+)
+makedepends=(
+  cmake
+  gcc-fortran
+  ninja
+)
+source=($pkgname-$pkgver::$url/archive/v$pkgver.tar.gz
+        runtest-uname.patch)
+b2sums=('cd49df6bd8bde4889743b9251367a7388f2b417c15df8c46c75cfad082d218823642e76a10897fddf4524e1c0fc073449b5f03e3cc05c6fde92568c169b6268d'
+        'bd267ba369d91b132b84a2bebb7a8a0c6a87532f3dcc1b5c5b6430ae65ab99b4067c8db8e993dc921ea889e910a6ae273e59d596695ed3d94571c2d4a5ecd22d')
+
+prepare() {
+  cd $pkgname-$pkgver
+  # replace hostname with uname -n
+  patch -p1 -i ../runtest-uname.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-$pkgver/src
+    -G Ninja
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_INCLUDEDIR=include/hypre
+    -D BUILD_SHARED_LIBS=ON
+    -D HYPRE_BUILD_EXAMPLES=OFF  # installs too generic names in /usr/bin/
+    -D HYPRE_BUILD_TESTS=ON
+    -D HYPRE_ENABLE_FORTRAN=ON
+    -D HYPRE_ENABLE_MPI=ON
+    -D HYPRE_ENABLE_OPENMP=ON
+    -D HYPRE_ENABLE_HYPRE_BLAS=OFF  # use system BLAS
+    -D HYPRE_ENABLE_HYPRE_LAPACK=OFF  # use system LAPACK
+    -D HYPRE_ENABLE_SUPERLU=ON
+    -D HYPRE_ENABLE_DSUPERLU=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  local excluded_tests=""
+  # ij and sstuct tests take too long and fail with numerical difference from upstream
+  excluded_tests+="test_ij_solvers|test_sstruct_solvers"
+
+  local ctest_options=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # the tests cannot run in parallel: the test scripts (checktest.sh and cleantest.sh)
+    # operate on all TEST_* directories, so concurrent runs interfere with each other
+    #--parallel $(nproc)
+    # limit execution time for each test
+    --timeout 200
+    # re-run failed tests
+    #--repeat until-pass:3
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_options[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE-{APACHE,MIT} -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # do not install tests
+  rm "$pkgdir"/usr/bin/test*
+}

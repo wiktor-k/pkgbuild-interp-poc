@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=Ranged-sets
+pkgname=haskell-ranged-sets
+pkgver=0.5.0
+pkgrel=138
+pkgdesc="Ranged sets for Haskell"
+url="https://code.haskell.org/ranged-sets"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-quickcheck')
+makedepends=('ghc' 'haskell-hunit')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('2d9e7baaddc9065941b91e8d4ebbaf7ac7f4b63d81a9f829ac421cd7d6621661b1133cb38fff73dec08d1527254df7d7333d78ab7b5466af56680e8e79afd774')
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 "LICENSE.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+    rm -f "${pkgdir}/usr/share/doc/${pkgname}/LICENSE.txt"
+}

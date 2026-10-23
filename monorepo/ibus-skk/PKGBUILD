@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: eagletmt <eagletmt@gmail.com>
+
+pkgname=ibus-skk
+pkgver=1.4.4
+pkgrel=2
+pkgdesc='Japanese input method SKK engine for IBus'
+arch=('x86_64')
+url='https://github.com/ueno/ibus-skk'
+license=('GPL-2.0-or-later')
+depends=('ibus' 'libgee' 'libskk')
+makedepends=('git' 'intltool' 'vala')
+source=("git+https://github.com/ueno/ibus-skk.git#tag=$pkgname-$pkgver")
+sha512sums=('8ed7bb8c536c0ae315e4c1fd49e44f5a09f07c30bb80e721d07ebba8da06c40c3d4fe57521a39aeb98837175ee7afebe39462fd1169e01d4d79c3670ca42916b')
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --libexecdir=/usr/lib/ibus
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

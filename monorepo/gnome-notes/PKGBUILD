@@ -1,0 +1,70 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gnome-notes
+pkgver=40.2
+pkgrel=3
+pkgdesc="Write out notes, every detail matters"
+url="https://wiki.gnome.org/Apps/Notes"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  curl
+  dconf
+  evolution-data-server
+  libgcc
+  glib2
+  glibc
+  gnome-online-accounts
+  gtk3
+  hicolor-icon-theme
+  json-glib
+  libgoa
+  libhandy
+  libical
+  libxml2
+  pango
+  tinysparql
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+  yelp-tools
+)
+provides=("bijiben=$pkgver")
+conflicts=(bijiben)
+replaces=(bijiben)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/bijiben.git#tag=BIJIBEN_${pkgver//./_}"
+  0001-meson-remove-uuid-dependency.patch
+)
+b2sums=('37c728dd00494fc2742fb2c64bf6b48e676374c2ce907691b81cb33f2b3a9170fa4ff33323a506494ffc66d43f72aa8f73ff67acc89f57fc889b51e0bcd41dbe'
+        'ac166fb29f5fa8744766be7c93d04413b36084f8363129e378a5535ac98f56777ffb51c85e7e21aa52c43b5427ad7c7a86b85fa7349cee994affde6718e18afa')
+
+prepare() {
+  cd bijiben
+
+  # Remove libuuid dep
+  git apply -3 ../0001-meson-remove-uuid-dependency.patch
+}
+
+build() {
+  local meson_options=(
+    -D update_mimedb=false
+  )
+
+  arch-meson bijiben build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

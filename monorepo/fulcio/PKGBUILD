@@ -1,0 +1,37 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=fulcio
+pkgver=1.8.5
+pkgrel=2
+pkgdesc='free Root-CA for code signing certs - issuing certificates based on an OIDC email address.'
+arch=('x86_64')
+url="https://github.com/sigstore/fulcio"
+license=('Apache')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/sigstore/fulcio/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('65f8a5b7dd593e59be54b76a918351dca3413180920e3e6e1490bbba778daeb8fb14b38c7ab6e4b514e6a1cf8f4af81ec53feb7d9f6171f5c56a92baaaa2d68a')
+b2sums=('125cf18104f452133ad1e3fe5a35045891fc25c6879a4d1f776deefae1ca1c92faccc059351707253ae60be946cad21d39a4f4270446354ce4bdafe9c7348345')
+
+build(){
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -ldflags=-linkmode=external -trimpath -mod=readonly -modcacherw"
+  mkdir build
+  go build -o build/ ./...
+}
+
+# Disable tests, failing due to missing config
+#check() {
+#  cd "${pkgname}-${pkgver}"
+#  make test
+#}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/fulcio "${pkgdir}/usr/bin/${pkgname}"
+}

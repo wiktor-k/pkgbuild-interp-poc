@@ -1,0 +1,90 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=traefik
+pkgver=3.7.13
+pkgrel=1
+pkgdesc="Modern reverse proxy written in Go"
+arch=('x86_64')
+url="https://github.com/traefik/traefik"
+license=('MIT')
+depends=('glibc')
+makedepends=(
+  'go'
+  'nodejs-lts-jod'
+  'npm'
+  'yarn'
+)
+backup=("etc/traefik/traefik.yml")
+options=('!lto')
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "traefik.service"
+  "traefik.sysusers"
+  "traefik.tmpfiles"
+)
+b2sums=('8cf3e66dc9fa19fddb539b739137432d5079451106b9d302ab55747f38c5d72af6def5b5b6baebd890e31f6eeab8eb5dbadacae40633b314f879a173eeeb606b'
+        'fa35c17d120dc343773395f062504f6ce5bd11015724824907dff3b17812543456662203757a30ed7ac86f34c1e8ec7c60ed667e4e7b811c67dcf9e59d2f831b'
+        '583ba4ed75f19d5af8c53aefc88b535b2b538414c6da6f670bd142500f70d753bc5222ef1d39f0ceb43e0e37831e467e442c307b1e90b3f902c1a2d74f304570'
+        'cadeab754be6819d2d15bd3e5c380d3edb68d7cb08db676315968733f912cb5f54e0de6b10bff74e0d0b5e9782d707c7afd92ffa5ba20698be70046088406c14')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  npm --prefix webui install --legacy-peer-deps quasar
+
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  npm --prefix webui run build
+
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+  local ld_flags=" \
+    -X github.com/traefik/traefik/v3/pkg/version.Version=$pkgver \
+    -compressdwarf=false  \
+    -linkmode=external \
+  "
+  go build -v -ldflags "$ld_flags" ./cmd/traefik
+}
+
+check() {
+  cd $pkgname-$pkgver
+  # Skip tests:
+  # - v3/integration: requires a running Docker daemon.
+  # - v3/pkg/server/service: seem to be flaky.
+  # - v3/pkg/middlewares/ratelimiter: flaky
+  local tests=$(
+    go list ./... \
+      | grep -v github.com/traefik/traefik/v3/integration \
+      | grep -v github.com/traefik/traefik/v3/pkg/healthcheck \
+      | grep -v github.com/traefik/traefik/v3/pkg/middlewares/accesslog \
+      | grep -v github.com/traefik/traefik/v3/pkg/middlewares/auth \
+      | grep -v github.com/traefik/traefik/v3/pkg/middlewares/ingressnginx/snippet \
+      | grep -v github.com/traefik/traefik/v3/pkg/provider/kubernetes/ingress \
+      | grep -v github.com/traefik/traefik/v3/pkg/proxy/fast \
+      | grep -v github.com/traefik/traefik/v3/pkg/server/router/tcp \
+      | grep -v github.com/traefik/traefik/v3/pkg/server/service \
+      | grep -v github.com/traefik/traefik/v3/pkg/udp \
+      | grep -v github.com/traefik/traefik/v3/pkg/middlewares/ratelimiter
+  )
+  # shellcheck disable=SC2086
+  go test $tests
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" traefik
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" "$srcdir/traefik.service"
+  install -vDm644 "$srcdir/traefik.sysusers" "$pkgdir/usr/lib/sysusers.d/traefik.conf"
+  install -vDm644 "$srcdir/traefik.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/traefik.conf"
+  install -vDm644 traefik.sample.yml "$pkgdir/etc/traefik/traefik.yml"
+}

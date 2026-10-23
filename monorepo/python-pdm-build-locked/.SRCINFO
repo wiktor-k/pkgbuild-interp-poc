@@ -1,0 +1,23 @@
+pkgbase = python-pdm-build-locked
+	pkgdesc = A pdm plugin to publish locked dependencies as optional-dependencies
+	pkgver = 0.3.8
+	pkgrel = 1
+	url = https://github.com/pdm-project/pdm-build-locked
+	arch = any
+	license = MIT
+	checkdepends = python-hatchling
+	checkdepends = python-pkginfo
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-pdm-backend
+	depends = python
+	depends = python-pdm
+	optdepends = python-hatchling: for python-hatch integration
+	optdepends = python-pdm-backend: for python-pdm-backend hook
+	source = python-pdm-build-locked-0.3.8.tar.gz::https://github.com/pdm-project/pdm-build-locked/archive/refs/tags/0.3.8.tar.gz
+	sha512sums = 6332fd35453a878dfd995765a72bf96ddf835d5f90be2d8bcc6f2a818118ef96c49288c3ded064fba81901dbceddb598a47250946d22f09df30a01ce0cc95c13
+	b2sums = 2830347d880477caab9756f7e5efe8ea96d83e4e77ea08161e3e5c5c5bfde785f357cd7b3bdda0619f7e0cf1416f7571e09d8b7d612e0fc6eeff753e325c6de1
+
+pkgname = python-pdm-build-locked

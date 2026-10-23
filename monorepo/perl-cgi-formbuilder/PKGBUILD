@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-cgi-formbuilder
+pkgver=3.20
+pkgrel=3
+pkgdesc="Easily generate and process stateful forms"
+arch=('any')
+license=('PerlArtistic')
+url="https://metacpan.org/release/CGI-FormBuilder"
+depends=('perl')
+makedepends=('perl-html-template' 'perl-text-template' 'perl-template-toolkit' 'perl-cgi-session')
+checkdepends=('perl-cgi')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/B/BI/BIGPRESH/CGI-FormBuilder-$pkgver.tar.gz")
+sha512sums=('ecba725d77f36abfdc43074981f884ddcce7d3e72828fdfce08c30450cb6b445f8e04b48257ee576167e6556646256e7a75e873a4c422ae4c19890b17408c9ae')
+
+build() {
+  cd CGI-FormBuilder-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd CGI-FormBuilder-$pkgver
+  make test
+}
+
+package() {
+  cd CGI-FormBuilder-$pkgver
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,21 @@
+pkgbase = deepin-desktop-schemas
+	pkgdesc = GSettings deepin desktop-wide schemas
+	pkgver = 6.0.13
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/deepin-desktop-schemas
+	arch = any
+	groups = deepin
+	license = GPL3
+	makedepends = git
+	makedepends = python
+	makedepends = go
+	depends = dconf
+	depends = deepin-gtk-theme
+	depends = deepin-icon-theme
+	depends = deepin-sound-theme
+	conflicts = deepin-artwork-themes
+	replaces = deepin-artwork-themes
+	source = git+https://github.com/linuxdeepin/deepin-desktop-schemas.git#tag=6.0.13
+	sha512sums = 364f2fda4e853eb291d0c094bf1303c6e6abdab24387f912183388a763139ec418a0dee724676c278f93eb0b5f64f41e31bc57749796f7bce16bc295a76e11b7
+
+pkgname = deepin-desktop-schemas

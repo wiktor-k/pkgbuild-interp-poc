@@ -1,0 +1,43 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-flask-mailman
+pkgver=1.1.1
+pkgrel=2
+pkgdesc="Porting Django's email implementation to your Flask applications"
+url='https://github.com/waynerv/flask-mailman'
+arch=(any)
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-flask
+  python-werkzeug
+)
+makedepends=(
+  python-build
+  python-installer
+  python-poetry-core
+  python-wheel
+)
+checkdepends=(
+  python-aiosmtpd
+  python-pytest
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('12bd3af87d9cef8186058a5bd3707670cf499856c6f753f2cc1b88bac0e8cd285adee7850cbebd431b3820eb64ef43f443faca0ac06dae34a0bd8d5deb156338')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  pytest
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

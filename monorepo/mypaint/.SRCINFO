@@ -1,0 +1,37 @@
+pkgbase = mypaint
+	pkgdesc = Fast and easy painting application for digital painters, with brush dynamics
+	pkgver = 2.0.1
+	pkgrel = 8
+	url = https://www.mypaint.app/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = swig
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = lcms2
+	depends = libgcc
+	depends = libgomp
+	depends = libmypaint
+	depends = libpng
+	depends = libstdc++
+	depends = mypaint-brushes
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	depends = python-numpy
+	source = git+https://github.com/mypaint/mypaint.git?signed#tag=v2.0.1
+	source = mypaint-backport-fixes.patch
+	validpgpkeys = A5EF2D077F35BBD2973418254803CB83E02F8A4D
+	b2sums = 0b6010d0c3d3ef1b2a8e9132ad80ba4bbb701c8dfa33d619157aa01d3d87baf9832defba2b141b9ed58ec8345165bb7c80edebdeb6945689217d22754ec23646
+	b2sums = 9e858de9dbe6ddaa58955ab868357da87a3a7a32648fc49cca5eb58d991493992117382e3df27951d4e3bb3a0bd27517b9dc742fce427ab214d9aa2454c20737
+
+pkgname = mypaint

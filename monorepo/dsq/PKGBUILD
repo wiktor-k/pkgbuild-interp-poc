@@ -1,0 +1,62 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=dsq
+pkgver=0.23.0
+pkgrel=3
+pkgdesc='CLI tool for running SQL queries against JSON/CSV/Excel/Parquet and more'
+arch=('x86_64')
+url='https://github.com/multiprocessio/dsq'
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go')
+checkdepends=('python' 'jq' 'p7zip')
+options=('!lto')
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('79630abb5d1488e31f5200865bf9964fd34f82ffd8545a383264acabbe5b73dcc3e4b279a2a776fe0595f437eb6094f0f4a9d8586777c3e2571ac750712527ea')
+b2sums=('fd1316246544f4df1912dee964cc46365a73292ac73e58f7cb74565d78805d4190a235361d1adc3230c531019975ea2097506470accbe31f4d910d85a39093dc')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+
+  go build -v \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags '${LDFLAGS}' \
+    -X main.Version=$pkgver" \
+    .
+}
+
+check() {
+  cd "$pkgname"
+
+  # fix failing test
+  sed \
+    -i scripts/test.py \
+    -e "s/dsq latest/dsq $pkgver/"
+
+  # setup taxi.csv
+  7z e testdata/taxi.csv.7z
+
+  # ensure chatter from systemd-nspawn doesn't modify expected stdout
+  LC_ALL=C ./scripts/test.py
+}
+
+package() {
+  cd "$pkgname"
+
+  install -vDm755 -t "$pkgdir/usr/bin" dsq
+}

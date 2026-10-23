@@ -1,0 +1,35 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Florian Pritz <flo@xinu.at>
+# Contributor: Sven Kauber <celeon@gmail.com>
+
+pkgname=siege
+pkgver=4.2.0
+pkgrel=1
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+pkgdesc="An http regression testing and benchmarking utility"
+url="https://www.joedog.org/siege-home/"
+depends=(
+  'glibc'
+  'openssl'
+  'zlib'
+)
+optdepends=('perl: siege2csv.pl')
+backup=(
+  etc/siegerc
+  etc/urls.txt
+)
+source=("https://download.joedog.org/siege/siege-$pkgver.tar.gz")
+sha256sums=('78af482fc655f1cf7270fdbc3171581ed4cb3163009f7f4f056fc2b7e2d24453')
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --sysconfdir=/etc --mandir=/usr/share/man
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  sed -i 's/^# file =$/file = \/etc\/urls.txt/' "$pkgdir/etc/siegerc"
+}

@@ -1,0 +1,25 @@
+pkgbase = vectorchord
+	pkgdesc = PostgreSQL extension for scalable, high-performance, and cost-effective vector search
+	pkgver = 1.1.1
+	pkgrel = 2
+	url = https://github.com/tensorchord/VectorChord
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = git
+	makedepends = rust
+	makedepends = clang
+	makedepends = sqlite
+	depends = postgresql
+	depends = pgvector
+	source = vectorchord::git+https://github.com/tensorchord/VectorChord#tag=1.1.1
+	sha512sums = 2a98b84db3a2c91b9cd7a12581ac300a4485f740df337ced67f7354cda937a663942024f7bfc8faed2cdf10ad135801fe6156dd90bb54de6006b6fb6b98d5998
+	b2sums = ce7630d6b24556bed9fd3cc01511507a4f0b674331db669f7aec45908dec7567258fd8a497e7642a37d309a81b45ef06cf2705112d67cce2fde65a3fa6202f3d
+
+pkgname = vectorchord
+	depends = postgresql
+	depends = pgvector
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = sqlite
+	depends = libsqlite3.so

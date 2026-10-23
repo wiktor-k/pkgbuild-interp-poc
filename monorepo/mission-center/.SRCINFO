@@ -1,0 +1,33 @@
+pkgbase = mission-center
+	pkgdesc = Monitor your CPU, Memory, Disk, Network and GPU usage
+	pkgver = 1.2.0
+	pkgrel = 1
+	url = https://missioncenter.io
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = blueprint-compiler
+	makedepends = cargo
+	makedepends = cmake
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = dmidecode
+	depends = libgcc
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = libadwaita
+	depends = mesa
+	depends = nvtop
+	depends = systemd
+	depends = systemd-libs
+	source = git+https://gitlab.com/mission-center-devs/mission-center.git#tag=v1.2.0
+	source = git+https://gitlab.com/mission-center-devs/gng.git
+	source = git+https://gitlab.com/mission-center-devs/app-detection.git
+	sha256sums = e358a5064222a60c36ea2d78b49266ca0069c06470a95617da653aea9962f1a4
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = mission-center

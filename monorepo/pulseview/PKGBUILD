@@ -1,0 +1,78 @@
+# Maintainer: Anatol Pomozov
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Thomas Krug <t.krug@elektronenpumpe.de>
+
+pkgname=pulseview
+pkgver=0.4.2
+pkgrel=21
+pkgdesc='A Qt based logic analyzer GUI for sigrok'
+arch=('x86_64')
+url='https://sigrok.org/wiki/Main_Page'
+license=('GPL-3.0-or-later')
+depends=(
+  'boost-libs'
+  'glib2'
+  'glibc'
+  'glibmm'
+  'hicolor-icon-theme'
+  'libgcc'
+  'libsigrok'
+  'libsigrokdecode'
+  'libstdc++'
+  'qt5-base'
+  'qt5-svg'
+)
+makedepends=(
+  'boost'
+  'cmake'
+  'git'
+  'qt5-tools'
+)
+#source=("git+git://sigrok.org/pulseview#tag=pulseview-$pkgver")
+# git repo is offline, use mirror
+source=(
+  "git+https://github.com/sigrokproject/pulseview#tag=pulseview-$pkgver"
+  "$pkgname-boost-1.89.0-compatibility.patch"
+)
+b2sums=('2b4913bb3253d73323d3f51461deeeea028139bd456301be724adad06a195e4e2a3bb5d0f6775cf03b28d5cf7deb6d69f2cec7bade03759cd5334348ab57a20c'
+        'ba7f66639d26163a57e0db46a177548550da839ad6a9eb20838af8973ed28d3e5801a31d4deae07edd1e6e2cce1ba2dda09cb467fada92f8c1b90aa4b347a65c')
+
+prepare() {
+  cd $pkgname
+
+  # Replace obsolete/deprecated Qt methods
+  git cherry-pick -n ae726b70a7ada9a4be5808e00f0c951318479684
+  # Fix broken build due to C++ template behind C linkage
+  git cherry-pick -n ed643f0b4ac587204a5243451cda181ee1405d62
+
+  patch -Np1 < ../$pkgname-boost-1.89.0-compatibility.patch
+}
+
+build() {
+  local cmake_options=(
+    -S "$pkgname" \
+    -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -Wno-dev \
+    -DCMAKE_CXX_FLAGS=-fext-numeric-literals \
+    -DDISABLE_WERROR=ON \
+    -DENABLE_TESTS=ON \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  )
+
+  # remove hardedcoded c++11 reference which breaks boost 1.87.0
+  sed -i "s/-std=c++11/-std=c++17/" "$pkgname/CMakeLists.txt"
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

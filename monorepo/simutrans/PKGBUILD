@@ -1,0 +1,71 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Anton Bazhenov <anton.bazhenov at gmail>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Gilles Gagniard <gilles@gagniard.org>
+# Contributor: JD Steffen <jd at steffennet dot org>
+
+pkgname=simutrans
+pkgver=125.0.1
+pkgrel=1
+pkgdesc='Transportation simulation game'
+arch=(x86_64)
+url='https://www.simutrans.com/'
+license=(Artistic-1.0)
+depends=(
+  bash
+  bzip2
+  fontconfig
+  freetype2
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libpng
+  libstdc++
+  sdl2
+  simutrans-pak
+  zlib
+  zstd
+)
+makedepends=(
+  cmake
+  git
+  ninja
+)
+optdepends=('timidity++: Play MIDI music')
+source=(
+  "git+https://github.com/simutrans/simutrans#tag=$pkgver"
+  simutrans-settings-folder.patch
+)
+sha512sums=('29332539607cd0f3a9c52aa5a2cb6f14ec73b1a2f1a3a196fcbe0e79c3dacdb41375e07becaeccf367e4b7b55414fb356f64283099faaded55dcc2c479b32e86'
+            'e6883ff8c83521e1dd9c8b3dfcdbeeacae487dd8c958b6323d4a2f12fba3fad672202438bfe7a05255513b21320613000108f5ccce81ee8860e92a2a551c8208')
+b2sums=('6897b203568da5f456b068864586790cc206530f24cd2c79a10275e21f9d0335455f2cf7b5a770e558aefd8f5983a41a384c983a7308e7612a1a56f9a54a6d2f'
+        '771342609e9f1ae50c2703b649db6e41bd07dadab176171c3713cc6854be608430a4b55c64be37b5e2b2009e4e0a31b87098b897b95647d9258dc781fa527e7e')
+
+prepare() {
+  cd $pkgname
+
+  # Use standard fallback paths
+  # https://github.com/simutrans/simutrans/pull/12
+  git apply -3 ../simutrans-settings-folder.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-author
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D USE_GAMES_DATADIR=1
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 -t "$pkgdir/usr/share/licenses/simutrans" simutrans/simutrans/license.txt
+}

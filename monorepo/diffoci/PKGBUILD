@@ -1,0 +1,36 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=diffoci
+pkgver=0.1.8
+pkgrel=1
+pkgdesc="diff for Docker and OCI container images"
+url="https://github.com/reproducible-containers/diffoci"
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go')
+source=("git+${url}.git#tag=v${pkgver}?signed")
+validpgpkeys=('C020EA876CE4E06C7AB95AEF49524C6F9F638F1A') # Akihiro Suda <suda.kyoto@gmail.com>
+sha256sums=('1eee82e5f70e021a22e9cdd1a17b0151932075354bcd9e20232c593e1b4a94e9')
+
+prepare(){
+	cd "${pkgname}"
+	mkdir -p build/
+}
+
+build() {
+	cd "${pkgname}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+	go build -ldflags="-linkmode=external -s -w -buildid=''" -o "build" ./cmd/...
+}
+
+package() {
+	cd "${pkgname}"
+	install -Dm 755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

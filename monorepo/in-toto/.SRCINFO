@@ -1,0 +1,27 @@
+pkgbase = in-toto
+	pkgdesc = A framework to secure your software supply chain
+	pkgver = 3.1.0
+	pkgrel = 1
+	url = https://in-toto.io
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-attrs
+	depends = python-cryptography
+	depends = python-dateutil
+	depends = python-iso8601
+	depends = python-pathspec
+	depends = python-securesystemslib
+	optdepends = gnupg: pgp signing/verification
+	source = git+https://github.com/in-toto/in-toto.git#tag=v3.1.0
+	validpgpkeys = 903BAB73640EB6D65533EFF3468F122CE8162295
+	validpgpkeys = 8BA69B87D43BE294F23E812089A2AD3C07D962E8
+	validpgpkeys = E32941299CB8C0D93DCF27ACB83110D012545604
+	b2sums = c9395ea4d14f7d9da03add71663eac4e5b4544648b4e3bd37329e906f19942fe5108f113f67a9e775186fa1110f4cb68966d4ab9bd737f9f8a345438aa9f77bc
+
+pkgname = in-toto

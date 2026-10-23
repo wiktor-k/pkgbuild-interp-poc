@@ -1,0 +1,37 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+
+pkgname=kdesvn
+pkgver=2.1.0
+pkgrel=6
+pkgdesc="A pure C++ SVN-client for KDE"
+arch=('x86_64')
+url="https://apps.kde.org/kdesvn/"
+license=('GPL')
+depends=('subversion' 'kcoreaddons5' 'kio5' 'knotifications5' 'kparts5' 'ktexteditor5')
+makedepends=('extra-cmake-modules' 'db')
+changelog=$pkgname.changelog
+source=(https://download.kde.org/stable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz)
+sha256sums=('515eb95d5d2a51b495df01adf56ef0af703c5d344bb49bc2a6390ef57bba027b')
+
+prepare() {
+# Install service menus to modern path
+  sed -e 's|${SERVICES_INSTALL_DIR}/ServiceMenus|share/kio/servicemenus|g' -i $pkgname-$pkgver/src/kdesvnd/CMakeLists.txt
+  sed -e 's| DocTools||' -e '/(doc)/d' -i $pkgname-$pkgver/CMakeLists.txt
+}
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  cmake . \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_CXX_FLAGS="-DQT_THREAD_SUPPORT" \
+    -DLIB_SUFFIX= \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  make
+}
+
+package() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+}

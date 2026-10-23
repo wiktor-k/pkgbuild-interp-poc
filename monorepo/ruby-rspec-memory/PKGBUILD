@@ -1,0 +1,70 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-rspec-memory
+pkgver=1.0.4
+pkgrel=6
+pkgdesc='RSpec helpers for checking memory allocations'
+arch=(any)
+url='https://github.com/socketry/rspec-memory'
+license=(MIT)
+depends=(
+  ruby
+  ruby-rspec
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+)
+options=(!emptydirs)
+source=(https://github.com/socketry/rspec-memory/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('f3b25f8fe54692fe2434da2a01ffed3f4331fbc71dc456b2a2ac0496b2a4be9c')
+
+prepare() {
+  cd rspec-memory-$pkgver
+  sed -r -e 's|~>|>=|g' -e '/signing_key/d' -i rspec-memory.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd rspec-memory-$pkgver
+  gem build rspec-memory.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    rspec-memory-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd rspec-memory-$pkgver
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd rspec-memory-$pkgver
+  cp -a tmp_install/* "$pkgdir"/
+}

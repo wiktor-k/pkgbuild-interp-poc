@@ -1,0 +1,24 @@
+pkgbase = qspectrumanalyzer
+	pkgdesc = Spectrum analyzer for multiple SDR platforms.
+	pkgver = 2.2.0
+	pkgrel = 13
+	url = https://github.com/xmikos/qspectrumanalyzer
+	arch = any
+	license = GPL-3.0-only
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-qt.py
+	depends = python-pyqt5
+	depends = python-pyqtgraph
+	depends = soapy_power
+	optdepends = rtl-sdr: Alternative backend
+	optdepends = rx_tools: Alternative backend
+	optdepends = hackrf: Alternative backend
+	source = qspectrumanalyzer-2.2.0.tar.gz::https://github.com/xmikos/qspectrumanalyzer/archive/v2.2.0.tar.gz
+	source = setenv.patch
+	sha256sums = d50e13fa4951a67ed4f56362fb74daff9faeda88d7fc3f9d98cffb8d63c6311d
+	sha256sums = 9205115603abf8c555d4325246f4b57207002cc7037f96a6e9a3a2cfa9d18037
+
+pkgname = qspectrumanalyzer

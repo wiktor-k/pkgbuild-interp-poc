@@ -1,0 +1,23 @@
+pkgbase = mediawriter
+	pkgdesc = Fedora Media Writer - write Fedora images to portable media
+	pkgver = 5.3.2
+	pkgrel = 1
+	url = https://github.com/FedoraQt/MediaWriter
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-svg
+	depends = udisks2
+	depends = xz
+	source = git+https://github.com/FedoraQt/MediaWriter.git#tag=5.3.2
+	b2sums = 46081edfbebe75d8986c7d7cce571970c217bdfd2cdfd613f2e541593c34f224deaea1fa4fe03d7377d0ec1e16d1a79cbea3f6267bc68a81806f6e9e3b82e725
+
+pkgname = mediawriter

@@ -1,0 +1,30 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Igor Dyatlov <dyatlov.igor@protonmail.com>
+
+pkgname=rnote
+pkgver=0.14.2
+pkgrel=2
+pkgdesc="A simple drawing application to create handwritten notes"
+arch=('x86_64')
+url="https://github.com/flxzt/rnote"
+license=('GPL3')
+depends=('gtk4' 'glib2' 'libadwaita' 'alsa-lib')
+makedepends=('meson' 'cargo' 'cmake' 'git')
+#checkdepends=('appstream-glib')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+b2sums=('95fb0157d6d3d8cc3d16eb8d6f4fb8de168a52c404fe081dc7faf8f952b6db2e9e1a9c09ba44bd4fccc3d84946c53eb59e07e6507841334df0020bc6875858bf')
+
+build() {
+  arch-meson "$pkgname-$pkgver" build -Dcli=true
+  meson compile -C build
+}
+
+#check() {
+#  meson test -C build
+#}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim: ts=2 sw=2 et:

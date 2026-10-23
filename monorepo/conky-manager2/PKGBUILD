@@ -1,0 +1,50 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+
+pkgname=conky-manager2
+pkgver=2.7
+pkgrel=2
+pkgdesc="GUI for managing Conky config files with options to browse and edit themes"
+url="https://github.com/zcot/conky-manager2"
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  '7zip'
+  'cairo'
+  'conky'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'imagemagick'
+  'json-glib'
+  'libgee'
+  'libx11'
+  'rsync'
+)
+makedepends=('vala')
+provides=('conky-manager')
+conflicts=('conky-manager')
+replaces=('conky-manager')
+source=(
+  "${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+  makefile-roundup.patch
+)
+sha512sums=('58246a23e624543e6c8652367da6aece1492f8926f35819f0b47a8fa2271fb5c33d3d1c7001dae37f5152431bc1a6a9e0981d44e70078d7c23dff99b540ce0a0'
+            'b1565d17df416777536f2731033245ea2c6ba3ae1f97f619ca6dfc6c809c7f8f346abe34a9289ab88fceb3471691fd922f79b53688753656c7987e88ff3a73c3')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -Np1 < ../makefile-roundup.patch
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  mv "$pkgdir/usr/share/"{appdata,metainfo}
+}

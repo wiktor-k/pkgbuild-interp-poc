@@ -1,0 +1,101 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: <gaelic>
+# Contributor: Anatoly Bashmakov anatoly at posteo dot net
+
+pkgname=asciidoctor-pdf
+pkgver=2.3.24
+pkgrel=1
+pkgdesc="A native PDF converter for AsciiDoc based on Asciidoctor and Prawn"
+arch=(any)
+url="https://github.com/asciidoctor/asciidoctor-pdf"
+license=(MIT)
+depends=(
+  asciidoctor
+  ruby
+  ruby-concurrent
+  ruby-matrix
+  ruby-prawn
+  ruby-prawn-icon
+  ruby-prawn-svg
+  ruby-prawn-table
+  ruby-prawn-templates
+  ruby-treetop
+)
+makedepends=(
+  git
+  rubygems
+)
+checkdepends=(
+  gsfonts
+  poppler
+  ruby-chunky_png
+  ruby-coderay
+  ruby-pdf-inspector
+  ruby-rspec
+)
+optdepends=('ruby-coderay: for syntax highlighting')
+options=(!emptydirs)
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "$pkgname-remove-failing-tests.patch"
+)
+sha256sums=('354dd0321710440a0b0e740b14135712cdd27e9faf92301360d659b12de80e62'
+            '151cbb28525753c12825334b288e34691195c537fd1ef1d94147a8c85b57b968')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 < ../$pkgname-remove-failing-tests.patch
+  sed -i -E 's|~>|>=|g' "$pkgname.gemspec"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd $pkgname-$pkgver
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd $pkgname-$pkgver
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.adoc
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

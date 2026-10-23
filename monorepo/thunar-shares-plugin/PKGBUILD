@@ -1,0 +1,27 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: maoxuner <maoxuner at 126 dot com>
+# Contributor: Sébastien Deligny <sebdeligny at gmail>
+
+pkgname=thunar-shares-plugin
+pkgver=0.5.0
+pkgrel=1
+epoch=1
+pkgdesc="Thunar plugin to quickly share a folder using Samba without requiring root access"
+arch=('x86_64')
+url="https://docs.xfce.org/xfce/thunar/thunar-shares-plugin"
+license=('GPL-2.0-or-later')
+depends=('thunar' 'samba')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/thunar-plugins/thunar-shares-plugin.git#tag=$pkgname-$pkgver")
+sha256sums=('db081c26d3a0b223df5d4a00c9c36fd9927d293453eeeea7dc3057aeeab6cbe3')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

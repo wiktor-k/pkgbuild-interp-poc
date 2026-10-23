@@ -1,0 +1,25 @@
+pkgbase = wike
+	pkgdesc = Wikipedia reader for the GNOME desktop
+	pkgver = 3.2.1
+	pkgrel = 1
+	url = https://apps.gnome.org/Wike/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libsoup3
+	depends = pango
+	depends = python
+	depends = python-gobject
+	depends = webkitgtk-6.0
+	source = git+https://github.com/hugolabe/Wike.git#tag=3.2.1
+	b2sums = ba5ec50ab59dec1ef5e0c93c34bd3c32659648d3551c8701656ff410624044ee3685d81096f8c7bf42ac04d553ceb1fb58a64b46b9b5cbf8aed9008af6c01f08
+
+pkgname = wike

@@ -1,0 +1,32 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: KokaKiwi <kokakiwi+aur@kokakiwi.net>
+
+_pyname=adb-shell
+pkgname=python-${_pyname}
+pkgver=0.4.4
+pkgrel=4
+pkgdesc="A Python implementation of ADB with shell and FileSync functionality."
+arch=(any)
+url="https://github.com/JeffLIrion/adb_shell"
+license=('Apache')
+depends=('python' 'python-cryptography' 'python-pyasn1' 'python-rsa')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+optdepends=('python-aiofiles: async API'
+            'python-libusb1: To connect to a device via USB')
+conflicts=('python-adb_shell')
+source=("${pkgname}-${pkgver}.tar.gz"::"https://github.com/JeffLIrion/adb_shell/archive/refs/tags/v${pkgver}.tar.gz")
+b2sums=('f10cfd62fee6a7f81ef47b91b32fc2ea53121c29388bcd6722c2c30276f0f81d69dd93c63c9bb376009dda1ce0b0163a675672e882824619e6b858b5af44b27b')
+
+build() {
+  cd "${_pyname/-/_}-${pkgver}"
+  python -m build -wn
+}
+
+package() {
+  cd "${_pyname/-/_}-${pkgver}"
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

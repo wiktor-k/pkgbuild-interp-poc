@@ -1,0 +1,18 @@
+pkgbase = ccid
+	pkgdesc = A generic USB Chip/Smart Card Interface Devices driver
+	pkgver = 1.8.4
+	pkgrel = 1
+	url = https://ccid.apdu.fr/
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = meson
+	depends = pcsclite
+	depends = libusb
+	depends = flex
+	backup = etc/reader.conf.d/libccidtwin
+	source = ccid::git+https://salsa.debian.org/rousseau/CCID.git#tag=1.8.4?signed
+	validpgpkeys = F5E11B9FFE911146F41D953D78A1B4DFE8F9C57E
+	sha256sums = efa693ca2ea52f33744580319242ed19643481df4430e8a4735fa48f1ad943d6
+
+pkgname = ccid

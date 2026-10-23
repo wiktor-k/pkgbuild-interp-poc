@@ -1,0 +1,33 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=inja
+pkgver=3.5.0
+pkgrel=1
+pkgdesc='A template engine for modern C++'
+arch=(any)
+url='https://pantor.github.io/inja/'
+license=(MIT)
+depends=(nlohmann-json)
+makedepends=(git
+             cmake
+             python)
+source=(git+https://github.com/pantor/inja#tag=v$pkgver
+        inja.pc)
+sha256sums=('1162ce16134b409fdd381b8899dbce3b172d2874b1f0a08e06feb9d31b3ea40d'
+            '5551c0cd7e7785e83961fc617417fb7b35b32edda9591757b00b422201947d34')
+
+build() {
+  cmake -B build -S inja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_BENCHMARK=OFF \
+    -DINJA_USE_EMBEDDED_JSON=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 inja/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+  sed -e "s|VERSION|$pkgver|" -i inja.pc
+  install -Dm644 inja.pc -t "$pkgdir"/usr/share/pkgconfig
+}

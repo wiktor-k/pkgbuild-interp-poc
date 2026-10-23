@@ -1,0 +1,51 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Kent Hou Man <knthmn0 at gmail dot com>
+
+_name=monaspace
+pkgbase=$_name-font
+pkgname=(otf-$_name otf-$_name-nerdfonts ttf-$_name-frozen ttf-$_name-variable)
+pkgver=1.400
+pkgrel=1
+pkgdesc='An innovative superfamily of fonts for code, by GitHub'
+arch=(any)
+url="https://github.com/githubnext/$_name"
+license=(OFL-1.0-RFN)
+_archive="$_name-FLAVOR-v$pkgver"
+source=("$url/releases/download/v$pkgver/${_archive/FLAVOR/frozen}.zip"
+        "$url/releases/download/v$pkgver/${_archive/FLAVOR/nerdfonts}.zip"
+        "$url/releases/download/v$pkgver/${_archive/FLAVOR/static}.zip"
+        "$url/releases/download/v$pkgver/${_archive/FLAVOR/variable}.zip"
+        "$_name-$pkgver-LICENSE::$url/raw/refs/tags/v$pkgver/LICENSE")
+sha256sums=('f4a846421d1d6bb1233e5cb748d2afb85c7111b3da994a200504eaffd97a3a05'
+            '9b7f9505d977601d8819dfdb57fa4b49bdab61132b6d1131c2e8d092066edc5a'
+            'ab66d71be751495f679727332a3345597943bd4d7beebca03f5cde04bf994de7'
+            'b69a7f2a3c455c89dcb6cc23b61bb3fb8beecba728ccdebeccd80577e58de0c8'
+            '0e84e5f7dd6f05e74a00f2fb828ca43e489d954f5509ff0fa439ea18c0d35fe9')
+
+package_otf-monaspace() {
+	provides=("$pkgbase")
+	install -Dm0644 "$_name-$pkgver-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cd "Static Fonts"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/OTF/" */*.otf
+}
+
+package_otf-monaspace-nerdfonts() {
+	provides=("$pkgbase" ttf-font-nerd)
+	install -Dm0644 "$_name-$pkgver-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cd "NerdFonts"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/OTF/" */*.otf
+}
+
+package_ttf-monaspace-frozen() {
+	provides=("$pkgbase")
+	install -Dm0644 "$_name-$pkgver-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cd "Frozen Fonts"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" */*.ttf
+}
+
+package_ttf-monaspace-variable() {
+	provides=("$pkgbase-variable")
+	install -Dm0644 "$_name-$pkgver-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	cd "Variable Fonts"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" */*.ttf
+}

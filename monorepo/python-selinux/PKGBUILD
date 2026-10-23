@@ -1,0 +1,37 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=selinux
+pkgname=python-selinux
+pkgver=0.3.0
+pkgrel=5
+pkgdesc="Pure-python selinux shim module for use in virtualenvs"
+arch=(any)
+url="https://github.com/pycontribs/selinux"
+license=(MIT)
+depends=(
+  python
+  python-distro
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('a21a5718b6922a5720ab9b15eafc60a8199b60c61073354ba3751f726097acb720d308ec5bb27fe9d4c0586f8ecf9928a9840f97f10cf02a58566b6eb9ec2161')
+b2sums=('cf0c2568d708f4f747ff4aa37b8142d7b2dbbbb0d6d966c786d6bf6187bde93c3fa02f4fe5027c9ae722f30a7a6da3faa3d948b7ecf5ad9222e025893ce643c9')
+
+build() {
+  cd $_name-$pkgver
+  export SETUPTOOLS_SCM_PRETEND_VERSION="$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+}

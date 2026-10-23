@@ -1,0 +1,24 @@
+pkgbase = alpm-lint
+	pkgdesc = Linting of ALPM packaging related files and projects
+	pkgver = 0.3.4
+	pkgrel = 1
+	url = https://alpm.archlinux.page/alpm-lint/
+	arch = x86_64
+	groups = alpm
+	license = Apache-2.0 OR MIT
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = just
+	makedepends = lowdown
+	makedepends = rust
+	makedepends = rust-script
+	depends = alpm-pkgbuild-bridge
+	depends = glibc
+	depends = libgcc
+	optdepends = alpm-docs: for additional specifications
+	source = alpm::git+https://gitlab.archlinux.org/archlinux/alpm/alpm.git?signed#tag=alpm-lint/0.3.4
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 84abec6ede915845bbe6940519becff9c8fd2d9d84acb18dd7a619038aa6bbd7ed0c5838ac896306b9da9552274f2d8d9a567bfd64a2df039a4f2b389415d8e4
+	b2sums = b41739ba2ffd0340b3bc8cde751a66e7257cdb05fa5886b6d49255219f2a164b52c5807d0facbcf8348c38925b6b058014fe6b7ca3994812b178b8ff97a7df84
+
+pkgname = alpm-lint

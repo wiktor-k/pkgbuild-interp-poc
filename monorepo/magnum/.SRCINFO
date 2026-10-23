@@ -1,0 +1,22 @@
+pkgbase = magnum
+	pkgdesc = C++11 graphics middleware for games and data visualization
+	pkgver = 2020.06
+	pkgrel = 5
+	url = https://magnum.graphics
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = libstdc++
+	depends = libgcc
+	depends = corrade>=2020.06
+	depends = glfw
+	depends = openal
+	depends = sdl2
+	depends = vulkan-icd-loader
+	optdepends = magnum-plugins: import and export features
+	source = git+https://github.com/mosra/magnum#commit=fac6f4da261930c7035bf51f66091e350905720b
+	sha256sums = SKIP
+
+pkgname = magnum

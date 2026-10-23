@@ -1,0 +1,60 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: NOGISAKA Sadata <ngsksdt@gmail.com>
+# Contributor: Bennett Piater <bennett at piater dot name>
+
+pkgname=doctl
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='The official command line interface for the DigitalOcean API'
+url='https://github.com/digitalocean/doctl'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=(https://github.com/digitalocean/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('a1acc98f69cb41b1096d319c72d1255dfe1939b1333989758f15a0eb6c81b283')
+b2sums=('5093e7ca525dccf5eb3e98585ad071b8057682121ab2209bedd624b9baee5c17d77717e8cc4949468a19998a34ea462288950a6f3929661526d0cb7fbaeee877')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode=external
+      -X github.com/digitalocean/doctl.Major=$(echo $pkgver | cut -d. -f1)
+      -X github.com/digitalocean/doctl.Minor=$(echo $pkgver | cut -d. -f2)
+      -X github.com/digitalocean/doctl.Patch=$(echo $pkgver | cut -d. -f3)
+      -X github.com/digitalocean/doctl.Label=release
+    " \
+    ./cmd/...
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  ./doctl --help
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 "${pkgname}" -t "${pkgdir}/usr/bin"
+
+  # setup completions
+  install -dm 755 "${pkgdir}/usr/share/bash-completion/completions" \
+                  "${pkgdir}/usr/share/zsh/site-functions" \
+                 "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completion bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+}
+
+# vim: ts=2 sw=2 et:

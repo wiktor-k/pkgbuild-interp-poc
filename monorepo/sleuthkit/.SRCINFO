@@ -1,0 +1,25 @@
+pkgbase = sleuthkit
+	pkgdesc = File system and media management forensic analysis tools
+	pkgver = 4.15.0
+	pkgrel = 1
+	url = https://www.sleuthkit.org/sleuthkit
+	arch = x86_64
+	license = CPL-1.0
+	license = GPL-2.0-or-later
+	license = IPL-1.0
+	makedepends = autoconf-archive
+	depends = glibc
+	depends = libewf
+	depends = libgcc
+	depends = libstdc++
+	depends = perl
+	depends = sqlite
+	depends = zlib
+	provides = libtsk.so
+	source = https://github.com/sleuthkit/sleuthkit/releases/download/sleuthkit-4.15.0/sleuthkit-4.15.0.tar.gz
+	source = https://github.com/sleuthkit/sleuthkit/releases/download/sleuthkit-4.15.0/sleuthkit-4.15.0.tar.gz.asc
+	validpgpkeys = 0917A7EE58A9308B13D3963338AD602EC7454C8B
+	b2sums = 1fde6d5c82bd97e01bb6ce048290c4f7e38541128492d0d9494328df6b6db217f557c42ed7147b9eeba3e6ff2c9bb011b23d1ea25050b1488a0a80b571e2f5e5
+	b2sums = SKIP
+
+pkgname = sleuthkit

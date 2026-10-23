@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Maintainer: Eric Bélanger <eric@archlinux.org>
+
+pkgname=kdiff3
+pkgver=1.12.6
+pkgrel=1
+pkgdesc='A file comparator/merge tool'
+arch=(x86_64)
+url='https://apps.kde.org/kdiff3/'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         icu
+         kconfig
+         kcoreaddons
+         kconfigwidgets
+         kcrash
+         ki18n
+         kio
+         kwidgetsaddons
+         kxmlgui
+         libgcc
+         libstdc++
+         qt6-base)
+makedepends=(boost
+             extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/stable/$pkgname/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('edeaa2313cb74b650958d24cd98b300b73173ac8a9c87067de62babf02baa37c'
+            'SKIP')
+validpgpkeys=(EE56D710885D36FB1E4D21F3F442B36D614B06BC) # Michael Reeves <reeves.87@gmail.com>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DCMAKE_BUILD_TYPE=None
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

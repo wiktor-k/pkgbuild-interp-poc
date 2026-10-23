@@ -1,0 +1,74 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-wsgidav
+pkgver=4.3.5
+pkgrel=1
+pkgdesc='Generic WebDAV server based on WSGI'
+arch=(any)
+url='https://github.com/mar10/wsgidav'
+license=(MIT)
+depends=(
+  python
+  python-defusedxml
+  python-json5
+  python-jinja
+  python-passlib
+  python-pyyaml
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-cheroot
+  python-requests
+  python-webtest
+)
+optdepends=(
+  'python-paste: WSGI server'
+  'gunicorn: WSGI server'
+  'python-cheroot: WSGI server'
+  'python-gevent: WSGI server'
+  'uvicorn: WSGI server'
+  'mercurial: Mercurial WebDAV provider'
+  'python-pymongo: MongoDB WebDAV provider'
+  'python-mysqlclient: MySQL WebDAV provider'
+  'python-pam: pam-login authentication'
+  'python-lxml: performance improvements for PROPPATCH requests'
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('32131c61cc2dec1df597365f06c137d3141ebf00a4da94d9d76ada5e38ba1c463887a67432fa2110152847774814efbcacb360909b529be4f0d04ffd91728a55')
+b2sums=('806de3a92c8d769f90018d84426be044f2c202b45c256e211d3fe0da8e96b38aa0d1d4ada59ebce7297477c17ec236298f6fc1d5bf03f0126bd698e189f5fc01')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md sample_wsgidav.yaml
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

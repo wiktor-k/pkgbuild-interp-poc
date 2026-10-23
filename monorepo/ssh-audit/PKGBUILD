@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: graysky <graysky AT archlinux DOT us>
+
+pkgname=ssh-audit
+pkgver=3.9.0
+pkgrel=1
+pkgdesc='SSH configuration auditing'
+arch=(any)
+url='https://github.com/jtesta/ssh-audit'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('f6b2f37bb0015ca30d44d0f77e0821233be3ab5b4b24057f9e1511a18cd887f5ccb9cc56b01863efc92c7495d50816b474f6bea4899db309d23f7388ec4f70e6')
+b2sums=('fa15283597798653f94bd1029d6261d38ae08c7e86c55d695479e08c5c7dec60a8cec25b9ad3b804c2595547b741b0800d04843526299eaa1b3770573c4e310d')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  local pytest_options=(
+    -vv
+  )
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" "$pkgname.1"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,44 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=stampdalf
+pkgver=0.0.3
+pkgrel=1
+pkgdesc="Wrap commands and ensure reproducibility on the file system"
+url="https://github.com/89luca89/stampdalf"
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'go'
+)
+source=("https://github.com/89luca89/stampdalf/archive/v${pkgver}/apko-${pkgver}.tar.gz")
+sha256sums=('6cff5128ca51b0ef4b09aa6b5d90990330cdb4ca7b350f9531286ad329e15393')
+b2sums=('1b5ccb545693c93e1c4d17343b72a3bda8c8889f0febcf134ec96b2d879aab1ba6ddfa20810fcb382c4804750913853bc3c92849164081c2ec9ab045925eecb4')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  mkdir build
+
+  go build \
+      -o build/ \
+      -trimpath \
+      -buildmode=pie \
+      -mod=readonly \
+      -modcacherw \
+      -ldflags "-linkmode external -extldflags \"${LDFLAGS}\"" \
+      ./...
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  go test ./...
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/stampdalf -t "${pkgdir}"/usr/bin
+}
+
+# vim: ts=2 sw=2 et:

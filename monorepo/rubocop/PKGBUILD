@@ -1,0 +1,102 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+pkgname="rubocop"
+pkgver=1.82.0
+pkgrel=2
+pkgdesc='A Ruby code style checking and code formatting tool'
+arch=('any')
+url='https://rubocop.org/'
+license=('MIT')
+provides=('ruby-rubocop')
+depends=(
+  ruby
+  ruby-language_server-protocol
+  ruby-lint_roller
+  ruby-parallel
+  ruby-parser
+  ruby-rainbow
+  ruby-regexp_parser
+  ruby-rubocop-ast
+  ruby-ruby-progressbar
+  ruby-unicode-display_width
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  asciidoctor
+  procps-ng
+  ruby-bundler
+  ruby-irb
+  ruby-lsp
+  ruby-memory_profiler
+  ruby-rake
+  ruby-rspec
+  ruby-rubocop-performance
+  ruby-rubocop-rake
+  ruby-rubocop-rspec
+  ruby-stackprof
+  ruby-test-queue
+  ruby-webmock
+  ruby-yard
+)
+options=('!emptydirs')
+source=(
+  "https://github.com/rubocop/rubocop/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+)
+sha512sums=('18cd5f23ef62e076757d6bf1959a878222f2a1e066423a75f20e9f9ab73a0ff4ab240c1b98d2a789cb99b714633a1eef760b6baae1629b54830e1f793a5ab446')
+b2sums=('7a8fa23c9bed195202fe6ebd1882cf32c906fa033f6f5dbe7efaadb58a51afff2a55cad91483c01e373622cb3ed7cc3567f48e75f93acfbe54a32762c4406119')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${pkgname}.gemspec" Gemfile
+
+  # we need webmock
+  sed --in-place \
+    --expression '/group/d' \
+    --expression '/end/d' \
+    Gemfile
+
+  sed --in-place --regexp-extended \
+    --expression '/bump/d' \
+    --expression '/simplecov/d' \
+    Gemfile
+
+  rm tasks/cut_release.rake
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${pkgname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${pkgname}-${pkgver}.gem"
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install/${_gemdir}" rake ascii_spec spec
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

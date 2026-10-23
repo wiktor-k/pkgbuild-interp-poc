@@ -1,0 +1,43 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Doug Newgard <scimmia at archlinux dot info>
+# Contributor: Andrey Mivrenik <gim at fastmail dot fm>
+# Contributor: Glen Oakley <goakley123@gmail.com>
+
+pkgname=cool-retro-term
+pkgver=2.0.0beta2
+_pkgver=2.0.0-beta2
+pkgrel=1
+pkgdesc='A good looking terminal emulator which mimics the old cathode display'
+arch=('x86_64')
+url='https://github.com/Swordfish90/cool-retro-term'
+license=('GPL-3.0-or-later')
+depends=('qmltermwidget' 'qt6-base' 'qt6-declarative' 'qt6-5compat' 'hicolor-icon-theme' 'glibc' 'libgcc' 'libstdc++')
+makedepends=('git')
+source=("git+https://github.com/Swordfish90/cool-retro-term.git#tag=$_pkgver"
+        "git+https://github.com/KDAB/KDSingleApplication.git")
+sha256sums=('7b34293efb3581a6c0924ab4385c69b9e8c403ec05d99d1a3a9b7128af3c6930'
+            'SKIP')
+
+prepare() {
+  cd cool-retro-term
+
+  git submodule init
+  git submodule set-url KDSingleApplication "$srcdir/KDSingleApplication"
+  git -c protocol.file.allow=always submodule update
+
+  # Don't build vendored qmltermwidget as we package it separately.
+  sed -i '/qmltermwidget/d' cool-retro-term.pro
+}
+
+build() {
+  cd cool-retro-term
+
+  qmake6
+  make
+}
+
+package() {
+  cd cool-retro-term
+
+  make INSTALL_ROOT="$pkgdir" install
+}

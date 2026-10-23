@@ -1,0 +1,35 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Mikael Blomstrand <mbloms ÅT kth DÖT se>
+# Contributor: Jérôme M. Berger <jerome.berger@sagemcom.com>
+
+pkgname=abi-compliance-checker
+pkgver=2.3+r24+g7c175c4
+pkgrel=1
+pkgdesc="Check ABI compatibility between library versions"
+url="https://lvc.github.io/abi-compliance-checker/"
+arch=(any)
+license=(LGPL-2.1-or-later)
+depends=(
+  abi-dumper
+  binutils
+  ctags
+  gcc
+  perl
+)
+makedepends=(git)
+_commit=7c175c45a8ba9ac41b8e47d8ebbab557b623b18e  # master
+source=("git+https://github.com/lvc/abi-compliance-checker#commit=$_commit")
+b2sums=('474c3f2be087bd742bc9fb08687aed04eac4f679cde96bcaa03eff70752101a76126699068c788393f3a46499afd6e540dbe428327410eb5eac8204a011564aa')
+
+pkgver() {
+  cd $pkgname
+  git describe --tags | sed 's/[^-]*-g/r&/;s/-/+/g'
+}
+
+package() {
+  cd $pkgname
+  mkdir -p "$pkgdir/usr"
+  perl Makefile.pl -install --prefix=/usr --destdir="$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

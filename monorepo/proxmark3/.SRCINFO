@@ -1,0 +1,20 @@
+pkgbase = proxmark3
+	pkgdesc = Software for the the Proxmark3, an RFID swiss-army tool
+	pkgver = 4.20142
+	pkgrel = 2
+	url = https://github.com/RfidResearchGroup/proxmark3
+	arch = x86_64
+	license = GPL2
+	makedepends = arm-none-eabi-gcc
+	makedepends = arm-none-eabi-newlib
+	makedepends = lua52
+	makedepends = python
+	depends = qt5-base
+	depends = bluez-libs
+	depends = jansson
+	optdepends = lua52: lua scripts
+	optdepends = python: some scripts
+	source = proxmark3-4.20142.tar.gz::https://github.com/RfidResearchGroup/proxmark3/archive/v4.20142.tar.gz
+	sha512sums = cee17dcf875cd6227dc867e688cdb81616f329a7d8e4c9755c73dcdf7ecbc87f5414b54eca8561412e799c1341e490ba64f3f60293acfeb4887f32ce45d22ac0
+
+pkgname = proxmark3

@@ -1,0 +1,22 @@
+pkgbase = python-blessed
+	pkgdesc = A thin, practical wrapper around terminal styling, screen positioning, and keyboard input
+	pkgver = 1.50
+	pkgrel = 1
+	url = https://github.com/jquast/blessed
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-rerunfailures
+	checkdepends = python-pytest-xdist
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-flit-core
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-jinxed
+	depends = python-wcwidth
+	source = git+https://github.com/jquast/blessed.git#tag=1.50
+	b2sums = 93464495960c975bfb83a3976e2ea7d74afdf96169024fd97de6731ccb706267a6a85d9f9e19a0926fd8c9a322fada8b248d90883dba452ed7e8b8dda96ea1df
+
+pkgname = python-blessed

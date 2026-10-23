@@ -1,0 +1,22 @@
+pkgbase = libspecbleach
+	pkgdesc = C library for audio noise reduction
+	pkgver = 0.3.1
+	pkgrel = 1
+	url = https://github.com/lucianodato/libspecbleach
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cmake
+	makedepends = fftw
+	makedepends = libgomp
+	depends = glibc
+	provides = libspecbleach.so
+	source = https://github.com/lucianodato/libspecbleach/archive/v0.3.1/libspecbleach-v0.3.1.tar.gz
+	sha512sums = b2ea6ea4af6cb01e0412ec8d1f25b2fa27f4058d9e1d204c2d1550cebe94961da5423b65d505304c5a9fefb703b73d8e12502e1a000fedcbd8d41a9aed1cbd19
+	b2sums = 079c8f85f59c1d00ccaa4bba181a487624048b63675cadb4f9172033a9c5454520b86ba63214e6d408b7c19f64114fa05b23ce408e9609f7632b6ecd8161d2fc
+
+pkgname = libspecbleach
+	depends = glibc
+	depends = fftw
+	depends = libfftw3f.so
+	depends = libgomp
+	depends = libgomp.so

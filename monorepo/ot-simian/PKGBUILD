@@ -1,0 +1,102 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: OSAMC <https://github.com/osam-cologne/archlinux-proaudio>
+# Contributor: Christopher Arndt <aur -at- chrisarndt -dot- de>
+# Contributor: Alexandros Theodotou <alex at zrythm dot org>
+
+pkgbase=ot-simian
+pkgname=(
+  ot-simian-docs
+  ot-simian-standalone
+  ot-simian-vst3
+  ot-simian-clap
+)
+pkgver=2.0.2
+pkgrel=2
+pkgdesc='Drum synthesizer inspired by the Simmons SDS-V'
+arch=(x86_64)
+url='https://punklabs.com/ot-simian'
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+_common_depends=(
+  glibc
+  libgcc
+  libx11
+  libxcb
+  xcb-util-wm
+  libglvnd
+  libxcursor
+)
+makedepends=(
+  rustup
+  libglvnd
+  python
+  alsa-lib
+  jack
+  libx11
+  libxcb
+  xcb-util-wm
+  libxcursor
+)
+source=(
+  "$pkgbase-$pkgver.zip::https://punklabs.com/content/projects/ot-simian/downloads/OneTrickSIMIAN2-Source-v$pkgver.zip"
+  "$pkgbase-$pkgver-UserGuide.pdf::https://punklabs.com/content/projects/ot-simian/downloads/OneTrick%20SIMIAN2%20User%20Guide.pdf"
+  rust-toolchain.toml
+)
+sha512sums=('3063f9f26e6967b4787b1bf881854947d36d700b8480c1e5fbd2aea4cf2f80779a4e06855a299b3313b173c49c60fc2d7143e010831053ab7d2b8f28fb9c0b1e'
+            'c3cb63b8317d44302f1a90d164fdadc1d5aa486f7e35507f9914e662de7be8714903ebce9a4595b8ba9ceb6b85a99697d44aea387783a01071861e99749e2a53'
+            'dbbe9c0fa0aa74eeb6b92a4394a08e68301d5d3fc05a639243544c50909d5f7db9d89207bd5bf52bc3413dbe756b03db9a3a112f1565ab29b8900fbca739484c')
+b2sums=('74891b891f85041153771fda21533b012f9d573e016cf9a920b5128aa133d8df48653812ed461a3ac636605c09609f2ab61f312e090985d96d9532ceba8b2cba'
+        'f5c8effe6b241edd22043245148b3774fcea14b358bab1e7c3e7272d52d0fae52d2a55b0349149f1b5d006e1f13848975c3d9a68c7248c0d9b5675c16bad3a1f'
+        '8f24fe0b5d035b3815d947bb51510274412d9be0c0bddd7f69c1f3bec65a11709d2bf1fdc27544a1cc258fa2dc13b7609155c0ef99f84c89a285c586db82fa7d')
+
+prepare() {
+  # download dependencies
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cargo xtask bundle onetrick_simian2 --release --frozen
+}
+
+package_ot-simian-standalone() {
+  pkgdesc+=' - standalone'
+  depends=("${_common_depends[@]}")
+  optdepends=(
+    'jack: audio backend'
+    'alsa-lib: audio backend'
+    'ot-simian-docs: documentation'
+  )
+
+  # standalone
+  install -vDm755 -t "$pkgdir/usr/bin" "target/bundled/OneTrick SIMIAN2"
+}
+
+package_ot-simian-docs() {
+  pkgdesc+=' - documentation'
+
+  install -vDm644 "$pkgbase-$pkgver-UserGuide.pdf" "$pkgdir/usr/share/doc/$pkgbase/UserGuide.pdf"
+}
+
+package_ot-simian-vst3() {
+  pkgdesc+=' - VST3 plugin'
+  groups+=(vst3-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    vst3-host
+  )
+  optdepends=('ot-simian-docs: documentation')
+
+  install -vd "$pkgdir/usr/lib/vst3"
+  cp -vr "target/bundled/OneTrick SIMIAN2.vst3" "$pkgdir/usr/lib/vst3"
+}
+package_ot-simian-clap() {
+  pkgdesc+=' - CLAP plugin'
+  groups+=(clap-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    clap-host
+  )
+  optdepends=('ot-simian-docs: documentation')
+
+  install -vDm755 -t "$pkgdir/usr/lib/clap" "target/bundled/OneTrick SIMIAN2.clap"
+}

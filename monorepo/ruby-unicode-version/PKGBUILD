@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=ruby-unicode-version
+_pkgname="${pkgname#ruby-}"
+pkgver=1.6.0
+pkgrel=1
+pkgdesc='Returns Unicode/Emoji versions of current and previous Rubies'
+arch=(any)
+url='https://github.com/janlelis/unicode-version'
+license=(MIT)
+depends=(ruby)
+makedepends=(git)
+checkdepends=(ruby-rake ruby-minitest)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('8cbed70ff497ee6882e418c272af041b2ed6b7d0931aa3c69fc4472a00debda9a517042764a0be1e443ff0032b4ac6324a7d3e298953aa542e50a7f6b5bf9605')
+b2sums=('f0926a7720f7c7bc134da64110be2a805a98c104d5d301f7674e500445f8b76cefba0aad22a862cb284fd4a4d2dbfdcbd403c14e4a319db63898b76e58a41a40')
+
+build() {
+  cd "$pkgname"
+
+  gem build "$_pkgname.gemspec"
+}
+
+check() {
+  cd "$pkgname"
+
+  rake spec
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" MIT-LICENSE.txt
+}

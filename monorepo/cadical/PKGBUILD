@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=cadical
+pkgver=3.0.1
+pkgrel=2
+pkgdesc='A simplified, fast and reliable CDCL SAT solver'
+arch=('x86_64')
+url='https://github.com/arminbiere/cadical'
+license=('MIT')
+depends=('glibc' 'libgcc' 'libstdc++')
+makedepends=('git')
+checkdepends=('gzip' 'zlib')
+optdepends=(
+  '7zip: 7z compressed input/output support'
+  'bzip2: bzip2 compressed input/output support'
+  'gzip: gzip compressed input/output support'
+  'xz: xz and LZMA compressed input support'
+)
+source=("git+https://github.com/arminbiere/cadical.git#tag=rel-$pkgver")
+sha256sums=('2349b65517b15d91d56000473c1a3dc5dd72b0f2a1ce032b30792236599b7e20')
+
+build() {
+  cd cadical
+  ./configure --shared CXXFLAGS="$CXXFLAGS $LDFLAGS"
+  make
+}
+
+check() {
+  cd cadical
+  make test
+}
+
+package() {
+  cd cadical
+  install -Dm755 build/cadical-dynamic "$pkgdir/usr/bin/cadical"
+  install -Dm755 build/mobical -t "$pkgdir/usr/bin/"
+  install -Dm755 build/libcadical.so -t "$pkgdir/usr/lib/"
+  install -Dm644 src/{cadical.hpp,ccadical.h,ipasir.h,tracer.hpp} -t "$pkgdir/usr/include/cadical/"
+  install -Dm644 README.md BUILD.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -Dm644 LICENSE contrib/craigtracer.LICENSE.MIT -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

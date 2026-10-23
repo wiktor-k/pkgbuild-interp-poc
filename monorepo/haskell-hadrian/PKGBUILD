@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hadrian
+pkgname=haskell-hadrian
+_ghcver=9.6.7
+pkgver=0.1.0.0+9.6.7
+pkgrel=30
+pkgdesc="GHC build system"
+url="https://gitlab.haskell.org/ghc/ghc"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-base16-bytestring' 'haskell-cryptohash-sha256' 'haskell-extra' 'haskell-quickcheck'
+         'haskell-shake' 'haskell-unordered-containers')
+makedepends=('ghc' 'uusi')
+source=("https://downloads.haskell.org/~ghc/$_ghcver/ghc-${_ghcver}-src.tar.xz"
+        ghc-enable-ghci-for-riscv64.patch::https://gitlab.haskell.org/ghc/ghc/-/commit/dd38aca95ac25adc9888083669b32ff551151259.patch)
+sha256sums=('d053bf6ce1d588a75cfe8c9316269486e9d8fb89dcdf6fd92836fa2e3df61305'
+            '705c79d713e7344b5300c1b87eeb7faad31fa6bf65d5c164eb588606d58e803e')
+
+prepare() {
+  cd ghc-$_ghcver
+  # apply patch to enable ghci for riscv64
+  patch -p1 < "$srcdir"/ghc-enable-ghci-for-riscv64.patch
+  # Allow GHC 9.6's bundled directory on Linux; the newer minimum fixes a Windows-only race.
+  # https://gitlab.haskell.org/ghc/ghc/-/issues/24382
+  uusi -u QuickCheck -u 'directory:>=1.3.8.5 && <1.4' hadrian/hadrian.cabal
+}
+
+build() {
+  cd ghc-$_ghcver/hadrian
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --datasubdir=haskell-hadrian --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' \
+    -fthreaded
+
+  runhaskell Setup build $MAKEFLAGS
+}
+
+package() {
+  cd ghc-$_ghcver/hadrian
+
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

@@ -1,0 +1,112 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Tomas Krizek <tomas.krizek@nic.cz>
+# Contributor: Ondřej Surý <ondrej@sury.org>
+
+pkgname=knot-resolver
+pkgver=6.5.0
+pkgrel=1
+pkgdesc="Caching DNSSEC-validating DNS resolver"
+arch=('x86_64')
+url='https://www.knot-resolver.cz/'
+license=('GPL-3.0-or-later')
+depends=(
+  'dnssec-anchors'
+  'fstrm'
+  'glibc'
+  'gnutls'
+  'knot'
+  'libcap-ng'
+  'libgcc'
+  'libnghttp2'
+  'libngtcp2'
+  'libstdc++'
+  'libuv'
+  'lmdb'
+  'luajit'
+  'protobuf-c'
+  'python'
+  'python-aiohttp'
+  'python-jinja'
+  'python-yaml'
+  'supervisor'
+  'systemd-libs'
+)
+makedepends=(
+  'cmocka'
+  'git'
+  'meson'
+  'python-build'
+  'python-installer'
+  'python-poetry-core'
+  'python-setuptools'
+  'python-wheel'
+)
+optdepends=(
+  'lua51-basexx: experimental_dot_auth module'
+  'lua51-cqueues: http and dns64 module, policy.rpz() function'
+  # TODO: 'lua51-etcd: etcd module'
+  'lua51-http: http and prefill modules, trust_anchors bootstrap'
+  'lua51-psl: policy.slice_randomize_psl() function'
+  'python-prometheus_client: stats and metrics in Prometheus format'
+  'python-watchdog: files monitoring and reload on changes'
+)
+backup=('etc/knot-resolver/config.yaml')
+source=(
+  "git+https://gitlab.nic.cz/knot/knot-resolver.git#tag=v${pkgver}?signed"
+  "git+https://gitlab.nic.cz/knot/deckard.git"
+  "git+https://gitlab.nic.cz/knot/3rdparty/lua-aho-corasick.git"
+  "git+https://gitlab.nic.cz/knot/3rdparty/lua-tapered.git"
+)
+b2sums=('1c2a341570c22ad8b87484b0355e66e64c68cb1073ae1a9af175ad62ef07e12b09c26fee4590b890f6c31b284215bb93fa7db54c93f3ff7f894171c80402e061'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+validpgpkeys=(
+  '3057EE9A448F362D74205A779AB120DA0A76F6DE' # Ales Mrazek <ales.mrazek@nic.cz>
+  'B6006460B60A80E782062449E747DF1F9575A3AA' # Vladimír Čunát (work) <vladimir.cunat@nic.cz>
+)
+
+prepare() {
+  cd ${pkgname}
+  # https://archlinux.org/todo/change-sysusers-to-fully-locked-system-accounts/
+  sed -i 's/^u /u! /' systemd/sysusers.d/knot-resolver.conf.in
+
+  git submodule init
+  git config submodule.tests/integration/deckard.url ../deckard
+  git config submodule.modules/policy/lua-aho-corasick.url ../lua-aho-corasick
+  git config submodule.tests/config/tapered.url ../lua-tapered
+  git -c protocol.file.allow=always submodule update \
+    tests/integration/deckard \
+    modules/policy/lua-aho-corasick \
+    tests/config/tapered
+}
+
+build() {
+  arch-meson ${pkgname} build \
+    -D keyfile_default=/etc/trusted-key.key \
+    -D systemd_files=enabled \
+    -D unit_tests=enabled
+  ninja -C build
+
+  # Use meson-generated constants.py with correct paths
+  cp -v build/python/knot_resolver/constants.py \
+    ${pkgname}/python/knot_resolver/constants.py
+  cd ${pkgname}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+
+  # Install knot-resolver Python manager and kresctl
+  cd ${pkgname}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+
+  install -vDm644 -t "${pkgdir}/etc/knot-resolver" etc/config/config.yaml
+}

@@ -1,0 +1,45 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-rpds-py
+pkgver=2026.9.1
+pkgrel=1
+pkgdesc='Python bindings to the Rust rpds crate for persistent data structures'
+arch=(x86_64)
+url='https://github.com/crate-py/rpds'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  python
+)
+makedepends=(
+  git
+  python-build
+  python-maturin
+  python-installer
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('7e3de836f88b99d0762e61c5993404c101baecc2ed49409f06a16deb88fd66bd3777db010c4b99c5ce8f3b18bc7a59f4f70f00e56870f5c7f3bd0d38dbcafb78')
+b2sums=('d82354d04ea42ad012e63d13c4810011027f441a4d1f655f162149b6d25a20f0e9aef616447e8b76f8b7fbcd286d38b98701ad4d6b599479595a66490b42299c')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

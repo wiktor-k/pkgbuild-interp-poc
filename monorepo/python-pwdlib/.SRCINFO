@@ -1,0 +1,23 @@
+pkgbase = python-pwdlib
+	pkgdesc = Modern password hashing for Python
+	pkgver = 0.3.1
+	pkgrel = 1
+	url = https://frankie567.github.io/pwdlib
+	arch = any
+	license = MIT
+	checkdepends = python-argon2-cffi
+	checkdepends = python-bcrypt
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-hatch-regex-commit
+	makedepends = python-installer
+	depends = python
+	optdepends = python-argon2-cffi: for argon2 support
+	optdepends = python-bcrypt: for bcrypt support
+	source = git+https://github.com/frankie567/pwdlib#tag=v0.3.1?signed
+	validpgpkeys = 54D275CAAD0B4AF869D2A65B98CAADC2D251C56F
+	sha256sums = 853da5550bfba61641787681a19666a8ee404e6c71f8231e32f1864dd1c24b17
+
+pkgname = python-pwdlib

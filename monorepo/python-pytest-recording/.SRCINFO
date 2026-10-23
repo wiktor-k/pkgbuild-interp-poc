@@ -1,0 +1,23 @@
+pkgbase = python-pytest-recording
+	pkgdesc = A pytest plugin powered by VCR.py to record and replay HTTP traffic
+	pkgver = 0.14.0
+	pkgrel = 1
+	url = https://github.com/kiwicom/pytest-recording
+	arch = any
+	license = MIT
+	checkdepends = python-pytest-httpbin
+	checkdepends = python-pytest-mock
+	checkdepends = python-requests
+	checkdepends = python-werkzeug
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-pytest
+	depends = python-vcrpy
+	source = git+https://github.com/kiwicom/pytest-recording.git#tag=v0.14.0
+	sha512sums = 4d65bb983d217ddd7a49046e3b9bfa92780a13e9f897c9ae1eddfa4a930aec749dfcfa2e652144bf04707a13d6dda9ecee9b07415ab33b741e69b828b6482e6f
+
+pkgname = python-pytest-recording

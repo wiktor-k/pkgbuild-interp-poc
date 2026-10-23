@@ -1,0 +1,49 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-rebulk
+pkgver=6.0.1
+pkgrel=1
+pkgdesc='Define simple search patterns in bulk to perform advanced matching on any string'
+arch=(any)
+url='https://github.com/Toilal/rebulk'
+license=(MIT)
+depends=(python)
+# python-regex is not a dependency, as it will be deprecated by upstream at some point
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-uv-build
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('5938c996e57819a36f911b64f5736dac905d0f9577d8483c3cdc248103dda8aab2cf57e8005fe47c3bd4e0cda8d2a519e3b22c4f3844f961fbf148b7261d5667')
+b2sums=('2245416cca46c523df39f4e42fc1286b44c172a695baa1f028afec53bf2b07db833ca9e6ad960fea7469e7919c9623c24faa147478d9ee5996884fbdbcc99a72')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  PYTHONPATH="$PWD:$PYTHONPATH" pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # delete tests from package
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  rm -rf "$pkgdir/$site_packages/rebulk/test"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,61 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+
+pkgname=irker
+pkgver=2.25
+pkgrel=2
+pkgdesc="An IRC client that runs as a daemon accepting notification requests"
+arch=(any)
+url="https://gitlab.com/esr/irker"
+license=(BSD-2-Clause)
+depends=(
+  python
+  python-pysocks
+)
+makedepends=(
+  docbook-xml
+  docbook-xsl
+  xmlto
+)
+optdepends=('python-simplejson: alternative JSON backend for irkerhook.py')
+backup=(etc/$pkgname/irkerd.env)
+source=(
+  https://gitlab.com/esr/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+  irkerd.service
+  irkerd.env
+  irker.sysusers
+  irker.tmpfiles
+  docbook-remove-system-id.patch
+)
+sha512sums=('8778382c716f40bec45ba823911e4c1be3d50a30c63456e73d0d315f343ed2d4b5e7ba079b5e0db85bdd732064c632bd708602d370986cbd6212ba7c2c89ebc1'
+            'f6a5c291258e0c341e3a5ba5fa2f6a43013be5c8faa5a372188854876cfe7f0dcd0bd979fa5627388216957103bfe1d002aefb74d51a620d05c16be87b639821'
+            '734b98a72073f9b8168b141a4ebd2819eb5173a7e56b3ff3e843edc1db1107249764dcb4e3b5d95860e6d119d7b4abb8bfbe8b8a9c1398011d19dfd6dacd9d2d'
+            '22d074a0df728c972a7b95ec65cb09e0c6c7511bd76935ad09f5cee74e2975966dc827306e1290731cbe117fb48641f7a9ac3a3654f21d64fff9bd18cc13fb71'
+            '5eb944a3f18dd23321d7ef31f0079c55be9af4f82e981a9071f21080e1bfbcb428ed6245dad8095ac2e3118d964d9b26b73d6786b8141354182b1b9cc3dcee2d'
+            'c30b8ab135f146e50b06b03e3bf91368b1e4f42ed5858e683c1fe4bef99f7e45cf7c5d70042c12e9a2583d784772c9dbafc0dc608a6fbf1b914923d7145547e1')
+b2sums=('d6a5b9198d62aa89a5eee1498f4bbe68fa9a427409d4132c1c60c0aac805dfb0166b3956de425d110892a4ab97c0490dfe7ad6226a25133949cc05cdc2f6d3e4'
+        '8f239dd9f03e7377572fb2f2f8a77004ddcf1ed423d93965b689296758214aa5e1913ff87bc889456f7ea248ee0a7d8edd18cbc8890814ef2b54c79b126eb80b'
+        '7196806c47ba34a89aed6c27657767f444fdf5dd21ae309d5ab1617ee4f75f7f35f0fc7bb205cb339367e083debe74f54ddfb1c633d32d2106aa02e312cfbe0d'
+        '97ab56ef982140edb98908f5a8cb3474db4a787009e66a05a7643e7ec5b6dee5c87768ecaf69bb68bfcfcdd8e38d2620ccac62a41cebfd7f0644e44a7b7567c6'
+        '91eb92bbf64ba92b461a637df8ed84a978950f439e4161b7a3a7486e87a64a0156790b11c621f4770adbdac33f82b2b284a9ac44222dc2140c162247c4164cb0'
+        '9f7c1e06f2031cdf9f0972915d8453b56e84bc21c69594ebe70697f75e72db628e241eac2c8c7a778735a82f5305d1b05b27b17930b0dedbb6c0f9ab09577aa8')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 -i "$srcdir"/docbook-remove-system-id.patch
+}
+
+build() {
+  make -C $pkgname-$pkgver PREFIX=usr
+}
+
+package() {
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver PREFIX=usr
+  install -vDm 755 $pkgname-$pkgver/{irk,irkerhook.py} -t "$pkgdir/usr/bin"
+  install -vDm 644 $pkgname-$pkgver/COPYING -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -vDm 644 $pkgname-$pkgver/{NEWS,README.adoc,{hacking,security}.adoc} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 irkerd.service -t "$pkgdir/usr/lib/systemd/system/"
+  install -vDm 640 irkerd.env -t "$pkgdir/etc/$pkgname/"
+  install -vDm 644 irker.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm 644 irker.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}

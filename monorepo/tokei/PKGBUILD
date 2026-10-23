@@ -1,0 +1,37 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=tokei
+pkgver=15.0.0
+pkgrel=1
+pkgdesc='A blazingly fast CLOC (Count Lines Of Code) program'
+arch=('x86_64')
+url="https://github.com/XAMPPRocky/tokei"
+license=('MIT' 'Apache')
+options=('!lto')
+depends=(
+  'libgcc'
+)
+makedepends=('rust' 'cargo')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/XAMPPRocky/tokei/archive/v${pkgver}.tar.gz")
+sha512sums=('cb7966192bcc6a0089af35c4ad0494a2588f8f7839b3966f04ff734393af92ed9997b804503a67c1e1ee1875fbd723150e38d99e19af7b0aad0d597a21afc53f')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  cargo build --release --locked --features all
+}
+
+check() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  cargo test --release --locked --features all
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  install -Dm755 target/release/tokei "${pkgdir}/usr/bin/tokei"
+
+  install -Dm644 LICENCE-MIT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-MIT"
+  install -Dm644 LICENCE-APACHE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-APACHE"
+}

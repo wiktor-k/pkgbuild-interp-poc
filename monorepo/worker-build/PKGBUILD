@@ -1,0 +1,44 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=worker-build
+pkgver=0.8.7
+pkgrel=1
+pkgdesc="Custom build command for a Cloudflare Workers project"
+url='https://github.com/cloudflare/workers-rs/tree/main/worker-build'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  'esbuild'
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+  'openssl' 'libcrypto.so' 'libssl.so'
+  'wasm-bindgen'
+  'wasm-pack'
+)
+makedepends=('cargo')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::https://static.crates.io/crates/${pkgname}/${pkgname}-${pkgver}.crate")
+sha256sums=('1051c05ef088889a30ad3bad40c22a716ba8ca8d02a3fb01cef8c143ba952222')
+b2sums=('0dd75d94c4d62177497e8e291abc6dcdbb933dabef46359d50484a94cd2992f4c212fa4eb809ea28256b7eab568460d7d82c3cfe31847ad0e9590ac76106cfb3')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" target/release/worker-build
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,23 @@
+# Maintainer: Anatol Pomozov
+# Contributor: Knut Ahlers <knut at ahlers dot me>
+
+pkgname=gofumpt
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="A strict formatter for Go language"
+arch=('x86_64')
+url="https://github.com/mvdan/gofumpt"
+license=('BSD-3-Clause')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mvdan/gofumpt/archive/v${pkgver}.tar.gz")
+sha512sums=('71921ee84159d008038a5ab80f4752fdc0ea0d23a1eeb05b016d7dc41fc6bc334570ad866f36226e3cfa6ca352b4c6074f61d8d927d997c178fbcd1fd7e21586')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	CGO_ENABLED=0 go build -trimpath -mod=readonly -modcacherw
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	install -Dm755 -t "${pkgdir}/usr/bin" gofumpt
+}	

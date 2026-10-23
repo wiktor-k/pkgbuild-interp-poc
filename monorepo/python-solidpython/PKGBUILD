@@ -1,0 +1,66 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=python-solidpython
+pkgver=1.1.3
+pkgrel=8
+# missing tag for 1.1.3: https://github.com/SolidCode/SolidPython/issues/202
+_commit=0a4f539c31a25df52a42bab2ceeffafd45596f73
+pkgdesc='Python frontend for solid modelling that compiles to OpenSCAD'
+arch=(any)
+url='https://github.com/SolidCode/SolidPython'
+license=(LGPL-2.1-or-later)
+depends=(
+  python
+  python-euclid3
+  python-prettytable
+  python-ply
+  python-pypng
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-poetry-core
+  python-wheel
+)
+source=("$pkgname::git+$url#commit=$_commit")
+sha512sums=('b497f28ef0ffc687de33577dcb3e67c5b530ee81ea1c7debe5d262e95d0dd560dd32e295bfe2d9e99c585b5a13cc782b2ff3fa6bac4bb859f46cc8676a217051')
+b2sums=('2d37e23c33ae98f3572ba61f817c531cc80d5235868ce6d1484ec2819a14f4d9b231c1fed066aec5da3662bb51ea5d6cc46267debcc9dfbdddff64f523a59d2a')
+
+prepare() {
+  cd "$pkgname"
+
+  # switch to proper PEP517 build-system and fix direct dependencies:
+  # https://github.com/SolidCode/SolidPython/pull/203
+  git cherry-pick --no-commit \
+    d6568ee7e1f85025725597d1cdcb62b3d0a1ded1 \
+    025ca1c1bd9848bf12bff72b80b8d05d8e24968d
+  # Removed pkg_resources, Ruff formatting
+  git show 921280e851ebfcf7eb4beecbb4f7906207451a1c \
+    -- solid/solidpython.py | \
+    git apply
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporarily install wheel
+  python -m installer --destdir=test_dir dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="test_dir/$site_packages:$PYTHONPATH"
+
+  python -m unittest discover -vs solid/test/
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,85 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Achmad Fathoni <fathoni.id(at)gmail.com>
+
+pkgname=python-voila
+_name=${pkgname#python-}
+pkgver=0.5.13
+pkgrel=1
+pkgdesc="Voilà turns Jupyter notebooks into standalone web applications"
+arch=(any)
+url="https://github.com/voila-dashboards/voila"
+license=(BSD-3-Clause)
+depends=(
+  python
+  jupyter-nbclient
+  jupyter-nbconvert
+  jupyter-server
+  jupyterlab
+  python-jupyter-client
+  python-jupyterlab-server
+  python-traitlets
+  python-websockets
+)
+makedepends=(
+  python-build
+  python-installer
+  python-wheel
+  python-hatchling
+  python-hatch-jupyter-builder
+  python-jupyter-packaging
+  npm
+  # optdepends for jupyterlab
+  jupyter-lsp
+  # optdepends for jupyter-server
+  python-jupyter-server-terminals
+  # optdepends for python-ipykernel
+  python-debugpy
+  # jupyter-events depends on jsonschema[format-nongpl] which needs the
+  # following packages that are tracked as optdepends for python-jsonschema
+  python-fqdn
+  python-isoduration
+  python-jsonpointer
+  python-rfc3339-validator
+  python-rfc3986-validator
+  python-uri-template
+  python-webcolors
+)
+checkdepends=(
+  python-ipykernel
+  python-ipywidgets
+  python-matplotlib
+  python-numpy
+  python-pandas
+  python-papermill
+  python-pytest
+  python-pytest-rerunfailures
+  python-pytest-tornasync
+  python-tinycss2
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('bfe918d22d0ae535f81e72f23bf66dab037ebe193b6afbae094114f39c7b2b51dc50137a6dc00903aeffd1acb58ef76565793b5ff3af213b0ce76e3922d3c4dc')
+
+build() {
+  cd $_name-$pkgver
+  # NOTE: jupyterlab requires 'httpx~=0.28.0' in its pyproject.toml, but Arch still has only 0.27.0 so we must use --skip-dependency-check
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check(){
+  cd $_name-$pkgver
+  # install to temporary directory
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m installer --destdir="$PWD/tmp_install" dist/*.whl
+  # based on https://github.com/voila-dashboards/voila/blob/main/.github/workflows/main.yml
+  # TODO: tests/app is very slow and seems to be broken
+  #PYTHONPATH="$PWD/tmp_install$site_packages" pytest -vv tests/app --async-test-timeout=240 --reruns 2 --reruns-delay 1
+  PYTHONPATH="$PWD/tmp_install$site_packages" pytest -vv tests/server --async-test-timeout=240 --reruns 2 --reruns-delay 1 --trace
+  PYTHONPATH="$PWD/tmp_install$site_packages" pytest -vv tests/execute_output_test.py
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  mv $pkgdir/{usr,}/etc
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

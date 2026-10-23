@@ -1,0 +1,91 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=reapack
+pkgver=1.2.6
+pkgrel=3
+pkgdesc='Package manager for the Reaper DAW'
+arch=(x86_64)
+url='https://reapack.com'
+license=(
+  GPL-3.0-or-later
+  LGPL-3.0-or-later
+)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  openssl
+  zlib
+  reaper
+  libxml2
+  curl
+  sqlite
+)
+makedepends=(
+  git
+  cmake
+  boost
+  ruby
+  php
+  catch2
+)
+source=(
+  "$pkgname::git+https://codeberg.org/cfillion/reapack#tag=v$pkgver"
+  'github.com-justinfrankel-wdl::git+https://github.com/justinfrankel/WDL'
+  'github.com-justinfrankel-reaper-sdk::git+https://github.com/justinfrankel/reaper-sdk'
+  $pkgname-1.2.4.5-system_wide.patch
+)
+sha512sums=('e785b8f1d5fe142251c55329e69f77fa08fadb34983fcfa3f7df5cdc6d971eda7545d8050e34258ec63a0841b3ad72af0fce37c13d3d251af4b7b0da276a3f5b'
+            'SKIP'
+            'SKIP'
+            '96b3392ee3059d1d7dd8c20039ec278d25c80f8fb0cfacab33738d24e2272f048ab36506fdc7049d2639e3bf7c5c403571568fc0261a278c69e040578f3c157d')
+b2sums=('6dc565343c12629d50f487fc78ae50769127b7d0a2e6f901bfe2417b09853fa6de7c0ebbecac84df8fe70a9c185ef40e23994eeb25da909ede19d70991be1759'
+        'SKIP'
+        'SKIP'
+        '222e37d29c6b9c3b1593545e3e12c40561a6f44b82234e0ba2b8223da541bc74191d955b98a9c72fc29ceac1a09a8e9d8fa24466524a7296e18c148563ee45e8')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodule(s)
+  git submodule init
+  git config submodule.vendor/WDL.url "$srcdir/github.com-justinfrankel-wdl"
+  git config submodule.vendor/reaper-sdk.url "$srcdir/github.com-justinfrankel-reaper-sdk"
+  git -c protocol.file.allow=always submodule update
+
+  # allow installing the plugin to reaper's system-wide plugin path: https://github.com/cfillion/reapack/issues/80
+  patch -p1 -i ../$pkgname-1.2.4.5-system_wide.patch
+}
+
+build() {
+  cd "$pkgname"
+
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_CXX_STANDARD=17
+    # out-of-tree build is broken: https://github.com/cfillion/reapack/issues/79
+    -S .
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+check() {
+  make -C "$pkgname/build" test
+}
+
+package() {
+  cd "$pkgname"
+
+  # NOTE: install target is not configurable: https://github.com/cfillion/reapack/issues/81
+  # plugin
+  install -vDm755 -t "$pkgdir/usr/lib/REAPER/Plugins/" "build/reaper_reapack-$CARCH.so"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

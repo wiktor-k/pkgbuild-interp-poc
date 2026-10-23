@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=criterion
+pkgname=haskell-criterion
+pkgver=1.6.5.0
+pkgrel=19
+pkgdesc="Robust, reliable performance measurement and analysis"
+url="https://github.com/haskell/criterion"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-base-compat-batteries' 'haskell-binary-orphans'
+         'haskell-cassava' 'haskell-code-page' 'haskell-criterion-measurement' 'haskell-glob'
+         'haskell-js-chart' 'haskell-microstache' 'haskell-mwc-random'
+         'haskell-optparse-applicative' 'haskell-prettyprinter'
+         'haskell-prettyprinter-ansi-terminal' 'haskell-statistics' 'haskell-transformers-compat'
+         'haskell-vector')
+makedepends=('git' 'ghc' 'haskell-base-compat' 'haskell-hunit' 'haskell-quickcheck' 'haskell-tasty'
+             'haskell-tasty-hunit' 'haskell-tasty-quickcheck')
+source=("git+https://github.com/haskell/criterion.git#tag=${_hkgname}-${pkgver}")
+sha512sums=('cc546355be111f67e70d0b73f80f7ec713152d135be76763ad34adae1d337c762d2588c94c357d8a0472b74a4f2d55d94538bebd2a8c6fe175e7db1e5c373453')
+
+build() {
+    cd $_hkgname
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-fast -f-embed-data-files
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

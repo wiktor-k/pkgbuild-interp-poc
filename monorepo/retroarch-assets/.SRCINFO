@@ -1,0 +1,26 @@
+pkgbase = retroarch-assets
+	pkgdesc = UI/UX assets for RetroArch
+	pkgver = 20260813.223050.g73106363e14e
+	pkgrel = 1
+	epoch = 1
+	url = http://www.libretro.com/
+	arch = any
+	groups = libretro
+	license = CC-BY-4.0
+	makedepends = git
+	depends = retroarch
+	source = git+https://github.com/libretro/retroarch-assets.git#commit=73106363e14e
+	b2sums = 25622d04c10cc5334af80055ed7b90d109f31fe4094cb3d55922abdbff4d64f4b30d73292aa4eb5ea9dd25fea9461681a5108befe55e1a5d3dffa88737b02aff
+
+pkgname = retroarch-assets-glui
+	pkgdesc = GLUI UI/UX assets for RetroArch
+	depends = retroarch
+	depends = retroarch-assets-xmb
+
+pkgname = retroarch-assets-ozone
+	pkgdesc = Ozone UI/UX assets for RetroArch
+	depends = retroarch
+	depends = retroarch-assets-xmb
+
+pkgname = retroarch-assets-xmb
+	pkgdesc = XMB UI/UX assets for RetroArch

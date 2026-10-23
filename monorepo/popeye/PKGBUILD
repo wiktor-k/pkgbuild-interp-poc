@@ -1,0 +1,44 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=popeye
+pkgver=0.22.1
+pkgrel=1
+pkgdesc="Kubernetes cluster resource sanitizer"
+arch=('x86_64')
+url="https://github.com/derailed/popeye"
+license=('Apache')
+depends=('glibc')
+makedepends=('go')
+optdepends=('bash-completion')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/derailed/popeye/archive/v${pkgver}.tar.gz")
+sha512sums=('ddaec0c3d046613e31f3c116cd1d0ae3977ff2a214fa1547c1af9c17991c95dd0aaf30abd5cb7f60040e03beeb28c37b7a0bdf5277a2a323d2c112360e75cc50')
+
+build(){
+  cd "${pkgname}-${pkgver}"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+
+  go build -v -x \
+    -ldflags "-linkmode external -w -X github.com/derailed/popeye/cmd.version=${pkgver} -X github.com/derailed/popeye/cmd.date=$(date -ud "@${SOURCE_DATE_EPOCH}" +%FT%T%Z)"\
+    .
+}
+
+check(){
+  cd "${pkgname}-${pkgver}"
+
+  go test -v ./...
+}
+
+package(){
+  cd "${pkgname}-${pkgver}"
+
+  install -Dsm755 ./popeye "${pkgdir}/usr/bin/popeye"
+
+  "${pkgdir}/usr/bin/popeye" completion bash | install --verbose -D --mode=0644 /dev/stdin "${pkgdir}/usr/share/bash-completion/completions/popeye"
+  "${pkgdir}/usr/bin/popeye" completion fish | install --verbose -D --mode=0644 /dev/stdin  "${pkgdir}/usr/share/fish/vendor_completions.d/popeye.fish"
+  "${pkgdir}/usr/bin/popeye" completion zsh | install --verbose -D --mode=0644 /dev/stdin  "${pkgdir}/usr/share/zsh/site-functions/_popeye"
+}

@@ -1,0 +1,15 @@
+pkgbase = shadowsocks-v2ray-plugin
+	pkgdesc = A SIP003 plugin based on v2ray for shadowsocks
+	pkgver = 5.49.0
+	pkgrel = 1
+	url = https://github.com/teddysun/v2ray-plugin
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	source = git+https://github.com/teddysun/v2ray-plugin.git#tag=v5.49.0
+	sha512sums = 7081c95bde7c4930d1301912a07d10d54a07bad66bd24d920c29c3214b1e265c5dca3ebf2244a1c3bec4cf3332a938a21eaf331448ba9e3640e11e991bd0fd74
+
+pkgname = shadowsocks-v2ray-plugin

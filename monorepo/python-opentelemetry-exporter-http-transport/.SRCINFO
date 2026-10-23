@@ -1,0 +1,22 @@
+pkgbase = python-opentelemetry-exporter-http-transport
+	pkgdesc = OpenTelemetry Exporters HTTP transport
+	pkgver = 1.45.1
+	pkgrel = 1
+	url = https://github.com/open-telemetry/opentelemetry-python/tree/main/exporter/opentelemetry-exporter-http-transport
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-mocket
+	checkdepends = python-opentelemetry-test-utils
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-opentelemetry-api
+	depends = python-requests
+	depends = python-urllib3
+	source = git+https://github.com/open-telemetry/opentelemetry-python.git#tag=v1.45.1
+	sha256sums = c56494b52a4241a2a34e0a6d0f3eb539fddecdd8ebf92f6cd7fda21ee1111851
+
+pkgname = python-opentelemetry-exporter-http-transport

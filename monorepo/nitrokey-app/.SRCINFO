@@ -1,0 +1,23 @@
+pkgbase = nitrokey-app
+	pkgdesc = Nitrokey management application
+	pkgver = 1.4.2
+	pkgrel = 2
+	url = https://www.nitrokey.com
+	arch = x86_64
+	license = GPL3
+	makedepends = cmake
+	makedepends = qt5-tools
+	makedepends = bash-completion
+	makedepends = cppcodec
+	depends = qt5-base
+	depends = qt5-svg
+	depends = hicolor-icon-theme
+	depends = libnitrokey
+	depends = libnitrokey.so
+	source = https://github.com/Nitrokey/nitrokey-app/releases/download/v1.4.2/nitrokey-app-v1.4.2.tar.gz
+	source = https://github.com/Nitrokey/nitrokey-app/releases/download/v1.4.2/nitrokey-app-v1.4.2.tar.gz.sig
+	validpgpkeys = 868184069239FF65DE0BCD7DD9BAE35991DE5B22
+	sha512sums = 5a8d1219cedb59737634ce9eee4c0b50a67471e55736e5255085b3c08f8aea0a716ae5ad817d39e40f67519f4987cde43b2d26e622f56c5d88d9104c59a31462
+	sha512sums = SKIP
+
+pkgname = nitrokey-app

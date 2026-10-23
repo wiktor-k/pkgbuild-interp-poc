@@ -1,0 +1,36 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: Wes Brewer <brewerw@gmail.com>
+# Contributor: VuDu <vudu.curse@gmail.com>
+
+pkgname=nfoview
+pkgver=2.2
+pkgrel=1
+pkgdesc="Simple NFO file viewer in GTK+ 4"
+url="https://otsaloma.io/nfoview/"
+arch=('any')
+license=(GPL-3.0-or-later)
+depends=('gobject-introspection-runtime' 'gtk4' 'hicolor-icon-theme' 'pango' 'python' 'python-cairo' 'python-gobject')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest' 'xorg-server-xvfb')
+optdepends=('ttf-cascadia-code: recommended font')
+source=("git+https://github.com/otsaloma/${pkgname}.git?signed#tag=${pkgver}")
+sha256sums=('54710475a47477b63e286e410a1718fd8a5f529b807840b2f57cbcdf83b08310')
+validpgpkeys=('8DD6B3FCDAB33C91EA915B913A584A9504CACA67') # Osmo Salomaa <otsaloma@iki.fi>
+
+build() {
+	cd "${pkgname}"
+	make PREFIX=/usr build
+}
+
+check() {
+	cd "${pkgname}"
+	xvfb-run pytest -v "${pkgname}"
+}
+
+package() {
+	cd "${pkgname}"
+	make PREFIX=/usr DESTDIR="${pkgdir}" install
+	install -Dm 644 {AUTHORS,NEWS,README}.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
+}

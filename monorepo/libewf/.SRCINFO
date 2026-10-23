@@ -1,0 +1,17 @@
+pkgbase = libewf
+	pkgdesc = A library for support of the Expert Witness Compression Format (EWF)
+	pkgver = 20140816
+	pkgrel = 1
+	url = https://github.com/libyal/libewf-legacy
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = fuse2
+	makedepends = git
+	depends = bzip2
+	depends = glibc
+	depends = zlib
+	optdepends = fuse2: to be able to use ewfmount
+	source = libewf-20140816.tar.gz::https://github.com/libyal/libewf-legacy/archive/20140816.tar.gz
+	sha256sums = de94366eb9586a910ae536dc8b621b5d7637ee28913a7fc0e6395b2ab67e9b9b
+
+pkgname = libewf

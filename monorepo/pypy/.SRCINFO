@@ -1,0 +1,24 @@
+pkgbase = pypy
+	pkgdesc = A Python implementation written in Python, JIT enabled
+	pkgver = 8.0.1
+	pkgrel = 1
+	url = https://pypy.org
+	arch = x86_64
+	license = MIT
+	makedepends = pypy
+	makedepends = tk
+	makedepends = sqlite
+	makedepends = mercurial
+	depends = expat
+	depends = bzip2
+	depends = gdbm
+	depends = openssl
+	depends = libffi
+	depends = zlib
+	depends = ncurses
+	optdepends = sqlite: sqlite module
+	optdepends = tk: tk module
+	source = https://downloads.python.org/pypy/pypy2.7-v8.0.1-src.tar.gz
+	sha512sums = 18455b0509117e742ee29dfe3b8ae4fbde6fa5ed9f8271c7220995775a4f570134809b62a1ff25402d1275aae67b8ec3bfc5bd80a83e95f0058ca18d0eb6f994
+
+pkgname = pypy

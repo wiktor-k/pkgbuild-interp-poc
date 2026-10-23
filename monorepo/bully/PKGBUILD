@@ -1,0 +1,40 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Ľubomír 'The_K' Kučera <lubomir-dot-kucera-dot-jr-at-gmail-dot-com>
+
+pkgname=bully
+pkgver=1.4.00
+_pkgver=${pkgver%.*}-${pkgver##*.}
+pkgrel=1
+pkgdesc='Retrieve WPA/WPA2 passphrase from a WPS enabled access point'
+url='https://github.com/kimocoder/bully'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  aircrack-ng
+  glibc
+  libpcap
+)
+optdepends=(
+  'pixiewps: pixiewps support'
+)
+source=(
+  ${url}/archive/refs/tags/${_pkgver}/${pkgname}-${_pkgver}.tar.gz
+  bully-fix-unassigned-use-of-result.patch::https://github.com/kimocoder/bully/commit/9e60df0ea0ad99aaf0d19d1ff4749cdc68838e88.patch
+)
+sha256sums=('7da8f588caed1cbcce70e5ecf4b90588a2647ee0f7582ba05e88ced3e245d539'
+            '06e884b46e55b59041474dea0364ca7afbbb10df69a759043cf0d17a5f77820d')
+b2sums=('03689f47185cd2fdb8085a3760f271406b635feeda1eb52fa904a50d64ab65bf6922ed1466948fac6fbf7515f57a215ee363d486ddfedfb6aa495adea7a00602'
+        '4e646dc1c56e9903b791761d68e47ef4a624d333516aa4570d469ff4f44afcfb1c7ce209c7cc51de5cd617a30e94fa6b9384604355d3687a37654cb1de2ba73a')
+
+build() {
+  cd ${pkgname}-${_pkgver}
+  make -C src
+}
+
+package() {
+  cd ${pkgname}-${_pkgver}
+  make -C src install DESTDIR="${pkgdir}" prefix=/usr
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

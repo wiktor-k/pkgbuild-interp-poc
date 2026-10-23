@@ -1,0 +1,25 @@
+pkgbase = roundcubemail
+	pkgdesc = A PHP web-based mail client
+	pkgver = 1.7.5
+	pkgrel = 1
+	url = https://roundcube.net/
+	install = roundcube.install
+	arch = any
+	license = GPL
+	makedepends = git
+	depends = php-interpreter
+	optdepends = python: password change script
+	optdepends = perl: for change_ldap_pass.pl helper
+	optdepends = php-gd
+	options = emptydirs
+	backup = etc/webapps/roundcubemail/.htaccess
+	backup = etc/webapps/roundcubemail/apache.conf
+	source = https://github.com/roundcube/roundcubemail/releases/download/1.7.5/roundcubemail-1.7.5-complete.tar.gz
+	source = https://github.com/roundcube/roundcubemail/releases/download/1.7.5/roundcubemail-1.7.5-complete.tar.gz.asc
+	source = apache.conf
+	validpgpkeys = F3E4C04BB3DB5D4215C45F7F5AB2BAA141C4F7D5
+	sha512sums = a53d1e86faac5abb04301a884f1520aed090c5ac3acb8bce1311509cefcc46b6e3537d04163010707daa77e1b7482a641b72f43fdfac27ced68058b18483ca38
+	sha512sums = SKIP
+	sha512sums = 74dfe29b0600ee1ee74a729a5ba6772f2658599dcb5ad4323689d0394ac1df43c2d569cce11291f49e238633d1a6729e742df3ee23547538196c4dd97e3a7406
+
+pkgname = roundcubemail

@@ -1,0 +1,27 @@
+pkgbase = pam_wrapper
+	pkgdesc = Tool to test PAM applications and PAM modules
+	pkgver = 1.1.8
+	pkgrel = 2
+	url = https://cwrap.org/pam_wrapper.html
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = cmocka
+	makedepends = doxygen
+	makedepends = git
+	makedepends = graphviz
+	makedepends = ninja
+	makedepends = python-setuptools
+	depends = glibc
+	depends = pam
+	depends = python
+	source = git+https://git.samba.org/pam_wrapper.git#tag=pam_wrapper-1.1.8
+	b2sums = 69ae8379e6134896b47cfeff1a2cb42f9b072ddbd6871991a06e1159aa987001baa9331bb242457faebf8827bf0440c258800ca243735465aaaa6792cbc93e82
+
+pkgname = pam_wrapper
+	provides = libpam_wrapper.so
+	provides = libpamtest.so
+
+pkgname = pam_wrapper-docs
+	pkgdesc = Tool to test PAM applications and PAM modules (documentation)
+	depends = 

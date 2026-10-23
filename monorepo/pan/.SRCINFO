@@ -1,0 +1,33 @@
+pkgbase = pan
+	pkgdesc = Powerful Usenet newsreader
+	pkgver = 0.165
+	pkgrel = 1
+	url = http://pan.rebelbase.com/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = cmake
+	makedepends = git
+	makedepends = itstool
+	makedepends = ninja
+	depends = cairo
+	depends = enchant
+	depends = gcr
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gmime3
+	depends = gnutls
+	depends = gspell
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libnotify
+	depends = libsecret
+	depends = libstdc++
+	depends = pango
+	depends = zlib
+	source = git+https://gitlab.gnome.org/GNOME/pan.git?signed#tag=v0.165
+	validpgpkeys = 9F7239FCB664F10B33E9DC03C31F4FD949AB2B6C
+	b2sums = c2e3c1ed1711374e84b9ebe3d0b983ff445f217a88f56b809103022cfb154fae784523af21ce4ea0d7eaa1b748116f5f35f0134aebb7ba6ee3e427518c9850df
+
+pkgname = pan

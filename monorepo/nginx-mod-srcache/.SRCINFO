@@ -1,0 +1,15 @@
+pkgbase = nginx-mod-srcache
+	pkgdesc = Nginx module for transparent subrequest-based caching layout for arbitrary locations
+	pkgver = 0.34
+	pkgrel = 5
+	url = https://github.com/openresty/srcache-nginx-module
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = nginx
+	makedepends = nginx-src
+	backup = etc/nginx/modules.d/20-srcache.conf
+	source = https://github.com/openresty/srcache-nginx-module/archive/v0.34/srcache-0.34.tar.gz
+	sha256sums = ce9d89534c27b8d697ab585a5327ca98d939c5d1ea4b2e845ba34ae1e417f008
+
+pkgname = nginx-mod-srcache
+	depends = nginx

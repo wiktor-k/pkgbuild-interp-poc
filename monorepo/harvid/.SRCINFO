@@ -1,0 +1,26 @@
+pkgbase = harvid
+	pkgdesc = HTTP Ardour Video Daemon
+	pkgver = 0.9.1
+	pkgrel = 6
+	url = https://x42.github.io/harvid/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = ffmpeg
+	makedepends = libjpeg-turbo
+	makedepends = xxd
+	depends = glibc
+	depends = libpng
+	source = https://github.com/x42/harvid/archive/v0.9.1/harvid-0.9.1.tar.gz
+	sha512sums = 9a848078adeb1cc5730e21fac18acb5965fadf903dead52dcf805112938fc975d010cc5b651cdc87265e10c209273cb3a1a8c8ec64f9f2613640638747832466
+	b2sums = 18e72df0330f3d7bd420b95610b23cb582db32b427e5bacec74c43312742dd7de0dd4829bdbb7841f5e0ca62d11c0361b83efb6b6221da0ecb328d8efe28de29
+
+pkgname = harvid
+	depends = glibc
+	depends = libpng
+	depends = ffmpeg
+	depends = libavcodec.so
+	depends = libavformat.so
+	depends = libavutil.so
+	depends = libswscale.so
+	depends = libjpeg-turbo
+	depends = libjpeg.so

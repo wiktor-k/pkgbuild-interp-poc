@@ -1,0 +1,38 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Simon Parzer <simon.parzer@gmail.com>
+
+pkgname=grafx2
+pkgver=2.9
+pkgrel=2
+_recoilver=6.4.4 # https://downloads.sourceforge.net/project/recoil/recoil/recoil
+pkgdesc='Pixelart-oriented painting program'
+arch=(x86_64)
+url='http://grafx2.chez.com/'
+license=(GPL-2.0-or-later)
+depends=(fontconfig hicolor-icon-theme lua sdl2_image sdl2_ttf)
+makedepends=(git jq)
+options=(!emptydirs)
+source=("https://sourceforge.net/projects/recoil/files/recoil/$_recoilver/recoil-$_recoilver.tar.gz"
+        "git+https://gitlab.com/GrafX2/grafX2.git#commit=7237d93b08d9fdc47a1a86a28b11124671502e90") # tag: v2.9
+b2sums=('da0fbb63b4afbd1f4ca0af82f537db1ed730bd591a4d8238cf5be837b12a13b2dbaa2cef7ef93d26d1fb2e5419d6fe84610489851b7ba17a3463652802c7a1de'
+        '31bda0177672395af85887e11ea49f854dd7f64bf6a43cd3b6c738bf0bdf460d5d03e2c55b86bf75ab0ff5140b467eb9a44a54602873fddbc160e4035a2ff1f3')
+
+prepare() {
+  mv grafX2 $pkgname
+  sed -i 's/-liconv//g' $pkgname/src/Makefile
+
+  # TODO: package recoil (retro computer image library) as a separate package
+  mkdir -p grafx2/3rdparty/archives
+  cp -u recoil-$_recoilver.tar.gz grafx2/3rdparty/archives/recoil-$_recoilver.tar.gz
+}
+
+build() {
+  make -C $pkgname/src API=sdl2 PREFIX=/usr
+}
+
+package() {
+  install -d "$pkgdir/usr/share/grafx2/scripts/samples_2.4/picture/"{thomson/lib,others-8bit/lib}
+  make -C $pkgname/src API=sdl2 DESTDIR="$pkgdir" PREFIX=/usr install
+  mv "$pkgdir/usr/bin/grafx2"{-sdl2,}
+  install -Dm644 $pkgname/doc/README.txt "$pkgdir/usr/share/doc/$pkgname/README"
+}

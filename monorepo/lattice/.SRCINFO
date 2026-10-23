@@ -1,0 +1,23 @@
+pkgbase = lattice
+	pkgdesc = Editor-agnostic language server for the Crystal programming language
+	pkgver = 0.9.2
+	pkgrel = 1
+	url = https://codeberg.org/DaZhi-the-Revelator/lattice
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = crystal
+	makedepends = shards
+	makedepends = git
+	depends = openssl
+	depends = glibc
+	depends = gc
+	depends = pcre2
+	depends = libgcc
+	depends = libyaml
+	depends = zlib
+	source = git+https://codeberg.org/DaZhi-the-Revelator/lattice.git#tag=v0.9.2
+	source = git+https://codeberg.org/DaZhi-the-Revelator/tree-sitter-crystal.git
+	sha256sums = 0c4dcd703041ca3621356277e66ef4cdc5136ec62b1773eea0dc8928fa37787b
+	sha256sums = SKIP
+
+pkgname = lattice

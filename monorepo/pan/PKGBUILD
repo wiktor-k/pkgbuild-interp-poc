@@ -1,0 +1,58 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Bernard Baeyens (berbae) <berbae52 at sfr dot fr>
+
+pkgname=pan
+pkgver=0.165
+pkgrel=1
+pkgdesc='Powerful Usenet newsreader'
+arch=(x86_64)
+url='http://pan.rebelbase.com/'
+license=(GPL-2.0-only)
+depends=(
+  cairo
+  enchant
+  gcr
+  gdk-pixbuf2
+  glib2
+  glibc
+  gmime3
+  gnutls
+  gspell
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libnotify
+  libsecret
+  libstdc++
+  pango
+  zlib
+)
+makedepends=(
+  cmake
+  git
+  itstool
+  ninja
+)
+source=("git+https://gitlab.gnome.org/GNOME/pan.git?signed#tag=v$pkgver")
+b2sums=(c2e3c1ed1711374e84b9ebe3d0b983ff445f217a88f56b809103022cfb154fae784523af21ce4ea0d7eaa1b748116f5f35f0134aebb7ba6ee3e427518c9850df)
+validpgpkeys=(9F7239FCB664F10B33E9DC03C31F4FD949AB2B6C) # Dominique Dumont <domi.dumont@free.fr>
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D WANT_DBUS=1 \
+    -D WANT_GMIME_CRYPTO=1 \
+    -D WANT_NOTIFY=1 \
+    -D WANT_GKR=1 \
+    -D ENABLE_MANUAL=1
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

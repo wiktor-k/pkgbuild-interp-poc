@@ -1,0 +1,49 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=framework-system
+pkgver=0.6.6
+pkgrel=1
+pkgdesc='Tools to interact with the Framework Computer systems'
+url='https://github.com/FrameworkComputer/framework-system'
+arch=(x86_64)
+license=(BSD-3-Clause)
+depends=(
+  glibc # libc.so
+  libgcc libgcc_s.so
+  libusb libusb-1.0.so
+  systemd-libs libudev.so
+)
+makedepends=(
+  cargo
+  git
+)
+options=(!lto)
+source=($pkgname::"git+https://github.com/FrameworkComputer/framework-system.git#tag=v${pkgver}")
+sha256sums=('50e5dcdebe9e155d66568c1e5c86043f1ae39203821bc26fcf263b11957c4bf1')
+b2sums=('7a4554f8d6e12c0b6acfecc913f4a1d1cfb251a24dfdc5d7f3ea5c317465deb0498c4d20674dd3f08e9783b714b73575cccaf498fc3d0e492c9e57d9930e98aa')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname
+  install -Dm 755 target/release/framework_tool -t "${pkgdir}/usr/bin"
+  install -Dm 644 -t "${pkgdir}/usr/share/licenses/${pkgname}/" 'LICENSE.md'
+  install -Dm 644 -t "${pkgdir}/usr/share/bash-completion/completions/" framework_tool/completions/bash/framework_tool
+  install -Dm 644 -t "${pkgdir}/usr/share/zsh/site-functions/" framework_tool/completions/zsh/_framework_tool
+}
+
+# vim: ts=2 sw=2 et:

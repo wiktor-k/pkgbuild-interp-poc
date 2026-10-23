@@ -1,0 +1,37 @@
+# Maintainer:  Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=tickrs
+epoch=2
+pkgver=0.15.0
+pkgrel=2
+pkgdesc="Realtime ticker data in your terminal"
+arch=('x86_64')
+url="https://github.com/tarkah/tickrs"
+license=('MIT')
+depends=('libgcc' 'openssl' 'zlib')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('b176fb7f1b60539e6738976f1c07b2fcfaa3e930bb2304512ae90630d483014f433d4d95ab983bb7276515fd2d280ea9427fe74d2277430babd336d2d904647d')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  OPENSSL_NO_VENDOR=true cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  OPENSSL_NO_VENDOR=true cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

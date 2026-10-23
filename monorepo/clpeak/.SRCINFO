@@ -1,0 +1,35 @@
+pkgbase = clpeak
+	pkgdesc = A tool which profiles OpenCL devices to find their peak capacities (OpenCL/Vulkan support)
+	pkgver = 3.0.1
+	pkgrel = 1
+	url = https://github.com/krrishnarraj/clpeak
+	arch = x86_64
+	license = Unlicense
+	makedepends = cmake
+	makedepends = opencl-headers
+	makedepends = ninja
+	makedepends = git
+	makedepends = vulkan-headers
+	makedepends = shaderc
+	makedepends = cuda
+	makedepends = clang
+	depends = ocl-icd
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = vulkan-icd-loader
+	source = git+https://github.com/krrishnarraj/clpeak#tag=3.0.1
+	sha512sums = 3ed93c4fe33cff5c82276d6ffa3452f6963e898555c8dba5a6a47acf713b7b2897c80b96de7625155a1823eb20c05bf7f031e78abbdec0cdeb8c74dce9c03f8f
+
+pkgname = clpeak
+
+pkgname = clpeak-cuda
+	pkgdesc = A tool which profiles GPUs to find their peak capacities (OpenCL/Vulkan/CUDA support)
+	depends = ocl-icd
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = vulkan-icd-loader
+	depends = cuda
+	provides = clpeak
+	conflicts = clpeak

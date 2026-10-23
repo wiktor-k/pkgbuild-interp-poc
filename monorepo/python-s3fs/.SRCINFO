@@ -1,0 +1,29 @@
+pkgbase = python-s3fs
+	pkgdesc = A Python file interface to S3
+	pkgver = 2026.9.0
+	pkgrel = 1
+	url = https://github.com/fsspec/s3fs
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-pytest-env
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-flask
+	checkdepends = python-flask-cors
+	checkdepends = python-moto
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-aiobotocore
+	depends = python-botocore
+	depends = python-urllib3
+	depends = python-fsspec
+	depends = python-aiohttp
+	source = python-s3fs::git+https://github.com/fsspec/s3fs#tag=2026.9.0
+	sha512sums = 799e9a58a6951b6ff0e3d8dafb640c12dc1dd72cb46225b35b7ce23180a1cf9c9a2e32c80748f608dd16cf40329509a6ed401520afd470d1e0bd85c1a4e59fc6
+	b2sums = 9ecbcbbf89d956151a3916345735c24da09a96579d886f8b9f7aed84643b323c4446558a6de09efa53f2e63c00ee9336bee0529953052a6cdd46d31dd6a637a3
+
+pkgname = python-s3fs

@@ -1,0 +1,36 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: navigaid <navigaid@gmail.com>
+pkgname=yaegi
+pkgver=0.16.1
+pkgrel=2
+pkgdesc='Yet another Elegant Go Interpreter'
+arch=('x86_64')
+url='https://github.com/containous/yaegi'
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/containous/yaegi/archive/v${pkgver}.tar.gz")
+sha512sums=('44db8b3748980c60873aef6b2aa7198e34e9c3aec9141ba56c9c91120e38e4d587c4bbfd09b250b52b607c88d1da41b82b31859d90636bf62cfe6d07bd30fea8')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw -ldflags=-linkmode=external"
+  go build -v ./cmd/yaegi
+}
+
+# disabling tests...
+#check() {
+#  cd "${pkgname}-${pkgver}"
+#  sed -i 's|"-race", ||' ./cmd/yaegi/yaegi_test.go
+#  GOROOT="/usr/lib/go" go test -v ./...
+#}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 yaegi "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

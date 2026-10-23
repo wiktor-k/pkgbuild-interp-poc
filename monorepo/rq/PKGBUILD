@@ -1,0 +1,40 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: David Flemström <david.flemstrom@gmail.com>
+
+pkgname=rq
+pkgver=1.0.4
+pkgrel=2
+pkgdesc='Record Query, a tool for record analysis and transformation'
+arch=(x86_64)
+url="https://github.com/dflemstr/$pkgname"
+license=(Apache-2.0)
+depends=(gcc-libs
+         glibc)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+options=(!lto)
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('4c3fc4427d02271c93a2cf4a784887982e97f9aba4946900aad1a35b142f9a47')
+
+prepare() {
+	cd "$_archive"
+	cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+	sed -i -e '/deny(warnings)/d' src/lib.rs
+}
+
+build() {
+	cd "$_archive"
+	RUSTFLAGS+=' -Awarnings'
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	cd "$_archive"
+	cargo test --frozen --all-features
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

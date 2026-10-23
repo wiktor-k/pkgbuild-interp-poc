@@ -1,0 +1,25 @@
+pkgbase = python-grandalf
+	pkgdesc = Graph and drawing algorithms framework
+	pkgver = 0.8
+	pkgrel = 1
+	url = https://github.com/bdcht/grandalf
+	arch = any
+	license = GPL-2.0-only OR EPL-1.0
+	checkdepends = python-networkx
+	checkdepends = python-numpy
+	checkdepends = python-ply
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-pyparsing
+	optdepends = python-networkx: NetworkX integration support
+	optdepends = python-numpy: directed-constrained layout support
+	optdepends = python-ply: DOT file parsing support
+	source = git+https://github.com/bdcht/grandalf.git#tag=v0.8
+	sha512sums = SKIP
+
+pkgname = python-grandalf

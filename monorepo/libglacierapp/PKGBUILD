@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=libglacierapp
+pkgver=1.2.6
+pkgrel=1
+pkgdesc="Glacier Application library"
+arch=('x86_64')
+url="https://github.com/nemomobile-ux/libglacierapp"
+license=('LGPL-2.0-or-later')
+depends=('glibc' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-declarative')
+makedepends=('git' 'cmake')
+source=("git+https://github.com/nemomobile-ux/libglacierapp.git#tag=$pkgver")
+sha512sums=('8260e91fe6a391b4e9f98279336da31cbde89941bcb9e039e90b8aa49a20286fcb9f3081d6f8995b66b190e896eadcf36028d982cd1587fd1b375d7b5b5d36b2')
+
+build(){
+  cd $pkgname
+
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=/usr/lib -DPROJECT_VERSION=$pkgver .
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

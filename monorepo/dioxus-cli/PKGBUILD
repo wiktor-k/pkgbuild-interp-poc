@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Adrian Groh <adrian[dot]groh[at]t[dash]online[dot]de>
+
+pkgname=dioxus-cli
+pkgver=0.7.10
+pkgrel=1
+pkgdesc="CLI tool for developing, testing, and publishing Dioxus apps"
+url="https://github.com/DioxusLabs/dioxus"
+license=('MIT' 'Apache-2.0')
+arch=("x86_64")
+depends=('glibc' 'libgcc' 'bzip2' 'zlib' 'openssl' 'xz')
+makedepends=('cargo')
+provides=('dx')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+b2sums=('2316b7d13edd09ff75801f35bf4da2a6671b53bb4e10a0fb5a5a19d82bf43af41c498d1334eb360ebea8f9b7feed4c7d0d8d7b83b8560b9428b4330cd2d51281')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname%-cli}-$pkgver"
+  cargo fetch --target "$(rustc --print host-tuple)" # --locked
+}
+
+build() {
+  cd "${pkgname%-cli}-$pkgver"
+  cargo build -p "$pkgname" --release --frozen
+}
+
+check() {
+  cd "${pkgname%-cli}-$pkgver"
+  cargo test -p "$pkgname" --frozen -- --skip "test_harnesses::run_harness"
+}
+
+package() {
+  cd "${pkgname%-cli}-$pkgver"
+  install -Dm 755 "target/release/dx" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,16 @@
+pkgbase = d2
+	pkgdesc = A modern diagram scripting language that turns text to diagrams
+	pkgver = 0.9.0
+	pkgrel = 1
+	url = https://d2lang.com
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = d2::git+https://github.com/terrastruct/d2#tag=v0.9.0
+	sha512sums = 8b256f233de62ba0eaaf5b81c7d157e95a66a84402ab4c163fbcd46f348c9dfc38140eeb9c46126847581d79c48895dca0164634591bf49ec96e42d180d7cfe9
+	b2sums = 2570b3644db88165cbf4447a820ed9d7428b93eb11986ba943c364b9958a71d1ba4c591b02547d5cf7b41b80b0f246f2b5d842c9e833b1d54d84c86ea25fc9b5
+
+pkgname = d2

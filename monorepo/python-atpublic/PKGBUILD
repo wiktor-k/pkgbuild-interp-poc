@@ -1,0 +1,39 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-atpublic
+_name="${pkgname#python-}"
+_upstream=public
+pkgver=9.0.0
+pkgrel=1
+pkgdesc="@public decorator for Python"
+arch=(any)
+url="https://gitlab.com/flufl/public"
+license=(Apache-2.0)
+depends=(python)
+makedepends=(
+  python-build
+  python-hatchling
+  python-installer
+)
+checkdepends=(
+  python-pytest
+  python-sybil
+)
+source=($url/-/archive/$_name@$pkgver/$_upstream-$_name@$pkgver.tar.gz)
+sha512sums=('c431f1f20021044e0ce7872d9bc2617e025b0c38d4c9ef1e27259f9c350cdc68e6e18081d829f4cc8b60e0a7b10d9473220d8844a5771abb4068ef696b645375')
+b2sums=('fc69a4548f177462df3922a13de96b95f00504d6bff79cd8af48ee2023a822309ff890307decde84b8071cabae37839a1c4a1096ff9dcca7d2c14d8acbbaa392')
+
+build() {
+  cd $_upstream-$_name@$pkgver/packages/atpublic
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_upstream-$_name@$pkgver
+  PYTHONPATH="$PWD/packages/$_name/src" pytest -vv
+}
+
+package() {
+  python -m installer --destdir="$pkgdir" $_upstream-$_name@$pkgver/packages/atpublic/dist/*.whl
+  install -vDm 644 $_upstream-$_name@$pkgver/packages/atpublic/README.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+}

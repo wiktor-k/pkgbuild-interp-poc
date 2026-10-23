@@ -1,0 +1,38 @@
+# Maintainer: Evangelos Foutras <foutrelis@archlinux.org>
+
+pkgname=qml-box2d
+pkgver=20240415
+_commit=3a85439726d1ac4d082308feba45f23859ba71e0
+pkgrel=2
+pkgdesc="Box2D QML plugin"
+url="https://github.com/qml-box2d/qml-box2d"
+arch=('x86_64')
+license=('Zlib')
+depends=('qt6-base' 'qt6-declarative')
+makedepends=('cmake' 'git')
+source=("git+https://github.com/qml-box2d/qml-box2d.git#commit=$_commit")
+sha256sums=('534a91fa8d9e1805829f1bf3854cbdd892001880af9b070e15dbff965777846e')
+
+pkgver() {
+  cd $pkgname
+  git log -1 --date=format:%Y%m%d --pretty=format:%cd
+  mkdir build
+}
+
+build() {
+  cd $pkgname/build
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib/qt6/qml \
+    -DBUILD_EXAMPLES=OFF \
+    ..
+  make
+}
+
+package() {
+  cd $pkgname/build
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+# vim:set ts=2 sw=2 et:

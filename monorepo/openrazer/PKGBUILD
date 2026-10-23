@@ -1,0 +1,70 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Luca Weiss <luca (at) z3ntu (dot) xyz>
+# Contributor: Gabriele Musco <emaildigabry@gmail.com>
+
+pkgname=(
+  openrazer-daemon
+  openrazer-driver-dkms
+  python-openrazer
+)
+pkgbase=openrazer
+pkgver=3.12.4
+pkgrel=1
+pkgdesc='Community-led effort to support Razer peripherals on Linux'
+arch=(any)
+url=https://openrazer.github.io
+license=(GPL)
+makedepends=(
+  git
+  python-setuptools
+)
+source=(
+  "git+https://github.com/$pkgbase/$pkgbase.git#tag=v$pkgver"
+  sysusers.conf
+  0001-Use-openrazer-group.patch
+)
+b2sums=('5a32ee9a8bdcea50baad0dddf08d8ffa2db68b96990b838e23cb479520f977b8f44341fdb8f9803a5358b2248fb7ac44381caadd2fcfd89397cb4cf036d05e86'
+        '4315fa4a7c79eb678c1d357b3326fcfec438b83e12741c86605dc4440414950b3b0e267b83056500f70b09a08a41004f46f40182d04fcd3ba8c55f724f1b436d'
+        'd24c3dba7300bc375f11cc168f44b3488933b660355d101cd2f4b006c6ca33baa9d96f9523807d6392620f4d17349dd140ba1a58b84de930d117e548a4727d46')
+
+prepare() {
+  cd $pkgbase
+  patch --forward --strip=1 --input=../0001-Use-openrazer-group.patch
+}
+
+package_openrazer-daemon() {
+  pkgdesc='Userspace daemon that abstracts access to the kernel driver. Provides a DBus service for applications to use'
+  depends=(
+    dbus-python
+    openrazer-driver-dkms
+    python-daemonize
+    python-gobject
+    python-pyudev
+    python-setproctitle
+    xautomation
+  )
+  optdepends=('libnotify: for the battery notifier')
+
+  cd $pkgbase
+  make DESTDIR="$pkgdir" daemon_install
+}
+
+package_openrazer-driver-dkms() {
+  pkgdesc='OpenRazer kernel modules sources'
+  depends=(dkms)
+
+  cd $pkgbase
+  make DESTDIR="$pkgdir" setup_dkms udev_install
+  install -Dm644 ../sysusers.conf "$pkgdir"/usr/lib/sysusers.d/$pkgbase.conf
+}
+
+package_python-openrazer() {
+  pkgdesc='Library for interacting with the OpenRazer daemon'
+  depends=(
+    openrazer-daemon
+    python-numpy
+  )
+
+  cd $pkgbase
+  make DESTDIR="$pkgdir" python_library_install
+}

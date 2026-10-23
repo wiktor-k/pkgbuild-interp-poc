@@ -1,0 +1,21 @@
+pkgbase = git-absorb
+	pkgdesc = git commit --fixup, but automatic
+	pkgver = 0.9.0
+	pkgrel = 2
+	url = https://github.com/tummychow/git-absorb
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = git
+	makedepends = cargo
+	makedepends = asciidoc
+	depends = glibc
+	depends = libgcc
+	depends = libgit2
+	source = git-absorb-0.9.0.tar.gz::https://github.com/tummychow/git-absorb/archive/0.9.0.tar.gz
+	sha256sums = a0f74e6306d7fbd746d2b4a6856621d46a7f82e3e88b6bb8b6fc0480cf811f53
+
+pkgname = git-absorb
+	depends = glibc
+	depends = libgcc
+	depends = libgit2
+	depends = libgit2.so

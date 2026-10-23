@@ -1,0 +1,43 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=nginx-prometheus-exporter
+pkgdesc='NGINX Prometheus Exporter for NGINX and NGINX Plus'
+pkgver=1.5.3
+pkgrel=1
+arch=(x86_64)
+license=('Apache-2.0')
+url="https://github.com/nginxinc/nginx-prometheus-exporter"
+depends=(glibc)
+makedepends=(go)
+backup=(etc/conf.d/nginx-prometheus-exporter)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/nginxinc/nginx-prometheus-exporter/archive/v${pkgver}.tar.gz
+        nginx-prometheus-exporter.service
+        nginx-prometheus-exporter.conf)
+sha512sums=('36554b5bd78f8470e61f8562be03704f779871cfd19f6a3472f45275f170be5ae57f2adc57ca48cfb8c03bf451cba778ab6b27d8dde67c5acd9a5902faf1dfe6'
+            'd29541b1afe15bfe90ac9d54f0771ade4c8cd9d4291d0a9b1e9ffb4f38f1ae3739bef79a0120ca7c79ea5b580d224b09e9ca7645c92d8c4bc991532759249bb5'
+            '843d6903c8da8356cef0c53722c176f5ed12d140a2888f3f3cf5dedaf6437fdc3c0a527ba6635bd949b28a64af98221aeb5caa13edb12b05a712c6e2aadddf77')
+
+build() {
+  cd "$pkgname-$pkgver"
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\"  -X main.version=${pkgver} -X main.gitCommit=${pkgver}" \
+    .
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  go test ./... 
+}
+
+package() {
+  install -Dm644 nginx-prometheus-exporter.service "$pkgdir"/usr/lib/systemd/system/nginx-prometheus-exporter.service
+  install -Dm644 nginx-prometheus-exporter.conf "${pkgdir}"/etc/conf.d/nginx-prometheus-exporter
+
+  cd "$pkgname-$pkgver"
+  install -Dm755 $pkgname "$pkgdir"/usr/bin/$pkgname
+
+}

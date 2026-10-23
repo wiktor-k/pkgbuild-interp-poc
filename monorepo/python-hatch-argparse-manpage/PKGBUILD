@@ -1,0 +1,29 @@
+# Maintainer:
+
+_pyname=hatch-argparse-manpage
+pkgname=python-$_pyname
+pkgver=1.0.2
+pkgrel=1
+pkgdesc='Hatch build hook plugin to automatically generate manual pages'
+arch=(any)
+url='https://github.com/damonlynch/hatch-argparse-manpage'
+license=(GPL-3.0-or-later)
+depends=(python
+         python-argparse-manpage
+         python-hatchling
+         python-rich)
+makedepends=(git
+             python-build
+             python-installer)
+source=(git+https://github.com/damonlynch/hatch-argparse-manpage#tag=v$pkgver)
+sha256sums=('601b388048bb09adf73e0907121057107cb1b459ff518d230c09368dedfa42e4')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

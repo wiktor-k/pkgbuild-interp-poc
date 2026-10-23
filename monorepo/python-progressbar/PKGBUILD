@@ -1,0 +1,51 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Maxim Andersson <thesilentboatman@gmail.com>
+# Contributor: NicoHood <archlinux {cat} nicohood {dog} de>
+
+pkgname=python-progressbar
+_name="${pkgname#python-}"
+pkgdesc="A progress bar for Python"
+pkgver=4.6.0
+pkgrel=1
+arch=(any)
+url="https://github.com/WoLpH/python-progressbar"
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-utils
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-sphinx
+  python-wheel
+)
+checkdepends=(
+  python-dill
+  python-pytest
+  python-freezegun
+)
+source=(git+$url?signed#tag=v$pkgver)
+sha512sums=('578ef712fc5eebc1ea68fe5101a7c9f91a6476f6833696ccc7b507ef0a16fecbbbb812f3d8c4ac3c8ea42312974e63f746745867be6f1e336ec7612fc0125804')
+b2sums=('de2e70d74c7b2a9946b5d0572b475ad27b8e25d55d402048a071520369c9cd87c2f2dda9eabe95b8971cf3a81794c281452fa20566a4d1a4125b1413c5b516e2')
+validpgpkeys=('149325FD15904E9C4EB89E95E81444E9CE1F695D') # Rick van Hattem <wolph@wol.ph>
+
+build() {
+  cd $pkgname
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  PYTHONPATH="$PWD" pytest -vv -c /dev/null
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {CHANGES,CONTRIBUTING,README}.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,18 @@
+pkgbase = ruby-rbtree
+	pkgdesc = A sorted associative collection that is implemented with a Red-Black Tree
+	pkgver = 0.4.7
+	pkgrel = 1
+	url = https://github.com/mame/rbtree
+	arch = x86_64
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-test-unit
+	makedepends = git
+	depends = ruby
+	options = !emptydirs
+	source = ruby-rbtree::git+https://github.com/mame/rbtree#tag=v0.4.7
+	sha512sums = 460730e946e9d306747d5078e79d3ddd499a5b4bee36997d19f1d4bb122e6a0f1ada267e8b26b4c2e1a3b0d2dce4e037c4a5e9395c5d86b0b4e96f271a295577
+	b2sums = 118db5ea4569ebdf8794a72bf499e97d23c6dee41aa444846f409954e1b881e3e036e9ca7730b377e4ce60f394079212d94d1bb6af4def07b8202eaa7599faef
+
+pkgname = ruby-rbtree

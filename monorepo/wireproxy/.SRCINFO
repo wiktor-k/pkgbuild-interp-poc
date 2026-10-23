@@ -1,0 +1,25 @@
+pkgbase = wireproxy
+	pkgdesc = Wireguard client that exposes itself as a socks5 proxy
+	pkgver = 1.1.3
+	pkgrel = 1
+	url = https://github.com/whyvl/wireproxy
+	arch = x86_64
+	license = ISC
+	makedepends = go
+	depends = glibc
+	source = wireproxy-1.1.3.tar.gz::https://github.com/whyvl/wireproxy/archive/refs/tags/v1.1.3.tar.gz
+	source = wireproxy.sysusers
+	source = wireproxy.tmpfiles
+	source = wireproxy.service
+	source = wireproxy@.service
+	source = wireproxy-user.service
+	source = wireproxy-user@.service
+	sha256sums = b62e925d9efe402a14c6501dfa56137c49ece6a5be264095295d2565d747b1c7
+	sha256sums = 2fa16441c6913154ec8f026420bb603fec463d0627aee4277aca30ca95b534df
+	sha256sums = ab9a59d0f200371aee18abc93653cf8f9504063d14ae08e289b90f711e559735
+	sha256sums = 570b9777af70938f0f0ceec7feb46698966e7f96b96506af2a564ffca870214b
+	sha256sums = 2e8e57908b54d1a91f0838488a78eb5304ffe0aaecd10f1131ad9e7f44794622
+	sha256sums = 7ab95b432cc3a4ea5be7d60e925c87eee132445320f2178d99d4e74e62bf4a85
+	sha256sums = 24c5cbf76615b1be5b21370e5abc34182d1d477158b2b10306f2f0395e5dc07b
+
+pkgname = wireproxy

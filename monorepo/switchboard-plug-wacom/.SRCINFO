@@ -1,0 +1,27 @@
+pkgbase = switchboard-plug-wacom
+	pkgdesc = Switchboard wacom Plug
+	pkgver = 8.0.2
+	pkgrel = 1
+	url = https://github.com/elementary/switchboard-plug-wacom
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libadwaita-1.so
+	depends = libgee
+	depends = libgranite-7.so
+	depends = libgudev-1.0.so
+	depends = libswitchboard-3.so
+	depends = libwacom
+	depends = libx11
+	depends = libxi
+	source = git+https://github.com/elementary/switchboard-plug-wacom.git#tag=237693e948292dab61458ba7a16eb4db6e823432
+	sha256sums = f59f2aaae67efc028061a3e4a7d900e48893f220288b0d6194c217db0443eb2a
+
+pkgname = switchboard-plug-wacom

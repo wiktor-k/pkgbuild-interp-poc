@@ -1,0 +1,27 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=libucontext
+pkgver=1.5.1
+pkgrel=1
+pkgdesc="ucontext implementation featuring glibc-compatible ABI"
+arch=(x86_64)
+url="https://github.com/kaniini/libucontext"
+license=("ISC")
+depends=(glibc)
+makedepends=(scdoc meson git)
+source=("git+https://github.com/kaniini/libucontext#tag=${pkgname}-${pkgver}")
+sha256sums=('c2a38139deb025031b81d85120564eef8838f4ef0b57e0c95d82fff07138861f')
+
+build() {
+  arch-meson -Ddocs=true -Dfreestanding=true ${pkgname} build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 ${pkgname}/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

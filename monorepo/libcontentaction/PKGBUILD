@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=libcontentaction
+pkgver=0.4.13
+pkgrel=2
+pkgdesc="Library for associating content with actions"
+arch=('x86_64')
+url="https://github.com/sailfishos/libcontentaction"
+license=('LGPL-2.1-only')
+depends=('mlite' 'qt6-declarative')
+makedepends=('git' 'python' 'qt6-tools')
+source=("git+https://github.com/sailfishos/libcontentaction.git#tag=$pkgver")
+sha512sums=('066969314a71e5fd5aa6a98b470a16516e4ecace08a73651c305e300927547f0b465551df4de4ced3ee93a1164203abdb36d2c6142e7a606b24629c47b193570')
+
+build() {
+  cd libcontentaction
+  qmake6
+  make
+}
+
+package() {
+  cd libcontentaction
+  make INSTALL_ROOT="$pkgdir" install
+
+  # Remove tests
+  rm -r "$pkgdir/opt"
+}

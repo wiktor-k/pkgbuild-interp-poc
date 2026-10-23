@@ -1,0 +1,110 @@
+# Maintainer : Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Maintainer : Bruno Pagani <archange@archlinux.org>
+# Contributor: Frederik "Freso" S. Olesen <archlinux@freso.dk>
+# Contributor: Bastien Traverse <firstname at lastname dot email>
+# Contributor: Samantha Baldwin <fuhsaz+git@cryptic.li>
+# Contributor: Caleb Reach <jtxx000@gmail.com>
+# Contributor: Felix Yan <felixonmars@gmail.com>
+# Contributor: Karol "Kenji Takahashi" Woźniak <kenji.sx>
+# Contributor: Mantas Mikulėnas <grawity@gmail.com>
+
+pkgname=whipper
+pkgver=0.10.0
+pkgrel=9
+pkgdesc='Python CD-DA ripper preferring accuracy over speed'
+arch=(x86_64)
+url='https://github.com/whipper-team/whipper'
+license=(GPL-3.0-or-later)
+depends=(
+  cdrdao
+  flac
+  libcdio-paranoia
+  libsndfile
+  python
+  python-discid
+  python-musicbrainzngs
+  python-mutagen
+  python-pycdio
+  python-ruamel-yaml
+  python-packaging
+  sox
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+  python-docutils
+)
+checkdepends=(
+  python-twisted
+)
+optdepends=('python-pillow: cover art support')
+conflicts=(accuraterip-checksum)
+provides=(accuraterip-checksum)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  test-fixup.patch
+)
+sha512sums=('2f24852cbc98dd3656a171e568f109c4d99e452833bf0e5e391ee49ce0fee580709d90f34d17a08d63eed09b00be5b095e8005f8191734a4a9cc052d4b7e9ef4'
+            'cbc76738dae1df98cb9a030ed32219208cf8d9ce0fc2b6fd082d44b5dc0343b05512d9f710d7eb37a4d5a8e54e8591e05543e99568f49aae06fff94cccc11eea')
+
+prepare() {
+  cd "$pkgname"
+
+  # Fixes a DeprecationWarning for ruamel_yaml>=0.17
+  #https://github.com/whipper-team/whipper/pull/543
+  git cherry-pick --no-commit e0942417a1c267781a8b676789730457dcb2e6fa
+
+  # tests depend on an external service... which can change test data
+  patch -p1 -i "$srcdir/test-fixup.patch"
+
+  # add man page for accuraterip-checksum
+  # https://github.com/whipper-team/whipper/pull/557
+  git cherry-pick --no-commit 9f7edca6b08ed532729670b13c30f36c97a3d58e
+
+  # remove dependency on gobject
+  # https://github.com/whipper-team/whipper/pull/561
+  git cherry-pick --no-commit \
+    1b1301378209a4cf46430e75e0897f7302d09e1a \
+    3c9fa49f30ec380502bf9bbdf44c356ca8345d41
+
+  # remove dependency on pkg_resources
+  #https://github.com/whipper-team/whipper/pull/659
+  git cherry-pick --no-commit adab25986f38d1bf5e8766f6b0f301c1acf2ec49
+}
+
+build() {
+  cd "$pkgname"
+
+  export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
+
+  python -m build --wheel --no-isolation
+
+  # generate man pages
+  make -C man
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  python -m unittest discover
+}
+
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # install man pages
+  install -Dm644 -t "${pkgdir}/usr/share/man/man1" man/*.1
+}

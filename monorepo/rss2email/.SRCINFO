@@ -1,0 +1,19 @@
+pkgbase = rss2email
+	pkgdesc = A tool for delivering news from RSS feeds to your email program
+	pkgver = 3.14
+	pkgrel = 8
+	url = https://github.com/rss2email/rss2email
+	arch = any
+	license = GPL
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-poetry-core
+	depends = python
+	depends = python-html2text
+	depends = python-feedparser
+	source = https://github.com/rss2email/rss2email/archive/v3.14/rss2email-3.14.tar.gz
+	source = 0001-Use-poetry-core-as-build-backend.patch
+	sha256sums = ea09b68f6a5421b0bd50e98e24d49a0a33bd54a5f59d0f1be1f6f3f05b8c6087
+	sha256sums = eea10b00b105d77d9054adfb344b64b85b49c45a02b3dec2e3e8e07ca0261c6a
+
+pkgname = rss2email

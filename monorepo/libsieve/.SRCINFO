@@ -1,0 +1,16 @@
+pkgbase = libsieve
+	pkgdesc = sieve interpretator lib
+	pkgver = 2.3.1
+	pkgrel = 6
+	url = http://libsieve.sourceforge.net/
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = git
+	source = git+https://github.com/sodabrew/libsieve.git#commit=9b9856f675daa2847dfdd6c1bea7213db71be0c1
+	source = glibc-regex.patch
+	source = crash-fix.patch
+	sha512sums = 202de28bd3fd2b5616af4f6040fa6e39a1d46e2da85cd4349678d9a25958c3754b8ef722447d69c5e4b4f57a7cf5f79f2f0682a1c1f85bc19f9e78e094f9f96d
+	sha512sums = c58e2f5a5d78748e49dee20b2c9e73e290bff844619bd625e02368164be12907923cbc659ea726e33deccf2a1c4f446f49b50f7f014d49e75ce5eec192480a14
+	sha512sums = 9b7b3254027a27290ed5aaed5d4d801ebf1bc51f0d3a3dcdbadf82fc66d00f20cadd54aeb370ed1932f907cf1db57a85acb6473ddd45adc29705233a93b7a762
+
+pkgname = libsieve

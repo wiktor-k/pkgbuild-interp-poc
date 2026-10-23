@@ -1,0 +1,46 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: berberman <hatsue@typed.icu>
+
+_hkgname=hspec-golden
+pkgname=haskell-hspec-golden
+pkgver=0.2.2.0
+pkgrel=117
+pkgdesc="Golden tests for hspec."
+url="https://github.com/stackbuilders/hspec-golden"
+license=('MIT')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-ansi-terminal' 'haskell-hspec-core' 'haskell-optparse-applicative')
+makedepends=('ghc' 'haskell-hspec' 'haskell-hspec-discover' 'haskell-silently')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('2049366f9b55f884d1225c483f633d5ff00eee5060110764612f21cfef2d2d64ec6baa7846393ce6684f0243cdf6a83a3486afcd6f1ba483f456faffc2b18562')
+
+build() {
+  cd $_hkgname-$pkgver    
+    
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

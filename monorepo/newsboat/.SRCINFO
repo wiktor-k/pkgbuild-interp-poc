@@ -1,0 +1,30 @@
+pkgbase = newsboat
+	pkgdesc = RSS/Atom feed reader for text terminals
+	pkgver = 2.45
+	pkgrel = 1
+	url = https://newsboat.org/
+	arch = x86_64
+	license = MIT
+	makedepends = asciidoctor
+	makedepends = git
+	makedepends = rust
+	makedepends = swig
+	depends = curl
+	depends = hicolor-icon-theme
+	depends = json-c
+	depends = libxml2
+	depends = sqlite
+	depends = stfl
+	optdepends = buku: for bookmark-buku.sh
+	optdepends = kitty: for kitty-img-pager.sh
+	optdepends = perl: for pinboard.pl
+	optdepends = python: for exportOPMLWithTags.py
+	optdepends = ruby: for feedgrabber.rb, heise.rb, and slashdot.rb
+	replaces = newsbeuter
+	options = !makeflags
+	options = !lto
+	source = git+https://github.com/newsboat/newsboat.git?signed#tag=r2.45
+	validpgpkeys = B8B1756A0DDBF0760CE67CCF4ED6CD61932B9EBE
+	sha256sums = ecf7cd29004952cc6e79a4606dbb8674158e87f4ae1b96f7f3d6baab7c43db58
+
+pkgname = newsboat

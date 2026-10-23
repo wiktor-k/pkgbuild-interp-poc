@@ -1,0 +1,20 @@
+pkgbase = python-pypandoc
+	pkgdesc = Thin wrapper for pandoc
+	pkgver = 1.17
+	pkgrel = 1
+	url = https://github.com/JessicaTegner/pypandoc
+	arch = any
+	license = MIT
+	checkdepends = texlive-basic
+	checkdepends = texlive-latexextra
+	checkdepends = texlive-fontsrecommended
+	checkdepends = python-pandocfilters
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = pandoc
+	source = git+https://github.com/JessicaTegner/pypandoc.git#tag=v1.17
+	sha512sums = 66327609ec7002361d81d6712328be32cc416365092d18a04240be26ea446241b3b29d78c5d6acf8e4d231b079c76ae819199e3aed0ed2c7a2cb5304e4f77569
+
+pkgname = python-pypandoc

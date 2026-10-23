@@ -1,0 +1,113 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+
+pkgname=jellyfin-server
+_pkgname="${pkgname%-server}"
+pkgver=12.2
+pkgrel=1
+pkgdesc='Jellyfin server backend'
+arch=(x86_64)
+url='https://jellyfin.org'
+_url='https://github.com/jellyfin/jellyfin'
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  aspnet-runtime-10.0
+  bash
+  sqlite
+  fontconfig
+  jellyfin-ffmpeg
+  jemalloc
+)
+makedepends=(
+  git
+  dotnet-sdk-10.0
+  aspnet-targeting-pack-10.0
+)
+optdepends=(
+  'jellyfin-web: to run web-app on the same machine'
+  'noto-fonts: for text titles in library folders'
+)
+backup=(
+  etc/jellyfin/logging.json
+  etc/jellyfin/jellyfin.env
+)
+options=(!debug)
+source=(
+  "$pkgname::git+$_url#tag=v$pkgver"
+  "jellyfin-packaging::git+${_url}-packaging"
+  sysusers.conf
+  tmpfiles.conf
+  fix-envfile-path.patch
+  use-system-jemalloc.patch
+)
+sha512sums=('69283657dc0988e9915f81f64dda1baeabe592be9fd637f001d0244364c80d9451cc6c99b8e59bb51cc821675c78b1d2b8c44a97ed8e42cf25b5f2136f4afff6'
+            'SKIP'
+            '3d2699174fe8719536e4f3ad98bac609a959815e38491f166257d248c195f007745634fa1907557d55c814bb06235130e9cea2d226770956004650d7d9b2b564'
+            '3e12ec3d3fcb15975d5f86bc3ce3363ae89b0e9e0b2580c29fc8a612c0220a74a067138b15c48ae27bb3c5777eca33055f10651949678a1ee7bd094293f6abb6'
+            '26d4a2c081c5a2563863fb21a427e6b5ff0f551549b7ba77075054e81fbda064991e3443ec3f11f42ffdcc8adef0e20363f00d248d7967d327656280db919672'
+            '5e1903a424efc444fb1dfa2d6a0c1488bd0eb1213b7c872b39c0e240150366c4ce379b9d39bb43dc2dc8eed25f8f9402c8ba545ba7a66fa93ee6acda0315ca94')
+b2sums=('85dfd833ec47b98805fcc9f9b6060f58b38e862da483ee01b7773e4e9120dca9cd83a2f03f782470e322a0078567a5d9deb11c9b08ea85a2c61336266c3f93ae'
+        'SKIP'
+        '5aa5e041513db1cd58e4b0dd91b712931be956d0c4e240c92f5183260a55ad48b6d34612b9a22bf49eb9c80418b2437b01f2cfef200f035a3475a0737d6871ea'
+        'bc8001cf28ebf76a125e7ab0d9d5a8fcf35e0def5b907dc5fe90e16cdbb3fdf8b7f098779ced9a44e7a3918ee605058b379d445a224178456a32a6a99cd084b4'
+        '4f63c425fc60e80c36c958674f0bbd704feb79cac9e8d05e76e0bc01d6d3e10555395a45f994e240a68433c01f9a14d5a1db1765eccb7409f11da34161c75ffc'
+        '32019a53b03e548d8f80e8ba602cd83cdfcd0fcc72993c3eaa56072088e1654350b0d283ebe4f2df749fd3c0253586435e1fb57f15b349b7b9d9a70320daca72')
+
+prepare() {
+  cd jellyfin-packaging
+
+  # fix envfile path in systemd service
+  patch -p1 -i "$srcdir/fix-envfile-path.patch"
+
+  # use system jemalloc
+  # https://github.com/jellyfin/jellyfin/issues/11588
+  patch -p1 -i "$srcdir/use-system-jemalloc.patch"
+}
+
+build(){
+  cd "$pkgname"
+
+  # disable dotnet telemetry
+  export DOTNET_CLI_TELEMETRY_OPTOUT=1
+  export DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+  export DOTNET_NOLOGO=1
+
+  dotnet \
+    publish \
+    Jellyfin.Server \
+    --configuration Release \
+    --output builddir \
+    --self-contained false\
+    --os linux \
+    -p:DebugSymbols=false \
+    -p:DebugType=none
+}
+
+package() {
+  cd "$pkgname"
+
+  # install binaries
+  install -vd "$pkgdir/usr/"{lib,bin}
+  cp -r builddir "$pkgdir/usr/lib/jellyfin"
+  ln -sf /usr/lib/jellyfin/jellyfin "$pkgdir/usr/bin/jellyfin"
+
+  # ensure binaries have correct permissions
+  chmod 755 "$pkgdir/usr/lib/$_pkgname/jellyfin"
+
+  # use upstream provided packaging files
+  cd "$srcdir/jellyfin-packaging/debian/conf"
+
+  # systemd integration
+  install -vDm644 jellyfin.service -t "$pkgdir/usr/lib/systemd/system"
+  install -vDm644 "$srcdir/sysusers.conf" "$pkgdir/usr/lib/sysusers.d/$_pkgname.conf"
+  install -vDm644 "$srcdir/tmpfiles.conf" "$pkgdir/usr/lib/tmpfiles.d/$_pkgname.conf"
+  # set /etc/jellyfin to 750 according to tmpfiles
+  install -vdm750 "$pkgdir/etc/$_pkgname"
+  install -vDm640 jellyfin "$pkgdir/etc/$_pkgname/$_pkgname.env"
+  install -vDm640 logging.json -t "$pkgdir/etc/$_pkgname"
+}
+
+# vim: ts=2 sw=2 et:

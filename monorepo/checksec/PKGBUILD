@@ -1,0 +1,70 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+# Contributor: Lubomir Krajcovic <lubomir.krajcovic(AT)gmail(DOT)com>
+
+pkgname=checksec
+pkgver=3.2.0
+pkgrel=2
+pkgdesc='Tool designed to test which standard Linux OS and PaX security features are being used'
+url='https://slimm609.github.io/checksec/'
+arch=(any)
+license=(BSD-3-Clause)
+depends=(
+  glibc
+)
+makedepends=(
+  go
+  git
+)
+options=('!lto')
+source=("git+https://github.com/slimm609/checksec.git#tag=${pkgver}")
+sha512sums=('9d8c01089db59991af82369c8cc5b9f1f379b187955a89354b1de657b821a859bd3b5e19e76f698ccec1dc69ce41bdf3c8cb4f10ec5fdb535bc85dc9c55d3182')
+b2sums=('e3ab1d7fcb9d97766e9837033aa128d6e72af2df039bd3e7c533bf6247de6bcea99d9527d55d52886c6b85c099d10cf82df5e5dc5faa482f8d1185381ffb4f41')
+
+prepare() {
+  cd ${pkgname}
+
+  GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd ${pkgname}
+
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  GOPATH="${srcdir}"
+  export GOPROXY=off
+  export GOFLAGS="-trimpath -buildmode=pie -mod=readonly -modcacherw -buildvcs=false"
+
+  local ld_flags=" \
+    -X main.version=${pkgver} \
+    -X main.commit=$(git rev-parse --short HEAD) \
+    -X main.date=$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +"%Y-%m-%dT%H:%M:%SZ") \
+    -compressdwarf=false \
+    -linkmode=external \
+    -extldflags \"${LDFLAGS}\"
+  "
+
+  go build -v -ldflags "${ld_flags}" .
+}
+
+package() {
+  cd ${pkgname}
+  install -Dm 755 checksec -t "${pkgdir}/usr/bin"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 CHANGELOG.md README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 extras/man/checksec.1 -t "${pkgdir}/usr/share/man/man1"
+
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+
+  "${pkgdir}/usr/bin/checksec" completion bash > "${pkgdir}/usr/share/bash-completion/completions/checksec"
+  "${pkgdir}/usr/bin/checksec" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_checksec"
+  "${pkgdir}/usr/bin/checksec" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/checksec.fish"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,15 @@
+pkgbase = shake
+	pkgdesc = Userspace defragmenter that can be run while system is in use
+	pkgver = 1.0
+	pkgrel = 4
+	url = https://vleu.net/shake/
+	install = shake.install
+	arch = x86_64
+	license = GPL3
+	makedepends = cmake
+	makedepends = help2man
+	depends = attr
+	source = shake-1.0.tar.gz::https://github.com/unbrice/shake/archive/v1.0.tar.gz
+	sha512sums = f73601ebf37ac934b2cfb5bcedd530e38bd6873615e80eae01c690bf935ed3924abb1d06fb31c46397b5804d47a36584ac5e11b4c7142b46e570ddbf3abe1775
+
+pkgname = shake

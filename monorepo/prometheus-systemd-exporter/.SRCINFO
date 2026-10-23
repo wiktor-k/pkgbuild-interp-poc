@@ -1,0 +1,21 @@
+pkgbase = prometheus-systemd-exporter
+	pkgdesc = Application-level metrics for systemd units
+	pkgver = 0.7.0
+	pkgrel = 1
+	url = https://github.com/prometheus-community/systemd_exporter
+	arch = x86_64
+	license = Apache
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	source = prometheus-systemd-exporter-0.7.0.tar.gz::https://github.com/prometheus-community/systemd_exporter/archive/v0.7.0.tar.gz
+	source = prometheus-systemd-exporter.conf
+	source = prometheus-systemd-exporter.service
+	source = prometheus-systemd-exporter.sysusers
+	sha256sums = 666a26db03844f11504d36ff08526b25155c5239beed9fabd0d9cc96433ea89a
+	sha256sums = 24c91b7bb90cb65bf5edddc93cce810f57f2e06f265cef955303325526508f23
+	sha256sums = 9230d7a3092418da27e0690387700a8d1c143bcc1f1666657c62548be5bd169a
+	sha256sums = e6a79e1d65cb2b4512c4bbe341a7455111fc585d6f329bff48d97a1ca3d3df59
+
+pkgname = prometheus-systemd-exporter

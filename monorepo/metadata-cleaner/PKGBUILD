@@ -1,0 +1,57 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=metadata-cleaner
+pkgver=4.0.1
+pkgrel=1
+pkgdesc='Python GTK application to view and clean metadata in files, using mat2'
+arch=(any)
+url='https://gitlab.com/metadatacleaner/metadatacleaner'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  mat2
+  pango
+  python
+  python-gobject
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=(
+  "git+https://gitlab.com/metadatacleaner/metadatacleaner.git#tag=v$pkgver"
+  metadata-cleaner-single-window.patch
+)
+b2sums=(
+  4a2dc53a9ee50b3fc9eb77fea2653b453d6315248254805ef18ccefbc0d5d17e18132f5f61a8c33b72cb01fff06521c73638930b62f1356d7d07aa6e459c5a71
+  5c575705bdb43ac56c044f7c503845b2bd3ceb3260e95eecab04468a2ffdc0d3460c2f1ff4d9410b2a521f0d1010df28377d31c7697eb5335a26b6558ba919b7
+)
+
+prepare() {
+  cd metadatacleaner
+
+  # Make the app to have a single window only
+  # https://gitlab.com/metadatacleaner/metadatacleaner/-/merge_requests/43
+  git apply -3 ../metadata-cleaner-single-window.patch
+}
+
+build() {
+  arch-meson metadatacleaner build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

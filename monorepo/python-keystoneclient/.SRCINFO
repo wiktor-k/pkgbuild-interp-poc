@@ -1,0 +1,36 @@
+pkgbase = python-keystoneclient
+	pkgdesc = Client Library for OpenStack Identity
+	pkgver = 6.0.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-keystoneclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-fixtures
+	checkdepends = python-keyring
+	checkdepends = python-lxml
+	checkdepends = python-oauthlib
+	checkdepends = python-openstacksdk
+	checkdepends = python-oslotest
+	checkdepends = python-requests-mock
+	checkdepends = python-stestr
+	checkdepends = python-testresources
+	checkdepends = python-testscenarios
+	checkdepends = python-testtools
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-pbr
+	depends = python-debtcollector
+	depends = python-oslo-config
+	depends = python-oslo-i18n
+	depends = python-oslo-serialization
+	depends = python-oslo-utils
+	depends = python-requests
+	depends = python-stevedore
+	depends = python-packaging
+	source = git+https://github.com/openstack/python-keystoneclient.git#tag=6.0.0
+	sha512sums = 1636856fc1947f659612c804d64b04b11639728519f97984bf243a2783454d7a24a9fe1571fb4fadd788285425d1a244f62bdb5b2b6851bba35e0b44d2b10c47
+
+pkgname = python-keystoneclient

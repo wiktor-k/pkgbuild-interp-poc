@@ -1,0 +1,28 @@
+pkgbase = python-sse-starlette
+	pkgdesc = SSE plugin for Starlette
+	pkgver = 3.5.0
+	pkgrel = 1
+	url = https://github.com/sysid/sse-starlette
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-asgi-lifespan
+	checkdepends = python-httpx
+	checkdepends = python-httpx2
+	checkdepends = python-portend
+	checkdepends = python-psutil
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-tenacity
+	checkdepends = uvicorn
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-anyio
+	depends = python-starlette
+	source = git+https://github.com/sysid/sse-starlette.git#tag=v3.5.0
+	b2sums = 15c4366f7618d93a5435368427eefb9af5621d0d832da1fd35835adc1ca19062513d5180cf4b90fb504687c761e353cb7ed61f498cb9845d7fca800eac2d5ce7
+
+pkgname = python-sse-starlette

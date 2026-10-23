@@ -1,0 +1,20 @@
+pkgbase = browserpass
+	pkgdesc = Native host app for Browserpass, browser extension for zx2c4's pass (password manager)
+	pkgver = 3.1.2
+	pkgrel = 1
+	url = https://github.com/browserpass/browserpass-native
+	arch = x86_64
+	license = ISC
+	makedepends = go
+	makedepends = git
+	depends = gnupg
+	depends = glibc
+	optdepends = browserpass-chromium: Chromium extension for Browserpass
+	optdepends = browserpass-firefox: Firefox extension for Browserpass
+	source = browserpass-3.1.2.tar.gz::https://github.com/browserpass/browserpass-native/releases/download/v3.1.2/browserpass-native-3.1.2-src.tar.gz
+	source = browserpass-3.1.2.tar.gz.asc::https://github.com/browserpass/browserpass-native/releases/download/v3.1.2/browserpass-native-3.1.2-src.tar.gz.asc
+	validpgpkeys = 56C3E775E72B0C8B1C0C1BD0B5DB77409B11B601
+	sha256sums = f48e973e2b53874e691dd671dd0726a97a2b68109577ad3803fcf8cabd28fa0d
+	sha256sums = SKIP
+
+pkgname = browserpass

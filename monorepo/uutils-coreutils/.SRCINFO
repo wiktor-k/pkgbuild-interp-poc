@@ -1,0 +1,19 @@
+pkgbase = uutils-coreutils
+	pkgdesc = Cross-platform Rust rewrite of the GNU coreutils
+	pkgver = 0.12.0
+	pkgrel = 1
+	url = https://uutils.github.io/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	depends = systemd-libs
+	source = uutils-coreutils::git+https://github.com/uutils/coreutils.git#tag=0.12.0
+	source = uutils-coreutils-l10n::git+https://github.com/uutils/coreutils-l10n.git#tag=0.12.0
+	b2sums = 0b14eab9d359cd1c79032ec3d8cadf9b51d51d0c7e2cf6f27a07b66ddb0614d64a15a25717e6bd67ee786b18832c6f90a549f567c2801be9dea649ca2cd51867
+	b2sums = 8a027f39cedf44e3a5f880b693fb78747f9c44620bf75c89e0c4a8557e67e5ec42e34df1ced3244630061a40e287c671185d2d5d92e7eafc74890cb522e488cd
+
+pkgname = uutils-coreutils

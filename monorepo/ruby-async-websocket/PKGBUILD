@@ -1,0 +1,80 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-async-websocket
+pkgver=0.30.1
+pkgrel=1
+pkgdesc='An async websocket library on top of websocket-driver'
+arch=(any)
+url='https://github.com/socketry/async-websocket'
+license=(MIT)
+depends=(
+  ruby
+  ruby-async-http
+  ruby-protocol-http
+  ruby-protocol-rack
+  ruby-protocol-websocket
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-rack
+  ruby-sus
+  ruby-sus-fixtures-async-http
+)
+options=(!emptydirs)
+source=("git+${url}.git#tag=v${pkgver}")
+sha256sums=('9a31ffa7ead5c9793ad51a03a9ddc4efdc1fdc550a581a8df2ede3b57d48283e')
+
+prepare() {
+  cd async-websocket
+  sed -r -e 's|~>|>=|g' -e '/signing_key/d' -i async-websocket.gemspec
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-websocket
+  gem build async-websocket.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    async-websocket-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-websocket
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd async-websocket
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

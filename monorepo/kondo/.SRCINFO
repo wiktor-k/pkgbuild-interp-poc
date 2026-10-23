@@ -1,0 +1,26 @@
+pkgbase = kondo
+	pkgdesc = Save disk space by cleaning non-essential files from software projects
+	pkgver = 0.9
+	pkgrel = 1
+	url = https://github.com/tbillington/kondo
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = pango
+	makedepends = gdk-pixbuf2
+	makedepends = gtk3
+	depends = gcc-libs
+	options = !lto
+	source = kondo-0.9.tar.gz::https://github.com/tbillington/kondo/archive/v0.9.tar.gz
+	source = kondo-0.9-depend-on-0.9.patch
+	sha512sums = b8a2db6eb6a8b54e792fdce9e9d29f79daf4b3017067ed8f56a5be62a29b5ff3420979d67dc9ea412e75e26114447988be3d7e8542fe17803aebc95909fed9ce
+	sha512sums = 1b5c76bce9c05bd6d3a2fc9846142e9884a063edca127a41e913df94b45aadfc3411bd353f352d03c964b1533120e603c40d68a62cd04c68aabf31e25a7521b6
+
+pkgname = kondo
+
+pkgname = kondo-ui
+	pkgdesc = Save disk space by cleaning non-essential files from software projects (UI)
+	depends = gcc-libs
+	depends = glib2
+	depends = cairo
+	depends = gtk3

@@ -1,0 +1,46 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=dhall-bash
+pkgver=1.0.41
+pkgrel=285
+pkgdesc='Compile Dhall to Bash'
+url='https://dhall-lang.org'
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'dhall' 'haskell-neat-interpolation' 'haskell-shell-escape'
+         'haskell-optparse-generic')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('51d2711b8e2b280225390eb5015cb0891f20b51d2773e081c6860e170f47a86fffbb0d241edfe6dc0d49af46b1a43003e6402a58496fbe2dd261740c30d89c82')
+
+prepare() {
+    cd $pkgname-$pkgver
+    uusi -u optparse-generic $pkgname.cabal
+}
+
+build() {
+    cd $pkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $pkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $pkgname-$pkgver
+    install -D -m744 register.sh   "${pkgdir}/usr/share/haskell/register/${pkgname}.sh"
+    install -D -m744 unregister.sh "${pkgdir}/usr/share/haskell/unregister/${pkgname}.sh"
+    runhaskell Setup copy --destdir="${pkgdir}"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

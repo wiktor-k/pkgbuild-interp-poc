@@ -1,0 +1,18 @@
+pkgbase = epic4
+	pkgdesc = It's a new direction in ircII development
+	pkgver = 2.10.11
+	pkgrel = 3
+	url = http://www.epicsol.org/
+	arch = x86_64
+	license = custom
+	depends = openssl
+	depends = ncurses
+	depends = tcl
+	depends = perl
+	options = !emptydirs
+	source = http://ftp.epicsol.org/pub/epic/EPIC4-PRODUCTION/epic4-2.10.11.tar.xz
+	source = test-cflags.patch
+	sha256sums = 622f9a11d86cb6b768d1004872e1931cdcc01e7f10029ecfc42a3945368ed151
+	sha256sums = d1caf896c21529e4ad81644b808b223a0d1c2e46bf0d5ad06226160c4a65eda3
+
+pkgname = epic4

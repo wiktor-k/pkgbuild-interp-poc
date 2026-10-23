@@ -1,0 +1,19 @@
+pkgbase = curlftpfs
+	pkgdesc = A filesystem for acessing FTP hosts based on FUSE and libcurl.
+	pkgver = 0.9.2
+	pkgrel = 10
+	url = http://curlftpfs.sourceforge.net/
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	depends = curl
+	depends = fuse2
+	depends = glib2
+	source = git+https://github.com/galo2099/curlftpfs.git#commit=72fed1664cbb7cf9bc911b7d9c87d4c00ab1d318
+	source = ioerror.patch
+	source = no-verify-hostname.patch
+	sha512sums = b22441238be0b6dc30034c2dc7188e72e42192d56c96e7cbfdb6575392996505da56f336e1c54abd2ff0f033f3418987eda3b7214ea31e9e71ce2c3e7ae11034
+	sha512sums = 6d5454dc9b09279067028175458dd3dd1cecc7f99d11e2fe7048b9b9c31d9ed213ed916698f9311c5278e9389b4a53e0fde5fe735e613d80cbd6423041fe8122
+	sha512sums = 737db3bcd12ee04ef1d63e22ae97588f9ea0156ba425241ebf176a6437df474990e081f05c6656a6b02c93d41ce1e88b0beb805253f11c09de9d37892baedf56
+
+pkgname = curlftpfs

@@ -1,0 +1,60 @@
+# Maintainer: Evangelos Foutras <foutrelis@archlinux.org>
+
+pkgname=7zip
+pkgver=26.05
+pkgrel=1
+pkgdesc='File archiver for extremely high compression'
+arch=(x86_64 aarch64)
+url='https://www.7-zip.org'
+license=('LGPL-2.1-or-later AND LicenseRef-UnRAR AND BSD-3-Clause AND BSD-2-Clause')
+depends=(
+  sh
+  libgcc
+  libstdc++
+  glibc
+)
+makedepends_x86_64=(uasm)
+provides=(p7zip)
+conflicts=(p7zip)
+replaces=(p7zip)
+source=("https://github.com/ip7z/7zip/releases/download/${pkgver}/7z${pkgver//./}-src.tar.xz")
+sha512sums=('3c7fd4f00823465e8a1b17bf9ef282ef5a2032f7d5ab16bb059205d0038b9e228183b1915903ffedbf89033ae0648231e220c4585b58089e75241b1c1e2c2e31')
+b2sums=('05f8e2447eae0a485e3e608621def717a5e69cc121542d0f8f5b52ba8046a2c85ddbeb2315747619a0b361311d0acb71a0c75d632d7891023792b879757d84f7')
+
+build() {
+  local _platform_flags=()
+
+  case $CARCH in
+    x86_64)
+      _platform_flags=(PLATFORM=x64 IS_X64=1 MY_ASM=uasm USE_ASM=1)
+      ;;
+    aarch64)
+      _platform_flags=(PLATFORM=arm64 IS_ARM64=1 USE_ASM=1)
+      ;;
+  esac
+
+  for component in Bundles/{Alone,Alone7z,Format7zF,SFXCon} UI/Console; do
+    make -C CPP/7zip/$component -f ../../cmpl_gcc.mak "${_platform_flags[@]}" \
+      LFLAGS_STRIP= \
+      CC="cc $CPPFLAGS $CFLAGS $LDFLAGS" \
+      CXX="g++ $CPPFLAGS $CXXFLAGS $LDFLAGS"
+  done
+}
+
+package() {
+  install -Dt "$pkgdir/usr/lib/7zip" \
+    CPP/7zip/Bundles/Alone/b/g/7za \
+    CPP/7zip/Bundles/Alone7z/b/g/7zr \
+    CPP/7zip/Bundles/Format7zF/b/g/7z.so \
+    CPP/7zip/UI/Console/b/g/7z
+  install -D CPP/7zip/Bundles/SFXCon/b/g/7zCon "$pkgdir/usr/lib/7zip/7zCon.sfx"
+
+  for _prog in 7za 7zr 7z; do
+    printf '#!/bin/sh\nexec /usr/lib/7zip/%s "$@"\n' "$_prog" \
+    | install -D /dev/stdin "$pkgdir/usr/bin/$_prog"
+  done
+
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" DOC/{,unRar}License.txt
+}
+
+# vim:set ts=2 sw=2 et:

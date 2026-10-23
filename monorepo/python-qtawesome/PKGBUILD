@@ -1,0 +1,34 @@
+# Maintainer: Muflone http://www.muflone.com/contacts/english/
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=qtawesome
+pkgname=python-${_pkg}
+pkgver=1.4.2
+pkgrel=1
+pkgdesc="Iconic fonts in PyQt and PySide applications"
+arch=(any)
+url="https://github.com/spyder-ide/qtawesome/"
+license=(MIT)
+depends=(python-qtpy)
+makedepends=(python-setuptools python-build python-installer)
+checkdepends=(python-pytest python-pytest-qt xorg-server-xvfb)
+source=(${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('f5c927ffcc52e68cca6813574dc51afc02649095a908ff406a133b2cfcbd9353')
+
+build() {
+  cd ${_pkg}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkg}-${pkgver}
+  xvfb-run --auto-servernum python example.py
+  PYTHONPATH="${PWD}"/build/lib xvfb-run --auto-servernum pytest -vv --color=yes qtawesome \
+    --deselect qtawesome/tests/test_qtawesome.py::test_get_fonts_info
+}
+
+package() {
+  cd ${_pkg}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

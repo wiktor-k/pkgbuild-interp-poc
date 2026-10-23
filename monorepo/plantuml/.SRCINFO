@@ -1,0 +1,26 @@
+pkgbase = plantuml
+	pkgdesc = Component that allows to quickly write uml diagrams
+	pkgver = 1.2026.8
+	pkgrel = 1
+	url = https://plantuml.com/
+	arch = any
+	license = GPL-3.0-or-later
+	checkdepends = fontconfig
+	checkdepends = ttf-dejavu
+	checkdepends = ttf-liberation
+	makedepends = git
+	makedepends = gradle
+	makedepends = java-environment>=8
+	depends = bash
+	depends = java-runtime>=8
+	optdepends = plantuml-ascii-math: allow use AsciiMath or JLaTeXMath notation
+	optdepends = ditaa: allow use ditaa notation
+	optdepends = graphviz: allow use Graphviz/DOT notation
+	source = git+https://github.com/plantuml/plantuml.git#tag=v1.2026.8
+	source = plantuml.run
+	source = plantuml@.service
+	b2sums = bdd6f0f08c14209d8b2a4e7680aea98c044760f621b2e8065ec58867dafc369334a6b96fc272009f97d5f7ff3db1eb46d7bb6ed1030bccca7928c6d9a4bae3f2
+	b2sums = ef64a657bf688fc103f68a5181035ad2ab6dee50f190664b62309ef2322add4648bbdffac4598c24395680e73b4d25c9105a6259cb50676818b558dfc50a2b7d
+	b2sums = c211ea5ad01038b348dda9c8bde3cfc09f869a31f1dbb7e9c410043a434912f3aea2afd7eee4ebd64505e80976693c55de31699f080bdb8d04d025a1623ca1cc
+
+pkgname = plantuml

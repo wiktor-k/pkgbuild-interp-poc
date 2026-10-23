@@ -1,0 +1,51 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hint
+pkgname=haskell-hint
+pkgver=0.9.0.9
+pkgrel=33
+pkgdesc="Runtime Haskell interpreter (GHC API wrapper)"
+url="https://github.com/haskell-hint/hint"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-ghc' 'haskell-ghc-paths' 'haskell-random' 'haskell-temporary')
+makedepends=('ghc' 'haskell-hunit' 'haskell-typed-process')
+checkdepends=('cabal-install')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('997a184be29a06de17809e77fd4dccb993d1a1ef5abde208e75d68aaf42ef36f3a6c4ed801ec75943428105f18cab2e748d717d8cd6aa1b460fbd5939ec80015')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    # test_ghc_environment_file: TODO
+    sed -e 's/"cabal" \["build"/"cabal" ["build", "--enable-shared", "--disable-library-vanilla", "--ghc-option=-dynamic"/' \
+        -e '/,test_ghc_environment_file/d' \
+        -i unit-tests/run-unit-tests.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

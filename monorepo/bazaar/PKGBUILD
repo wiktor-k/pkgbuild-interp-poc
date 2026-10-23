@@ -1,0 +1,68 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: Rafael Dominiquini <rafaeldominiquini at gmail dot com>
+
+pkgname=bazaar
+pkgver=0.9.9
+pkgrel=1
+pkgdesc="A fast and modern store for GNOME with focus on Flatpaks, particularly from Flathub"
+arch=(x86_64)
+url="https://apps.gnome.org/Bazaar/"
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  appstream
+  cairo
+  dbus
+  dconf
+  flatpak
+  glib2
+  glibc
+  glycin
+  glycin-gtk4
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  json-glib
+  libadwaita
+  libdex
+  libgcc
+  libmalcontent
+  libproxy
+  libsecret
+  libsoup3
+  libxmlb
+  libyaml
+  md4c
+  pango
+  systemd-libs
+  webkitgtk-6.0
+)
+makedepends=(
+  blueprint-compiler
+  git
+  glib2-devel
+  meson
+  ninja
+  python-babel
+  vala
+)
+source=("git+https://gitlab.gnome.org/World/bazaar.git#tag=v${pkgver}")
+b2sums=('1744e313160bb4fb9d05bb5e31f6e571df046979c380a0e5575735f78c75bc5e4fce7d835aadd5b1b558b92e79ce937a24891c63065a0cba2d99fe1bab0649f6')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() (
+  meson test -C build --print-errorlogs
+)
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

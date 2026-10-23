@@ -1,0 +1,37 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: freggel.doe <freggel.doe@gmx.net>
+# Contributor: Andrew Rodland
+
+pkgname=perl-crypt-pbkdf2
+_cpanname=Crypt-PBKDF2
+_module=Crypt::PBKDF2
+pkgver=0.261630
+pkgrel=1
+pkgdesc="The PBKDF2 password hashing algorithm"
+arch=('any')
+url="https://metacpan.org/release/$_cpanname"
+license=('GPL' 'PerlArtistic')
+depends=('perl' 'perl-strictures' 'perl-type-tiny' 'perl-crypt-urandom')
+makedepends=('perl-module-build-tiny')
+checkdepends=('perl-test-fatal' 'perl-moo' 'perl-namespace-autoclean')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/A/AR/ARODLAND/${_cpanname}-${pkgver}.tar.gz")
+sha512sums=('47feea99bc9201bfb1cb83858cc62384d820fe99921b442514e2fbf031376b208da3d06a5a0c8ad1272e7b69b0c365e4096bcd82fd7378ee7e3fdc51e908f038')
+
+build() {
+    cd "$srcdir/$_cpanname-$pkgver"
+    perl Build.PL
+    ./Build
+}
+
+check() {
+    cd "$srcdir/$_cpanname-$pkgver"
+    ./Build test
+}
+
+package() {
+    cd "$srcdir/$_cpanname-$pkgver"
+    ./Build install --destdir "$pkgdir"
+}
+
+# vim:set ts=4 sw=4 expandtab:

@@ -1,0 +1,30 @@
+pkgbase = blurble
+	pkgdesc = Word guessing game
+	pkgver = 0.4.0
+	pkgrel = 4
+	url = https://gitlab.gnome.org/World/Blurble
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	source = git+https://gitlab.gnome.org/World/Blurble.git#tag=v0.4.0
+	source = blurble-metainfo.patch
+	source = blurble-window-title.patch
+	source = blurble-dbus-activatable.patch
+	source = blurble-keyboard-hu.patch
+	b2sums = 0a72995850b1ef6149b628ed1606320a4a56844dca0e153c7492c6dc32a2255bacdef6b8584bffcc0d513e05f408c030dc7e480d02944d0fbf36c18590d49636
+	b2sums = e487ebbe22b1e61839b04d3701fb9e7a6fb5b77f8af9889736a3892086631a395afec0c4ff4afd9a28b7f2544773f36bf4a016f58d9a8b83409934fa227c45b8
+	b2sums = 194390507ec8f5119400abafc552fca7ba4df269009ce90a6be220b81b68561321c372c10a5739b0e8299e54048d5137adc417af04b39ff194cd31252fdb42c6
+	b2sums = 7b6c37c4d128e5f2e976e034d88d56bd5a716f54b190eef6f6d5ab98bb59b3cb401a66352e820b1f5541354865fc73d1a5d8513bc720f66f001e35352da196b3
+	b2sums = de7143e26a945c2b68e794d561bb668e53461d8181916a2b38c6f7d0c6d21ee7e31e6b20110b262cd415fd610849e0ef7cf6ee116c3b78b622bef7130de07fcc
+
+pkgname = blurble

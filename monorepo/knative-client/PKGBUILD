@@ -1,0 +1,39 @@
+# Maintainer : Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=knative-client
+_pkgname=client
+pkgver=1.17.0
+pkgrel=2
+pkgdesc="knative client"
+arch=('x86_64')
+url="https://github.com/knative/client"
+license=('Apache')
+makedepends=('go')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/knative/${_pkgname}/archive/refs/tags/knative-v${pkgver}.tar.gz")
+sha512sums=('b53c5f7a4ce47205255c36785e2179ac7c4deff57d6bb71f5fc243b9daedd100cf2e1de77820db167fa8de7ee55c45bd063a5f0375bc41ec99fbb512f3c32782')
+b2sums=('87afcfe5a2d5d73e1f94d062f77197c836418a654673fdd05c849eb5bc263a4c7776c6ce3c7d82a60fdb9068b78d3571016c7f2dc0b6e4fc8144964008980c30')
+
+build() {
+  cd "client-knative-v${pkgver}/cmd/kn"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw -ldflags=-linkmode=external"
+  go build -v
+}
+
+check() {
+  cd "client-knative-v${pkgver}"
+  go test -v ./...
+}
+
+package() {
+  cd "client-knative-v${pkgver}/cmd/kn"
+  mkdir -p "${pkgdir}/usr/share/bash-completion/completions"
+  mkdir -p "${pkgdir}/usr/share/zsh/site-functions"
+  ./kn completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_kn"
+  ./kn completion bash > "${pkgdir}/usr/share/bash-completion/completions/kn"
+  install -Dm755 kn "${pkgdir}/usr/bin/kn"
+}

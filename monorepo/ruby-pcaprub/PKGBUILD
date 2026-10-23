@@ -1,0 +1,91 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname=pcaprub
+pkgname=ruby-${_gemname}
+pkgver=0.13.3
+pkgrel=5
+pkgdesc='Consistent interface to libpcap packet capture library'
+url='https://github.com/pcaprub/pcaprub'
+arch=('x86_64')
+license=('LGPL2.1')
+depends=(
+  ruby
+  libpcap
+)
+makedepends=(
+  git
+  ruby-rake
+  ruby-rake-compiler
+  ruby-rdoc
+  ruby-rubygems-tasks
+)
+options=('!emptydirs')
+source=("git+${url}#tag=v${pkgver}")
+sha512sums=('ed27c0e0dc2205087d0d777cbed1dedc15b0e65deab1e256f993658dda34d10ba5d00a9c630a931202096df5372b5652a1fc949bc3b3b468db9a5879078d1183')
+b2sums=('3e274f87d87fb722037249595d99999e32e53a859f09fbdb2681d2d920e7a81aadf59634a5962c5f7e431236ebe68ac57b28159baf87adcfaa6feb2a585773f3')
+
+prepare() {
+  cd "${_gemname}"
+
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    --expression '/git/d' \
+    --expression '/[Cc]overalls/d' \
+    Gemfile \
+    Rakefile
+}
+
+build() {
+  cd "${_gemname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  rake gem compile
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "pkg/${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+package() {
+  cd "${_gemname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.rdoc --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

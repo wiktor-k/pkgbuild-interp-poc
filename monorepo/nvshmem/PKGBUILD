@@ -1,0 +1,155 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=nvshmem
+pkgname=(nvshmem python-nvshmem)
+pkgver=3.8.0
+_upstream_pkgrel=0
+_cuda_ver=13
+pkgrel=1
+pkgdesc="NVIDIA parallel programming interface based on OpenSHMEM"
+arch=(x86_64)
+url="https://developer.nvidia.com/nvshmem"
+license=(LicenseRef-NVIDIA-NVSHMEM)
+makedepends=(
+  cmake
+  cuda
+  cython
+  ninja
+  libfabric
+  nccl
+  openmpi
+  openpmix
+  openucx
+  rdma-core
+  python-build
+  python-installer
+  python-setuptools-scm
+  python-wheel
+)
+source=($pkgbase-$pkgver.tar.gz::https://github.com/NVIDIA/nvshmem/archive/refs/tags/v$pkgver-$_upstream_pkgrel.tar.gz)
+b2sums=('ec417a8ba9505d1ff29bd5bde7e2d8faae606c6c3c37baede46299ab06a2e7b71fceed95095bd97aeebd33586b3e679fcb8200b0ead08745668f9888d38c8783')
+# LTO does not work with mixed GCC versions (15 by nvcc and 16 system)
+options=(!lto)
+
+prepare() {
+  cd $pkgbase-$pkgver-$_upstream_pkgrel
+  # generate pyproject.toml
+  nvshmem4py/scripts/generate_pyproject_toml.py $_cuda_ver nvshmem4py > nvshmem4py/pyproject.toml
+  sed -i -e "s|requirements.txt|requirements_cuda$_cuda_ver.txt|" nvshmem4py/setup.py
+
+  # pass CMAKE_CUDA_FLAGS to cmake call
+  sed -i 's|-DCMAKE_CUDA_HOST_COMPILER=${CMAKE_CUDA_HOST_COMPILER}|-DCMAKE_CUDA_HOST_COMPILER=${CMAKE_CUDA_HOST_COMPILER} -DCMAKE_CUDA_FLAGS=${CMAKE_CUDA_FLAGS}|' src/CMakeLists.txt
+
+  # fix install locations
+  sed -i 's|DESTINATION share/src/|DESTINATION share/nvshmem/src/|g' src/CMakeLists.txt
+  sed -i 's|DESTINATION include/|DESTINATION include/nvshmem/|g' src/CMakeLists.txt
+
+  # fix INCLUDE_DIRS in cmake config file
+  sed -i 's|${PACKAGE_PREFIX_DIR}/include|${PACKAGE_PREFIX_DIR}/include/'"$pkgname"'|' cmake_config/NVSHMEMConfig.cmake.in
+
+  # respect LDFLAGS
+  sed -i 's|set(CMAKE_EXE_LINKER_FLAGS "-Wl,--enable-new-dtags")|set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--enable-new-dtags")|' CMakeLists.txt
+}
+
+build() {
+  # In general, we want to list all real archs (sm_XX) and the latest virtual arch (compute_XX) for future PTX compatibility.
+  # Valid values can be discovered from nvcc --help
+  local cuda_archs="75;80;86;87;88;89;90;100;103;110;120;121;121-virtual"
+  local env_options=(
+    # nvshmem dependencies are configured through environment variables :-(
+    # https://github.com/NVIDIA/nvshmem/blob/devel/cmake_config/NVSHMEMEnv.cmake#L90-L103
+    CUDA_HOME="$CUDA_PATH"
+    GDRCOPY_HOME=/usr
+    LIBFABRIC_HOME=/usr
+    MPI_HOME=/usr
+    PMIX_HOME=/usr
+    UCX_HOME=/usr
+    NCCL_HOME=/usr
+    #CUTLASS_HOME=
+    NVSHMEM_PREFIX=/usr
+  )
+  local cmake_options=(
+    -B build
+    -S $pkgbase-$pkgver-$_upstream_pkgrel
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_CUDA_ARCHITECTURES="$cuda_archs"
+    # Compile source code for supported GPU archs in parallel
+    -DCMAKE_CUDA_FLAGS="--threads $(nproc)"
+    -DNVSHMEM_USE_GDRCOPY=OFF  # gdrcopy is not packaged
+    -DNVSHMEM_BUILD_WITH_CUTLASS=OFF
+    -DNVSHMEM_PMIX_SUPPORT=ON
+    -DNVSHMEM_DEFAULT_PMIX=ON
+    -DNVSHMEM_SHMEM_SUPPORT=ON
+    -DNVSHMEM_IBGDA_SUPPORT=ON
+    -DNVSHMEM_IBDEVX_SUPPORT=ON
+    -DNVSHMEM_LIBFABRIC_SUPPORT=ON
+    -DNVSHMEM_UCX_SUPPORT=ON
+    -DNVSHMEM_USE_DLMALLOC=OFF  # causes compiler errors
+    -DNVSHMEM_USE_NCCL=ON
+    -DNVSHMEM_GPU_COLL_USE_LDST=OFF  # causes compiler errors
+    # disable building Python wheel through cmake to avoid venv and external dependencies
+    -DNVSHMEM_BUILD_PYTHON_LIB=OFF
+  )
+  env "${env_options[@]}" cmake "${cmake_options[@]}"
+  cmake --build build
+
+  cd $pkgbase-$pkgver-$_upstream_pkgrel/nvshmem4py
+  # The ask_smem extension includes NVSHMEM device headers (device/nvshmemx_defines.h),
+  # which are exported to the build tree by src/CMakeLists.txt.
+  # See the upstream nvshmem4py/cmake/buildWheel.cmake
+  CPPFLAGS="-I $srcdir/build/src/include -I /opt/cuda/include -I /opt/cuda/include/cccl" python -m build --wheel --no-isolation
+}
+
+package_nvshmem() {
+  depends=(
+    cuda
+    glibc
+    libgcc
+    libstdc++
+  )
+  optdepends=(
+    'libfabric: For OpenFabrics transport plugin'
+    'openmpi: For MPI and OpenSHMEM bootstrap plugins'
+    'openpmix: For PMI bootstrap plugins'
+    'openucx: For UCX transport plugin'
+    'rdma-core: For IBGDA transport plugin'
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  # install license
+  install -vDm 644 $pkgbase-$pkgver-$_upstream_pkgrel/License.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # move bin subdirs into "namespaced" directory
+  install -vdm 755 "$pkgdir"/usr/bin/$pkgname/
+  mv -v "$pkgdir"/usr/bin/{examples,perftest} "$pkgdir"/usr/bin/$pkgname/
+
+  # remove inappropriate artifacts
+  rm -rv "$pkgdir"/build "$pkgdir"/usr/{changelog,License.txt,version.txt,git_commit.txt}
+}
+
+package_python-nvshmem() {
+  pkgdesc="Python interface for NVSHMEM"
+  depends=(
+    cuda
+    glibc
+    nvshmem
+    python
+    python-cffi
+    python-cuda-bindings
+    python-cuda-core
+    python-cuda-pathfinder
+    python-numba
+    python-numpy
+    python-mpi4py
+  )
+
+  cd $pkgbase-$pkgver-$_upstream_pkgrel/nvshmem4py
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # install license
+  install -vDm 644 License.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,25 @@
+pkgbase = python-capstone6pwndbg
+	pkgdesc = Lightweight multi-platform, multi-architecture disassembly framework (pwndbg only)
+	pkgver = 8.0.0
+	pkgrel = 1
+	url = https://www.capstone-engine.org/index.html
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cmake
+	makedepends = git
+	makedepends = glibc
+	makedepends = python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	source = git+https://github.com/pwndbg/capstone6pwndbg.git#tag=v8.0.0
+	source = git+https://github.com/capstone-engine/capstone.git
+	sha512sums = 326e33dbb5de3597bb3e6139a764a99a0a74d1ca065846192d26233298214d490cc2916edc8cb53458d2418f79cc4e8cbbd50b229443350fd5c80902cb11248a
+	sha512sums = SKIP
+	b2sums = 3429dc1c9da997b007c26943749ecec63471f1ac5b8e615abc406cf7336deb78c9df81e89bc5678b0ef2c7350b76faee8153c68ec7778339979b6155c7c030a6
+	b2sums = SKIP
+
+pkgname = python-capstone6pwndbg
+	depends = glibc
+	depends = python

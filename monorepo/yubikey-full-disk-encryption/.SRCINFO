@@ -1,0 +1,18 @@
+pkgbase = yubikey-full-disk-encryption
+	pkgdesc = Use YubiKey to unlock a LUKS partition
+	pkgver = r155.dcaac00
+	pkgrel = 2
+	url = https://github.com/agherzan/yubikey-full-disk-encryption
+	arch = any
+	license = Apache
+	makedepends = git
+	depends = yubikey-personalization
+	depends = cryptsetup
+	optdepends = ykchalresp-nfc: NFC support
+	optdepends = udisks2: use ykfde-open without root
+	optdepends = expect: use ykfde-open without root
+	backup = etc/ykfde.conf
+	source = git+https://github.com/agherzan/yubikey-full-disk-encryption.git#commit=dcaac005b10eac132ac663c268318bd909bf027c
+	sha256sums = SKIP
+
+pkgname = yubikey-full-disk-encryption

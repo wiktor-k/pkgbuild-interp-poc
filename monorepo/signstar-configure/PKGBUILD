@@ -1,0 +1,51 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=signstar-configure
+_name=signstar
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Runtime configuration for Signstar hosts"
+arch=(x86_64)
+url="https://signstar.archlinux.page/signstar-configure"
+_url="https://gitlab.archlinux.org/archlinux/signstar"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+  libusb
+)
+makedepends=(
+  git
+  just
+  rust
+  rust-script
+)
+source=($_name::git+$_url.git?signed#tag=$pkgname/$pkgver)
+sha512sums=('8b982962472ed85e9363c2224bf95092a4053313dd1258a25c71684e280a882e4eb3747a321a69ffada09eb50ac23a3a72c1b0c290ce51868a5da62ce28615b8')
+b2sums=('cbb1411c31f18ca75a7bcddd92c0c3325aa67843a9a66b3ee1dfacd5386e8d1dc56b7acf3ba33a4b489629ab02b34b9df897471422c48866e1ac13130d84fc9a')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release --package $pkgname
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+}
+
+package() {
+  install -vDm 755 $_name/target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_name/$pkgname/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $_name/LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name/output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 $_name/output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 $_name/$pkgname/resources/systemd/*.{service,timer} -t "$pkgdir/usr/lib/systemd/system/"
+}
+

@@ -1,0 +1,24 @@
+pkgbase = python-swiftclient
+	pkgdesc = An SDK for building applications to work with OpenStack
+	pkgver = 4.11.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-swiftclient
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-keystoneauth1
+	checkdepends = python-stestr
+	checkdepends = python-openstacksdk
+	checkdepends = python-keystoneclient
+	checkdepends = python-openstackclient
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-pbr
+	depends = python-requests
+	optdepends = python-keystoneclient: for Auth versions 2.0 and 3 support
+	source = git+https://github.com/openstack/python-swiftclient.git#tag=4.11.0
+	sha512sums = f6bdadcff5e800270639f25bd14e842a1a04909a30ea9b76431d225e9a53e745e5b2d8da66e970444aa0f7e95ea348911336d51cc8509f30efa2388c395b3afe
+
+pkgname = python-swiftclient

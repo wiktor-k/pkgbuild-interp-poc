@@ -1,0 +1,26 @@
+pkgbase = hexter
+	pkgdesc = A Yamaha DX7 modeling software synthesizer for the DSSI Soft Synth Interface
+	pkgver = 1.1.1
+	pkgrel = 4
+	url = https://github.com/smbolton/hexter
+	arch = x86_64
+	groups = dssi-plugins
+	groups = pro-audio
+	license = GPL2
+	makedepends = dssi
+	makedepends = ladspa
+	makedepends = liblo
+	makedepends = readline
+	depends = dssi-host
+	depends = glibc
+	source = https://github.com/smbolton/hexter/archive/version_1.1.1/hexter-version_1.1.1.tar.gz
+	sha512sums = 3de1e75df453a79d4b7eda4cf503f436201db34837b7584ea683f57c4b62029ea994eb6bc6d461e10938183b995792ded975ac112f0b9639d06b5571c93f3100
+	b2sums = 32bcb1f42f9971fd4ca2406e58b7a9f735510eaad5ccc92a0aa45200c0ca468fb02698d1e548f9a6a657bbae183eabe20a200352470270042ec7b99f0238b1db
+
+pkgname = hexter
+	depends = dssi-host
+	depends = glibc
+	depends = liblo
+	depends = liblo.so
+	depends = readline
+	depends = libreadline.so

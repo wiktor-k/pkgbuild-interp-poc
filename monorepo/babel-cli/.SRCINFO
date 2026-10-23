@@ -1,0 +1,19 @@
+pkgbase = babel-cli
+	pkgdesc = A compiler for writing next generation JavaScript
+	pkgver = 8.0.6
+	pkgrel = 1
+	url = https://babeljs.io/
+	arch = any
+	license = MIT
+	makedepends = npm
+	depends = nodejs
+	depends = babel-core
+	provides = nodejs-babel-cli
+	conflicts = nodejs-babel-cli
+	conflicts = openbabel<3
+	replaces = nodejs-babel-cli
+	noextract = babel-cli-8.0.6.tgz
+	source = babel-cli-8.0.6.tgz::https://registry.npmjs.org/@babel/cli/-/cli-8.0.6.tgz
+	sha512sums = ba6f25fec899e978a818dc5b984af2d59deeefb61ee9b903920ea55dec2d64369c18d0be30b87ce4259c9cc57f035da2e1e87bec7921912295959b64e09b2e70
+
+pkgname = babel-cli

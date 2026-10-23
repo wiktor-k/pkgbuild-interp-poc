@@ -1,0 +1,27 @@
+pkgbase = deepin-qt6integration
+	pkgdesc = Qt 6 platform theme integration plugins for DDE
+	pkgver = 6.0.50
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/qt6integration
+	arch = x86_64
+	groups = deepin
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	makedepends = xcb-util-renderutil
+	makedepends = gtest
+	depends = dtk6core
+	depends = dtk6gui
+	depends = dtk6widget
+	depends = qt6-base
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libx11
+	depends = libqtxdg
+	source = git+https://github.com/linuxdeepin/qt6integration.git#tag=6.0.50
+	sha512sums = 5201b89867c94a8b4d100d1995efa1b4c8f486515642d2e8284507f1b38f7a956b55175965dc4b22678381ab0bf9decabdd3995cc542ae25e69ec29fc897e9f0
+
+pkgname = deepin-qt6integration

@@ -1,0 +1,60 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Tom K <tomk@runbox.com>
+# Contributor: Todd Musall <tmusall@gmail.com>
+
+pkgname=gnubiff
+pkgver=2.2.17
+pkgrel=13
+pkgdesc='Mail notification program that checks for mail and displays headers when new mail has arrived'
+arch=(x86_64)
+url='https://gnubiff.sourceforge.net/'
+license=(GPL-3.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  libx11
+  openssl
+  pango
+  popt
+)
+makedepends=(intltool)
+source=(
+  "https://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz"
+  gnubiff.appdata.xml
+)
+b2sums=(
+  5ee58828211eb7b85ab017129feec48c6d2b2df4de862f7791f15f361bda7919cbdc7aa37403130da044a1f9e2068154ddc5ae8629eb9f4d38956d759477fb80
+  02914c3ab2a79cb6a51516b23dd126ccf5cd73991d8ee6cbd37a55ed30e585e38a078ea8dfe002656fe17b80eb497ac88bb4d95bcd34d43e665821d53112ad23
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+  sed -i 's|$(datadir)/pixmaps|$(datadir)/icons/hicolor/48x48/apps|' art/Makefile.am
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --disable-fam \
+    --disable-gnome \
+    --with-password \
+    --with-password-string="65423957eb027b94c9e661611c0e4271"
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" DATADIRNAME=share install
+  install -Dm644 art/tux-awake.png "$pkgdir/usr/share/icons/hicolor/64x64/apps/gnubiff.png"
+  install -Dm644 ../gnubiff.appdata.xml "$pkgdir/usr/share/metainfo/gnubiff.appdata.xml"
+}

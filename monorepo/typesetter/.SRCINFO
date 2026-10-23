@@ -1,0 +1,34 @@
+pkgbase = typesetter
+	pkgdesc = A minimalist local-first Typst editor
+	pkgver = 0.15.2
+	pkgrel = 2
+	url = https://codeberg.org/haydn/typesetter
+	arch = x86_64
+	arch = aarch64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = rust
+	makedepends = blueprint-compiler
+	makedepends = meson
+	makedepends = libvirt
+	makedepends = libvirt-glib
+	depends = libadwaita
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = dconf
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = gtksourceview5
+	depends = libspelling
+	depends = pango
+	depends = gdk-pixbuf2
+	depends = openssl
+	depends = cairo
+	depends = graphene
+	depends = zstd
+	source = typesetter::git+https://codeberg.org/haydn/typesetter#tag=v0.15.2
+	sha512sums = badaad5cefcfe5a2d81a74f952d60c7d18f31c4aab6ff8193b25559d45227bf5d07ddffee130ead8fb74e363381cc253d36012cfce1d3296bc4c9c843d263702
+	b2sums = a0e04e1520f7083bd09e8b1873c3692fbda6e4a1fbb6fb04615eaab2e0a57e735e5902375dd6f41615d3940fb88326b43816ae3bf50a3c3331cd7fa09857ab39
+
+pkgname = typesetter

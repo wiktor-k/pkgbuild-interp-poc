@@ -1,0 +1,49 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=python-tweepy
+_pypiname=tweepy
+pkgver=4.16.0
+pkgrel=1
+pkgdesc='Python library for accessing the entire Twitter API'
+url='https://tweepy.org/'
+arch=('any')
+license=('MIT')
+depends=('python' 'python-oauthlib' 'python-requests' 'python-requests-oauthlib')
+makedepends=('python-build' 'python-flit-core' 'python-installer')
+checkdepends=(
+  'python-aiohttp'
+  # 'python-async-lru'  # TODO: needs package
+  'python-vcrpy'
+)
+optdepends=(
+  'python-aiohttp: for async support'
+  # 'python-async-lru: for async support'  # TODO: needs package
+)
+source=(https://github.com/tweepy/${_pypiname}/archive/v${pkgver}/${_pypiname}-${pkgver}.tar.gz)
+sha256sums=('35b691d6c97024eee8b3c300935b38828cce41444b4c1f86a207947e67147856')
+sha512sums=('81ea84aa241fb7fa354139fb2dfdb917ac8bd50e11ab036307ebee4fd3d4f01f253cb6d4a558a63290f3ec580e489cc1ff0ca004b8abda2c008390e5fc2ac57d')
+
+prepare() {
+  cd ${_pypiname}-${pkgver}
+  sed -i 's/flit_core<4/flit_core/' pyproject.toml
+}
+
+build() {
+  cd ${_pypiname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+# check() {
+#   cd ${_pypiname}-${pkgver}
+#   python -m unittest discover -v
+# }
+
+package() {
+  cd ${_pypiname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -d "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -r examples "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

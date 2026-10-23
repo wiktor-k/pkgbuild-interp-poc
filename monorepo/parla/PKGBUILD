@@ -1,0 +1,47 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=parla
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="Native Gnome DeltaChat client"
+arch=(x86_64)
+url="https://github.com/trufae/parla"
+license=(GPL-3.0-or-later)
+depends=(
+  deltachat-rpc-server
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  json-glib
+  libgcc
+  libadwaita
+  libsoup3
+  pango
+  webkitgtk-6.0
+)
+makedepends=(
+  meson
+  vala
+)
+optdepends=(
+  'python-openai-whisper: for voice message transcribing'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+sha512sums=('9b03c878bf27a2de07e386b35743c3eea8d1830ed95eed4bda733aeae43f6e5fdd2f99aa274e5bee318d3e48508cf7d3bbd9f11fa8011da09dfc1ef70479c3ea')
+b2sums=('3854f0dcb5fb3d7efd63898eb1584e154e64a12986b4ef67567a9d40eed38bd9ecde3be9d668b0073fce9ef7c51a819d2a77b564a5dd8d1e9019c275814b24c2')
+
+build() {
+  arch-meson build -D webxdc=true $pkgname-$pkgver
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

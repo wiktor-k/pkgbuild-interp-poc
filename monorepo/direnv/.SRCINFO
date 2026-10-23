@@ -1,0 +1,21 @@
+pkgbase = direnv
+	pkgdesc = A shell extension that manages your environment
+	pkgver = 2.38.2
+	pkgrel = 1
+	url = https://direnv.net
+	arch = x86_64
+	license = MIT
+	checkdepends = zsh
+	checkdepends = fish
+	checkdepends = bash
+	checkdepends = tcsh
+	checkdepends = elvish
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = direnv::git+https://github.com/direnv/direnv.git#tag=v2.38.2
+	sha512sums = 996a88c4e3708106ea55beeb921f151fb060782aebdc5296830771c9242ae09594452ed5568522e06f254923258105d0c3a17d3893cc04af06143f88973f40f0
+	b2sums = a0e5cc5860f3f9cc67d6b1899e1260c8d739c2a55eddb3560d22d3f9fa57cc79c7bb443c4f9f71e1946bd11d879ef0bdbd4b40aeac358a05e5575707b0e6966a
+
+pkgname = direnv

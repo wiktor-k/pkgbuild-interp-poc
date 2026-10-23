@@ -1,0 +1,19 @@
+pkgbase = python-openstackdocstheme
+	pkgdesc = Open Infrastructure Projects Sphinx Themes
+	pkgver = 3.6.0
+	pkgrel = 1
+	url = https://opendev.org/openstack/openstackdocstheme
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-pbr
+	depends = python-dulwich
+	depends = python-sphinx
+	options = !emptydirs
+	source = git+https://github.com/openstack/openstackdocstheme.git#tag=3.6.0
+	sha512sums = ba7f8678eaa1e0317263788299c1c1907e3a4b3b447e8a1a5571f14bafb6b1d6d923fd22977527d615f3e5b938bc1fe07731e39f36b3793fb595b5680c8fab01
+
+pkgname = python-openstackdocstheme

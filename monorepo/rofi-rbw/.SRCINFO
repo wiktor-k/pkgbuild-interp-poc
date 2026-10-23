@@ -1,0 +1,26 @@
+pkgbase = rofi-rbw
+	pkgdesc = Rofi (and dmenu-like) frontend for Bitwarden
+	pkgver = 1.7.0
+	pkgrel = 1
+	url = https://github.com/fdw/rofi-rbw
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python-configargparse
+	depends = rbw
+	optdepends = rofi: for the X.Org selector
+	optdepends = xclip: for one of the X.Org clipboarders
+	optdepends = xsel: for one of the X.Org clipboarders
+	optdepends = xdotool: for an X.Org typer
+	optdepends = fuzzel: for one of the Wayland selectors
+	optdepends = wofi: for one of the Wayland selectors
+	optdepends = wl-clipboard: for the Wayland clipboarder
+	optdepends = wtype: for a Wayland typer
+	optdepends = ydotool: for a generic typer
+	source = git+https://github.com/fdw/rofi-rbw.git#tag=1.7.0
+	b2sums = ee45884a52d040c04c423333e39f5c8c6b25f1cee562e89e13a7f303a3b5c1d3e20f9f65638b7e7db1a37515370983ca8bf8c01ddf90b85f0b8c64d07ba9087a
+
+pkgname = rofi-rbw

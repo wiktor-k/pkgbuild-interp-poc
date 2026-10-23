@@ -1,0 +1,20 @@
+pkgbase = python-jupyter-builder
+	pkgdesc = Build tools for JupyterLab
+	pkgver = 1.2.3
+	pkgrel = 1
+	url = https://jupyter.org/
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-nodejs-version
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-jupyter-core
+	depends = python-traitlets
+	source = git+https://github.com/jupyterlab/jupyter-builder#tag=v1.2.3
+	sha256sums = 72f75f3053b74b858502bf579ee3e78ee8aef7da6c043980f90567e701aa90bf
+
+pkgname = python-jupyter-builder

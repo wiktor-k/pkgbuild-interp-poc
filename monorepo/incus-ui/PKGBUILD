@@ -1,0 +1,40 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=incus-ui
+pkgver=0.22.0
+pkgrel=1
+pkgdesc='incus web interface'
+arch=(x86_64)
+url='https://github.com/zabbly/incus-ui-canonical'
+license=(GPL-3.0-only)
+makedepends=(git yarn npm)
+source=("$pkgname::git+https://github.com/zabbly/incus-ui-canonical.git#tag=incus-${pkgver}")
+sha512sums=('6de8d76813fa361e838f40bb50c31419c0c6582d07bb2a1ec7e91962ffedf677f8d06ec341d3ecd3829b141296e4ae192adb9041a4febb45173e7d1f448550d4')
+b2sums=('623f13c7e9e34d99e10e3f1b3626ad31abe9414cf6310b035838d9dcb893734d01648f075dd1b274b4ffa340e83d46fe1135c50830822dd1891492ec0ad7ce52')
+
+prepare() {
+  cd "$pkgname"
+
+  # See https://github.com/zabbly/incus/blob/2efccf9de6d2245b8c4f2b3203e94613b973cf24/.github/workflows/builds.yml#L366C11-L366C79
+  find -type f -name "*.ts" -o -name "*.tsx" -o -name "*.scss" | xargs sed -i \
+    -e 's/devlxd/guestapi/g' \
+    -e 's/dev\/lxd/dev\/incus/g' \
+    -e 's/LXD/Incus/g' \
+    -e 's/Lxd/Incus/g' \
+    -e 's/lxd/incus/g'
+
+  yarn install
+}
+
+build() {
+  cd "$pkgname"
+
+  yarn build
+}
+
+package() {
+  cd "$pkgname"
+
+  install -dm755 "${pkgdir}/usr/share/incus-ui"
+  cp -dR --preserve=timestamps "build/ui" -T "${pkgdir}/usr/share/incus-ui"
+}

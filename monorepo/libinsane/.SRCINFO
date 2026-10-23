@@ -1,0 +1,22 @@
+pkgbase = libinsane
+	pkgdesc = Library to access scanners
+	pkgver = 1.0.10
+	pkgrel = 2
+	url = https://gitlab.gnome.org/World/OpenPaperwork/libinsane
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	checkdepends = cunit
+	checkdepends = valgrind
+	makedepends = doxygen
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = glibc
+	depends = sane
+	source = git+https://gitlab.gnome.org/World/OpenPaperwork/libinsane.git#tag=1.0.10
+	b2sums = e79489c83ad4f9125dd0c94b31187c37420b884047aba334bd737ccd45f53d77cde882b87e3ddc8f67e311dc54c9120746746358ca59c68ab7e196c2f0e70230
+
+pkgname = libinsane

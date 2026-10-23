@@ -1,0 +1,105 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-file-manager
+pkgver=6.5.48.3
+pkgrel=1
+epoch=1
+pkgdesc='Deepin File Manager'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-file-manager"
+license=('CC-BY-4.0' 'CC0-1.0' 'GPL-3.0-or-later' 'LGPL-3.0-or-later' 'MIT')
+# deepin-appearance: org.deepin.dde.Appearance1
+depends=('dtk6core' 'dtk6gui' 'dtk6widget'
+         'deepin-anything' 'deepin-util-dfm' 'deepin-shell' 'qt6-base' 'qt6-svg'
+         'deepin-pdfium' 'docparser' 'libsecret' 'zlib' 'dconf' 'openssl' 'glib2'
+         'libxcb' 'libx11' 'qt6-multimedia' 'cryptsetup' 'device-mapper' 'lucene++' 'avfs'
+         'polkit-qt6' 'poppler' 'taglib' 'util-linux-libs' 'icu' 'pcre2' 'glibc' 'libgcc' 'libstdc++'
+         'deepin-appearance' 'deepin-qt-dbus-factory' 'cryfs' 'socat' 'dtklog' 'deepin-service-manager')
+makedepends=('git' 'boost' 'cmake' 'ninja' 'qt6-tools' 'deepin-tray-loader' 'deepin-movie'
+             'deepin-gettext-tools')
+optdepends=('deepin-manual: for help menual'
+            'deepin-shortcut-viewer: for shortcut display'
+            'deepin-screensaver: for screensaver chooser'
+            'deepin-device-formatter: for disk formatting'
+            'deepin-movie: for video preview'
+            'deepin-terminal: for opening in terminal'
+            'deepin-compressor: for compress/decompress')
+groups=('deepin')
+provides=('deepin-desktop')
+conflicts=('deepin-desktop')
+replaces=('deepin-desktop')
+# https://github.com/linuxdeepin/developer-center/issues/5725
+options=('!lto')
+source=("git+https://github.com/linuxdeepin/dde-file-manager.git#tag=$pkgver")
+sha512sums=('3c7354c7cdf127ab8650f14bfe906cfb0ab7f18b01b2a8a305e71bac02bb46701f3c14bebdeb8e69e3fde6ec5a456182362ba698c456a615ea7d6ce1b9c018ee')
+
+prepare() {
+  cd dde-file-manager
+
+  # Include <cstdint> where required when building with GCC 15.
+  # https://github.com/linuxdeepin/dde-file-manager/pull/2928
+  git cherry-pick -n baa88b600c4398bc49c36a3547077cd8d3a4e5cf
+
+  # Migrate search and TextIndex from PCRE1 to PCRE2.
+  # https://github.com/linuxdeepin/dde-file-manager/pull/2812
+  git cherry-pick -n 682dffd359abdf42329f03a1cb0ca666eb3a328d
+
+  # Backport upstream's Qt 6.10+ private-header target links.
+  # https://github.com/linuxdeepin/dde-file-manager/pull/3245
+  sed -i \
+    -e 's/find_package(Qt6 COMPONENTS Core Widgets Gui Svg REQUIRED)/find_package(Qt6 COMPONENTS Core Widgets Gui Svg WidgetsPrivate REQUIRED)/' \
+    -e '/Qt6::Widgets$/a\    Qt6::WidgetsPrivate' \
+    src/plugins/desktop/ddplugin-canvas/CMakeLists.txt
+  sed -i \
+    -e 's/find_package(Qt6 COMPONENTS Core Widgets Gui REQUIRED)/find_package(Qt6 COMPONENTS Core Widgets Gui GuiPrivate REQUIRED)/' \
+    -e '/Qt6::Gui$/a\    Qt6::GuiPrivate' \
+    src/plugins/desktop/ddplugin-core/CMakeLists.txt
+  sed -i \
+    -e 's/find_package(Qt6 COMPONENTS Core REQUIRED)/find_package(Qt6 COMPONENTS Core Widgets WidgetsPrivate REQUIRED)/' \
+    -e '/DFM6::framework/a\    Qt6::Core\n    Qt6::Widgets\n    Qt6::WidgetsPrivate' \
+    src/plugins/desktop/ddplugin-organizer/CMakeLists.txt
+  sed -i \
+    -e 's/find_package(Dtk6 COMPONENTS Widget REQUIRED)/find_package(Qt6 COMPONENTS Core Gui GuiPrivate REQUIRED)\n&/' \
+    -e '/DFM6::framework/a\    Qt6::Core\n    Qt6::Gui\n    Qt6::GuiPrivate' \
+    src/plugins/desktop/ddplugin-background/CMakeLists.txt
+  sed -i \
+    -e 's/find_package(Qt6 COMPONENTS Core Svg REQUIRED)/find_package(Qt6 COMPONENTS Core Svg Gui GuiPrivate REQUIRED)/' \
+    -e '/Qt6::Svg$/a\        Qt6::Core\n        Qt6::Gui\n        Qt6::GuiPrivate' \
+    src/plugins/desktop/ddplugin-wallpapersetting/CMakeLists.txt
+  sed -i \
+    -e 's/find_package(Dtk6 COMPONENTS Widget REQUIRED)/find_package(Qt6 COMPONENTS Core Widgets WidgetsPrivate REQUIRED)\n&/' \
+    -e '/DFM6::framework/a\    Qt6::Core\n    Qt6::Widgets\n    Qt6::WidgetsPrivate' \
+    src/plugins/filemanager/dfmplugin-workspace/CMakeLists.txt
+
+  # Package the udev rule under /usr/lib instead of an admin directory.
+  sed -i 's|DESTINATION /etc/udev/rules.d|DESTINATION ${CMAKE_INSTALL_LIBDIR}/udev/rules.d|' \
+    src/services/diskencrypt/CMakeLists.txt
+
+  # Upstream regenerates checked-in DBus XML files while other targets consume them,
+  # which creates Ninja dependency cycles with globbed sources.
+  sed -i '/qt6_generate_dbus_interface/,/)/d' \
+    src/plugins/daemon/core/CMakeLists.txt \
+    src/plugins/daemon/recent/CMakeLists.txt \
+    src/plugins/daemon/tag/CMakeLists.txt \
+    src/plugins/daemon/vault/CMakeLists.txt
+
+}
+
+build() {
+  # cmake confused with glob files, see https://github.com/linuxdeepin/developer-center/issues/5158
+  cmake -GNinja -B build -S dde-file-manager \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib/dde-file-manager \
+    -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  cd build
+  ninja
+}
+
+package() {
+  cd build
+  DESTDIR="$pkgdir" ninja install
+}

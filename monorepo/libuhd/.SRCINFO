@@ -1,0 +1,57 @@
+pkgbase = libuhd
+	pkgdesc = Universal Software Radio Peripheral (USRP) userspace driver
+	pkgver = 4.9.0.1
+	pkgrel = 8
+	url = https://github.com/EttusResearch/uhd
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = python-requests
+	makedepends = boost
+	makedepends = boost-libs
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = dpdk
+	makedepends = git
+	makedepends = pybind11
+	makedepends = python-mako
+	makedepends = python-numpy
+	makedepends = python-ruamel-yaml
+	makedepends = python-setuptools
+	source = git+https://github.com/EttusResearch/uhd.git#tag=v4.9.0.1
+	sha256sums = 74830b4ceffc05173cf21073bf25a8e32458a91bf083f634d349ad1593d86bf8
+
+pkgname = libuhd
+	depends = boost-libs
+	depends = dpdk
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libusb
+	depends = python
+	provides = libuhd.so
+
+pkgname = libuhd-docs
+	pkgdesc = Universal Software Radio Peripheral (USRP) userspace driver (documentation)
+
+pkgname = libuhd-utils
+	pkgdesc = Universal Software Radio Peripheral (USRP) userspace driver (utilities)
+	depends = boost-libs
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libuhd
+	depends = ncurses
+	depends = python
+	depends = python-uhd
+
+pkgname = python-uhd
+	pkgdesc = Universal Software Radio Peripheral (USRP) userspace driver (Python API)
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libuhd
+	depends = python
+	depends = python-mako
+	depends = python-numpy
+	depends = python-ruamel-yaml
+	optdepends = python-jsonschema: for validating configuration files

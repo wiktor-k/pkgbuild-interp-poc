@@ -1,0 +1,22 @@
+pkgbase = gotraceui
+	pkgdesc = Go execution trace frontend
+	pkgver = 0.4.0
+	pkgrel = 3
+	url = https://github.com/dominikh/gotraceui
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	makedepends = vulkan-headers
+	depends = wayland
+	depends = libxkbcommon
+	depends = libx11
+	depends = libglvnd
+	depends = libxkbcommon-x11
+	depends = libxcursor
+	source = gotraceui-0.4.0.tar.gz::https://github.com/dominikh/gotraceui/archive/v0.4.0.tar.gz
+	source = switch_to_gio_fork.patch
+	sha256sums = 5aa6bc3e36fcde4cf91e8056df99ac432175c72ed76a061406469d8eca78f647
+	sha256sums = 199b381d54f24487ffd1b9493d18207cf853107814d2d9df2f58932e27f5b677
+
+pkgname = gotraceui

@@ -1,0 +1,18 @@
+pkgbase = vhs
+	pkgdesc = A tool for recording terminal GIFs
+	pkgver = 0.12.1
+	pkgrel = 1
+	url = https://github.com/charmbracelet/vhs
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = ffmpeg
+	depends = ttyd
+	options = !lto
+	source = vhs::git+https://github.com/charmbracelet/vhs#tag=v0.12.1
+	sha512sums = c77b0d5ebf728628b85051f9bd1e914659d820293b58af116e5a5f613cb5292fada0cee52947f553adb5938fd36d8e8be1141b2063745001ca2b7ca33d2e7061
+	b2sums = 65f1800942d5acf9bb6d9264baa492344c535c25a05e32df048ffa0897347c9c9de5c914ac16eb15bd6233a23fb3414be73c9a973fd48b6aef563ea11dd2d85e
+
+pkgname = vhs

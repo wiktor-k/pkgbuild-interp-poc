@@ -1,0 +1,17 @@
+pkgbase = acpi_call-dkms
+	pkgdesc = A linux kernel module that enables calls to ACPI methods through /proc/acpi/call - module sources
+	pkgver = 1.2.2
+	pkgrel = 3
+	url = https://github.com/nix-community/acpi_call
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = dkms
+	provides = acpi_call=1.2.2-3
+	conflicts = acpi_call
+	source = git+https://github.com/nix-community/acpi_call.git#tag=v1.2.2
+	source = dkms.conf
+	b2sums = ad709e39995bddb1f603b493ca502ac327402057509c9609de25e09a0094ea930d356555a905211e4e6b6b3fca701ff41ba3d99532d5df7fe30d282d00b596b1
+	b2sums = 504da1102e778fe54368e990408dbef02f5b2ce91f683d170f3d6a1a2f9349d00d61dcbddd0262a8dfc958ea0964135ba58d8dd88ac06bd10b5e13b90f11faef
+
+pkgname = acpi_call-dkms

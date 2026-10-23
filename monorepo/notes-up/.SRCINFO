@@ -1,0 +1,37 @@
+pkgbase = notes-up
+	pkgdesc = Write beautiful notes fast and easy using Markdown
+	pkgver = 2.0.6
+	pkgrel = 4
+	url = https://github.com/Philip-Scott/Notes-up
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = discount
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = granite
+	depends = gtk3
+	depends = gtksourceview4
+	depends = gtkspell3
+	depends = hicolor-icon-theme
+	depends = libgee
+	depends = pango
+	depends = sqlite
+	depends = webkit2gtk-4.1
+	source = git+https://github.com/Philip-Scott/Notes-up.git#tag=2.0.6
+	source = notes-up-markdown3.patch
+	source = notes-up-window-icon.patch
+	source = notes-up-window-title.patch
+	source = notes-up-fix-pdf-export.patch
+	b2sums = 36a0e21877914e000114d2849e11c5d9f92278e4ed26bc96e34884c558a459fcf3816b80c06bad661be87a309787b1bbddd55359aa06a16b428dc14dd35af95d
+	b2sums = f213f7e41e67c83717cf1e10882c0f11f05aff5ac3ef72a645c33bfc8848ef0e3bb8ca40c39bd292ae5ac79e4d6f803821b55ef8148b7f01d00a692bac9b71b6
+	b2sums = 8f539e22ea89e8f0b360f023c59242a34d9d898c7cfa49fc8004092e41b7b7603d6c143de2fdf8c048ef544f4673aee552370dd495eaaaec5a6120f7ace1a91d
+	b2sums = 6232f5d09bf1001dbbc95102e5d50b6ba545f22574fccefbd4b53102b2d4546661d77163d83e1c19eebdb120be8566999179c6e594e7b0899ba2bdd18dfcd904
+	b2sums = e16271d8e719271e260aef5857f3152c9f4b3a942b2e7394747f0f160d814f2b6846c832e27d534f0a2d7e12ab4466988dcb65c17fad0084d9512c995b7001e2
+
+pkgname = notes-up

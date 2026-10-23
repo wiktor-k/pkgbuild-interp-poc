@@ -1,0 +1,92 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Max Zhao <alcasa dot mz at gmail dot com>
+# Contributor: Leonard König <leonard.r.koenig at googlemail dot com>
+
+pkgname=endless-sky
+pkgver=0.11.3
+pkgrel=1
+pkgdesc='A sandbox-style space exploration and combat game'
+arch=(x86_64)
+url='https://endless-sky.github.io/'
+# licenses obtained via following script:
+# grep "^License:" copyright | sed -e "s/License: //" -e "s/ /-/" | sort | uniq
+license=(
+  CC0-1.0
+  CC-BY-2.0
+  CC-BY-3.0
+  CC-BY-4.0
+  CC-BY-SA-3.0
+  CC-BY-SA-4.0
+  GPL-3.0-only
+  LicenseRef-public-domain
+  LicenseRef-Unsplash
+)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  openal
+  libpng
+  glew
+  hicolor-icon-theme
+  libjpeg-turbo
+  sdl2
+  libmad
+  util-linux-libs
+  libglvnd
+  minizip
+  libavif
+  flac
+)
+makedepends=(
+  git
+  cmake
+  ninja
+)
+optdepends=(
+  'endless-sky-high-dpi: high resolution graphics assets'
+)
+source=(
+  "$pkgname::git+https://github.com/endless-sky/endless-sky#tag=v$pkgver"
+  fix-binary-install.patch
+  no-compress-manfile.patch
+)
+sha512sums=('a9e4e8ab21e4910d9d8fbdd5458001f6e7fa4e3541554fd0a58f2842436f19b4039a936439d37dd58b00d3fb4ed987b332aabbcc208bf793251c89249780eb8d'
+            '454a48ade614f30469a5d45271fb96b7e9d34cba40a5771e4b170213435cbce2c8aee07aad60ddb0e9b8e8f0c4963469b98a92ce6f1173be8100484ce4fc9252'
+            '3012ffaa0e5f9754518d4620b0bf09de8b205f9e6147625aded8ea5eb58728e135abfa29d9d4660bd6ce11cf8e6366ddebb374b7762a0bc6fb67531b3b2a8414')
+b2sums=('de0bb8c9d3069fab1a038830f805ea08aa418c60a8177308a83b6f2821faba4c91cbe9af5a621cd3724f6168093c224041bf52aa51d4155d40da87fb0463c31c'
+        '551192e7c8b3d90609e1556f91bbb0a5930cd136082051ba0c054b0acb0d77fc3c6aaffc60ab65755345083f5ed5f76013f0cb4abaf720c4cf8da2d213618c7a'
+        'a4b4aececeea00fcf4a18b8bc4e56ba2049f9d8fc7ff4d533daf7e4d2c05f74c7b05eef4bf89046c57aa90532afd74d3f8228b402e1dec66edd8e7df604a6072')
+
+prepare() {
+  cd "$pkgname"
+
+  # binary is installed to /usr/games instead of /usr/bin
+  patch -p1 -i "$srcdir/fix-binary-install.patch"
+
+  # let package manager (pacman) deal with compression of man files
+  patch -p1 -i "$srcdir/no-compress-manfile.patch"
+}
+
+build() {
+    local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BUILD_TESTING=OFF
+    -D ES_GLES=ON
+    -D ES_USE_SYSTEM_LIBRARIES=ON
+    -W no-dev
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/copyright"
+}

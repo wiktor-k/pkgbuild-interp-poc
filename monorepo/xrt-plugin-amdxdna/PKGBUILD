@@ -1,0 +1,83 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Contributor: Lubosz Sarnecki <lubosz@gmail.com>
+pkgname=xrt-plugin-amdxdna
+pkgver=2.21.75
+epoch=1
+
+# The XRT_PLUGIN_VERSION_STRING is retrieved from the XRT submodule in the CPACK cmake file (CMake/pkg.cmake),
+# which we are currently removing from inclusion. So we need to set it manually.
+# https://github.com/Xilinx/XRT/blob/2.21.75/src/CMake/settings.cmake#L57
+plugin_version="2.21.75"
+
+pkgrel=2
+pkgdesc='Runtime for AIE and FPGA based platforms'
+arch=('x86_64')
+url='https://github.com/amd/xdna-driver'
+license=('LicenseRef-AMD-Proprietary AND Apache-2.0')
+depends=(
+  'glibc'
+  'gcc-libs'
+  'libdrm'
+  'xrt'
+  'jq'
+)
+makedepends=(
+  'git'
+  'awk'
+  'cmake'
+  'ninja'
+  'rapidjson'
+  'boost'
+  'python'
+  'pybind11'
+  'linux-headers'
+  # CMake needs a full OpenCL package to locate OpenCL headers
+  'rocm-opencl-runtime'
+)
+source=(
+  "${pkgname}::git+$url#tag=${pkgver}"
+  "${pkgname}-XRT::git+https://github.com/Xilinx/XRT.git"
+)
+sha256sums=('b62884cbf130f0bf486b044f17f88eedf00dd1b0311ecc7f1900e2d21845072a'
+            'SKIP')
+
+prepare() {
+  cd "${srcdir}/${pkgname}"
+  git submodule init
+
+  git config submodule."xrt".url "${srcdir}/${pkgname}"-XRT
+
+  git -c protocol.file.allow=always submodule update --init --recursive
+
+  # Remove CPACK and thus remove definition of XRT_PLUGIN_VERSION_STRING
+  sed -i '/pkg\.cmake/d' CMake/native.cmake
+  # Remove kernel module
+  sed -i '/driver/d' src/CMakeLists.txt
+  # New warnings in GCC 15 trigger compiler error
+  find . -name "*.cmake" -exec sed -i 's/-Werror//' {} \;
+  # Force kernel header location
+  local kernelvar=$(</usr/src/linux/version)
+  find . -name "*.cpp" -exec sed -i "s@#include <drm/@#include </usr/lib/modules/$kernelvar/build/include/uapi/drm/@" {} \;
+}
+
+build() {
+  local cmake_args=(
+    -Wno-dev
+    -G Ninja
+    -S $pkgname
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D XRT_ENABLE_WERROR=OFF
+    -D XRT_PLUGIN_VERSION_STRING="${plugin_version}"
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  rm -r "$pkgdir"/bins
+
+  install -Dm644 "$pkgname/LICENSE.amdnpu" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

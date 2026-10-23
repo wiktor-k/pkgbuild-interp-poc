@@ -1,0 +1,79 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=kernelshark
+pkgver=2.4.0
+pkgrel=2
+pkgdesc="GUI frontend for trace-cmd based Linux kernel Ftrace captures"
+arch=(x86_64)
+url="https://kernelshark.org/"
+license=(
+  GPL-2.0-only
+  LGPL-2.0-only
+)
+depends=(
+  freeglut
+  glibc
+  glu
+  libgcc
+  libgomp
+  libstdc++
+  qt6-base
+  qt6-scxml
+  ttf-fira-sans
+)
+makedepends=(
+  boost
+  cmake
+  json-c
+  libglvnd
+  libtracefs
+  libtraceevent
+  trace-cmd
+)
+optdepends=(
+  'bash: for kshark-su-record'
+)
+provides=(
+  libkshark.so
+  libkshark-plot.so
+  libkshark-gui.so
+)
+source=($pkgname-$pkgver.tar.gz::https://git.kernel.org/pub/scm/utils/trace-cmd/kernel-shark.git/snapshot/kernel-shark-$pkgname-v$pkgver.tar.gz)
+sha512sums=('c72a277441333cef2aa9b52f8483795359c57d4ddd321a81f58da1b7abdaf4d965cb865f41f00667043b37e30529e6f1ba84b045acd8a45ce9e0d465456f7613')
+b2sums=('fed643474e276b391cac58518fb76915658a9d7ddf7f9d4b4fa09297e4054a1428d5a102357d59681bc9ee32131c4f58290496b18c52880e89de77d7c6734bc0')
+
+prepare() {
+  cd kernel-shark-$pkgname-v$pkgver
+
+  # replace FreeSans with ttf-fira-sans
+  sed -e 's/FreeSans/FiraSans-Regular/g' \
+      -i CMakeLists.txt
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D _INSTALL_PREFIX=/usr
+    -D _LIBDIR=/usr/lib
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -S kernel-shark-$pkgname-v$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  depends+=(
+    json-c libjson-c.so
+    libglvnd libGL.so
+    libtraceevent libtraceevent.so
+    libtracefs libtracefs.so
+    trace-cmd libtracecmd.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+}

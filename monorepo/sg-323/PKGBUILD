@@ -1,0 +1,110 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=sg-323
+pkgname=(sg-323-{clap,vst3,lv2})
+pkgver=1.2.0
+pkgrel=1
+pkgdesc='Emulation of the Ursa Major Stargate 323 digital reverb'
+arch=(x86_64)
+url='https://github.com/greyboxaudio/SG-323'
+license=(GPL-3.0-only)
+groups=(pro-audio)
+_common_depends=(
+  glibc
+  libgcc
+  libstdc++
+  alsa-lib
+  fontconfig
+  freetype2
+)
+makedepends=(
+  "${_common_depends[@]}"
+  git
+  cmake
+  libx11
+  libxi
+  libxrandr
+  libxinerama
+  libxcursor
+)
+source=(
+  "$pkgbase::git+$url#tag=$pkgver"
+  'github.com-juce-framework-JUCE::git+https://github.com/juce-framework/JUCE'
+  'github.com-free-audio-clap-juce-extensions::git+https://github.com/free-audio/clap-juce-extensions'
+  'github.com-free-audio-clap::git+https://github.com/free-audio/clap'
+  'github.com-free-audio-clap-helpers::git+https://github.com/free-audio/clap-helpers'
+)
+sha512sums=('4dbae6dd205af0130c79f76bae18266d5331b672d2fccad3e7d7e2b245d89a4e3491d1c56ad2126e2a1a7286c4f2358e20d3af5afa574b1f5aef57d5cefbb428'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('12250d341f64f15f9ed29c364bc0ffacdb2f62ce1037508fce9c98c4bd2881bb56b67d864e50953057d48783f8130d412591cc82a1859c110955ba6459f8b701'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgbase"
+
+  # prepare git submodule(s)
+  git submodule init
+  git config submodule.libs/JUCE.url "$srcdir/github.com-juce-framework-JUCE"
+  git config submodule.libs/clap-juce-extensions.url "$srcdir/github.com-free-audio-clap-juce-extensions"
+  git -c protocol.file.allow=always submodule update --init
+
+  pushd libs/clap-juce-extensions
+  git submodule init
+  git config submodule.clap-libs/clap.url "$srcdir/github.com-free-audio-clap"
+  git config submodule.clap-libs/clap-helpers.url "$srcdir/github.com-free-audio-clap-helpers"
+  git -c protocol.file.allow=always submodule update --init
+  popd
+}
+
+build() {
+  # https://archlinux.org/todo/lto-fat-objects/
+  CFLAGS+=" -ffat-lto-objects"
+  CXXFLAGS+=" -ffat-lto-objects"
+
+  cmake \
+    -B build \
+    -S "$pkgbase"
+
+  cmake --build build
+}
+
+package_sg-323-clap() {
+  pkgdesc+=' - CLAP plugin'
+  groups+=(clap-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    clap-host
+  )
+
+  install -vDm644 -t "$pkgdir/usr/lib/clap" build/SG323_artefacts/CLAP/SG-323.clap
+}
+
+package_sg-323-vst3() {
+  pkgdesc+=' - VST3 plugin'
+  groups+=(vst3-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    vst3-host
+  )
+
+  install -vd "$pkgdir/usr/lib/vst3"
+  cp -vr build/SG323_artefacts/VST3/SG-323.vst3 "$pkgdir/usr/lib/vst3"
+}
+
+package_sg-323-lv2() {
+  pkgdesc+=' - LV2 plugin'
+  groups+=(lv2-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    lv2-host
+  )
+
+  install -vd "$pkgdir/usr/lib/lv2"
+  cp -vr build/SG323_artefacts/LV2/* "$pkgdir/usr/lib/lv2"
+}

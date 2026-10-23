@@ -1,0 +1,18 @@
+pkgbase = intelli-shell
+	pkgdesc = Like IntelliSense, but for shells
+	pkgver = 3.4.5
+	pkgrel = 1
+	url = https://github.com/lasantosr/intelli-shell
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cargo
+	depends = libgcc
+	depends = libgit2
+	depends = openssl
+	depends = sqlite
+	depends = zlib
+	options = !lto
+	source = intelli-shell-3.4.5.tar.gz::https://github.com/lasantosr/intelli-shell/archive/v3.4.5.tar.gz
+	sha512sums = a5da4c4cb96124e51b2ea9cc8353b4e25f85081734de34a0f7624516391001ccc6068ad11e137cf860e95390a6e73a2632df26f5d645912fd142db913116a479
+
+pkgname = intelli-shell

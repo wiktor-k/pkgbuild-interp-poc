@@ -1,0 +1,57 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Nagy <danielnagy at gmx de>
+# Contributor: hauzer <hauzer@gmx.com>
+
+_hkgname=cookie
+pkgname=haskell-cookie
+pkgver=0.5.1
+pkgrel=18
+pkgdesc="HTTP cookie parsing and rendering"
+url="https://github.com/snoyberg/cookie"
+license=('MIT')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-data-default-class')
+makedepends=('ghc' 'uusi')
+checkdepends=('haskell-hunit' 'haskell-quickcheck' 'haskell-tasty' 'haskell-tasty-hunit'
+              'haskell-tasty-quickcheck')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('f0c5427680f34a1e973632168acb75200fe72cc40f3c8f308bf87831990aebd0493685863a48ae61e1fcb6cba2e803be0813c33f51f940ab149e19b79000a21f')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid -fnetwork-uri
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register   --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

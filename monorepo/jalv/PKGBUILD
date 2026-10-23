@@ -1,0 +1,70 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+
+pkgname=jalv
+pkgver=1.10.0
+pkgrel=1
+pkgdesc="A simple but fully featured LV2 host for Jack"
+arch=(x86_64)
+url="https://drobilla.net/software/jalv.html"
+license=(ISC)
+groups=(pro-audio)
+depends=(
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt5-base
+  qt6-base
+  zix
+)
+makedepends=(
+  jack
+  lilv
+  lv2
+  mandoc
+  meson
+  qt5-tools
+  qt6-tools
+  serd
+  sord
+  sratom
+  suil
+)
+provides=(lv2-host)
+options=(!lto)
+source=(https://download.drobilla.net/$pkgname-$pkgver.tar.xz{,.sig})
+sha512sums=('fefa28b9735e141c87494b3bea927a0b84f712607847d0030e6d9f4a5bb556d5465d3ae6fe250f7d03fcd5504aab477bbb9fe2a3e59e2ed4a327e7d484eacd68'
+            'SKIP')
+b2sums=('01676f3c7c0cd4ee776744087dd8b510fc4a56eff319c6f572ef99166672ec9c954de36d39c5b22c5ae27269df8190f5650aef9b22ae6cf3f5d0e0e835875d82'
+        'SKIP')
+validpgpkeys=('907D226E7E13FA337F014A083672782A9BF368F3') # David Robillard <d@drobilla.net>
+
+build() {
+  local meson_options=(
+     -D portaudio=disabled
+  )
+
+  arch-meson $pkgname-$pkgver build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  depends+=(
+    glib2 libglib-2.0.so libgobject-2.0.so
+    jack libjack.so
+    lilv liblilv-0.so
+    serd libserd-0.so
+    sratom libsratom-0.so
+    suil libsuil-0.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+  install -vDm 644 $pkgname-$pkgver/COPYING -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,NEWS,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

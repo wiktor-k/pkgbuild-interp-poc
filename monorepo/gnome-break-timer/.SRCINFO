@@ -1,0 +1,36 @@
+pkgbase = gnome-break-timer
+	pkgdesc = Keeps track of how much you are using the computer, and it reminds you to take regular breaks
+	pkgver = 3.1.0
+	pkgrel = 5
+	url = https://wiki.gnome.org/Apps/BreakTimer
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gsound
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libadwaita
+	source = git+https://gitlab.gnome.org/GNOME/gnome-break-timer.git?signed#tag=3.1.0
+	source = gnome-break-timer-window-icon.patch
+	source = gnome-break-timer-onlyshowin-gnome.patch
+	source = gnome-break-timer-appstreamcli.patch
+	source = gnome-break-timer-create-window.patch
+	source = gnome-break-timer-fix-resource-race.patch
+	validpgpkeys = 4CD14406B0B5EA1D29015FD1B863B585A397D1AE
+	b2sums = 8a7d6f1ebf0cfa49965d51b9d097eff0bf32e0e8c4f0b7664cc95a5c93221159d93b1c49d11e4351854272725d4d3ea76b82a03479ffc6576c410b8b0a1dd517
+	b2sums = 0fa34dca22c74bc6a6b60b8a4d19610286d3f1f7e85d052ba7cfdb7759976f6f754cacddd18b7c515ea1ec6b8362de06a651e944ec226e2d3cab3be74bbe3914
+	b2sums = 633fee12981a496b0ce48a5afb6f69bbc3117ed851bbaa14ee6e85985687925021f1376d54d24ca712459162c5725b68263c8c5982bbb4b8d63a80864e066b32
+	b2sums = c7b61cc16ff7e3b2c4ad60c6bdd3e1671de1b1a0a0541f3bd367961fb232f4db6a5fcc8c55be65b703c4dd77d11de539a021380d43aaa00c85fee675a2f03bec
+	b2sums = 90d676349950bc0a3a21eb1369c6606b00960c18e9b3d01f071f4fd6c72d7e80767f0e7ad8c689e58a6f32202d3bcfbbe085c189cc98c8f60e351a44009e6fe5
+	b2sums = 47e6d52e7a94aece90fd3785c77eec3d18a2906f2da922367df3d8fb2beb0062df2a5a42c3ea4a5bea229d6f85d7c83a670e991ec4f82f08e92563e22ec4fa55
+
+pkgname = gnome-break-timer

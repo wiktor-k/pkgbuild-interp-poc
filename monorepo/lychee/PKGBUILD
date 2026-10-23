@@ -1,0 +1,64 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=lychee
+pkgver=0.24.2
+pkgrel=2
+pkgdesc='Fast, async, resource-friendly link checker written in Rust'
+arch=('x86_64')
+url=https://lychee.cli.rs
+license=('Apache-2.0 OR MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'git'
+  'rust'
+)
+checkdepends=('cargo-nextest')
+conflicts=(
+  'lychee-link-checker'
+  'lychee-rs'
+)
+replaces=(
+  'lychee-link-checker'
+  'lychee-rs'
+)
+options=('!lto')
+source=("git+https://github.com/lycheeverse/lychee.git#tag=lychee-v$pkgver")
+b2sums=('1c67f508b0b301472373d4b3545535501bd71ac9b220ae638f343eaacd67cec0fd9e6f0bdbfaa0d22f061129bd5744e8c2021aa0f84806bbf3c926bb537a1aff')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --frozen
+  mkdir -v ../{completions,man}
+  ./target/release/$pkgname --generate man > ../man/$pkgname.1
+  ./target/release/$pkgname --generate complete-bash > ../completions/$pkgname
+  ./target/release/$pkgname --generate complete-fish > ../completions/$pkgname.fish
+  ./target/release/$pkgname --generate complete-zsh > ../completions/_$pkgname
+}
+
+check() {
+  cd $pkgname
+  test_expr="(!test(test_exclude_example_domains) and !test(test_detailed_json_output_on_error) and !test(test_skip_cache_unknown_status_code))"
+  cargo nextest run --all-targets --all-features -E "$test_expr" --test-threads 1
+  cargo nextest run --filter-expr 'test(test_exclude_example_domains)' --test-threads 1
+  cargo test --doc
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -vDm 644 ../man/$pkgname.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 ../completions/$pkgname -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -vDm 644 ../completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 ../completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.md
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE-MIT
+}

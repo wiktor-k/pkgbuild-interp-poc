@@ -1,0 +1,53 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Muflone http://www.muflone.com/contacts/english/
+
+pkgname=python-pysmi
+pkgver=2.0.0
+pkgrel=2
+pkgdesc='SNMP/SMI MIB parsing and conversion library designed to turn ASN.1 MIBs into various formats'
+arch=('any')
+url='https://github.com/lextudio/pysmi'
+license=('BSD-2-Clause')
+depends=(
+  'python'
+  'python-jinja'
+  'python-lark-parser'
+  'python-requests'
+)
+makedepends=(
+  'python-build'
+  'python-flit-core'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pysnmp'
+  'python-pytest'
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('a3445c81b351282a2431a6c305f55df82e409af2c9341a7dba37c906edf291b06c025a4edb72a37e32e5566f0a5e07c9a3d98efe0d6e2da1009676e686341104')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  pytest \
+    --deselect tests/test_typedeclaration_smiv2_pysnmp.py::TypeDeclarationFixedLengthTestCase \
+    --deselect tests/test_typedeclaration_smiv2_pysnmp.py::TypeDeclarationTestCase
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr -t "$pkgdir/usr/share/doc/$pkgname" examples
+
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.rst
+}
+
+# vim: ts=2 sw=2 et:

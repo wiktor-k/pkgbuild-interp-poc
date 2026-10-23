@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=jupyter-jsmol
+pkgver=2022.1.0
+pkgrel=6
+pkgdesc='JSmol viewer widget which can be used in Jupyter Notebooks and JupyterLab'
+arch=(any)
+url='https://pypi.org/project/jupyter-jsmol/'
+license=(BSD)
+depends=(jupyterlab
+         python
+         python-ipywidgets
+         python-traitlets)
+makedepends=(python-build
+             python-installer
+             python-jupyter-packaging)
+source=(https://pypi.python.org/packages/source/j/$pkgname/${pkgname/-/_}-$pkgver.tar.gz)
+sha256sums=('6889b236dcd1eb69093ec1bc87ce352809c89a551214eada81186c2830c07c9a')
+
+build() {
+  cd ${pkgname/-/_}-$pkgver
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+package() {
+  cd ${pkgname/-/_}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  mv "$pkgdir"/{usr/,}etc
+}

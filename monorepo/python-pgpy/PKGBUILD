@@ -1,0 +1,65 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: James Morris <jmorris@securityinnovation.com>
+
+pkgname=python-pgpy
+pkgver=0.6.0
+pkgrel=6
+pkgdesc='Pretty Good Privacy for Python'
+arch=('any')
+license=('BSD-3-Clause')
+url='https://github.com/SecurityInnovation/PGPy'
+depends=(
+  'python'
+  'python-cryptography'
+  'python-pyasn1'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest'
+  'python-pytest-order'
+)
+source=(
+  "$pkgname::git+$url.git#tag=v$pkgver"
+  # https://github.com/SecurityInnovation/PGPy/pull/443
+  "drop-use-of-imghdr.patch::$url/commit/221a1f15a42f3ef76ccafcddf66b7c4ade391bff.patch"
+  "fix-tests.patch"
+   https://github.com/SecurityInnovation/PGPy/commit/5cdda87f.patch
+)
+b2sums=('0e0fc10f05c5f18f87449ab87c6f9e0e15d9945acfdf532b8e8460a61233f1ed7e00e81af81a9d422628bc7e76462e162604cd11fa1fe28ee961e9b1ce9fce56'
+        '5e8b46fd94f703f345218e5db6f018de9bd9ca476b4c853795188277be2b46026bd89775c1232b87f67983c1aef8d2fb62a4743987091b90d21b53f9f09f7f00'
+        '82409e50e2cf060b3b34460709c74c0c60e1c53392a226eb8134aade45f71023500b4f658a8c3353fc08b424e724358cec602b44c695685b4eaa31a521a10853'
+        '2d8477388f13b2d67e593aa406852ebc17e1fd104b2cd487a120d189df82d339d79657ee85d70c72ff1fa2294db7712394815f9e1f903a8776ec5940067e5afd')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -Np1 -i ../drop-use-of-imghdr.patch
+  patch -Np1 -i ../fix-tests.patch
+  patch -p1 -i ../5cdda87f.patch # Fix tests with latest cryptography
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,79 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=fluxcd
+pkgver=2.9.6
+pkgrel=1
+pkgdesc='Open and extensible continuous delivery solution for Kubernetes'
+arch=(x86_64)
+url='https://fluxcd.io'
+license=(Apache-2.0)
+depends=(glibc)
+makedepends=(git go kustomize)
+replaces=(fluxctl)
+options=(!lto)
+source=("$pkgname::git+https://github.com/fluxcd/flux2#tag=v$pkgver")
+sha512sums=('35751ef046802a19c270f23b706d85ec9b299c672400989bc2688320f617d5b03467960d0998a2b62d895c3d47a0a808dc43bf6624071a73fdad3d41ab5b4e24')
+b2sums=('e803bb3e89d5bbc9855c0f86f70c1c1c1a400a49e7eba46614ec13e66a4df83ac9085ce3d3ff32722b6586c6a2313d8a6df11e9bae4827fd9a9e4a2b1c7ed0b6')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # generate manifests
+  # https://github.com/fluxcd/flux2/blob/c5b5263b1bd826e792b3e5607857b7cd6d981b62/.github/workflows/release.yaml#L55-L57
+  make cmd/flux/.manifests.done
+  ./manifests/scripts/bundle.sh "" ./output manifests.tar.gz
+  kustomize build ./manifests/install > ./output/install.yaml
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.VERSION=${pkgver}" \
+    -o build \
+    ./cmd/...
+
+  # generate shell completions
+  cd build
+  for shell in bash fish zsh; do
+    ./flux completion "$shell" > "completion.$shell"
+  done
+}
+
+check() {
+  cd "$pkgname"
+
+  go test -v ./...
+}
+
+package() {
+  cd "$pkgname/build"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" flux
+
+  # shell completions
+  install -vDm644 completion.bash "$pkgdir/usr/share/bash-completion/completions/flux"
+  install -vDm644 completion.fish "$pkgdir/usr/share/fish/vendor_completions.d/flux.fish"
+  install -vDm644 completion.zsh "$pkgdir/usr/share/zsh/site-functions/_flux"
+}

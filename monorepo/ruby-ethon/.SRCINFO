@@ -1,0 +1,29 @@
+pkgbase = ruby-ethon
+	pkgdesc = Libcurl wrapper
+	pkgver = 0.18.0
+	pkgrel = 1
+	url = https://github.com/typhoeus/ethon
+	arch = any
+	license = MIT
+	checkdepends = ruby-rspec
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-sinatra
+	checkdepends = ruby-mime-types
+	checkdepends = ruby-webrick
+	checkdepends = ruby-mustermann
+	checkdepends = ruby-rack
+	checkdepends = ruby-rackup
+	checkdepends = ruby-benchmark-ips
+	checkdepends = ruby-patron
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-ffi
+	depends = curl
+	noextract = ethon-0.18.0.gem
+	options = !emptydirs
+	source = ruby-ethon::git+https://github.com/typhoeus/ethon.git#tag=v0.18.0
+	sha256sums = 80d572958f769d53d26cfa2fc5aeada1710132b15419fbc20d24505fa4778bef
+
+pkgname = ruby-ethon

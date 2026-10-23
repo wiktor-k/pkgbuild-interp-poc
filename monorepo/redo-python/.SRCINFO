@@ -1,0 +1,22 @@
+pkgbase = redo-python
+	pkgdesc = An implementation of the redo build system in Python
+	pkgver = 0.42.d
+	pkgrel = 6
+	url = https://github.com/apenwarr/redo
+	arch = any
+	license = GPL
+	makedepends = git
+	makedepends = python-beautifulsoup4
+	makedepends = python-markdown
+	depends = python
+	optdepends = python-setproctitle: pretty output
+	provides = redo
+	conflicts = redo-sh
+	conflicts = redo-c
+	conflicts = redo-jdebp
+	source = redo-python::git+https://github.com/apenwarr/redo.git#commit=7f00abc36be15f398fa3ecf9f4e5283509c34a00
+	source = fix-tests.patch
+	b2sums = 9f302262bc49728a8e04a8bb5eee8e181da3f947115b63c9f5a0a2f6d1cb2bf2001681881d74627f42cbbc7ecb9ef6c22e9ffe1c06053295b4ef54c4211209f8
+	b2sums = 48381fb55e577d2e06553a014dcb39c7b45c22eaa82242656e2ea7c596b56346f220662fcee7ed8c11168450ab54409f350e5c7d3c2568fb0e5127d91f7f6394
+
+pkgname = redo-python

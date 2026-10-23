@@ -1,0 +1,19 @@
+pkgbase = python-pydyf
+	pkgdesc = A low-level PDF generator
+	pkgver = 0.13.0
+	pkgrel = 1
+	url = https://www.courtbouillon.org/pydyf
+	arch = any
+	license = BSD
+	checkdepends = python-pytest
+	checkdepends = python-pillow
+	checkdepends = ghostscript
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-flit-core
+	makedepends = python-installer
+	depends = python
+	source = python-pydyf::git+https://github.com/CourtBouillon/pydyf.git#tag=v0.13.0
+	sha256sums = 9f2e10310300505d6077e59681583f6041797f199853a4c7553f6b55e61c5073
+
+pkgname = python-pydyf

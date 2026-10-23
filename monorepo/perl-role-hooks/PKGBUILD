@@ -1,0 +1,42 @@
+# Maintainer:
+
+pkgname=perl-role-hooks
+pkgver=0.008
+pkgrel=3
+pkgdesc='Role callbacks'
+arch=(any)
+license=(PerlArtistic)
+depends=(perl
+         perl-class-method-modifiers)
+makedepends=()
+checkdepends=(perl-class-tiny
+              perl-moo
+              perl-test-requires)
+options=(!emptydirs)
+url='https://metacpan.org/pod/Role::Hooks'
+source=(https://search.cpan.org/CPAN/authors/id/T/TO/TOBYINK/Role-Hooks-$pkgver.tar.gz)
+sha256sums=('28d66ea0a8dc306b76da83ff0879493d808f73185bcf9c4ed372f3946fb543ec')
+
+build() {
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+    PERL_AUTOINSTALL=--skipdeps                            \
+    PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='$pkgdir'"     \
+    PERL_MB_OPT="--installdirs vendor --destdir '$pkgdir'" \
+    MODULEBUILDRC=/dev/null
+
+  cd Role-Hooks-$pkgver
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  cd Role-Hooks-$pkgver
+
+  export PERL_MM_USE_DEFAULT=1 PERL5LIB=""
+  make test
+}
+
+package() {
+  cd Role-Hooks-$pkgver
+  make install
+}

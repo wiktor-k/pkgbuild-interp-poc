@@ -1,0 +1,22 @@
+pkgbase = python-khoca
+	pkgdesc = A C++/python program for research in knot theory
+	pkgver = 1.4
+	pkgrel = 4
+	url = http://lewark.de/lukas/khoca.html
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	depends = pari
+	depends = python
+	source = git+https://github.com/soehms/khoca/#tag=1.4
+	sha256sums = 05bf116ca55ee34d1a5ab1be2445e94f42b9c4c5e6ef951102f56f3af78c9b3f
+
+pkgname = python-khoca

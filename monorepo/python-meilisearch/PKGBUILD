@@ -1,0 +1,35 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=python-meilisearch
+pkgver=0.43.0
+epoch=1
+pkgrel=1
+pkgdesc='Python client for MeiliSearch API'
+arch=(any)
+license=('MIT')
+url='https://pypi.org/project/meilisearch/'
+depends=(python python-requests python-camel-converter python-pydantic)
+makedepends=(python-setuptools python-build python-installer python-wheel)
+checkdepends=(python-pytest python-pytest-ordering)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/meilisearch/meilisearch-python/archive/v${pkgver}.tar.gz)
+sha512sums=('9164834fd6a4040f62409ec2d04acb9ba0ebf5aad9380dc62cecf50fc9a04268d9d1282675f33f84ca4bcd40d6d1fe71d028b9d2e8715105d08982b4d719519a')
+
+build() {
+  cd "meilisearch-python-${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  # requires running meilisearch https://github.com/meilisearch/meilisearch-python/blob/master/.github/workflows/test.yml#L20
+  cd "meilisearch-python-${pkgver}"
+  #pytest .
+}
+
+package() {
+  cd "meilisearch-python-${pkgver}"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -D -m644 LICENSE "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
+}

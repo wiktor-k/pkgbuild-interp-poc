@@ -1,0 +1,71 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Ben <contrasutra@myrealbox.com>
+
+pkgname=sound-juicer
+pkgver=3.40.0
+pkgrel=6
+pkgdesc="A lean and friendly audio CD extractor for GNOME"
+url="https://wiki.gnome.org/Apps/SoundJuicer"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  brasero
+  dconf
+  glib2
+  glibc
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  iso-codes
+  libcanberra
+  libdiscid
+  libgcc
+  libmusicbrainz5
+  pango
+)
+makedepends=(
+  git
+  itstool
+  meson
+)
+optdepends=(
+  'gst-plugins-bad: Opus encoding support'
+  'gst-plugins-ugly: MP3 encoding support'
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/sound-juicer.git#tag=$pkgver"
+  0001-Don-t-create-window-in-startup-phase.patch
+)
+b2sums=('bf2444827421803a3f4c94b83ccee03101703bb9a289526be696d42f1d4d54ca4807be080b9326938d0d1c0228fab48f37347d83032252195f0729f8d8dfbaa8'
+        'd5613b1dff83552f585affd0a328842ef20bf86d7f3ea3dd4293a5456fe2bb7244254c661027f2a78dd064738780e913c4f905cb9d994a26d0c38f7e145913dc')
+
+prepare() {
+  cd $pkgname
+
+  # Fix icon name
+  # https://gitlab.gnome.org/GNOME/sound-juicer/-/merge_requests/37
+  git cherry-pick -n f4427c1d539e4ca4584359f6cb6033e09539be62
+
+  # Don't create window in startup phase
+  # https://gitlab.gnome.org/GNOME/sound-juicer/-/merge_requests/44
+  git apply -3 ../0001-Don-t-create-window-in-startup-phase.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

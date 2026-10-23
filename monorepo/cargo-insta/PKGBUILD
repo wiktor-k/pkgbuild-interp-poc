@@ -1,0 +1,42 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: CosmicHorror <CosmicHorrorDev@pm.me>
+# Contributor: Vlad Frolov <frolvlad@gmail.com>
+
+pkgname=cargo-insta
+_pkgname=insta
+pkgver=1.49.0
+pkgrel=1
+pkgdesc="Cargo plugin for snapshot testing in Rust"
+url="https://github.com/mitsuhiko/insta"
+depends=('glibc' 'libgcc' 'cargo')
+checkdepends=('git')
+arch=('x86_64')
+license=('Apache-2.0')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz")
+sha512sums=('953f5c8d5b811920a13107f009c845d5421023ffafe1add4388181a22ddd25394c3c6f484f7697865a56d1ae8b4e1ac121e12d9e7fa68a144af6e6daff55a50b')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  # workspace test checks if srcdir ends with "insta"
+  cargo test --frozen --all-features -- --skip "test_get_cargo_workspace" --skip "workspace"
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm755 "target/release/${pkgname}" "${pkgdir}/usr/bin/$pkgname"
+}
+
+# vi: filetype=sh shiftwidth=2 expandtab

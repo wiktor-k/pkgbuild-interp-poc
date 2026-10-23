@@ -1,0 +1,16 @@
+pkgbase = upload-symbols
+	pkgdesc = Command line tool to upload to the Mozilla Symbols Server
+	pkgver = 0.3.1
+	pkgrel = 1
+	url = https://github.com/mozilla-services/upload-symbols
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = git+https://github.com/mozilla-services/upload-symbols#tag=v0.3.1
+	b2sums = b11b0b6ea94d07a57e0e93ca61bdcc34a7e780aafdf3d2659ee77c8949a57a5426b7c0d9e2b35279780fb708ad0cce39a1d81943be825d041a7b3318bf8691db
+
+pkgname = upload-symbols

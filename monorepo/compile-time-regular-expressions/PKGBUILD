@@ -1,0 +1,32 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=compile-time-regular-expressions
+pkgver=3.11.0
+pkgrel=2
+pkgdesc="Compile Time Regular Expression in C++"
+arch=(any)
+url="https://github.com/hanickadot/compile-time-regular-expressions/"
+license=(Apache-2.0)
+makedepends=(cmake)
+provides=(ctre)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('a973f0485db23b4f595cf312f2e89fbc1ec2b2ee77ffb88975c8130089df3c73dbe3cbc56ab60c11abd8d84b3d11887a295485d5cf67f551d5e56ab85a98382e')
+b2sums=('3f33de90623ee06e3efc3ca088ce4453ad44ad4bca551bc5e53450d944d9ecfca0c4feca393f4e90c1db7cc84f81ea4dae0c5276f55963fbc14fb48f752525ec')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-$pkgver
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $pkgname-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

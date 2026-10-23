@@ -1,0 +1,56 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Contributor: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=cxxbridge
+pkgver=1.0.205
+pkgrel=1
+pkgdesc='Safe interop between Rust and C++'
+url='https://github.com/dtolnay/cxx'
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=('cargo')
+options=(!lto)
+source=(https://github.com/dtolnay/cxx/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz
+        Cargo.lock)
+sha256sums=('05ea497a7fdcdff5db8afa959a8ddd470b35832bfae33e9906438916930c4205'
+            '512ea590c32adbcd95cb73b51f986c0ebb22597591a707f577e7261eca1765cf')
+b2sums=('b0bbaf52fdad6299ad9e7868a21fa7072dc0ad9a22b6b59e474b45a117d081189273451e66e06c6306deeacd80387382ecd5a36080f42e38902cad59e57ddad2'
+        'cdfafcbd66908acd7e1398841ebe1e3e18b4b279562e1b667834c3e0f0f8f2277a5134a81b1b84b8a2b0059a1311a0786784b32abd4ef7581a239752c977f364')
+
+prepare() {
+  cd "cxx-${pkgver}"
+  cp ../Cargo.lock .
+  cargo fetch --locked --target host-tuple
+}
+
+updlockfiles() {
+  cd "cxx-${pkgver}"
+  rm -f Cargo.lock
+  cargo update
+  cp Cargo.lock "${outdir}/"
+}
+
+build() {
+  cd "cxx-${pkgver}"
+  cargo build --frozen --release --package cxxbridge-cmd
+}
+
+check() {
+  cd "cxx-${pkgver}"
+  cargo test --frozen --release --package cxxbridge-cmd
+}
+
+package() {
+  cd "cxx-${pkgver}"
+  install -Dm 755 target/release/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 755 include/cxx.h -t "${pkgdir}/usr/share/${pkgname}/"
+
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE-* -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

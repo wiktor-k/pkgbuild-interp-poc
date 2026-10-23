@@ -1,0 +1,42 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Diego Principe <cdprincipe@gmail.com>
+# Contributor: paterbrown <paterbrown@silberhelme.de>
+# Contributor: Josip <josipponjavic@gmail.com>
+
+pkgname=elementary-icon-theme
+pkgver=9.0.0
+pkgrel=1
+pkgdesc='Named, vector icons for elementary OS'
+arch=(any)
+url=https://github.com/elementary/icons
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(hicolor-icon-theme)
+makedepends=(
+  git
+  librsvg
+  meson
+  xorg-xcursorgen
+)
+source=(elementary-icon-theme::git+https://github.com/elementary/icons.git#tag=${pkgver})
+b2sums=('51a2e90a956117314a7fb2f7e8e37aa002429c32650d7523227327cfad25b5ac529ce482c0ca8b8272c4ba924c86559659e6453c8e3c35a6f45db939dbb00ba2')
+
+prepare() {
+  cd elementary-icon-theme
+  git cherry-pick -n 9b9d3df4f93ee6ad33c37462f023aab3b758b4a5 # remove broken symlinks
+}
+
+build() {
+  arch-meson elementary-icon-theme build \
+    -Dvolume_icons=false
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+
+  # installed by inkscape itself
+  rm -r "${pkgdir}"/usr/share/inkscape/
+}
+
+# vim: ts=2 sw=2 et:

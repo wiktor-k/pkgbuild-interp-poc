@@ -1,0 +1,22 @@
+pkgbase = kakoune-lsp
+	pkgdesc = Kakoune Language Server Protocol Client
+	pkgver = 21.0.2
+	pkgrel = 1
+	url = https://github.com/kakoune-lsp/kakoune-lsp
+	arch = x86_64
+	license = custom:unlicense
+	makedepends = rust
+	depends = kakoune
+	optdepends = bash-language-server: language server for Bash
+	optdepends = gopls: language server for Go
+	optdepends = haskell-language-server: language server for Haskell
+	optdepends = lua-language-server: language server for Lua
+	optdepends = python-lsp-server: language server for Python
+	optdepends = rust-analyzer: language server for Rust
+	provides = kak-lsp
+	conflicts = kak-lsp
+	replaces = kak-lsp
+	source = kakoune-lsp-21.0.2.tar.gz::https://github.com/kakoune-lsp/kakoune-lsp/archive/v21.0.2.tar.gz
+	b2sums = 1c951c5d81bc7a856a9c805d5dc5af2a5802178ec62e96477762a20927902b60bef197d875d910732fa950308ace0a7c020b2cf396aeda955f02df45cea9847a
+
+pkgname = kakoune-lsp

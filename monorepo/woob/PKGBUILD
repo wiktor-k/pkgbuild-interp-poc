@@ -1,0 +1,59 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=woob
+pkgver=3.7
+pkgrel=2
+pkgdesc="Core library and modules for Web outside of Browsers"
+arch=(any)
+url="https://woob.tech/"
+license=(LGPL-3.0-or-later)
+depends=(
+    python
+    python-lxml
+    python-requests
+    python-dateutil
+    python-yaml
+    python-html2text
+    python-unidecode
+    python-pillow
+    python-babel
+    python-packaging
+    python-pycountry
+    python-rich
+    python-simplejson
+    python-setuptools
+)
+optdepends=(
+    'python-colorama: CLI usage'
+    'python-prettytable: CLI output formatting'
+    'python-feedparser: required by some modules'
+    'python-jose: required by some modules'
+    'python-pycryptodome: required by some modules'
+    'python-google-api-python-client: multiple Google services like YouTube'
+)
+makedepends=(python-build python-installer python-wheel)
+checkdepends=(python-pytest python-prettytable python-responses)
+replaces=(weboob)
+provides=(weboob)
+conflicts=(weboob)
+#source=(https://files.pythonhosted.org/packages/source/w/${pkgname}/${pkgname}-${pkgver}.tar.gz)
+source=(https://gitlab.com/woob/woob/-/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('e155d2f75f6c815fe1283648028509439cc663433b11084f9818490d9fedaaf3')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  # Regression in python-requests,
+  # https://gitlab.com/woob/woob/-/issues/706
+  # https://github.com/psf/requests/issues/6730
+  pytest -vv --color=yes --deselect=tests/browser/adapters.py::TestAdapter::test_ciphers
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

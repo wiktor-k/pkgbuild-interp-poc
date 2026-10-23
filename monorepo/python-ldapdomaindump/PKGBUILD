@@ -1,0 +1,42 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-ldapdomaindump
+pkgver=0.10.0
+pkgrel=2
+pkgdesc='Active Directory information dumper via LDAP'
+arch=('any')
+url='https://github.com/dirkjanm/ldapdomaindump'
+license=('MIT')
+depends=(
+  'python'
+  'python-dnspython'
+  'python-ldap3'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "$pkgname-remove-conflicting-scripts.patch"
+)
+sha256sums=('e5d879d10685140912b7ca7b2a6c403bee0819a3ffda1ef6ec58fecfb583fd59'
+            '0773ce9c08b9b243b7de1529a52bc31339eeca353066a835ddd8e26d90524e84')
+
+prepare() {
+  cd ${pkgname#python-}-$pkgver
+  patch -Np1 < ../$pkgname-remove-conflicting-scripts.patch
+}
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

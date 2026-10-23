@@ -1,0 +1,47 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Contributor: Jakob Gahde <j5lx@fmail.co.uk>
+
+pkgname=prometheus-mysqld-exporter
+pkgver=0.19.0
+pkgrel=1
+pkgdesc="Prometheus exporter for MySQL server metrics"
+arch=('x86_64')
+url="https://github.com/prometheus/mysqld_exporter"
+license=('Apache')
+depends=('glibc')
+makedepends=('go')
+options=(!lto)
+backup=('etc/conf.d/prometheus-mysqld-exporter')
+source=("mysql_exporter-${pkgver}.tar.gz::https://github.com/prometheus/mysqld_exporter/archive/v${pkgver}.tar.gz"
+        "prometheus-mysqld-exporter.service"
+        "prometheus-mysqld-exporter.conf")
+sha512sums=('92fa65fb94938b56c78bff013bddd03ceb9703cc12916bf9365880a369ed818e5c158e30a846e3f9271945e6d8a0ddeb348b844d88584bb62981365f0a6c95f2'
+            '50619f4fa62c97c9c3533dc6a18024e2f2548e72b79e4cabae766d8b2135b4a5fdc9a6af87a279ecbae9101feac642851f2e239333a181b0db8d48af75eeac6c'
+            '6e4fa86980897e92161cf6143b27a72db8b0f1366d842c55340da56bd325bfdbb29a1d8043d26477bf161f723d164b0337a12ffb74057f0e14de4172d027762c')
+
+build() {
+  cd "mysqld_exporter-${pkgver}"
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-extldflags \"${LDFLAGS}\"
+      -X github.com/prometheus/common/version.Version=${pkgver} \
+      -X github.com/prometheus/common/version.Revision=${pkgver} \
+      -X github.com/prometheus/common/version.Branch=tarball \
+      -X github.com/prometheus/common/version.BuildUser=someone@builder \
+      -X github.com/prometheus/common/version.BuildDate=$(date -u '+%Y%m%d-%H:%M:%S' --date=@${SOURCE_DATE_EPOCH})" \
+    .
+}
+
+package() {
+  install -Dm644 "prometheus-mysqld-exporter.service" \
+    "${pkgdir}/usr/lib/systemd/system/prometheus-mysqld-exporter.service"
+  install -Dm644 "prometheus-mysqld-exporter.conf" \
+    "${pkgdir}/etc/conf.d/prometheus-mysqld-exporter"
+
+  cd "mysqld_exporter-${pkgver}"
+  install -Dm755 "mysqld_exporter" "${pkgdir}/usr/bin/prometheus-mysqld-exporter"
+}

@@ -1,0 +1,22 @@
+pkgbase = python-pyzmq
+	pkgdesc = Python bindings for ZeroMQ
+	pkgver = 27.2.0
+	pkgrel = 1
+	url = https://zeromq.org/languages/python/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-scikit-build-core
+	makedepends = python-wheel
+	makedepends = cython
+	depends = zeromq
+	depends = python
+	source = python-pyzmq::git+https://github.com/zeromq/pyzmq#tag=v27.2.0
+	sha512sums = 4533e04dedf8cf03460902cb9cdf8ad3589366d2f7d6b527af3aaba00cc89d5bb91b5c8721fad453a5c53697678d5d2f5ed2b244b12c371bec6d7cd0f875a910
+	b2sums = e5a595187e79458615814cfa7090bc0c9f4cecfa201799ab8cba271d575057275f6da74e6f878db3747d0ca3666a67c831d8c7a564e4cf15ec49e2180739b1d5
+
+pkgname = python-pyzmq

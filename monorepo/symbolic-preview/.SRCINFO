@@ -1,0 +1,30 @@
+pkgbase = symbolic-preview
+	pkgdesc = Utility to create, preview and export symbolic icons
+	pkgver = 0.0.9
+	pkgrel = 8
+	url = https://gitlab.gnome.org/World/design/symbolic-preview
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libxml2
+	depends = pango
+	source = git+https://gitlab.gnome.org/World/design/symbolic-preview.git#tag=0.0.9
+	source = symbolic-preview-new-window.patch
+	source = symbolic-preview-filedialog.patch
+	b2sums = 291520a94fd3c9a6e878f43997b8ae23c0aa2b26a36ef9bb147cf4e79fe094751a1e627b3e2457e706473c254367ef37420448ce31fa7a4e1fd068442c8f7e7e
+	b2sums = ab835aa8c81cf201ec4ad46b37a5e84dbb6b6b22df60c2515ce3475ba2c8082b433314abd845eedc01692e25d9f3606bd40f04343ad3240637abddfb6a907430
+	b2sums = c987cb9bf823239ec885ce3a9dcdfba882a11f80cb843012b3eadbd601913d0310506472efad8287d4e6f0da19b250a2c397c79f125259219eaca014d35218c8
+
+pkgname = symbolic-preview

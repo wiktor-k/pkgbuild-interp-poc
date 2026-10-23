@@ -1,0 +1,22 @@
+pkgbase = python-mysql-connector
+	pkgdesc = A standardized database driver for Python platforms and development
+	pkgver = 26.10.0
+	pkgrel = 1
+	url = https://dev.mysql.com/downloads/connector/python/
+	arch = any
+	license = GPL-2.0-only
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-dnspython
+	depends = python-typing_extensions
+	source = https://cdn.mysql.com//Downloads/Connector-Python/mysql-connector-python-26.10.0-src.tar.gz
+	source = mysql-connector-python-26.10.0-src.tar.gz.asc::https://dev.mysql.com/downloads/gpg/?file=mysql-connector-python-26.10.0-src.tar.gz&p=29
+	validpgpkeys = 859BE8D7C586F538430B19C2467B942D3A79BD29
+	validpgpkeys = BCA43417C3B485DD128EC6D4B7B3B788A8D3785C
+	sha512sums = 712007f7455f682e1426d8fefd8a57c56338084b6fa8689b002ef9ec6574f9df3dc7529d188289e6915c2f37c9de6a8fb2841455dbac37fdf90f544ab3b7acbe
+	sha512sums = SKIP
+
+pkgname = python-mysql-connector

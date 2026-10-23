@@ -1,0 +1,15 @@
+pkgbase = rtorrent
+	pkgdesc = Ncurses BitTorrent client based on libTorrent
+	pkgver = 0.16.26
+	pkgrel = 1
+	url = https://rakshasa.github.io/rtorrent/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = libtorrent=0.16.26
+	depends = curl
+	depends = tinyxml2
+	source = git+https://github.com/rakshasa/rtorrent.git#tag=v0.16.26
+	sha256sums = 86f399382553e93f6b5d687cd593b56b01c9321ab38fe129beecc312cb9dd4c9
+
+pkgname = rtorrent

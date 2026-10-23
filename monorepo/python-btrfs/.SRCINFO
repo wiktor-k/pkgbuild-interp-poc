@@ -1,0 +1,17 @@
+pkgbase = python-btrfs
+	pkgdesc = Python Btrfs module, with useful scripts to inspect btrfs internals
+	pkgver = 15
+	pkgrel = 2
+	url = https://github.com/knorrie/python-btrfs
+	arch = any
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = python-btrfs::git+https://github.com/knorrie/python-btrfs.git#tag=v15
+	sha256sums = d646ca633739c701178ecc8f56a3a96f956a3b40f1670715fd79a2daa3d5f705
+
+pkgname = python-btrfs

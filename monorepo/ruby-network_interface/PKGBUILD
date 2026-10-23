@@ -1,0 +1,85 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname=network_interface
+pkgname=ruby-${_gemname}
+pkgver=0.0.4
+pkgrel=2
+pkgdesc='Library to get network interface information'
+url='https://github.com/rapid7/network_interface'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+options=('!emptydirs')
+source=("git+${url}#tag=v${pkgver}")
+sha512sums=('6c70f861c3ea2c47f6e4da8a79f1d8d8f84211b496f345f8a066c3b868cb1104e96bdf046a234da82438cafd4798431e45f2e155a02e47c9125f6d63b42e54a1')
+b2sums=('d14ebaaa5794e28ece6938f973cd0ef5ce65e96d183d4f2b1c83aa1444b819d2055cf0247254afc1a77e70390a6b69b5971aaa87a71b413a64650824fa1a9ff3')
+
+prepare() {
+  cd "${_gemname}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+package() {
+  cd "${_gemname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

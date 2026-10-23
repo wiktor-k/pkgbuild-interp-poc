@@ -1,0 +1,64 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: Marcel Campello <marcel@prafrentex.com.br>
+
+pkgname=opentofu
+pkgver=1.13.1
+pkgrel=1
+pkgdesc="Lets you declaratively manage your cloud infrastructure"
+arch=(x86_64)
+url="https://github.com/opentofu/opentofu"
+license=(MPL-2.0)
+depends=(glibc)
+makedepends=(
+  git
+  go
+)
+provides=(terragrunt-iac-provider)
+options=(!lto)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('47fa6392dd40ebf1972bb9c78628d2a95e80c8228e38cf20386ea7ed72878132e16b2217a2ffc86ef9c6d8340cf388c4e8b46f3a84205b7e39327cf4032a1785')
+
+prepare() {
+  cd $pkgname
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="$srcdir"
+
+  local ld_flags=" \
+    -compressdwarf=false  \
+    -linkmode=external  \
+    -X github.com/opentofu/opentofu/version.dev=no \
+  "
+  go build -v -ldflags="$ld_flags" ./cmd/...
+}
+
+check() {
+  cd $pkgname
+  # Skipped test asserts a hard-coded terraform_version that lags the release
+  go test ./... -skip '^TestStateViews$'
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" tofu
+
+  echo 'complete -C /usr/bin/tofu tofu' \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/tofu"
+  {
+    echo '#compdef tofu'
+    echo 'autoload -U +X bashcompinit && bashcompinit'
+    echo 'complete -o nospace -C /usr/bin/tofu tofu'
+  } | install -vDm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_tofu"
+
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  cp -a -t "$pkgdir/usr/share/doc/$pkgname" docs
+}

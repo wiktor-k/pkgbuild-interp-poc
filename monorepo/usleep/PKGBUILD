@@ -1,0 +1,22 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Corentin Peuvrel <corentin.peuvrel@gmail.com>
+
+pkgname=usleep
+pkgver=20160311.094456
+pkgrel=1
+pkgdesc='Sleep for (at least) the given number of microseconds'
+arch=(x86_64)
+url='https://github.com/cpeuvrel/usleep-aur'
+license=(MIT)
+makedepends=(git)
+source=("usleep::git+$url#commit=4f880a7") # 2016-03-11
+b2sums=('2bd6cb066179043518ae125d59d9164753548ff7c0cfed3e9aa00fb9500f3dbe047bf46337d5899232479b5f40b416557ab9790cd5f8a189ea165f26a4f2e32b')
+
+build() {
+  make -C $pkgname
+}
+
+package() {
+  make -C $pkgname PREFIX="$pkgdir/usr/bin" install
+  install -Dm644 $pkgname/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

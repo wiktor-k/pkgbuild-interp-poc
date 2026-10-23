@@ -1,0 +1,22 @@
+pkgbase = pnetcdf-openmpi
+	pkgdesc = Parallel I/O Library for NetCDF File Access (openmpi version)
+	pkgver = 1.15.1
+	pkgrel = 1
+	url = https://parallel-netcdf.github.io/
+	arch = x86_64
+	license = custom
+	checkdepends = bc
+	makedepends = gcc-fortran
+	depends = openmpi
+	depends = netcdf-openmpi
+	provides = parallel-netcdf
+	provides = parallel-netcdf-openmpi
+	conflicts = parallel-netcdf
+	conflicts = parallel-netcdf-openmpi
+	replaces = parallel-netcdf
+	replaces = parallel-netcdf-openmpi
+	options = staticlibs
+	source = https://parallel-netcdf.github.io//Release/pnetcdf-1.15.1.tar.gz
+	sha256sums = 169c6adab08ba49154f14261225992601c573971b823c2066008a8ff57973f8a
+
+pkgname = pnetcdf-openmpi

@@ -1,0 +1,50 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+
+_gemname='rspec-its'
+pkgname="ruby-${_gemname}"
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='RSpec extension gem for attribute matching'
+arch=('any')
+url='https://github.com/rspec/rspec-its'
+license=('MIT')
+makedepends=('ruby-rdoc')
+checkdepends=('ruby-rake' 'ruby-minitest' 'ruby-test-unit')
+depends=('ruby' 'ruby-rspec')
+options=(!emptydirs)
+source=("${url}/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.gz"
+        'disable-cucumber.patch')
+sha512sums=('a31b0bdff78269ee96c4f93f56d7e7cf741c6d93f40609854c44e85979f9bd44da5457b48e664b7c2f45841dfb74963662300044ca9fecd8347dd7a6b7c7dda2'
+            '290dac56438fbafa11e582bd7b4ebbf31cf9ccfdeede445982202af39902f749ac570f9e8a59331f9e8fd33ac3b0015f555c4093487d7be9e16323d8f3eff7ef')
+
+prepare() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+
+  # we build with a tar archive, so `git` won't work
+  sed --in-place 's|`git ls-files`.split($/)|`find`.split("\\n")|' "${_gemname}.gemspec"
+
+  # disable unneeded dependencies
+  patch --forward --verbose --strip=1 --input='../disable-cucumber.patch'
+}
+
+build() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  rake spec
+}
+
+package() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

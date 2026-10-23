@@ -1,0 +1,15 @@
+pkgbase = golangci-lint
+	pkgdesc = Fast linters runner for Go
+	pkgver = 2.15.0
+	pkgrel = 1
+	url = https://github.com/golangci/golangci-lint
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = git+https://github.com/golangci/golangci-lint.git#tag=v2.15.0
+	b2sums = 94438a93f268ebbc07bce76bc6db9f8f8987f94a4eac80414598245d80322890d4471f7ad6d7459f344dae4ea9615fc04daa38e6f6b178d06dbd2931c62b915e
+
+pkgname = golangci-lint

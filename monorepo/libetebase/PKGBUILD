@@ -1,0 +1,35 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=libetebase
+pkgver=0.5.8
+pkgrel=2
+pkgdesc='Etebase C library'
+arch=(x86_64)
+url='https://github.com/etesync/libetebase'
+license=(BSD-3-Clause)
+depends=(glibc
+         libgcc
+         libsodium
+         openssl)
+makedepends=(git
+             rust)
+source=(git+https://github.com/etesync/libetebase#tag=v$pkgver)
+sha256sums=('9c73782d81b9f459cf96b33d35787340dd266d397e70eca3bc31fd9dd2d86f07')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  env CARGO_INCREMENTAL=0 SODIUM_USE_PKG_CONFIG= cargo build --release --locked --offline
+  make pkgconfig
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

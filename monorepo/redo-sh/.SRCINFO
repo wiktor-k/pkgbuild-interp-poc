@@ -1,0 +1,19 @@
+pkgbase = redo-sh
+	pkgdesc = An implementation of the Redo build system in Bash
+	pkgver = 4.0.7
+	pkgrel = 1
+	url = http://news.dieweltistgarnichtso.net/bin/redo-sh.html
+	arch = any
+	license = AGPL-3.0-or-later
+	makedepends = git
+	depends = sh
+	optdepends = graphviz: dependency graph support via redo-dot
+	provides = redo
+	conflicts = redo-python
+	conflicts = redo-jdebp
+	conflicts = redo-c
+	source = redo-sh::git+http://news.dieweltistgarnichtso.net/bin.git#tag=redo-v4.0.7
+	sha512sums = 815e58f4a509816a6c61c65e894082ac5de5ab9a23902b156d2917d37ebf14d1c411b0c1dd5fb79329db2d385f9f3678765ae36eb079f58196d8202d002d896a
+	b2sums = e40ec2ec199c8db22b297041d8be71309d719454f4a35e7a8769f31ad5d38214edbe2d185480d89178be7fd0f2a40cf13cc60793d58e2b40a386d5ddf7355f70
+
+pkgname = redo-sh

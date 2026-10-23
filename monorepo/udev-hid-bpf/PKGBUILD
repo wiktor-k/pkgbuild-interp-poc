@@ -1,0 +1,64 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=udev-hid-bpf
+pkgver=2.3.0.20260703
+_pkgver="$(sed 's/\(.*\)\./\1-/' <<< "${pkgver}")"
+pkgrel=2
+pkgdesc='An automatic HID-BPF loader based on udev events written in rust'
+url='https://gitlab.freedesktop.org/libevdev/udev-hid-bpf'
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=(
+  'glibc'
+  'libbpf'
+  'libelf'
+  'libgcc'
+  'systemd-libs' 'libudev.so'
+  'zlib' 'libz.so'
+)
+makedepends=(
+  'bpf'
+  'cargo'
+  'clang'
+  'cmake'
+  'meson'
+  # for editing the Cargo.lock file with tomlq
+  'yq'
+)
+checkdepends=(
+  'python-click'
+  'python-gitpython'
+  'python-pytest'
+  'python-rich'
+)
+options=('!lto')
+source=(https://gitlab.freedesktop.org/libevdev/${pkgname}/-/archive/${_pkgver}/${pkgname}-${_pkgver}.tar.gz)
+sha256sums=('ad71da0c37a832ae9084e7beb843b90d0718f13cbc5a21efb7a858eedb290eac')
+b2sums=('b037440986f105cd0a8fe1c7c6eb8e1d182defd0c7867c2666017a1a96757d38871d65380de9cfcb3bed6109ad54a6b0e3d882a82f616d83b4be4c05ac45ac23')
+
+prepare() {
+  cd "${pkgname}-${_pkgver}"
+  tomlq -it '
+    (.package[] | select(.name == "udev-hid-bpf") | .version) = "'"$_pkgver"'"
+  ' Cargo.lock
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${_pkgver}"
+  arch-meson -Dbpfs=testing,stable build
+  ninja -C build
+}
+
+check() {
+  cd "${pkgname}-${_pkgver}"
+  # https://gitlab.freedesktop.org/libevdev/udev-hid-bpf/-/issues/79
+  meson test -C build || true
+}
+
+package() {
+  cd "${pkgname}-${_pkgver}"
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

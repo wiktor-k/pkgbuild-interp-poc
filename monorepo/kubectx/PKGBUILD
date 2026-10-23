@@ -1,0 +1,85 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Ian Beringer <ian@ianberinger.com>
+
+pkgname=kubectx
+pkgver=0.11.0
+pkgrel=1
+pkgdesc='Utility to manage and switch between kubectl contexts and Kubernetes namespaces'
+url='https://github.com/ahmetb/kubectx'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  glibc
+  kubectl
+)
+makedepends=(
+  go
+  grep
+)
+optdepends=(
+  'fzf: interactively choose entries'
+)
+provides=(kubectx kubens)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('4bdb2baecbcee58b6aa4b8b723ff2d9e1cd11515b9289f800b1a5572c429947347e3fae7d804e5de4843f95ba99b6b6fccb3e1f91b32edd032cb4804e5a82639')
+b2sums=('f5305d5cd858419bfa71f5b947547638ecaa7879de0642ccf7a683f3893988c95c82cdb07d041c851682a97065a6ebae552601f607e2519bdb86a36308f29c75')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  rm -f kubectx kubens
+
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build(){
+  cd "${pkgname}-${pkgver}"
+
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+
+  export GOPATH="${srcdir}"
+  export GOPROXY=off
+
+  local _options=(
+    -trimpath
+    -buildmode=pie
+    -mod=readonly
+    -modcacherw
+    -ldflags " \
+      -X main.version=${pkgver} \
+      -linkmode external \
+      -extldflags \"${LDFLAGS}\" \
+      -compressdwarf=false \
+      "
+    -v
+  )
+
+  go build "${_options[@]}" ./cmd/kubectx/...
+  go build "${_options[@]}" ./cmd/kubens/...
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  ./kubectx --version | grep "${pkgver}"
+  ./kubens --version | grep "${pkgver}"
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm 755 -p kubectx kubens -t "${pkgdir}/usr/bin"
+
+  # completion
+  install -Dm 644 -p completion/kubectx.bash "${pkgdir}/usr/share/bash-completion/completions/kubectx"
+  install -Dm 644 -p completion/kubens.bash "${pkgdir}/usr/share/bash-completion/completions/kubens"
+  install -Dm 644 -p completion/_kubectx.zsh "${pkgdir}/usr/share/zsh/site-functions/_kubectx"
+  install -Dm 644 -p completion/_kubens.zsh "${pkgdir}/usr/share/zsh/site-functions/_kubens"
+  install -Dm 644 -p completion/kubectx.fish "${pkgdir}/usr/share/fish/vendor_completions.d/kubectx.fish"
+  install -Dm 644 -p completion/kubens.fish "${pkgdir}/usr/share/fish/vendor_completions.d/kubens.fish"
+}
+
+# vim: ts=2 sw=2 et:

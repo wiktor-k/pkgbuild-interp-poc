@@ -1,0 +1,45 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Rafael Dominiquini <rafaeldominiquini at gmail dor com>
+
+pkgname=inferno
+pkgver=0.12.8
+pkgrel=1
+pkgdesc="A Rust port of FlameGraph"
+arch=('x86_64')
+url="https://github.com/jonhoo/inferno"
+license=('CDDL-1.0')
+depends=(
+  'libgcc'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('b55a0ff810928fdf52d5d101ffb0b76b49b7fbf6bfc1d061361bc76d170a0976')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen --lib -- --skip "collapse"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  for bin in "inferno-collapse-perf" "inferno-collapse-dtrace" "inferno-collapse-guess" "inferno-flamegraph" "inferno-diff-folded"; do
+    install -Dm755 "target/release/$bin" "${pkgdir}/usr/bin/$bin"
+  done
+
+  install -Dm644 "CHANGELOG.md" -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  install -Dm644 "README.md" -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  install -Dm644 "LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,65 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: Dragutin Cirkovic <dragonmen@gmail.com>
+# Contributor: heinrich5991 <heinrich5991@gmail.com>
+
+pkgname=srs
+pkgver=6.0_r2
+pkgrel=1
+pkgdesc="High performance realtime media server"
+arch=('x86_64')
+url="https://github.com/ossrs/srs"
+license=('MIT')
+depends=('openssl'
+         'libgcc'
+         'glibc'
+         'libstdc++'
+         'libasan'
+         'srt'
+         'libsrtp')
+makedepends=('zlib'
+             'unzip'
+             'net-tools'
+             'python'
+             'git'
+             'cmake'
+             'tcl')
+backup=(etc/srs/srs.conf)
+options=('docs')
+source=("git+https://github.com/ossrs/srs/#tag=v${pkgver/_/-}"
+        "srs.conf"
+        "srs.service")
+sha256sums=('b7b5e96044b8a4878f0ab8216d0ee92378e47ddc80ddd2358f334b5b84e8be66'
+            '1d806a8f0d8706e77ec3bf84c9953a76c0bda7003db94a0522784feb77f5774c'
+            '6d1398a3c8919f957eeeef0c254958bd222c00df0598ca3032b873a66142a36f')
+
+build() {
+  cd "${srcdir}"/srs/trunk
+
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
+  ./configure --prefix=/install \
+              --use-sys-ssl \
+              --use-shared-st \
+              --use-sys-srt \
+              --use-sys-srtp \
+              --generic-linux=on
+  make
+  make DESTDIR="${srcdir}" install
+}
+
+package() {
+  install -Dm644 "${srcdir}"/srs/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  install -d "${pkgdir}/usr/bin" \
+             "${pkgdir}/etc/${pkgname}" \
+             "${pkgdir}/usr/share/doc/${pkgname}" \
+             "${pkgdir}/usr/lib/systemd/system"
+
+  install -m755 srs.conf "${pkgdir}/etc/${pkgname}"
+  install -m755 srs.service "${pkgdir}/usr/lib/systemd/system"
+
+  cd "${srcdir}"/install
+  install -m755 objs/srs "${pkgdir}"/usr/bin/srs
+
+  cp -r conf "${pkgdir}/usr/share/doc/${pkgname}"
+}

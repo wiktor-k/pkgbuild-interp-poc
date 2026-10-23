@@ -1,0 +1,33 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Jeff Mickey <jeff@archlinux.org>
+
+pkgname=surfraw
+pkgver=2.3.0
+pkgrel=4
+pkgdesc="Shell Users' Revolutionary Front Rage Against the Web"
+arch=('any')
+url="https://gitlab.com/surfraw/Surfraw/"
+license=('custom')
+depends=('perl')
+install=$pkgname.install
+changelog=$pkgname.changelog
+backup=('etc/xdg/surfraw/conf' 'etc/xdg/surfraw/bookmarks')
+source=($pkgname-$pkgver.tar.bz2::https://gitlab.com/surfraw/Surfraw/-/archive/$pkgname-$pkgver/Surfraw-$pkgname-$pkgver.tar.bz2)
+sha256sums=('1859bc0e54080ae710511d9420af2ef24823ca3a141d0fe248c7bf0f5f18e6c5')
+
+build() {
+  cd "${srcdir}"/Surfraw-$pkgname-$pkgver
+
+  ./prebuild
+  ./configure --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+package () {
+  cd "${srcdir}"/Surfraw-$pkgname-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+
+# license
+  install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/$pkgname/COPYING
+}

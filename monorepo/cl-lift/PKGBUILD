@@ -1,0 +1,46 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=cl-lift
+_pkgname="${pkgname#cl-}"
+pkgver=1.7.1.r51.ga794184
+pkgrel=1
+pkgdesc='The LIsp Framework for Testing'
+arch=('any')
+url='https://lift.common-lisp.dev'
+license=('MIT')
+depends=('common-lisp' 'cl-asdf')
+makedepends=('git')
+#checkdepends=('sbcl') # tests fail strangely
+_commit='a7941845a9de72be60e66ea941aa34cbee35bf23'
+source=("$pkgname::git+https://github.com/gwkkwg/lift#commit=$_commit")
+sha512sums=('8dc116bdc9e20d7a4c3aa03ac9fa965a7ed93056e55cdcffea743383b22bc67e046ccffbb2f893e5322ad85dbe04006191ca92a671048a30dd4ff17c71916412')
+b2sums=('5fc20bb5568fde2df25adcf44294ab82759c7b1f397c195e032952269cc8e46f2345f4fcbadd36216a73fd9e79cbba716b50aae213a8265dad78cbadd8d8ce58')
+
+pkgver() {
+  cd "$pkgname"
+
+  # first known commit to receive latest version
+  local _pkgver=1.7.1
+  local _pkgcommit='46dc0f2d46e9877725253c466df199fd990c529d'
+
+  git tag "$_pkgver" "$_pkgcommit"
+
+  git describe --tags | sed -e 's/^v//' -e 's/-/.r/' -e 's/-/./g'
+}
+
+package() {
+  cd "$pkgname"
+
+  # library
+  install -vDm644 -t "$pkgdir/usr/share/common-lisp/source/$_pkgname" ./*.{asd,config}
+  cp -vr \
+    timeout dev test resources \
+    "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr examples "$pkgdir/usr/share/doc/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

@@ -1,0 +1,64 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=alpm-soname
+_upstream=alpm
+pkgver=0.4.4
+pkgrel=1
+pkgdesc="A CLI for looking up soname data in an ALPM context"
+arch=(x86_64)
+url="https://alpm.archlinux.page/alpm-soname/index.html"
+_url="https://gitlab.archlinux.org/archlinux/alpm/alpm.git"
+license=(
+  'Apache-2.0 OR MIT'
+  CC-BY-SA-4.0
+)
+groups=(alpm)
+depends=(
+  glibc
+  libgcc
+  xz
+)
+makedepends=(
+  git
+  just
+  lowdown
+  rust
+  rust-script
+)
+checkdepends=(meson)
+optdepends=(
+  'alpm-docs: for additional specifications'
+)
+source=($_upstream::git+$_url?signed#tag=$pkgname/$pkgver)
+sha512sums=('30745571c6e59a7976448d53a32522a43aab9934acef1a979447aaae894bce6a953276cf0b4ea586651ddd2342f41a92472db79d55a4919999c84fe08663dcaa')
+b2sums=('8d02dba38489294fcf78dfa084c22c93cc4561da2f9a2425018abd78d4cd6032af98e69752249a624a85727eb5e235958ea3f7fc0357397bfbcecfca12bb71c8')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_upstream
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release --features cli --package $pkgname
+
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_upstream
+  cargo test --frozen --package $pkgname
+}
+
+package() {
+  cd $_upstream
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

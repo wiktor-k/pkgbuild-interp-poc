@@ -1,0 +1,72 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-spyder-kernels
+pkgver=3.1.6
+pkgrel=1
+pkgdesc="Jupyter Kernels for the Spyder console"
+arch=(any)
+url="https://github.com/spyder-ide/spyder-kernels/"
+license=(MIT)
+depends=(
+  cython
+  ipython
+  python
+  python-cloudpickle
+  python-dateutil
+  python-ipykernel
+  python-jupyter-client
+  python-matplotlib
+  python-matplotlib-inline
+  python-numpy
+  python-pandas
+  python-pillow
+  python-pygments
+  python-pyzmq
+  python-traitlets
+  python-wurlitzer
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-anyio
+  python-dask
+  python-distributed
+  python-django
+  python-flaky
+  python-h5py
+  python-numpy
+  python-pillow
+  python-polars
+  python-pyarrow
+  python-pydicom
+  python-pytest
+  python-scipy
+  python-xarray
+)
+optdepends=('python-pydicom: DICOM format import')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+b2sums=('7a89e05066066259dd9cb0da6410f8009b69547b8192848bceab4cea8ccda6d4fa425d0c9ba06adf3da6c9b350c0a5f96c5cc18d60ce243632ff3314dded3223')
+
+build() {
+  cd ${pkgname#python-}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-${pkgver}
+  pytest \
+    --deselect spyder_kernels/console/tests/test_console_kernel.py::test_np_threshold \
+    --deselect spyder_kernels/console/tests/test_console_kernel.py::test_functions_with_locals_in_pdb \
+    --deselect spyder_kernels/console/tests/test_console_kernel.py::test_debug_namespace
+}
+
+package() {
+  cd ${pkgname#python-}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE.txt
+}

@@ -1,0 +1,52 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+
+pkgname=vmexec
+pkgver=0.7.1
+pkgrel=1
+pkgdesc="Run a single command in a speedy virtual machine with zero-setup"
+arch=('x86_64')
+url="https://gitlab.archlinux.org/archlinux/vmexec/"
+license=('MIT')
+depends=('libguestfs' 'libgcc' 'glibc')
+makedepends=('rust')
+source=(vmexec-$pkgver.tar.gz::${url}-/archive/v${pkgver}/vmexec-v${pkgver}.tar.gz)
+sha512sums=('cccf63c8b2383a70eca05dc022e21914b37b57d098a0cf22d7952ac76db62c9d13b0d4296c83c53e02003da422758625168de9fe46e08ce38a5c3e49a06d763a')
+
+prepare() {
+  cd $pkgname-v$pkgver
+
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname-v$pkgver
+
+  export CFLAGS+=" -ffat-lto-objects"
+  cargo build --release --locked
+}
+
+check() {
+  cd $pkgname-v$pkgver
+
+  # Only run unittests because the integration tests can't currently work in an
+  # nspawn environment.
+  cargo test --bins --locked
+}
+
+package() {
+  cd $pkgname-v$pkgver
+
+  install -Dm755 target/release/vmexec "$pkgdir"/usr/bin/vmexec
+
+  mkdir -p "$pkgdir"/usr/share/{bash-completion/completions,zsh/site-functions,fish/vendor_completions.d}
+  target/release/vmexec completions bash > "$pkgdir"/usr/share/bash-completion/completions/vmexec
+  target/release/vmexec completions zsh > "$pkgdir"/usr/share/zsh/site-functions/_vmexec
+  target/release/vmexec completions fish > "$pkgdir"/usr/share/fish/vendor_completions.d/vmexec.fish
+
+  mkdir -p "$pkgdir"/usr/share/man/man1
+  target/release/vmexec manpage "$pkgdir"/usr/share/man/man1
+
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

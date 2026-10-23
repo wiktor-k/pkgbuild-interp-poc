@@ -1,0 +1,34 @@
+pkgbase = scanmem
+	pkgdesc = Memory scanner designed to isolate the address of an arbitrary variable in an executing process
+	pkgver = 0.17
+	pkgrel = 11
+	url = https://github.com/scanmem/scanmem
+	arch = x86_64
+	license = GPL3
+	makedepends = intltool
+	makedepends = gtk3
+	makedepends = python-gobject
+	makedepends = polkit
+	makedepends = glibc
+	makedepends = readline
+	options = !emptydirs
+	source = scanmem-0.17.tar.gz::https://github.com/scanmem/scanmem/archive/v0.17.tar.gz
+	sha256sums = f02054b91322cf41517506158fcb74554e9fc6644e696f8aa25e5acf162d374b
+	sha512sums = 6d74f3d1d3492d41cabc342cfd1189815536dcbd57857d8a92e05c5dcaebcb9b1df886aee706c56eaf3344737070ea0fe852eef164ef3fe7907f66c626d8523e
+
+pkgname = scanmem
+	depends = libscanmem
+	depends = glibc
+	depends = readline
+
+pkgname = libscanmem
+	pkgdesc = Memory scanner designed to isolate the address of an arbitrary variable in an executing process (library)
+	depends = readline
+
+pkgname = gameconqueror
+	pkgdesc = Memory scanner designed to isolate the address of an arbitrary variable in an executing process (gtk GUI)
+	depends = libscanmem
+	depends = gtk3
+	depends = python
+	depends = python-gobject
+	depends = polkit

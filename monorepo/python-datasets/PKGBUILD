@@ -1,0 +1,121 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: daskol (Daniel Bershatsky) < bepshatsky at yandex dot ru >
+# Contributor: trougnouf (Benoit Brummer) < trougnouf at gmail dot com >
+
+_name=datasets
+pkgname=python-$_name
+pkgver=5.1.0
+pkgrel=1
+pkgdesc="Ready-to-use datasets for ML models with fast, easy-to-use and efficient data manipulation tools"
+arch=(any)
+url="https://github.com/huggingface/datasets"
+license=(Apache-2.0)
+groups=(huggingface)
+depends=(
+  python
+  python-aiohttp
+  python-dill
+  python-filelock
+  python-fsspec
+  python-h5py
+  python-httpx
+  python-huggingface-hub
+  python-multiprocess
+  python-numpy
+  python-packaging
+  python-pandas
+  python-pyarrow
+  python-requests
+  python-tqdm
+  python-xxhash
+  python-yaml
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  ffmpeg
+  python-absl
+  python-decorator
+  python-librosa
+  python-pytest
+  python-pytest-datadir
+  python-pytest-rerunfailures
+  python-pytest-xdist
+  python-pytorch
+  python-soxr
+  python-sqlalchemy
+  python-torchcodec
+  python-trimesh
+  python-zstandard
+)
+optdepends=(
+  'ffmpeg: Audio datasets'
+  'python-librosa: Audio datasets'
+  'python-soxr: Audio datasets'
+  'python-torchcodec: Audio datasets'
+  'python-pillow: Vision datasets'
+  'python-tensorflow: TensorFlow support'
+  'python-pytorch: PyTorch support'
+  'python-trimesh: for decoding meshes'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz")
+b2sums=('dcd135c96c2938c663412d438fa3b6afade6c37d2f2f4b2bb2905a7a9541cf8b252968522ea65e1b93bf8bd041d5bd6aa769e472e1d977e87b164bafabb905b1')
+
+prepare() {
+  cd $_name-$pkgver
+  # avoid stupid `NameError: name 'log' is not defined` error when our dill
+  # version is *newer* than what upstream supports
+  sed -i 's|elif _is_supported_dill_version():|else:|' src/datasets/utils/_dill.py
+}
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # distribute tests across multiple CPUs
+    -n auto
+    # re-run failed tests
+    --reruns 2
+    # python-pyspark is not packaged, causes error when collecting tests
+    --ignore tests/packaged_modules/test_spark.py
+    # python-pylance is not packaged https://github.com/lance-format/lance/tree/main
+    --ignore tests/packaged_modules/test_lance.py
+    # python-tokenizers is not packaged
+    --ignore tests/test_fingerprint_tokenizer_stability.py
+    # python-iceberg is not packaged
+    --ignore tests/packaged_modules/test_iceberg.py
+    # ModuleNotFoundError: No module named 'aifc'
+    --deselect tests/packaged_modules/test_audiofolder.py::test_data_files_with_metadata_and_archives
+    # subprocess.CalledProcessError
+    --deselect tests/test_fingerprint.py::test_move_script_doesnt_change_hash
+    # ImportError: Install s3fs to access S3
+    --deselect tests/test_arrow_dataset.py::test_build_local_temp_path[s3://bucket/relative/path]
+    # TypeError: Passing coroutines is forbidden, use tasks explicitly.
+    --deselect tests/test_distributed.py::test_torch_distributed_run
+    --deselect tests/test_distributed.py::test_torch_distributed_run_streaming_with_num_workers
+    # skip test modules that cause many failures due to rate-limiting (429 Too Many Requests)
+    --deselect tests/test_inspect.py
+    --deselect tests/test_load.py
+    --deselect tests/test_upstream_hub.py
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 README.md -t "$pkgdir"/usr/share/doc/$pkgname/
+}

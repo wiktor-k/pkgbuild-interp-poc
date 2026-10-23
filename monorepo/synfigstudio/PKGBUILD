@@ -1,0 +1,72 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Franco Iacomella <yaco@gnu.org>
+
+pkgname=synfigstudio
+pkgver=1.4.5
+pkgrel=2
+pkgdesc='Professional vector animation program (GUI)'
+arch=(x86_64)
+url='https://www.synfig.org/'
+license=(GPL-2.0-or-later)
+depends=(
+  atkmm
+  cairo
+  cairomm
+  glib2
+  glibc
+  glibmm
+  gtk3
+  gtkmm3
+  hicolor-icon-theme
+  libgcc
+  libsigc++
+  libstdc++
+  libxml++2.6
+  mlt
+  pangomm
+  python
+  synfig
+)
+makedepends=(
+  etl
+  git
+  intltool
+)
+source=(
+  "git+https://github.com/synfig/synfig.git#tag=v$pkgver"
+  synfigstudio-prgname.patch
+)
+b2sums=(
+  c7347ece20992063ef15f72b22b1e42a129dbf36c53b4188032482239f4d7939376463cf086da7c48c19a61b397ef15984a0bf2ea073848c78eb1bd0248c7250
+  5310912114d11a7ee20275654a0e5ab8e4b38effeff2213484aad6a8139ce2eec2a92599279f753f433089c56e84782c3a042d1be6deb8a97216bc8d119ef76b
+)
+
+prepare() {
+  cd synfig/synfig-studio
+
+  # Fix missing window icon in Wayland
+  # https://github.com/synfig/synfig/pull/3561
+  git apply -3 ../../synfigstudio-prgname.patch
+
+  # Install metainfo file to correct location
+  # https://github.com/synfig/synfig/pull/3790
+  sed -i 's|appdatadir = $(datadir)/appdata|appdatadir = $(datadir)/metainfo|' Makefile.am
+
+  autoreconf -fiv
+}
+
+build() {
+  cd synfig/synfig-studio
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --disable-update-mimedb
+  make
+}
+
+package() {
+  cd synfig/synfig-studio
+  make DESTDIR="$pkgdir" install
+}

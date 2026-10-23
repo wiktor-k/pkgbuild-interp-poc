@@ -1,0 +1,42 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Arnaud Berthomier <arnaud@cyprio.net>
+
+pkgname=gleam
+pkgver=1.19.2
+pkgrel=1
+pkgdesc='Friendly programming language for building type-safe and scalable systems'
+arch=(x86_64)
+url='https://github.com/gleam-lang/gleam'
+license=(Apache-2.0)
+depends=(erlang-core erlang-eunit glibc libgcc)
+makedepends=(cargo git rust)
+checkdepends=(bun deno nodejs)
+optdepends=('erlang: standard erlang distribution'
+            'rebar3: erlang dependency support')
+provides=(gleam)
+options=(!docs !libtool !lto !staticlibs)
+source=("git+$url#tag=v$pkgver")
+b2sums=('d60ff15d38ff183018159927c9aacc814040aac09f239d13db7cdbe52d3cbe0fd409513ad017f874149e5237c578699f4544ac42ac2a1298b1fd3f8ba45888de')
+
+prepare() {
+  cd $pkgname
+  RUSTUP_TOOLCHAIN=stable \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  CARGO_TARGET_DIR=target RUSTUP_TOOLCHAIN=stable \
+    cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname
+  RUSTUP_TOOLCHAIN=stable \
+    cargo test --frozen --workspace
+}
+
+package() {
+  install -Dm755 $pkgname/target/release/gleam "$pkgdir/usr/bin/gleam"
+}

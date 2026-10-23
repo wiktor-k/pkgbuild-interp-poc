@@ -1,0 +1,28 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-low-index
+pkgver=1.3
+pkgrel=1
+pkgdesc="An implementation of Sims' Low Index Subgroup algorithm"
+url='https://snappy.computop.org/'
+depends=(glibc
+         python)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools)
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+source=(git+https://github.com/3-manifolds/low_index#tag=v${pkgver}_as_released)
+sha256sums=('d978f745078ab54ba2517ce902fc2731502b9cb338df8d05349bb8905c1e98e9')
+
+build() {
+  cd low_index
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd low_index
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,61 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Contributor: Jeremy Audet <jerebear@protonmail.com>
+# Contributor: Lucky <archlinux@builds.lucky.li>
+
+_gemname='cri'
+pkgname="ruby-${_gemname}"
+pkgver=2.15.12
+pkgrel=3
+pkgdesc='Library for building easy-to-use command-line tools with support for nested commands'
+arch=('any')
+url='https://github.com/ddfreyne/cri'
+license=('MIT')
+makedepends=('ruby-rdoc' 'ruby-yard' 'ruby-rake')
+checkdepends=('ruby-minitest')
+depends=('ruby')
+options=(!emptydirs)
+source=(
+  "${url}/archive/${pkgver}/${_gemname}-${pkgver}.tar.gz"
+  'Rakefile.patch'
+  "${url}/commit/bd4a37491a46b0f896af4e6846a8e40e542631b3.patch"
+)
+sha512sums=('feb0f8fedf3fa9631405e466bade01bc8101978ab63a18fd4bc5e91d815c64cc43537910a05457c5eb341db6e76aeef498e6f749a8cb680fb1fb95244e8a33a0'
+            '44d3db7dfda851d432ff293e178c31e513dfd902cbbf3c7862857b479562f091cd8afcac7c68a4fb4c825286fd6d62c5956be54eeb4e1640cf04bb7d1f71d764'
+            '97eb128ac89410f4b8918bf46d1c25052f46bf57774436219ff4610fa3a8b8d3b0716db8a82afe1e35d721818e466a5873caa8ab3ecf67b3694d52cdf5f94a9d')
+
+prepare() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+
+  # The Rakefile and a helper file try to load a bunch of gems to report the CI status to a cloud provider
+  # Also it tries to execute a ruby linter for a legacy Ruby version
+  # all those tools aren't required to build and test the software, also we don't have them in the repos.
+  patch --forward --verbose --strip=1 --input='../Rakefile.patch'
+
+  patch --verbose --strip=1 --input="../bd4a37491a46b0f896af4e6846a8e40e542631b3.patch"
+}
+
+build() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  rake test_unit
+  rake doc
+}
+
+package() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+  install -Dm 644 README.md CODE_OF_CONDUCT.md NEWS.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  mv doc/yardoc "${pkgdir}/usr/share/doc/${pkgname}/"
+  rm -rf "${pkgdir}/${_gemdir}/gems/${_gemname}-${pkgver}/"{README.md,CODE_OF_CONDUCT.md,NEWS.md,.gitignore,.rubocop.yml,.travis.yml,test,LICENSE}
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

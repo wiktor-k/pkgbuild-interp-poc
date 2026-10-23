@@ -1,0 +1,134 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: bartus <arch-user-repoᘓbartus.33mail.com>
+# Contributor: pingplug <pingplug@foxmail.com>
+# Contributor: cornholio <vigo.the.unholy.carpathian@gmail.com>
+# Contributor: Lubosz Sarnecki <lubosz@gmail.com>
+
+_pkgname=magma
+pkgbase=$_pkgname
+pkgname=(magma-cuda magma-hip)
+pkgver=2.10.0
+pkgrel=1
+_pkgdesc="Matrix Algebra on GPU and Multicore Architectures"
+arch=('x86_64')
+url="https://icl.utk.edu/magma/"
+license=('BSD-3-Clause')
+depends=('blas' 'lapack')
+makedepends=('git' 'cmake' 'ninja' 'python' 'gcc-fortran'
+             'cuda'
+             'rocm-core' 'rocm-toolchain' 'hip-runtime-amd' 'hipblas' 'hipsparse')
+optdepends=('python: for examples and tests'
+            'gcc-fortran: Fortran interface')
+source=(
+  "${_pkgname}::git+https://github.com/icl-utk-edu/magma.git#tag=v${pkgver}"
+  $pkgname-smaller-cuda-binaries.patch::https://github.com/icl-utk-edu/magma/pull/83.patch
+)
+sha256sums=('4ce599fec02a871aec6e1c2cea93e596364fddee6790113a552baca75fcb407b'
+            'bbe40b25601de852389e169335c0ee85a60fa4e634cf246ff74decf3a218cd91')
+options=(!lto)
+
+_valid_sm() {
+  echo "sm_75 sm_80 sm_86 sm_87 sm_88 sm_89 sm_90 sm_100 sm_103 sm_110 sm_120 sm_121"
+}
+
+_valid_gfx() {
+  echo "$(rocm-supported-gfx -s -d ' ')"
+}
+
+prepare() {
+  # NOTE: all patches must be applied before copying the sources for -cuda and -hip and running make generate
+  cd "${_pkgname}"
+
+  # Fix https://github.com/icl-utk-edu/magma/issues/39
+  patch -Np1 -i "$srcdir"/$pkgname-smaller-cuda-binaries.patch
+
+  cd "${srcdir}"
+
+  cp -r "${_pkgname}" "${_pkgname}-${pkgver}-cuda"
+  cp -r "${_pkgname}" "${_pkgname}-${pkgver}-hip"
+
+  cd "${_pkgname}-${pkgver}-cuda"
+  echo -e "BACKEND = cuda\nFORT = true\nGPU_TARGET=$(_valid_sm)" > make.inc
+  make generate
+
+  cd "${srcdir}"
+
+  cd "${_pkgname}-${pkgver}-hip"
+  echo -e "BACKEND = hip\nFORT = true\nGPU_TARGET=$(_valid_gfx)" > make.inc
+  make generate
+}
+
+build() {
+  echo "Build with cuda backend"
+  cd "${srcdir}/${_pkgname}-${pkgver}-cuda"
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/cuda/targets/x86_64-linux \
+    -DBUILD_SHARED_LIBS=ON \
+    -DGPU_TARGET="$(_valid_sm)"
+  ninja -C build
+
+
+  echo "Build with rocm/hip backend"
+  cd "${srcdir}/${_pkgname}-${pkgver}-hip"
+  local _rocm_ver=$(./tools/get-rocm-version.sh)
+  # -fcf-protection is not supported by HIP, see
+  # https://docs.amd.com/bundle/ROCm-Compiler-Reference-Guide-v5.5/page/Compiler_Options_and_Features.html#d2e2018
+  CXXFLAGS+=" -fcf-protection=none"
+  # ROCm version needs to be passed to the compiler since it's not part of the
+  # cmake toolchain yet.
+  CXXFLAGS+=" -DROCM_VERSION=$_rocm_ver"
+  # With ROCm 6.0.0 the header moved from /opt/rocm/include to the subfolder hipsparse.
+  # magma still uses the old location.
+  CXXFLAGS+=" -isystem /opt/rocm/include/hipsparse --offload-compress"
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_CXX_COMPILER=/opt/rocm/bin/hipcc \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/opt/rocm \
+    -DBUILD_SHARED_LIBS=ON \
+    -DMAGMA_ENABLE_HIP=ON \
+    -DGPU_TARGET="$(_valid_gfx)" \
+    -DAMDGPU_TARGETS="$(_valid_gfx | tr ' ' ';')"
+  ninja -C build
+}
+
+_package() {
+  DESTDIR="${pkgdir}" ninja -Cbuild install
+
+  local _prefix="$1"
+  install -d "${pkgdir}/${_prefix}"/share/magma/example
+  cp -r "${srcdir}"/magma/example/* "${pkgdir}/${_prefix}"/share/magma/example/
+  install -d "${pkgdir}/${_prefix}"/share/magma/testing
+  cp -r "${srcdir}"/magma/testing/* "${pkgdir}/${_prefix}"/share/magma/testing/
+  install -Dm644 "${srcdir}"/magma/COPYRIGHT "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+  echo "${_prefix}/lib" > "${pkgname}.conf"
+  install -Dm644 "${pkgname}.conf" "${pkgdir}"/etc/ld.so.conf.d/"${pkgname}.conf"
+}
+
+package_magma-cuda() {
+  pkgdesc="${_pkgdesc} (with CUDA)"
+  depends+=(cuda)
+  provides=(magma)
+  replaces=(magma)
+
+  cd "${srcdir}/${_pkgname}-${pkgver}-cuda"
+  _package "/opt/cuda"
+}
+
+package_magma-hip() {
+  pkgdesc="${_pkgdesc} (with ROCm/HIP)"
+  depends+=(hip-runtime-amd hipblas hipsparse)
+  provides=(hipmagma)
+  replaces=(hipmagma)
+
+  cd "${srcdir}/${_pkgname}-${pkgver}-hip"
+  _package "/opt/rocm"
+}
+
+# vim:set ts=2 sw=2 et:

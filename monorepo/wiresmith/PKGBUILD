@@ -1,0 +1,29 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=wiresmith
+pkgver=0.4.5
+pkgrel=1
+pkgdesc="Auto-config WireGuard clients into a mesh"
+arch=('x86_64')
+url="https://github.com/svenstaro/wiresmith"
+license=('MIT')
+depends=('libgcc' 'glibc')
+makedepends=('rust')
+options=('!lto')
+source=($pkgname-$pkgver.tar.gz::https://github.com/svenstaro/wiresmith/archive/v${pkgver}.tar.gz)
+sha512sums=('9c1141c5c7d00be3bb453753c2d6e49a7875dc9bba73361111678eb40434241c406ba49cadc06db5125eb86934f91df74acb7e63da508596a103680e02b9b06c')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  cargo build --release --locked
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  install -Dm755 target/release/wiresmith "$pkgdir"/usr/bin/wiresmith
+  install -Dm644 packaging/wiresmith.service "$pkgdir"/usr/lib/systemd/system/wiresmith.service
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

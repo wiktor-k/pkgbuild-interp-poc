@@ -1,0 +1,24 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=qt6mpris
+pkgver=1.0.0.1_1deepin2
+pkgrel=1
+pkgdesc='Qt 6 and QML MPRIS interface and adaptor'
+arch=('x86_64')
+url="https://github.com/deepin-community/qt6mpris"
+license=('LGPL-2.1-or-later')
+depends=('glibc' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-declarative')
+makedepends=('git')
+source=("git+https://github.com/deepin-community/qt6mpris.git#tag=${pkgver/_/-}")
+sha512sums=('76e516bdfd04f29eeb717898b241ef43c608109f7967b6a970cc15a4c1157b2a0ef09a6a1ad9454ca895029fcdd02a3cd09f5e1d28e20869a9f994e0c9b3f737')
+
+build() {
+  cd qt6mpris
+  qmake6 mpris-qt.pro
+  make
+}
+
+package() {
+  cd qt6mpris
+  make INSTALL_ROOT="$pkgdir" install
+}

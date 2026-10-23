@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Bence Balint <balintbence1337@gmail.com>
+
+pkgname=python-w3lib
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="Library of web-related functions"
+arch=('any')
+license=('BSD-3-Clause')
+url="https://github.com/scrapy/w3lib"
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-hatchling')
+checkdepends=('python-hypothesis' 'python-pytest')
+source=("git+https://github.com/scrapy/w3lib.git#tag=v$pkgver")
+sha512sums=('ac704341428667347fdb123c91c406052bd1f93ed08f064c59ecebcbf0359ded4d041bf4c7a99904991f51c0d61622d483d54ccb1ac686b56513a356caab83e0')
+
+build() {
+  cd w3lib
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd w3lib
+  pytest
+}
+
+package() {
+  cd w3lib
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

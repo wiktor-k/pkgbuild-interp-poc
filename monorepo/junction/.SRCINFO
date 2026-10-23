@@ -1,0 +1,27 @@
+pkgbase = junction
+	pkgdesc = Application chooser to open files and links
+	pkgver = 1.13
+	pkgrel = 1
+	url = https://apps.gnome.org/Junction/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = bash
+	depends = dconf
+	depends = gjs
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libportal
+	depends = libportal-gtk4
+	source = git+https://github.com/sonnyp/Junction.git#tag=v1.13
+	source = git+https://github.com/sonnyp/troll.git
+	b2sums = 7f23a8378fc11abf6fcaa792a87ee160248018b77461e901c49383dfa614dba5874e81647bff52a550fb15cf99e4afebf2b7901b2ed2519e43879b28ea5b9b75
+	b2sums = SKIP
+
+pkgname = junction

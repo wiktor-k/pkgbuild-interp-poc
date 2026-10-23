@@ -1,0 +1,91 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='parallel_tests'
+pkgname="ruby-${_gemname}"
+pkgver=5.7.0
+pkgrel=1
+pkgdesc='Run Test::Unit / RSpec / Cucumber / Spinach in parallel'
+arch=('any')
+url="https://github.com/grosser/${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-parallel
+)
+makedepends=(
+  ruby-rdoc
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('061be3cbd33519f470982f6458eeba7b27d384625d7161cf4354f8bcfedfadd885d3941fe08bae265c59af6970c22c851ba2f8ebf241664c8d850ed48736f60e')
+b2sums=('693705be984e82e031dfe943ff8b44c31cd9730bc38fa9438beab07c7035744b3ed5fb5e4a8f79a099604c8b071a292855dd610c20a1fb3f114b1c13084552ad')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+# https://github.com/grosser/spinach is not packaged yet
+# check() {
+#   cd "${_gemname}-${pkgver}"
+#
+#   local _gemdir="$(gem env gemdir)"
+#
+#   GEM_HOME="tmp_install${_gemdir}" rake test
+# }
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 Readme.md --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

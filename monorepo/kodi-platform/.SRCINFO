@@ -1,0 +1,17 @@
+pkgbase = kodi-platform
+	pkgdesc = platform library for external kodi addons
+	pkgver = 20251221.844cf3e
+	pkgrel = 2
+	url = https://github.com/xbmc/kodi-platform
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-platform::git+https://github.com/xbmc/kodi-platform.git#commit=844cf3e
+	sha256sums = f1241e99e59ac273b0b4b6f415b2429b0f21f7ce3a076a18a1ecf6e214d7d374
+
+pkgname = kodi-platform
+	depends = kodi
+	depends = p8-platform

@@ -1,0 +1,19 @@
+pkgbase = python-simplespectral
+	pkgdesc = Heavily simplified scipy.signal.spectral module
+	pkgver = 1.0.0
+	pkgrel = 14
+	url = https://github.com/xmikos/simplespectral
+	arch = any
+	license = MIT
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-numpy
+	optdepends = python-scipy: faster FFT calculations with scipy.fftpack library
+	replaces = simplespectral
+	source = python-simplespectral-1.0.0.tar.gz::https://github.com/xmikos/simplespectral/archive/v1.0.0.tar.gz
+	sha256sums = 4342741f7054c71f7c5fb9d38df49e048e0a4e20eb53cefd247e47937644cad0
+
+pkgname = python-simplespectral

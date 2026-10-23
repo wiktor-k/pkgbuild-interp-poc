@@ -1,0 +1,63 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Lubomir 'Kuci' Kucera <kuci24-at-gmail-dot-com>
+# Contributor: Martin Rys <martin@rys.pw>
+
+pkgname=gitlab-runner
+pkgver=19.5.1
+pkgrel=1
+pkgdesc="The official GitLab CI runner written in Go"
+arch=('x86_64')
+url='https://gitlab.com/gitlab-org/gitlab-runner'
+license=('MIT')
+depends=('ca-certificates' 'curl' 'git' 'glibc' 'tar')
+optdepends=('inetutils: hostname command')
+makedepends=('git' 'go' 'git' 'mercurial' 'gox')
+install=gitlab-runner.install
+replaces=('gitlab-ci-multi-runner')
+backup=('etc/gitlab-runner/config.toml')
+noextract=("prebuilt-alpine-x86_64-${pkgver}.tar.xz"
+           "prebuilt-ubuntu-x86_64-${pkgver}.tar.xz")
+source=("git+$url.git#tag=v${pkgver}"
+        "prebuilt-alpine-x86_64-${pkgver}.tar.xz::https://gitlab-runner-downloads.s3.amazonaws.com/v${pkgver}/helper-images/prebuilt-alpine-x86_64.tar.xz"
+        "prebuilt-ubuntu-x86_64-${pkgver}.tar.xz::https://gitlab-runner-downloads.s3.amazonaws.com/v${pkgver}/helper-images/prebuilt-ubuntu-x86_64.tar.xz"
+        "gitlab-runner.service"
+        "gitlab-runner.sysusers"
+        "gitlab-runner.tmpfiles"
+        "config.toml")
+sha512sums=('3ee4ed30925029a12408080b15c28966a699b1cc5fb6bcccf67c54324b0a78ea65594f24b4cde49a67f742568b1a1f5fa922a8fbba4ae1342563c35bf9c488e2'
+            '66485fddedd4794693dfda718451a132dd851b02867d8b4fad38c5586382dcd8c5840eaebc65687d0dd586747eac8547b1908333a1ba5ee24c941334362f1702'
+            'f58cb49ea470bb7dadde5b768d6d7278fe1a3a0228f95545ad23a91e142c2969784df6f8477ce86f9749e0b7c0c856f551228cae5927ce396fd2a85d69ce9464'
+            'a61348bc0c817a21588bd4a82daf7f230d41816b576befbc5727e37da534de6378031a49e9f5e2da34be5d78f4927a64ee856afaa80ec7b6e7037244d9dbead0'
+            '8aa7f08702e99053c696fcc2aaba83beb9e9cd6f31973d82862db9350ac46df3a095377625d31fe909677525290d2de922d7a97930ed235774cb8f0da8944d40'
+            '6751d9fa0b27172d1b419c4138f5ac15cbc7c9147653a7258cf1470216142c637210bb60608c7ed0974e0e4057e5ddeae32225df1bb36e7dd1f20fec71e33cc3'
+            '9718b94bd0ddb09095ffb8c1e60ca1e9649dabb1747e7fc95e58e404b2f9effdeb4cfd759f5b904443dc53a4e18c02003c38f85584713deb49f6a6d1007503de')
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  cd gitlab-runner
+  make out/binaries/gitlab-runner-linux-amd64
+}
+
+package() {
+  cd gitlab-runner
+
+  install -Dm644 "${srcdir}/config.toml" "${pkgdir}/etc/gitlab-runner/config.toml"
+  install -Dm644 "${srcdir}/gitlab-runner.service" "${pkgdir}/usr/lib/systemd/system/gitlab-runner.service"
+  install -Dm644 "${srcdir}/gitlab-runner.sysusers" "${pkgdir}/usr/lib/sysusers.d/gitlab-runner.conf"
+  install -Dm644 "${srcdir}/gitlab-runner.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/gitlab-runner.conf"
+  install -Dm755 out/binaries/gitlab-runner-linux-amd64 "${pkgdir}/usr/bin/gitlab-runner"
+  install -Dm755 packaging/root/usr/share/gitlab-runner/clear-docker-cache "${pkgdir}/usr/share/gitlab-runner/clear-docker-cache"
+
+  # Move prebuilt Docker images to hard-coded canonical location
+  for image in prebuilt-{alpine,ubuntu}-x86_64-${pkgver}.tar.xz; do
+    install -Dm644 "${srcdir}/${image}" "${pkgdir}/usr/lib/gitlab-runner/helper-images/${image}"
+  done
+
+  install -Dm644 -t "${pkgdir}/usr/share/licenses/$pkgname/" LICENSE
+}

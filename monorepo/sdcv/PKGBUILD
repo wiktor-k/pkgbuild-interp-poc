@@ -1,0 +1,32 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+
+pkgname=sdcv
+pkgver=0.5.5
+pkgrel=2
+pkgdesc="StarDict Console Version"
+arch=('x86_64')
+url="https://dushistov.github.io/sdcv/"
+license=('GPL')
+depends=('glib2' 'readline' 'zlib')
+makedepends=('cmake')
+provides=('stardict')
+changelog=$pkgname.changelog
+source=($pkgname-$pkgver.tar.gz::https://github.com/Dushistov/$pkgname/archive/v$pkgver.tar.gz)
+sha256sums=('4d2519e8f8479b9301dc91e9cda3e1eefef19970ece0e8c05f0c7b7ade5dc94b')
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  install -d build
+  cd build
+
+  cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr ..
+  make
+  make lang
+}
+
+package() {
+  cd "${srcdir}"/$pkgname-$pkgver/build
+
+  make DESTDIR="${pkgdir}" install
+}

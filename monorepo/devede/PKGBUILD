@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Javier 'Phrodo_00' Aravena <phrodo.00@gmail.com>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=devede
+_pkgname=devedeng
+pkgver=4.22.1
+pkgrel=1
+pkgdesc='Program to create Video DVDs and CDs'
+arch=(any)
+url='https://rastersoft.com/programas/devede.html'
+license=(GPL-3.0-only)
+depends=(
+  cdrtools
+  dvdauthor
+  ffmpeg
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  python
+  python-cairo
+  python-gobject
+  vcdimager
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-gettext
+  python-wheel
+)
+source=("git+https://gitlab.com/rastersoft/$_pkgname.git#tag=$pkgver")
+b2sums=(f4b58558054ae4565a160c08f85926cb347cf446126fa62f7075c21ecb0097583d4109c71f55bcf014b7655f2ca311846f3b0993f0a01b8c24d626752a184232)
+
+build() {
+  cd $_pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

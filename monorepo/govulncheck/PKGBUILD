@@ -1,0 +1,45 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Contributor: Morten Linderud <foxboron@archlinux.org>
+
+pkgname=govulncheck
+pkgver=1.9.0
+pkgrel=1
+pkgdesc='Database client and tools for the Go vulnerability database'
+arch=(x86_64)
+url='https://github.com/golang/vuln'
+license=(BSD-3-Clause)
+depends=(glibc)
+makedepends=(git go)
+source=(go-vuln::git+https://go.googlesource.com/vuln#tag=v$pkgver)
+sha256sums=('92addffc7b949b8bfec55489ace3e9ce7c730c6e4468b68521fe9b819ccd0554')
+
+prepare() {
+  cd "go-vuln"
+  mkdir -p bin/
+
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "go-vuln"
+  # export CGO_CPPFLAGS="${CPPFLAGS}"
+  # export CGO_CFLAGS="${CFLAGS}"
+  # export CGO_CXXFLAGS="${CXXFLAGS}"
+  # export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_ENABLED=1
+  export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+  go build -o bin/ ./cmd/...
+}
+
+check() {
+  cd "go-vuln"
+  # TODO: The tests doesn't actually run because of a rather complicate setup
+  # go test ./...
+}
+
+package() {
+  cd "go-vuln"
+  install -Dm755 bin/govulncheck "$pkgdir/usr/bin/govulncheck"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

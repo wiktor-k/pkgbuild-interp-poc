@@ -1,0 +1,23 @@
+pkgbase = kani
+	pkgdesc = Bit-precise model checker for Rust
+	pkgver = 0.64.0
+	pkgrel = 1
+	url = https://github.com/model-checking/kani
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	makedepends = git
+	depends = cargo-nightly
+	depends = gcc-libs
+	provides = cargo-kani
+	provides = kani-verifier
+	source = kani-0.64.0::git+https://github.com/model-checking/kani#commit=12386811f934e7eb76e794bea787a1030f934735
+	source = kani-charon::git+https://github.com/AeneasVerif/charon
+	source = kani-firecracker::git+https://github.com/firecracker-microvm/firecracker.git
+	source = kani-s2n-quic::git+https://github.com/aws/s2n-quic
+	sha256sums = 125ed138413c0745d94fe6166d3b9d9b5ff8b209cd098917b8e757d2c582093e
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = kani

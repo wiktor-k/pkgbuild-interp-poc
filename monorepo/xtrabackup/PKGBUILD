@@ -1,0 +1,56 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+
+pkgname=xtrabackup
+pkgver=9.7.1_rc1
+pkgrel=1
+pkgdesc='Non-blocking backup tool for MySQL'
+arch=('x86_64')
+url='https://www.percona.com/software/mysql-database/percona-xtrabackup'
+license=('GPL-2.0-only')
+depends=('libaio' 'libev' 'libgcrypt' 'curl' 'perl-dbd-mysql' 'numactl' 'protobuf' 'libprocps' 'icu' 'zlib' 'zstd' 'lz4')
+makedepends=('cmake' 'python-sphinx' 'vim' 'libedit' 'libevent' 'libfido2')
+source=("https://downloads.percona.com/downloads/Percona-XtraBackup-${pkgver%.*}/Percona-XtraBackup-${pkgver//_/-}/source/tarball/percona-xtrabackup-${pkgver//_/-}.tar.gz")
+sha256sums=('604c797be4040f6ee41905848ae63baded22b36ab085a7fb68b1e207c8d4d73b')
+
+prepare() {
+  mkdir build
+}
+
+build() {
+  cd build
+  cmake -DBUILD_CONFIG=xtrabackup_release \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        -DMYSQL_DATADIR=/var/lib/mysql \
+        -DMYSQL_UNIX_ADDR=/run/mysqld/mysqld.sock \
+        -DWITH_EDITLINE=system \
+        -DWITH_FIDO=system \
+        -DWITH_ICU=system \
+        -DWITH_LZ4=system \
+        -DWITH_PROTOBUF=system \
+        -DWITH_SSL=system \
+        -DWITH_ZLIB=system \
+        -DWITH_ZSTD=system \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DINSTALL_PLUGINDIR="/usr/lib/xtrabackup/plugin" \
+        -DINSTALL_MANDIR="/usr/share/man" \
+        -DINSTALL_STATIC_LIBRARIES=OFF \
+        -DCMAKE_CXX_FLAGS="${CXXFLAGS} -include cstdint" \
+        ../percona-xtrabackup-${pkgver//_/-}
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="$pkgdir" install
+
+  cd "$pkgdir"
+  rm -rf usr/xtrabackup-test \
+         usr/lib/xtrabackup/plugin/debug \
+         usr/lib/*.a \
+         usr/include \
+         usr/docs \
+         usr/share/man/man8 \
+         usr/share/man/man1/{c,i,m,l,p,z}*
+}

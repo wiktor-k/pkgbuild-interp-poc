@@ -1,0 +1,84 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: bbx0 <39773919+bbx0@users.noreply.github.com>
+# Contributor: Raphael Amorim <rapha850@gmail.com>
+
+pkgname=rio
+pkgver=0.5.28
+pkgrel=1
+pkgdesc="A hardware-accelerated GPU terminal emulator powered by WebGPU"
+arch=('x86_64')
+url="https://github.com/raphamorim/rio"
+license=('MIT')
+depends=(alsa-lib
+         fontconfig
+         freetype2
+         glibc # libc.so libm.so ld-linux-x86-64.so
+         hicolor-icon-theme
+         libgcc
+         libstdc++
+         oniguruma # libonig.so
+         vulkan-driver)
+makedepends=(cargo
+             cmake
+             glslang
+             libxcb
+             libxkbcommon
+             python
+             scdoc)
+source=("${url}/archive/refs/tags/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('cbf9bf2567e35a42cc8ccfb99dff54b471b9fdf02a471624db762c9d6304def7f35821de5e37e2268360eb35fc2b1665bcd9381763397d33a338e3b7405d0016')
+
+_srcenv() {
+  cd "${pkgname}-${pkgver}"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -fno-lto'
+  CXXFLAGS+=' -fno-lto'
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+
+  # Fix launchable ID in metainfo file
+  sed -i "s/com.rioterm.Rio.desktop/rio.desktop/" "misc/com.rioterm.Rio.metainfo.xml"
+}
+
+build() {
+  _srcenv
+  cargo build --frozen --release --all-features
+  make -C extra/man
+}
+
+check() {
+  _srcenv
+  cargo test --frozen --release --all-features --workspace
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  depends=(hicolor-icon-theme
+           libasound.so
+           libfontconfig.so
+           libfreetype.so
+           libgcc_s.so
+           libstdc++.so
+           oniguruma
+           vulkan-driver)
+  install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+  install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+  install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+  install -Dm0644 -t "$pkgdir/usr/share/applications/" "misc/$pkgname.desktop"
+  install -Dm0644 "misc/logo.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
+  install -Dm0644 -t "$pkgdir/usr/share/metainfo/" misc/com.rioterm.Rio.metainfo.xml
+  install -Dm0644 -t "$pkgdir/usr/share/man/man1/" extra/man/*.1
+  install -Dm0644 -t "$pkgdir/usr/share/man/man5/" extra/man/*.5
+}
+
+# vim: ts=2 sw=2 et:

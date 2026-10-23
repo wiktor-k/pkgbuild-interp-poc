@@ -1,0 +1,31 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Jiachen YANG <farseerfc@gmail.com>
+# AUR Maintainer: Timofey Titovets <nefelim4ag@gmail.com>
+
+pkgname=python-btrfs
+pkgver=15
+pkgrel=2
+pkgdesc="Python Btrfs module, with useful scripts to inspect btrfs internals"
+arch=(any)
+url="https://github.com/knorrie/python-btrfs"
+license=('LGPL-3.0-or-later')
+depends=('python')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("$pkgname::git+$url.git#tag=v${pkgver}")
+sha256sums=('d646ca633739c701178ecc8f56a3a96f956a3b40f1670715fd79a2daa3d5f705')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

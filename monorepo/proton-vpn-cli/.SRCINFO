@@ -1,0 +1,28 @@
+pkgbase = proton-vpn-cli
+	pkgdesc = Official ProtonVPN CLI Linux app
+	pkgver = 1.0.5
+	pkgrel = 1
+	url = https://github.com/ProtonVPN/proton-vpn-cli
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-click
+	depends = python-dbus-fast
+	depends = python-packaging
+	depends = python-proton-core
+	depends = python-proton-vpn-api-core
+	depends = python-proton-keyring-linux
+	depends = python-proton-vpn-network-manager
+	depends = python-proton-vpn-local-agent
+	depends = proton-vpn-daemon
+	depends = python-sentry_sdk
+	depends = python-tabulate
+	source = git+https://github.com/ProtonVPN/proton-vpn-cli.git#tag=v1.0.5
+	sha256sums = c355a60f724062cccf0a755d27a9c575e187f827d2b8f46088392b67af4ebbb7
+
+pkgname = proton-vpn-cli

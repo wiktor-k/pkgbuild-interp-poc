@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Francois Charette <firmicus@gmx.net>
+
+pkgname=perl-www-mechanize
+pkgver=2.22
+pkgrel=1
+pkgdesc="Automates web page form & link interaction"
+arch=(any)
+url="https://search.cpan.org/dist/WWW-Mechanize"
+license=('GPL' 'PerlArtistic')
+depends=('perl-libwww' 'perl-html-parser' 'perl-uri' 'perl-html-form' 'perl-html-tree')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/O/OA/OALDERS/WWW-Mechanize-$pkgver.tar.gz")
+sha256sums=('2ed28cbeea54de40d08e88eb52f4dd5fcb05062efb6b2feb9da8376ca4308e60')
+
+build() {
+  cd  "$srcdir"/WWW-Mechanize-$pkgver
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd  "$srcdir"/WWW-Mechanize-$pkgver
+  make install DESTDIR="$pkgdir"
+}

@@ -1,0 +1,60 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=alsa-scarlett-gui
+pkgver=0.5.1
+pkgrel=2
+pkgdesc='GUI for the ALSA controls presented by the Focusrite Scarlett Gen 2/3 mixer driver'
+arch=('x86_64')
+url='https://github.com/geoffreybennett/alsa-scarlett-gui'
+license=('GPL-3.0-or-later' 'LGPL-3.0-or-later')
+depends=(
+  'glibc'
+  'glib2'
+  'alsa-lib'
+  'alsa-utils'
+  'gtk4'
+  'hicolor-icon-theme'
+  'cairo'
+  'pango'
+  'openssl'
+)
+makedepends=('git')
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  'ftbfs-remove-redefinitions.patch'
+)
+sha512sums=('f1b0038dd4ebee5a6ad1a23828257fe70e95114efcf149b1eb1f5730bfeb707a145a326271956ad8c34855c0d27026b3ae8d0a9d1e5fe4235e5380a8ac731807'
+            '247a7bdb4e341d5da42454ee34119118944910f9ebf53bf87c49cfc077bfbe4b4ba94704e2ccd58c11ef6f5464cb03999fcfe151f55a2295b9e65caf16d483ae')
+b2sums=('ec1d3fa0ecb95e7879e331e6703f5ce83e7ce7acb776604c31c0dedda0989acb7612fc036399403973b41ff1f0fb9bc25e4d978badcf54761ece1cbb214ad6b6'
+        '0fe59b743b180bbb76ffa99b4b6a09207f1b4cd6beff60ffbd4ba177adde6a2e0c99840d5537c9a807c320e6773eddfe12d6fc537278c912fab5220f1ba22f3d')
+
+prepare() {
+  cd "$pkgname"
+
+  # FTBFS: remove cflags already defined in makepkg.conf
+  patch -p1 -i "$srcdir/ftbfs-remove-redefinitions.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  make \
+    -C src \
+    PREFIX=/usr \
+    VERSION="$pkgver"
+}
+
+package() {
+  cd "$pkgname"
+
+  make \
+    -C src \
+    PREFIX="$pkgdir/usr" \
+    VERSION="$pkgver" \
+    install
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md ./docs/*.md
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/img" img/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/demo" demo/*
+}

@@ -1,0 +1,53 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname="nomad-driver-exec2"
+pkgdesc="An official Nomad task driver plugin for sandboxing workloads using native Linux kernel features"
+pkgver=0.2.0
+pkgrel=1
+arch=("x86_64")
+url="https://developer.hashicorp.com/nomad/plugins/drivers/exec2"
+license=('MPL-2.0')
+depends=(nomad glibc libgcc)
+makedepends=(go git)
+source=(
+    "${pkgname}::git+https://github.com/hashicorp/${pkgname}.git#tag=v${pkgver}"
+)
+sha256sums=('769cd10f6f2f1a34c5c29793b1f252aba45c75702c120e6d73a5b31a676049dc')
+
+prepare() {
+  cd "${pkgname}"
+
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "${pkgname}"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "\
+      -X github.com/hashicorp/${pkgname}/version.GitCommit=$(git rev-parse HEAD) \
+      -X github.com/hashicorp/${pkgname}/version.Version=${pkgver} \
+      -X github.com/hashicorp/${pkgname}/version.Versionprerelease=" \
+    -o "${pkgname}" \
+    .
+}
+
+package() {
+  cd "${pkgname}"
+
+  install -Dm755 "${pkgname}" "${pkgdir}/usr/lib/nomad/plugins/${pkgname}"
+
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr examples "$pkgdir/usr/share/doc/$pkgname"
+}

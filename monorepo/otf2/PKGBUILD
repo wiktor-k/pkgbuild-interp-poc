@@ -1,0 +1,60 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+
+pkgbase=otf2
+pkgname=(otf2 otf2-docs)
+pkgver=3.2
+pkgrel=1
+pkgdesc='Open Trace Format 2, a scalable trace data format and support library'
+arch=('x86_64')
+url='https://perftools.pages.jsc.fz-juelich.de/cicd/otf2/'
+license=('BSD-3-Clause')
+makedepends=('chrpath' 'python')
+source=("https://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/$pkgbase-$pkgver/$pkgbase-$pkgver.tar.gz")
+sha256sums=('82b3a88a550cb8c3cec8fd45eca82cdcbaf945209977482471b4b5e430d64a8d')
+
+build() {
+  mkdir -p build
+  cd build
+  # SPHINX=: skips the Python documentation, the tarball already ships HTML docs
+  "../$pkgbase-$pkgver/configure" \
+    --prefix=/usr \
+    --disable-static \
+    --enable-backend-test-runs \
+    PYTHON=python \
+    SPHINX=:
+  make
+}
+
+check() {
+  make -C build check
+}
+
+package_otf2() {
+  depends=('glibc' 'libgcc' 'libstdc++' 'python')
+  optdepends=('otf2-docs: API documentation and examples'
+              'python-jinja: otf2-template')
+
+  make -C build DESTDIR="$pkgdir" install
+  install -Dm644 "$pkgbase-$pkgver/COPYING" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  # The libtool link leaves the build-time staging directory as RUNPATH
+  chrpath -d "$pkgdir/usr/bin/otf2-config"
+
+  # Picked up by package_otf2-docs
+  mv "$pkgdir/usr/share/doc" "$srcdir/doc"
+}
+
+package_otf2-docs() {
+  pkgdesc+=' (documentation)'
+
+  install -d "$pkgdir/usr/share"
+  mv "$srcdir/doc" "$pkgdir/usr/share/doc"
+  # The prebuilt HTML docs are unpacked from tarballs that store the
+  # owner and group-writable modes of the upstream build machine
+  chown -R root:root "$pkgdir/usr/share/doc"
+  chmod -R u=rwX,go=rX "$pkgdir/usr/share/doc"
+  # Sphinx build cache, not reproducible
+  rm -r "$pkgdir/usr/share/doc/otf2/python/doctrees"
+  rm "$pkgdir/usr/share/doc/otf2/python/.buildinfo"
+  install -Dm644 "$pkgbase-$pkgver/COPYING" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

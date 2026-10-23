@@ -1,0 +1,18 @@
+pkgbase = restic
+	pkgdesc = Fast, secure, efficient backup program
+	pkgver = 0.19.1
+	pkgrel = 1
+	url = https://github.com/restic/restic
+	arch = x86_64
+	arch = aarch64
+	license = BSD
+	checkdepends = fuse2
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	optdepends = fuse2: mount archive
+	source = restic-0.19.1.tar.gz::https://github.com/restic/restic/archive/v0.19.1.tar.gz
+	sha512sums = f707e085f35026a9c901c851c10190b18804d7c7f161f37933341a89fcc240f199084c8e93b35ce92237c67772d9673da9d78d8ccd0087714b765f9e8b384155
+	b2sums = ac44c12def4314bb96f6578354c4d407d984ce13cf9ab68b8eb7c63b6337f09b8e482ae0363ca66a6fcdeb1c0200dfb11ace952c477565b0f9d7965c9f19a8ea
+
+pkgname = restic

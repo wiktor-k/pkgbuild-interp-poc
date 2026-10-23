@@ -1,0 +1,29 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=btrbk
+pkgver=0.32.7
+pkgrel=1
+pkgdesc="Tool for creating snapshots and remote backups of btrfs subvolumes"
+arch=(any)
+url="https://github.com/digint/btrbk"
+license=(GPL-3.0-or-later)
+depends=(btrfs-progs perl)
+makedepends=(asciidoctor)
+optdepends=(
+  'bash: for contrib scripts'
+  'mbuffer: for rate limiting and progress bars'
+  'openssh: for transfering backups to/from remote hosts'
+  'perl-io-aio: for faster calculation of extent maps'
+  'python: for contrib scripts'
+)
+source=($url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('42ffea30fcddb97a5252e0e7aaa7819a42fcdda6fdc6bf36dc6c229e820d9433fcd3c4534f6d05a5d400fef8835ed45636643bb3361498e77781c3f55c7c9345')
+b2sums=('547b4ff3662b76f6d1dbd4d52f8e340f23c884c95b5d9a9ca44cdd52b77344660ff07bbcb4a25fc1a37d4a224e4bdbcc1c88409e7cf30fdf037020e61e0b81a8')
+
+build() {
+  make -C $pkgname-$pkgver
+}
+
+package() {
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver
+}

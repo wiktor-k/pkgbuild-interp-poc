@@ -1,0 +1,87 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Maxime Gauduin <alucryd@gmail@com>
+# Contributor: Emiliano Vavassori <syntaxerrormmm@gmail.com>
+# Contributor: Guilherme Nogueira <guilherme@nirev.org>
+
+pkgname=ruby-treetop
+_pkgname=${pkgname#ruby-}
+pkgver=1.6.18
+_pkgver=367d37e0d0b4b7a9a6ad14c54758745ced1b28ad
+pkgrel=1
+pkgdesc="A Ruby-based parsing DSL based on parsing expression grammars"
+arch=(any)
+url="https://github.com/cjheath/treetop"
+license=(MIT)
+depends=(
+  ruby
+  ruby-polyglot
+)
+makedepends=(
+  git
+  rubygems
+)
+checkdepends=(
+  ruby-activesupport
+  ruby-rr
+  ruby-rspec
+)
+options=(!emptydirs)
+source=("git+$url.git#tag=$_pkgver")
+sha256sums=('07bcb80b16b5aa233cce1c7adf74d80983f4b6684d2881aa1e2e50585cd4f595')
+
+prepare() {
+  cd "$_pkgname"
+  sed -i -E 's|~>|>=|g' "$_pkgname.gemspec"
+}
+
+build() {
+  cd "$_pkgname"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd "$_pkgname"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

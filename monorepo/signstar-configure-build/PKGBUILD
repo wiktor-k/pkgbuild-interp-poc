@@ -1,0 +1,52 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=signstar-configure-build
+_name=signstar
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="A commandline tool to configure a Signstar system during build"
+arch=(x86_64)
+url="https://gitlab.archlinux.org/archlinux/signstar/-/tree/main/signstar-configure-build"
+_url="https://gitlab.archlinux.org/archlinux/signstar"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  rust
+  rust-script
+)
+source=($_name::git+$_url.git?signed#tag=$pkgname/$pkgver)
+sha512sums=('8f036eabd780dc7bf7b867112ed284daf3d615c1736376ba234a7c30c1ddd83192b7844ee570f040453575ec5c6ef87be03a9e7fc8703209a67ca2b604afb951')
+b2sums=('2f86267bcfa98c511d302433d645af0ce8924a819fadd2744c2c005e057f4c99a9f9bc572b81a4fa8edf375c6eff6b785fdd938689a99b8a32e64130e844f89f')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name
+  cargo build --frozen --release --features nethsm,yubihsm2 --package $pkgname
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_name
+  cargo test --frozen --package $pkgname
+}
+
+package() {
+  install -vDm 755 $_name/target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_name/$pkgname/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $_name/LICENSES/MIT.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name/output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 $_name/output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+}

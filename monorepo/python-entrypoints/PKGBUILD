@@ -1,0 +1,32 @@
+# Maintainer: Kyle Keen <keenerd@gmail.com>
+
+pkgname=python-entrypoints
+_name=entrypoints
+pkgver=0.4.2
+pkgrel=1
+pkgdesc="Discover and load entry points from installed packages."
+arch=('any')
+url="https://github.com/takluyver/entrypoints"
+license=('MIT')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-flit-core')
+checkdepends=('python-pytest')
+source=(https://github.com/takluyver/entrypoints/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('787951fa1632b03e7c5d9ccc23561f957ab97f282874abe535088ee4e6c9819c')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  pytest -v
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

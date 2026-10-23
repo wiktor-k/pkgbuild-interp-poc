@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=non-negative
+pkgname=haskell-non-negative
+pkgver=0.1.2.1
+pkgrel=42
+pkgdesc="Non-negative numbers"
+url="http://code.haskell.org/~thielema/non-negative/"
+license=("GPL")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-quickcheck' 'haskell-utility-ht')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('e59282a3e365a75063dce0c609807bfd431365678397c1bc33cea7371e3c42510ebd7dfd47c9760c3931383487a6c2f4b9db807a01e6f205e30914d912015461')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    uusi -d semigroups
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -fsplitbase
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

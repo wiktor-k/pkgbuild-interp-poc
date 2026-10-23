@@ -1,0 +1,39 @@
+# Maintainer: Jiachen Yang <farseerfc@gmail.com>
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=tuntox
+pkgver=0.0.10.1
+_tag=cedf90d610a87d115bcd3d0d9c08fd38c28bb174 # git rev-parse $pkgver
+pkgrel=2
+pkgdesc='Tunnel TCP connections over the Tox protocol'
+arch=('x86_64')
+url='https://github.com/gjedeer/tuntox'
+license=('GPL3')
+depends=('toxcore')
+makedepends=('git' 'libnsl')
+source=("git+https://github.com/gjedeer/tuntox#tag=$_tag?signed")
+sha512sums=('SKIP')
+validpgpkeys=('11C1B15A5D5DD662E469928AEBDA6B974ED3D2B7')  # GDR!_ <gdr@gdr.name>
+
+prepare() {
+  cd $pkgname
+  #sed -i "s|DEPS=libsodium toxcore|DEPS=libsodium libtoxcore|" Makefile
+  sed -i '/^CFLAGS=/d' Makefile # use CFLAGS from makepkg
+  sed -i '/^LDFLAGS=/d' Makefile # use LDFLAGS from makepkg
+  sed -i 's/^DSO_LDFLAGS=.*$/DSO_LDFLAGS=$(LDFLAGS)/' Makefile # use LDFLAGS from makepkg
+  cat Makefile
+}
+
+build() {
+  cd $pkgname
+
+  make tuntox_nostatic  # use dynamic linking
+  mv tuntox_nostatic tuntox
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 tuntox "$pkgdir/usr/bin/tuntox"
+  install -Dm755 scripts/tokssh "$pkgdir/usr/bin/tokssh"
+  install -Dm644 scripts/tuntox.service "$pkgdir/usr/lib/systemd/system/tuntox.service"
+}

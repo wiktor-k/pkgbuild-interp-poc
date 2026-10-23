@@ -1,0 +1,65 @@
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-applet-streamer
+pkgver=0.4.1
+pkgrel=3
+pkgdesc="MATE panel applet to let you play your favourite online radio station with a single click"
+arch=(x86_64)
+url='https://github.com/assen-totin/mate-applet-streamer'
+license=(GPL-2.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  gst-plugins-base
+  gst-plugins-good
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libnotify
+  libxml2
+  mate-panel
+  sqlite
+)
+makedepends=(git)
+source=(
+  "git+https://github.com/assen-totin/mate-applet-streamer.git#tag=$pkgver"
+  mate-applet-streamer-0.4.1-type-cast.patch
+  mate-applet-streamer-0.4.1-xml-urls.patch
+)
+b2sums=(
+  913b4ec7b8bb9e408e4f99e54d9b7e23c68d03b46ae2eb04a65175354c121d08be89372c6c1f7a221afc6f3d1aef900cd31015cd5a1a4f4017add40956ccad46
+  d3f5da61a359c737c822eace86530c20b92840baac40ce2b779ae5325b1b8e1e6beb43b572292488434242eb3ba4ae34e07165e57e982191fd6cd918f1722495
+  19e0b142380f94164718d5dc64ba593deccb3d80428a0a9d624a129a1421ffb50d2ecef86b2f25590047db33ec222f737dbda88f00e83cc00925cbfca963566f
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix incompatible pointer types
+  # https://github.com/assen-totin/mate-applet-streamer/pull/12
+  git apply -3 ../mate-applet-streamer-0.4.1-type-cast.patch
+
+  # Update XML URLs
+  # https://github.com/assen-totin/mate-applet-streamer/pull/13
+  git apply -3 ../mate-applet-streamer-0.4.1-xml-urls.patch
+
+  find . \( -name '*.c' -o -name '*.h' \) -printf '%P\n' > po/POTFILES.in
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --libexec="/usr/lib/$pkgname" \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  rm "$pkgdir/usr/share/glib-2.0/schemas/gschemas.compiled"
+}

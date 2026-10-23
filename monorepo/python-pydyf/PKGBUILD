@@ -1,0 +1,51 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-pydyf
+pkgver=0.13.0
+pkgrel=1
+pkgdesc='A low-level PDF generator'
+arch=('any')
+url='https://www.courtbouillon.org/pydyf'
+license=('BSD')
+depends=('python')
+makedepends=(
+  'git'
+  'python-build'
+  'python-flit-core'
+  'python-installer'
+)
+checkdepends=(
+  'python-pytest'
+  'python-pillow'
+  'ghostscript'
+)
+source=("$pkgname::git+https://github.com/CourtBouillon/pydyf.git#tag=v$pkgver")
+sha256sums=('9f2e10310300505d6077e59681583f6041797f199853a4c7553f6b55e61c5073')
+
+prepare() {
+  cd "$pkgname"
+
+  # all addopts are related to python coverage reporting
+  sed -i -e "/^addopts =/d" pyproject.toml
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

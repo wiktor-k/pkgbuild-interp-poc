@@ -1,0 +1,64 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=prometheus-json-exporter
+_pkgname=json_exporter
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="Prometheus exporter which scrapes remote JSON by JSONPath"
+arch=('x86_64')
+url="https://github.com/prometheus-community/json_exporter"
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go')
+options=(!lto)
+backup=(etc/prometheus/json.yml)
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+  'systemd.service'
+)
+sha512sums=('59abccdcfc68306566b031fedc9c6daf142c54987e265052666c2c680398ba0d0a7c3c67e1d4269863fa04bba0a0cf4a73c7f62ab1f6690ca36b6b93cf70359d'
+            'fec356ad3b683e80cd3c8932f40278b49e475a048cec17978f102f0b5b191e1e6f84970bc99c205d1f0319d65999a00b6acdfac139127619f3cbe24ebdd74b9d')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+
+  # create folder for build output
+  rm -Rf build
+  mkdir build
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  go build -v \
+    -buildmode=pie \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" \
+    -X github.com/prometheus/common/version.Version=$pkgver \
+    -X github.com/prometheus/common/version.Revision=$pkgver \
+    -X github.com/prometheus/common/version.Branch=tarball \
+    -X github.com/prometheus/common/version.BuildUser=someone@builder \
+    -X github.com/prometheus/common/version.BuildDate=$(date -u '+%Y%m%d-%H:%M:%S' --date=@${SOURCE_DATE_EPOCH})" \
+    -o build .
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  go test ./...
+}
+
+package() {
+  # systemd integration
+  install -Dm644 systemd.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+
+  # example config
+  install -Dm644 "$_pkgname-$pkgver/examples/config.yml" "$pkgdir/etc/prometheus/json.yml"
+
+  # binary
+  install -Dm755 "$_pkgname-$pkgver/build/$_pkgname" "$pkgdir/usr/bin/$pkgname"
+}
+

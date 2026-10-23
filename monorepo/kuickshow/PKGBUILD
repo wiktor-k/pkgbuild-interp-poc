@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: sxe <sxxe@gmx.de>
+
+pkgname=kuickshow
+pkgver=0.11.0
+pkgrel=2
+pkgdesc='A very fast and convenient image viewer'
+url='https://userbase.kde.org/KuickShow'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(glibc
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         ki18n
+         kiconthemes
+         kio
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libstdc++
+         qt6-base)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/unstable/$pkgname/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('b876b5ace52ada515127a27b9397d4cc01a9f76f74ebfb4956bcac412084d74a'
+            'SKIP')
+validpgpkeys=(F99F27E7220290611111555E285ABEE99DADA2A7) # Christian Gerloff <chrgerloff@gmx.net>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package(){
+  DESTDIR="$pkgdir" cmake --install build
+}

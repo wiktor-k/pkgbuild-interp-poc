@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-yaspin
+pkgver=3.5.1
+pkgrel=1
+pkgdesc="Yet Another Terminal Spinner"
+url="https://github.com/pavdmyt/yaspin"
+license=('MIT')
+arch=('any')
+depends=('python-termcolor')
+makedepends=('git' 'python-build' 'python-installer' 'python-poetry-core')
+checkdepends=('python-pytest' 'python-pytest-mock')
+source=("git+https://github.com/pavdmyt/yaspin.git#tag=v$pkgver")
+sha512sums=('1e8b169869e549d112a29e152f68609a953813e944e4e2eabbae966a4040b7b8ac0d2a0aeda1f62d476083bcba657758e69a3ee9a458f2ddf533826cc4fe3929')
+
+build() {
+  cd yaspin
+  python -m build --no-isolation --wheel
+}
+
+check() {
+  cd yaspin
+  FORCE_COLOR=1 python -m pytest
+}
+
+package() {
+  cd yaspin
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

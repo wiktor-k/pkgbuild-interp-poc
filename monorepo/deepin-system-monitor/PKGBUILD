@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-system-monitor
+pkgver=6.5.48
+pkgrel=1
+pkgdesc='A more user-friendly system monitor'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-system-monitor"
+license=('CC-BY-4.0' 'CC0-1.0' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'LGPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-svg' 'icu' 'dconf' 'glib2' 'libxcb' 'xcb-util-wm'
+         'glibc' 'libgcc' 'libstdc++' 'libnl' 'libcap' 'libpcap' 'polkit-qt6' 'libxext'
+         'systemd-libs' 'deepin-service-manager')
+makedepends=('git' 'cmake' 'deepin-gettext-tools' 'ninja' 'qt6-tools' 'deepin-tray-loader')
+optdepends=('deepin-application-manager: group Linglong application processes and relaunch after crashes')
+groups=('deepin')
+install=deepin-system-monitor.install
+source=("git+https://github.com/linuxdeepin/deepin-system-monitor.git#tag=$pkgver")
+sha512sums=('36539e06b8a60c8aa8508375e7f82b3f880f32ced2700658e212a9073683e0f47aeb62709cbca6290708c676415010595f81903ad68d34e6b64f49db399b6b2f')
+
+build() {
+  cd deepin-system-monitor
+  cmake . -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DVERSION=$pkgver
+  ninja
+}
+
+package() {
+  cd deepin-system-monitor
+  DESTDIR="$pkgdir" ninja install
+}

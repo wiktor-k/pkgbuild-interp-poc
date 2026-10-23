@@ -1,0 +1,64 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-http-form_data
+pkgver=3.0.1
+pkgrel=1
+pkgdesc='Utility-belt to build form data request bodies'
+arch=(any)
+url='https://github.com/httprb/form_data'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+)
+checkdepends=(
+  ruby-minitest
+)
+options=(!emptydirs)
+source=(git+$url.git#tag=v$pkgver)
+sha256sums=('b2e48895ecd5aef4190078553205f22febad35ff1624856cfa1aeea09d13f3cd')
+
+prepare() {
+  cd form_data
+  # v3.0.x references Pathname unguarded but does not require the stdlib.
+  sed -i '/# frozen_string_literal/a require "pathname"' lib/http/form_data/file.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd form_data
+  gem build http-form_data.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    http-form_data-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+}
+
+check() {
+  cd form_data
+  NOCOV=1 ruby -Ilib:test -e 'Dir["test/**/*_test.rb"].sort.each { |test| load test }'
+}
+
+package() {
+  cd form_data
+  cp -a tmp_install/* "$pkgdir"/
+
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

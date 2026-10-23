@@ -1,0 +1,34 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Stijn Seghers <stijnseghers at gmail dot com>
+
+pkgname=python-pylint-venv
+_pkgname=${pkgname#python-}
+pkgver=3.0.4
+pkgrel=3
+pkgdesc='Make pylint respect virtualenvs'
+arch=(any)
+url="https://github.com/jgosmann/pylint-venv"
+license=(MIT)
+depends=(
+  python
+  python-pylint
+)
+makedepends=(
+  python-build
+  python-installer
+  python-poetry-core
+  python-wheel
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('3b05ed629731744ba4a8cf8dbe33db0d578416131143a43e9ee85c5004c977ab')
+
+build() {
+  cd "$_pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

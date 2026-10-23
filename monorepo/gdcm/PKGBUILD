@@ -1,0 +1,143 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=gdcm
+pkgname=(gdcm gdcm-docs)
+pkgver=3.2.11
+pkgrel=1
+pkgdesc="C++ library for DICOM medical files"
+arch=(x86_64)
+url="https://github.com/malaterre/GDCM"
+license=(BSD-3-Clause)
+makedepends=(
+  cmake
+  ninja
+  python
+  swig
+  doxygen
+  graphviz
+  # depends
+  expat
+  glibc
+  json-c
+  libgcc
+  libjpeg-turbo
+  libstdc++
+  libxml2
+  openjpeg2
+  openssl
+  util-linux-libs
+  zlib
+)
+source=($pkgbase-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz
+        fix-swig-4.5-python-compat.patch)
+b2sums=('25bf8bfb3095e8151550b1a160979539e727d6419940d0ca9e2c6247422149344e1748110af6a4caa30b8e4321af62374531bbe05ff8981b29bb14ae805eca2a'
+        'd71287bc982b42b535b7985d428bbd1ab2ea653baff0af73823903c33ad849decf959722b63bcd059fef0c08bfa91926fcddf36b670260df0f9c0e98d9d92d3d')
+
+prepare() {
+  cd ${pkgbase^^}-$pkgver
+  # fix compilation of the Python wrappers with SWIG 4.5.0
+  # https://github.com/malaterre/GDCM/pull/232
+  patch -p1 < ../fix-swig-4.5-python-compat.patch
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+build() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  local cmake_options=(
+    -B build
+    -S ${pkgbase^^}-$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DGDCM_BUILD_APPLICATIONS=ON
+    -DGDCM_BUILD_SHARED_LIBS=ON
+    -DGDCM_BUILD_TESTING=ON
+    -DGDCM_DOCUMENTATION=ON
+    -DGDCM_PDF_DOCUMENTATION=OFF  # does not work - latex error Bad register code (32866).
+    -DGDCM_USE_JPEGTURBO=ON
+    -DGDCM_USE_SYSTEM_CHARLS=OFF  # not packaged
+    -DGDCM_USE_SYSTEM_EXPAT=ON
+    -DGDCM_USE_SYSTEM_JSON=ON
+    -DGDCM_USE_SYSTEM_LIBXML2=ON
+    -DGDCM_USE_SYSTEM_LJPEG=OFF   # not packaged
+    -DGDCM_USE_SYSTEM_OPENJPEG=ON
+    -DGDCM_USE_SYSTEM_OPENSSL=ON
+    -DGDCM_USE_SYSTEM_PAPYRUS3=OFF  # not packaged
+    -DGDCM_USE_SYSTEM_POPPLER=OFF   # not compatible with the Arch version
+    -DGDCM_USE_SYSTEM_SOCKETXX=OFF  # not packaged
+    -DGDCM_USE_SYSTEM_UUID=ON
+    -DGDCM_USE_SYSTEM_ZLIB=ON
+    -DGDCM_USE_VTK=OFF
+    -DGDCM_WRAP_PYTHON=ON
+    -DGDCM_INSTALL_PYTHONMODULE_DIR="$site_packages"
+    # 3.2.11 no longer back-fills LIBRARY_OUTPUT_PATH, but the post-build copy
+    # of gdcmswig.py/gdcm.py in Wrapping/Python still expands it
+    -DLIBRARY_OUTPUT_PATH="$srcdir"/build/bin
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  local excluded_tests=""
+  excluded_tests+="|TestTransferSyntax" #(Failed)
+  excluded_tests+="|TestUIDGeneratorPython" #(Failed)
+  excluded_tests+="|TestSCUValidation" #(Failed)
+  excluded_tests+="|TestEcho" #(Subprocess aborted)
+  excluded_tests+="|TestFind" #(Subprocess aborted)
+  excluded_tests+="|TestWrapPython" #(Failed)
+  excluded_tests+="|gdcmscu-echo-dicomserver" #(Subprocess aborted)
+  excluded_tests+="|gdcmscu-find-dicomserver" #(Subprocess aborted)
+  ctest --test-dir build --output-on-failure --exclude-regex "$excluded_tests"
+}
+
+package_gdcm() {
+  depends=(
+    expat libexpat.so
+    glibc
+    json-c libjson-c.so
+    libgcc
+    libstdc++
+    libxml2 libxml2.so
+    openjpeg2
+    openssl libcrypto.so
+    util-linux-libs libuuid.so
+    zlib libz.so
+  )
+  optdepends=(
+    'gdcm-docs: GDCM documentation'
+    'python: Python bindings'
+  )
+  provides=(
+    libgdcmCommon.so
+    libgdcmDICT.so
+    libgdcmDSED.so
+    libgdcmIOD.so
+    libgdcmMEXD.so
+    libgdcmMSFF.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  (
+    cd "$pkgdir"
+    _pick $pkgbase-docs usr/share/doc
+  )
+  install -vDm 644 ${pkgbase^^}-$pkgver/Copyright.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_gdcm-docs() {
+  pkgdesc+=" - documentation"
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 ${pkgbase^^}-$pkgver/Copyright.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

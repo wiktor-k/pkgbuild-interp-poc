@@ -1,0 +1,55 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: X0rg
+
+pkgname=libcpuid
+pkgver=0.8.2
+pkgrel=1
+pkgdesc='A small C library for x86 CPU detection and feature extraction'
+arch=(x86_64)
+url='http://libcpuid.sourceforge.net'
+license=(BSD-2-Clause)
+depends=(glibc)
+makedepends=(
+  git
+  cmake
+  ninja
+  doxygen
+  python
+  graphviz
+)
+provides=(libcpuid.so)
+source=("$pkgname::git+https://github.com/anrieff/libcpuid#tag=v$pkgver")
+sha512sums=('ad59cce877a2c8bce36be2e1ef0325ab216c23633d8fc13a5802ea96087ebba2f946801044034c85700174f287110d7efaeb0cb78d3ee636bb52cc0b725a1b24')
+b2sums=('25eb4df1057579aaa469539ef36cd28cf312bdabf88e5a228eb76a5a356eb8e2a86f0be75f81729e1ea47142407bb9a485d002fa2db1e818fc7cc340cbf8812a')
+
+build() {
+  cd "$pkgname"
+
+  local cmake_options=(
+    -S .
+    -B build
+    -W no-author
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D LIBCPUID_SHARED=ON
+    -D LIBCPUID_ENABLE_TESTS=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  cd "$pkgname/build"
+
+  ninja consistency
+}
+
+package() {
+  cd "$pkgname"
+
+	DESTDIR="$pkgdir" cmake --install build
+
+  # license
+	install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

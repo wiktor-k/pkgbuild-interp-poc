@@ -1,0 +1,52 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: fzerorubigd <fzero@rubi.gd>
+
+pkgname=python-pgspecial
+pkgver=2.3.0
+pkgrel=1
+pkgdesc='Meta-commands handler for PostgreSQL'
+arch=(any)
+url='https://github.com/dbcli/pgspecial'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-click
+  python-sqlparse
+  python-psycopg
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(python-pytest python-configobj)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('3248ccfcd9a8c697f2cdaf1338bf4210f5fc38694fcf06179ad3b90919b21dd5a6312afe90d72a1e78277b3b5a38e12773596c980539195208e9b5e8ec715d28')
+b2sums=('db1b9cec9245f4540c9ead3e41bd49d859c109751256b3724622237b8cbc1dd996911600d267f51d7fbb09e201469145660c558e1a1af6cfbe460f5cb79d96a4')
+
+build() {
+  cd "$pkgname"
+
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  PYTHONPATH="$(pwd):$PYTHONPATH" pytest --ignore tests/test_specials.py
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" License.txt
+}

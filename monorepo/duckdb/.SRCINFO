@@ -1,0 +1,40 @@
+pkgbase = duckdb
+	pkgdesc = An analytical in-process SQL database management system
+	pkgver = 1.5.6
+	pkgrel = 1
+	url = https://www.duckdb.org
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = pybind11
+	makedepends = uv
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-scikit-build-core
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = duckdb::git+https://github.com/duckdb/duckdb#tag=v1.5.6
+	source = python-duckdb::git+https://github.com/duckdb/duckdb-python#tag=v1.5.6
+	sha512sums = b3098e0f326010bfab806d67843dd320de130184ee97e68b922e00c0aff6bd3bce610d1177ee75f776156eefcb496d0fa2b318b58b2bd893bd680facfcf6d5e2
+	sha512sums = ccee5c5e1aac1cf39193005d9a47ae2c614568c8991d9b35f49788d3dbb94b95264cc6db712dc515544dc3afa0ba21d28dc51da39ccfaa10e380bd5c9223b98a
+	b2sums = 172549d9f6d7c3070b82786f79dd0c3cca43ec602ca1110b3c5cdaac29445580995b87da4308228054aa705001f3ac65185e2a602e7147675dd8cfba5de8bc1e
+	b2sums = 4c773cc9e3df684ba2bfe2b4feea876f3b140002dd7d9b9bd5d3fe88c14fb8be74683e507605bca84af4999f1c5f70ab6a984bd2622fd39b5e7adc55980400d2
+
+pkgname = duckdb
+
+pkgname = python-duckdb
+	pkgdesc = An analytical in-process SQL database management system Python API
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-typing_extensions
+	optdepends = ipython: used in duckdb.query_graph
+	optdepends = python-fsspec: used in duckdb.filesystem
+	optdepends = python-numpy: used in duckdb.experimental.spark and in duckdb.fetchnumpy()
+	optdepends = python-pandas: used for pandas dataframes all over the place
+	optdepends = python-pyarrow: used for pyarrow support
+	optdepends = python-arrow-adbc: for the adbc driver

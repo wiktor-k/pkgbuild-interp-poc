@@ -1,0 +1,18 @@
+pkgbase = bfs
+	pkgdesc = A breadth-first version of find
+	pkgver = 4.1.4
+	pkgrel = 1
+	url = https://tavianator.com/projects/bfs.html
+	arch = x86_64
+	license = 0BSD
+	makedepends = git
+	depends = glibc
+	depends = acl
+	depends = libcap
+	depends = liburing
+	depends = oniguruma
+	source = bfs::git+https://github.com/tavianator/bfs#tag=4.1.4
+	sha512sums = c337ca66e001b61f41ea85ef6c8bc9f063a98787d2039af7b186fbdac52bb7b76eca85a0c7a03194d9859f7b3e9b9d3632f2a2d04da07a361906efdebccdfcd9
+	b2sums = 1541cdfe043b1bb9c9a4d02126f596655ac917b22ca406d8f367547cab6ef194703109086086883037139cddc8e0994eb3c081a5d454028233a05279041d7bcf
+
+pkgname = bfs

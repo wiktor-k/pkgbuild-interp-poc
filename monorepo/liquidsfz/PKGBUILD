@@ -1,0 +1,144 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=liquidsfz
+pkgname=(
+  liquidsfz
+  libliquidsfz
+  liquidsfz-{lv2,standalone}
+)
+pkgver=0.4.2
+pkgrel=1
+pkgdesc="SFZ Sampler"
+arch=(x86_64)
+url="https://github.com/swesterfeld/liquidsfz"
+license=(MPL-2.0)
+makedepends=(
+  git
+  jack
+  libglvnd
+  libsndfile
+  libx11
+  libxcursor
+  libxext
+  libxrandr
+  lv2
+  readline
+)
+checkdepends=(lv2lint)
+source=(
+  git+$url.git#tag=$pkgver
+  git+https://github.com/ocornut/imgui.git
+)
+sha512sums=('25abe0bb2ed55c1f2d2de3af05b1e0377a06a8b32d561bafc22850a0e218c6f26ef6a42c55556da0932db98fbc0364d8d72498de4660effc06ea7a2a3395c4f4'
+            'SKIP')
+b2sums=('bb2e5700cefa6b7825a0afa0371111dc4b50341e6b66faaeaf114f9391bbec6639fd59211aa8475f5bba21b057440f6dcee8e6249d2965bb927c6859571c9308'
+        'SKIP')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+prepare() {
+  cd $pkgbase
+  git submodule init
+  git config submodule.3rdparty/imgui.url "$srcdir/imgui"
+  git -c protocol.file.allow=always submodule update
+
+  autoreconf -fiv
+}
+
+build() {
+  local configure_options=(
+    --prefix=/usr
+    --enable-shared
+    --disable-static
+  )
+
+  cd $pkgbase
+  ./configure "${configure_options[@]}"
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  make -k check -C $pkgbase
+  LD_LIBRARY_PATH="$pkgbase/lib/.libs/:$LD_LIBRARY_PATH" lv2lint -Mpack -I $pkgbase/lv2 "http://spectmorph.org/plugins/liquidsfz"
+}
+
+package_liquidsfz() {
+  depends=($pkgbase-{lv2,standalone})
+
+  make DESTDIR="$pkgdir/" install -C $pkgbase
+
+  (
+    cd "$pkgdir"
+    _pick lib$pkgbase usr/include
+    _pick lib$pkgbase usr/lib/lib$pkgbase*
+    _pick lib$pkgbase usr/lib/pkgconfig
+    _pick $pkgbase-lv2 usr/lib/lv2/
+    _pick $pkgbase-standalone usr/bin/
+  )
+}
+
+package_liquidsfz-lv2() {
+  pkgdesc+=" - LV2 plugin"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  depends=(
+    glibc
+    libgcc
+    libglvnd
+    libliquidsfz
+    libsndfile libsndfile.so
+    libstdc++
+    libx11
+    libxcursor
+    libxext
+    libxrandr
+    lv2-host
+  )
+
+  mv $pkgname/* "$pkgdir"
+}
+
+package_libliquidsfz() {
+  pkgdesc+=" - library"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+  )
+  provides=(
+    libliquidsfz.so
+  )
+
+  mv $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase/{NEWS,TODO,{OPCODES,README}.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+package_liquidsfz-standalone() {
+  pkgdesc+=" - standalone"
+  groups=(
+    pro-audio
+  )
+  depends=(
+    glibc
+    jack
+    libgcc
+    libliquidsfz
+    libstdc++
+    libsndfile libsndfile.so
+    readline libreadline.so
+  )
+
+  mv $pkgname/* "$pkgdir"
+}

@@ -1,0 +1,19 @@
+pkgbase = qd
+	pkgdesc = C++/Fortran-90 double-double and quad-double library
+	pkgver = 2.3.24
+	pkgrel = 2
+	url = https://www.davidhbailey.com/dhbsoftware/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = gcc-fortran
+	makedepends = git
+	makedepends = texlive-latex
+	depends = glibc
+	depends = libgcc
+	depends = libgfortran
+	depends = libstdc++
+	depends = sh
+	source = git+https://github.com/BL-highprecision/QD#tag=v2.3.24
+	sha256sums = e89355c0eb883b2a9aa9584ae82fad061d064dfe0177f7e22a23077725c88e55
+
+pkgname = qd

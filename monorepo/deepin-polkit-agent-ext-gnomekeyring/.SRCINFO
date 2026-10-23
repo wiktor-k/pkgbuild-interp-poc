@@ -1,0 +1,19 @@
+pkgbase = deepin-polkit-agent-ext-gnomekeyring
+	pkgdesc = GNOME keyring extension for dde-polkit-agent
+	pkgver = 6.0.1
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/dpa-ext-gnomekeyring
+	arch = x86_64
+	groups = deepin
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = qt5-tools
+	depends = deepin-polkit-agent
+	depends = deepin-qt5integration
+	depends = libsecret
+	source = git+https://github.com/linuxdeepin/dpa-ext-gnomekeyring.git#tag=6.0.1
+	sha512sums = f881848d0d6379fe3f6eaf27596ab77a7055f9dc926abae3b3bf54b363b29e5203673dc8c0bb7f91162ab629d5b0e1fb777401150b1cacde071ae1108f3d1f6b
+
+pkgname = deepin-polkit-agent-ext-gnomekeyring

@@ -1,0 +1,42 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_name=material-symbols
+_classic=material-icons
+pkgbase=$_name-font
+pkgname=(otf-$_classic ttf-$_classic ttf-$_name-variable)
+_pkgname=material-design-icons
+_fname=MaterialSymbols
+pkgver=2.874
+_pkgver=bb04090f930e272697f2a1f0d7b352d92dfeee43
+pkgrel=1
+pkgdesc='Material Design icons by Google'
+arch=(any)
+url="https://github.com/google/$_pkgname"
+license=(Apache-2.0)
+_archive="$_pkgname-$_pkgver"
+source=("$url/archive/$_pkgver/$_archive.zip")
+sha256sums=('632dae1bf1e5b24605feb6c6ad3b98c192d0f20852b58bb5b7eb8bc4d397ead9')
+
+package_otf-material-icons () {
+	pkgdesc+=" (deprecated classic Material Icons static styles)"
+	# pkgver=1.000
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/OTF/" font/*.otf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}
+
+package_ttf-material-icons () {
+	pkgdesc+=" (deprecated classic Material Icons static style)"
+	# pkgver=1.017
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" font/*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}
+
+package_ttf-material-symbols-variable () {
+	provides=("$pkgbase=$pkgver")
+	pkgdesc+="  (Material Symbols - 4 axis variable)"
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" variablefont/$_fname*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

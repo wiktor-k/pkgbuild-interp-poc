@@ -1,0 +1,26 @@
+pkgbase = deepin-polkit-agent
+	pkgdesc = Deepin Polkit Agent
+	pkgver = 6.0.24
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/dde-polkit-agent
+	arch = x86_64
+	groups = deepin
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	depends = deepin-shell
+	depends = deepin-session-shell
+	depends = dtk6core
+	depends = dtk6gui
+	depends = dtk6widget
+	depends = polkit-qt6
+	depends = qt6-base
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/linuxdeepin/dde-polkit-agent.git#tag=6.0.24
+	sha512sums = f75887a964ce89deea5627af6eab5f08c623dd915c6c5e20064f083c3baf323e904cf92d9c3d54e33b7fa4a1174696267460fa5fb830b9352cf8651541dfc751
+
+pkgname = deepin-polkit-agent

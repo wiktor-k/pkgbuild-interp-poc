@@ -1,0 +1,75 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Felix Bühler <account at buehler dot rocks>
+
+pkgname=newsflash
+pkgver=5.2.5
+pkgrel=1
+pkgdesc='Feed reader application designed to complement an already existing web-based RSS reader account'
+arch=(x86_64)
+url='https://apps.gnome.org/NewsFlash/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  cairo
+  fontconfig
+  glib2
+  glibc
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  lcms2
+  libadwaita
+  libclapper
+  libclapper-gtk
+  libgcc
+  libseccomp
+  libxml2
+  openssl
+  pango
+  sqlite
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  clang
+  git
+  meson
+  rust
+  webkitgtk-6.0
+)
+options=(!lto)
+source=("git+https://gitlab.com/news-flash/news_flash_gtk.git#tag=v.$pkgver")
+b2sums=(a5210be3ca251e0d7c4e94a7288f851e11609daffcd506cbb0609c1bec680e4895d6a3173487a70a906ac74afe4e972aaad30f2d1f7ff651b9c4b0f973588dea)
+
+prepare() {
+  cd news_flash_gtk
+  sed -i "s/version: '0.0.0'/version: '$pkgver'/" meson.build
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  # Used to encrypt user passwords.
+  # DO NOT CHANGE
+  export PASSWORD_CRYPT_KEY="ypsSXCLhJngks9qGUAqShd8JjRaZ824wT3e"
+
+  arch-meson news_flash_gtk build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+  ln -s io.gitlab.news_flash.NewsFlash "$pkgdir/usr/bin/$pkgname"
+}

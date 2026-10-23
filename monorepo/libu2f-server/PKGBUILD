@@ -1,0 +1,45 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Maxim Baz <$pkgname at maximbaz dot com>
+# Contributor: Maxime de Roucy <maxime.deroucy@gmail.com>
+
+pkgname=libu2f-server
+pkgver=1.1.0
+pkgrel=7
+pkgdesc="Yubico Universal 2nd Factor (U2F) Server C Library"
+url="https://github.com/Yubico/libu2f-server"
+arch=('x86_64')
+license=('BSD-2-Clause')
+depends=('openssl' 'json-c')
+makedepends=('check' 'gengetopt' 'git' 'help2man')
+source=("git+${url}.git#tag=${pkgname}-${pkgver}?signed"
+        'json-c-0.14.patch')
+sha256sums=('0dbbeace28f5d45817a64f67b48c2ac86cb4f3fcdd5854b528414fa012b3301a'
+            'cdeaf6387e8f4b49a32e272e9aa8c7f86305b6911e8d09084125f608af72492b')
+validpgpkeys=('B70D62AA6A31AD6B9E4F9F4BDC8888925D25CA7A') # Alessio Di Mauro <alessio@yubico.com>
+
+prepare() {
+	cd "${pkgname}"
+
+	patch -Np1 -i "${srcdir}/json-c-0.14.patch"
+	autoreconf -vif
+}
+
+build() {
+	cd "${pkgname}"
+
+	./configure --prefix=/usr
+	make
+}
+
+check() {
+	cd "${pkgname}"
+
+	make check
+}
+
+package() {
+	cd "${pkgname}"
+
+	make DESTDIR="${pkgdir}" install
+	install -Dm 644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

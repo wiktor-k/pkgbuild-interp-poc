@@ -1,0 +1,22 @@
+pkgbase = palette
+	pkgdesc = Tool for viewing the GNOME color palette as defined by the design guidelines
+	pkgver = 3.0.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/design/palette
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	source = git+https://gitlab.gnome.org/World/design/palette.git#tag=3.0.0
+	source = git+https://gitlab.gnome.org/Teams/Design/HIG-app-icons.git
+	b2sums = fb3369865ccd80b896d7ab9a48e905c74fa6f2f96b73c6edb8f2a5e3c5b15ef7a497e320011554f6acea3856a594632530c43fc0af24f24680e852f7a727109b
+	b2sums = SKIP
+
+pkgname = palette

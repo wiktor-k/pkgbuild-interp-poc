@@ -1,0 +1,72 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-pry
+pkgver=0.16.1
+pkgrel=1
+pkgdesc='A runtime developer console and IRB alternative with powerful introspection capabilities'
+arch=(any)
+url='https://pry.github.io/'
+license=(MIT)
+depends=(
+  ruby
+  ruby-coderay
+  ruby-method_source
+  ruby-reline
+)
+makedepends=(
+  git
+)
+checkdepends=(
+  ruby-bundler
+  ruby-irb
+  ruby-rake
+  ruby-rspec
+  ruby-yard
+)
+options=(!emptydirs)
+source=(git+https://github.com/pry/pry.git#tag=v$pkgver)
+sha512sums=('af88375f70c2cd3ddeab92931aaeea616225a194e181ce39c0638f09eadc4e5fcea4c82769d2e7f42c83a2fb658e081abe308cf97384fa38dfbe9b116bbd8b9b')
+b2sums=('515c81e21d31c4cf38a5610c03a4e6d1dca2d7d50df9408ad7236130ad308d6efa89aa09bb3f01cefa541ad82ca6b9876cd870c6b4258fffed8746691f2ce800')
+
+prepare() {
+  cd pry
+  sed -i -r -e 's|~>|>=|' pry.gemspec
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd pry
+  gem build pry.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    pry-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd pry
+  EDITOR=vim TERM=screen-256color GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd pry
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

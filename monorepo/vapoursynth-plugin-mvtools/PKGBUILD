@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=vapoursynth-plugin-mvtools
+pkgver=29
+pkgrel=1
+pkgdesc='MVTools plugin for VapourSynth'
+arch=(x86_64)
+url=https://github.com/dubhater/vapoursynth-mvtools
+license=(GPL-2.0-only)
+depends=(
+  fftw
+  glibc
+  libgcc
+  libstdc++
+  vapoursynth
+)
+makedepends=(
+  git
+  meson-python
+  nasm
+  python-build
+  python-installer
+)
+source=(git+https://github.com/dubhater/vapoursynth-mvtools.git#tag=v${pkgver})
+sha256sums=('d6b9d3d91590f03aafc94482eb4df3dec80cfeb6beb0f36406c2b34c949e1106')
+
+prepare() {
+  cd vapoursynth-mvtools
+  sed 's|vapoursynth/include|/usr/include/vapoursynth|g' -i meson.build
+  sed 's/VSHelper.h/VSHelper4.h/g; s/vs_bitblt/vsh::bitblt/g' -i src/MVFrame.cpp -i src/SimpleResize.cpp
+}
+
+build() {
+  cd vapoursynth-mvtools
+  python -m build --wheel --no-isolation
+}
+
+package(){
+  python -m installer --destdir="$pkgdir" vapoursynth-mvtools/dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

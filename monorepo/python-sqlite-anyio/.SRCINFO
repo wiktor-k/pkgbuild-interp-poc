@@ -1,0 +1,20 @@
+pkgbase = python-sqlite-anyio
+	pkgdesc = Asynchronous client for SQLite using AnyIO
+	pkgver = 0.3.2
+	pkgrel = 1
+	url = https://github.com/davidbrochart/sqlite-anyio
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-trio
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-anyio
+	depends = python-typing_extensions
+	source = git+https://github.com/davidbrochart/sqlite-anyio#tag=0.3.2
+	sha256sums = 6d0ed2390b8fcf0e084b185bd77be6e876560ea30b98423178cf092ba57d2cb3
+
+pkgname = python-sqlite-anyio

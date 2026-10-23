@@ -1,0 +1,28 @@
+pkgbase = av1an
+	pkgdesc = Cross-platform command-line encoding framework with per scene quality encoding
+	pkgver = 0.5.2
+	pkgrel = 2
+	url = https://github.com/rust-av/Av1an
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = rust
+	makedepends = nasm
+	makedepends = clang
+	makedepends = git
+	depends = libgcc
+	depends = glibc
+	depends = ffmpeg
+	depends = aom
+	depends = vapoursynth
+	optdepends = svt-av1: SVT-AV1 encoder support
+	optdepends = rav1e: rav1e encoder support
+	optdepends = libvpx: vpx encoder support
+	optdepends = vmaf: VMAF calculation support
+	optdepends = mkvtoolnix-cli: mkvmerge support
+	optdepends = ffms2: FFMS2 chunk detection support
+	optdepends = vapoursynth-plugin-bestsource: Preferred chunk detection plugin
+	optdepends = vapoursynth-plugin-lsmashsource: L-SMASH chunk detection support
+	source = git+https://github.com/master-of-zen/Av1an#tag=v0.5.2
+	sha256sums = 01c7e71296c60b1584fb1ecaf5cca9ecef849ba65bbd8a765be195432e445695
+
+pkgname = av1an

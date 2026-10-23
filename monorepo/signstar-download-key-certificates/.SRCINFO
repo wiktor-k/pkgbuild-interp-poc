@@ -1,0 +1,21 @@
+pkgbase = signstar-download-key-certificates
+	pkgdesc = Return key certificates stored in backends of a Signstar host
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://signstar.archlinux.page/signstar-download-key-certificates
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = git
+	makedepends = jq
+	makedepends = just
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	depends = libusb
+	source = signstar::git+https://gitlab.archlinux.org/archlinux/signstar.git?signed#tag=signstar-download-key-certificates/0.1.0
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 1975e0e266715a7864714335ae48e8617b5670c55a59fa2ebac002a23c38442098ae4b30746db50b8c026846a983afe2416ae26295a6d95b417cfacb8d237d91
+	b2sums = 515323e683dc9e9dee3c926e34f2beae89c1b0603d6feef6be2975bf69f5fa4d48fe79034cc41c6182b39836db0fabf458f0f9870ac47323a6b98b7b8392f7f7
+
+pkgname = signstar-download-key-certificates

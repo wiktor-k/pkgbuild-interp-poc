@@ -1,0 +1,53 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: George Woodall <georgewoodall82@gmail.com>
+
+pkgname=tgpt
+pkgver=2.15.0
+pkgrel=1
+pkgdesc="AI Chatbots in terminal without needing API keys"
+arch=(x86_64)
+url="https://github.com/aandrew-me/tgpt"
+license=(GPL-3.0-or-later)
+depends=(glibc)
+makedepends=(
+  go
+  libx11
+)
+options=(!lto)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('18d718425041c010f59e01278ff4d0853f007a16cba411109431e3d0140d33333c71118d6d29c4c0afd687e51770d27b077a576b85a7459a9f7cbabbe96cda7e')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+  local ld_flags="-compressdwarf=false -linkmode=external"
+  go build -v -ldflags "$ld_flags"
+}
+
+check() {
+  cd $pkgname-$pkgver
+  # OpenGPT tests failing due to 'Response: Service Unavailable'.
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/aandrew-me/tgpt/v2/providers/opengpts \
+      | grep -v github.com/aandrew-me/tgpt/v2/src/helper \
+      | grep -v github.com/aandrew-me/tgpt/v2/src/imagegen/pollinations \
+  )
+  # shellcheck disable=SC2086
+  go test -v $unit_tests
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" tgpt
+}

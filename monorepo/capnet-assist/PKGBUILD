@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=capnet-assist
+pkgver=8.0.2
+pkgrel=1
+pkgdesc='Captive Portal Assistant'
+arch=(x86_64)
+url=https://github.com/elementary/capnet-assist
+license=(GPL3)
+groups=(pantheon)
+depends=(
+  gcr-4
+  glib2
+  gtk4
+  libadwaita-1.so
+  libgranite-7.so
+  networkmanager
+  webkitgtk-6.0
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+_tag=016580415b2d3fcf843c53f664ead99f0f8bf819
+source=(git+https://github.com/elementary/capnet-assist.git#tag=${_tag})
+b2sums=('d4ada45cdfaa1d384af3aff4ad0811355f2de64292216c9bce9bebe9849c0d6821247dc0fa3a3913d8fca966aea1a6a8e3c98d574106ffad84030320a44d4603')
+
+pkgver() {
+  cd capnet-assist
+  git describe --tags
+}
+
+build() {
+  arch-meson capnet-assist build \
+    -D b_pie=false
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+}
+
+# vim: ts=2 sw=2 et:

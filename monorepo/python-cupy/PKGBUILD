@@ -1,0 +1,234 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Contributor: Lubosz Sarnecki <lubosz@gmail.com>
+
+pkgbase=python-cupy
+pkgname=(python-cupy python-cupy-rocm-gfx9 python-cupy-rocm-gfx10 python-cupy-rocm-gfx11 python-cupy-rocm-gfx12)
+pkgver=14.2.0
+pkgrel=1
+pkgdesc="NumPy/SciPy-compatible array library for GPU-accelerated computing with Python"
+arch=(x86_64)
+url="https://github.com/cupy/cupy"
+license=(MIT)
+makedepends=(
+  git
+  cython
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+  # common depends
+  python-fastrlock
+  python-numpy
+  # CUDA build
+  cuda
+  # NOTE: cudnn 9 causes compilation errors and will be dropped https://github.com/cupy/cupy/issues/8215
+  # TODO: package cusparselt
+  cutensor
+  nccl
+  python-cuda-pathfinder
+  # ROCm build
+  hip-runtime-amd
+  hipblas
+  hipcub
+  hipfft
+  hiprand
+  hipsparse
+  rccl
+  rocfft
+  rocprim
+  rocrand
+  rocsolver
+  rocsparse
+  rocthrust
+  roctracer
+  rocm-toolchain
+)
+optdepends=(
+  'python-scipy: for copying sparse matrices from GPU to CPU'
+  'python-optuna: for using using Automatic Kernel Parameters Optimizations (cupyx.optimizing)'
+)
+source=(
+  "$pkgbase::git+https://github.com/cupy/cupy.git#tag=v$pkgver"
+  "$pkgbase-cccl::git+https://github.com/NVIDIA/cccl.git"
+  "$pkgbase-dlpack::git+https://github.com/dmlc/dlpack.git"
+  "$pkgbase-jitify::git+https://github.com/NVIDIA/jitify.git"
+  "$pkgbase-xsf::git+https://github.com/scipy/xsf.git"
+  "cuda_wrappers.diff"
+  "cusparse_spgeam.diff::https://github.com/cupy/cupy/pull/10064.diff"
+)
+
+b2sums=('47474fb6cfbdaa8e4abd3d153998ba236378bfa7aa2ce516e3015aefd6917c1688f85337a2867793511cbd26c6411dd78457d9cddbaee508d56ea59ec4b08f3c'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        '3239021ef7e7706a1df28abf6d4744e847ee38fe803ea46bf38dbe9bb0c95648efb3c926d8b7477e1b124806adb61e9df8e2b23f1b19bc1833ddb8a8db4dec86'
+        '6a5031b73feb39922fbf1b54f0c0aafb94c37d569bf1f534f02bdb193b95b3c7a89c474e9259bd0ba56bbf038c05014c46cb5635cfcb5cb131b9ecbda5abff52')
+
+# Building with over 16 arches fails in linking. Split them to separate packages.
+_rocm_gfx9_targets="gfx900,gfx906:xnack-,gfx908:xnack-,gfx90a:xnack+,gfx90a:xnack-,gfx942,gfx950"
+_rocm_gfx10_targets="gfx1010,gfx1012,gfx1030,gfx1031,gfx1035,gfx1036"
+_rocm_gfx11_targets="gfx1100,gfx1101,gfx1102,gfx1103,gfx1150,gfx1151,gfx1152,gfx1153"
+_rocm_gfx12_targets="gfx1200,gfx1201"
+_rocm_depends=(
+  glibc
+  libgcc
+  libstdc++
+  hip-runtime-amd
+  hipblas
+  hipfft
+  hiprand
+  hipsparse
+  rccl
+  rocblas
+  rocsolver
+  roctracer
+  python
+  python-fastrlock
+  python-numpy
+)
+
+prepare() {
+  cd $pkgbase
+  git submodule init
+
+  git config submodule."third_party/cccl".url "$srcdir"/$pkgbase-cccl
+  git config submodule."third_party/dlpack".url "$srcdir"/$pkgbase-dlpack
+  git config submodule."third_party/jitify".url "$srcdir"/$pkgbase-jitify
+  git config submodule."third_party/xsf".url "$srcdir"/$pkgbase-xsf
+
+  git -c protocol.file.allow=always submodule update --init --recursive
+
+  # release version constraints for Cython
+  sed -i 's|Cython>=[0-9.]\+,<[0-9.]\+|Cython|' pyproject.toml
+  # v14.1.0 regression, cross-referencing #9622 / #9820 / #9718 / #9944
+  patch -Np1 -i ../cuda_wrappers.diff
+  # cuSPARSE >= 13.0 (CUDA 13.3+) ships cusparseSpGEAM natively, which
+  # conflicts with cupy's own opaque forward-decl stub for it; fixed
+  # upstream in cupy/cupy#10064. That PR was branched after v14.1.1, so
+  # main has since drifted from this tag; -F3 lets the relevant hunks
+  # fuzz-match past the drift. Its two test-file hunks no longer match at
+  # all against this older tag and are expected to fail (harmlessly, we
+  # don't run cupy's test suite here) -- hence the trailing "|| true".
+  patch -Np1 -F3 -i ../cusparse_spgeam.diff || true
+
+  # copy the source tree for the ROCm build
+  # (most artifacts end up in the build/ directory but .cpp files get generated
+  # along the other sources)
+  cd "$srcdir"
+  cp -ar $pkgbase $pkgbase-rocm-gfx9
+  cp -ar $pkgbase $pkgbase-rocm-gfx10
+  cp -ar $pkgbase $pkgbase-rocm-gfx11
+  cp -ar $pkgbase $pkgbase-rocm-gfx12
+}
+
+build() {
+  # CUDA build
+  export CUPY_NUM_BUILD_JOBS="$(nproc)"
+  export CUPY_NUM_NVCC_THREADS="$(nproc)"
+
+  cd "$srcdir"/$pkgbase
+  LDFLAGS="$LDFLAGS -L/opt/cuda/targets/x86_64-linux/lib/stubs" \
+  python -m build --wheel --no-isolation
+
+  # ROCm build
+  export HIPCC_COMPILE_FLAGS_APPEND="-parallel-jobs=$(nproc)"
+  export HIPCC_LINK_FLAGS_APPEND="-parallel-jobs=$(nproc)"
+  export CUDA_PATH=""
+  export CUPY_INSTALL_USE_HIP=1
+  export ROCM_HOME=/opt/rocm
+  # avoid huge amount of warnings
+  HIPCC_COMPILE_FLAGS_APPEND+=" -Wno-unused-value"
+
+  # build only gfx9
+  export HCC_AMDGPU_TARGET="${_rocm_gfx9_targets}"
+  echo "Building for ROCm targets: ${HCC_AMDGPU_TARGET}"
+  cd "$srcdir"/$pkgbase-rocm-gfx9
+  python -m build --wheel --no-isolation
+
+  # build only gfx10
+  export HCC_AMDGPU_TARGET="${_rocm_gfx10_targets}"
+  echo "Building for ROCm targets: ${HCC_AMDGPU_TARGET}"
+  cd "$srcdir"/$pkgbase-rocm-gfx10
+  python -m build --wheel --no-isolation
+
+  # build only gfx11
+  export HCC_AMDGPU_TARGET="${_rocm_gfx11_targets}"
+  echo "Building for ROCm targets: ${HCC_AMDGPU_TARGET}"
+  cd "$srcdir"/$pkgbase-rocm-gfx11
+  python -m build --wheel --no-isolation
+
+  # build only gfx12
+  export HCC_AMDGPU_TARGET="${_rocm_gfx12_targets}"
+  echo "Building for ROCm targets: ${HCC_AMDGPU_TARGET}"
+  cd "$srcdir"/$pkgbase-rocm-gfx12
+  python -m build --wheel --no-isolation
+}
+
+package_python-cupy() {
+  pkgdesc+=" (CUDA version)"
+  depends=(
+    cuda
+    glibc
+    libgcc
+    libstdc++
+    python
+    python-fastrlock
+    python-numpy
+    python-cuda-pathfinder
+  )
+  optdepends+=(
+    'cutensor: for acceleratedd tensor operations'
+    'nccl: for collective multi-GPU computations'
+  )
+
+  cd $pkgbase
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_python-cupy-rocm-gfx9() {
+  pkgdesc+=" (ROCm gfx9 targets)"
+  depends=(${_rocm_depends[@]})
+  conflicts=(python-cupy)
+  provides=(python-cupy)
+
+  cd $pkgbase-rocm-gfx9
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_python-cupy-rocm-gfx10() {
+  pkgdesc+=" (ROCm gfx10 targets)"
+  depends=(${_rocm_depends[@]})
+  conflicts=(python-cupy)
+  provides=(python-cupy)
+
+  cd $pkgbase-rocm-gfx10
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_python-cupy-rocm-gfx11() {
+  pkgdesc+=" (ROCm gfx11 targets)"
+  depends=(${_rocm_depends[@]})
+  conflicts=(python-cupy)
+  provides=(python-cupy)
+  replaces=(python-cupy-rocm)
+
+  cd $pkgbase-rocm-gfx11
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_python-cupy-rocm-gfx12() {
+  pkgdesc+=" (ROCm gfx12 targets)"
+  depends=(${_rocm_depends[@]})
+  conflicts=(python-cupy)
+  provides=(python-cupy)
+
+  cd $pkgbase-rocm-gfx12
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

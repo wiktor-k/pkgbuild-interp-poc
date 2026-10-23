@@ -1,0 +1,27 @@
+pkgbase = gitlab-shell
+	pkgdesc = Git management software
+	pkgver = 14.59.0
+	pkgrel = 1
+	epoch = 3
+	url = https://gitlab.com/gitlab-org/gitlab-shell/
+	install = gitlab-shell.install
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	depends = valkey
+	depends = git
+	options = !strip
+	options = !lto
+	backup = etc/webapps/gitlab-shell/config.yml
+	backup = etc/webapps/gitlab-shell/secret
+	backup = etc/webapps/gitlab-shell/.gitconfig
+	source = gitlab-shell-14.59.0.tar.gz::https://gitlab.com/gitlab-org/gitlab-shell/-/archive/v14.59.0/gitlab-shell-v14.59.0.tar.gz
+	source = configs.patch
+	source = gitlab-shell.gitconfig
+	source = gitlab-shell.sysusers
+	sha512sums = 73e29a51d6454a3894d3adb9c73e94d152d2eec20f1d6d4a26ab8aecbe86119abbd6da76024210563f1ff0c7382fc691972640b20f7c1c338f0ba666f217df10
+	sha512sums = 13c0fb88693e787f2960059985713d7ffb6d2fa51d9dbcba9c9562ae91e74bd3963efc63837cd19c5441fb5835d0c8eafd3285bea6676168f7b111a08fb086a7
+	sha512sums = 5c4892baa8224fdd1ddb679bd6036e281b9c896a8ba5764fb83d95fc01a45235bdacb2d870f946b13f7ffb47f6e6085f49e7473579fc36b242d19d0ce6c83981
+	sha512sums = 616188911fa7b7c569bc2d5e2024177e67366c48b4ffef1f7ad4dc8e4e9e2cdb421b687f45a1e9bdec8bf2736a157ca9f1e0ba24edae2f073b8c7b5ac42745e8
+
+pkgname = gitlab-shell

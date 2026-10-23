@@ -1,0 +1,19 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-shell-wallpapers
+pkgver=1.5
+pkgrel=2
+pkgdesc="Selection of wallpapers contributed to the nwg-shell project"
+url="https://github.com/nwg-piotr/nwg-shell-wallpapers"
+arch=('any')
+license=('CC0-1.0')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('8717eabe4fb755885c52507e34a0b6e6eb278b7c31a39b86eee4b29618f72171')
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm 644 wallpapers/* -t "${pkgdir}/usr/share/backgrounds/nwg-shell/"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

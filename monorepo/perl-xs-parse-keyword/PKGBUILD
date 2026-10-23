@@ -1,0 +1,35 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Moritz Bunkus <moritz@bunkus.org>
+
+pkgname=perl-xs-parse-keyword
+pkgver=0.49
+pkgrel=2
+pkgdesc="XS functions to assist in parsing keyword syntax"
+arch=('x86_64')
+url="https://metacpan.org/dist/XS-Parse-Keyword"
+license=('Artistic-1.0-Perl' 'GPL-1.0-or-later')
+depends=('perl')
+makedepends=('perl-extutils-cchecker' 'perl-module-build')
+source=("https://cpan.metacpan.org/authors/id/P/PE/PEVANS/XS-Parse-Keyword-${pkgver}.tar.gz")
+sha512sums=('75901a0984c68d2657042eba21dde4922568550dfcf70f4714476bc37b82b20590d5ca286599dfcc2476e8adb44f809cd17927710a591e83b8a6f562175ea565')
+
+build() {
+  cd "XS-Parse-Keyword-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1 MODULEBUILDRC=/dev/null
+  /usr/bin/perl Build.PL
+  ./Build
+}
+
+check() {
+  cd "XS-Parse-Keyword-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1
+  ./Build test
+}
+
+package() {
+  cd "XS-Parse-Keyword-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  ./Build install --installdirs=vendor --destdir="$pkgdir"
+}

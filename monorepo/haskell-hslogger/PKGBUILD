@@ -1,0 +1,47 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=haskell-hslogger
+pkgver=1.3.2.0
+pkgrel=107
+pkgdesc="Versatile logging framework"
+url="https://hackage.haskell.org/package/hslogger"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-network' 'haskell-network-bsd')
+makedepends=('ghc' 'uusi' 'haskell-hunit')
+source=("https://hackage.haskell.org/packages/archive/hslogger/$pkgver/hslogger-$pkgver.tar.gz")
+sha512sums=('58a6f0f7dfab5ccf9b0eba126aa54263d74f0910b015bdca002b9db336105ddc4bc46e6fba2c6739230d38906ba7c432cbc81cd65e3a0f88ab6dcda4fa77b73a')
+
+prepare() {
+    cd hslogger-$pkgver
+    gen-setup
+}
+
+build() {
+    cd hslogger-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd hslogger-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd hslogger-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

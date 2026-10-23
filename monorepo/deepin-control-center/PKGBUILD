@@ -1,0 +1,61 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-control-center
+pkgver=6.1.94
+pkgrel=1
+pkgdesc='Control panel of Deepin Desktop Environment'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-control-center"
+license=('GPL-3.0-or-later' 'LGPL-3.0-or-later' 'MIT')
+# startdde: org.deepin.dde.Display1
+depends=('dtk6core' 'dtk6declarative' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-declarative'
+         'qt6-multimedia' 'qt6-svg' 'qt6-wayland' 'deepin-account-faces' 'deepin-api' 'libpwquality'
+         'deepin-daemon' 'startdde' 'deepin-pw-check' 'deepin-network-core' 'deepin-desktop-theme'
+         'ffmpegthumbnailer' 'icu' 'polkit-qt6' 'xorg-xrandr')
+makedepends=('git' 'cmake' 'deepin-tray-loader' 'gmock' 'gtest' 'ninja' 'qt6-tools'
+             'deepin-gettext-tools' 'doxygen' 'libsystemd' 'extra-cmake-modules'
+             'treeland-protocols' 'wlr-protocols')
+# Not packaged: network-manager-l2tp
+conflicts=('dde-control-center' 'dde-dock-applets')
+replaces=('dde-control-center' 'dde-dock-applets')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dde-control-center.git#tag=$pkgver")
+sha512sums=('7d87f7d32368645deaeba950ab9998c532aa85240c427b91e510866b747033c1ee2bd0a01de0259d02198b8e92c11730953ac075b5f99320ea16099279edd839')
+
+prepare() {
+  mkdir -p build
+
+  cd dde-control-center
+
+  # Keep the wrapper aligned with Arch's /usr/lib executable directory.
+  sed -i 's|/usr/libexec/deepin/dde-control-center|/usr/lib/deepin/dde-control-center|' \
+    misc/dde-control-center-loader-wrapper
+
+  # The direct-launch fallback stays in the foreground; wait for its D-Bus name.
+  sed -i 's/^Type=forking$/Type=dbus/' misc/systemd/dde-control-center.service.in
+}
+
+build() {
+  cd build
+  cmake \
+    -GNinja \
+    -DDISABLE_AUTHENTICATION=YES \
+    -DDISABLE_PRIVACY_PLUGIN=YES \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
+    ../dde-control-center
+  ninja
+}
+
+check() {
+  cd build
+  #ninja test
+}
+
+package() {
+  cd build
+  DESTDIR="$pkgdir" ninja install
+}

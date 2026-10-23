@@ -1,0 +1,41 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: George Rawlinson <george@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Georg Grabler (STiAT) <ggrabler@gmail.com>
+
+pkgname=proxytunnel
+pkgver=1.13.0
+pkgrel=1
+pkgdesc="Creates tunnels through HTTP(S) proxies for any TCP based protocol"
+arch=('x86_64')
+url="https://github.com/proxytunnel/proxytunnel"
+license=('GPL-2.0-only WITH cryptsetup-OpenSSL-exception' 'BSD-3-Clause')
+depends=('glibc' 'openssl')
+makedepends=('git' 'asciidoc' 'xmlto')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('2623c2b8fd1087bd01abfd37f30f904e9a0b57e7db18880c4e0759eaaa25a211c5f09f79d7839bb7d287afc2fa63eca9b9ee0df4e8c991f1ed9b0ed291cd7e1f')
+b2sums=('478b6929605849c8348c53b15fcb95b5f0a6a66d78e937eab7bc369b8ab13d10923ea5980ec0ab707ecd750283bc787f6edda5a34c1ff64a5bd60c65fe3c8852')
+
+prepare() {
+  cd "$pkgname"
+  # append -DOPENSSL11 to CFLAGS via SSL-specific OPTFLAGS: See ptstream.c
+  sed -i '/^OPTFLAGS += -DUSE_SSL$/ s/$/ -DOPENSSL11/' Makefile
+  # fixup modes otherwise strip fails
+  sed -i 's|555|755|g' Makefile
+}
+
+build() {
+  cd "$pkgname"
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+  make prefix=/usr
+}
+
+package() {
+  cd "$pkgname"
+  make prefix=/usr DESTDIR="$pkgdir" install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,26 @@
+pkgbase = python-lazr.config
+	pkgdesc = Create configuration schemas, and process and validate configurations
+	pkgver = 3.1
+	pkgrel = 4
+	url = https://launchpad.net/lazr.config
+	arch = any
+	license = LGPL-3.0-only
+	checkdepends = python-zope-testrunner
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-lazr.delegates
+	depends = python-zope-interface
+	provides = python-lazr-config
+	replaces = python-lazr-config
+	source = git+https://git.launchpad.net/lazr.config#tag=3.1
+	source = python-lazr.config-3.1-remove-pkg_resources.patch
+	sha512sums = ee5e10ac0be62bedfd69d01dfa364b0eb75e6ad7d291d096d13d15b902cac33310d5a8c1812656b04edcb3f5489e164fa0cbac1cf42aa00ab85b69762ccc85eb
+	sha512sums = 5479523849f9193f0fd481f04eeb989da1c20af7e1ea0b00926696e1435257a9bac6e17f825c281b89f864721cd5c43d6fd6558126c882c01f971899bef81fee
+	b2sums = 2b49fadf20e0066e2a25a783b60f25e59730e00411c1f25f3d7596a0061664b44b90fb6dd8aeaaf77809fece70ee7f34f2207d3255c0c521b5be60f0c44a685a
+	b2sums = 9f4cb8ba550dbe74124471f396b542a5e25d815a4d5e7439340864a7071c79279905e33379ba5588fbb5fd1882b79e3919398978ba7e74fefdeede689f83971e
+
+pkgname = python-lazr.config

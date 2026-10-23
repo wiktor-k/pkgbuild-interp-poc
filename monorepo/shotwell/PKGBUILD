@@ -1,0 +1,34 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer : Ionut Biru <ibiru@archlinux.org>
+# Contributor: Joeny Ang <ang(dot)joeny(at)gmail(dot)com>
+
+pkgname=shotwell
+epoch=2
+pkgver=33.0
+_basever=${pkgver%.*}
+pkgrel=2
+pkgdesc="A digital photo organizer designed for the GNOME desktop environment"
+arch=('x86_64')
+url="https://gitlab.gnome.org/GNOME/shotwell"
+license=('LGPL-2.1-or-later')
+depends=('libgee' 'gexiv2' 'libraw' 'libsoup3'
+	 'dconf' 'hicolor-icon-theme' 'json-glib' 'gcr-4'
+	 'gst-plugins-base' 'libgphoto2' 'libgudev'
+	 'gtk4' 'libportal-gtk4')
+makedepends=('intltool' 'vala' 'itstool' 'meson' 'ninja' 'cmake' 'git')
+optdepends=('gst-libav: encoders, decoders, muxers, and demuxers provided by FFmpeg')
+source=("git+https://gitlab.gnome.org/GNOME/shotwell.git#tag=$pkgver")
+sha256sums=('e1195715fc0f9f76b857f16e99a9fffc397e9d526225f086f86b37b22357c92a')
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

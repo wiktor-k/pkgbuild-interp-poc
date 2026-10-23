@@ -1,0 +1,33 @@
+pkgbase = sslh
+	pkgdesc = SSL/SSH/OpenVPN/XMPP/tinc port multiplexer
+	pkgver = 2.3.1
+	pkgrel = 1
+	url = https://www.rutschle.net/tech/sslh/README.html
+	install = sslh.install
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = systemd
+	depends = glibc
+	depends = libcap
+	depends = libconfig
+	depends = pcre2
+	depends = systemd-libs
+	depends = libev
+	depends = libbsd
+	backup = etc/sslh.cfg
+	source = git+https://github.com/yrutschle/sslh.git#tag=v2.3.1?signed
+	source = sslh.cfg
+	source = sslh.service
+	source = sslh-select.service
+	source = sslh-ev.service
+	source = sslh-fork.service
+	validpgpkeys = CDDDBADBEA4B72748E007D326C056F7AC7934136
+	sha256sums = 3893e89e0aee8256d065c739be22aac5049de59a80dbd71caefe36b8c9ef708d
+	sha256sums = 7db2e873ed4c8770e3c38d7ac3ced94221356a3ceafa9d6c8cdc65dd8f09a18e
+	sha256sums = 3d084889cb671df22382767d181e25f1c0a0d63b6937cadb550af0153c488c74
+	sha256sums = 42182146dfe6ca99c5e07e1009f017567a276c504308ed39ecc05b304f28f107
+	sha256sums = 6580a61b81a0a1a9806a9d23a82dcc2e601f237bd1e4bd66a550e385cca13d51
+	sha256sums = a6aabd7ad68c9c1fdb0e2f5dcb9f8e108651a77d5422e718a1186607b8657bea
+
+pkgname = sslh

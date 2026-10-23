@@ -1,0 +1,57 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-jaraco.stream
+pkgver=3.0.4
+pkgrel=2
+pkgdesc='Routines for handling streaming data'
+arch=(any)
+url='https://github.com/jaraco/jaraco.stream'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-toml
+  python-wheel
+)
+checkdepends=(
+  python-more-itertools
+  python-pytest
+)
+conflicts=(python-jaraco)
+replaces=(python-jaraco)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('46aa409117ecd906427eb574bf1c6130c29126b59225b381f3b5d1f59a3b41f9df923a5e6afa8da39182b24666d36a1afb7c025bd6e19b3ec08518677bde306d')
+b2sums=('f0c4d4e27f32fbb7254b7690be9b3a701b3b36bb8eeca4e41c3919f5869b7271f966aaa4676c03cae4c1d04ebbd48d2076155e660407ad068c7227fe6a34488a')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # install to temporary location
+  python -m installer --destdir=test_dir dist/*.whl
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH"
+
+  pytest -vv test_dir/$_site_packages/jaraco/stream
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.rst
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

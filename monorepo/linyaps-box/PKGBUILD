@@ -1,0 +1,55 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: taotieren <admin@taotieren.com>
+
+pkgname=linyaps-box
+pkgver=2.3.5
+pkgrel=1
+pkgdesc='A simple OCI runtime mainly used by linyaps (linglong)'
+arch=(x86_64)
+url='https://github.com/OpenAtom-Linyaps/linyaps-box'
+license=('LGPL-3.0-or-later')
+provides=(
+  linglong-box
+)
+depends=(
+  fmt
+  glibc
+  libcap
+  libseccomp
+  libgcc
+  libstdc++
+  systemd-libs
+)
+makedepends=(
+  cli11
+  cmake
+  git
+  gtest
+  ninja
+  nlohmann-json
+  pkgconf
+)
+source=("git+https://github.com/OpenAtom-Linyaps/linyaps-box.git#tag=$pkgver")
+sha256sums=('96a65930c6b299fd620cd1ebb4cef6462f7ece84925b3f078c3b961ab94ed561')
+
+build() {
+  cd linyaps-box
+
+  cmake -Dlinyaps-box_ENABLE_SECCOMP=ON \
+    -Dlinyaps-box_OFFLINE_BUILD=ON \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -B build \
+    -G Ninja
+  ninja -C build
+}
+
+check() {
+  ninja -C linyaps-box/build test
+}
+
+package() {
+  cd linyaps-box
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

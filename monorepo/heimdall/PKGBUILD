@@ -1,0 +1,54 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Jerome Leclanche <jerome@leclan.ch>
+# Contributor: Tim Schumacher <timschumi@gmx.de>
+
+pkgname=heimdall
+_pkgname=Heimdall
+pkgver=2.2.2
+_pkgver=v$pkgver
+pkgrel=1
+pkgdesc="Tool suite used to flash firmware (ROMs) onto Samsung Galaxy S devices (grimler fork)"
+arch=(x86_64)
+url="https://git.sr.ht/~grimler/Heimdall"
+license=(MIT)
+depends=(
+  gcc-libs
+  glibc
+  libusb
+  zlib
+)
+makedepends=(
+  cmake
+  qt6-base
+)
+optdepends=(
+  "qt6-base: GUI support for heimdall-frontend"
+)
+source=(
+  $pkgname-$pkgver.tar.gz::https://git.sr.ht/~grimler/Heimdall/archive/$_pkgver.tar.gz
+  $pkgname.desktop
+)
+sha256sums=(
+  "7d01dd8bf9c2f93ea016ae8b059110c50cea49e78670e8a1333ebd5899cdaaa3"
+  "439cea1a8976b9b589ffe4030a084243bcc5e937dcb9c571cdb94d3ff08b4fb4"
+)
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $_pkgname-$_pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  install -vDm 755 build/bin/* -t "$pkgdir"/usr/bin/
+  install -vDm 644 $_pkgname-$_pkgver/heimdall/60-$pkgname.rules -t "$pkgdir"/usr/lib/udev/rules.d/
+  install -vDm 644 $pkgname.desktop -t "$pkgdir/usr/share/applications/"
+  install -vDm 644 $_pkgname-$_pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

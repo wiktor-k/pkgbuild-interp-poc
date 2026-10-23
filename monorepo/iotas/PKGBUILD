@@ -1,0 +1,79 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=iotas
+pkgver=2026.10
+_katex_version=0.16.22
+pkgrel=1
+pkgdesc='Simple note taking with Markdown support and optional Nextcloud Notes sync'
+arch=(any)
+url='https://apps.gnome.org/Iotas/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libsecret
+  pango
+  python
+  python-gobject
+  python-gtkspellcheck
+  python-linkify-it-py
+  python-markdown-it-py
+  python-mdit_py_plugins
+  python-packaging
+  python-requests
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+checkdepends=(
+  python-pypandoc
+  python-pytest
+)
+optdepends=('python-pypandoc: Export to ODT and custom formats')
+source=(
+  "git+https://gitlab.gnome.org/World/iotas.git#tag=$pkgver"
+  "katex-v$_katex_version.tar.gz::https://github.com/KaTeX/KaTeX/releases/download/v$_katex_version/katex.tar.gz"
+  iotas-optional-pandoc.patch
+)
+b2sums=(
+  2dce4cbe6184fa19991bd2f48fec0b9c243a14a722c9c0831415688bae15d81a30e186d5c794c4f82bddafdc4f8f076b7c4a4dff42e0d65aebed198ac4159247
+  cf1f847bb4f6f64b048b04b52f9cf772dcabbe5dccbd802072978f133c7c9600b4404bcc2399ea35f71f77176774f6953f8f198e6b94b90a63b5124576c8bbd2
+  85a8519bca083a3b8392882a431ba070fffb9ad6175b189fbcf1331c3e0c90def0c9a27b3e5fd1c8d499d9786caa49611e64f1aa0114024727181af65551320c
+)
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/World/iotas/-/merge_requests/291
+  git apply -3 ../iotas-optional-pandoc.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  PYTHONPATH="$PWD/iotas/third-party" \
+    meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  # Bundle KaTeX
+  cd katex
+  install -Dm644 -t "$pkgdir/usr/share/iotas/media/css/web/" katex.min.css
+  install -Dm644 -t "$pkgdir/usr/share/iotas/media/js/" katex.min.js
+  install -Dm644 -t "$pkgdir/usr/share/iotas/media/css/web/fonts/" fonts/*.woff2
+}

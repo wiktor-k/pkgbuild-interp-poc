@@ -1,0 +1,37 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkgname=table-mysql
+pkgname=opensmtpd-table-mysql
+pkgver=1.2.1
+pkgrel=1
+pkgdesc='MySQL support for OpenSMTPD'
+arch=(x86_64)
+url=https://github.com/OpenSMTPD/table-mysql
+license=(ISC)
+depends=(glibc mariadb-libs)
+makedepends=(git)
+source=(git+$url.git#tag=$pkgver)
+sha512sums=('7b56573af6358e9bcda668f68a73c0d074e96e7d2be16e1d6bf393923837dc6cd2efd2ab2d494032d6f44f2725e4d1a51cd41f26dc165b38a7c714de8e894788')
+b2sums=('90e87cc458f90de3cf31dc59e0e680b77305900154ece4c13d94a583d3c6369287ec9d859683b1196ce2332cb9d4ab6f4fd3107ef4f794a1c78cc6879129b21d')
+
+prepare() {
+  cd $_pkgname
+  sed -i 's|libexec/smtpd|lib/smtpd/opensmtpd|' Makefile.am
+  autoreconf -vfi
+}
+
+build() {
+  cd $_pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $_pkgname
+  make -k check
+}
+
+package() {
+  cd $_pkgname
+  make DESTDIR="$pkgdir" install
+}

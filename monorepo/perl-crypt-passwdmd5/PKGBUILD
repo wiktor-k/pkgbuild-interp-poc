@@ -1,0 +1,31 @@
+# Maintainer:
+
+pkgname=perl-crypt-passwdmd5
+pkgver=1.46
+pkgrel=1
+pkgdesc="Provides a crypt()-compatible interface to new MD5-based crypt()"
+arch=('any')
+url="https://search.cpan.org/dist/Crypt-PasswdMD5"
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=('perl' 'perl-crypt-urandom')
+provides=('perl-passwd-md5')
+replaces=('perl-passwd-md5')
+options=('!emptydirs')
+source=(https://search.cpan.org/CPAN/authors/id/R/RS/RSAVAGE/Crypt-PasswdMD5-$pkgver.tgz)
+sha512sums=('8ff4e2484840298bdd4c618163a19cb216b3a036d982927669aca8dea3d0cb091b04f4f0fe21a9ec43df65f92e2a975721990f7424db2972127d891d67309398')
+
+build() {
+  cd Crypt-PasswdMD5-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Crypt-PasswdMD5-$pkgver
+  make test
+}
+
+package() {
+  cd Crypt-PasswdMD5-$pkgver
+  make DESTDIR="${pkgdir}" install
+}

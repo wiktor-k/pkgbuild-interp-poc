@@ -1,0 +1,55 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=jupyter-sphinx
+pkgname=python-$_pyname
+pkgver=0.5.3
+pkgrel=4
+pkgdesc='Jupyter Sphinx Extensions'
+arch=(any)
+url='https://github.com/jupyter/jupyter-sphinx/'
+license=(BSD)
+depends=(ipython
+         jupyter-nbclient
+         jupyter-nbconvert
+         jupyter-nbformat
+         python
+         python-docutils
+         python-ipywidgets
+         python-jupyter-client
+         python-sphinx
+         python-traitlets)
+makedepends=(git
+             python-build
+             python-hatchling
+             python-installer)
+checkdepends=(python-pytest)
+source=(git+https://github.com/jupyter/jupyter-sphinx#tag=v$pkgver
+        fix-tests.patch)
+sha256sums=('c8a6b2a1a621132890dfe06321668a15a251b2b8c803a714462483febc9aaab5'
+            '4c26dc8893823b98b038ffb18bee629ebc9282c0ffc0b0470cc982f5d8fac25b')
+
+prepare() {
+  cd $_pyname
+# https://github.com/jupyter/jupyter-sphinx/issues/280
+  patch -p1 -i ../fix-tests.patch
+}
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pyname
+  PYTHONPATH="$PWD" \
+  pytest -v \
+    -W ignore::DeprecationWarning \
+    -W ignore::PendingDeprecationWarning
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

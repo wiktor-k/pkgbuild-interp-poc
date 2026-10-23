@@ -1,0 +1,23 @@
+pkgbase = sugar-activity-calculate
+	pkgdesc = Graphing calculator for Sugar
+	pkgver = 47
+	pkgrel = 5
+	url = https://github.com/sugarlabs/calculate-activity
+	arch = any
+	groups = sugar-fructose
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = glib2
+	depends = gtk3
+	depends = librsvg
+	depends = pango
+	depends = python
+	depends = python-dbus
+	depends = python-gobject
+	depends = sugar-toolkit-gtk3
+	depends = telepathy-glib
+	optdepends = python-matplotlib: alternative plotting backend
+	source = git+https://github.com/sugarlabs/calculate-activity.git#tag=v47
+	b2sums = e95b55a946267c7585ac244934cbebff6dc244da193040b8ca126efe296051c89dfd576d41fa7feb639f1eac2127bd7a64966e65c81056a05fd9b90681a44da2
+
+pkgname = sugar-activity-calculate

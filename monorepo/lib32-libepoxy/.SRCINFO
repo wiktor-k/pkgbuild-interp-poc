@@ -1,0 +1,19 @@
+pkgbase = lib32-libepoxy
+	pkgdesc = Library handling OpenGL function pointer management
+	pkgver = 1.5.10
+	pkgrel = 2
+	url = https://github.com/anholt/libepoxy
+	arch = x86_64
+	license = MIT
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = meson
+	makedepends = lib32-libgl
+	makedepends = lib32-systemd
+	depends = lib32-glibc
+	source = git+https://github.com/anholt/libepoxy#commit=c84bc9459357a40e46e2fec0408d04fbdde2c973
+	validpgpkeys = 53EF3DC3B63E2899271BD26322E8091EEA11BBB7
+	sha256sums = SKIP
+
+pkgname = lib32-libepoxy
+	provides = libepoxy.so

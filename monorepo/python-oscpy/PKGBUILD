@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-oscpy
+pkgver=0.6.1
+pkgrel=1
+pkgdesc="A modern and efficient OSC Client/Server implementation"
+url="https://github.com/kivy/oscpy"
+license=('MIT')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest' 'python-pytest-rerunfailures')
+source=("git+https://github.com/kivy/oscpy.git#tag=v$pkgver")
+sha512sums=('c26038d896cd005653a54e95a41498ef06c9d0644d952e9923e7d57dd3ecef642ec9f9a5b346b21dc66563ce021875760f8555e4216802a905ca33777619a9db')
+
+build() {
+  cd oscpy
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd oscpy
+  python -m pytest --reruns=5
+}
+
+package() {
+  cd oscpy
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

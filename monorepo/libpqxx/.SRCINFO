@@ -1,0 +1,21 @@
+pkgbase = libpqxx
+	pkgdesc = C++ client API for PostgreSQL
+	pkgver = 8.0.2
+	pkgrel = 1
+	url = http://pqxx.org/development/libpqxx/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = python
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = libstdc++.so
+	depends = libgcc_s.so
+	depends = postgresql-libs>=9.1
+	provides = libpqxx-8.0.so
+	source = libpqxx::git+https://github.com/jtv/libpqxx#tag=8.0.2
+	sha512sums = 20a64ca454cfadcdbe06d35800c5718ec707924e982a13b837287ececf891a2e9ecc8a5917bdf55514d6364cc0133fd64bfb2bd4c26e52a05a1d8adce9eb5af5
+	b2sums = f29a053498c5320200097d6d2afb6dc7ad001ab5eb57d8eed9a81684768f419daed485b8e848260b769a83a8f8cbe5578533f37da85a77f7f15ab7fdb5e5bc54
+
+pkgname = libpqxx

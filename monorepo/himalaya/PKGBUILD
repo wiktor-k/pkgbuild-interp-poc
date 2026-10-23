@@ -1,0 +1,75 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=himalaya
+pkgver=2.2.1
+pkgrel=2
+pkgdesc='A CLI email client'
+arch=(x86_64)
+url="https://github.com/soywod/himalaya"
+license=(MIT Apache-2.0)
+depends=(glibc # libc.so
+         gpgme
+         libgcc
+         openssl)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('261b6d3bce4f0de6399b347525fc3c687f309d83840b4e10a58ab7ad70c03544')
+
+_features='maildir'
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+	export OPENSSL_NO_VENDOR=true
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+	mkdir -p {completions,man}
+}
+	
+_compgen() {
+    target/release/$pkgname completion $1
+}
+
+_mangen() {
+    target/release/$pkgname man --dir $1
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --features "$_features"
+	_compgen bash > "completions/$pkgname"
+	_compgen fish > "completions/$pkgname.fish"
+	_compgen zsh  > "completions/_$pkgname"
+	_mangen man
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		test_imap_backend
+	)
+	cargo test --frozen --features "$_features" -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$pkgname-$pkgver"
+	install -Dm 755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+	install -Dm 664 -t "$pkgdir/usr/share/bash-completion/completions/" "completions/$pkgname"
+	install -Dm 664 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "completions/$pkgname.fish"
+	install -Dm 664 -t "$pkgdir/usr/share/zsh/site-functions/" "completions/_$pkgname"
+	install -Dm 644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm 644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE-*
+	install -Dm 644 -t "$pkgdir/usr/share/man/man1/" man/*.1
+}

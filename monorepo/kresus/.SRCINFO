@@ -1,0 +1,27 @@
+pkgbase = kresus
+	pkgdesc = Self-hosted personal finance manager
+	pkgver = 0.25.2
+	pkgrel = 1
+	url = https://kresus.org
+	arch = x86_64
+	license = AGPL-3.0-or-later
+	makedepends = git
+	makedepends = yarn
+	makedepends = libpng
+	makedepends = node-gyp
+	depends = python
+	depends = python-requests
+	depends = nodejs-lts-krypton
+	depends = woob
+	optdepends = python-pdfminer: La Banque Postale support
+	backup = etc/webapps/kresus/config.ini
+	source = git+https://codeberg.org/kresus/kresus.git#tag=0.25.2
+	source = kresus.service
+	source = kresus.sysusers
+	source = kresus.tmpfiles
+	sha256sums = 96c47de90d5f0c0b5b10d1bfa3105d8b8f14be1c0879d0218f87820b1ad35a57
+	sha256sums = 14d1373b0ba27b5695d75119af066348328be4104028d4d7a981252f7c9b1265
+	sha256sums = a2865fd7eb63aa0a61b22a61a1b5969684355d3fe4d63794f6710453dac972f6
+	sha256sums = ba8ad7d9eb5d2b47fde5f6a3ab98596e5c679141b78d76d54b44830604b67632
+
+pkgname = kresus

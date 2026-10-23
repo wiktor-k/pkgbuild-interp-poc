@@ -1,0 +1,35 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-turtleart
+_pkgname=turtleart-activity
+pkgver=220
+pkgrel=5
+pkgdesc='Logo-inspired graphical turtle for Sugar'
+arch=(any)
+url='https://github.com/sugarlabs/turtleart-activity'
+license=(MIT)
+groups=(sugar-fructose)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gst-plugins-base-libs
+  gst-python
+  gstreamer
+  gtk3
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  sugar-toolkit-gtk3
+  telepathy-glib
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(c7ad7a4ce0011cf8d9935dd82263e2f83845ffc37a5d7a561e5d045eb537c9087dc9dc9a81864475aedc417da71ef73eaaad27fa2743a60b1906c541c00da52c)
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}

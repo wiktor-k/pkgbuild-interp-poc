@@ -1,0 +1,43 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Eric Berquist <eric dot berquist at gmail dot com>
+
+pkgname=ruby-mixlib-cli
+_pkgname="${pkgname#ruby-}"
+pkgver=2.2.4
+pkgrel=1
+pkgdesc='A simple mixin for CLI interfaces, including option parsing'
+arch=(any)
+url='https://github.com/chef/mixlib-cli'
+license=(Apache-2.0)
+depends=(ruby)
+makedepends=(git ruby-rake ruby-rdoc ruby-bundler)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('06193ee8f3428ec2c731dd5bdf82118ad6e8315959cc7f5b89e3f0f6966cf32a2e40890723c03826a3aa5ced0ed7b64877bc4f5964ed5a3e9659b2d6ed679e6e')
+b2sums=('62bb0b7ea5510374b0e029e723653d7a8d2be13ff2bb308fec73ef65d02c60124a95bac0b90afd747077c951910e193912e87610f2423f5fb78f5c8b9ff1c2e7')
+
+build() {
+  cd "$pkgname"
+
+  rake build
+}
+
+package() {
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$pkgname/pkg/$_pkgname-$pkgver.gem"
+
+  # delete cache
+  rm -vrf "$pkgdir/$_gemdir/cache"
+
+  # license
+  install -vd "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "$_gemdir/gems/$_pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname"
+}

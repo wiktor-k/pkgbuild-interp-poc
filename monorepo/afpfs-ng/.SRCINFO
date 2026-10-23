@@ -1,0 +1,15 @@
+pkgbase = afpfs-ng
+	pkgdesc = A client for the Apple Filing Protocol (AFP)
+	pkgver = 0.8.2
+	pkgrel = 4
+	url = http://alexthepuffin.googlepages.com/
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	depends = gmp
+	depends = fuse
+	depends = libgcrypt
+	source = afpfs-ng::git+https://github.com/simonvetter/afpfs-ng.git#commit=e107bd4939d9332e5eb70ab0c09479b7a87d18e2
+	sha256sums = SKIP
+
+pkgname = afpfs-ng

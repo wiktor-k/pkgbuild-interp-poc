@@ -1,0 +1,18 @@
+pkgbase = libebml
+	pkgdesc = Extensible Binary Meta Language library
+	pkgver = 1.4.7
+	pkgrel = 1
+	url = https://github.com/Matroska-Org/libebml
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	provides = libebml.so
+	source = git+https://github.com/Matroska-Org/libebml.git#tag=release-1.4.7
+	b2sums = 198ee990d5f06828fa939885b26d00b3d8d6c9e5ee7205b59952ec1722863bd9c2afb0d964f66c862caff2aa4dcf1c6d7927338f154cddbbf8f8e0bd05b3574e
+
+pkgname = libebml

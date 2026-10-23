@@ -1,0 +1,38 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgbase=plasma-applets-weather-widget
+pkgname=plasma-applets-weather-widget-3
+pkgver=3.0.4
+pkgrel=2
+pkgdesc="Plasma applet for displaying weather information"
+arch=(x86_64)
+url="https://github.com/blackadderkate/weather-widget-2"
+license=(GPL-2.0-only)
+depends=(
+    gcc-libs
+    kcmutils
+    kirigami
+    ksvg
+    libplasma
+    plasma5support
+    plasma-workspace
+    qt6-5compat
+    qt6-base
+    qt6-declarative
+)
+makedepends=(extra-cmake-modules vulkan-headers)
+source=($url/archive/refs/tags/V$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('020671b8259db86495c2f21fe08455d92b6fba5c958e8dd3eb51bda7f8f178a3')
+
+build() {
+  cmake -B build -S weather-widget-2-$pkgver -Wno-dev
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

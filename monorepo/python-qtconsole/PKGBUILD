@@ -1,0 +1,57 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+
+_pkgname=qtconsole
+pkgname=python-qtconsole
+pkgver=5.7.2
+pkgrel=1
+pkgdesc='Qt-based console for Jupyter with support for rich media output'
+arch=(any)
+url='https://qtconsole.readthedocs.io/'
+license=(BSD-3-Clause)
+depends=(ipython
+         python
+         python-ipykernel
+         python-ipython-pygments-lexers
+         python-jupyter-core
+         python-jupyter-client
+         python-traitlets
+         python-packaging
+         python-pygments
+         python-qtpy
+         qt6-svg)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools)
+checkdepends=(python-flaky
+              python-pytest
+              python-pytest-asyncio
+              python-pytest-qt
+              xorg-server-xvfb)
+source=(git+https://github.com/jupyter/$_pkgname#tag=$pkgver)
+sha256sums=('62bf164d4428e6d4713458778eda91f0be9088dd383911e1655d7fcbe35ffb2b')
+
+build() {
+  cd $_pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pkgname
+  export QT_QPA_PLATFORM='offscreen'
+  pytest -v qtconsole
+}
+
+package() {
+  cd $_pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd examples
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  sed -i "s|^Icon=.*$|Icon=${site_packages}/qtconsole/resources/icon/JupyterConsole.svg|" jupyter-qtconsole.desktop
+  install -Dm644 jupyter-qtconsole.desktop -t "$pkgdir"/usr/share/applications/
+}

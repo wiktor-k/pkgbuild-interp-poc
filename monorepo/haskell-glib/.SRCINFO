@@ -1,0 +1,19 @@
+pkgbase = haskell-glib
+	pkgdesc = Binding to the GLIB library for Gtk2Hs.
+	pkgver = 0.13.12.0
+	pkgrel = 93
+	url = https://hackage.haskell.org/package/glib
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = ghc
+	makedepends = haskell-gtk2hs-buildtools
+	depends = ghc-libs
+	depends = glib2
+	depends = haskell-utf8-string
+	provides = gtk2hs-glib
+	conflicts = gtk2hs-glib
+	replaces = gtk2hs-glib
+	source = https://hackage.haskell.org/packages/archive/glib/0.13.12.0/glib-0.13.12.0.tar.gz
+	sha512sums = 179f8bb8c0cd23ff586552dfb40649beef8731c71697ff9322f0502536d7153a6e34c27f79ca5f0614aa07abde82c391b2a6dcf30a34a66bbe983ebff30eeda1
+
+pkgname = haskell-glib

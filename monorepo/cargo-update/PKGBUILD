@@ -1,0 +1,46 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Jameson Pugh <imntreal@gmail.com>
+# Contributor: Mikaela Szekely <qyriad@gmail.com>
+
+pkgname=cargo-update
+pkgver=22.1.1
+pkgrel=1
+pkgdesc="A cargo subcommand for checking and applying updates to installed executables"
+arch=('x86_64')
+url="https://github.com/nabijaczleweli/cargo-update"
+license=('MIT')
+depends=('cargo' 'curl' 'glibc' 'libgcc' 'libgit2' 'openssl' 'zlib')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+        "Cargo.lock")
+sha256sums=('570d009f6ddd83d54ea478b63f369e08617feddb7119a9cb1d5c6a050d213c28'
+            'f162794756551836a38364cd507dc026541c51f7ccbce3ca528731d55843bac5')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cp "$srcdir/Cargo.lock" .
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 "target/release/cargo-install-update" "$pkgdir/usr/bin/cargo-install-update"
+  install -Dm755 "target/release/cargo-install-update-config" "$pkgdir/usr/bin/cargo-install-update-config"
+
+  install -Dm644 "man/cargo-install-update.md" "$pkgdir/usr/share/doc/${pkgname}/cargo-install-update.md"
+  install -Dm644 "man/cargo-install-update-config.md" "$pkgdir/usr/share/doc/${pkgname}/cargo-install-update-config.md"
+  install -Dm644 "README.md" "$pkgdir/usr/share/doc/${pkgname}/README.md"
+  install -Dm644 "LICENSE" "$pkgdir/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

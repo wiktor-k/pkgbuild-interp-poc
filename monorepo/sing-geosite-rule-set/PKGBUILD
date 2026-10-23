@@ -1,0 +1,36 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: everyx <lunt.luo#gmail.com>
+
+pkgname=sing-geosite-rule-set
+_pkgname=sing-geosite
+pkgver=20261022032135
+pkgrel=1
+pkgdesc="Geosite Rule Sets for sing-box"
+arch=('any')
+url="https://github.com/SagerNet/${_pkgname}"
+license=('GPL-3.0-or-later')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz"
+        "dlc-${pkgver}.dat::https://github.com/v2fly/domain-list-community/releases/download/${pkgver}/dlc.dat"
+        "0001-build-support-local-dlc.dat-input.patch")
+sha256sums=('0df4dc0241b6276eca1a9137ab5626dd8b3e540be74f1dfda7b16fe37ba1b008'
+            'c4adaddccaf7f2481d1001e790618391add209c64503e45a8fcbde6e8b6ba18a'
+            '2e87be2a85577d5b83417e02876fb69588bbe47c7de6e89c7617bff9ffd478f1')
+
+prepare() {
+    cd "${srcdir}/${_pkgname}-${pkgver}"
+    patch -Np1 -i "${srcdir}/0001-build-support-local-dlc.dat-input.patch"
+    export GOPATH="${srcdir}"
+    go mod download -modcacherw
+}
+
+build() {
+    cd "${srcdir}/${_pkgname}-${pkgver}"
+    export GOPATH="${srcdir}"
+    go run -v . -dlc "${srcdir}/dlc-${pkgver}.dat"
+}
+
+package() {
+    cd "${srcdir}/${_pkgname}-${pkgver}"
+    install -Dm644 ./rule-set/*.srs -t "${pkgdir}/usr/share/sing-box/rule-set"
+}

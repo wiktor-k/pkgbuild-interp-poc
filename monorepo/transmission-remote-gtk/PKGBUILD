@@ -1,0 +1,39 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sébastien LEBEAU <sebcbi1 at gmail dot com>
+# Contributor: Patrick Griffis <tingping@fedoraproject.org>
+
+pkgname=transmission-remote-gtk
+pkgver=1.7.1
+pkgrel=1
+pkgdesc="GTK remote control for the Transmission BitTorrent client"
+arch=(x86_64)
+url="https://github.com/transmission-remote-gtk/transmission-remote-gtk"
+license=(GPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  json-glib
+  libappindicator-gtk3
+  libgcc
+  libsoup3
+  pango
+)
+makedepends=(
+  meson
+  python-docutils
+)
+source=("${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+b2sums=('0b6122b0529a8931706552e91c50e0d2c3c151c0e836fd9d91ec3235f93fd6e9ce052e8d983f96c680f4803ebdcaf96f96842ddfcaf335df870f0b0a899ef125')
+
+build() {
+  arch-meson ${pkgname}-${pkgver} build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

@@ -1,0 +1,25 @@
+pkgbase = kdbg
+	pkgdesc = A graphical debugger interface
+	pkgver = 3.2.0
+	pkgrel = 4
+	url = http://www.kdbg.org
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = extra-cmake-modules
+	makedepends = git
+	depends = gdb
+	depends = glibc
+	depends = kconfig
+	depends = kconfigwidgets
+	depends = kcoreaddons
+	depends = ki18n
+	depends = kiconthemes
+	depends = kwidgetsaddons
+	depends = kwindowsystem
+	depends = kxmlgui
+	depends = libstdc++
+	depends = qt6-base
+	source = git+https://github.com/j6t/kdbg#tag=kdbg-3.2.0
+	sha256sums = 940f55bec8053dd70514dbf6a2ad371726c302737e52ed7e9b15d95abad5432f
+
+pkgname = kdbg

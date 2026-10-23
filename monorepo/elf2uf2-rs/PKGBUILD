@@ -1,0 +1,38 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=elf2uf2-rs
+pkgver=2.2.0
+pkgrel=2
+pkgdesc="Convert ELF files to UF2 for USB Flashing Bootloaders"
+url='https://github.com/JoNil/elf2uf2-rs'
+arch=('x86_64')
+license=('0BSD')
+depends=(
+  'glibc'
+  'libgcc'
+  'libudev.so'
+)
+makedepends=('cargo')
+source=("${pkgname}-${pkgver}.tar.gz::https://crates.io/api/v1/crates/${pkgname}/${pkgver}/download")
+sha256sums=('827c11ccf54519131befb45dacf1a837500a7c82d50056c1561ca5624f48f440')
+b2sums=('3f7f020bae08e7890d683a9675f856694d36e26c31b5c9e96d86456023b8052dfeacb9ed6e2de845e6d02e9f7569c8378349a6748f6bdaaa4cceed0d4cfb9bd3')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/elf2uf2-rs
+
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

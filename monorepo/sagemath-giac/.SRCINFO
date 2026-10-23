@@ -1,0 +1,23 @@
+pkgbase = sagemath-giac
+	pkgdesc = Support for using Giac within SageMath
+	pkgver = 0.1.4
+	pkgrel = 3
+	url = https://github.com/sagemath/sagemath-giac
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = python-pytest
+	makedepends = cython
+	makedepends = git
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	depends = giac
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = sagemath
+	source = git+https://github.com/sagemath/sagemath-giac#tag=0.1.4
+	sha256sums = 4d73d6e7d7d56ec2441b33b3d9e7fbe8ae6a867757755a48bcd2084a23bc4b33
+
+pkgname = sagemath-giac

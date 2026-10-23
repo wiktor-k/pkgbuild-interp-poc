@@ -1,0 +1,95 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+
+pkgname=marker
+pkgver=2023.05.02
+pkgrel=2
+pkgdesc='Simple yet robust Markdown editor made with GTK'
+arch=(x86_64)
+url='https://github.com/fabiocolacio/Marker'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  gtksourceview4
+  gtkspell3
+  hicolor-icon-theme
+  libgcc
+  pango
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  itstool
+  meson
+)
+optdepends=(
+  'mathjax: alternative backend for rendering formulas'
+  'pandoc-cli: export to RTF, ODT, DOCX'
+)
+source=(
+  "git+https://github.com/fabiocolacio/Marker.git#tag=$pkgver"
+  git+https://github.com/Mandarancio/scidown.git
+  git+https://github.com/Mandarancio/charter.git
+  git+https://github.com/codeplea/tinyexpr.git
+  marker-gtksourceview4.patch
+  marker-window-icon.patch
+)
+b2sums=(
+  7b58e68ddc29478d50ac1138a88f306d4a155c901b5749ee787c7b1c24a537e5d28a24a5c7697710127baa72220826062f226541b17459eca429104ff00ad626
+  SKIP
+  SKIP
+  SKIP
+  934b44c89ef082086af6cee03eb35e32d285345be54f4891840db8bb2161fac7fc98cf9bd5933ff9b3be2e55d08daf48d0c1c5040faf391d1f2807371fb12f46
+  57684f3361523015ccd29d1344bc4d8962216956d80c1a880e07d944008de05493d2f1b94afcfefdcc008cfd82cd8d7c3fb25b3eb4119f35d160b8e7ea4af65b
+)
+
+prepare() {
+  cd Marker
+
+  # Fix incompatible pointer
+  # https://github.com/fabiocolacio/Marker/pull/427
+  git cherry-pick -n 92a679e02f08eef8e2f8c91371b7a3a1f95b4bbc
+
+  # Set window title and icon
+  # https://github.com/fabiocolacio/Marker/pull/434
+  git apply -3 ../marker-window-icon.patch
+
+  # Port to gtksourceview-4
+  # https://github.com/fabiocolacio/Marker/pull/436
+  git apply -3 ../marker-gtksourceview4.patch
+
+  # Set path for MathJax
+  sed -i 's|file:///usr/share/javascript/mathjax/MathJax.js|file:///usr/share/mathjax/tex-chtml.js|' src/marker-markdown.c
+
+  git submodule init
+  git submodule set-url src/scidown "$srcdir/scidown"
+  git -c protocol.file.allow=always submodule update
+
+  cd src/scidown
+  git submodule init
+  git submodule set-url src/charter "$srcdir/charter"
+  git -c protocol.file.allow=always submodule update
+
+  cd src/charter
+  git submodule init
+  git submodule set-url src/tinyexpr "$srcdir/tinyexpr"
+  git -c protocol.file.allow=always submodule update
+
+  # Fix PDF export when charter is used
+  # https://github.com/Mandarancio/charter/pull/4
+  git cherry-pick -n 958d5f06707932b48f383c06a2554da2657d6c17
+}
+
+build() {
+  arch-meson Marker build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

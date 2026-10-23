@@ -1,0 +1,26 @@
+pkgbase = xournalpp
+	pkgdesc = Handwriting notetaking software with PDF annotation support
+	pkgver = 1.3.8
+	pkgrel = 1
+	url = https://github.com/xournalpp/xournalpp
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = help2man
+	makedepends = gtest
+	depends = gtk3
+	depends = poppler-glib
+	depends = libxml2
+	depends = portaudio
+	depends = libsndfile
+	depends = lua
+	depends = libzip
+	depends = gtksourceview4
+	depends = qpdf
+	optdepends = texlive-latexextra: LaTeX package
+	source = git+https://github.com/xournalpp/xournalpp.git#tag=v1.3.8
+	sha256sums = 08ca88eede3f10864163f43b0d50134af8923ff4dd3cd923fb4f804c0a21c8ae
+
+pkgname = xournalpp

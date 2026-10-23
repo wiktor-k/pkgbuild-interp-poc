@@ -1,0 +1,78 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Konstantin Gizdov <arch at kge dot pw>
+# Contributor: Baptiste Jonglez <archlinux at bitsofnetworks dot org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: William Rea <sillywilly@gmail.com>
+# Contributor: Angel 'angvp' Velasquez <angvp[at]archlinux.com.ve>
+
+pkgname=gobby
+pkgver=0.6.0
+pkgrel=4
+epoch=1
+pkgdesc='Collaborative text editor'
+arch=(x86_64)
+url='https://gobby.github.io/'
+license=(ISC)
+depends=(
+  atkmm
+  dconf
+  glib2
+  glibc
+  glibmm
+  gnutls
+  gtk3
+  gtkmm3
+  gtksourceview4
+  hicolor-icon-theme
+  libgcc
+  libinfinity
+  libsigc++
+  libstdc++
+  libxml++2.6
+  pangomm
+)
+makedepends=(
+  git
+  intltool
+  yelp-tools
+)
+source=(
+  "git+https://github.com/gobby/gobby.git?signed#tag=v$pkgver"
+  gobby-gtksourcedrawspacesflags-declaration.patch
+  gobby-no-appmenu.patch
+)
+b2sums=(
+  e184629169000f92e308ed9321edecac012d601f83d90ecfc9401deb6e21c50c26c4f137b746693a7ae278c0a2d8324d18537b86db186b84521be74599504151
+  9ab880bf78c65b5a5bce843d2c8c6c7dbbc441589a17ecd7a78c6a942bb6bafbf9cdfc0728ef6bb69f5d3737850c6bd89bfe869b12ac4cf86b1081b8553e8ddf
+  a2096cfaa03aebbf8f90e193ab2464ee6492fc1dfa430b29c2945d892e71a36f69fe397aeea45f7a3c660e317430256bb5bf4807560010ad985ee2a803a21369
+)
+validpgpkeys=(728834F3B8D552ED25CC1B1FB1C71544BF1D92C7) # Armin Burgmeier <armin@arbur.net>
+
+prepare() {
+  cd $pkgname
+
+  # Port to gtksourceview4
+  git apply -3 ../gobby-gtksourcedrawspacesflags-declaration.patch
+  sed -i 's/gtksourceview-3.0/gtksourceview-4/' configure.ac
+
+  # Remove deprecated app menu
+  # https://github.com/gobby/gobby/pull/213
+  git apply -3 ../gobby-no-appmenu.patch
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}

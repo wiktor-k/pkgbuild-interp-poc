@@ -1,0 +1,44 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=cargo-tarpaulin
+pkgver=0.37.5
+pkgrel=1
+pkgdesc="Tool to analyse test coverage of cargo projects"
+arch=('x86_64')
+url=https://github.com/xd009642/tarpaulin
+license=('Apache-2.0' 'MIT')
+depends=(
+  'cargo'
+  'glibc'
+  'libgcc'
+  'libcurl.so'
+  'openssl'
+  'libssh2'
+  'libgit2'
+  'zlib'
+)
+makedepends=('git')
+source=("$pkgname-$pkgver::git+$url.git#tag=$pkgver")
+b2sums=('2a0d7625318730041741051dc63dab36cac6a63c1932fcb7b2f6820dfb13402d6fc1e603728cfe9f4e84f0c96952932098d3b82556e84b0e228ba0401bcb8561')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export LIBGIT2_NO_VENDOR=1
+  export LIBSSH2_SYS_USE_PKG_CONFIG=1
+  cargo build --release --frozen 
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/${pkgname}" -t "${pkgdir}"/usr/bin/
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE-MIT -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

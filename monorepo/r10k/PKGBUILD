@@ -1,0 +1,110 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Contributor: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: arakmar
+
+pkgname=r10k
+pkgver=5.0.3
+pkgrel=1
+pkgdesc='Provides a general purpose toolset for deploying Puppet environments and modules.'
+arch=('any')
+url="https://github.com/puppetlabs/${pkgname}"
+license=('Apache-2.0')
+depends=(
+  ruby
+  ruby-colored2
+  ruby-cri
+  ruby-gettext-setup
+  ruby-jwt
+  ruby-log4r
+  ruby-minitar
+  ruby-multi_json
+  ruby-puppet_forge
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  git
+  ruby-rspec
+  ruby-rugged
+  ruby-syslog
+)
+options=('!emptydirs')
+source=("${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('4b04f492ee4c431de5fa0f5f506032253f73a1a2ab64227dcc8e14866cf8b035fd276d14c6f90cec130cc355a2afec2e16612e63953f1d1bc355330b85487e5c')
+b2sums=('bfcecb51e20370a8be88699aceb4ad8ef6987469a452c938e787d3a2b6f8c57858ccdbdb9b2cddccf4e95cd7f6d7d3066a7d5e9c45e24b74f0f108715fe7fe19')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    --expression "s|dependency 'colored2',   '([0-9])|dependency 'colored2', '>= \1|g" \
+    "${pkgname}.gemspec"
+
+  # we don't build from a git checkout
+  sed --in-place --regexp-extended 's|git ls-files|find . -type f -not -path "*/\.git*"|' "${pkgname}.gemspec"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${pkgname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${pkgname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${pkgname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${pkgname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rspec
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.mkd --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

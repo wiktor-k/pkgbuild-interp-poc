@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-calculator
+pkgver=8.0.1
+pkgrel=1
+pkgdesc='The Pantheon Calculator'
+arch=(x86_64)
+url=https://github.com/elementary/calculator
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libgranite-7.so
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+_tag=989f6632daaf6f9c22542cd08136abc40c08679b
+source=(pantheon-calculator::git+https://github.com/elementary/calculator.git#tag=${_tag})
+sha256sums=('f495c21c1661db6bd8b61340f19782e5f992ba3ca911c2616685703cf5594521')
+
+pkgver() {
+  cd pantheon-calculator
+  git describe --tags
+}
+
+build() {
+  arch-meson pantheon-calculator build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

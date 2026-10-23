@@ -1,0 +1,74 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Pierre Schmitz <pierre@archlinux.de>
+
+pkgname=openfire
+pkgver=5.1.2
+pkgrel=1
+pkgdesc="High performance XMPP (Jabber) server."
+arch=('any')
+url='https://www.igniterealtime.org/projects/openfire/'
+license=('Apache-2.0')
+depends=('java-runtime-headless>=17')
+makedepends=('maven' 'java-environment=17')
+backup=('etc/conf.d/openfire'
+        'etc/openfire/openfire.xml'
+        'etc/openfire/security.xml'
+        'etc/openfire/crowd.properties'
+        'etc/openfire/security/truststore'
+        'etc/openfire/security/client.truststore'
+        'etc/openfire/security/keystore')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/igniterealtime/Openfire/archive/refs/tags/v$pkgver.tar.gz"
+        'openfire.sh'
+        'openfire.conf'
+        'openfire.service'
+        'user.conf'
+        'tmpfile.conf'
+        'force-java17.patch')
+sha256sums=('a4b61de6279d84313f5d08d254124e65e9ea6cc0083507e00655b90f290a5019'
+            'c850f376d53134ccc8d1035322dea792ba9145a5ab37f1801598c60bc70d0ed1'
+            'c8a612abee90bdc9a2869e562a4bbbf596159c60adcd23368833a0e2ca27c1d4'
+            'bc58f7e80cbdaee8523874990bf061cfd0e6480c676102e2131fe487d2782061'
+            'ea08e0c4d4b51b2a1adca71decfa1a856826898f00fb8ef857844f6326277e1e'
+            'c63396991984a067d05e21094a664255d6aed2bf294bddd3885a7da75472b886'
+            '293762fe6b0127f20a26b176d61a5a1b7dbf3c59d959853fcf80122770e62ce9')
+
+prepare() {
+  patch -d Openfire-$pkgver -Np1 -i ../force-java17.patch
+}
+
+build() {
+  cd Openfire-$pkgver
+  # Skip tests, run in check() instead
+  mvn package --batch-mode -DskipTests=true
+}
+
+check() {
+  cd Openfire-$pkgver
+  JAVA_HOME="/usr/lib/jvm/java-17-openjdk" mvn test
+}
+
+package() {
+  cd "$pkgdir"
+  install -dm755 usr/share/openfire/resources usr/share/{doc,java}
+  install -dm750 etc/openfire
+
+  cd "$srcdir"
+  install -Dm0755 openfire.sh "$pkgdir"/usr/bin/openfire
+  install -Dm0644 openfire.conf "$pkgdir"/etc/conf.d/openfire
+  install -Dm0644 openfire.service "$pkgdir"/usr/lib/systemd/system/openfire.service
+  install -Dm0644 user.conf "$pkgdir"/usr/lib/sysusers.d/openfire.conf
+  install -Dm0644 tmpfile.conf "$pkgdir"/usr/lib/tmpfiles.d/openfire.conf
+
+  cd Openfire-$pkgver/distribution/target/distribution-base
+
+  cp -R conf/* "$pkgdir"/etc/openfire/
+
+  cp -R resources/security "$pkgdir"/etc/openfire/
+  ln -s /etc/openfire/security "$pkgdir"/usr/share/openfire/resources/security
+
+  cp -R plugins "$pkgdir"/usr/share/openfire/
+  cp -R resources/{database,spank,nativeAuth} "$pkgdir"/usr/share/openfire/resources/
+  rm -rf "$pkgdir"/usr/share/openfire/resources/nativeAuth/{osx,win}*
+  cp -R lib "$pkgdir"/usr/share/java/openfire
+  cp -R documentation "$pkgdir"/usr/share/doc/openfire
+}

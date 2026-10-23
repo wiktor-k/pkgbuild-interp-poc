@@ -1,0 +1,45 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Germán Osella Massa <gosella@gmail.com>
+
+pkgname=python-more-itertools
+pkgver=11.2.1
+pkgrel=1
+pkgdesc='More routines for operating on iterables, beyond itertools'
+arch=(any)
+url='https://github.com/more-itertools/more-itertools'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-flit-core
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('882ffecc6db394a8c5458da5f693c95ab02841ab4888f9ae523ef7a9ca27c32454eb40c954784e6310810490601d61671c021ae3f293e253f273f60998b89200')
+b2sums=('48b9f1dce6aa26079f8c8cc8316a644600af74fd5cae48d0d9839ec59d50e4901c4b1f9e714d8ad63ea446ab9f3cc0d71a20ccfe3442aa8126f0873d70b056d4')
+
+build() {
+  cd "$pkgname"
+
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  python -m unittest
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

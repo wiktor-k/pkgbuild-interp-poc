@@ -1,0 +1,27 @@
+pkgbase = tiled
+	pkgdesc = A general purpose tile map editor, built to be flexible and easy to use
+	pkgver = 1.12.2
+	pkgrel = 1
+	url = http://www.mapeditor.org
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = mesa
+	makedepends = qt6-tools
+	makedepends = python
+	makedepends = qbs
+	depends = qt6-base
+	depends = libgl
+	depends = gtk-update-icon-cache
+	depends = shared-mime-info
+	depends = desktop-file-utils
+	depends = libxkbcommon-x11
+	depends = qt6-declarative
+	depends = qt6-svg
+	depends = zstd
+	optdepends = python: Python plugin
+	optdepends = qt6-imageformats: Support for additional image formats (including WebP)
+	optdepends = qaseprite: Support for the Aseprite image format
+	source = tiled-1.12.2.tar.gz::https://github.com/mapeditor/tiled/archive/v1.12.2.tar.gz
+	sha512sums = 366dd14620133068b0b2324098bcb44ea15d380e329d99e5da84f904e44125cda1e73995ec1d8562de9d7518682896750ce8afa8d2c951acb5b29d83982a9727
+
+pkgname = tiled

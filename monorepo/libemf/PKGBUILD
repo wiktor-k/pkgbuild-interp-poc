@@ -1,0 +1,35 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: lily wilson <hotaru@thinkindifferent.net>
+
+pkgname=libemf
+pkgver=1.0.14
+pkgrel=1
+pkgdesc='Library implementation of ECMA-234 API for the generation of enhanced metafiles'
+arch=('x86_64')
+url='https://libemf.sourceforge.net/'
+license=('GPL-2.0-or-later' 'LGPL-2.1-or-later')
+depends=(
+    'glibc'
+    'libgcc'
+    'libstdc++')
+source=("https://sourceforge.net/projects/libemf/files/libemf/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('05662a657c86ece56e21d7804f2c217c82f4dc535c5ad1d61c03b1fe43b0c188')
+
+build() {
+    cd "${pkgname}-${pkgver}"
+    ./configure \
+        --prefix='/usr' \
+        --enable-static='no' \
+        --enable-shared='yes' \
+        --enable-threads \
+        --enable-editing
+    make
+}
+
+check() {
+    make -C "${pkgname}-${pkgver}" check
+}
+
+package() {
+    make -C "${pkgname}-${pkgver}" DESTDIR="$pkgdir" install
+}

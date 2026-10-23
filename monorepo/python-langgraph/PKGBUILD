@@ -1,0 +1,76 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langgraph
+pkgver=1.2.14
+pkgrel=1
+pkgdesc="Building stateful, multi-actor applications with LLMs"
+arch=('any')
+url="https://github.com/langchain-ai/langgraph/tree/main/libs/langgraph"
+license=('MIT')
+depends=(
+  'python'
+  'python-langchain-core'
+  'python-langgraph-checkpoint'
+  'python-langgraph-prebuilt'
+  'python-langgraph-sdk'
+  'python-pydantic'
+  'python-typing_extensions'
+  'python-xxhash'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'pifpaf'
+  'python-anyio'
+  'python-httpx'
+  'python-langgraph-checkpoint-postgres'
+  'python-pytest'
+  'python-pytest-mock'
+  'python-pytest-xdist'
+  'python-redis'
+  'python-syrupy'
+  'valkey'
+)
+source=("git+https://github.com/langchain-ai/langgraph.git#tag=$pkgver")
+sha512sums=('20fb391d84d7a24d14aea149e5ab47cb1037ad5cc34ad232fe1a9a3645f00dc5f9c7df5800fbbcc6aff5a30de1d960d9dd1c61b8fc1e0771f43f8db5b77998d2')
+
+prepare() {
+  cd langgraph
+
+  # python-langgraph-checkpoint-sqlite is unavailable; keep no-Docker checks on
+  # memory checkpointers and Redis cache coverage through local Valkey.
+  sed -i \
+    -e '/from langgraph\.cache\.sqlite import SqliteCache/d' \
+    -e '/^[[:space:]]*_checkpointer_sqlite/d' \
+    -e 's/params=\["sqlite", "memory"\] if NO_DOCKER else \["sqlite", "memory", "redis"\]/params=["memory", "redis"]/' \
+    -e '/if request\.param == "sqlite":/{N;d;}' \
+    -e 's/elif request\.param == "memory":/if request.param == "memory":/' \
+    -e '/^[[:space:]]*"sqlite"/d' \
+    -e '/^[[:space:]]*"sqlite_aes"/d' \
+    -e '/^[[:space:]]*"sqlite_aio"/d' \
+    -e '/elif checkpointer_name == "sqlite":/,/elif checkpointer_name == "postgres":/{/elif checkpointer_name == "postgres"/!d;}' \
+    -e '/elif checkpointer_name == "sqlite_aio":/,/elif checkpointer_name == "postgres_aio":/{/elif checkpointer_name == "postgres_aio"/!d;}' \
+    libs/langgraph/tests/conftest.py
+  sed -i '/from langgraph\.checkpoint\.sqlite/d' libs/langgraph/tests/conftest_checkpointer.py
+}
+
+build() {
+  cd langgraph/libs/langgraph
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langgraph/libs/langgraph
+  NO_DOCKER=true pifpaf run redis --port 6379 -- python -m pytest
+}
+
+package() {
+  cd langgraph/libs/langgraph
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

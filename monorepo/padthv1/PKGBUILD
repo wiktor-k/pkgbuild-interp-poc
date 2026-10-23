@@ -1,0 +1,130 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=padthv1
+pkgname=(
+  padthv1
+  padthv1-common
+  padthv1-lv2
+  padthv1-standalone
+)
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="An old-school polyphonic additive synthesizer"
+arch=(x86_64)
+url="https://padthv1.sourceforge.io/"
+license=(GPL-2.0-or-later)
+makedepends=(
+  alsa-lib
+  cmake
+  fftw
+  jack
+  libgcc
+  liblo
+  libstdc++
+  lv2
+  qt6-base
+  qt6-svg
+  qt6-tools
+)
+source=(https://download.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz)
+sha512sums=('3e174f09f8cd42deadcb0120163d9c0d1a399ff65649c59a1d6838e36c9cbb1137bac7a9ff7f2a25a679b1d37ab9c7226fc22959abfcb76a7b77e04252ce5be5')
+b2sums=('2e1312b624cae87d6b5e5c2791e9cdb3c7f665bb765d92b3dcc0553df8b141da6b71ad5ff401ee49fa100480d775a8245c8458e10009c6bf780e47fb640b9aab')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CONFIG_QT6=ON
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package_padthv1() {
+  depends=(
+    $pkgbase-{lv2,standalone}=$pkgver
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  (
+    cd "$pkgdir"
+
+    # have find-libdeps resolve dependencies properly:
+    # https://gitlab.archlinux.org/archlinux/devtools/-/issues/102
+    find usr/lib -type f -iname "*.so" -exec chmod +x {} \;
+
+    _pick $pkgbase-common usr/share/$pkgbase
+    _pick $pkgbase-lv2 usr/lib/lv2
+    _pick $pkgbase-standalone usr/{bin,share}
+  )
+}
+
+package_padthv1-common() {
+  pkgdesc+=" - common files"
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+package_padthv1-lv2() {
+  pkgdesc+=" - LV2 plugin"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  depends=(
+    fftw libfftw3f.so
+    glibc
+    libgcc
+    libstdc++
+    lv2-host
+    padthv1-common
+    qt6-base
+    qt6-svg
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+package_padthv1-standalone() {
+  pkgdesc+=" - standalone"
+  groups=(
+    pro-audio
+  )
+  depends=(
+    alsa-lib
+    fftw libfftw3f.so
+    glibc
+    hicolor-icon-theme
+    jack
+    libgcc
+    liblo
+    libstdc++
+    padthv1-common
+    qt6-base
+    qt6-svg
+  )
+  optdepends=(
+    'new-session-manager: for session management using the standalone application'
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+# vim:set ts=2 sw=2 et:

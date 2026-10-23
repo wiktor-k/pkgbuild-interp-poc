@@ -1,0 +1,17 @@
+pkgbase = brush
+	pkgdesc = Bash/POSIX-compatible shell implemented in Rust
+	pkgver = 0.4.0
+	pkgrel = 1
+	url = https://github.com/reubeno/brush
+	install = brush.install
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	source = brush-0.4.0.tar.gz::https://github.com/reubeno/brush/archive/brush-shell-v0.4.0.tar.gz
+	source = brush-docs-0.4.0.tar.gz::https://github.com/reubeno/brush/releases/download/brush-shell-v0.4.0/brush-docs.tar.gz
+	sha256sums = 0cce607454972c18bc4a30d2f44a2c91fccf02c458475fda7720370a3dc8a4f0
+	sha256sums = 1070fa3a9470927c0c3d9c5417151f1b8f72317b42bed21f33e5fd4f3dad3332
+
+pkgname = brush

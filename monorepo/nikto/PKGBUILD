@@ -1,0 +1,50 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: grimsock <lord.grimsock at gmail dot com>
+# Contributor: Alessandro Sagratini <ale_sagra at hotmail dot com>
+# Contributor: Arkham <arkham at archlinux dot us>
+# Contributor: LeCrayonVert < greenarrow at archlinux dot us>
+
+pkgname=nikto
+pkgver=2.6.1
+pkgrel=1
+pkgdesc='A web server scanner which performs comprehensive tests against web servers for multiple items'
+url='https://github.com/sullo/nikto'
+arch=(any)
+license=(
+  GPL-3.0-only
+)
+depends=(
+  openssl
+  perl
+  perl-json
+  perl-net-ssleay
+  sh
+)
+backup=(
+  etc/nikto.conf
+)
+source=(
+  ${pkgname}-${pkgver}.tar.gz::https://github.com/sullo/${pkgname}/archive/${pkgver}.tar.gz
+  nikto.sh
+)
+sha512sums=('d15c09c117e7d2dbf2b82d63aed7a4efcfd3c2827f020e212fb9a283c87f68d6a71ad93ab391e41f7023fef4f324b3569effbc696277b7be4cb05379b747c938'
+            '75b9be1f1cacbca09a5e72f8125aadc24938a3ac36b2337bf68916231af52e2af846a0dedb36782f45716d2c6d590a3606cb5879339528e7a744f1d2d880120d')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  find . -type f ! -name nikto.pl -exec chmod 644 {} +
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -d "${pkgdir}/usr/share/nikto"
+  cp -a program/* "${pkgdir}/usr/share/nikto"
+
+  install -Dm 755 "${srcdir}/nikto.sh" "${pkgdir}/usr/bin/nikto"
+  install -Dm 644 program/nikto.conf.default "${pkgdir}/etc/nikto.conf"
+  install -Dm 644 documentation/nikto.1 "${pkgdir}/usr/share/man/man1/nikto.1"
+  install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README"
+}
+
+# vim: ts=2 sw=2 et:

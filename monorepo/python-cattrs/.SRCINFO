@@ -1,0 +1,29 @@
+pkgbase = python-cattrs
+	pkgdesc = Complex custom class converters for attrs
+	pkgver = 26.2.1
+	pkgrel = 1
+	url = https://catt.rs
+	arch = any
+	license = MIT
+	checkdepends = python-hypothesis
+	checkdepends = python-msgspec
+	checkdepends = python-orjson
+	checkdepends = python-pytest
+	checkdepends = python-pytest-benchmark
+	checkdepends = python-yaml
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-vcs
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-attrs
+	depends = python-typing_extensions
+	optdepends = python-msgspec: msgspec converter
+	optdepends = python-orjson: orjson converter
+	optdepends = python-yaml: YAML converter
+	source = git+https://github.com/python-attrs/cattrs#tag=v26.2.1
+	b2sums = 79ff686ee7155b3fb0e88e4e05c4852922d1819182c3ebee0323a17eed93494c7af8ea3b0121fdb811cb6f6e9ae462b8a95a137d520847c066872a71c957c96a
+
+pkgname = python-cattrs

@@ -1,0 +1,32 @@
+pkgbase = dtk6widget
+	pkgdesc = Deepin base graphical widgets library
+	pkgver = 6.0.50
+	pkgrel = 2
+	url = https://github.com/linuxdeepin/dtk6widget
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	makedepends = gtest
+	makedepends = doxygen
+	depends = dtk6core
+	depends = dtk6gui
+	depends = gcc-libs
+	depends = glibc
+	depends = libx11
+	depends = libxcb
+	depends = libxext
+	depends = libxi
+	depends = qt6-base
+	depends = qt6-imageformats
+	depends = qt6-svg
+	depends = startup-notification
+	depends = xcb-util
+	source = git+https://github.com/linuxdeepin/dtk6widget.git#tag=6.0.50
+	source = qt-6.10.2.patch
+	sha512sums = ee7dc0d97bed1cf1303af9287e3f45f13f0a2a19186649581dfbc5ba1947f39bede8b2480d7f3035a160935913b396540ab9724ec8985ea15e4cc2d7ae9d57fe
+	sha512sums = 4aa82c9883032ec9bd00942576f2985a4d68bec9b58c1d2b1f617bcc0f98f8cb325c266cd7002cf587e137f9ee997ae94220263f7388e601e5face8ca27e2533
+
+pkgname = dtk6widget

@@ -1,0 +1,36 @@
+pkgbase = kupfer
+	pkgdesc = Launcher application written in Python. Similar to Gnome-Do / Launchy
+	pkgver = 329
+	pkgrel = 3
+	url = https://kupferlauncher.github.io/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = intltool
+	makedepends = itstool
+	makedepends = python-docutils
+	makedepends = waf
+	depends = bash
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libkeybinder3
+	depends = libwnck3
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-dbus
+	depends = python-gobject
+	depends = python-pyxdg
+	depends = python-setproctitle
+	depends = tinysparql
+	optdepends = gvfs: Trash plugin
+	optdepends = xautomation: Send Keys plugin
+	optdepends = libappindicator: StatusNotifierItem support
+	optdepends = python-qrcode: Show QRCode plugin
+	source = git+https://github.com/kupferlauncher/kupfer.git?signed#tag=v329
+	validpgpkeys = E6B26A59AD3BD80DA22CF54BAFFC8A6894648B15
+	b2sums = 487aeb5c119f6c8511c1c837c8d91dd7a5fcb410ae2badbca6c7014c4a8dcc4295a7b49e9981b42f6aaf1e11b42636c2c98ee2ed51b55e9b62f8995fa614a81a
+
+pkgname = kupfer

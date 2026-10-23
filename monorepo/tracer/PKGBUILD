@@ -1,0 +1,39 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=tracer
+pkgver=1.6
+pkgrel=1
+pkgdesc="Tracer finds outdated running applications in your system"
+arch=('any')
+url="http://tracer-package.com/"
+license=('GPL-2.0-or-later')
+depends=(python python-distro python-psutil python-six python-dbus pyalpm)
+makedepends=(python-setuptools python-build python-installer python-wheel)
+checkdepends=(python-pytest)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/FrostyX/tracer/archive/refs/tags/$pkgname-$pkgver-1.tar.gz")
+sha512sums=('6aebc61ba212a4fe02395832e288f2ab9c21df1429b3f5884f3015e4178a0d64ae176f3720a4971f58883e7f223f15216c75763bdb024df73a8938f3f408c472')
+
+prepare() {
+    cd "$pkgname-$pkgname-$pkgver-1"
+    cp LICENSE LICENCE.md
+}
+
+check() {
+    cd "$pkgname-$pkgname-$pkgver-1"
+    PYTHONPATH=. pytest tests
+}
+
+build() {
+    cd "$pkgname-$pkgname-$pkgver-1"
+
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "$pkgname-$pkgname-$pkgver-1"
+
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -Dm644 scripts/tracer.bash_completion \
+        "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+    install -Dm644 LICENCE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,46 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Oliver Bandel <oliver@first.in-berlin.de>
+
+pkgname=ocaml-zarith
+pkgver=1.14
+pkgrel=9
+pkgdesc='Implements arithmetic and logical operations over arbitrary-precision integers and rational numbers'
+url='https://github.com/ocaml/Zarith'
+arch=('x86_64')
+license=('GPL-2.0-only')
+depends=(
+  'glibc'
+  'gmp'
+  'ocaml'
+  'ocaml-compiler-libs'
+)
+makedepends=('ocaml-findlib')
+provides=('zarith')
+options=(
+  !strip
+  !debug
+)
+source=("$url/archive/release-$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('e00b6ed0893a7a4b53c859edc02030336f1c35405202f87741d87288819bdb6562bb3728c6950074b625ad9e5a16cc4afd39c4e0e2486ba18f1a84e49339fdd3')
+
+build() {
+  cd Zarith-release-$pkgver
+  export CFLAGS+=' -ffat-lto-objects'
+  export CXXFLAGS+=' -ffat-lto-objects'
+  # ocamlmklib rejects raw -Wl,... flags; it only accepts -Wl,-rpath,...
+  unset LDFLAGS
+  ./configure -installdir /usr/lib/ocaml
+  make
+}
+
+check() {
+  cd Zarith-release-$pkgver
+  make tests
+}
+
+package() {
+  cd Zarith-release-$pkgver
+  mkdir -p "$pkgdir/usr/lib/ocaml/stublibs"
+  make install INSTALLDIR="$pkgdir/usr/lib/ocaml"
+}

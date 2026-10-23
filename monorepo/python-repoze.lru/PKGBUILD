@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: DasIch <dasdasich@googlemail.com>
+# Contributor: James Bulmer <nekinie@gmail.com>
+
+pkgname=python-repoze.lru
+pkgver=0.8
+pkgrel=1
+pkgdesc="A tiny LRU cache implementation and decorator"
+arch=('any')
+url="https://github.com/repoze/repoze.lru"
+license=('LicenseRef-Repoze-BSD-derived')
+depends=('python')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-pytest' 'python-pytest-cov')
+source=("https://pypi.io/packages/source/r/repoze_lru/repoze_lru-$pkgver.tar.gz")
+sha512sums=('6c958af8dc885971d8a6f13cccf13d0f0fa5e2d0dd9eda82bb89c736d3ea47676bb29d4d9aa44e489bee622f56780b0fdffb24f26afe862c5d98442643d4b46c')
+
+build() {
+  cd repoze_lru-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd repoze_lru-$pkgver
+  PYTHONPATH="$PWD/src" pytest
+}
+
+package() {
+  cd repoze_lru-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

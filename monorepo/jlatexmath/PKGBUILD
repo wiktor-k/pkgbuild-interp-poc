@@ -1,0 +1,32 @@
+# Contributor: Jiachen YANG <farseerfc@gmail.com>
+# Contributor: Victor Dmitriyev <mrvvitek@gmail.com>
+# Contributor: Alucryd <alucryd at gmail dot com>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Stefan Husmann <stefan-husmann at t-online dot de>
+
+pkgname=jlatexmath
+pkgver=1.0.7
+pkgrel=3
+pkgdesc='Java API to display mathematical formulas written in LaTeX'
+arch=('any')
+url='https://github.com/opencollab/jlatexmath'
+license=('GPL-2.0-or-later AND OFL-1.1-RFN AND Knuth-CTAN')
+depends=('java-runtime')
+makedepends=('git' 'maven')
+source=("git+$url#tag=$pkgver")
+sha256sums=('30811ed148cce934ca2c72f707d884114832952cd476e12e42781252116caa1a')
+
+build() {
+  cd $pkgname
+  # tests need X11
+  mvn -Djava.version=1.8 -Dmaven.javadoc.skip=true -DskipTests clean package
+}
+
+package() {
+  cd $pkgname/$pkgname
+  install -Dm644 target/$pkgname-$pkgver.jar "$pkgdir/usr/share/java/$pkgname/$pkgname.jar"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  cp src/main/resources/org/scilab/forge/jlatexmath/fonts/licences/* "$pkgdir/usr/share/licenses/$pkgname/"
+}
+
+# vim:set ts=2 sw=2 et:

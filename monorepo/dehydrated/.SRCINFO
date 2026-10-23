@@ -1,0 +1,21 @@
+pkgbase = dehydrated
+	pkgdesc = letsencrypt/acme client implemented as a shell-script – just add water
+	pkgver = 0.7.2
+	pkgrel = 2
+	url = https://dehydrated.io
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = curl
+	depends = diffutils
+	depends = openssl
+	optdepends = sudo: for the DEHYDRATED_USER option
+	source = git+https://github.com/dehydrated-io/dehydrated.git#commit=v0.7.2?signed
+	source = dehydrated.service
+	source = dehydrated.timer
+	validpgpkeys = 3C2F2605E078A1E18F4793909C4DBE6CF438F333
+	b2sums = 6b17d438c6d80f3533f18ad5b6b374d4e41542fea64542f321d6768a1ff45aaee7a5bf392cdfb85390b1958a3076ad2aba6453c2d142899aa0e07c50622ff9a5
+	b2sums = d897cdf34621b377e6f9e6ba6d6a351f3290f6b08fd57fce723a85e44fe73b75003941bfa625e2213f4bb26e0753ab7d3e1f50a2530d0b6c37766b3061bec2ce
+	b2sums = df0d85ae33cbd27502bbbcf3f3055a29b2d38b2863a59dc6ea4fce1c7811b68bea14c404377dfde18ed32b1232331db020ca8d015f471fb6f8e919e7b0a32d2a
+
+pkgname = dehydrated

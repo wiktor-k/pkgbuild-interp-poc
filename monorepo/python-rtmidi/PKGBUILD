@@ -1,0 +1,97 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: OSAMC <https://github.com/osam-cologne/archlinux-proaudio>
+# Contributor: Christopher Arndt <aur -at- chrisarndt -dot- de>
+
+pkgname=python-rtmidi
+pkgver=1.5.8
+pkgrel=6
+pkgdesc='Python bindings for the MIDI I/O library RtMidi'
+arch=(x86_64)
+url='https://github.com/SpotlightKid/python-rtmidi'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  python
+)
+makedepends=(
+  alsa-lib
+  cython
+  git
+  jack
+  meson-python
+  ninja
+  python-build
+  python-installer
+  python-myst-parser
+  python-sphinx
+  python-wheel
+)
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  'github.com-SpotlightKid-rtmidi::git+https://github.com/SpotlightKid/rtmidi'
+  use-system-ninja.patch
+  remove-xdg-open.patch
+  skip-broken-clean.patch
+)
+sha512sums=('1eed97aaa38c1b231a79a37c7d724680e276aba072bc6233eecbf7e26edfa18b705c470cd217467e6bcbf6ebc7748cd7e0ee5c744b703e280aeb2e6382f2c4e1'
+            'SKIP'
+            '5451ebfd47fce56521d0a457ce775f932eb5ba62bc3e34dd6e8f0c96e5abf5fd288abbb046becdc1c909ee35d36227995191fb8e555134bf57b7c82de2deb790'
+            '5230e9697c1aedfb7a778d2f1d720991bc0822b7d5ad7c88f5470a919b6ea71403735d39e1f223c0abc1475a2fa77052e342269f1b4ba7335f1cf7d78ed03cd6'
+            '3cc18196b73c23407dac296badcba0546f78b8f6e54c249f9d7f43c682df6e56b4aaa3d2ae2f48c17d9046f8fed1277783c01dca7fb3dfef0593fbb70134bebf')
+b2sums=('a550e48faff6ad555aeb2186a4e6553195295d7690fc91ea062d191418c67e20838af8eee4024f5752f26f9e20c435bb4b85666a00a8bbb2f136631ff3458325'
+        'SKIP'
+        '89690e60c1a5fd983e6f08a83957e100b361a2ee7e560194fa2f09989712084c36a2e3ae5b7196a1a5ab3e3d335b783ffc4bb58aa31888a55aac7495fa2ec2a1'
+        '2c030e9d3c7b392a8a041165418b8012d0d5372217b515eb764943eefeb4ad7fa49e7fc462e53004106e8cbbf6ce9beb088603b58478812c870fccea6a723289'
+        'a5fa68ddcac7e5e0fcbfd05cfaf9fe0279f5f84fac6daca6a426a27c42514aabd20d9871da4b3a073f6add2f3431c410fc0155d64639d332a1616a3971c6cb91')
+
+pkgver() {
+  cd "$pkgname"
+
+  git describe --tags | sed 's/^v//'
+}
+
+prepare() {
+  cd "$pkgname"
+
+  git cherry-pick -n e81ec0bea542ea67c043a0020273765d87b3f7e2 # Update rtmidi to an existing commit
+  # use forked/vendored rtmidi
+  git submodule init
+  git config submodule.src/rtmidi.url "$srcdir/github.com-SpotlightKid-rtmidi"
+  git -c protocol.file.allow=always submodule update
+
+  # remove xdg-open from Makefile
+  patch -p1 -i "$srcdir/remove-xdg-open.patch"
+
+  # skip broken clean in Makefile
+  patch -p1 -i "$srcdir/skip-broken-clean.patch"
+
+  # use system Ninja
+  patch -p1 -i "$srcdir/use-system-ninja.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # build python module
+  python -m build --wheel --no-isolation
+
+  # documentation
+  make docs
+}
+
+package() {
+  depends+=('libasound.so' 'libjack.so')
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr docs/_build/html "$pkgdir/usr/share/doc/$pkgname"
+  cp -vr examples "$pkgdir/usr/share/doc/$pkgname"
+}

@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=adriconf
+pkgver=2.7.4
+pkgrel=1
+pkgdesc="GUI tool to configure Mesa drivers by setting options and writing them to the standard drirc file"
+arch=(x86_64)
+url="https://gitlab.freedesktop.org/mesa/adriconf"
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  glibc
+  glibmm-2.68
+  gtkmm-4.0
+  hicolor-icon-theme
+  mesa
+  libdrm
+  libgcc
+  libgl
+  libstdc++
+  libsigc++-3.0
+  pciutils
+  pugixml)
+makedepends=(
+  cmake)
+source=(https://gitlab.freedesktop.org/mesa/$pkgname/-/archive/v.$pkgver/$pkgname-v.$pkgver.tar.gz)
+sha256sums=('160929d6a8b16157de928c444200b164b09042621855096abfe52db0af115d3e')
+
+build() {
+  cmake -B build -S $pkgname-v.$pkgver \
+    -G 'Unix Makefiles' \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_UNIT_TESTS=OFF \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 $pkgname-v.$pkgver/flatpak/org.freedesktop.adriconf.metainfo.xml \
+    "$pkgdir/usr/share/metainfo/org.freedesktop.adriconf.metainfo.xml"
+  install -Dm644 $pkgname-v.$pkgver/flatpak/org.freedesktop.adriconf.desktop \
+    "$pkgdir/usr/share/applications/org.freedesktop.adriconf.desktop"
+  install -Dm644 $pkgname-v.$pkgver/flatpak/org.freedesktop.adriconf.png \
+    "$pkgdir/usr/share/icons/hicolor/256x256/apps/org.freedesktop.adriconf.png"
+}

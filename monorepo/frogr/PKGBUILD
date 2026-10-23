@@ -1,0 +1,54 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=frogr
+pkgver=1.8.1
+pkgrel=5
+pkgdesc='Flickr uploader for GNOME'
+arch=(x86_64)
+url='https://wiki.gnome.org/Apps/Frogr'
+license=(GPL-3.0-only)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  json-glib
+  libexif
+  libgcc
+  libgcrypt
+  libsoup3
+  libxml2
+)
+makedepends=(
+  git
+  itstool
+  meson
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/frogr.git?signed#tag=RELEASE_$pkgver"
+  frogr-prgname.patch
+)
+b2sums=(
+  639ac9be27491d86d18b770f57804818435dcb548fa09f9cb37c1998ebbb4dfd04aab49358f7031677d35fc1fa1aedda5123a855b9195c225382ad642e58c072
+  ffd2b250cd2fbf47c322aef52d107c91e3cbbb0dd1215d63bb886ef925c63c5a1f2fbf92d4eef3b3559d69357455237fa8ec520578c9c98f60fbe6678ff04359
+)
+validpgpkeys=(9A98AEBB7E250E7654CD627A1AB71886930A0CF6) # Mario Sanchez Prada <mario@endlessm.com>
+
+prepare() {
+  cd $pkgname
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/frogr/-/merge_requests/10
+  git apply -3 ../frogr-prgname.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

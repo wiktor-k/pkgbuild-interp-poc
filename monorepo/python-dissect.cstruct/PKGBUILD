@@ -1,0 +1,34 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=python-dissect.cstruct
+_name=${pkgname#python-}
+pkgver=4.7
+pkgrel=2
+pkgdesc='Dissect module implementing a parser for C-like structures'
+arch=('any')
+url='https://github.com/fox-it/dissect.cstruct'
+license=('Apache-2.0')
+depends=('python')
+checkdepends=('python-pytest')
+makedepends=('python' 'python-setuptools' 'python-setuptools-scm' 'python-build' 'python-installer' 'python-wheel')
+source=("${pkgname}-${pkgver}.tar.gz"::"https://github.com/fox-it/dissect.cstruct/archive/refs/tags/${pkgver}.tar.gz")
+sha512sums=('3eae671c6e2613592d29e96e32b4404ce654845ef45a06e1957d3767b2acf2e455723a695902bb628873e5c983d4b94642e37291f1d56c0a670bb6a9c09a2ba8')
+
+export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
+
+build() {
+  cd "${_name}-${pkgver}"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "${_name}-${pkgver}"
+  PYTHONPATH=. pytest .
+}
+
+package() {
+  cd "${_name}-${pkgver}"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

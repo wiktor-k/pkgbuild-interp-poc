@@ -1,0 +1,21 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Stefano Esposito <ragnarok@email.it>
+
+pkgname=emacs-python-mode
+pkgver=6.3.1
+pkgrel=1
+pkgdesc="Python mode for Emacs"
+url="https://gitlab.com/python-mode-devs/python-mode"
+license=("GPL")
+arch=('any')
+depends=('emacs')
+install=emacs-python-mode.install
+source=("https://gitlab.com/python-mode-devs/python-mode/-/archive/$pkgver/python-mode-$pkgver.tar.gz")
+sha256sums=('02c899f2f6b8d57b29855420d569d3f4726843a2706f7f66df9fbcd4e9b303e9')
+
+package() {
+  cd "$srcdir"/python-mode-$pkgver
+  install -dm755 "$pkgdir"/usr/share/emacs/site-lisp/
+  install -Dm644 *.el "$pkgdir"/usr/share/emacs/site-lisp/
+  rm -f "$pkgdir"/usr/share/emacs/site-lisp/pymacs.*
+}

@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Simon Doppler <dopsi[at]dopsi[dot]ch>
+# Contributor: Kyle Brooks <brookskd[at]gmail[dot]com>
+# Contributor: bl4ckb0x <navkamal90[at]gmail[dot]com>
+
+pkgname=systemc
+pkgver=3.0.2
+pkgrel=1
+pkgdesc="Set of C++ classes and macros which provide an event-driven simulation interface for modeling and describing complex hardware systems"
+url="https://www.accellera.org/downloads/standards/systemc"
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc' 'libgcc' 'libstdc++')
+makedepends=('cmake' 'ninja' 'git')
+replaces=('systemc-cmake')
+source=("git+https://github.com/accellera-official/systemc.git#tag=$pkgver")
+sha512sums=('8402ef9e32bd1098b1429dc41172b3a0a44ba4f91946680188cc29d2bded1ce4c2e2881525ea52f38194c81c01eadf9402c81b73558a70e02fdcf7327be7ec02')
+
+prepare() {
+  mkdir -p build
+  cd systemc
+  # Don't force CMAKE_BUILD_TYPE to Release (Arch uses noconfig)
+  sed -i '/if(NOT CMAKE_BUILD_TYPE/,/^endif()/d' CMakeLists.txt
+  # Fix ctest to handle empty CMAKE_BUILD_TYPE (Arch uses noconfig)
+  sed -i 's/-C "\$<CONFIG>"//' cmake/SystemCTesting.cmake
+}
+
+build() {
+  cd build
+  cmake -GNinja -DCMAKE_CXX_STANDARD=17 -DCMAKE_INSTALL_PREFIX=/usr ../systemc
+  ninja
+}
+
+check() {
+  cd build
+  ninja check
+}
+
+package() {
+  cd build
+  DESTDIR="$pkgdir" ninja install
+}

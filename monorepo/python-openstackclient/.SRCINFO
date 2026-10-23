@@ -1,0 +1,33 @@
+pkgbase = python-openstackclient
+	pkgdesc = OpenStack Command-line Client
+	pkgver = 10.5.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-openstackclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-ddt
+	checkdepends = python-fixtures
+	checkdepends = python-hacking
+	checkdepends = python-requests-mock
+	checkdepends = python-stestr
+	checkdepends = python-testtools
+	checkdepends = python-wrapt
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-pbr
+	depends = python-cryptography
+	depends = python-cliff
+	depends = python-iso8601
+	depends = python-openstacksdk
+	depends = python-osc-lib
+	depends = python-oslo-i18n
+	depends = python-keystoneclient
+	depends = python-manilaclient
+	depends = python-requests
+	depends = python-stevedore
+	source = git+https://github.com/openstack/python-openstackclient.git#tag=10.5.0
+	sha512sums = e08f4556162341f0f50384b18b769bdcd231e117c54b9064cc1de1c4769008f83f0cd1a2891d7a3f8b7518d3fe4613b1e5c8ab79c4667450c2ff096437bd2146
+
+pkgname = python-openstackclient

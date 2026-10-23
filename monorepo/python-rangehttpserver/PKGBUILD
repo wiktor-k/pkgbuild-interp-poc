@@ -1,0 +1,41 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+_pkgname=RangeHTTPServer
+pkgname=python-rangehttpserver
+pkgver=1.4.0
+pkgrel=3
+pkgdesc='SimpleHTTPServer with support for Range requests'
+arch=('any')
+url='https://github.com/danvk/RangeHTTPServer/'
+license=('Apache-2.0')
+depends=('python')
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest'
+  'python-requests'
+)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
+sha256sums=('7ec021ebe26e0849cc7efa40ce231c0d9cc46027d37a80d728b3854c2149bfb4')
+sha512sums=('180a0b1bfd029f03dd6878d4b3edc7dc6b54126cabce3ba640fc5123b0b6eb62a17f5fdc93753565ac4f60ba0638ed27e007b237ee8e1330b0779d49952348bb')
+
+build() {
+  cd ${_pkgname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkgname}-${pkgver}
+  pytest -v
+}
+
+package() {
+  cd ${_pkgname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 README -t "${pkgdir}/usr/share/doc/${pkgname}"
+}

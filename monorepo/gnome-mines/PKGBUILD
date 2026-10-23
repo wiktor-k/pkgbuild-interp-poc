@@ -1,0 +1,50 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-mines
+pkgver=50.0
+pkgrel=1
+pkgdesc="Clear hidden mines from a minefield"
+url="https://wiki.gnome.org/Apps/Mines"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgee
+  librsvg
+)
+makedepends=(
+  appstream
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+options=(!emptydirs)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-mines.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('7f64735ff9c7c812f2246a30c1cb6aa378533e53cef9a942134027f1891c7b0e2141894689981f6d681b42e66520b9e63090f48a6b28b05014164e8ba5b11ede')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

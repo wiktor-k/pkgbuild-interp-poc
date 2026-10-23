@@ -1,0 +1,25 @@
+pkgbase = bettercap
+	pkgdesc = Swiss army knife for network attacks and monitoring
+	pkgver = 2.41.7
+	pkgrel = 2
+	url = https://github.com/bettercap/bettercap
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	depends = iproute2
+	depends = libnetfilter_queue
+	depends = libnfnetlink
+	depends = libpcap
+	depends = libpcap.so
+	depends = libusb
+	depends = libusb-1.0.so
+	optdepends = bettercap-caplets: scripts (caplets) and proxy modules
+	options = !emptydirs
+	options = !lto
+	source = https://github.com/bettercap/bettercap/archive/v2.41.7/bettercap-2.41.7.tar.gz
+	sha512sums = 4eb933309d529adea4b3e0e37204448e019bc7dfe7415db1d383cc13f72e0b76dcda45aa3c048bc8bb649bef85bc05d527cb9fd8c560b85958d2f4e69402b250
+	b2sums = 4f40af423b458ddd29effbb79e3507ccbd6ea7746df680a034012d4151c26be536c9533dfcea7a27311f4327c3544605ca393e061a5376912382865afff92218
+
+pkgname = bettercap

@@ -1,0 +1,49 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=ipycanvas
+pkgname=python-$_pyname
+pkgver=0.14.3
+pkgrel=2
+pkgdesc="Interactive widgets library exposing the browser's Canvas API"
+url='https://ipycanvas.readthedocs.io/en/latest/'
+arch=(any)
+license=(BSD-3-Clause)
+source=(git+https://github.com/jupyter-widgets-contrib/ipycanvas#tag=v$pkgver)
+depends=(ipython
+         python
+         python-ipywidgets
+         python-numpy
+         python-pillow
+         python-traitlets)
+makedepends=(corepack
+             git
+             jupyterlab
+             python-build
+             python-hatch-build-scripts
+             python-hatch-jupyter-builder
+             python-hatch-nodejs-version
+             python-hatchling
+             python-installer)
+sha256sums=('94c7808e675cecf2aa650c6d39ccd16dd802a77136d0f7cf85176833c22a8985')
+
+prepare() {
+  cd $_pyname
+# ipycanvas requires yarn>=3
+  mkdir bin
+  corepack enable --install-directory bin yarn
+  yes | bin/yarn set version stable
+  bin/yarn install
+}
+  	
+build() {
+  cd $_pyname
+  PATH="$PWD/bin:$PATH" \
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  mv "$pkgdir"/{usr/,}etc
+}

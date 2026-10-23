@@ -1,0 +1,49 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Hugo Osvaldo Barrera <hugo@barrera.io>
+
+pkgname=darkman
+pkgver=2.3.1
+pkgrel=1
+pkgdesc='Framework for dark-mode and light-mode transitions on Linux desktop'
+arch=(x86_64)
+url=https://darkman.whynothugo.nl
+license=(ISC)
+makedepends=(
+  git
+  go
+)
+optdepends=(
+  "geoclue: to automatically determine the system's location"
+  'xdg-desktop-portal-impl: to expose the current mode via the XDG settings portal D-Bus API'
+)
+source=("git+https://gitlab.com/WhyNotHugo/darkman.git#tag=v$pkgver?signed")
+b2sums=('5a96289ce2044ef276144f5245ed21819e06271a559db2fb1ae569c37720fb3a57f4e30ba092daf8de0b90e24effa22a645dc7b679fa6e8a58563b3a361f7df4')
+validpgpkeys=("1204CA9FC2FFADEEDC2961367880733B9D062837") # Hugo Osvaldo Barrera <hugo@whynothugo.nl>
+
+prepare() {
+  cd $pkgname
+  go mod vendor
+}
+
+build() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+  make build
+}
+
+check() {
+  cd $pkgname
+  go test ./...
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+
+  cd "$pkgdir"
+  rm -r etc
+}

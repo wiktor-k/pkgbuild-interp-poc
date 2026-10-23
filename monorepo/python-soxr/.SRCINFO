@@ -1,0 +1,25 @@
+pkgbase = python-soxr
+	pkgdesc = High quality, one-dimensional sample-rate conversion library for Python
+	pkgver = 1.1.0
+	pkgrel = 2
+	url = https://github.com/dofuuz/python-soxr
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cython
+	makedepends = git
+	makedepends = nanobind
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-scikit-build-core
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	depends = glibc
+	depends = libgcc
+	depends = libsoxr
+	depends = libstdc++
+	depends = python
+	depends = python-numpy
+	source = git+https://github.com/dofuuz/python-soxr.git#tag=v1.1.0
+	b2sums = 659816db3ad6cff01d7d6be2b29cef2a1ce7060875e1345dbd21e91b40d3307f441f659ccfecf74c742f68eb407a70c216b9c688853d1bc82768f7a132bc542c
+
+pkgname = python-soxr

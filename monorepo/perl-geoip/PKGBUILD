@@ -1,0 +1,39 @@
+# Maintainer: Brian Bidulock <bidulock@openss7.org>
+# Contributor: Sebastien Bariteau <numkem@gmail.com>
+
+pkgname=perl-geoip
+_gitname=geoip-api-perl
+pkgver=1.51
+pkgrel=5
+pkgdesc="GeoIP Perl API"
+arch=(i686 x86_64)
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+url="https://github.com/maxmind/geoip-api-perl"
+source=("https://github.com/maxmind/${_gitname}/archive/v${pkgver}.zip")
+depends=('geoip')
+options=('!emptydirs')
+provides=('cassandra')
+sha256sums=('4e98f4664e094b974555bdf94e4055b1ac0bf63e18ed12884edb37f7fe9002df')
+
+build() {
+  cd ${_gitname}-${pkgver}
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+_perl_depends() {
+# template start; name=perl-binary-module-dependency; version=1;
+if [[ $(find "$pkgdir/usr/lib/perl5/" -name "*.so") ]]; then
+	_perlver_min=$(perl -e '$v = $^V->{version}; print $v->[0].".".($v->[1]);')
+	_perlver_max=$(perl -e '$v = $^V->{version}; print $v->[0].".".($v->[1]+1);')
+	depends+=("perl>=$_perlver_min" "perl<$_perlver_max")
+fi
+# template end;
+}
+
+package() {
+  cd ${_gitname}-${pkgver}
+  make install DESTDIR=${pkgdir}
+
+  _perl_depends
+}

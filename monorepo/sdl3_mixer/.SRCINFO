@@ -1,0 +1,26 @@
+pkgbase = sdl3_mixer
+	pkgdesc = A simple multi-channel audio mixer (Version 3)
+	pkgver = 3.2.4
+	pkgrel = 1
+	url = https://github.com/libsdl-org/SDL_mixer
+	arch = x86_64
+	license = MIT
+	makedepends = fluidsynth
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = sdl3
+	depends = libvorbis
+	depends = libmodplug
+	depends = mpg123
+	depends = flac
+	depends = opusfile
+	depends = libxmp
+	optdepends = fluidsynth: MIDI software synth, replaces built-in timidity
+	source = https://github.com/libsdl-org/SDL_mixer/releases/download/release-3.2.4/SDL3_mixer-3.2.4.tar.gz
+	source = https://github.com/libsdl-org/SDL_mixer/releases/download/release-3.2.4/SDL3_mixer-3.2.4.tar.gz.sig
+	validpgpkeys = 0900104363B4C9D4223DE149D913FE7D4B61D39B
+	sha512sums = cfbd23bc1a730371b8b8232b8b72f6187a84e0fc6fb80ae0e546b023e1a7acb6115da3e010a4e1cdc3a6a8f7a4506ee1c110127cbb91f1094807da9c462e5b77
+	sha512sums = SKIP
+
+pkgname = sdl3_mixer

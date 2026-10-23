@@ -1,0 +1,21 @@
+# Maintainer: Giancarlo Razzolini <grazzolini@archlinux.org>
+
+pkgname=nvidia-prime
+pkgver=1.0
+pkgrel=6
+pkgdesc="NVIDIA Prime Render Offload configuration and utilities"
+arch=('any')
+url="https://www.archlinux.org/packages/extra/any/nvidia-prime/"
+license=('0BSD')
+depends=('bash' 'nvidia-utils')
+source=("prime-run"
+        "LICENSE")
+md5sums=('3d377404ef87df6e18ea3b149ba1110b'
+         '82d4a168a6801c4f87e83aabb7ea1bdf')
+sha512sums=('d9158ddee6ec105796d86ac42b32c6c925cfa866d5e25c64d5a29be47fe393ace0efb4ef8a3e7cff699abc599d28ee46866dcbfdfd1920122e426ee262c562e6'
+            'a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930')
+
+package() {
+    install -Dm755 $srcdir/prime-run $pkgdir/usr/bin/prime-run
+    install -Dm644 $srcdir/LICENSE $pkgdir/usr/share/licenses/$pkgname/LICENSE
+}

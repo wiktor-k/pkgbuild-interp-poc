@@ -1,0 +1,18 @@
+pkgbase = hut
+	pkgdesc = A CLI tool for Sourcehut
+	pkgver = 0.9.0
+	pkgrel = 1
+	url = https://sr.ht/~xenrox/hut
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = git
+	makedepends = go
+	makedepends = scdoc
+	depends = glibc
+	options = !lto
+	options = !debug
+	source = hut::git+https://git.sr.ht/~xenrox/hut#tag=v0.9.0
+	sha512sums = 5670fda108ff6617c190985afdbc9c02b18656d0562d0e8a0614d1371d0ee2fc7ddd9e0cee7c0849578ae095f0d64e94035056b2ed7676e98da069152c98c658
+	b2sums = e77c5fc610a2735befe03f1b46e88f9afa23dabbfa78a0401609efd1f968451ff7610fb769ed3c6f465ef3da31429e7e24e8adfe1093de924532e8d7615bda97
+
+pkgname = hut

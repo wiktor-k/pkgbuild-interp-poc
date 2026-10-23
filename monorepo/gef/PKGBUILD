@@ -1,0 +1,42 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=gef
+pkgver=2026.01
+pkgrel=1
+pkgdesc='Multi-Architecture GDB Enhanced Features for Exploiters & Reverse-Engineers'
+url='https://github.com/hugsy/gef'
+arch=(any)
+license=(MIT)
+depends=(
+  gdb
+  python
+)
+optdepends=(
+  'python-capstone: extended disassemble support'
+  'python-keystone: assembler support'
+  'python-unicorn: emulation support'
+  'ropgadget: ROP gadget support'
+)
+source=(
+  https://github.com/hugsy/gef/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz.tar.gz
+)
+sha512sums=('20e1bd398b1bc0345a7a637fe058a0aaee9f4c2b5a65ce67f3774d9fcf4a5c865f43fbe1ff9cb2d5e04091d025dded43e08f88b5333211084616955a3fc5eac6')
+b2sums=('5dffee69689aaa988dc35e56809f1a7775e872f12c20d047de9ee4f5b5bf1146c567549080e65cf98ae7310a1735263fdf525fd930099f694dc57f001c3660d0')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  python -m compileall .
+  python -O -m compileall .
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 644 *.py -t "${pkgdir}/usr/share/${pkgname}"
+  install -Dm 644 __pycache__/* -t "${pkgdir}/usr/share/${pkgname}/__pycache__"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -d "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -r docs/* "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,92 @@
+# Maintainer: Campbell Jones <serebit at archlinux dot org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=budgie-desktop
+pkgver=10.10.2
+pkgrel=3
+pkgdesc='A familiar, modern desktop environment'
+arch=(x86_64)
+url='https://github.com/BuddiesOfBudgie/budgie-desktop'
+license=('GPL-2.0-or-later AND LGPL-2.1-or-later')
+groups=(budgie)
+depends=(
+	accountsservice
+	alsa-lib
+	bash
+	budgie-backgrounds
+	budgie-control-center
+	budgie-desktop-services
+	budgie-session
+	cairo
+	dconf
+	gammastep
+	gdk-pixbuf2
+	glib2
+	glibc
+	gnome-desktop
+	gnome-themes-extra
+	grim
+	gtk3
+	gtklock
+	gtk-layer-shell
+	hicolor-icon-theme
+	labwc
+	libcanberra
+	libgee
+	libnotify
+	libpeas-2
+	libpulse
+	libxfce4windowing
+	materia-gtk-theme
+	mesa-utils
+	mutter
+	pango
+	papirus-icon-theme
+	polkit
+	python
+	python-gobject
+	python-psutil
+	python-systemd
+	slurp
+	swaybg
+	swayidle
+	upower
+	util-linux-libs
+	wdisplays
+	wlopm
+	xdg-desktop-portal-gtk
+	xdg-desktop-portal-wlr
+)
+makedepends=(
+	git
+	glib2-devel
+	gobject-introspection
+	intltool
+	meson
+	sassc
+	vala
+)
+optdepends=(
+	'budgie-desktop-view: Desktop icons'
+	'ibus: Input method support'
+	'network-manager-applet: Network management in the panel'
+	'power-profiles-daemon: Manage power and performance from the panel'
+	'switcheroo-control: Open apps with the secondary GPU'
+)
+source=(
+	"git+https://github.com/BuddiesOfBudgie/budgie-desktop.git#tag=v$pkgver"
+	30_org.archlinux.budgie-desktop.gschema.override
+)
+b2sums=('ab8fec0f4fc688d3267e14452051679dde42951e83b52bdb3336dae4b86f8b918175f34e8805f21377f5ab34687cb19887babbde0a614195a09aba2062230e5a'
+        '3ff3664b2dc075a068e008a63d4558fe05d1d8a2b2e647d2b491169455b05d18e4970d46a9ffc83a500b4cb00d2048dbf0aea8ffdf8ea2f9262e7a554d25073d')
+validpgpkeys=(0E0D97562A4EC8BD8E329DCDAA7A2325E04B609B) # Joshua Strobl <me at joshuastrobl dot com>
+
+build() {
+	arch-meson $pkgname build
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "$pkgdir"
+	install -Dm 644 -t "$pkgdir/usr/share/glib-2.0/schemas/" 30_org.archlinux.budgie-desktop.gschema.override
+}

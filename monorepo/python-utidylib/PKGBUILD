@@ -1,0 +1,59 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-utidylib
+pkgver=1.1.0
+pkgrel=1
+pkgdesc='Python wrapper for the HTML cleaning library named TidyLib'
+arch=(any)
+url='https://github.com/nijel/utidylib'
+license=(MIT)
+depends=(
+  python
+  tidy
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  python-sphinx
+  python-sphinx-furo
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('a67161a4263faaa84b1037fd33011dc30adb5585dc623c42c81262798f52fb35bd944ad841c7f184d0884fb4f758e6f259aede8bffec9f34e1ddb486b977def5')
+b2sums=('1acb0bd0bd3fc187acb88e0bc4a5e6e686abf85ff63ede0e27156aef4519eb315dae851a0d2f747d682966234df759ec79c8bbca357c0571301813f0820cd124')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+
+  make -C docs man html
+
+  # remove unreproducible files from html documentation
+  rm -vf docs/_build/html/.buildinfo
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" docs/_build/man/utidylib.1
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst
+  cp -vr docs/_build/html "$pkgdir/usr/share/doc/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

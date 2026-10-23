@@ -1,0 +1,37 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+# Contributor: sgar < swhaat at github >
+
+pkgname=python-chacha20poly1305-reuseable
+_name=${pkgname#python-}
+pkgver=0.13.2
+pkgrel=4
+pkgdesc='A reusable version of ChaCha20Poly1305 for use with cryptography and asyncio'
+arch=(any)
+url='https://github.com/bdraco/chacha20poly1305-reuseable'
+license=(Apache-2.0)
+depends=(python python-cryptography)
+makedepends=(git python-build python-installer python-wheel python-poetry-core)
+source=("git+$url.git#tag=v$pkgver"
+        remove-setuptools-dependency.patch)
+b2sums=('78a2f6006ded87ab065183788f717af690164ff05caee46ba552707a5dd56caa4a38b5c2a535c059e9e02826f9844cad80a63b12e3551215a1a83dbd33a17165'
+        'f64dd4881b4ce99fa6e6883adf692a061ce3ebb4064c3e20672bfb0dd9e1d0ed8294c12a8626c336cd2844b8a1bc915fdedbef5dd2cf1de413eb994556995f36')
+
+prepare() {
+  cd $_name
+
+  # remove setuptools dependency
+  patch -p1 < ../remove-setuptools-dependency.patch
+}
+
+build() {
+  cd $_name
+  python -m build --wheel --no-isolation
+}
+
+package() {
+	cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/python-chacha20poly1305-reuseable/
+}
+
+# vim:set ts=2 sw=2 et:

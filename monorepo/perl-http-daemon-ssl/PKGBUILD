@@ -1,0 +1,33 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Contributor: Andreas Baumann <mail@andreasbaumann.cc>
+
+pkgname=perl-http-daemon-ssl
+pkgver=1.04
+pkgrel=3
+pkgdesc="Simple http server class with SSL support"
+arch=('any')
+url='https://metacpan.org/pod/HTTP::Daemon::SSL'
+license=('PerlArtistic' 'GPL')
+depends=('perl' 'perl-io-socket-ssl' 'perl-io-socket-inet6')
+checkdepends=('perl-http-daemon')
+options=('!emptydirs')
+source=(https://cpan.metacpan.org/authors/id/A/AU/AUFFLICK/HTTP-Daemon-SSL-${pkgver}.tar.gz)
+sha256sums=('7eae05422d934c8492dfd3505b774fd6590c99808ce8beb6c57efd261e5dc22e')
+
+build() {
+  cd HTTP-Daemon-SSL-${pkgver}
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+# currently breaks, must investigate
+# https://github.com/aufflick/p5-http-daemon-ssl/issues/2
+# check() {
+  # cd HTTP-Daemon-SSL-${pkgver}
+  # make test
+# }
+
+package() {
+  cd HTTP-Daemon-SSL-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}

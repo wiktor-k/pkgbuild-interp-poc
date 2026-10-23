@@ -1,0 +1,32 @@
+# Maintainer: Eric Bélanger <eric@archlinux.org>
+
+pkgname=vorbis-tools
+pkgver=1.4.3
+pkgrel=1
+pkgdesc='Extra tools for Ogg-Vorbis'
+arch=('x86_64')
+url='https://www.xiph.org/vorbis/'
+license=('GPL2')
+depends=('curl' 'libcurl.so'
+         'flac' 'libFLAC.so'
+         'libao' 'libao.so'
+         'libvorbis' 'libvorbis.so' 'libvorbisenc.so' 'libvorbisfile.so'
+         'opusfile')
+source=("https://downloads.xiph.org/releases/vorbis/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('a1fe3ddc6777bdcebf6b797e7edfe0437954b24756ffcc8c6b816b63e0460dde')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --without-speex \
+    --enable-vcut
+  make
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+}

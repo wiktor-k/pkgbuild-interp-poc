@@ -1,0 +1,47 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+
+pkgname=intel-metrics-discovery
+pkgver=1.14.186
+pkgrel=1
+pkgdesc="User mode library providing access to Intel GPU performance data (MDAPI)"
+arch=('x86_64')
+url="https://github.com/intel/metrics-discovery"
+license=('MIT')
+depends=(
+	glibc
+	libgcc
+	libstdc++
+	libdrm
+)
+makedepends=(
+	cmake
+	ninja
+)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('4d1875c2061e92fd2136022edc774a838f71b4a6ce507734b826507ca6441c60')
+
+prepare() {
+	cd metrics-discovery-${pkgver}
+	# Remove constraint on CMAKE_BUILD_TYPE
+	sed -i '/release|release-internal|debug/d' md_cmake_adapter.cmake
+	# Fix installation of header files with default target as we don't use CPACK
+	sed -i 's/COMPONENT metrics-discovery-devel/COMPONENT metrics-discovery/' CMakeLists.txt
+}
+
+build() {
+	local cmake_args=(
+		-Wno-dev
+		-G Ninja
+		-B build
+		-S metrics-discovery-${pkgver}
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D CMAKE_BUILD_TYPE=None
+	)
+	cmake "${cmake_args[@]}"
+    cmake --build build
+}
+
+package() {
+    DESTDIR="${pkgdir}" cmake --install build
+    install -Dm644 metrics-discovery-${pkgver}/LICENSE.md -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

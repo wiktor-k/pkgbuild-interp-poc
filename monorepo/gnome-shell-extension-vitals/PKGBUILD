@@ -1,0 +1,33 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnome-shell-extension-vitals
+_uuid=Vitals@CoreCoding.com
+pkgver=86.0.1
+pkgrel=1
+pkgdesc="GNOME Shell extension to display computer's temperature, voltage, fan speed, memory usage, processor load, system resources, network speed and storage stats"
+arch=(any)
+url='https://github.com/corecoding/Vitals'
+license=(GPL-2.0-or-later)
+depends=(gnome-shell)
+makedepends=(git)
+optdepends=('libgtop: Show storage stats')
+source=("git+https://github.com/corecoding/Vitals.git#tag=v$pkgver")
+b2sums=(fef86f7600d86e684e252314473a357771d7b0cabca120094f2e545a9bfbfbd75045b1cf51b7895e3d28854c44b4aa4c3a1db888e746181db8c104c864a4d0a4)
+
+build() {
+  cd Vitals
+  for i in locale/*/; do
+    msgfmt "$i/LC_MESSAGES/vitals.po" -o "$i/LC_MESSAGES/vitals.mo"
+  done
+}
+
+package() {
+  cd Vitals
+  install -dm755 "$pkgdir/usr/share/gnome-shell/extensions/$_uuid"
+  cp -a helpers icons metadata.json ./*.css ./*.js ./*.ui LICENSE "$pkgdir/usr/share/gnome-shell/extensions/$_uuid/"
+  install -Dm644 -t "$pkgdir/usr/share/glib-2.0/schemas/" schemas/org.gnome.shell.extensions.vitals.gschema.xml
+
+  for i in locale/*/; do
+    install -Dm644 -t "$pkgdir/usr/share/$i/LC_MESSAGES/" "$i/LC_MESSAGES/vitals.mo"
+  done
+}

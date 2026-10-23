@@ -1,0 +1,80 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+
+pkgname=fastflowlm
+pkgver=1.0.9
+pkgrel=1
+pkgdesc='Run LLMs on AMD Ryzen AI NPUs'
+arch=('x86_64')
+url='https://www.fastflowlm.com/'
+# https://github.com/FastFlowLM/FastFlowLM/blob/main/LICENSE_RUNTIME.txt
+# https://github.com/FastFlowLM/FastFlowLM/blob/main/LICENSE_BINARY.txt
+license=('MIT AND LicenseRef-FastFlowLMProprietaryBinaryLicenseAgreement-2.0')
+depends=(
+  # 'msgpack-cxx'
+  'boost-libs'
+  'curl'
+  'ffmpeg'
+  'fftw'
+  'glibc'
+  'libgcc'
+  'libgomp'
+  'libstdc++'
+  'readline'
+  'xrt'
+  'xrt-plugin-amdxdna'
+)
+makedepends=(
+  'git'
+  'cmake'
+  'ninja'
+  'rust'
+  'boost'
+)
+
+options=(!lto)
+source=(
+  "${pkgname}::git+https://github.com/FastFlowLM/FastFlowLM.git#tag=v${pkgver}"
+  "${pkgname}-tokenizers-cpp::git+https://github.com/mlc-ai/tokenizers-cpp"
+)
+sha256sums=('0dc95879b213661b1fcfe00131c279ee288b07b91c694000b36f1f6da9d94286'
+            'SKIP')
+
+prepare() {
+  cd "${srcdir}/${pkgname}"
+  git submodule init
+
+  git config submodule."third_party/tokenizers-cpp".url "${srcdir}/${pkgname}"-tokenizers-cpp
+
+  git -c protocol.file.allow=always submodule update --init --recursive
+
+  # rm -rf "third_party/tokenizers-cpp/msgpack"
+  # sed -i "s/add_subdirectory(msgpack)//" third_party/tokenizers-cpp/CMakeLists.txt
+}
+
+build() {
+  local cmake_args=(
+    -Wno-dev
+    -S $pkgname/src
+    -B build
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_XCLBIN_PREFIX=/usr/share/flm
+    -D FLM_VERSION=${pkgver}
+    # this is used for a driver version check that only applies to windows
+    -D NPU_VERSION=dummy
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$pkgname/LICENSE_RUNTIME.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE_RUNTIME.txt"
+  install -Dm644 "$pkgname/LICENSE_BINARY.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE_BINARY.txt"
+
+  # Remove vendored msgpack-cxx
+  rm -rvf $pkgdir/usr/include/ $pkgdir/usr/lib/cmake/
+}

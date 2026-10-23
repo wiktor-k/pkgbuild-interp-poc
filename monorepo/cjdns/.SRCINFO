@@ -1,0 +1,25 @@
+pkgbase = cjdns
+	pkgdesc = Routing engine designed for security, scalability, speed and ease of use
+	pkgver = 22.3
+	pkgrel = 2
+	url = https://github.com/cjdelisle/cjdns
+	install = cjdns.install
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = audit
+	makedepends = libseccomp
+	makedepends = linux-headers
+	makedepends = nodejs
+	makedepends = python
+	makedepends = rust
+	makedepends = util-linux
+	makedepends = which
+	depends = glibc
+	depends = sh
+	depends = libgcc
+	optdepends = nodejs: optional utilities support
+	source = cjdns-22.3.tar.gz::https://github.com/cjdelisle/cjdns/archive/cjdns-v22.3.tar.gz
+	sha512sums = 16795c7673d8661c20181e370b09034125dfc76de670323688c69f15c6016c6619520635593b0733e60a45ec27b824e661c5675fa4a4a2a8a899e9356af88184
+	b2sums = a83db64f1f521a83920bc93fa976d21352202a8951fd2382a159588f66b126b41a362e0685eeedb6d80105a82a7c8c00b5fd6dcd38be06462e4a74501e5ca290
+
+pkgname = cjdns

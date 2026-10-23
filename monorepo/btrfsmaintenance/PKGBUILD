@@ -1,0 +1,35 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: willemw <willemw12@gmail.com>
+# Contributor: Caleb McKay <caleb@candj.us>
+# Contributor: Romain Gautier <romain.gautier@nimamoh.net>,Jameson Pugh <imntreal@gmail.com>
+
+pkgname=btrfsmaintenance
+pkgver=0.5.2
+pkgrel=3
+pkgdesc="Btrfs maintenance scripts"
+arch=('any')
+url="https://github.com/kdave/${pkgname}"
+license=('GPL-2.0-or-later')
+depends=('btrfs-progs')
+backup=("etc/default/${pkgname}")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('f41f5c8a697420c282c603d96f70b25a6f4d3bf330fa0249625bce256e0cce2e')
+
+prepare() {
+	sed -i 's|/etc/sysconfig/|/etc/default/|' ${pkgname}-${pkgver}/${pkgname}-refresh.{path,service}
+}
+
+package() {
+	cd "${pkgname}-${pkgver}/"
+
+	install -Dm644 "sysconfig.${pkgname}" "${pkgdir}/etc/default/${pkgname}"
+
+	install -Dm644 btrfs-{balance,defrag,scrub,trim}.{service,timer} -t "${pkgdir}/usr/lib/systemd/system/"
+	install -Dm644 ${pkgname}-refresh.{path,service} -t "${pkgdir}/usr/lib/systemd/system/"
+
+	install -Dm755 btrfs-{balance,defrag{,-plugin},scrub,trim}.sh -t "${pkgdir}/usr/share/${pkgname}/"
+	install -Dm755 ${pkgname}-refresh-cron.sh -t "${pkgdir}/usr/share/${pkgname}/"
+	install -Dm644 ${pkgname}-functions -t "${pkgdir}/usr/share/${pkgname}/"
+
+	install -Dm644 README.{md,man} CHANGES.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
+}

@@ -1,0 +1,57 @@
+# Maintainer:
+
+pkgname=python-google-re2
+pkgver=1.1.20251105
+_pkgver=$(date --date=${pkgver#*.*.} +%Y-%m-%d)
+pkgrel=2
+pkgdesc='Python bindings for re2'
+arch=(x86_64)
+url='https://github.com/google/re2'
+license=(BSD-3-Clause)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  python
+  re2
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  pybind11
+)
+checkdepends=(python-absl)
+source=("$pkgname::git+$url#tag=$_pkgver")
+sha512sums=('8d647c6d0e81608fa9be51436e87f40ee70759c7340931c673a1a9c17452b383998db6e856b653aa036d23967c5fcab844309ed757a538cfa16eb48f4b0c6b39')
+b2sums=('90eff43f89221f6dd27e26f0e52b59c9628c27b5244ddf1fe77ecb6b7e6f4d506a627d1724e54a8a878e32c0e7433b7aee8ec3a4cc95336abccb91c3fdfdb32f')
+
+build() {
+  cd "$pkgname/python"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname/python"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  # avoid importing local module (re2.py)
+  cp re2_test.py $(pwd)/tmp && cd $(pwd)/tmp
+  python re2_test.py
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" python/dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

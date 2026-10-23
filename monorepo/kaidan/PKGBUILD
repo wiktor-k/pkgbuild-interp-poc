@@ -1,0 +1,56 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=kaidan
+pkgver=0.16.0
+pkgrel=2
+pkgdesc='A user-friendly XMPP client for every device'
+arch=(x86_64)
+url='https://www.kaidan.im/'
+license=(GPL-3.0-or-later
+         MIT)
+depends=(glib2
+         glibc
+         gst-plugin-qml6
+         gstreamer
+         icu
+         kcoreaddons
+         kcrash
+         kdsingleapplication
+         kio
+         kirigami-addons
+         kirigami
+         kitemmodels
+         knotifications
+         kquickimageeditor
+         kwindowsystem
+         libgcc
+         libomemo-c
+         libstdc++
+         prison
+         qqc2-desktop-style
+         qt6-base
+         qt6-declarative
+         qt6-location
+         qt6-multimedia
+         qt6-positioning
+         qt6-svg
+         qtkeychain-qt6
+         qxmpp)
+makedepends=(extra-cmake-modules
+             qt6-tools)
+source=(https://download.kde.org/unstable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('b38a64c7b7524a32dffe08eeda034f76d3597a84d8f7afd25c658dab43fb074d'
+            'SKIP')
+validpgpkeys=(AE08C590A7D112C1979D068B04EFAD0F7A4D9724) # Melvin Keskin <melvo@olomono.de>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DCMAKE_BUILD_TYPE=None
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 $pkgname-$pkgver/LICENSES/* -t "$pkgdir"/usr/share/licenses/$pkgname
+}

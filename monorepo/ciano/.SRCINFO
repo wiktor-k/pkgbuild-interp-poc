@@ -1,0 +1,30 @@
+pkgbase = ciano
+	pkgdesc = Multimedia file converter focused on simplicity
+	pkgver = 0.2.4
+	pkgrel = 7
+	url = https://robertsanseries.github.io/ciano/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = ffmpeg
+	depends = glib2
+	depends = glibc
+	depends = granite
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = imagemagick
+	depends = libgee
+	depends = pango
+	source = git+https://github.com/robertsanseries/ciano.git#tag=0.2.4
+	source = ciano-fix-gif.patch
+	source = ciano-activate-window.patch
+	source = ciano-window-size.patch
+	b2sums = 504ed12c734210683f7e57e22a44c6cc3fb72afe78dc3f4dacbef9ebd44781122563e3ce0e2878cf66b4f157480539850e01b970511bfbca4c94e073f45e0a9a
+	b2sums = c84896398151769bcb56a5d0a6c388926a396b4537cbe35de3946ad011679d8bc617b6130e676f7b30350d4f05774178a30ec26fc0e14343842ff30b83caea33
+	b2sums = ade378631b01479ef918307f74fb205e388fbb8cf0e011d677f9e5d7b289cd86b455518f8730beb4ed875148eb0f4405ea95a13a3db95dd83d19ec3e6e98a400
+	b2sums = 53a413d2e1addd4679db2f82a63654cd67373ccf77d13bd778bbbc2e404ada45d8ecd76c095d6b9044d1b1e68831d0162e49ef0074b59839512b312893169455
+
+pkgname = ciano

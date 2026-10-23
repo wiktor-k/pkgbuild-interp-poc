@@ -1,0 +1,37 @@
+pkgbase = squeekboard
+	pkgdesc = An on-screen-keyboard input method for Wayland
+	pkgver = 1.43.1
+	pkgrel = 6
+	url = https://gitlab.gnome.org/World/Phosh/squeekboard
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = libbsd
+	makedepends = meson
+	makedepends = python-gobject
+	makedepends = rust
+	makedepends = wayland-protocols
+	depends = cairo
+	depends = dconf
+	depends = feedbackd
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gnome-desktop
+	depends = gtk3
+	depends = libgcc
+	depends = libxkbcommon
+	depends = pango
+	depends = wayland
+	optdepends = python-gobject: squeekboard-entry command
+	provides = phosh-osk-provider
+	conflicts = stevia
+	source = git+https://gitlab.gnome.org/World/Phosh/squeekboard.git#tag=v1.43.1
+	source = 0001-data-Add-systemd-unit-file.patch
+	source = 0002-Fix-build-with-Rust-1.98.0.patch
+	b2sums = 2af3a0d790f71b04b682152fadc8fc6ffe8798da951936d84fa40362d3ccb38213239228b778428f5e01fd26cb9bde20ff8cc27550a2bfc565cd8657d58f489e
+	b2sums = 15a7e70056ab16a19630911ecebf04789e81159072e127d29fa3eb432615c07c1c9092119adefbf2da4f6dca8d1e4f155ba5fcca0280ec910aafd7343d1bbb70
+	b2sums = 7f1e9f3b89480a8ac4f5a46b452f536d58d03d11216fc04e1ddf7b61102283eff0abff837b3e2122240738ea674f93b3528cb492bfae24c20b6a49547d28a879
+
+pkgname = squeekboard

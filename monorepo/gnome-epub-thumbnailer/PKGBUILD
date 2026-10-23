@@ -1,0 +1,44 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gnome-epub-thumbnailer
+pkgver=1.8
+pkgrel=3
+pkgdesc="Thumbnailer for EPub and MOBI books"
+url="https://gitlab.gnome.org/GNOME/gnome-epub-thumbnailer"
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  libarchive
+  libgcc
+  librsvg
+  libxml2
+)
+makedepends=(
+  git
+  meson
+)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-epub-thumbnailer.git#tag=$pkgver")
+b2sums=('4273a9d198549abc4a9dddd6a939574dc4eaf2420121e980ef667832d2a866746baf6c8a1ce1fd2a11ed882918804e30806668893ddd732f1d7b3c54418b53be')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+ 
+package() {
+  meson install -C build --destdir "$pkgdir"
+ 
+}
+
+# vim:set sw=2 sts=-1 et:

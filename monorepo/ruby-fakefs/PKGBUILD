@@ -1,0 +1,75 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=ruby-fakefs
+pkgver=3.2.1
+pkgrel=1
+pkgdesc='A fake filesystem. Use it in your tests.'
+arch=(any)
+url='https://github.com/fakefs/fakefs'
+license=(MIT)
+depends=(ruby)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  less
+  ruby-bundler
+  ruby-csv
+  ruby-irb
+  ruby-maxitest
+  ruby-mutex_m
+  ruby-pry
+  ruby-rake
+  ruby-rspec
+)
+options=(!emptydirs)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('018c198988472990d37b70813e6705b2a6b86d2ef5de61c8f2fa09b0929e2daf48e9706079f12abedbdad293293dddbae3f1ef78d615f481caa56c3c2cb603ea')
+
+prepare() {
+  cd ${pkgname#ruby-}
+  sed -r -e 's|~>|>=|' -i fakefs.gemspec
+  # Remove dependency on bump and rubocop
+  sed -r -e '/bump|rubocop/d' -i fakefs.gemspec
+  sed -r -e '/bump\/tasks/d;/rubocop\/rake_task/,+1d;/namespace :bump/,+4d' -i Rakefile
+}
+
+build() {
+  local gemdir="$(gem env gemdir)"
+  cd ${pkgname#ruby-}
+  gem build fakefs.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    fakefs-$pkgver.gem
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r "tmp_install/$gemdir/cache"
+}
+
+check() {
+  local gemdir="$(gem env gemdir)"
+  cd ${pkgname#ruby-}
+  GEM_HOME="tmp_install/$gemdir" rake test spec
+}
+
+package() {
+  cd ${pkgname#ruby-}
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

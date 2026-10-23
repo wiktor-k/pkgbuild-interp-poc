@@ -1,0 +1,57 @@
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: L. Bradley LaBoon <brad@laboon.io>
+# Contributor: Justin Dray <justin@dray.be>
+
+_gemname=hiera-eyaml
+pkgname=ruby-$_gemname
+pkgver=5.0.1
+pkgrel=3
+pkgdesc='OpenSSL Encryption backend for Hiera'
+arch=(any)
+url='https://github.com/voxpupuli/hiera-eyaml'
+license=(MIT)
+depends=(
+  ruby
+  ruby-optimist
+  ruby-highline
+)
+makedepends=(
+  ruby-rdoc
+)
+options=(!emptydirs)
+source=("${_gemname}-${pkgver}.tar.gz::https://github.com/voxpupuli/hiera-eyaml/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('f2d667ffccf4bfc167f521f5d03b3b6c83c2d41a77c2ea961a521c4c63f13887')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # we don't build from a git checkout
+  sed --in-place --regexp-extended 's|git ls-files|find . -type f -not -path "*/\.git/*" -printf "%P\n"|' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_gemname}-${pkgver}.gem"
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 ./*.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

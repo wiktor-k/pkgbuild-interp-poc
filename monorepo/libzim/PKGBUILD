@@ -1,0 +1,43 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+pkgname=libzim
+pkgver=9.8.1
+# https://github.com/openzim/zim-testing-suite/releases
+_testing_suite_commit=9dec68e2c169a1a16826746b49123ca8e9456cf1 # v0.9
+pkgrel=1
+pkgdesc="Reference implementation of the ZIM specification by the openZIM project"
+license=('GPL-2.0-or-later')
+arch=('x86_64')
+depends=('xapian-core' 'xz' 'icu' 'zstd')
+makedepends=('meson' 'gtest' 'git')
+url='https://github.com/openzim/libzim'
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz"
+	"git+https://github.com/openzim/zim-testing-suite#commit=${_testing_suite_commit}"
+	"1081.patch::https://github.com/hashworks/libzim/commit/306ff9bf14d3c7504fad94fcd132a8bf290a7951.patch")
+sha256sums=('718d82930949de8eae14809de1af92414071811ba68c91e9ad0abb1fe3287799'
+            'd50eca0a9402db7b88f013ec7c7b5a9406ff2178c21e0c0ae5453bb36821b6f4'
+            '913b87a738a878e4269ec5829e6650f81102e9d3a939b9f520d5421a836a933f')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+
+	# The minimum string length for partial matching in xapian v2 is now 2, causing the test to return no results.
+	# https://github.com/openzim/libzim/pull/1081
+	patch -Np1 < "$srcdir/1081.patch"
+
+	# https://github.com/openzim/libzim/issues/757
+	arch-meson build \
+		-Dtest_data_dir="${srcdir}/zim-testing-suite/data" \
+		-Dcpp_std=c++17
+	ninja -C build
+}
+
+check() {
+	cd "${pkgname}-${pkgver}/build"
+	SKIP_BIG_MEMORY_TEST=1 meson test --verbose
+}
+
+package() {
+	install -Dm644 "${pkgname}-${pkgver}/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+	cd "${pkgname}-${pkgver}/build"
+	DESTDIR="${pkgdir}" ninja install
+}

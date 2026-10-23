@@ -1,0 +1,20 @@
+pkgbase = mscp
+	pkgdesc = transfer files over multiple SSH (SFTP) connections
+	pkgver = 0.2.4
+	pkgrel = 1
+	url = https://github.com/upa/mscp
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cmake
+	makedepends = git
+	depends = gcc-libs
+	depends = glibc
+	depends = krb5
+	depends = openssl
+	depends = zlib
+	source = git+https://github.com/upa/mscp.git#tag=v0.2.4
+	source = git+https://git.libssh.org/projects/libssh.git
+	sha256sums = 04698202cf8f96bf4f31d9203f5a5378ddb07daaaa5cf2a77b2c7b78a5b3c6d0
+	sha256sums = SKIP
+
+pkgname = mscp

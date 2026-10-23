@@ -1,0 +1,21 @@
+pkgbase = doomretro
+	pkgdesc = The classic, refined DOOM source port
+	pkgver = 6.3
+	pkgrel = 1
+	url = http://doomretro.com
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = icoutils
+	depends = glibc
+	depends = sdl2
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = hicolor-icon-theme
+	optdepends = timidity++: for music playback
+	source = doomretro::git+https://github.com/bradharding/doomretro.git#tag=v6.3
+	sha512sums = 1577f014ed86f11477e84c95fc849286cb230b32c4e4594bbe08224a4f86779df79a8747af89e68142c441adf865415d08e13ecf10701d86ff7c962a3e90528c
+	b2sums = c7ccc26e1440bb55962c31469db4a95ea72874ea08816276e145b37f098de76dc32cc71d760bc16327f88e79d1402a84250ffd485dd5219535482f167594ffbc
+
+pkgname = doomretro

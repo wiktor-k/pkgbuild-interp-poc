@@ -1,0 +1,32 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-khoca
+pkgver=1.4
+pkgrel=4
+pkgdesc='A C++/python program for research in knot theory'
+arch=(x86_64)
+url='http://lewark.de/lukas/khoca.html'
+license=(GPL-3.0-or-later)
+depends=(glibc
+         gmp
+         libgcc
+         libstdc++
+         pari
+         python)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools)
+source=(git+https://github.com/soehms/khoca/#tag=$pkgver)
+sha256sums=('05bf116ca55ee34d1a5ab1be2445e94f42b9c4c5e6ef951102f56f3af78c9b3f')
+
+build() {
+  cd khoca
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd khoca
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

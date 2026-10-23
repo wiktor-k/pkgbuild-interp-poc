@@ -1,0 +1,124 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=soju
+pkgver=0.11.1
+pkgrel=1
+pkgdesc='A user-friendly IRC bouncer'
+arch=(x86_64)
+url='https://soju.im'
+license=(AGPL-3.0-or-later)
+depends=(glibc)
+makedepends=(
+  git
+  go
+  scdoc
+  sqlite
+  pam
+)
+optdepends=(
+  'postgresql: PostgreSQL support'
+  'sqlite: SQLite support'
+  'sh: for soju-casemap-logs'
+  'pam: PAM support'
+)
+backup=(etc/soju/config)
+options=(!lto)
+source=(
+  "$pkgname::git+https://codeberg.org/emersion/soju#tag=v$pkgver"
+  systemd.service.patch
+  sysusers.conf
+  tmpfiles.conf
+)
+sha512sums=('71b0dd7a912d2283929e8ebb039434de58f05e553dab20f8fe686a255fbcc6176337429248e1860a4a23f45235590b58143524894f3ab299e190bfdedf9ba43b'
+            '659aa69e907b184ef20eca07b6ae9f9fb45d9d25e61c77855e5ea9143f6db5074d8b73d84f67ea71fc9497666145451a33da88edee986e538e4530811db0571a'
+            '6d6b7f9b9eded5e5029573404318ba06a37ff3b7bf843a209461eb54ab5c1a2840dced3c7c0611d17e4cae54ed3d12bb4105c1f102580286f91c4440476b7f95'
+            '378dd64a8c3fa4fd1b28c055bbeb7c46eb05ec79a925d5b138af5d373970e82bafba62ff29269f63e67c67f34fb961570d448a02fa08f7f6cf4e8d844a3c12a0')
+b2sums=('c2d3d6094035d342eccb180f093e41a509db338b6a42783093d59866a4d56a0f5db80453f6f6b805f4ed747df0a246c391a0542aeb83b72e805e7c82caf598dd'
+        '96e3690c8fa5aeb243187d48ed4ceecc6b5362618d4d521fbad404f9c892bb7bf9ca94c9baa9d5fa878924d59531a3312ae3f3b20a0ef092676c14cd46df9154'
+        '30ff9ff5445f560ff5c32d772cb1eb88bb50bf3a7dfd2aa5fdef9c5338e36c41a06ad15223a5ca37b4e68edda130431c547a05f5a5b1cf5ac71bde47dbb06e39'
+        '9d164e694980e40955b1e8cedf1875214299840a8fce09b20069d594e74265c4335c0693e4bdd7c073c062a1de66cca859657f7581a27baffbfab741f45d0acc')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+
+  # patch systemd service
+  patch -p1 -i "$srcdir/systemd.service.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X codeberg.org/emersion/soju/config.DefaultPath=/etc/soju/config \
+    -X codeberg.org/emersion/soju/config.DefaultUnixAdminPath=/run/soju/admin" \
+    -tags 'libsqlite3,pam' \
+    -o build \
+    ./cmd/... \
+    ./contrib/...
+
+  # rename binaries to prevent file conflicts
+  mv build/{migrate-db,/soju-migrate-db}
+  mv build/{migrate-logs,/soju-migrate-logs}
+  mv build/{znc-import,soju-znc-import}
+
+  # man pages
+  scdoc < doc/soju.1.scd > build/soju.1
+  scdoc < doc/sojuctl.1.scd > build/sojuctl.1
+
+  # ensure reproducibility of man pages
+  # i'm not 100% sure where the man sub-command gets the date from, i assume
+  # it uses $TODAYS_DATE, so this should make the man page reproducible
+  local _commit_date=$(git show --no-patch --format=%cd --date=format:%Y-%m-%d)
+  sed \
+    -e "s/\"[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\"/\"$_commit_date\"/" \
+    -i build/*.1
+}
+
+check() {
+  cd "$pkgname"
+
+  go test -v ./...
+}
+
+package() {
+  cd "$pkgname"
+
+  # systemd integration
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" contrib/soju.service
+  install -vDm644 "$srcdir/sysusers.conf" "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 "$srcdir/tmpfiles.conf" "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+
+  # binaries
+  install -vDm755 -t "$pkgdir/usr/bin" build/soju{,db,ctl,-migrate-db,-migrate-logs,-znc-import}
+  install -vDm755 contrib/casemap-logs.sh "$pkgdir/usr/bin/soju-casemap-logs"
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" build/*.1
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md contrib/clients.md
+  cp -vr doc "$pkgdir/usr/share/doc/$pkgname"
+  rm -f "$pkgdir/usr/share/doc/$pkgname/doc/soju.1.scd"
+
+  # configuration
+  install -vDm644 config.in "$pkgdir/etc/soju/config"
+}

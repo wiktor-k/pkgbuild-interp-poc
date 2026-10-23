@@ -1,0 +1,22 @@
+pkgbase = kodi-addon-visualization-waveform
+	pkgdesc = Waveform visualizer for Kodi
+	pkgver = 21.0.2
+	pkgrel = 6
+	epoch = 1
+	url = https://github.com/xbmc/visualization.waveform
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-visualization
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = glu
+	makedepends = glm
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-visualization-waveform-21.0.2.tar.gz::https://github.com/xbmc/visualization.waveform/archive/21.0.2-Omega.tar.gz
+	sha512sums = d79fdbebedbe14df24c383b3eed84371cc744ecbe8c56311d5df654c0d3d50b81938eea4a898102fb91173b0f12106d38d174a7d6ca20270b233a4fe39e46972
+
+pkgname = kodi-addon-visualization-waveform
+	depends = kodi
+	depends = glu
+	depends = glm

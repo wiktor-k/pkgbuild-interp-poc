@@ -1,0 +1,28 @@
+pkgbase = js80p
+	pkgdesc = A MIDI driven, performance oriented, versatile synthesizer
+	pkgver = 4.1.1
+	pkgrel = 1
+	url = https://attilammagyar.github.io/js80p/
+	install = js80p.install
+	arch = x86_64
+	groups = pro-audio
+	groups = vst3-plugins
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = alsa-lib
+	makedepends = libx11
+	makedepends = zenity
+	makedepends = kdialog
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libxcb
+	depends = cairo
+	source = js80p::git+https://github.com/attilammagyar/js80p#tag=v4.1.1
+	source = do-not-run-cppcheck.patch
+	sha512sums = 038225f9471bf5609bd3a7d09b0a79d42e4b59ef878411450087ccba36f7d9877b572f2a082e045369692424e38505ece5e0059fc50731fe8a6603b518780ef0
+	sha512sums = e3f6e69f8fd81bd28883a6e74f19e72a887f1c53eb695cd3e6eecd8d15ce457417dbdc635bf8273b4f51490284033112723db288689d80cf39f59b54cfc439f2
+	b2sums = f728903cf2d0852283da4070f6aee4fd2bc3b552d099aec7456da1fa63f9ae3ca8865038ff4589c2775f0629b4096a426f8b72f1bbbeea07a1eb5c0996a738e7
+	b2sums = 9042a7bdde673d0a6884b047f9d37362cb4b4a1b00e13129c73ceb233a4235a677c990f872f58d9c3bf79b74786f6ccc96426a742baaf9b9cea27d475a9b931f
+
+pkgname = js80p

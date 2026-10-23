@@ -1,0 +1,35 @@
+pkgbase = gnome-mplayer
+	pkgdesc = GTK interface around MPlayer
+	pkgver = 1.0.9
+	pkgrel = 11
+	url = https://github.com/kdekorte/gnome-mplayer
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	depends = alsa-lib
+	depends = cairo
+	depends = dbus
+	depends = dbus-glib
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gmtk
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libnotify
+	depends = libx11
+	depends = libxss
+	source = git+https://github.com/kdekorte/gnome-mplayer.git#tag=v1.0.9
+	source = 0001-Fix-incompatible-pointer-type.patch
+	source = 0001-Disable-Wayland-backend-as-it-s-not-supported.patch
+	source = 0001-Make-Keyboard-Shortcuts-page-scrollable.patch
+	source = gnome-mplayer.appdata.xml
+	b2sums = eb4a2008ba86f9ba99aa5b96e590212c7d3d15594f618276da08e2c1434962a0d62ff5215ea7e88214565ca22b96fa3bbd33791be51044b000970871a4fccf8f
+	b2sums = ea4f41e24ce87354a72102f6c78157193566156f132bb1306b9700c035a71dedf833d91c05f8543ac94efff591c832b063003c7c46f4f9941501775b0df41bb2
+	b2sums = 12307ebc0785f1ac46b3d4b07d4d85ab0d2a6451ffcdc2edf595173c2f21b72c942f665ab3137d0d593551e8932bcc2c4a3d6d4a295034d3b4a3e2a5bac9e6c9
+	b2sums = 014e03bfb8a5aa8af9fcadc4673a7f69b6df8eff93e655e4c7bdd4e5a6b6f2c37c02341d637524870c74bb67569c998d040fd711c111259e6ea0107d7f085528
+	b2sums = 051182948b3a8917ebe8c768246ad5ad8a7797111c9a6f2155f8bd53e41b9b0ad69f9882cbfd456b36fe6f543e298131813731018e6abccbb2e02f3aaefa28ee
+
+pkgname = gnome-mplayer

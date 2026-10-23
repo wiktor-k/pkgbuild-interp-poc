@@ -1,0 +1,48 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Robin Candau <antiz@archlinux.org>
+# Contributor: Matrix <thysupremematrix a_t tuta d_o_t io>
+# Contributor: Yamada Hayao <hayao@fascode.net>
+
+pkgname=gnome-shell-extension-desktop-icons-ng
+_pkgname=desktop-icons-ng
+pkgver=51.0.9
+pkgrel=1
+pkgdesc='Desktop icons extension for GNOME Shell'
+arch=(any)
+url='https://www.rastersoft.com/programas/ding.html'
+license=(GPL-3.0-only)
+depends=(
+  dconf
+  gdk-pixbuf2
+  gjs
+  glib2
+  gnome-autoar
+  gnome-desktop-4
+  gnome-shell
+  graphene
+  gtk4
+  libadwaita
+  nautilus
+  pango
+)
+makedepends=(
+  git
+  meson
+)
+source=("git+https://gitlab.com/rastersoft/$_pkgname.git#tag=$pkgver")
+b2sums=(3a30fa1cd6d41568526ec2e8bed6fc1d42a1eeecea082d7bfc858aa78e5f061dadcf31a781377d579c362f450925fc2e0c8023898c9c7a667664eac1853c1405)
+
+prepare() {
+  cd $_pkgname
+  rm app/icons/hicolor/icon-theme.cache
+}
+
+build() {
+  gtk-update-icon-cache $_pkgname/app/icons/hicolor/
+  arch-meson $_pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}

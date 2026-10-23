@@ -1,0 +1,33 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=termdown
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='Countdown timer and stopwatch in your terminal'
+arch=(any)
+url=https://github.com/trehn/termdown
+license=(GPL-3.0-only)
+depends=(
+  python-art
+  python-dateutil
+  python-pillow
+)
+makedepends=(
+  git
+  python-build
+  python-hatchling
+  python-installer
+)
+optdepends=('espeak-ng: for spoken countdown')
+source=("git+$url.git#tag=$pkgver")
+b2sums=('8871ed07e1dc3704c4103b9dd4336563e6cfaca27341f8ad5aef314afd7be4a1c6801c18aeb391102fc2477647825bbcf4b81c58e4ab48e43a82159e0993f3ab')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

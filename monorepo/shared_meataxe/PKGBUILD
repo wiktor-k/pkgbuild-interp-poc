@@ -1,0 +1,44 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=shared_meataxe
+pkgver=1.0.3
+pkgrel=1
+pkgdesc='A set of programs for working with matrix representations over finite fields'
+arch=(x86_64)
+url='https://users.fmi.uni-jena.de/~king/SharedMeatAxe/'
+license=(
+  GPL-2.0-or-later
+)
+depends=(
+  glibc
+)
+makedepends=(
+  git
+)
+source=(
+  git+https://github.com/simon-king-jena/SharedMeatAxe#tag=v$pkgver
+)
+sha256sums=('c3c04041b55019fcfab86e405cae971f37dc169f91cf1037373f85a568cfc3fb')
+
+prepare() {
+  cd SharedMeatAxe
+  autoreconf -fiv
+}
+
+build() {
+  cd SharedMeatAxe
+  ./configure \
+    --prefix=/usr \
+    --enable-tables
+  make
+}
+
+check() {
+  cd SharedMeatAxe
+  make check
+}
+
+package() {
+  cd SharedMeatAxe
+  make DESTDIR="$pkgdir" install
+}

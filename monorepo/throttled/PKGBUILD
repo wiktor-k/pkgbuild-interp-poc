@@ -1,0 +1,38 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Kenneth Endfinger <kaendfinger@gmail.com>
+
+pkgname=throttled
+pkgver=0.12
+pkgrel=1
+pkgdesc="Workaround for Intel throttling issues in Linux."
+arch=('any')
+url="https://github.com/erpalma/throttled"
+license=('MIT')
+depends=('python-dbus-next')
+makedepends=('git')
+backup=('etc/throttled.conf')
+install=$pkgname.install
+source=("git+https://github.com/erpalma/$pkgname.git#tag=v$pkgver")
+sha512sums=('e8b5c02dedb02bf3811d090bead992d0e93b4985e0cb1fe8fdc9be43e11f8e03584bc66d72e9a3ba9359ed9c85ef8143406265a1dc0c0700865747284b084d48')
+
+prepare() {
+  cd $pkgname
+  sed -i "s|ExecStart=.*|ExecStart=/usr/lib/$pkgname/throttled.py|" systemd/throttled.service
+}
+
+build() {
+  cd $pkgname
+  python -m compileall *.py
+}
+
+package() {
+  cd $pkgname
+  install -Dm644 etc/throttled.conf "$pkgdir"/etc/throttled.conf
+  install -Dm644 systemd/throttled.service "$pkgdir"/usr/lib/systemd/system/throttled.service
+  install -Dm755 throttled.py "$pkgdir"/usr/lib/$pkgname/throttled.py
+  install -Dm755 mmio.py "$pkgdir"/usr/lib/$pkgname/mmio.py
+  cp -a __pycache__ "$pkgdir"/usr/lib/$pkgname/
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

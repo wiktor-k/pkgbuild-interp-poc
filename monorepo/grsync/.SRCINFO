@@ -1,0 +1,23 @@
+pkgbase = grsync
+	pkgdesc = GTK GUI for rsync to synchronize folders, files and make backups
+	pkgver = 1.3.1
+	pkgrel = 3
+	url = https://www.opbyte.it/grsync/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = intltool
+	depends = bash
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	depends = rsync
+	source = http://www.opbyte.it/release/grsync-1.3.1.tar.gz
+	source = grsync.appdata.xml
+	source = grsync-use-themed-icon.patch
+	b2sums = 26bfdc0787ed3340df866f21cad79bba6ad6bb91abc834338be1dfcbe8ae464b755b4d5832586dafb416e8e88ef97a06074b5018d14ba415f625e24c66c42bef
+	b2sums = 8ce145e4907b76ecc276767dbb065889f541415a2465350771826a34fd0a20a886650310bedc0770f6a574b09e3566a70a8bc62e2c62f203e72dfebcff6b13a0
+	b2sums = 56aeffaba08b3ea7d43c6cd85a008ebd47a49e2b5aa5eeefc327a1a74db79da8b75bdd1e562a21cb444b95c53d88bcd874c30210ddc11109ac47995809f33349
+
+pkgname = grsync

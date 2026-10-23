@@ -1,0 +1,34 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=typos-lsp
+pkgver=0.1.56
+pkgrel=1
+pkgdesc='Language server for the typos source code spell checker'
+arch=(x86_64)
+url=https://github.com/tekumara/typos-lsp
+license=(MIT)
+depends=(
+  libgcc
+)
+makedepends=(
+  git
+  rust
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('0a7a468cc54d3e557c57441e55523e3dfb0341e095b3b00b3fdcba0eadf614545b06a3dd35aefb9cb4d6735846e43cc1656fc5000ec033c3c894ef01fc66cbb7')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --locked --offline
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

@@ -1,0 +1,67 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Martchus <martchus@gmx.net>
+
+pkgbase=c++utilities
+pkgname=("${pkgbase}" "${pkgbase}-doc")
+_reponame=cpp-utilities
+pkgver=5.37.0
+pkgrel=1
+pkgdesc='Common C++ classes and routines such as argument parser, IO and conversion utilities'
+arch=('x86_64')
+url="https://github.com/Martchus/${_reponame}"
+license=('GPL-2.0-or-later')
+depends=(
+    'glibc'
+    'libgcc'
+    'libstdc++'
+)
+makedepends=(
+    'cmake'
+    'doxygen'
+    'graphviz'
+    'ninja'
+)
+checkdepends=(
+    'cppunit'
+)
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/Martchus/${_reponame}/archive/v${pkgver}.tar.gz")
+sha256sums=('9e212e8c873b2de410bb9e23a7fcf65ddbae3ba5484cd52992ed66eefa30e608')
+
+build() {
+    local cmake_options=(
+        -B build
+        -S ${_reponame}-${pkgver}
+        -G Ninja
+        -D CMAKE_BUILD_TYPE=None
+        -D CMAKE_INSTALL_PREFIX=/usr
+        -D BUILD_SHARED_LIBS=ON
+    )
+    cmake "${cmake_options[@]}"
+    cmake --build build --target all apidoc
+}
+
+check() {
+    cmake --build build --target tests
+
+    local ctest_flags=(
+        --test-dir build
+        --output-on-failure
+        --parallel $(nproc)
+    )
+    ctest "${ctest_flags[@]}"
+}
+
+package_c++utilities() {
+    optdepends=("${pkgbase}-doc: for API documentation")
+    provides=('libc++utilities.so')
+
+    DESTDIR="${pkgdir}" cmake --install build
+    rm -rf "${pkgdir}/usr/share/${pkgbase}/api-doc"
+}
+
+package_c++utilities-doc() {
+    pkgdesc+=" - API documentation"
+    depends=()
+
+    DESTDIR="${pkgdir}" cmake --build build --target install-api-doc
+}

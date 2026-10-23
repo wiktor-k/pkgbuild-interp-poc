@@ -1,0 +1,21 @@
+pkgbase = percona-toolkit
+	pkgdesc = Collection of advanced command-line tools to perform a variety of MySQL and system tasks.
+	pkgver = 3.7.1_4
+	pkgrel = 1
+	url = https://www.percona.com/software/database-tools/percona-toolkit
+	arch = x86_64
+	license = GPL
+	makedepends = perl-dbd-mysql
+	makedepends = perl-dbi
+	makedepends = go
+	makedepends = git
+	depends = perl-term-readkey
+	optdepends = perl-dbd-mysql: MySQL connections
+	optdepends = perl-dbi: MySQL connections
+	options = !emptydirs
+	options = purge
+	options = !lto
+	source = https://github.com/percona/percona-toolkit/archive/v3.7.1-4/percona-toolkit-3.7.1-4.tar.gz
+	sha256sums = 2935e33531b7f113d71a5252fdba23ba86c1b5b5cd6665813c1f40b60a18c4c0
+
+pkgname = percona-toolkit

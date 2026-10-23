@@ -1,0 +1,31 @@
+# Maintainer: Jonathan Steel <jsteel@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Jason Chu <jason@archlinux.org>
+
+pkgname=dvgrab
+pkgver=3.5.2
+pkgrel=1
+pkgdesc="Saves audio and video data from an IEEE (FireWire) digital source"
+arch=('x86_64')
+url="http://www.kinodv.org/"
+license=('GPL-2.0-only')
+depends=('glibc' 'libgcc' 'libstdc++' 'libdv' 'libavc1394' 'libjpeg-turbo' 'libiec61883' 'libraw1394')
+source=($pkgname-$pkgver::https://github.com/ddennedy/$pkgname/archive/refs/tags/v$pkgver.tar.gz)
+sha256sums=('c56301a9d1de4ae6f8bfb7402865eea935079240ce98dcc8dc84a4a4c6ef5824')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}

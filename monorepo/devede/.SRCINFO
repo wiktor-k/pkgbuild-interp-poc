@@ -1,0 +1,28 @@
+pkgbase = devede
+	pkgdesc = Program to create Video DVDs and CDs
+	pkgver = 4.22.1
+	pkgrel = 1
+	url = https://rastersoft.com/programas/devede.html
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-gettext
+	makedepends = python-wheel
+	depends = cdrtools
+	depends = dvdauthor
+	depends = ffmpeg
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	depends = vcdimager
+	source = git+https://gitlab.com/rastersoft/devedeng.git#tag=4.22.1
+	b2sums = f4b58558054ae4565a160c08f85926cb347cf446126fa62f7075c21ecb0097583d4109c71f55bcf014b7655f2ca311846f3b0993f0a01b8c24d626752a184232
+
+pkgname = devede

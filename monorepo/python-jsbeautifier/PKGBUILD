@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=('python-jsbeautifier' 'python-cssbeautifier')
+pkgbase=python-jsbeautifier
+pkgver=2.0.3
+pkgrel=1
+arch=('any')
+license=('MIT')
+url='https://github.com/beautify-web/js-beautify'
+depends=('python-editorconfig')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('f70920688dfcec1776f819acecca96c83927078909c75f64d58fb4e8d02e78af0c3023f6fbafa76f44c56f871b5fcc4718f01e461ea555e288d52d510b8e20d0')
+
+prepare() {
+  cd js-beautify
+  cp -a python python-css
+}
+
+build() {
+  cd js-beautify/python
+  mv setup-js.py setup.py
+  python -m build --wheel --skip-dependency-check --no-isolation
+  cd ../python-css
+  mv setup-css.py setup.py
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd js-beautify
+  python python/js-beautify-test.py
+}
+
+package_python-jsbeautifier() {
+  pkgdesc='JavaScript unobfuscator and beautifier'
+  cd js-beautify/python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -D -m644 -t "$pkgdir"/usr/share/licenses/"${pkgname[0]}" ../LICENSE
+}
+
+package_python-cssbeautifier() {
+  pkgdesc='CSS unobfuscator and beautifier'
+  depends+=('python-jsbeautifier')
+  cd js-beautify/python-css
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -D -m644 -t "$pkgdir"/usr/share/licenses/"${pkgname[1]}" ../LICENSE
+}

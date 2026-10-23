@@ -1,0 +1,20 @@
+pkgbase = sea-orm-cli
+	pkgdesc = An async & dynamic ORM for Rust
+	pkgver = 2.0.4
+	pkgrel = 1
+	url = https://www.sea-ql.org/SeaORM/
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	options = !lto
+	source = git+https://github.com/SeaQL/sea-orm.git#tag=2.0.4
+	source = Cargo.lock
+	sha256sums = b5ec04e11f184d88462f7379ea3a8670e964ac7e2a011630a39ba590821f5751
+	sha256sums = 2bdd19d14b424b6b3735f4f48e20cc4f83a35b0c37c96bd47e30c3c74e239a28
+
+pkgname = sea-orm-cli

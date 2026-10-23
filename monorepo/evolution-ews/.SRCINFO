@@ -1,0 +1,30 @@
+pkgbase = evolution-ews
+	pkgdesc = MS Exchange integration through Exchange Web Services
+	pkgver = 3.62.1
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/evolution/-/wikis/home
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = intltool
+	makedepends = ninja
+	makedepends = python
+	makedepends = systemd
+	depends = evolution
+	depends = evolution-data-server
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = json-glib
+	depends = libgcc
+	depends = libical
+	depends = libmspack
+	depends = libsoup3
+	depends = libxml2
+	depends = pango
+	source = git+https://gitlab.gnome.org/GNOME/evolution-ews.git#tag=3.62.1
+	b2sums = 8a3296d7c0e12adb5d6c147d5c5de68c8d5d52de7da17b0ef27cafe7fb16d6b0bc08fd365ca19941daed488ae266fcfaea3284fa3c42059bc1f18a9c682ba708
+
+pkgname = evolution-ews

@@ -1,0 +1,90 @@
+# Maintainer: AndyRTR <andyrtr@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+# Contributor: Lukas Jirkovsky <l.jirkovsky@gmail.com>
+
+# main repo: http://www.geeqie.org/cgi-bin/gitweb.cgi?p=geeqie.git
+# bug tracker: https://github.com/BestImageViewer/geeqie/issues
+
+pkgname=geeqie
+pkgver=3.3
+pkgrel=1
+pkgdesc='Lightweight image viewer'
+arch=('x86_64')
+url="http://www.geeqie.org/"
+license=('GPL-2.0-or-later')
+# https://github.com/BestImageViewer/geeqie#optional-libraries
+depends=('cairo'
+         'cfitsio'
+         'djvulibre'
+         'exiv2'
+         'ffmpegthumbnailer'
+         'gdk-pixbuf2'
+         'glib2'
+         'glibc'
+         'graphene'
+         'gtk4'
+         'gtksourceview5'
+         'hicolor-icon-theme'
+         'imath'
+         'lcms2'
+         'libarchive'
+         'libgcc'
+         'libheif'
+         'libjpeg-turbo'
+         'libjxl'
+         'libraw'
+         'libshumate'
+         'libspelling'
+         'libstdc++'
+         'libtiff'
+         'libwebp'
+         'lua'
+         'openexr'
+         'openjpeg2'
+         'pango'
+         'poppler-glib'
+         'sh')
+makedepends=('fbida'
+             'gawk'
+             'glib2-devel'
+             'imagemagick'
+             'libwmf'
+             'meson'
+             'perl-image-exiftool'
+             'python'
+             # for the docs
+             'doxygen' 'yelp-tools' 'graphviz'
+             'pandoc-cli'
+             #'fop' - for pdf format but 'pdfoutline' is missing
+)
+checkdepends=('xorg-server-xvfb' 'shellcheck' 'markdownlint' 'appstream')
+optdepends=('fbida: for jpeg rotation'
+            'gawk: to use the geo-decode function'
+            'perl-image-exiftool: for the jpeg extraction plugin'
+            'gphoto2: command-line tools for various (plugin) operations'
+            'imagemagick: command-line tools for various (plugin) operations')
+source=(#"http://www.geeqie.org/${pkgname}-${pkgver}.tar.xz"{,.asc}
+        https://github.com/BestImageViewer/geeqie/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.xz{,.asc})
+sha256sums=('45ea0ef3c2b93b754e33763a1074673ab380e088d8217c28be3779423f56fe48'
+            'SKIP')
+validpgpkeys=('91EC400226201276E2ADCEC7D0DA6F44C936D1DA') # "Colin Clark <colin.clark@cclark.uk>"
+
+build() {
+  arch-meson $pkgname-$pkgver build
+  meson compile -C build
+}
+
+check() {
+  dbus-run-session xvfb-run -s '-nolisten local' \
+    meson test -C build --print-errorlogs
+}
+
+package(){
+  DESTDIR="$pkgdir" meson install -C build
+  # add Changelog listed in help menu
+  install -m644 "$pkgname-$pkgver/build-aux/ChangeLog.gqview" "$pkgdir/usr/share/doc/$pkgname/ChangeLog"
+
+  # add missing html doc
+  cp -arv build/doc/html "$pkgdir/usr/share/doc/$pkgname/"
+}

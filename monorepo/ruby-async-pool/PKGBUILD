@@ -1,0 +1,82 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-async-pool
+pkgver=0.12.0
+pkgrel=1
+pkgdesc='A singleplex and multiplex resource pool for implementing robust clients'
+arch=(any)
+url='https://github.com/socketry/async-pool'
+license=(MIT)
+depends=(
+  ruby
+  ruby-async
+  ruby-metrics
+  ruby-traces
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-io-event
+  ruby-sus
+  ruby-sus-fixtures-async
+  ruby-sus-fixtures-benchmark
+)
+options=(!emptydirs)
+source=(https://github.com/socketry/async-pool/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha512sums=('87102ff43dd75619be1db092cbe2a9e685f5f7202207ad8ee34ff6d529a11df326f54e28c1dd668f1748f3dddd8440680ff1e21ba3fb03f2c0a768fc67ed7825')
+b2sums=('b3b82bf7285dc4a924294ff501a7ddd29e74d1ce8fc801a9a2fc5c31f69b0e8c2e7a653dcfe14a6f6bc9859f8aa9acc4b3f011703a527b8b24a322d7ea76e0e7')
+
+prepare() {
+  cd async-pool-$pkgver
+
+  sed -r -e 's|~>|>=|g' -e '/signing_key/d' -i async-pool.gemspec gems.rb
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-pool-$pkgver
+  gem build async-pool.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    async-pool-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd async-pool-$pkgver
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd async-pool-$pkgver
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

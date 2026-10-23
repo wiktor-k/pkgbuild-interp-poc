@@ -1,0 +1,21 @@
+pkgbase = python-vobject
+	pkgdesc = Module for parsing and generating vCard and vCalendar files
+	pkgver = 0.9.9
+	pkgrel = 3
+	url = http://py-vobject.github.io
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-dateutil
+	depends = python-pytz
+	source = git+https://github.com/py-vobject/vobject.git#tag=v0.9.9
+	source = 0001-remove-six.patch
+	b2sums = 59b95bd5120aa8ef85a8394aa665271a0e3fc9c73dcf06d2df8c40984eef256166d96e4bd51aede90f2fee0d4328a6c3b64357f6c8c1c3a8caad407cc7f5fd64
+	b2sums = 37436e090724fbe77be2524fa7285d4e4fd631f7fa71834925167f0b5ad63e86913c203c0d3487ab3f88998066e8ae1d07ea6bcd4b124b180eb21302495eed70
+
+pkgname = python-vobject

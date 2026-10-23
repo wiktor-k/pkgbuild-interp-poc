@@ -1,0 +1,26 @@
+pkgbase = gnome-extensions-app
+	pkgdesc = Small app for managing GNOME Shell extensions
+	pkgver = 51alpha
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-extensions-app
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	depends = bash
+	depends = dconf
+	depends = gjs
+	depends = glib2
+	depends = glibc
+	depends = gnome-shell
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/GNOME/gnome-extensions-app.git#tag=51.alpha
+	source = git+https://gitlab.gnome.org/GNOME/libshew.git#commit=d16afc40412b565d2bbecf80335f54a19a978009
+	b2sums = 91ee64563058d244cbc4e4677d837fb68dfee4c28145f472fded4c91f77f34e198ba45d3bd9863d4fe3aaa976a3265209920cb6b6ddbfe329dc9f42fc1c00280
+	b2sums = 7b39ef786d0af34f207c36c078fda5410848a5eceb84509b145184be1dbb994aeb3ffa70cb3de363a8460d59c140aafbdee8f74312cf2971a80cc5d485f1b829
+
+pkgname = gnome-extensions-app

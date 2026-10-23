@@ -1,0 +1,33 @@
+pkgbase = python-securesystemslib
+	pkgdesc = Cryptographic and general-purpose routines for Secure Systems Lab projects at NYU
+	pkgver = 1.5.1
+	pkgrel = 1
+	url = https://github.com/secure-systems-lab/securesystemslib
+	arch = any
+	license = CC0-1.0
+	license = MIT
+	checkdepends = python-asn1crypto
+	checkdepends = python-python-pkcs11
+	checkdepends = softhsm
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-cryptography
+	optdepends = python-boto3: AWS KMS signer support
+	optdepends = python-botocore: AWS KMS signer support
+	optdepends = python-hvac: HashiCorp Vault signer support
+	optdepends = python-python-pkcs11: HSM (PKCS#11) signer support
+	source = git+https://github.com/secure-systems-lab/securesystemslib.git#tag=v1.5.1
+	source = skip-failing-test.patch
+	validpgpkeys = C2FB9C910758B6827BC43233BC0C6DEDD5E5CC03
+	validpgpkeys = 8BA69B87D43BE294F23E812089A2AD3C07D962E8
+	validpgpkeys = 903BAB73640EB6D65533EFF3468F122CE8162295
+	validpgpkeys = 08F3409FCF71D87E30FBD3C21671F65CB74832A4
+	validpgpkeys = 1343C98FAB84859FE5EC9E370527D8A37F521A2F
+	b2sums = 002039852d80607effa64990d62cb50b0a9709e32ea66adbb33b49ee95f9a12e917e5f2a58d596c355d4282165d3c39a848eb7f98d28b17df5b5fa366d86532f
+	b2sums = bc38899b33d03630a9647cc064b1b09287aa5cc000618757c0c86a5d0e104bb952c8b609fd6cd44c01eb46f3c2aff523d15769ffa4b0d8cc7ee5a7fe18427c63
+
+pkgname = python-securesystemslib

@@ -1,0 +1,24 @@
+pkgbase = lcov
+	pkgdesc = front-end for GCC’s coverage testing tool gcov
+	pkgver = 2.6
+	pkgrel = 1
+	url = https://github.com/linux-test-project/lcov
+	arch = any
+	license = GPL
+	makedepends = python-sphinx
+	makedepends = python-sphinx_rtd_theme
+	depends = perl
+	depends = perl-capture-tiny
+	depends = perl-datetime
+	depends = perl-devel-cover
+	depends = perl-memory-process
+	optdepends = perl-gd: render frames in html output
+	optdepends = perl-json-xs: faster JSON parsing than built in JSON:PP
+	optdepends = python: enable extra support scripts
+	optdepends = python-coverage: enable python coverage reporting
+	optdepends = python-xlsxwriter: generate shpreadsheet reports
+	backup = etc/lcovrc
+	source = https://github.com/linux-test-project/lcov/releases/download/v2.6/lcov-2.6.tar.gz
+	sha256sums = 67a45db99b8ef0260c3fac9a2e3749fd8fa350a15e235dd3c29b356d97755c75
+
+pkgname = lcov

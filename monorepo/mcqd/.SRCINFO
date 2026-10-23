@@ -1,0 +1,17 @@
+pkgbase = mcqd
+	pkgdesc = Maximum Clique Algorithm for finding a maximum clique in an undirected graph
+	pkgver = 1.0.0
+	pkgrel = 5
+	url = http://insilab.org/maxclique/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://gitlab.com/janezkonc/mcqd#tag=v1.0.0
+	source = mcqd-silent.patch
+	sha256sums = a78429207f0395952a33294bef43858f7c22d164dd32719c1a571ec74e772f5d
+	sha256sums = 89b186a032d3b2e542c38ab601a9c5b8ed11f0385a3473fece3778409e9c7045
+
+pkgname = mcqd

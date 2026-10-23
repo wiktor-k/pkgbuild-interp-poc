@@ -1,0 +1,43 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Eric Belanger <belanger@astro.umontreal.ca>
+# Contributor: Jason Taylor <jftaylor21@gmail.com>
+# Contributor: Georg Grabler <ggrabler@chello.at>
+
+pkgname=kdbg
+pkgver=3.2.0
+pkgrel=4
+pkgdesc='A graphical debugger interface'
+arch=(x86_64)
+url='http://www.kdbg.org'
+license=(GPL-2.0-or-later)
+depends=(gdb
+         glibc
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         ki18n
+         kiconthemes
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libstdc++
+         qt6-base)
+makedepends=(extra-cmake-modules
+             git)
+source=(git+https://github.com/j6t/kdbg#tag=kdbg-$pkgver)
+sha256sums=('940f55bec8053dd70514dbf6a2ad371726c302737e52ed7e9b15d95abad5432f')
+
+prepare() {
+  sed -e '/Core5Compat/d' -i $pkgname/CMakeLists.txt -i $pkgname/kdbg/CMakeLists.txt
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DBUILD_FOR_KDE_VERSION=6
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

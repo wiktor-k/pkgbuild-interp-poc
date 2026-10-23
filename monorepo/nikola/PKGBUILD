@@ -1,0 +1,125 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=nikola
+pkgver=8.3.3
+pkgrel=3
+pkgdesc="A static site and blog generator"
+arch=(any)
+url="https://getnikola.com/"
+_url="https://github.com/getnikola/nikola"
+license=(MIT)
+depends=(
+  python
+  python-babel
+  python-blinker
+  python-doit
+  python-dateutil
+  python-docutils
+  python-lxml
+  python-mako
+  python-markdown
+  python-natsort
+  python-piexif
+  python-pillow
+  python-pygments
+  python-pyrss2gen
+  python-requests
+  python-setuptools  # https://github.com/getnikola/nikola/issues/3743
+  python-unidecode
+)
+makedepends=(
+  git
+  jupyter-notebook
+  python-aiohttp
+  python-build
+  python-ghp-import
+  python-hsluv
+  python-html5lib
+  python-installer
+  python-ipykernel
+  python-jinja
+  python-micawber
+  python-phpserialize
+  python-pygal
+  python-pyphen
+  python-ruamel-yaml
+  python-toml
+  python-typogrify
+  python-watchdog
+  python-wheel
+  zeromq
+)
+checkdepends=(
+  libwebp
+  python-feedparser
+  python-freezegun
+  python-pytest
+)
+optdepends=(
+  'libwebp: for WEBP image file support'
+  'jupyter-notebook: for .ipynb support'
+  'python-aiohttp: for nikola auto'
+  'python-ghp-import: for upload to Github pages'
+  'python-hsluv: for section color mixing'
+  'python-html5lib: for HTML5 minify and format support'
+  'python-hsluv: for optional color support'
+  'python-ipykernel: for .ipynb support'
+  'python-jinja: for jinja2 based themes'
+  'python-micawber: for embedding media in posts'
+  'python-phpserialize: for Wordpress import'
+  'python-pygal: for SVG graph plotting'
+  'python-pyphen: for hyphenation support'
+  'python-ruamel-yaml: for YAML support'
+  'python-toml: for TOML support'
+  'python-typogrify: for typographical enhancements'
+  'python-watchdog: for nikola auto'
+)
+source=(
+  git+$_url.git?signed#tag=v$pkgver
+  python-3.14.patch
+)
+sha512sums=('3b28d4395c170a4d9ae299b3ccedc203ddde656e699ab2726e466f62367d9b0993dd15b90b4ca82628671075dc9c2369fe147a0f5cc2f5865aaab1009dd29432'
+            'dff6426215a89a419c718da5f29efc4b2480c013036234c41a23a21bc1637f16a70ddc06a4e82a278893350dd547af4d7cd41a89f195ccf026be7649ab082920')
+b2sums=('1299774ff370eb3e6c4ced39dbaadf4526b2a81d7999fe99c179159becbdfa7aa692bd07f11e135a555249b6dbf8896c92fc326860ee6dcb78331e967d64e09e'
+        '99c3ffc0e3f4c7b050d79dcd19c8afb88351247c728b82b06a5d8e425df7105323347e350092446813de97d31d446a53b47fb9596b1b41961fc15b3083d56e7e')
+validpgpkeys=('DF32C99CFF84282CF9D4CF7171023DBD5EAAEA16') # Chris Warrick <kwpolska@gmail.com>
+
+prepare() {
+  cd $pkgname
+  patch -p1 < ../python-3.14.patch
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+
+  # shell completions
+  python -m $pkgname tabcompletion --shell bash --hardcode-tasks > ${pkgname}_bash
+  python -m $pkgname tabcompletion --shell zsh --hardcode-tasks > ${pkgname}_zsh
+  # ensure that the shell completion is assigned to the correct executable
+  sed -e "s/__main__.py/$pkgname/g" -i "${pkgname}_"{bash,zsh}
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -o addopts=''
+    # Skip test that fails due to different behavior of python-lxml
+    # https://gitlab.archlinux.org/archlinux/packaging/packages/python-lxml/-/issues/2
+    --deselect tests/test_command_import_wordpress.py::test_write_content_does_not_detroy_text
+  )
+  cd $pkgname
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {AUTHORS,CHANGES}.txt {CONTRIBUTING,README}.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 ${pkgname}_bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 ${pkgname}_zsh "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+
+  # Remove unwanted artifacts https://github.com/getnikola/nikola/issues/3852
+  rm -r "$pkgdir"/usr/lib/python*/site-packages/{docs,logo,npm_assets,scripts,translations}
+}

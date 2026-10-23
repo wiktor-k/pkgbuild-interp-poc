@@ -1,0 +1,22 @@
+pkgbase = python-pytesseract
+	pkgdesc = Python wrapper for Google Tesseract
+	pkgver = 0.3.13
+	pkgrel = 4
+	url = https://github.com/madmaze/pytesseract
+	arch = any
+	license = Apache
+	checkdepends = python-pytest
+	checkdepends = tesseract-data-eng
+	checkdepends = tesseract-data-fra
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-packaging
+	depends = python-pillow
+	depends = tesseract
+	source = git+https://github.com/madmaze/pytesseract.git#tag=v0.3.13
+	b2sums = f85ddc0168e710237b7fd7b59127bad033d43d91637e7151ee8e4da40505095adb11067f6c56135205a895449e1cf831479ed33f082c0aba3ea9466f85456712
+
+pkgname = python-pytesseract

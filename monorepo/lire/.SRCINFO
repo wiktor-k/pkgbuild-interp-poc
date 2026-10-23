@@ -1,0 +1,27 @@
+pkgbase = lire
+	pkgdesc = log file analyzer
+	pkgver = 2.1.1
+	pkgrel = 8
+	url = https://launchpad.net/ubuntu/trusty/+package/lire
+	arch = any
+	license = GPL-2.0-only
+	makedepends = postfix
+	depends = perl-dbd-sqlite
+	depends = perl-libintl-perl
+	depends = perl-curses-ui
+	depends = perl-curses
+	depends = perl-xml-parser
+	options = zipman
+	options = docs
+	backup = etc/lire/address.cf
+	backup = etc/lire/defaults
+	backup = etc/lire/disclaimer
+	backup = etc/lire/explanation
+	backup = etc/lire/profile_lean
+	backup = etc/lire/signature
+	source = https://launchpad.net/ubuntu/+archive/primary/+files/lire_2.1.1.orig.tar.gz
+	source = pod-fix.patch
+	sha256sums = 8c961703f413e81173f5d04504045a5c48dfe8cedab67d91d5d0fdf2db9543e5
+	sha256sums = ff09bf5778cb2104e30baf2136382d92ddf17e5367e19c5a9390b0ff224c5922
+
+pkgname = lire

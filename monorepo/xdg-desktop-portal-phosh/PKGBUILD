@@ -1,0 +1,68 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=xdg-desktop-portal-phosh
+pkgver=0.58.0
+pkgrel=1
+pkgdesc='Backend implementation for xdg-desktop-portal that is using GTK/GNOME/Phosh'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/Phosh/xdg-desktop-portal-phosh'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  fontconfig
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop-4
+  gtk4
+  libadwaita
+  libgcc
+  xdg-desktop-portal
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+  python-docutils
+  rust
+)
+provides=(xdg-desktop-portal-impl)
+source=(
+  "git+https://gitlab.gnome.org/World/Phosh/xdg-desktop-portal-phosh.git?signed#tag=v$pkgver"
+  git+https://gitlab.gnome.org/World/Phosh/pfs.git
+)
+b2sums=(
+  3f8fbcb8508757622a926dc83eed42a16192c7eadbf879fc8a60a37a1c02799dbf34717a1abbf3d840672d254f70884b87b30079878aaf9a0366616be5091a99
+  SKIP
+)
+validpgpkeys=(0DB3932762F78E592F6522AFBB5A2C77584122D3) # Guido Günther <guido@xcpu.ch>
+
+prepare() {
+  ln -s "$srcdir/pfs" "$pkgname/subprojects/pfs"
+  meson subprojects checkout --sourcedir $pkgname
+
+  cd $pkgname
+  CARGO_HOME="$srcdir/build/cargo" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  cd subprojects/pfs
+  CARGO_HOME="$srcdir/build/subprojects/pfs/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # Don't do debug build unless requested
+  sed -i "s/if get_option('buildtype') == 'release'/if not get_option('debug')/" src/meson.build
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

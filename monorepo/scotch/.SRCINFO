@@ -1,0 +1,29 @@
+pkgbase = scotch
+	pkgdesc = Package for graph and mesh/hypergraph partitioning, graph clustering, and sparse matrix ordering
+	pkgver = 7.0.17
+	pkgrel = 1
+	url = https://gitlab.inria.fr/scotch/scotch
+	arch = x86_64
+	license = CECILL-C
+	makedepends = gcc-fortran
+	makedepends = cmake
+	makedepends = ninja
+	depends = bzip2
+	depends = glibc
+	depends = openmpi
+	depends = xz
+	depends = zlib
+	source = https://gitlab.inria.fr/scotch/scotch/-/archive/v7.0.17/scotch-v7.0.17.tar.gz
+	source = fortify-source.patch
+	source = scotchconfig.patch
+	b2sums = 32afe6cd0d59f9d8d3b0ef6ee9067c73d2dd1f27b329e21ef8465f7af79fa92670eb50dba5ddd95bcb6a2a1eac898996d742833fdd2445b096928b72ffa4a2c7
+	b2sums = 1db11c73877dd796702ee8ef00d47f3a1c694ddd32ba93d855dc7ae3e594711da58a0b9091629e013aa13c4fe41fd97610cb05f7e067b2103f08171e1bc1ab92
+	b2sums = 17bb27bc700badecd7d6cc409e57fdfb4051212c370c8ecd56eb781fcad2a102ec5d67f9d0b1d26fcbc2c34dec3d0ffeb278a5300b0c083dc58980ed27d9b036
+
+pkgname = scotch
+
+pkgname = scotch-metis
+	pkgdesc = libScotchMeTiS compatibility library: MeTiS interface implemented using Scotch
+	depends = glibc
+	depends = openmpi
+	depends = scotch

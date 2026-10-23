@@ -1,0 +1,64 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+
+_name=svelte-language-tools
+pkgname=svelte-language-server
+pkgver=0.18.4
+pkgrel=1
+pkgdesc='Language server for Svelte'
+arch=(any)
+url=https://github.com/sveltejs/language-tools/tree/master/packages/language-server
+license=(MIT)
+depends=(
+  nodejs
+  typescript
+)
+makedepends=(
+  git
+  npm
+  pnpm
+)
+options=(!emptydirs)
+source=(
+	"$_name::git+https://github.com/sveltejs/language-tools.git#tag=svelte-language-server@$pkgver"
+)
+b2sums=('d2bf4dab57354d64ab9e5db704c72b8cf954366aff604191b221823766439e57c9427c8551c051ca7399a21b15e2510c6a1a1b3822603e4ce98a4c649963d75b')
+
+prepare() {
+  cd $_name
+  pnpm install --frozen-lockfile
+}
+
+build() {
+  cd $_name/packages/svelte2tsx
+  pnpm build
+  cd ../language-server
+  pnpm build
+}
+
+check() {
+  cd $_name/packages/language-server
+  pnpm run test --no-experimental-strip-types
+}
+
+package() {
+  local mod_dir=/usr/lib/node_modules/$pkgname
+
+  install -d "$pkgdir"/{usr/bin,$mod_dir}
+  ln -s $mod_dir/bin/server.js "$pkgdir"/usr/bin/svelteserver
+
+  cd $_name
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+
+  cd packages/language-server
+  # Prune unnecessary packages
+  cp package.json{,.bak}
+  sed -i 's/workspace:./*/' package.json
+  rm -r node_modules
+  npm install --omit=dev
+  rm -r node_modules/{.bin/{tsc,tsserver},typescript}
+  mv package.json{.bak,}
+
+  cp -r bin dist node_modules package.json "$pkgdir"/$mod_dir
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.md
+}

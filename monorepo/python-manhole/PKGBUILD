@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-manhole
+pkgver=1.8.1
+pkgrel=1
+arch=('any')
+pkgdesc='Debugging manhole for python applications'
+license=('BSD-2-Clause')
+url='https://github.com/ionelmc/python-manhole'
+depends=('python')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-virtualenv' 'python-pytest' 'python-process-tests' 'python-requests' 'uwsgi')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/ionelmc/python-manhole/archive/v$pkgver.tar.gz")
+sha512sums=('f37d4f401e862fe49b6c59025f62fac15a2f1c0ece4c8418c27ce1cef62723aa47506210ef78ddc7c3219ab2f31019d5b1235e496861b9f7b094a3390a3128bb')
+
+build() {
+  cd python-manhole-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  # Hack to process .pth files properly
+
+  cd python-manhole-$pkgver
+  virtualenv "$srcdir/pyvenv" --system-site-packages
+  (
+    . "$srcdir/pyvenv/bin/activate"
+    python setup.py develop
+    PYTHONPATH=src pytest
+  ) || echo "Tests failed"
+}
+
+package() {
+  cd python-manhole-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

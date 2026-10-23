@@ -1,0 +1,33 @@
+pkgbase = singular
+	pkgdesc = Computer Algebra System for polynomial computations
+	pkgver = 4.4.1.p5
+	pkgrel = 11
+	url = https://www.singular.uni-kl.de/
+	arch = x86_64
+	license = GPL-2.0-only
+	license = GPL-3.0-only
+	makedepends = 4ti2
+	makedepends = git
+	makedepends = latex2html
+	makedepends = lrcalc
+	makedepends = normaliz
+	makedepends = sharutils
+	makedepends = texlive-basic
+	makedepends = texlive-bin
+	makedepends = texlive-latex
+	depends = bash
+	depends = cddlib
+	depends = flint
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	depends = ntl
+	depends = readline
+	optdepends = normaliz: Normaliz interface
+	provides = singular-factory
+	options = !zipman
+	source = git+https://github.com/Singular/Singular#tag=Release-4-4-1p5
+	sha256sums = 77e0553ac6cfba06fccf1e9173e9a3a297e8a922a7017d5d6af237921485f1d3
+
+pkgname = singular

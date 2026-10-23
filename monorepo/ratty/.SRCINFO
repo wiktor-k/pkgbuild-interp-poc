@@ -1,0 +1,25 @@
+pkgbase = ratty
+	pkgdesc = A GPU-rendered terminal emulator with inline 3D graphics
+	pkgver = 0.6.0
+	pkgrel = 2
+	url = https://github.com/orhun/ratty
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = desktop-file-utils
+	depends = fontconfig
+	depends = libgcc
+	depends = glibc
+	depends = libx11
+	depends = libxcb
+	depends = libxkbcommon
+	depends = libxkbcommon-x11
+	depends = systemd-libs
+	depends = wayland
+	depends = zlib
+	source = ratty-0.6.0.tar.gz::https://github.com/orhun/ratty/archive/v0.6.0.tar.gz
+	source = ratty.desktop
+	sha512sums = 9682376587c3c72014e05c4bc0ce156a25d20376f1dc50ee7cb0ac048defc3268e7d153b9a893aea35db1b772c877b0ff505a2945a4c050614b716d3502f2e35
+	sha512sums = 781135d21bd960576ba7495f294ac2decb1377ca9fc7b1f7cdf6faa1502f53b60d533937661a2f310d27bba13edd2868d0b6fb303fd8f8cf4e1b7f81a4d4064c
+
+pkgname = ratty

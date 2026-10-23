@@ -1,0 +1,80 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Jokler <aur@jokler.xyz>
+# Contributor: JisuWoniu <jswn@jswn9945.xyz>
+
+pkgname=bacon
+pkgver=3.26.0
+pkgrel=1
+pkgdesc='A background rust code checker'
+arch=(x86_64)
+url='https://dystroy.org/bacon'
+license=(AGPL-3.0-only)
+depends=(alsa-lib libasound.so
+         glibc # libc.so libm.so
+         libgcc libgcc_s.so)
+makedepends=(git cargo)
+optdepends=(
+  'cargo: for use with Rust'
+  'clang: for use with C++ via clang'
+  'gcc: for use with C++ via gcc'
+  'eslint: for use with JavaScript'
+  'python: for use with Python via unittest'
+  'python-pytest: for use with Python via pytest'
+)
+source=("$pkgname::git+https://github.com/Canop/bacon#tag=v$pkgver")
+sha512sums=('408c201555c428cd3f30a9d4f58906ca6f8851008da8f5fbeabc9b15052712824f73760d787f03b7650dace448d989105ec21b2464bca9342742aa49a230edd2')
+b2sums=('434964f2aa71a89d307f4cb9644b5fe46461168c789f532bf2b42dc3bc29033b73543f9d0cd352496c0949bae06f9109ef64fc2c2a0647e8f52e9a6138b9da81')
+
+_srcenv() {
+    cd "$pkgname"
+    export CARGO_HOME="$srcdir"
+    export CARGO_PROFILE_RELEASE_DEBUG=2
+    export CARGO_PROFILE_RELEASE_STRIP=false
+    export CARGO_PROFILE_RELEASE_LTO=true
+    export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+    export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+    CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+  _srcenv
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  _srcenv
+
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  _srcenv
+
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  local _binary="target/release/$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "$_binary"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  cp -vr doc img "$pkgdir/usr/share/doc/$pkgname"
+
+  # completions
+  install -vDm644 <(COMPLETE=bash   exec -a "$pkgname" "$_binary") "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm644 <(COMPLETE=zsh    exec -a "$pkgname" "$_binary") "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+  install -vDm644 <(COMPLETE=fish   exec -a "$pkgname" "$_binary") "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+  install -vDm644 <(COMPLETE=elvish exec -a "$pkgname" "$_binary") "$pkgdir/usr/share/elvish/lib/$pkgname.elv"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

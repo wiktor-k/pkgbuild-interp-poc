@@ -1,0 +1,56 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: John Robinson <jbr100uk@gmail.com>
+
+pkgname=midish
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='Command-line MIDI sequencer and filter'
+arch=(x86_64)
+url='https://midish.org/'
+license=(0BSD)
+depends=(
+  glibc
+  alsa-lib
+)
+makedepends=(python-html2text)
+optdepends=('sh: for smfplay/smfrec')
+source=(
+  "https://www.midish.org/$pkgname-$pkgver.tar.gz"{,.asc}
+  change-examples-directory.patch
+)
+sha512sums=('647852c3a5af2af61088e06725c5e004d978d7f581eb108a7d3bf22cc728fbdc6b2b30fe5c74a2690384bfef0be20b74e442dddf3e7dbaa93d440ab461621ebb'
+            'SKIP'
+            '8ca1460124477ceba4f1f84edaa47c60b3089bbcc3691c765def2eef9ce9bf14666242d70a7f84d3a4f7ab64b28698d8623bd8fbde244cfa0de9c83288b6d9ca')
+b2sums=('637519e1ca094df38a7fe2054b9faa955e5cd0bd013065420ac19085a227a81fd0006b86f9b3c4d9da65c01e173cd860a88a9bb4151a7b0dc720bdd95e3af2cf'
+        'SKIP'
+        'bce5a65a20538167ccf4094b88e4d02b73b28f37939c6e044aa40fa7b74dc91457c3ba8719d4838ab8415c8739dc0a2b9fcf2deebc6095c1792503a730d4dda4')
+validpgpkeys=('6B1A7447AAF091CCDD36BAA6015E339411694A6E') # Alexandre Ratchov <alex@caoua.org>
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # install examples to standard directory
+  patch -p1 -i "$srcdir/change-examples-directory.patch"
+
+  # extract license from manual.html
+  awk '/23 Copyright/{flag=1; next} /24 Thanks/{flag=0} flag' manual.html \
+    | html2text \
+    | sed -r -e 's/^>\s*//' > LICENSE
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  ./configure --prefix=/usr --mandir=/usr/share/man
+
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,36 @@
+pkgbase = deno
+	pkgdesc = A secure runtime for JavaScript and TypeScript
+	pkgver = 2.9.8
+	pkgrel = 1
+	url = https://deno.com
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = python
+	makedepends = rust
+	makedepends = rust-bindgen
+	makedepends = nodejs
+	makedepends = gn
+	makedepends = ninja
+	makedepends = clang
+	makedepends = lld
+	makedepends = cmake
+	makedepends = protobuf
+	depends = dbus
+	depends = lcms2
+	depends = libffi
+	depends = libgcc
+	depends = sqlite
+	depends = wayland
+	depends = zlib
+	depends = zstd
+	source = git+https://github.com/denoland/deno.git#tag=v2.9.8
+	source = git+https://github.com/denoland/rusty_v8.git#tag=v150.4.0
+	source = compiler-rt-adjust-paths.patch
+	source = deno-2.9.6-rust-system.patch
+	sha512sums = 0894398fb2a280e313887a6704d10b9b1117cd81c28b8e13a8d34958a1ef04579bca09c6f291d2ee0d1d563ce2f38eee495dbea6a4017a6e4df5b66571a851fa
+	sha512sums = ae0d6d585cf7ba0172930d09e3d7a2d4bb5d748409e86b44dfa5a12741a51aab138ab12ca8327ac6a36506b9caf6a20fed20f0efd5b7fdf145bd8fdca20f5ed0
+	sha512sums = 8a782d68a6140f739f00d3eb341d742584ee0be80e85e89bc1540a21d15ad8b75274672ebd02e1e4fd1925ed9ca68b05142388e795dff81b0a864d38f5514253
+	sha512sums = 658e32634fc7463f79099d19e2e54ef59318811209d1e5f7adf5caae9b57ad06dfe9bbe41d272c47d92cd0ad1c746cc0e04775c495c8e120cbd62c88239d1945
+
+pkgname = deno

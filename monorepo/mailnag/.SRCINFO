@@ -1,0 +1,34 @@
+pkgbase = mailnag
+	pkgdesc = Extensible mail notification daemon
+	pkgver = 2.2.0
+	pkgrel = 10
+	url = https://github.com/pulb/mailnag
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = dbus-python
+	depends = glib2
+	depends = gst-plugins-base
+	depends = gst-python
+	depends = gstreamer
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libnotify
+	depends = libsecret
+	depends = org.freedesktop.secrets
+	depends = python
+	depends = python-gobject
+	depends = python-pyxdg
+	optdepends = mailnag-goa-plugin: GNOME Online Accounts integration
+	source = git+https://github.com/pulb/mailnag.git#tag=v2.2.0
+	source = mailnag-python-3.12.patch
+	source = mailnag-fix-maildir.patch
+	b2sums = 49d1c58de8abf8ada2cb7dfd11321d0738f2fa4e0304c7de30b7b5f0ee3e6ffef8f596b11e92e534762bbc2c774470e3d7135b97283081aad9a63c2bcd02972d
+	b2sums = b3f322eaa876b544e5acc0dbd581edfd071c7dda86db60e3061336e5f4e40b484b79357e2dc6fd33a6abd77b629b14f28e5ca038262b09bdc3a338c0f9199a10
+	b2sums = 725bd8cf26805545384ce72eb813ca08388ee652d94e452300c4951480e13736c41fad53907be187e459310ca30d78fc4421fa0474bdc1fea9a7d1049d9e7a0e
+
+pkgname = mailnag

@@ -1,0 +1,104 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgbase=ettercap
+pkgname=(
+  ettercap
+  ettercap-gtk
+)
+pkgver=0.8.4.1
+pkgrel=1
+pkgdesc='Network sniffer/interceptor/logger for ethernet LANs'
+arch=('x86_64')
+url='https://www.ettercap-project.org/'
+license=('GPL-2.0-or-later')
+depends=(
+  'curl' 'libcurl.so'
+  'ethtool'
+  'glibc'
+  'libmaxminddb'
+  'libnet'
+  'libpcap'
+  'ncurses' 'libncursesw.so' 'libpanelw.so' 'libformw.so' 'libmenuw.so'
+  'openssl'
+  'pcre2'
+  'zlib'
+)
+makedepends=(
+  'check'
+  'cmake'
+  'ghostscript'
+  'gtk3'
+  'harfbuzz'
+)
+options=('!emptydirs')
+backup=(etc/ettercap/etter.{conf,dns,mdns,nbns})
+source=(
+  "https://github.com/Ettercap/ettercap/archive/v${pkgver}/${pkgbase}-${pkgver}.tar.gz"
+  cmake-harfbuzz.patch
+)
+sha512sums=('d437303fec7a154454ca74d92a6b5dce1c768f966044968a6fd4f6dd6ba3ab995d5c5241f47b8de2c67096de2991d5eb4ec530d7cdcb6fc1632824546e5c53cf'
+            '56e75ae2fe6b3761a121d7062133c53d9b15894662c9ce341dd67eb4913983e926975f4a0901e2f2bf1c85933eb45e1842500e1c6a9af4738c761b328b3b8745')
+b2sums=('63c606c5cb23f14a9ce392381ea14817c9d2c02dc4ac1022d6275ee70c826e5096b9f3ad60596427fe07af903880f8ffa7d66a0e1cca2dd239c302e6ec6f3e4a'
+        'da9a1306637e28b5c00b4e2615b999a92d3365f8fad7ba956c10e16e09c1fb8dbe3e529fb70758fc891d8741975026aa167f957316deb814def76014750cc50f')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  patch -Np1 < "${srcdir}/cmake-harfbuzz.patch"
+}
+
+build() {
+  cmake -B build -S ${pkgbase}-${pkgver} \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev \
+    -D ENABLE_GTK=OFF \
+    -D ENABLE_TESTS=ON \
+    -D ENABLE_IPV6=ON
+  cmake --build build
+
+  cmake -B build-gtk -S ${pkgbase}-${pkgver} \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev \
+    -D ENABLE_GTK=ON \
+    -D ENABLE_TESTS=ON \
+    -D ENABLE_IPV6=ON
+  cmake --build build-gtk
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+  ctest --test-dir build-gtk --output-on-failure
+}
+
+package_ettercap() {
+  pkgdesc+=" - console"
+  provides=('libettercap.so')
+
+  DESTDIR="${pkgdir}" cmake --install build
+  cd ${pkgbase}-${pkgver}
+  install -vDm 644 -t "${pkgdir}/usr/share/doc/${pkgname}" CHANGELOG README*
+}
+
+package_ettercap-gtk() {
+  pkgdesc+=" - GTK frontend"
+  depends+=(
+    'gdk-pixbuf2'
+    'glib2'
+    'gtk3'
+    'hicolor-icon-theme'
+  )
+  optdepends=('polkit: run ettercap directly from menu')
+  provides=(
+    'ettercap'
+    'libettercap.so'
+  )
+  conflicts=('ettercap')
+
+  DESTDIR="${pkgdir}" cmake --install build-gtk
+  cd ${pkgbase}-${pkgver}
+  install -vDm 644 -t "${pkgdir}/usr/share/doc/${pkgname}" CHANGELOG README*
+}

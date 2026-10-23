@@ -1,0 +1,218 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=maelstrom
+pkgname=(
+  cargo-maelstrom
+  maelstrom-broker
+  maelstrom-client
+  maelstrom-go-test
+  maelstrom-pytest
+  maelstrom-run
+  maelstrom-worker
+)
+pkgver=0.14.0
+pkgrel=2
+pkgdesc="A fast Rust, Go, and Python test runner that runs every test in its own container"
+arch=(x86_64)
+url="https://maelstrom-software.com/"
+_url="https://github.com/maelstrom-software/maelstrom"
+license=('Apache-2.0 OR MIT')
+makedepends=(
+  gcc-libs
+  glibc
+  git
+  openssl
+  protobuf
+  rust
+)
+checkdepends=(
+  go
+  python-pip
+  python-pytest
+)
+options=(!lto)  # the project uses ring
+source=(
+  $pkgbase::git+$_url#tag=v$pkgver
+  $pkgbase-0.13.0-maelstrom-client-missing-shared-object.patch  # https://github.com/maelstrom-software/maelstrom/issues/501
+  $pkgbase-0.13.0-cargo-maelstrom-broken-tests.patch  # https://github.com/maelstrom-software/maelstrom/issues/502
+  $pkgbase-0.13.0-maelstrom-go-test-broken-tests.patch  # https://github.com/maelstrom-software/maelstrom/issues/503
+  $pkgbase-0.13.0-maelstrom-pytest-broken-tests.patch  # https://github.com/maelstrom-software/maelstrom/issues/504
+  $pkgbase-0.14.0-maelstrom-pytest-broken-tests.patch  # https://github.com/maelstrom-software/maelstrom/issues/522
+  $pkgbase-0.14.0-maelstrom-worker-broken-tests.patch  # https://github.com/maelstrom-software/maelstrom/issues/505
+)
+sha512sums=('801f732853f71d722b7cda24175e3d0e984dc19e9d2c5294ab2d8d6be05182865c4db03b5f59cf21739ec1e91b4bc39b126d92635d291668ebbd03fdcbb6cfcf'
+            'af9ff61b5384109e35cc7f236552a567433d59ebbb2e23c2253b402e5c7df4f79a337cee914cba8ebf38045b8efe6d8057a65c5b25eb940245cae26f23d0f6f0'
+            '6852d78284b3443cc943d3ce9a21d140ac952c285149e4f9db72b640c470593539d94aa939f3d5dd9aa6b1c1873964a02998dddd9cfc41593c0472989f036ec6'
+            '3ccc2fef34c6a812a78c3ebae115db132179bfe5fdd20235e86fa70f245c7ca3f8b96587eaefaa3c2a63501ab8aed673b6344bd10c32d6be1bbe6bf73dc04af6'
+            'c22ecdc02ad4687da2b93269259f057afd4a7522b63a94dc18077fafbd9090db6c198f6c9f55395387b4871e7e4f1a44d338bcb2a368a7f3f44d9089d41e62f0'
+            '775ed7fe01e59499e02be8110aaf41012863ea6e384799c156b58e7ac30d718d8e197cee92c0db109912a748c9ac8421cd6d7ff6e0f213091de2bd46c4139208'
+            '1a069e21d5c7f9512c0b3b45e43df1a5d0b9d3e520b6dd64a0fd456ce3f22df3340c428720ed3436aba67d445ed358c5bb0f80972c7861f7379bcf657825d4ba')
+b2sums=('4bdab15b20f4c264ed5344d1c37f14f2250a1d57886bb26d195c1f26ca0a917ca10497b08b72282fa1a3df8a2dcf2de4e745fda977ce386ab86a7d0a10f4b827'
+        'e89f9d2ee025bb0246ccf8cc86934ab299ac0837848771da2fcaa6a279084a0d9d2d62b60a6570594e45e6b0cf4f2096b479761d4e5444d5a5bfedce6870effc'
+        '7e38ea75641d91688ff2c58c6975d2386a5445905fa614117e6848fdfb5b9caeeb102ccd0aea5d785a1dbe8272239f4b6be14ab547dc73d045050382fd08d9af'
+        '1619c1a19557403e082c8f020b0a82dca936bd0800ffdea43823b935abc564ee99d2dc7de7b635217760cf93b59e83530804afc21c3a7c57d4394ad6e023cd35'
+        'c255c8b864166fee729ddd346aa38dfb3dad429f6543b62f0d09144811358f314dd3bc6af47647fb99b308e9e15e9ec4cdfb7c9d743725d0c697619ec87a56cb'
+        'ab86f9fd88c450d4c9b3d208379bba145ca82164278f1f1ecfafa50ae08160d635c0b40074cdf015023b429fc7ab42534d0fa170d57f7912f8131865f5eedfc3'
+        'e2e5148914546133b38485242775c917e3cb237036674737c4f99f5566828fdf8d371403eee55e8b672bfcde0d10014baff5394576d3e63e00b26fff46571be7')
+
+prepare() {
+  cd $pkgbase
+  patch -Np1 -i ../$pkgbase-0.13.0-maelstrom-client-missing-shared-object.patch
+  patch -Np1 -i ../$pkgbase-0.13.0-cargo-maelstrom-broken-tests.patch
+  patch -Np1 -i ../$pkgbase-0.13.0-maelstrom-go-test-broken-tests.patch
+  patch -Np1 -i ../$pkgbase-0.13.0-maelstrom-pytest-broken-tests.patch
+  patch -Np1 -i ../$pkgbase-0.14.0-maelstrom-pytest-broken-tests.patch
+  patch -Np1 -i ../$pkgbase-0.14.0-maelstrom-worker-broken-tests.patch
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgbase
+  for pkg in "${pkgname[@]}"; do
+    local cargo_build_options=(
+      --frozen
+      --release
+    )
+
+    # the wasm setup for maelstrom-web is broken: https://github.com/maelstrom-software/maelstrom/issues/468
+    if [[ "$pkg" == maelstrom-broker ]]; then
+      cargo_build_options+=(--no-default-features --package)
+    else
+      cargo_build_options+=(--all-features --package)
+    fi
+
+    printf "Building package %s\n" "$pkg"
+    cargo build "${cargo_build_options[@]}" "$pkg"
+  done
+}
+
+# tests are currently broken
+check() {
+  cd $pkgbase
+  export RUST_BACKTRACE=full
+  # NOTE: cargo-maelstrom tests `empty_cargo_project`, `few_tests` and `failed_test` require a higher open file limit
+  ulimit -n 4096
+
+  for pkg in ${pkgname[@]}; do
+    local cargo_test_options=(
+      --frozen
+    )
+    local test_options=()
+
+    # the wasm setup for maelstrom-web is broken: https://github.com/maelstrom-software/maelstrom/issues/468
+    if [[ "$pkg" == maelstrom-broker ]]; then
+      cargo_test_options+=(--no-default-features --package)
+    else
+      cargo_test_options+=(--all-features --package)
+    fi
+
+    printf "Testing package %s\n" "$pkg"
+    cargo test "${cargo_test_options[@]}" "$pkg"
+  done
+}
+
+package_cargo-maelstrom() {
+  pkgdesc="Cargo test runner for Maelstrom"
+  depends=(
+    cargo
+    glibc
+    libgcc
+    openssl libcrypto.so libssl.so
+  )
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-broker() {
+  pkgdesc="Maelstrom broker, coordinating between clients and workers"
+  depends=(
+    gcc-libs
+    glibc
+    openssl libcrypto.so libssl.so
+  )
+  groups=(maelstrom-cluster)
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-client() {
+  pkgdesc="Maelstrom client for creating and submitting jobs on a Maelstrom cluster"
+  depends=(
+    gcc-libs
+    glibc
+    openssl libcrypto.so libssl.so
+  )
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-go-test() {
+  pkgdesc="Go test runner for Maelstrom"
+  depends=(
+    gcc-libs
+    glibc
+    go
+    openssl libcrypto.so libssl.so
+  )
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-pytest() {
+  pkgdesc="Python test runner for Maelstrom"
+  depends=(
+    gcc-libs
+    glibc
+    openssl libcrypto.so libssl.so
+    python
+    python-pip
+    python-pytest
+  )
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-run() {
+  pkgdesc="Program for submitting jobs to Maelstrom clusters"
+  depends=(
+    gcc-libs
+    glibc
+    openssl libcrypto.so libssl.so
+  )
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}
+
+package_maelstrom-worker() {
+  pkgdesc="Maelstrom worker, executing jobs as directed by maelstrom-broker"
+  depends=(
+    gcc-libs
+    glibc
+    openssl libcrypto.so libssl.so
+  )
+  groups=(maelstrom-cluster)
+
+  cd $pkgbase
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/Apache-2.0.txt"
+  install -vDm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}

@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-neutronclient
+pkgver=14.0.0
+pkgrel=1
+pkgdesc="OpenStack Networking (Neutron) Client"
+arch=('any')
+url="https://docs.openstack.org/python-neutronclient/latest/"
+license=('Apache-2.0')
+depends=('python-pbr' 'python-cliff' 'python-debtcollector' 'python-netaddr'
+         'python-openstacksdk' 'python-osc-lib' 'python-oslo-i18n' 'python-oslo-log'
+         'python-oslo-serialization' 'python-oslo-utils' 'python-keystoneauth1'
+         'python-keystoneclient' 'python-requests')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-oslotest' 'python-osprofiler' 'python-openstackclient'
+              'python-requests-mock' 'python-stestr' 'python-testtools')
+source=("git+https://github.com/openstack/python-neutronclient.git#tag=$pkgver")
+sha512sums=('734d3ad1ae7dd9470ade40cf1bc02201850a912382af5d11fc537085c46302f0097e8016cd4b24bbacce3d10feac78d23d0fe8055db10e4ab722762b4b08542b')
+
+build() {
+  cd python-neutronclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-neutronclient
+  stestr run
+}
+
+package() {
+  cd python-neutronclient
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

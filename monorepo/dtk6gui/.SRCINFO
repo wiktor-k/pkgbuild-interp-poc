@@ -1,0 +1,26 @@
+pkgbase = dtk6gui
+	pkgdesc = Deepin Toolkit, gui module for DDE look and feel
+	pkgver = 6.0.50
+	pkgrel = 2
+	epoch = 1
+	url = https://github.com/linuxdeepin/dtk6gui
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	makedepends = gtest
+	makedepends = doxygen
+	makedepends = treeland-protocols
+	depends = glibc
+	depends = dtk6core
+	depends = librsvg
+	depends = qt6-base
+	depends = glib2
+	depends = libx11
+	depends = gcc-libs
+	source = git+https://github.com/linuxdeepin/dtk6gui.git#tag=6.0.50
+	sha512sums = e9a5c921d0af129c9f18923b236380174822566a808c99cd141a978dae9f58480e86c13b9f1dbaa91889e093b825c2ff012733b4c0dda754b107636f16248011
+
+pkgname = dtk6gui

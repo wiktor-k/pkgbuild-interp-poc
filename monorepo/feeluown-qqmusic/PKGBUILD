@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Bruce Zhang <zttt183525594@gmail.com>
+
+pkgname=feeluown-qqmusic
+pkgver=1.0.16
+pkgrel=1
+pkgdesc="feeluown qqmusic plugin"
+arch=('any')
+url="https://github.com/feeluown/feeluown-qqmusic"
+license=('GPL3')
+depends=('feeluown' 'python-marshmallow' 'python-requests')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools')
+checkdepends=('python-pytest')
+groups=('feeluown-full')
+source=("git+https://github.com/feeluown/feeluown-qqmusic.git#tag=v$pkgver")
+sha512sums=('c0517d098eae6a13c904cdca01a1383ec64910730c32eff717084455beac42a8cb8162e77681336e8f01f7837ae5009a9af911ef6a2ba0c6eeced1bc524b758f')
+
+build() {
+  cd feeluown-qqmusic
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd feeluown-qqmusic
+  pytest
+}
+
+package() {
+  cd feeluown-qqmusic
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

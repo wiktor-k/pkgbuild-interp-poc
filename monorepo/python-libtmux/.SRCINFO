@@ -1,0 +1,24 @@
+pkgbase = python-libtmux
+	pkgdesc = Python api for tmux
+	pkgver = 0.62.0
+	pkgrel = 1
+	url = https://libtmux.git-pull.com/
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	checkdepends = python-pytest-rerunfailures
+	checkdepends = procps-ng
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-wheel
+	depends = python
+	depends = python-typing_extensions
+	depends = tmux
+	optdepends = python-pytest: for pytest plugin
+	source = libtmux-0.62.0.tar.gz::https://github.com/tmux-python/libtmux/archive/refs/tags/v0.62.0.tar.gz
+	sha512sums = 68b55792af1344863ce196c6e7327db26d28ed993ea28be0411d277549b20f27ed67488c2db2b6ad52b7c9da1a5c63d9a21f0935ba45115928f9fd906cc32047
+	b2sums = 0cea4206137a702dcfdbaefcb70af246ad984077d32b91c611b99b99d2222e96f3b043d3e2e710a06a7c24d43d239d3595c034acc8137a929e4bfd1d0630f514
+
+pkgname = python-libtmux

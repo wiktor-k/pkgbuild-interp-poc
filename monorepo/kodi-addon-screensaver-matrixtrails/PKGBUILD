@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-screensaver-matrixtrails
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="Matrix trails screensaver for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/screensaver.matrixtrails'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-screensaver')
+makedepends=('cmake' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/screensaver.matrixtrails/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('ac8c71c2f2c5f2d212a4fef7e625f257360927608ba0c5cba4daa4a09ee9d1183e9226c7e2da76c0ec4eb2b719f5d29462bcaf99e503478d4ceccf76fd530329')
+
+build() {
+    cd "screensaver.matrixtrails-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi')
+    cd "screensaver.matrixtrails-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

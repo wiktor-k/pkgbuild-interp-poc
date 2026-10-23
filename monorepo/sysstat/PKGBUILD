@@ -1,0 +1,50 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Martin Devera <devik@cdi.cz>
+
+pkgname=sysstat
+pkgver=12.8.0
+pkgrel=1
+pkgdesc="a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)"
+arch=('x86_64')
+url="https://sysstat.github.io/"
+license=('GPL-2.0-only')
+depends=(
+  'glibc'
+  'lm_sensors'
+)
+makedepends=('systemd')
+optdepends=(
+  'tk: to use isag'
+  'gnuplot: to use isag'
+)
+backup=(
+  'etc/conf.d/sysstat'
+  'etc/conf.d/sysstat.ioconf'
+)
+source=("https://github.com/sysstat/sysstat/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('42ddf7131b690be8927ceacdc35c23d6f1295f52446db68ecc2ea619e0e7ec955157b146216474e271bd0db242b3348e8ba4c8ebc03e518ac69b2564eec71857')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr \
+    conf_dir=/etc/conf.d \
+    sa_lib_dir=/usr/lib/sa \
+    --mandir=/usr/share/man \
+    --enable-install-cron \
+    --enable-copy-only \
+    --disable-compress-manpg
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,39 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+
+pkgname=python-sh
+pkgver=2.4.0
+pkgrel=1
+pkgdesc='Subprocess interface that allows you to call any program as if it were a function'
+arch=('any')
+url='https://github.com/amoffat/sh'
+license=('MIT')
+depends=('python')
+makedepends=('git' 'python-build' 'python-hatchling' 'python-installer'
+             'python-wheel')
+checkdepends=('python-pytest')
+source=("git+https://github.com/amoffat/sh.git#tag=$pkgver")
+sha512sums=('6cd8703d8e1d865194189ee4ddb13c0a65e20ec34a54705a9ef0d7c557b94debad399355cf79cf648c0096db27e3822f91156ae183bdb9580c1f741bfa29f361')
+b2sums=('966b41f0f3aed4407ef1621ee55d42c8481dace1efe753d505b75020f30979a0c47769c75286b0616fb041fce2abbc41d9079153473403f8777530d5992a8cb4')
+
+build() {
+  cd sh
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd sh
+  PYTHONPATH=src pytest -k 'not test_environment'
+}
+
+package() {
+  cd sh
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+  install -vDm644 {README.rst,CHANGELOG.md} \
+    -t "$pkgdir"/usr/share/doc/$pkgname/
+}
+
+# vim:set ts=2 sw=2 et:

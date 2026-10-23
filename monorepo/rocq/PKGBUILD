@@ -1,0 +1,117 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+# Contributor: acieroid
+# Contributor: spider-mario <spidermario@free.fr>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: George Giorgidze <giorgidze@gmail.com>
+# Contributor: William J. Bowman <bluephoenix47@gmail.com>
+
+pkgbase=rocq
+pkgname=(
+  rocq
+  rocqide
+)
+pkgver=9.3.0
+pkgrel=1
+pkgdesc="Interactive theorem prover, or proof assistant"
+arch=('x86_64')
+url="https://rocq-prover.org/"
+license=('LGPL-2.1-only')
+makedepends=(
+  'cairo'
+  'dune'
+  'fontconfig'
+  'freetype2'
+  'gdk-pixbuf2'
+  'git'
+  'glib2'
+  'glibc'
+  'gmp'
+  'gtk3'
+  'gtksourceview3'
+  'lablgtk3'
+  'ocaml'
+  'ocaml-findlib'
+  'ocaml-zarith'
+  'pango'
+)
+options=(
+  '!debug'
+  'staticlibs'
+)
+source=(
+  "git+https://github.com/rocq-prover/rocq.git#tag=V$pkgver"
+  "rocqide.desktop"
+)
+b2sums=('f173b065e046b0e1ce47117a49f03b67cc860735df1226a30c327eeb6d4ff1a85d20c47288e4ca609f4c3651d93c6f856d51cddf2fc1e71366281515a2f95deb'
+        'd0c410885cfeeb1e2339e0b5df54bd15b21b07e6cb57b579821e01d5e9ec50db5563fa9abfe1c87539131a0a7129c1a4abd8a055c60ef540ce8411c52c809627')
+
+prepare() {
+  cd $pkgbase
+
+  # Avoid dev/tools/make_git_revision.sh from baking the build host name and
+  # the build directory into the installed revision file.
+  : > revision
+}
+
+build() {
+  cd $pkgbase
+  ./configure \
+    -prefix /usr \
+    -docdir /usr/share/doc \
+    -libdir /usr/lib/ocaml/coq
+  make dunestrap
+  dune build -p rocq-runtime,coq-core,rocq-core,coqide-server,rocqide
+}
+
+package_rocq() {
+  depends=(
+    'glibc'
+    'gmp'
+    'ocaml'
+    'ocaml-findlib'
+  )
+  replaces=('coq')
+  provides=('coq')
+  conflicts=('coq')
+
+  cd $pkgbase
+  dune install rocq-runtime coq-core rocq-core \
+    --prefix=/usr \
+    --destdir="$pkgdir" \
+    --mandir=/usr/share/man \
+    --docdir=/usr/share/doc \
+    --libdir=/usr/lib/ocaml
+}
+
+package_rocqide() {
+  pkgdesc+=" (GTK-based GUI)"
+  depends=(
+    'cairo'
+    'fontconfig'
+    'freetype2'
+    'gdk-pixbuf2'
+    'glib2'
+    'glibc'
+    'gmp'
+    'gtk3'
+    'gtksourceview3'
+    'pango'
+    'rocq'
+  )
+  replaces=('coqide')
+  provides=('coqide')
+  conflicts=('coqide')
+
+  cd $pkgbase
+  dune install coqide-server rocqide \
+    --prefix=/usr \
+    --destdir="$pkgdir" \
+    --mandir=/usr/share/man \
+    --docdir=/usr/share/doc \
+    --libdir=/usr/lib/ocaml
+
+  install -vDm644 -t "$pkgdir/usr/share/applications" ../"$pkgname.desktop"
+  install -vDm644 ide/rocqide/coq.png "$pkgdir/usr/share/pixmaps/$pkgname.png"
+}

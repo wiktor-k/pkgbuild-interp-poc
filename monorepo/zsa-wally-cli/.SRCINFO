@@ -1,0 +1,20 @@
+pkgbase = zsa-wally-cli
+	pkgdesc = Flash your ZSA Keyboard the EZ way
+	pkgver = 2.0.1
+	pkgrel = 6
+	url = https://github.com/zsa/wally-cli
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = libusb
+	depends = glibc
+	depends = zsa-udev
+	source = zsa-wally-cli-2.0.1.tar.gz::https://github.com/zsa/wally-cli/archive/2.0.1-linux.tar.gz
+	sha512sums = 998035e5d932892245cd6db13682501dc5e65a79b724e9ed66733c955bf6646c46c5cb59214160cd5bc5710949dcd43f054ae72b5adb757aa12e3cece92df4bc
+	b2sums = 876a1e237d08c43b90c89ef596ad9015a6f641d3282296b9e3c846a7bf7fa27988605902deaae9e2c95b9c8bf10a2e2304c3ad5b1812001a45b6ca93eb0210bd
+
+pkgname = zsa-wally-cli
+	depends = glibc
+	depends = zsa-udev
+	depends = libusb
+	depends = libusb-1.0.so

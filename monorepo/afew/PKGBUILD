@@ -1,0 +1,50 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+# Contributor: Lucas Hoffmann
+# Contributor: Giancarlo Razzolini <grazzolini@archlinux.org>
+# Contributor: Kazuo Teramoto <kaz.rag at gmail.com>
+
+pkgname=afew
+pkgver=4.0.2
+pkgrel=1
+pkgdesc='Initial tagging script for notmuch mail'
+arch=(any)
+url=https://github.com/afewmail/afew
+license=(ISC)
+depends=(
+  notmuch
+  python-chardet
+  python-cffi
+  python-dkim
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-sphinx
+  python-wheel
+)
+optdepends=('python-pyinotify: for --watch')
+checkdepends=(python-freezegun)
+source=("git+$url.git#commit=$pkgver")
+b2sums=('248eed0eb8fa530b4acec996e61572b4f6675d2cb3e9940195f5a78f5fdd25b57c84fc5db43705a351902cd1ce7b48eee5a484cb45e27b31a694597ed1bfe0de')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+  PYTHONPATH="build:$PYTHONPATH" sphinx-build -b man docs build
+}
+
+check() {
+  cd $pkgname
+  python -m unittest discover $pkgname/tests
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 build/$pkgname.1
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

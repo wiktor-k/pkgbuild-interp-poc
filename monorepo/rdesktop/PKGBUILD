@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Dan McGee <dan@archlinux.org>
+
+pkgname=rdesktop
+pkgver=1.9.0
+pkgrel=4
+pkgdesc='An open source client for Windows Remote Desktop Services'
+arch=(x86_64)
+url='https://www.rdesktop.org/'
+_url='https://github.com/rdesktop/rdesktop'
+license=(GPL-3.0-only)
+depends=(libao
+         libgssglue
+         libsamplerate
+         libxcursor
+         pcsclite
+         xorg-xrandr)
+options=(!lto)
+_archive="$pkgname-$pkgver"
+source=("$_url/archive/v$pkgver/$_archive.tar.gz"
+        "$pkgname-ssl.patch"
+         nettle-4.patch)
+sha256sums=('d547c2e6f3e4c818a7e69a0f39adb39fac303633e0c25aa804bb588507ffc230'
+            '52cdece7b301e1234b313ece9006e848d33cdf02568604f99a4697913166f1cc'
+            '94a8ec2911b6d38fae1932d50ad39a6910cd4c637e810a3f492dbeec10b41a5f')
+
+prepare() {
+	cd "$_archive"
+	patch -Np1 -i "../$pkgname-ssl.patch"
+	patch -p1 -i ../nettle-4.patch
+	./bootstrap
+}
+
+build() {
+	cd "$_archive"
+	export CCFLAGS+=' --std=c++11 -std=gnu++98'
+	export CXXFLAGS+=' --std=c++11 -std=gnu++98'
+	./configure --prefix=/usr --enable-smartcard --with-ipv6
+	make
+}
+
+package() {
+	cd "$_archive"
+	make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-audioencoder-wav
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="WAV Audio Encoder add-on for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/audioencoder.wav'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-audioencoder')
+makedepends=('cmake' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/audioencoder.wav/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('4b09a4c3c3c968a771af03090b83c1887918a0954282b7d57da03066c295c6ab337a9f8972bd64421f37f6e9c321e2b6a2a9eb2627e36d7a0d3190021ecb86c1')
+
+build() {
+    cd "audioencoder.wav-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi')
+    cd "audioencoder.wav-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

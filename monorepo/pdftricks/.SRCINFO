@@ -1,0 +1,24 @@
+pkgbase = pdftricks
+	pkgdesc = Simple, efficient application for small manipulations in PDF files using Ghostscript
+	pkgver = 0.4.1
+	pkgrel = 2
+	url = https://github.com/muriloventuroso/pdftricks
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = gdk-pixbuf2
+	depends = ghostscript
+	depends = glib2
+	depends = glibc
+	depends = granite
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = imagemagick
+	source = git+https://github.com/muriloventuroso/pdftricks.git#tag=0.4.1
+	source = pdftricks-meson.patch
+	b2sums = e48e220300b0e5597f445dd3f9e7b9469eb553c02e27fd5eb1ef3328f000cc7d40314359df97fc4bb7e03f41725a616b7ada60e142683ce731a072d746aabb45
+	b2sums = 52016cb3f7d929a3fc1d60fdd9ef230a5593f7832315bbda246868cd90b6926ea9167d8c85f7839eef642a072b7663eb31989d61a3f9e88e2842d1109579d272
+
+pkgname = pdftricks

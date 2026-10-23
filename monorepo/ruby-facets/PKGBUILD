@@ -1,0 +1,64 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-facets
+pkgver=4.0.0
+pkgrel=1
+pkgdesc='Premiere collection of general purpose method extensions and standard additions for the Ruby programming language'
+arch=(any)
+url='https://github.com/rubyworks/facets'
+license=(BSD-2-Clause)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-lemon
+  ruby-qed
+  ruby-rake
+  ruby-rubytest-cli
+  ruby-simplecov
+)
+options=(!emptydirs)
+source=(git+https://github.com/rubyworks/facets.git#tag=v$pkgver)
+sha256sums=('857c8386dc8f20515c8fa8670c6eed7c92a6e558d096ed88149bb88beb7e0c29')
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd facets
+  gem build facets.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    facets-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd facets
+  GEM_HOME="tmp_install/$_gemdir" rake test qed
+}
+
+package() {
+  cd facets
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

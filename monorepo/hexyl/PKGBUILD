@@ -1,0 +1,51 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Attenuation <ouyangjun1999@gmail.com>
+
+pkgname=hexyl
+pkgver=0.17.0
+pkgrel=2
+pkgdesc='Colored command-line hex viewer'
+url='https://github.com/sharkdp/hexyl'
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=(
+  'libgcc'
+)
+makedepends=('cargo' 'pandoc')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('9c098d0c625627eb618ddabac247e1537aa8718dcd462e653c5c2ffed34411ee0c3947914be4072f9cde4c45d3a763cc4caab67639d97de919e596b63761dd71')
+b2sums=('4590d03efac3249b600bc7051677532c1456f41ae263220a8fee88b94d9e2db6bdf3e8e349d854b8ce73995917eb58781260fa2feeeca7f9ea09abc46bbff6d2')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --release --frozen
+  pandoc -s -f markdown -t man -o "doc/${pkgname}.1" "doc/${pkgname}.1.md"
+  mkdir ../completions
+  target/release/${pkgname} --completion bash > ../completions/${pkgname}.bash
+  target/release/${pkgname} --completion fish > ../completions/${pkgname}.fish
+  target/release/${pkgname} --completion zsh > ../completions/${pkgname}.zsh
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 target/release/${pkgname} -t "${pkgdir}/usr/bin"
+  install -Dm 644 LICENSE* -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/${pkgname}"
+  install -Dm 644 "doc/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+  install -Dm0644 ../completions/${pkgname}.bash "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  install -Dm0644 ../completions/${pkgname}.fish -t "${pkgdir}/usr/share/fish/vendor_completions.d"
+  install -Dm0644 ../completions/${pkgname}.zsh "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

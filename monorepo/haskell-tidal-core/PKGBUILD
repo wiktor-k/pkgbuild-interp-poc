@@ -1,0 +1,77 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=haskell-tidal-core
+_name=${pkgname#haskell-}
+pkgver=1.10.0
+pkgrel=8
+pkgdesc="Core pattern library for TidalCycles, a pattern language for improvised music"
+arch=(x86_64)
+url="https://tidalcycles.org/"
+license=(GPL-3.0-only)
+depends=(
+  bash
+  gcc-libs
+  ghc-libs
+  glibc
+  gmp
+  haskell-base
+  haskell-blaze-builder
+  haskell-colour
+  haskell-containers
+  haskell-deepseq
+  haskell-hspec
+  haskell-parsec
+  haskell-text
+)
+makedepends=(
+  ghc
+  uusi
+)
+checkdepends=(haskell-microspec)
+source=(
+  https://hackage.haskell.org/packages/archive/$_name/$pkgver/$_name-$pkgver.tar.gz
+)
+sha512sums=('4712e7102b7ec1c5897780f138ec77b25a45ad61469592fcea3a7c500f4559aa11c5cff38ec3e4e5c22262f146aee2e02c7c06338aa7576b54f10890c687474c')
+b2sums=('5331fdf2dd5d2b4bcc5a30bbddeb792f27bc90abb519195765df5651597c9c2e6272112c1761eb0672e5718beaa13a7853a3ebee2315673b5e9716ff9ec89fbb')
+
+prepare() {
+  cd $_name-$pkgver
+  gen-setup
+}
+
+build() {
+  local configure_options=(
+    -O
+    --datasubdir=$pkgname
+    --disable-library-vanilla
+    --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname
+    --dynlibdir=/usr/lib
+    --enable-executable-dynamic
+    --enable-shared
+    --enable-tests
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now
+    --ghc-option=-pie
+    --libsubdir=\$compiler/site-local/\$pkgid
+    --prefix=/usr
+  )
+
+  cd $_name-$pkgver
+  runhaskell Setup configure "${configure_options[@]}"
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_name-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_name-$pkgver
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -vDm 744 register.sh "$pkgdir/usr/share/haskell/register/$pkgname.sh"
+  install -vDm 744 unregister.sh "$pkgdir/usr/share/haskell/unregister/$pkgname.sh"
+}

@@ -1,0 +1,22 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: justforlxz <justforlxz@gmail.com>
+
+pkgname=deepin-wayland-protocols
+pkgver=1.10.0.32
+pkgrel=1
+pkgdesc='deepin Specific Protocols for Wayland'
+url="https://github.com/linuxdeepin/deepin-wayland-protocols"
+arch=(any)
+license=(LGPL-2.1-or-later BSD-3-Clause MIT-CMU MIT Apache-2.0)
+makedepends=(git extra-cmake-modules ninja qt5-base)
+source=("git+https://github.com/linuxdeepin/deepin-wayland-protocols.git#tag=$pkgver")
+sha256sums=('57ce074d5f8557e7c6e04cff6f3ef54283001a267587f14e06d3d0423b7e53cd')
+
+build() {
+  cmake -GNinja -B build -S $pkgname
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

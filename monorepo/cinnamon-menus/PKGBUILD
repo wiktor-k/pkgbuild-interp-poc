@@ -1,0 +1,25 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Alexandre Filgueira <alexfilgueira@antergos.com>
+
+pkgname=cinnamon-menus
+pkgver=6.6.0
+pkgrel=1
+pkgdesc="Cinnamon menu specifications"
+arch=(x86_64)
+url="https://github.com/linuxmint/cinnamon-menus"
+license=(GPL LGPL)
+depends=(glib2)
+makedepends=(git gobject-introspection meson)
+source=(git+${url}#tag=$pkgver)
+sha256sums=('480e800d776aaf128032d9abae6aa33069c6b53833d0bd9d235dacbf91033376')
+b2sums=('70a3045b6603e628768b77ea80dac6d12ce4d564f406a6fb73e73e89718f7c751ec8edd2abb368b431eced837de27e2f2e8ef0287dab6f8eda06ede87624abfc')
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+package(){
+  meson install -C build --destdir="$pkgdir"
+}

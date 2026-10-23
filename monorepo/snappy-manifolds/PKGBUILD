@@ -1,0 +1,38 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=snappy-manifolds
+pkgver=3.3.2
+pkgrel=1
+pkgdesc='A package for studying the topology and geometry of 3-manifolds, with a focus on hyperbolic structures'
+url='https://snappy.computop.org/'
+depends=(glibc
+         ipython
+         libgcc
+         libstdc++
+         python
+         python-cypari2
+         python-fxrays
+         python-low-index
+         python-plink
+         python-snappy-manifolds
+         python-spherogram
+         python-tkinter-gl)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools)
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+source=(git+https://github.com/3-manifolds/SnapPy#tag=${pkgver}_as_released)
+sha256sums=('fbbb60c3049d93239d37789affbd4b11bc109a49826ce6ca587fe726130d9018')
+
+build() {
+  cd SnapPy
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd SnapPy
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

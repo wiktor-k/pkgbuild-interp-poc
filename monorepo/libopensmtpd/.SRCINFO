@@ -1,0 +1,16 @@
+pkgbase = libopensmtpd
+	pkgdesc = Library for creating OpenSMTPD filters
+	pkgver = 1.0
+	pkgrel = 2
+	url = https://imperialat.at/dev/libopensmtpd/
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = gzip
+	makedepends = mandoc
+	depends = glibc
+	depends = libevent
+	source = git+ssh://anonymous@src.imperialat.at/libopensmtpd#tag=v1.0
+	sha512sums = fde042bd4cea0b4fbdc13441d4c33c07e0d03d21e563864b226bda637f2996699211cc15d876e9db7bf36f5d3cd70243d49a07ea13c3ccedc48766d8aebf4e48
+
+pkgname = libopensmtpd

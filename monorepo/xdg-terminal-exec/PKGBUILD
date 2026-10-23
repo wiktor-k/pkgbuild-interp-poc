@@ -1,0 +1,35 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Max Gautier <mg@max.gautier.name>
+
+pkgname=xdg-terminal-exec
+pkgver=0.14.3
+pkgrel=2
+pkgdesc="Proposal for XDG Default Terminal Execution Specification and shell-based reference implementation"
+url="https://github.com/Vladimir-csp/xdg-terminal-exec"
+arch=('any')
+license=('GPL-3.0-or-later')
+depends=('bash')
+makedepends=('scdoc')
+checkdepends=('bats')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('82ac2dfdb357361d15f5163cdeb3cfd457bbb30bf5d2e14436393f493bd32afe')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	make clean
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	make
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	make test
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	make prefix=/usr DESTDIR="${pkgdir}" install
+}

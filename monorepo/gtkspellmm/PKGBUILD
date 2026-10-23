@@ -1,0 +1,60 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=gtkspellmm
+pkgname=(
+  gtkspellmm
+  gtkspellmm-docs
+)
+pkgver=3.0.5
+pkgrel=6
+pkgdesc='C++ binding for gtkspell'
+arch=(x86_64)
+url='http://gtkspell.sourceforge.net/'
+license=(GPL-2.0-or-later)
+depends=(
+  glib2
+  glibc
+  glibmm
+  gtk3
+  gtkmm3
+  gtkspell3
+  libgcc
+  libsigc++
+  libstdc++
+)
+makedepends=(
+  git
+  gtkmm3-docs
+  mm-common
+)
+source=("git+https://git.code.sf.net/p/gtkspell/gtkspellmm#tag=${pkgname}_${pkgver//./_}")
+b2sums=(8c47233b9e8c6f992fa4fea4dc33f296b0f4da2739f9127781c9aac09c334aedcff9ccd317f298d071c0dfe8df42ebfbb35a02fb5553af14afdcbced19ed9a69)
+
+prepare() {
+  cd $pkgbase
+  mm-common-prepare -cf
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgbase
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-maintainer-mode
+  make
+}
+
+package_gtkspellmm() {
+  cd $pkgbase
+  make DESTDIR="$pkgdir" install doc_subdirs=
+}
+
+package_gtkspellmm-docs() {
+  pkgdesc='Developer documentation for gtkspellmm'
+  depends=(gtkmm3-docs)
+
+  cd $pkgbase
+  make -C doc DESTDIR="$pkgdir" install
+}

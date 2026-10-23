@@ -1,0 +1,25 @@
+pkgbase = bustle
+	pkgdesc = Draw sequence diagrams of D-Bus traffic
+	pkgver = 0.14.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Bustle/
+	arch = x86_64
+	groups = gnome-circle
+	license = LGPL-2.1-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = pango
+	source = git+https://gitlab.gnome.org/World/bustle.git#tag=0.14.0
+	b2sums = a9e8ed2e2ac9dbe349590262d6ee4faada413e7b4bb455f1ea12fc8df30e943f5a423949e04e47cfc26590d058cd150a9e02d7149802e1a01b60e6ef0b621132
+
+pkgname = bustle

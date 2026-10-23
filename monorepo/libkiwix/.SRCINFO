@@ -1,0 +1,24 @@
+pkgbase = libkiwix
+	pkgdesc = Library providing the Kiwix software core
+	pkgver = 14.2.1
+	pkgrel = 2
+	url = https://github.com/kiwix/libkiwix
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = meson
+	makedepends = gtest
+	makedepends = mustache
+	depends = libzim>=9.8.1
+	depends = pugixml
+	depends = xapian-core
+	depends = aria2
+	depends = libmicrohttpd
+	depends = python
+	depends = curl
+	provides = kiwix-lib
+	conflicts = kiwix-lib
+	replaces = kiwix-lib
+	source = libkiwix-14.2.1.tar.gz::https://github.com/kiwix/libkiwix/archive/14.2.1.tar.gz
+	sha256sums = cff1eb06d62ab42e1720a49f473b7d9364f02ee77a8a455c9adb26db419e0fff
+
+pkgname = libkiwix

@@ -1,0 +1,29 @@
+pkgbase = genius
+	pkgdesc = Advanced calculator including a mathematical programming language
+	pkgver = 1.0.29
+	pkgrel = 1
+	url = https://www.jirka.org/genius.html
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = autoconf-archive
+	makedepends = git
+	makedepends = intltool
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gmp
+	depends = gtk3
+	depends = gtksourceview4
+	depends = hicolor-icon-theme
+	depends = mpfr
+	depends = ncurses
+	depends = pango
+	depends = readline
+	depends = vte3
+	source = git+https://gitlab.gnome.org/GNOME/genius.git#tag=1.0.29
+	source = org.gnome.Genius.appdata.xml
+	b2sums = 52dabb57175caad82b5eab359b5ff7010d08543fb1ae60697feae7e67ef603c3cbf2911d9b59c87e20fd2172de723284dfd583ca92bfba88ba62ac1be3ebfbae
+	b2sums = 6fffc6df8f2afd779e856df8add87317d34df9aef7b19adaeb513d2591e6136acdb149cd3a992512605a4e125f028d95781ae73824c62ab09f89021d377bb9bf
+
+pkgname = genius

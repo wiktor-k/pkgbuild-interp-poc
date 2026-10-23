@@ -1,0 +1,21 @@
+pkgbase = camlp5
+	pkgdesc = A preprocessor-pretty-printer of OCaml.
+	pkgver = 8.05.02
+	pkgrel = 1
+	url = https://camlp5.github.io/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ocaml-compiler-libs
+	makedepends = ocaml-findlib
+	depends = ocaml
+	depends = camlp-streams
+	depends = ocaml-rresult
+	depends = ocaml-bos
+	depends = ocaml-pcre2
+	options = !strip
+	options = staticlibs
+	options = !debug
+	source = camlp5-8.05.01.tar.gz::https://github.com/camlp5/camlp5/archive/8.05.01.tar.gz
+	sha256sums = 7aa71c393cf4f24860051a5aa78da8925d73cb79ba045df442dff2343b1283d7
+
+pkgname = camlp5

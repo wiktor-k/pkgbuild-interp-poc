@@ -1,0 +1,14 @@
+pkgbase = phpmyadmin
+	pkgdesc = PHP web-based tool to administrate MySQL and MariaDB databases over the web
+	pkgver = 5.2.3
+	pkgrel = 1
+	url = https://www.phpmyadmin.net
+	arch = any
+	license = GPL
+	depends = mysql-clients
+	depends = php-interpreter
+	backup = etc/webapps/phpmyadmin/config.inc.php
+	source = https://files.phpmyadmin.net/phpMyAdmin/5.2.3/phpMyAdmin-5.2.3-all-languages.tar.xz
+	sha512sums = 9a370167646b9e3e898262ef84587ff2ff5ba74eb1bd7e478f236a1e3f5bff9cb496670ec3c9f8b19d932fdbd796905e5ccc33e4fc0158a7fcde95aab8802b28
+
+pkgname = phpmyadmin

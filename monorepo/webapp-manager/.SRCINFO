@@ -1,0 +1,29 @@
+pkgbase = webapp-manager
+	pkgdesc = Run websites as if they were apps
+	pkgver = 1.4.6
+	pkgrel = 2
+	url = https://github.com/linuxmint/webapp-manager
+	arch = any
+	groups = x-apps
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = bash
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = python
+	depends = python-beautifulsoup4
+	depends = python-gobject
+	depends = python-pillow
+	depends = python-requests
+	depends = python-setproctitle
+	depends = python-tldextract
+	depends = xapp
+	source = git+https://github.com/linuxmint/webapp-manager.git#tag=1.4.6
+	source = webapp-manager-epiphany43.patch
+	b2sums = 37ed8994abee1a84942ba517b2ea6f96b067531fdfdce7359b049026ba32b0113900e2a1a7056f784cd920c725d66366927681ac83d46c4b6f8ef87d170704b9
+	b2sums = ac2c1a30476cf396818c768f464b1b50ef74faa2d29d11005756a585a8d2fca532120a868d4b3b984f20241798ab4d812a295eb061d1a23db6932392a2426316
+
+pkgname = webapp-manager

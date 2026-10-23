@@ -1,0 +1,17 @@
+pkgbase = jig
+	pkgdesc = A tool for building and publishing Puppet modules
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/avitacco/jig
+	arch = x86_64
+	arch = aarch64
+	license = GPL-3.0-or-later
+	license = Apache-2.0
+	checkdepends = git
+	makedepends = go
+	depends = glibc
+	options = !debug
+	source = jig-2.0.0.tar.gz::https://github.com/avitacco/jig/archive/refs/tags/v2.0.0.tar.gz
+	sha256sums = 7ccff5b5e0d5f64058db3049346f0f9cceb4d299d0848ddace4fbc67aa7ed186
+
+pkgname = jig

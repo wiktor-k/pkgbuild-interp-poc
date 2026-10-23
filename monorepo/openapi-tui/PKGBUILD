@@ -1,0 +1,46 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=openapi-tui
+pkgver=0.10.2
+pkgrel=2
+pkgdesc="Terminal UI to list, browse and run APIs defined with OpenAPI spec"
+arch=('x86_64')
+url="https://github.com/zaghaghi/openapi-tui"
+license=('MIT')
+depends=(
+  'libgcc'
+  'oniguruma'
+  'openssl'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha256sums=('e9ca7bc160ca6fdf50f7534318589fcb725564c05b81f40742e37a422f35a191')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export VERGEN_GIT_DESCRIBE="Arch Linux"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  export OPENSSL_NO_VENDOR=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  export OPENSSL_NO_VENDOR=1
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

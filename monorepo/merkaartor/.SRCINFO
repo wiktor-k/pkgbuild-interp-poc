@@ -1,0 +1,29 @@
+pkgbase = merkaartor
+	pkgdesc = OpenStreetMap editor
+	pkgver = 0.20.0
+	pkgrel = 30
+	url = http://merkaartor.be/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = qt6-tools
+	depends = abseil-cpp
+	depends = exiv2
+	depends = gdal
+	depends = glibc
+	depends = gpsd
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = proj
+	depends = protobuf
+	depends = qt6-5compat
+	depends = qt6-base
+	depends = qt6-networkauth
+	depends = qt6-svg
+	depends = zlib
+	source = git+https://github.com/openstreetmap/merkaartor.git#tag=0.20.0
+	b2sums = 482d16f8706d3ca8cdd3f4ebf8922cc0f4be13b2c0036eda15362ffa9565a0ea9903dadde085e9533c71eb2126e5948cda7678f94002a64e19458446b808690c
+
+pkgname = merkaartor

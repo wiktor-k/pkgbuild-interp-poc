@@ -1,0 +1,147 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=mailman
+pkgname=mailman3
+pkgver=3.3.10
+pkgrel=9
+pkgdesc="The GNU mailing list manager"
+arch=(any)
+url="https://www.list.org/"
+license=(GPL-3.0-or-later)
+depends=(
+  gunicorn
+  python
+  python-aiosmtpd
+  python-alembic
+  python-atpublic
+  python-authheaders
+  python-authres
+  python-click
+  python-dateutil
+  python-dnspython
+  python-falcon
+  python-flufl.bounce
+  python-flufl.i18n
+  python-flufl-lock
+  python-lazr.config
+  python-passlib
+  python-requests
+  'python-sqlalchemy>=1.4'
+  python-zope-component
+  python-zope-configuration
+  python-zope-event
+  python-zope-interface
+  python-nntplib
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-pdm-backend
+)
+checkdepends=(
+  python-nose2
+  python-psycopg2
+  python-pymysql
+  python-pytest
+)
+optdepends=(
+  'hyperkitty: for local archive and list interaction'
+  'lynx: for the default HTML to plaintext conversion'
+  'mailman3-hyperkitty: for archiving mails with an instance of hyperkitty'
+  'postorius: for local configuration interaction'
+  'python-mailmanclient: for programmatically interfacing the mailman REST API locally'
+  'python-psycopg2: for PostgreSQL support'
+  'python-pymysql: for MySQL support'
+  'smtp-server: for using a local mail server'
+)
+conflicts=(mailman)
+replaces=(mailman-core)
+backup=(etc/mailman.cfg)
+source=(
+  $pkgname::git+https://gitlab.com/$_name/$_name?signed#tag=v$pkgver
+  $pkgname-3.3.10-stop-modifying-cc-header.patch
+  $pkgname-3.3.10-fix-orphaned-member-lookup.patch
+  $pkgname-3.3.10-fix-member-recipients-crash.patch
+  $pkgname.service
+  $pkgname-digests.service
+  $pkgname-digests.timer
+  $pkgname-gatenews.service
+  $pkgname-gatenews.timer
+  $pkgname-notify.service
+  $pkgname-notify.timer
+  $pkgname.sysusers
+  $pkgname.tmpfiles
+)
+sha512sums=('923ae08b99657bf0ea626afc81e97e96e9ccc5b437a9f71a0d91549a3eac2544dfcb60c5a89ce22f2ce251c1a9bcbff6743610ad137d33ace9b4a06999739ce3'
+            '63f636acc93cf9605db16e92e6bb6836075109ae746953cbed40a64758cb6b2802d3e8948deac512d7cccc2cd4bd793f53da9477fc23d666860bc793058cb07d'
+            '6023b7c146d09753b42bfcd02ac78fe77e594740e5974b622a00e805bc376f5a693e550a5431dc28b6e8685df1658d22e7411d2445f119a70d30eeacb2785330'
+            '8023eb24dd47c540b224ce576d555030e0f0a880a8abce736f40ae250ecef66f7aab9c4596a7bb90d922e12a0bdcd87c392e0c46199b70d57da6cc590f8d2a48'
+            '13db8b7fc571725b299e909a289071a1e80502394d3e90f379b3ecd6f014b8adbbffa861903f91cfd0ad6ff2266cbf6539003a5d8559aea9a754012ce10eff96'
+            'dccb7bfac560252f6c36ce26149d72d7faa52c1ff283b725deab802b0a94c45692224936b1a099b95dd5d90782dd39ecb15e299303d0264f1c14a6ac8052ee77'
+            '5d7ccba8cf1262ab052078f2188ded15e43e1201302c7c24ce763efef9789ec99d8ea9a19e8fbd9bc5a38f47a162fe5cf4b0ade284894cb57af66350f23507bc'
+            'f02f0c25c5eb3493a4d345783a41a7ef03b9b4265b09bc5dc5d3cd6749c51f10d6d9f2b3fb48435df932008cf02b6b28ee28951e1e8db195ed5ef7eb3e32f7c6'
+            'fc550ef017ad8a22e0c40a8808361831b8c32cd0d34925cdce433ec4a0564e9577d6f9ccdcd38098eb4cf692257c061ff3fbea3b762d274f9b5e2fa88d10d82e'
+            'edc14e009d117c9799bb5d20f0f81dd580acdc184c35cbaf6596056467bc3116d77e5e4a1d9957cf23201cfd57c3a82970fe996e0565c8e527d83fcfc132051a'
+            'b8538618be8bdd6313d24b844d15c8f25a059c3391cd06db69314b7be19996bfbe913d6c0c9c99d6a19c4f92df32212d31785e92fb32faf5eb792fffe121fcce'
+            'e65090ac5988feb6ec28293f7ee4762e9d4ea9784d69554a0d4a65b24a079dc3b3faec537c0070f7e055c0fa03309f067d26e347190a41b21afc48847ef64379'
+            '6f4b51fd5eb34ac974b3312c34eb1437d9435cfd50f0cb89db02b94ce514bceca2c6dc7cb172b79b2d6a23d68e7ea391ec58dbd9899938c0fe88c03c67c521b9')
+b2sums=('513404b857ee26d19f8f4c3883cf9eb9d1494377f4c33b88302b7d5ec9f522901481ee0137a036bac2adbee88c66a866757495774a3fe8e388eba7fec50f000e'
+        '2faa6486e6cd040e442378c377a316ebfc691ab3d209ac6f3c949693b8af51834fcb78086c403c5516874530d15b0fabe5adba8e3011673bba21f5b93b5d5437'
+        '9da0a5ef2ce8e105a9017447458118f3525ac64584ad1a11ed7b4132b5e0e85702ab68bba0c8bd38c1baba2a7baae9a961e192505dcf49da4255a7fb27c05329'
+        '3e21531de52a258302b1f4f500d0bbfb9f87a5509a75dcafdcd17af6196e068a491e74e087db3038e798a37257a38b4d1bb59458669c1bda71320e8cbc5b67fc'
+        '4f8a075748d87822c95ca969680766a5f3d0526bcc49213458a6bb10a46e54e14f2be738a4b20af422d042cdbd4534a0639ef0fb2de77fca97eb1ee4507a1a9f'
+        'fc6d6545dad6cecfd4c1197269a3ec025eb0b830e04151bb2dee778b9e357127667c5a65ea401b10e31e2ec6a8509719de29c30471fa50d09634c934bdf50b9b'
+        'b0d764dd4f7017c2d5b76e8a52b0c8d75e35b0b0d9025609853d389f8fa0732ea902549ef168f988bf845370cf67aeb7d439af8dec1997127522055b11e64000'
+        '62dffd34e9952b5b7430b55d2ed01aafa8023b48d679f06cdaf444180012b8766ff633f198b92eade228420bad40718bc98f156b0c86a0f29e224585ccec48e0'
+        '06bfa99d6356efc426430b67de9ed18bd80a5d659b4f0c81d7e2306810c856d1de34c5df1fd2834228f3c2b78fc42806f1d9bede9ddb3ac7185a367608c0a823'
+        'ca8aca1a916e99ed313adfd57c33fdd7a3e1b883e22daae8a1e32084331aa32e7ab99b8adfb6ef95b8b696232d044c65de23dba28b2c7e31a9bd02a5f2cb22c2'
+        'b980470b16171ed0e32a0c1d9de7d5e6802431dd5275089c03f7bc862d5ac886b78af8aa8828faa71a63e847c9caf660c3da2890828ecb2e0bea537c2c4001a5'
+        '4443bbcdb1f0ae5a223139bfdf5f9434293dd21436c28c172b0588728a92db7120e96cddf75c56af0b02b874640e49e4777c8c8c371ad330c866939805dc309f'
+        '461dce577696405011ed89f7fc109caaf27f4183b4d315baa8ad03db0f12015ebc447cbe9c0b8c5bcba38b63fcaf45adcfcb3e5bf5afb7eb0bd87a2e1b0301e5')
+validpgpkeys=('541EA0448453394FF77A0ECC9D9B2BA061D0A67C') # Abhilash Raj <maxking@asynchronous.in>
+
+prepare() {
+  cd $pkgname
+  # make sure that mailman runs in a FHS compliant way
+  printf "[mailman]\nlayout: fhs\n" >> ../$_name.cfg
+  # set /var/lib/mailman instead of /var/tmp/mailman as default var_dir:
+  sed -e 's|/var/tmp/mailman|/var/lib/mailman|g' -i src/$_name/config/schema.cfg
+  # fix use of PosixPath with >= Python 3.13: https://gitlab.com/mailman/mailman/-/merge_requests/1309
+  git cherry-pick -n 685d9a7bdbd382d9e8d4a2da74bd973e93356e05
+  # stop modifying the CC header as it breaks DKIM: https://gitlab.com/mailman/mailman/-/merge_requests/1039
+  git apply ../$pkgname-3.3.10-stop-modifying-cc-header.patch
+  # fix Member._lookup() None preferences crash: https://gitlab.com/mailman/mailman/-/merge_requests/1503
+  git show d0e5baf0bf13c46ade39c4ab65037e386bb99edd -- src/mailman/model/member.py | git apply
+  # fix orphaned-member crashes: https://gitlab.com/mailman/mailman/-/issues/693
+  git apply ../$pkgname-3.3.10-fix-orphaned-member-lookup.patch
+  git apply ../$pkgname-3.3.10-fix-member-recipients-crash.patch
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  # thanks to test design it is impossible to run tests:
+  # https://gitlab.com/mailman/mailman/-/issues/400
+  # nose2 -v
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # config
+  install -vDm 640 ../$_name.cfg -t "$pkgdir/etc/"
+  # state dir
+  install -vdm 750 "$pkgdir/var/lib/mailman"
+  # sysusers.d
+  install -vDm 644 ../$pkgname.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  # tmpfiles.d
+  install -vDm 644 ../$pkgname.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  # services and timer
+  install -vDm 644 ../*.{service,timer} -t "$pkgdir/usr/lib/systemd/system"
+}

@@ -1,0 +1,18 @@
+pkgbase = gitlogue
+	pkgdesc = A cinematic Git commit replay tool for the terminal
+	pkgver = 0.9.0
+	pkgrel = 1
+	url = https://github.com/unhappychoice/gitlogue
+	arch = x86_64
+	license = ISC
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = libgit2
+	depends = openssl
+	depends = zlib
+	options = !lto
+	source = gitlogue-0.9.0.tar.gz::https://github.com/unhappychoice/gitlogue/archive/v0.9.0.tar.gz
+	sha256sums = e0e7c7def40757a41081b0e76daab0fd9f40af2840028b382e02728dcf3e9c8d
+
+pkgname = gitlogue

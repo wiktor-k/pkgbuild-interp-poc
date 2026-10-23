@@ -1,0 +1,50 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=yass
+pkgver=0.1.0
+pkgrel=5
+pkgdesc="Yet Another Scrolling Scope"
+arch=(x86_64)
+url="https://kokkinizita.linuxaudio.org/linuxaudio/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  clthreads
+  clxclient
+  glibc
+  jack
+  libgcc
+  libstdc++
+  libx11
+)
+makedepends=(gendesk)
+backup=(etc/yass.conf)
+source=(https://kokkinizita.linuxaudio.org/linuxaudio/downloads/$pkgname-$pkgver.tar.bz2)
+sha512sums=('c8107368ea014c0f078cd73df325aa68e15af2ce8797e02dbcc4cff4b03b753f9dd7301d9ef675960021a94ca47354cc93cae3f0e8abbbece54d9333ee4f77a2')
+b2sums=('3db37b76f6b0ede497b3bf8b616b194b50bd857cc1ba37fa89ab75b609c5d6879b743e712fa2f5beec95966a0be20432aacd24d8d7eeb1139d336ab1629be8eb')
+
+prepare() {
+  cd $pkgname-$pkgver
+  sed -e '/native/d' \
+      -i source/Makefile
+  # XDG desktop files
+  gendesk -n \
+          --pkgname $pkgname \
+          --pkgdesc "$pkgdesc" \
+          --name YASS \
+          --categories "AudioVideo;Audio"
+}
+
+build() {
+  make -C $pkgname-$pkgver/source
+}
+
+package() {
+  make DESTDIR="$pkgdir" PREFIX="/usr" install -C $pkgname-$pkgver/source
+  # XDG desktop integration
+  install -vDm 644 $pkgname-$pkgver/$pkgname.desktop -t "$pkgdir/usr/share/applications/"
+  # docs
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+  # configuration
+  install -vDm 644 $pkgname-$pkgver/.yassrc "$pkgdir/etc/yass.conf"
+}

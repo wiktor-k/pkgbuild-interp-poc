@@ -1,0 +1,44 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: HurricanePootis <hurricanepootis@protonmail.com>
+# Contributor: Michal Wojdyla <micwoj9292 at gmail.com>
+# Contributor: Michael DeGuzis <mdeguzis@gmail.com>
+
+pkgbase=quake
+pkgname=(librequake quake)
+epoch=1
+pkgver=0.09_beta
+pkgrel=3
+pkgdesc='Open source Quake 1 resource files'
+arch=(any)
+url='https://github.com/lavenderdotpet/LibreQuake'
+license=(BSD-3-Clause)
+makedepends=(gendesk)
+source=(librequake-${pkgver/_/-}.zip::https://github.com/lavenderdotpet/LibreQuake/releases/download/v${pkgver/_/-}/full.zip
+        quake.sh)
+b2sums=('a463ed00898d58867eb21b82a95091c6d9fa89300bc07716a1c8c5b1cd1e8b726ba18b597acbac5794ebc454f7c2875e276a2ad224a325f325ab198ba80b7940'
+        'a21191d25d1788ab3cf8886384de65daa0504cd4193619cdcb6d5aaf64f184100d8476c008cc8158947f0ebc77dfe7b834d51011a698292f46e70afc59fa8d9b')
+
+prepare() {
+  gendesk -f -n --pkgname quake --name Quake --pkgdesc 'Ironwail or vkQuake with LibreQuake' --icon librequake --categories 'Game;Shooter'
+}
+
+package_librequake() {
+  install -d "$pkgdir/usr/share/librequake"
+  cp -r full/id1 "$pkgdir/usr/share/librequake/"
+  rm -r "$pkgdir/usr/share/librequake/id1/docs"
+  install -Dm644 full/id1/docs/branding/icon.svg "$pkgdir/usr/share/pixmaps/librequake.svg"
+  install -Dm644 full/id1/docs/COPYING "$pkgdir/usr/share/licenses/$pkgname/LibreQuake-LICENSE"
+  install -Dm644 full/id1/docs/CREDITS "$pkgdir/usr/share/licenses/$pkgname/LibreQuake-CREDITS"
+  install -Dm644 full/id1/docs/freedoom-docs/COPYING.adoc "$pkgdir/usr/share/licenses/$pkgname/FreeDoom-LICENSE"
+  install -Dm644 full/id1/docs/freedoom-docs/CREDITS "$pkgdir/usr/share/licenses/$pkgname/FreeDoom-CREDITS"
+  install -Dm644 full/id1/docs/deathmatch-setup-guide.txt "$pkgdir/usr/share/doc/$pkgname/deathmatch-guide.txt"
+}
+
+package_quake() {
+  pkgdesc='Launcher for running an installed Quake 1 engine together with LibreQuake'
+  license=(0BSD)
+  depends=(librequake quake-engine)
+
+  install -Dm755 quake.sh "$pkgdir/usr/bin/quake"
+  install -Dm644 quake.desktop "$pkgdir/usr/share/applications/quake.desktop"
+}

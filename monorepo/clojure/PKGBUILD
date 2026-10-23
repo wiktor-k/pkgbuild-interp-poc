@@ -1,0 +1,40 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+# Contributor: Chris O'Donnell <christopher.p.odonnell@gmail.com>
+# Contributor: Sam May <sam.m4y@gmail.com>
+# Contributor: Pierre-Yves Ritschard <pyr@spootnik.org>
+# Contributor: Vladimir Tsanev <tsachev@gmail.com>
+# Contributor: David Harrigan <dharrigan@gmail.com>
+
+pkgname=clojure
+pkgver=1.12.5.1664
+pkgrel=1
+pkgdesc='Lisp dialect for the JVM'
+url='https://clojure.org/'
+arch=(any)
+license=(EPL-1.0)
+depends=(bash java-environment)
+makedepends=(setconf)
+optdepends=('leiningen: automate clojure projects'
+            'rlwrap: friendly shell with readline support')
+install=clojure.install
+source=("https://download.clojure.org/install/clojure-tools-$pkgver.tar.gz")
+b2sums=('091bbc86fa356b27199d84ea595aeede42c4cfe0064c19b11c1caf137dc9a018cc63560bf9632a8316648e66e8ab4e54b45fa730a2a44dec0c7de6ab4b2410f4')
+
+prepare() {
+  cd clojure-tools
+  setconf clj bin_dir=/usr/bin
+  setconf clojure install_dir=/usr/share/clojure
+  setconf -a clojure.sh 'export CLOJURE_HOME=/usr/share/clojure'
+}
+
+package() {
+  cd clojure-tools
+  install -Dm644 *.edn -t "$pkgdir/usr/share/clojure"
+  install -Dm644 *.jar -t "$pkgdir/usr/share/clojure/libexec"
+  install -Dm755 clj "$pkgdir/usr/bin/clj"
+  install -Dm755 clojure "$pkgdir/usr/bin/clojure"
+  install -Dm644 clojure.sh "$pkgdir/etc/profile.d/clojure.sh"
+  install -Dm644 clojure.1 "$pkgdir/usr/share/man/man1/clojure.1"
+  install -Dm644 clj.1 "$pkgdir/usr/share/man/man1/clj.1"
+}

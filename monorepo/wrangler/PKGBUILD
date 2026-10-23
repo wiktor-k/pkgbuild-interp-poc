@@ -1,0 +1,102 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=wrangler
+pkgver=4.149.0
+pkgrel=1
+_esbuild_ver='0.28.2'
+pkgdesc="The CLI for Cloudflare Workers"
+url='https://github.com/cloudflare/workers-sdk'
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=(
+  'glibc'
+  'libgcc'
+  'nodejs'
+  'worker-build'
+  'workerd'
+)
+makedepends=(
+  'go'
+  'npm'
+  'pnpm'
+  'turbo'
+  'typescript'
+  'yq'
+)
+# we can not use LTO as otherwise we get no reproducible package with full RELRO
+options=(!lto)
+source=(https://github.com/cloudflare/workers-sdk/archive/refs/tags/wrangler@${pkgver}.tar.gz
+        "esbuild-${_esbuild_ver}.tar.gz::https://github.com/evanw/esbuild/archive/v${_esbuild_ver}.tar.gz")
+sha256sums=('d4a9dc6a3b9d76ccfee6fbb2feb2ba379f27083f6d1d4422cbe3f52ab4456232'
+            '300162f899361d9f0263065f8728ef9086dcfc1a3d36bcbc4e0abe5de9c58bf8')
+b2sums=('c8bbb3b291c26bb9e979240750ff56f0da8940e080b9a963d1a0826063d3a0b0315335298907d729ada8202c8278f330845f70098e94c8adeea1407d53e7fe86'
+        '1ab99f6a65f06eafd517d5e05be498867d8ec0fd7d1235afae371e3bdb6f0eef65da9399da37eb69fdec7c3bca16e0a94ea88e9c506491497bfa8e1cd886f9f8')
+
+prepare() {
+  cd "workers-sdk-wrangler-${pkgver}"
+
+  # the build calls the git binary and fails if it's not there,
+  # but we don't want it to pull additional code, so place a dummy script
+  install -m 755 /dev/null ../git
+
+  # verify we're still using the correct esbuild version
+  esbuild=$(yq -r .catalogs.default.esbuild.version pnpm-lock.yaml)
+  if [[ "$esbuild" != "$_esbuild_ver" ]]; then
+    echo "ERROR: update _esbuild_ver from $_esbuild_ver to $esbuild"
+    exit 1
+  fi
+}
+
+build() {
+  # see the comment about the dummy `git` executable in prepare()
+  export PATH="$PATH:$PWD"
+
+  cd "workers-sdk-wrangler-${pkgver}"
+  pnpm install -C packages/wrangler --frozen-lockfile
+  turbo build
+  pnpm pack -C packages/wrangler
+
+  # build a copy of the specific esbuild version wrangler depends on
+  # getting this wrong makes `wrangler dev` fail with no error
+  cd "${srcdir}/esbuild-${_esbuild_ver}"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags '-compressdwarf=false -linkmode=external' \
+    ./cmd/esbuild
+}
+
+package() {
+  npm install -g --prefix "${pkgdir}/usr" "workers-sdk-wrangler-${pkgver}/packages/wrangler/wrangler-${pkgver}.tgz"
+  install -Dm644 "workers-sdk-wrangler-${pkgver}/LICENSE-MIT"  -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  # This file is very big
+  rm "${pkgdir}/usr/lib/node_modules/wrangler/wrangler-dist/cli.js.map"
+
+  # Remove pre-compiled binaries
+  rm -rv \
+    "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/@cloudflare/workerd-linux-64/bin/workerd" \
+    "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/@esbuild/linux-x64/bin/esbuild" \
+    "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/workerd/bin/workerd" \
+    "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/esbuild/bin/esbuild"
+
+  # Add symlinks to workerd package
+  ln -s "../../../../../../../bin/workerd" "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/@cloudflare/workerd-linux-64/bin/"
+  ln -s "../../../../../../bin/workerd" "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/workerd/bin/"
+
+  # Add esbuild binary
+  install -Dm755 -t "${pkgdir}/usr/lib/wrangler/bin/" \
+    "esbuild-${_esbuild_ver}/esbuild"
+  ln -s "../../../../../../wrangler/bin/esbuild" "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/@esbuild/linux-x64/bin/"
+  ln -s "../../../../../wrangler/bin/esbuild" "${pkgdir}/usr/lib/node_modules/wrangler/node_modules/esbuild/bin/"
+}
+
+# vim: ts=2 sw=2 et:

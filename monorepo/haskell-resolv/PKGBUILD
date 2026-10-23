@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=resolv
+pkgname=haskell-resolv
+pkgver=0.2.0.3
+pkgrel=101
+pkgdesc="Domain Name Service (DNS) lookup via the libresolv standard library routines"
+url="https://github.com/hvr/resolv"
+license=('GPL-2.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-base16-bytestring')
+makedepends=('ghc' 'haskell-tasty' 'haskell-tasty-hunit')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('bcf624aaf08855d827e37803dedda4f50f2f219a1a0d7e957f3a7f90414d3e0356f41954ba8a969a9fb36af5b2c8c2fe797e9d1b1dfe379d5e5508be557a5ed7')
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" \
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

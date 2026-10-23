@@ -1,0 +1,22 @@
+pkgbase = bup
+	pkgdesc = Efficient backup system based on the git packfile format
+	pkgver = 0.34
+	pkgrel = 1
+	url = https://bup.github.io/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = pandoc
+	depends = acl
+	depends = glibc
+	depends = par2cmdline
+	depends = python
+	depends = python-fuse
+	depends = python-pyxattr
+	depends = readline
+	depends = sh
+	optdepends = python-tornado: for bup web
+	source = git+https://github.com/bup/bup#tag=0.34
+	sha256sums = 7cc7fb180ac5bd0c05bca6852da1773e1150a5f589a2837508494b317a11e4df
+
+pkgname = bup

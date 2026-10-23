@@ -1,0 +1,18 @@
+pkgbase = rootlesskit
+	pkgdesc = Native "fake root" for implementing rootless containers
+	pkgver = 3.3.0
+	pkgrel = 1
+	url = https://github.com/rootless-containers/rootlesskit
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = openbsd-netcat
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = shadow
+	options = !lto
+	source = rootlesskit::git+https://github.com/rootless-containers/rootlesskit.git#tag=v3.3.0
+	sha512sums = 2172c02578e258e0edfad66b56a239b99fa08bfce748e9cc276c1919c6d27c3808f7c29d1311fe4808708b850dedb9839256caa0756b75dd81a045aa910f7db9
+	b2sums = ce773b697cfd0d1fc3ee10310eaea769592e22f0a4878d63064eadc81a00edb9524ee6f4b03b0729d6ff2219858b63d1f8d33a5df096d82a09990769d2ad81c7
+
+pkgname = rootlesskit

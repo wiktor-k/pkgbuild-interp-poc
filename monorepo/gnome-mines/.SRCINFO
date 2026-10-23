@@ -1,0 +1,26 @@
+pkgbase = gnome-mines
+	pkgdesc = Clear hidden mines from a minefield
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Mines
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgee
+	depends = librsvg
+	options = !emptydirs
+	source = git+https://gitlab.gnome.org/GNOME/gnome-mines.git#tag=50.0
+	b2sums = 7f64735ff9c7c812f2246a30c1cb6aa378533e53cef9a942134027f1891c7b0e2141894689981f6d681b42e66520b9e63090f48a6b28b05014164e8ba5b11ede
+
+pkgname = gnome-mines

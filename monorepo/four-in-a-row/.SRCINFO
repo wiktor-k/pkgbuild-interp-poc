@@ -1,0 +1,33 @@
+pkgbase = four-in-a-row
+	pkgdesc = Make lines of the same color to win
+	pkgver = 3.38.1
+	pkgrel = 5
+	url = https://gitlab.gnome.org/GNOME/four-in-a-row
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gsound
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = librsvg
+	source = git+https://gitlab.gnome.org/GNOME/four-in-a-row.git#tag=3.38.1
+	source = four-in-a-row-create-prgname.patch
+	source = 0001-Don-t-assert-when-the-last-winner-is-nobody.patch
+	source = four-in-a-row-touchscreen.patch
+	source = four-in-a-row-create-window.patch
+	b2sums = e44d55f543a1944bb5c9a5d473b41f25877cac7071060b794a5cb825fe53097347e3ee2a8b5dc05ded922fe8a6829982d0718c12256a244e31725446b282e7b5
+	b2sums = b2ea04533bfa4fc195714070b040fc77e580d900d9f721ac5ac73073e35065047ed7a58e4d7d8088d9629c47de23fcdbf2e8a568e888baa6b95ffbbec87e5a4e
+	b2sums = bde0095f79e15e2c09cd436d69e3cf5e5d429ee89f2c90d415ada0e277cc491d6aa0a365e90e3eaa3011976dbc01e10fc40cc4954f5b8f2a6d5b44dbd6948ad3
+	b2sums = a8b3e592e123a267f0d96a2ff864368fe7f7df0cd70709144243e493ce32ea86f333f8de6c61fc5691f424f6a73a4599b1426120c11ae9cee23872b544fe8206
+	b2sums = 1e5bc1ccc3ed31522d97e88ccaf8ebfe4afc6aaf54562d32abbb4fb0cd3e949a889de0d2dd0c339ed7d2e5439ee547846f899118d16151739b29919135a7454d
+
+pkgname = four-in-a-row

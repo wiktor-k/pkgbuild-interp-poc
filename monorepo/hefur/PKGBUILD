@@ -1,0 +1,84 @@
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+# Contributor: Pierre Schmitz <pierre@archlinux.de>
+# Contributor: Alexandre Bique <bique.alexandre@gmail.com>
+
+pkgname=hefur
+pkgver=1.0
+pkgrel=44
+_protobuf_ver=36.1
+pkgdesc='A standalone and lightweight BitTorrent tracker'
+arch=('x86_64')
+url='https://github.com/abique/hefur'
+license=('MIT')
+depends=(
+    'abseil-cpp'
+    'glibc'
+    'gnutls'
+    'libgcc'
+    'libstdc++'
+    'nettle'
+    'protobuf'
+    'xz'
+    'zlib')
+makedepends=(
+    'cmake'
+    'git')
+source=("git+https://github.com/abique/hefur.git#tag=${pkgver}"
+        'git+https://github.com/abique/mimosa.git'
+        "https://github.com/protocolbuffers/protobuf/archive/v${_protobuf_ver}/protobuf-${_protobuf_ver}.tar.gz"
+        'hefurd.service'
+        'sysusers.conf'
+        'tmpfiles.conf'
+        '010-hefur-fix-install.patch'::'https://github.com/abique/hefur/commit/5136250a567a290f41507f607d2c590f1a14eb2f.patch'
+        '020-hefur-fix-invalid-port-set-for-https.patch'::'https://github.com/abique/hefur/commit/f8b0fe6295257a6bfd7da00b1bd9cd4da966ddeb.patch')
+sha256sums=('d6db02ee070102c6da4374edaf50f558e47559268eb4c1491bdc44a7bb4c8e04'
+            'SKIP'
+            '7a7baff8207a57f3fe5c233d432a09eba67bdfb55a3145839d0817cae8e807a4'
+            '3d8b0a716f35798f6aa25d6ee6a032d8a142811b920338bcb398c24beb1c8b43'
+            '2e87fa1d1662d13103e4b84bc52c4f97507b06cd9982e0e9d1fec24ac495327a'
+            '7d39eec7c9f004a8651de95d11d32422f0a506f0fe21d5fdf37a407a05d4de0f'
+            'def46ba311fc4df1c039cddec69f23c19ba4f5a362acbc128084c38df6c3ba50'
+            '05cd1f9630f3bbd4ff9f60d7d4d93603eb839450141e7aeff6cef57763421c2b')
+
+prepare() {
+	git -C hefur submodule init
+	git -C hefur config --local submodule.mimosa.url "${srcdir}/mimosa"
+	git -C hefur -c protocol.file.allow='always' submodule update
+	
+	# add fixes for recent protobuf versions and nettle 4.0
+	git -C hefur/mimosa config --local advice.detachedHead false
+	git -C hefur/mimosa checkout 38a5cbab7239eeed6631ea5029d7d2b33446f88a
+	
+	patch -d hefur -Np1 -i "${srcdir}/010-hefur-fix-install.patch"
+	patch -d hefur -Np1 -i "${srcdir}/020-hefur-fix-invalid-port-set-for-https.patch"
+}
+
+build() {
+	# workaround for protobuf 34.0+ until upstream can find a solution
+	# https://github.com/abique/hefur/issues/53
+	export CXXFLAGS+=" -isystem${srcdir}/protobuf-${_protobuf_ver}/src"
+	
+	local _system_protobuf_ver
+	_system_protobuf_ver="$(LC_ALL='C' pacman -Qi 'protobuf' | awk '/^Version/ { print $3 }' | grep -oE '^[0-9]+\.[0-9]+')"
+	
+	if [ "$_system_protobuf_ver" != "$_protobuf_ver" ]
+	then
+		printf '%s\n' 'error: protobuf version in PKGBUILD must match the repository one'
+		exit 1
+	fi
+	
+	cmake -B build -S hefur \
+		-G 'Unix Makefiles' \
+		-DCMAKE_BUILD_TYPE:STRING='None' \
+		-DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+		-Wno-author
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+	install -D -m644 hefurd.service -t "${pkgdir}/usr/lib/systemd/system"
+	install -D -m644 sysusers.conf "${pkgdir}/usr/lib/sysusers.d/hefurd.conf"
+	install -D -m644 tmpfiles.conf "${pkgdir}/usr/lib/tmpfiles.d/hefurd.conf"
+	install -D -m644 hefur/LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

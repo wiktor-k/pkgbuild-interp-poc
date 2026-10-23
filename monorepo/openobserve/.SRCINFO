@@ -1,0 +1,31 @@
+pkgbase = openobserve
+	pkgdesc = Observability platform for logs, metrics, traces, and frontend monitoring
+	pkgver = 1.1.2
+	pkgrel = 1
+	url = https://openobserve.ai/
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = rustup
+	makedepends = git
+	makedepends = protobuf
+	makedepends = npm
+	makedepends = clang
+	depends = glibc
+	depends = libgcc
+	depends = sqlite
+	depends = oniguruma
+	depends = zlib
+	depends = zstd
+	backup = etc/conf.d/openobserve
+	source = git+https://github.com/openobserve/openobserve.git#tag=v1.1.2
+	source = openobserve.sysusers
+	source = openobserve.tmpfiles
+	source = openobserve.service
+	source = openobserve.env
+	sha256sums = 7eea7f1645c975c5a2871b5288ef99417ae7d9179498d58dad2395ba9f6d0b8e
+	sha256sums = fe2d95c0cf4fa36914b10fdd64992718388f59afa449d060c9ece4a7f743d973
+	sha256sums = 594c286d8ff7af5b7a5d6821b172880b1c530e56b0b42f70f3f1866dd0c936cc
+	sha256sums = a0e48687e444d58558d7474dec7fd88b08b4c3efd00099c6cab04f9a5e4feaab
+	sha256sums = b3b27e3d7045aa413f6ddf433e05667981204ccc0559c1062f0d79189305b8c6
+
+pkgname = openobserve

@@ -1,0 +1,175 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Jeff 'codemac' Mickey <jeff@archlinux.org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+
+pkgname=ejabberd
+pkgver=26.09
+pkgrel=1
+pkgdesc="Jabber server written in Erlang"
+arch=('x86_64')
+url="https://www.ejabberd.im/"
+license=("GPL-2.0-or-later")
+depends=('expat' 'openssl' 'zlib' 'erlang-core' 'pam' 'iproute2'
+	'libyaml' 'sqlite' 'gd' 'elixir'
+	'erlang-mnesia' 'erlang-os_mon' 'erlang-odbc' 'erlang-syntax_tools' 'erlang-xmerl'
+  'libstdc++' 'libgcc' 'glibc'
+)
+makedepends=('erlang-compiler' 'erlang-asn1' 'erlang-public_key' 'erlang-ssl' 'erlang-parsetools'
+	     'erlang-erl_interface' 'erlang-eunit' 'erlang-eldap' 'unzip'
+	     'git' 'rebar3' 'hevea' 'texlive-bin' 'texlive-basic' 'texlive-latexextra' 'elixir')
+optdepends=('gsfonts: for captcha'
+	    'imagemagick: for captcha')
+backup=('etc/ejabberd/ejabberd.yml'
+	'etc/ejabberd/ejabberdctl.cfg'
+	'etc/logrotate.d/ejabberd')
+options=(emptydirs)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/processone/ejabberd/archive/$pkgver.tar.gz"
+	"ejabberd.patch"
+	"erlang-idna::git+https://github.com/benoitc/erlang-idna"
+	"jiffy::git+https://github.com/davisp/jiffy"
+	"erlydtl::git+https://github.com/erlydtl/erlydtl"
+	"eredis::git+https://github.com/Nordix/eredis/"
+	"erlang-jose::git+https://github.com/potatosalad/erlang-jose"
+	"cache_tab::git+https://github.com/processone/cache_tab"
+	"eimp::git+https://github.com/processone/eimp"
+	"ejabberd-po::git+https://github.com/processone/ejabberd-po"
+	"epam::git+https://github.com/processone/epam"
+	"erlang-sqlite3::git+https://github.com/processone/erlang-sqlite3"
+	"esip::git+https://github.com/processone/esip"
+	"ezlib::git+https://github.com/processone/ezlib"
+	"fast_tls::git+https://github.com/processone/fast_tls"
+	"fast_xml::git+https://github.com/processone/fast_xml"
+	"fast_yaml::git+https://github.com/processone/fast_yaml"
+	"mqtree::git+https://github.com/processone/mqtree"
+	"p1_acme::git+https://github.com/processone/p1_acme"
+	"p1_mysql::git+https://github.com/processone/p1_mysql"
+	"p1_oauth2::git+https://github.com/processone/p1_oauth2"
+	"p1_pgsql::git+https://github.com/processone/p1_pgsql"
+	"p1_utils::git+https://github.com/processone/p1_utils"
+	"pkix::git+https://github.com/processone/pkix"
+	"stringprep::git+https://github.com/processone/stringprep"
+	"stun::git+https://github.com/processone/stun"
+	"xmpp::git+https://github.com/processone/xmpp"
+	"yconf::git+https://github.com/processone/yconf"
+	"luerl::git+https://github.com/rvirding/luerl"
+	"eredis2::git+https://github.com/wooga/eredis/"
+	"$pkgname.logrotate"
+	"$pkgname.sysusers")
+sha256sums=('2853a0ccafc0343ba47a3a848267fd9971c521d594a29c4caa8114bc511f10ab'
+            'a8e1be2d9daf8dd2dfedc11736a9677f3ed5c520c0f2ddf183689d2182b9151a'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            '7fec550709ccb499ff608ecbfa5c60926d3e77875badf880bb168b665cb1b0cf'
+            '5d1a53834697beb02ac0555c713b5798f5745b165d9235eb08fc15affe8b11a7')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  patch -p1 <../ejabberd.patch
+
+  return 0 # just put repos to src-pkg
+
+  mkdir -p "$srcdir/$pkgname-$pkgver/deps"
+  for i in \
+    base64url cache_tab eimp ejabberd_po elixir epam eredis esip ezlib fast_tls fast_xml fast_yaml idna jiffy jose luerl mqtree p1_acme p1_mysql p1_oauth2 p1_pgsql p1_utils pkix rebar_elixir_plugin sqlite3 stringprep stun unicode_util_compat xmpp yconf \
+    ; do
+    rm -rf "$srcdir/$pkgname-$pkgver/deps/$i"
+    mv "$srcdir"/$i "$srcdir/$pkgname-$pkgver/deps"
+  done
+  sed -i "s|git describe --tags 2>/dev/null|echo $pkgver|" configure.ac
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  [ -x configure ] || ./autogen.sh
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --sbindir=/usr/bin \
+    --localstatedir=/var \
+    --enable-odbc \
+    --enable-mssql \
+    --enable-mysql \
+    --enable-pgsql \
+    --enable-sqlite \
+    --enable-pam \
+    --enable-zlib \
+    --enable-redis \
+    --enable-elixir \
+    --enable-stun \
+    --enable-sip \
+    --disable-debug \
+    --enable-lua \
+    --disable-tools
+  make -j1
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+
+  sed -i \
+    -e "s|$pkgdir||g" \
+    -e "s|Group=.*|Group=jabber|g" \
+    -e "s|User=.*|User=jabber|g" \
+    ejabberd.service
+  sed -i \
+    -e "s|$pkgdir||g" \
+    -e "s|INSTALLUSER=\"\"|INSTALLUSER=\"jabber\"|g" \
+    "$pkgdir"/usr/bin/ejabberdctl
+
+  install -Dm0644 ejabberd.service "$pkgdir"/usr/lib/systemd/system/ejabberd.service
+
+  install -d "$pkgdir/var/lib/$pkgname"
+  install -D -m0644 "$srcdir/$pkgname.logrotate" "$pkgdir/etc/logrotate.d/$pkgname"
+  chmod ug+r "$pkgdir/etc/$pkgname/"*
+  chmod a+rx "$pkgdir/usr/bin/ejabberdctl"
+  rm -rf "$pkgdir/var/lock"
+  install -Dm644 "$srcdir"/$pkgname.sysusers "$pkgdir"/usr/lib/sysusers.d/ejabberd.conf
+  install -Dm644 tools/ejabberdctl.bc "$pkgdir"/usr/share/bash-completion/completions/ejabberdctl
+
+  cat <<EOF >>"$pkgdir"/etc/ejabberd/ejabberdctl.cfg
+# home dir workaround
+HOME=/var/lib/ejabberd
+EOF
+
+  # /usr/lib/ejabberd symlink follows to ejabberd version
+  (cd "$pkgdir"/usr/lib/ && ln -s ejabberd-* ejabberd)
+
+  # permissions
+  chown -R 17:17 "$pkgdir"/var/{lib,log}/ejabberd
+  chown root:17 \
+    "$pkgdir"/etc/ejabberd/ejabberd.yml \
+    "$pkgdir"/etc/ejabberd/ejabberdctl.cfg \
+    "$pkgdir"/etc/ejabberd
+
+  # fix eimp
+  chmod a+x "$pkgdir"/usr/lib/eimp-*/priv/bin/eimp
+}
+
+# vim:set ts=2 sw=2 et:

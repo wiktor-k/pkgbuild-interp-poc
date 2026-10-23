@@ -1,0 +1,17 @@
+pkgbase = ocaml-pcre2
+	pkgdesc = OCaml bindings to the pcre2 library
+	pkgver = 8.0.4
+	pkgrel = 3
+	url = https://github.com/camlp5/pcre2-ocaml
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = dune
+	makedepends = ocaml-findlib
+	depends = ocaml
+	options = !strip
+	options = !makeflags
+	options = !debug
+	source = ocaml-pcre2-8.0.4.tar.gz::https://github.com/camlp5/pcre2-ocaml/archive/8.0.4.tar.gz
+	sha512sums = cafe7c61f4aa90063fe7cb12a50905dbf0cfaa1636456cca25e2f3bf6a385b3d23618b451c6e986970c310f7ac20e13c3b8ba76ee579288849298eb7737797ce
+
+pkgname = ocaml-pcre2

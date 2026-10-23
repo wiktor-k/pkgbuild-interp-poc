@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=ggml-rocm
+pkgver=0.15.2
+pkgrel=1
+pkgdesc='Tensor library for machine learning'
+arch=(x86_64)
+url=https://github.com/ggerganov/ggml
+license=(MIT)
+depends=(
+  glibc
+  hipblas
+  libgcc
+  libstdc++
+  rocblas
+  rocm-hip-runtime
+)
+conflicts=(ggml)
+provides=(ggml)
+makedepends=(
+  cmake
+  git
+  ninja
+  rocm-hip-sdk
+  rocm-toolchain
+)
+source=(git+https://github.com/ggml-org/ggml.git#tag=v${pkgver})
+b2sums=('b52659d43f3b6ffd7da4dccbc2419865efb8f3ace867b0493f319cb4b161b73162e55067ed920274987cff04b231b1bbde9b054f682b1d3de9c9ada1703455d7')
+
+build() {
+  cmake -S ggml -B build -G Ninja \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DAMDGPU_TARGETS=$(rocm-supported-gfx) \
+      -DGGML_HIP=ON \
+      -DGGML_OPENMP=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  install -Dm 644 ggml/LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+}
+
+# vim: ts=2 sw=2 et:

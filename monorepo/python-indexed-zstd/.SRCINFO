@@ -1,0 +1,30 @@
+pkgbase = python-indexed-zstd
+	pkgdesc = Fast random access to zstd-compressed files
+	pkgver = 1.7.2
+	pkgrel = 1
+	url = https://github.com/martinellimarco/indexed_zstd
+	arch = x86_64
+	license = MIT OR GPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = cython
+	depends = python
+	depends = zstd
+	source = python-indexed-zstd::git+https://github.com/martinellimarco/indexed_zstd#tag=v1.7.2
+	source = github.com-martinellimarco-libzstd-seek::git+https://github.com/martinellimarco/libzstd-seek
+	sha512sums = ef8d868942dd898e98e9174bf9e9433a92af9f5cc0528980785ba71b8c27cec92f4ea23295eafe40824ad5ac09fd9f8ad89f29dc1ea150808b725e94deb8f541
+	sha512sums = SKIP
+	b2sums = b042d28df27db28b4a499ed35644cecd163fb047c38727cd5d3f68b2f814a2be41f477685ca4f7ae8f0e960302ba8aa9aa51a2218bb3ada63bd9099fd3949a2f
+	b2sums = SKIP
+
+pkgname = python-indexed-zstd
+	depends = python
+	depends = zstd
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libstdc++
+	depends = libstdc++.so

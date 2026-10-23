@@ -1,0 +1,95 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Contributor: Campbell Jones <arch at serebit dot com>
+
+pkgname=budgie-extras
+pkgver=2.3.0
+pkgrel=1
+pkgdesc='Additional Budgie Desktop components from the Ubuntu Budgie team'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+url='https://github.com/UbuntuBudgie/budgie-extras'
+depends=(
+  budgie-desktop
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-menus
+  granite
+  gtk-layer-shell
+  gtk3
+  hicolor-icon-theme
+  json-glib
+  libgee
+  libhandy
+  libnm
+  libnotify
+  libpeas-2
+  libsoup3
+  libxfce4windowing
+  pango
+  python
+  python-cairo
+  python-cairosvg
+  python-dbus
+  python-gobject
+  python-pillow
+  python-psutil
+  python-pyudev
+  python-svgwrite
+  sound-theme-freedesktop
+  vorbis-tools
+  wf-recorder
+  xdg-utils
+  xprintidle
+  zenity
+)
+makedepends=(
+  appstream
+  git
+  intltool
+  libkeybinder3
+  meson
+  ninja
+  vala
+)
+source=(
+  "git+https://github.com/UbuntuBudgie/budgie-extras.git#tag=v$pkgver"
+  git+https://github.com/UbuntuBudgie/applications-menu.git
+  git+https://github.com/UbuntuBudgie/QuickChar.git
+  git+https://github.com/UbuntuBudgie/budgie-network-applet.git
+  git+https://github.com/UbuntuBudgie/budgie-trash-applet.git
+)
+b2sums=(
+  131998b6688a1c72bc0e7f518a4f9e71d0a6b1dcffc327ce4df87dd0858d27807e7f30eb03e8437b77aef5914ad1fcd30472955bce2a87eb9cacec7f68e21bb2
+  SKIP
+  SKIP
+  SKIP
+  SKIP
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git config submodule.budgie-applications-menu/applications-menu.url ../applications-menu
+  git config submodule.budgie-quickchar/quickchar.url ../QuickChar
+  git config submodule.budgie-network-manager/budgie-network-applet.url ../budgie-network-applet
+  git config submodule.budgie-trash/trash.url ../budgie-trash-applet
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D for-wayland=true \
+    -D b_pie=false
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  # Show only in Budgie
+  sed -i '$ a OnlyShowIn=Budgie;' "$pkgdir"/etc/xdg/autostart/*-autostart.desktop "$pkgdir"/usr/share/applications/*.desktop
+}

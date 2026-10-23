@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-screensaver
+pkgver=6.5.11
+pkgrel=2
+pkgdesc='Deepin screensaver viewer and tools'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-screensaver"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-declarative' 'qt6-5compat'
+         'libx11' 'libxcb' 'libxss' 'libxext' 'xscreensaver'
+         'glibc' 'libgcc' 'libstdc++')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-screensaver.git#tag=$pkgver")
+sha512sums=('993626e78f5570c82dc26e9845c340c07bbbf0730cd479d5b5fea836c3cb6101b7eec0630aa76fe11d3460cb765dfee25143ec9e811df4626eeddfc163722640')
+
+prepare() {
+  cd deepin-screensaver
+
+  sed -i 's|#     list(APPEND qt_required_components GuiPrivate)|    list(APPEND qt_required_components GuiPrivate)|' src/CMakeLists.txt
+}
+
+build() {
+  cd deepin-screensaver
+  cmake -B build -S . -GNinja -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  cd deepin-screensaver
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=komodo
+pkgver=1.6.0
+pkgrel=1
+pkgdesc='A todo manager that uses todo.txt specification'
+arch=(x86_64)
+url='https://apps.kde.org/komodo/'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         kcolorscheme
+         kconfig
+         kcoreaddons
+         kdbusaddons
+         kguiaddons
+         ki18n
+         kiconthemes
+         kirigami
+         kirigami-addons
+         kitemmodels
+         libstdc++
+         qqc2-desktop-style
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/stable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('c7a6321f0faadcf230df361beaac2e8b2e161b1d47d170b2036617581909089a'
+            'SKIP')
+validpgpkeys=(6CF8BBBD93FD0A4A748495A12D8ADFDD01E76FAC) # Akseli Lahtinen <akselmo@akselmo.dev>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,51 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=marmite
+pkgver=0.4.2
+pkgrel=2
+pkgdesc='Markdown makes sites - A Static Site Generator for Blogs'
+arch=(x86_64)
+url="https://$pkgname.blog"
+_url="https://github.com/rochacbruno/$pkgname"
+license=(AGPL-3.0-or-later)
+depends=(glibc # libc.so libm.so
+         libgcc libgcc_s.so
+         zstd libzstd.so)
+makedepends=(cargo)
+replaces=("$pkgname-bin")
+_archive="$pkgname-$pkgver"
+source=("$_url/archive/refs/tags/$pkgver/$_archive.tar.gz")
+sha256sums=('a32b5bc2e077a8e16eb92acc4408b1ebc7b68230ce5843aee6774298fe637cc2')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	export ZSTD_SYS_USE_PKG_CONFIG=1
+	CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	_srcenv
+	cargo test --frozen --release --all-features
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

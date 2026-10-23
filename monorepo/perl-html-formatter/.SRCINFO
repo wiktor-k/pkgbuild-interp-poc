@@ -1,0 +1,21 @@
+pkgbase = perl-html-formatter
+	pkgdesc = Format HTML as plaintext
+	pkgver = 2.16
+	pkgrel = 13
+	url = https://search.cpan.org/dist/HTML-Formatter/
+	arch = any
+	license = GPL
+	license = PerlArtistic
+	makedepends = perl-module-build
+	depends = perl>=5.10.0
+	depends = perl-file-slurp
+	depends = perl-font-afm
+	depends = perl-html-tree
+	provides = perl-html-formattext
+	conflicts = perl-html-formattext
+	replaces = perl-html-formattext
+	options = !emptydirs
+	source = https://search.cpan.org/CPAN/authors/id/N/NI/NIGELM/HTML-Formatter-2.16.tar.gz
+	sha256sums = cb0a0dd8aa5e8ba9ca214ce451bf4df33aa09c13e907e8d3082ddafeb30151cc
+
+pkgname = perl-html-formatter

@@ -1,0 +1,25 @@
+pkgbase = gnome-shell-extension-desktop-icons-ng
+	pkgdesc = Desktop icons extension for GNOME Shell
+	pkgver = 51.0.9
+	pkgrel = 1
+	url = https://www.rastersoft.com/programas/ding.html
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = gjs
+	depends = glib2
+	depends = gnome-autoar
+	depends = gnome-desktop-4
+	depends = gnome-shell
+	depends = graphene
+	depends = gtk4
+	depends = libadwaita
+	depends = nautilus
+	depends = pango
+	source = git+https://gitlab.com/rastersoft/desktop-icons-ng.git#tag=51.0.9
+	b2sums = 3a30fa1cd6d41568526ec2e8bed6fc1d42a1eeecea082d7bfc858aa78e5f061dadcf31a781377d579c362f450925fc2e0c8023898c9c7a667664eac1853c1405
+
+pkgname = gnome-shell-extension-desktop-icons-ng

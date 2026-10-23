@@ -1,0 +1,65 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=safetensors
+pkgname=python-$_name
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="Simple, safe way to store and distribute tensors"
+arch=(x86_64)
+url="https://github.com/huggingface/safetensors"
+license=(Apache-2.0)
+depends=(
+  glibc
+  libgcc
+  python
+  python-numpy
+)
+makedepends=(
+  maturin
+  python-installer
+)
+optdepends=(
+  'python-jax: usage with jax'
+  'python-tensorflow: usage with tensorflow'
+  'python-pytorch: usage with pytorch'
+)
+checkdepends=(
+  python-pytest
+  python-pytorch
+  python-tensorflow
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+        Cargo.lock.patch)
+b2sums=('f9eb8ac9a9cd11298de8e93bdfe36dd590eb2e8629e2faef1d30d32a26d4e7f2c26618991c4f701ed8c695f0a3bc1eb8ff3efea213e214d9fccde00746163bbe'
+        'f65080579455a57d54b9c6547d2c8b0c6516c95d7bf04995f6caab669149ecd31e6f70f2c04adc627a7907a59afe7378b1b11c0fc1bfe2e76ebc69db06fbd0ce')
+
+prepare() {
+  cd $_name-$pkgver
+  # version 0.8.0 does not have Cargo.lock https://github.com/safetensors/safetensors/issues/785
+  patch -p1 < ../Cargo.lock.patch
+}
+
+build() {
+  cd $_name-$pkgver/bindings/python
+  maturin build --locked --release --target "$(rustc --print host-tuple)" --strip
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # Ignore tests with unpackaged dependencies
+    --ignore tests/test_paddle_comparison.py
+    --ignore tests/test_flax_comparison.py
+  )
+
+  cd $_name-$pkgver/bindings/python
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer target/wheels/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name-$pkgver/bindings/python
+  python -m installer --destdir="$pkgdir" target/wheels/*.whl
+}

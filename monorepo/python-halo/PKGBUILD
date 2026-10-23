@@ -1,0 +1,50 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Morten Linderud <foxboron@archlinux.org>
+# Contributor: Alexander Seiler <seileralex@gmail.com>
+
+pkgname=python-halo
+pkgver=0.0.31
+pkgrel=11
+_pkgname=${pkgname#python-}
+pkgdesc='Beautiful terminal spinners in Python'
+arch=(any)
+url='https://github.com/manrajgrover/halo'
+license=(MIT)
+depends=(
+  python
+  python-colorama
+  python-log_symbols
+  python-spinners
+  python-termcolor
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  "$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/source/${_pkgname::1}/$_pkgname/$_pkgname-$pkgver.tar.gz"
+  remove-six.patch
+)
+sha512sums=('0c8f97d0153f46691f57f31755c3b8f69634c565cdfb42b91423b305b9e5a523b511f33fd44bb7206f6b1a90d34c8a9baf19e83874acb2504b476f8e8e5ad6a8'
+            'f866fa0fc9b8bc4bee1daa7b56ffdf09d47a7c58549665e88a36a23860060324a76d9433a653e4ba83e87209f3c004528790899ccf8adaf56cc9ff1f4ef55108')
+b2sums=('1404ef0c5e87b5a49b70a761d3df2d700a39443bcb17695bb976193c22a5629567f1ec10cf1e1982677cdf27c832192a2f16aaa79294263c5d62a8100f5d581a'
+        'c0ca9128a44b1b07d1a96568a90d5e364f784f1b3c6064a12462433e25876d6b3f6db76e3bb39c21cd60a5a2d0f218596f074506af1ccfb96d5b7baadd871a7d')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+
+  patch -p1 -i "$srcdir/remove-six.patch"
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 'LICENSE' -t "$pkgdir/usr/share/licenses/$pkgname"
+}

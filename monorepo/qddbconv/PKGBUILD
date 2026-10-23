@@ -1,0 +1,47 @@
+# Maintainer: Dan Johansen <strit@archlinux.org>
+
+pkgname=qddbconv
+pkgver=1.3.1
+pkgrel=1
+pkgdesc="Multi-threaded Qt6 audio converter"
+arch=('x86_64')
+url="https://github.com/goberghen/qddbconv"
+license=('GPL-2.0-or-later')
+
+depends=(
+  'ffmpeg'
+  'gcc-libs'
+  'glibc'
+  'qt6-base'
+)
+
+makedepends=(
+  'cmake'
+)
+
+optdepends=(
+  'flac: FLAC and Ogg FLAC encoding'
+  'lame: MP3 encoding'
+  'opus-tools: Opus encoding'
+  'vorbis-tools: Ogg Vorbis encoding'
+  'wavpack: WavPack encoding'
+)
+
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+)
+
+sha256sums=('4450b6f0b63532587d0d8ccf8986b178a2924e5a9cc4c8b4d47d63b54a6bcfb1')
+
+build() {
+  cmake -B build -S "$pkgname-$pkgver" \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

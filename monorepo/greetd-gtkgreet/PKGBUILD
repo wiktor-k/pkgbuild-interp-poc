@@ -1,0 +1,44 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Ignacio Taranto <ignacio_taranto@protonmail.com>
+# Contributor: Eric Engestrom <aur [at] engestrom [dot] ch>
+# Contributor: Kenny Levinsen <aur [at] kl [dot] wtf>
+
+pkgname=greetd-gtkgreet
+_pkgname=${pkgname#*-}
+pkgver=0.8
+pkgrel=3
+pkgdesc='GTK based greeter for greetd'
+arch=(x86_64)
+url="https://git.sr.ht/~kennylevinsen/$_pkgname"
+license=(GPL-3.0-only)
+depends=(cairo libcairo.so
+         gdk-pixbuf2 libgdk_pixbuf-2.0.so
+         glib2 libglib-2.0.so
+         glibc # libc.so
+         gtk-layer-shell
+         gtk3
+         json-c)
+makedepends=(meson
+             scdoc)
+_archive="$_pkgname-$pkgver"
+source=("$_archive.tar.gz::$url/archive/$pkgver.tar.gz"
+        "$pkgname-fix-build.patch")
+sha256sums=('e5c70219da191a60e2e009412603e05c36cee15bbbf7657dbbeaa1d21a692873'
+            '2bd9cb623961d1885e3857b688324cdf68b4dfedeb987edf3680ddf50d8dae41')
+
+prepare() {
+	cd "$_archive"
+	patch -Np0 -i "../${source[1]}"
+}
+
+build() {
+	local meson_opts=(
+		layershell=enabled
+	)
+	arch-meson "$_archive" build ${meson_opts[@]/#/-D }
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "$pkgdir"
+}

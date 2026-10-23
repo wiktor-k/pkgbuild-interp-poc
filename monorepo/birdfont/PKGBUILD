@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Mohamed Sobh <mohamed.alhusieny@gmail.com>
+# Contributor: Drew Noel <drewmnoel@gmail.com>
+# Contributor: Manuel Hüsers <manuel.huesers@uni-ol.de>
+# Contributor: fstirlitz <felix.von.s@posteo.de>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Matej Lach <matej.lach@gmail.com>
+
+pkgname=birdfont
+pkgver=2.33.6
+pkgrel=1
+pkgdesc='Font editor which can generate fonts in TTF, EOT and SVG formats'
+arch=(x86_64)
+url='https://birdfont.org/'
+license=(GPL-3.0-only)
+# freetype2, fontconfi, and sqlite3 are linked in provided lib, but without an soname version :-/
+depends=(cairo # libcairo.so
+         # freetype2 libfreetype.so
+         # fontconfig libfontconfig.so
+         glibc # libc.so libm.so
+         glib2 libglib-2.0.so libgobject-2.0.so # gibgio-2.0.so
+         gdk-pixbuf2 # libgdk_pixbuf-2.0
+         gtk3 libgtk-3.so
+         hicolor-icon-theme
+         libgee libgee-0.8.so
+         libnotify libnotify.so
+         libxmlbird
+         # sqlite3 libsqlite3.so
+         webkit2gtk-4.1 libwebkit2gtk-4.1.so)
+makedepends=(python
+             vala)
+_archive="$pkgname-$pkgver"
+source=("https://github.com/johanmattssonm/$pkgname/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('ea8833bd139264b971a72b098ec4923bc778d8494b68925f5240b011c2f91840')
+validpgpkeys=('FB3BEFA59A6FF7F0E0682B68BCD31D4CCCEB9DD4') # Johan Mattsson
+
+build() {
+  cd "$_archive"
+  ./configure --prefix /usr --cflags="$CFLAGS" --ldflags="$LDFLAGS"
+  ./build.py
+}
+
+package() {
+  cd "$_archive"
+  ./install.py --dest "$pkgdir" --libdir /lib --manpages-directory /share/man/man1
+}

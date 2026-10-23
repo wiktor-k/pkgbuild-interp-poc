@@ -1,0 +1,48 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=gurk
+pkgver=0.10.2
+pkgrel=1
+pkgdesc="Signal Messenger client for terminal"
+url='https://github.com/boxdot/gurk-rs'
+arch=('x86_64')
+license=('AGPL-3.0-only')
+depends=(
+  glibc # libc.so libm.so
+  libgcc libgcc_s.so
+  sqlcipher # libsqlcipher.so
+)
+makedepends=(
+  'cargo'
+  'protobuf'
+)
+replaces=('gurk-bin')
+options=(!lto)
+source=(https://github.com/boxdot/${pkgname}-rs/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('d047915916bceb221cd96a8afe53e5ba3b897f8d8798a4d36ca4cf354aa63b03')
+b2sums=('f89633b01f892554c42c0447bf548f4efa6013f854ca6d0595253af6c27f89faac29f674ec237c9c49dc79346e92b19ae1650f2555c6bea375c49d548456b99b')
+
+prepare() {
+  cd "${pkgname}-rs-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-rs-${pkgver}"
+  LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-rs-${pkgver}"
+  LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo test --frozen
+  target/release/gurk --help
+}
+
+package() {
+  cd "${pkgname}-rs-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/gurk
+}
+
+# vim: ts=2 sw=2 et:

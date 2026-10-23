@@ -1,0 +1,20 @@
+pkgbase = rpp
+	pkgdesc = AMD ROCm Performance Primitives
+	pkgver = 7.2.4
+	pkgrel = 2
+	url = https://rocm.docs.amd.com/projects/rpp/en/latest/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = rocm-cmake
+	makedepends = half
+	depends = rocm-core
+	depends = hip-runtime-amd
+	depends = opencv
+	depends = rocm-openmp
+	depends = libgcc
+	depends = glibc
+	source = rpp-7.2.4.tar.gz::https://github.com/ROCm/rpp/archive/rocm-7.2.4.tar.gz
+	sha256sums = 886dc44e8133285697ab0e6a744ce0aae2c645426298808c2ca42317e243fe14
+
+pkgname = rpp

@@ -1,0 +1,73 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-jieba
+_name="${pkgname#python-}"
+pkgver=0.42.1
+pkgrel=10
+pkgdesc="Chinese Words Segementation Utilities"
+arch=('any')
+url='https://github.com/fxsjy/jieba'
+license=('MIT')
+depends=('python')
+checkdepends=('python-pytest' 'python-whoosh')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=(
+  "git+https://github.com/fxsjy/jieba.git#tag=v$pkgver"
+  $pkgname-0.42.1-remove_imp.patch
+  $pkgname-0.42.1-remove_distutils.patch
+  $pkgname-0.42.1-remove_pkg_resources.patch
+  $pkgname-0.42.1-fix-parallel-tests.patch
+)
+sha512sums=('4427f68c6e2279d9bf620a87a3f90ef4eaf24fcbc74afaa52de4aa9aef5541c5398374a35f8fb3ea8bbcfd8eed1b6f505ec1a9bbb2e4e66ac1ab19c0f2d5f31c'
+            '2359feb1d4898ed7785e067f145093050b9e587c26187c746a1fbed9bdb57456e1b09cfea5918376b5f4c6882095241ecd1695716f6b5b40943452a266087ace'
+            'c66c779422e3dd2b4d68505d9acfdaa4d81160eeeb6ecfd1bd0a2931b9c5321df9d41a5a1edb2c2cbd6ba8c10ce58765b000a9a637faf4065a94d15d24bb87ae'
+            'e5226cf97ca63d54288baa0eece61cc54a384735e19265bccb72c154d9c771f1759f6bbe8c86a38aca3c0f1fc8a76e597941dcad77c666c303a9819b086a767a'
+            '6e270e9c910aa54624d69e5976bf7ca3b4e1586e4c24578bf652152dcb6b343f21986ae98da417e86980b6c63f65c6aa13f1b7042388e171d8fb15bd34437dc7')
+
+prepare() {
+  patch -Np1 -d $_name -i ../$pkgname-0.42.1-remove_imp.patch
+  patch -Np1 -d $_name -i ../$pkgname-0.42.1-remove_distutils.patch
+  patch -Np1 -d $_name -i ../$pkgname-0.42.1-remove_pkg_resources.patch
+  patch -Np1 -d $_name -i ../$pkgname-0.42.1-fix-parallel-tests.patch
+}
+
+build() {
+  cd $_name
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name
+  export PYTHONPATH="$PWD:$PYTHONPATH"
+  # None unittests's that do not take an argument
+  for script in parallel/test.py parallel/test2.py parallel/test_disable_hmm.py parallel/test_cut_for_search.py parallel/test_pos.py test_whoosh.py test_whoosh_file_read.py; do
+    echo test/$script
+    python test/$script
+  done
+  # None unittests's that do take an argument
+  for script in test_file.py test_pos_file.py test_whoosh_file.py parallel/test_file.py parallel/test_pos_file.py; do
+    echo test/$script "$PWD/test/test.txt"
+    python test/$script "$PWD/test/test.txt"
+  done
+  # Unittests
+  cd test
+  pytest \
+    --ignore=test_paddle.py \
+    --ignore=test_paddle_postag.py \
+    --ignore=test_file.py \
+    --ignore=test_pos_file.py \
+    --ignore=test_whoosh.py \
+    --ignore=test_whoosh_file.py \
+    --ignore=test_whoosh_file_read.py \
+    --ignore=test.txt \
+    --ignore=parallel \
+    --ignore=test_userdict.py \
+    --ignore=test_lock.py
+  # Not tested paddle which is not packaged
+}
+
+package() {
+  cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

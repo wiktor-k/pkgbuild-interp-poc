@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=thingy
+pkgver=1.2.7
+pkgrel=1
+pkgdesc='Application to quickly access recent and favorite documents'
+arch=(any)
+url='https://github.com/linuxmint/thingy'
+license=(GPL-3.0-or-later)
+groups=(x-apps)
+depends=(
+  bash
+  dconf
+  gdk-pixbuf2
+  glib2
+  gnome-desktop
+  gtk3
+  hicolor-icon-theme
+  pango
+  python
+  python-gobject
+  python-setproctitle
+  xapp
+)
+makedepends=(git)
+source=("git+https://github.com/linuxmint/thingy.git#tag=$pkgver")
+b2sums=(edfdfa8bfd3d1d3592c25e82c4ffbc81ffbf17722a9cb45e676b78325b443b1752d4691447f4b49415da454efb7eef90658e217f1da44d14ba325f5787810b2b)
+
+prepare() {
+  cd $pkgname
+
+  # Set version number
+  sed -i "s/__DEB_VERSION__/$pkgver/" usr/lib/thingy/thingy.py
+}
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  cp -r usr "$pkgdir"
+
+  python -m compileall -d /usr/lib "$pkgdir/usr/lib"
+  python -O -m compileall -d /usr/lib "$pkgdir/usr/lib"
+}

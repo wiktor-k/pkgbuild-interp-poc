@@ -1,0 +1,36 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Oliver Jaksch <arch-aur@com-in.de>
+
+pkgname=libretro-mame
+pkgver=20260924.184211.g9069f39340f2
+pkgrel=1
+arch=(x86_64)
+pkgdesc='MAME Arcade core'
+url=https://github.com/libretro/mame
+license=(custom)
+groups=(libretro)
+depends=(
+  alsa-lib
+  glibc
+  libretro-core-info
+  libgl
+  zlib
+)
+makedepends=(
+  git
+  libglvnd
+  python
+)
+source=(libretro-mame::git+https://github.com/libretro/mame.git#commit=${pkgver##*.g})
+b2sums=('e0032a7e7cd06f1b8358b8d50354268a618955b078bb905b2118305715228420769b1c20dea46d5a9defe01ed703210af1feda9e38eafe7b69e283c711ab64fa')
+
+build() {
+  cd libretro-mame
+  make PTR64=1 -f Makefile.libretro
+}
+
+package() {
+  install -Dm 644 libretro-mame/mame_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+  install -Dm 644 libretro-mame/docs/LICENSE -t "${pkgdir}"/usr/share/licenses/libretro-mame/
+}
+

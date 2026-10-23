@@ -1,0 +1,21 @@
+pkgbase = languagetool
+	pkgdesc = An open source language checker
+	pkgver = 6.6
+	pkgrel = 2
+	url = https://www.languagetool.org
+	arch = any
+	license = LGPL-2.1-or-later
+	makedepends = unzip
+	depends = java-runtime-headless
+	optdepends = java-runtime: needed for the GUI version
+	optdepends = libxtst: needed for the GUI version
+	optdepends = gtk3: GTK style for the GUI
+	noextract = languagetool-6.6.zip
+	source = https://www.languagetool.org/download/LanguageTool-6.6.zip
+	source = languagetool.sh
+	source = languagetool.service
+	sha256sums = 53600506b399bb5ffe1e4c8dec794fd378212f14aaf38ccef9b6f89314d11631
+	sha256sums = 1230bed5e596ba161a08cddc70764afb46f018e8f483e9934017b3c7b2aaea70
+	sha256sums = 628e59208af02dd41c678135ef6dd8b328905701301d8257316b388d36d6c52b
+
+pkgname = languagetool

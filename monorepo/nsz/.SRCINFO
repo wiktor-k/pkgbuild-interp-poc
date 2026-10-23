@@ -1,0 +1,21 @@
+pkgbase = nsz
+	pkgdesc = Nintendo Switch homebrew compatible NSP/XCI compressor/decompressor
+	pkgver = 5.0.0
+	pkgrel = 2
+	url = https://github.com/nicoboss/nsz
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-enlighten
+	depends = python-pycryptodome
+	depends = python-zstandard
+	optdepends = python-kivy: GUI support
+	source = git+https://github.com/nicoboss/nsz.git#tag=5.0.0
+	b2sums = 2ed7bedd3ecbbbdfe9c3bf683a584479da7edf687e1aefb854a54e2ef90f6a5bced0c4dda259178ed05d935c714a97f458bd5267010a503775f30f83385a6c1e
+
+pkgname = nsz

@@ -1,0 +1,46 @@
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+
+pkgname=libilbc
+pkgver=3.0.4
+pkgrel=4
+pkgdesc='A friendly copy of the iLBC codec from the WebRTC project'
+arch=('x86_64')
+url='https://github.com/TimothyGu/libilbc/'
+license=('BSD-3-Clause')
+depends=(
+    'glibc'
+    'libgcc'
+    'libstdc++')
+makedepends=(
+    'cmake'
+    'git')
+source=("git+https://github.com/TimothyGu/libilbc.git#tag=v${pkgver}?signed"
+        'git+https://github.com/abseil/abseil-cpp.git')
+validpgpkeys=('9456AFC0814A8139E99483517FE6B095B582B0D4') # Timothy Gu
+sha256sums=('92081e329a16edeabe46c3953b414d625be2b21be4674f1804e6e7dc1fd3af2f'
+            'SKIP')
+
+prepare() {
+    git -C libilbc submodule init
+    git -C libilbc config --local submodule.abseil.url "${srcdir}/abseil-cpp"
+    git -C libilbc -c protocol.file.allow='always' submodule update
+}
+
+build() {
+    cmake -B build -S libilbc \
+        -G 'Unix Makefiles' \
+        -DCMAKE_BUILD_TYPE:STRING='None' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -Wno-dev
+    cmake --build build
+}
+
+check() {
+    build/ilbc_test 20 libilbc/sample.pcm build/sample-encoded.ilbc build/sample-decoded.pcm
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -D -m644 libilbc/COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -D -m644 libilbc/PATENTS -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

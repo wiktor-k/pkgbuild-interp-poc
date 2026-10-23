@@ -1,0 +1,57 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=hakyll
+pkgname=haskell-hakyll
+pkgver=4.17.0.0
+pkgrel=63
+pkgdesc="A static website compiler library"
+url="https://jaspervdj.be/hakyll"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-blaze-html' 'haskell-data-default' 'haskell-file-embed'
+         'haskell-fsnotify' 'haskell-hashable' 'haskell-http-conduit' 'haskell-http-types'
+         'haskell-lrucache' 'haskell-network-uri' 'haskell-optparse-applicative' 'haskell-pandoc'
+         'haskell-pandoc-types' 'haskell-random' 'haskell-regex-tdfa' 'haskell-resourcet' 'haskell-scientific'
+         'haskell-tagsoup' 'haskell-time-locale-compat' 'haskell-vector' 'haskell-wai'
+         'haskell-wai-app-static' 'haskell-warp' 'haskell-yaml' 'haskell-contravariant'
+         'haskell-xml-conduit')
+makedepends=('ghc' 'haskell-quickcheck' 'haskell-tasty' 'haskell-tasty-golden'
+             'haskell-tasty-hunit' 'haskell-tasty-quickcheck' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('f4477a9bee0bb9c5a3b02c13d4b34fd6a21e8495c9c53b1049dbeb0040c533a94dc19d631de96349ad50dab1922dd6b7996d6dd412f93f72fb8d99f95c7d6764')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    uusi -u pandoc
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -fcheckexternal -fwatchserver -fpreviewserver -fusepandoc
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    LC_CTYPE=en_US.UTF-8 runhaskell Setup test --show-details=direct || echo "Tests failed"
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

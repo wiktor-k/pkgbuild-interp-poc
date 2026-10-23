@@ -1,0 +1,84 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Matt Cuneo <m@cuneo.au>
+
+pkgname=matrix-authentication-service
+pkgver=1.27.1
+pkgrel=1
+pkgdesc="Authentication service for Matrix"
+url="https://github.com/element-hq/matrix-authentication-service"
+arch=(x86_64)
+license=(AGPL-3.0-only)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  nodejs-lts-krypton
+  npm
+  open-policy-agent
+  pnpm
+  rust
+)
+options=(!lto)
+source=(
+  "git+$url#tag=v${pkgver/[a-z]/-&}"
+  0001-Arch-Linux-paths.patch
+  matrix-authentication-service.service
+  matrix-authentication-service-worker.service
+  sysusers.conf
+  tmpfiles.conf
+)
+b2sums=('00ab9a2cfc854a2fe1916cea668e931f2ceb0f0e9bcecc203cf79a9f1c8d2584789bd8aa0b2b6214e8eb10f8ccb601c4a1b8416b9c55ec5a5157a4609187cd10'
+        '82775ed6b31f65ca9c61d367d52a1be6bd1179b46aa785f956bbbe4ca853bdbe67c8c30602351790035e37f0e3a50682e35e32a3fba5d1dd280b4da31450a21d'
+        '9f3e6f91897d2aee1409280d440ce4068244b007845e18f338eb43e634b970b8bf99eed2f4f877ec78f706925583136c8ba80e697983b52bd682753839916870'
+        'd3fac357d8794feefba7a45f6f8815aa0b2dce17d4200ee0906e2cb3444009fe13f3921e1dbbca6cbd2892f2d45edd75c817a216ec0dfd1eb4334df0d0ec2f74'
+        '5996147ed184e2f29e06148e36584462f81f12d5246c91f64eefbe0b82bf03b2509cd9d0c818b733f7d4fd820823095b11a04ff875bc9b996b1909e7925dff52'
+        'ec4959bf54b248b3b8e5f4399d0b8b3c437f39e38131ef16eec96532b8ba3b566f182175b6e5eeaede50b3b811f9a82fbeba4d0cdf964a7da0466d1796442c1e')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgname
+
+  # Move 'docker' feature paths from /usr/local to /usr
+  git apply -3 ../0001-Arch-Linux-paths.patch
+
+  cargo fetch --locked --target host-tuple
+  pnpm install --frozen-lockfile
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --frozen --features docker
+  pnpm --filter mas-frontend run build
+  make -C policies
+}
+
+package() {
+  cd $pkgname
+
+  install -D target/release/mas-cli -t "$pkgdir/usr/bin"
+
+  local sharedir="$pkgdir/usr/share/mas-cli"
+  install -Dm644 policies/policy.wasm frontend/dist/manifest.json -t "$sharedir"
+  cp -a templates translations -t "$sharedir"
+  cp -a frontend/dist -T "$sharedir/assets"
+  rm "$sharedir"/assets/manifest.json*
+
+  mkdir -p "$pkgdir/usr/share/doc"
+  cp -a docs -T "$pkgdir/usr/share/doc/$pkgname"
+
+  cd ..
+  mkdir -p "$pkgdir/etc/matrix-authentication-service"
+  install -Dm644 *.service -t "$pkgdir/usr/lib/systemd/system"
+  install -Dm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -Dm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}
+
+# vim:set sw=2 sts=-1 et:

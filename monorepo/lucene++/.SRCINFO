@@ -1,0 +1,26 @@
+pkgbase = lucene++
+	pkgdesc = C++ port of the popular Java Lucene library
+	pkgver = 3.0.9
+	pkgrel = 8
+	url = https://github.com/luceneplusplus/LucenePlusPlus
+	arch = x86_64
+	license = GPL
+	license = Apache
+	makedepends = boost
+	makedepends = cmake
+	makedepends = subversion
+	depends = boost-libs
+	source = https://github.com/luceneplusplus/LucenePlusPlus/archive/b545dba.tar.gz
+	source = https://github.com/luceneplusplus/LucenePlusPlus/commit/76dc90f2.patch
+	source = lucene-fix-boost-asio-io_service-deprecation.patch
+	source = gcc-15.patch
+	source = boost-1.89.patch
+	source = boost-1.90.patch::https://patch-diff.githubusercontent.com/raw/luceneplusplus/LucenePlusPlus/pull/222.patch
+	sha512sums = 25b40e0d24d70a07f6976f340faeba0eabe6279fa2a5d8e8484210f6b9faa4f3d3a69bb149c233320b74b7c4fa4be155d5575512f7e032d1e99f46cdb8ca2953
+	sha512sums = 0af65afca3b0725a78774d9e443efdf6ef1463f9388c98f13f3823dfd3677cd7f3a82c8e9a8e20ec3322624cc85c0ec2b91ec668f1a822462ae9beda0d8ab44d
+	sha512sums = 50fed61c82c366a428576c0e2e241a1795b8d54cc22d1a7d430d55b70ef5ed8c1ec248882935108638ed7e1daa1fa83d2bdc9e0497a1918cb22f0fd42627db58
+	sha512sums = f87625a2c9acd82b76a916d01ac4351bc6961b71fc48942b93658eb7e9742b23d35163b23baca58d7636497e36c0ca8da9779c1cfcf611a83d301fd84679f588
+	sha512sums = b94f6f9d3e79777a43c30ff0f771b2366f12307ad4355731227454fcf9b1c4f7e083a5418e94439e64a0eb1111d77611561af99b8aec24003d3242095035a97b
+	sha512sums = 59aaa33e7c9d19c2dfbe4cdcf8ccb0055e236c0bfb05becc5ac540de61b90249d81f7c17f979a4d3619f8526005204a0e00efafd4f9492307152ca889d3c3ee1
+
+pkgname = lucene++

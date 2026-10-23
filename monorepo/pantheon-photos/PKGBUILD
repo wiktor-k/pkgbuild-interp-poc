@@ -1,0 +1,59 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-photos
+pkgver=8.0.2
+pkgrel=1
+pkgdesc='The Pantheon Photos Manager'
+arch=(x86_64)
+url=https://github.com/elementary/photos
+license=(GPL-3.0-only)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  geocode-glib-2
+  glib2
+  glibc
+  gst-plugins-base-libs
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libexif
+  libgee
+  libgexiv2
+  libgphoto2
+  libgranite.so
+  libgudev-1.0.so
+  libhandy-1.so
+  libportal
+  libportal-gtk3
+  libraw
+  libwebp
+  pango
+  sqlite
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+groups=(pantheon)
+source=(pantheon-photos::git+https://github.com/elementary/photos.git#tag=${pkgver})
+b2sums=('a18aa39920cd1d04e1c3a4e0b9388244b49bac275797e314482c32ba44ce4aef56eeaaed871156883f94c33e6ac8b033a17aec14345dfc948419e311deb2c5f9')
+
+prepare() {
+  cd pantheon-photos
+}
+
+build() {
+  export LDFLAGS+=" -lm"
+  arch-meson pantheon-photos build
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+}
+
+# vim: ts=2 sw=2 et:

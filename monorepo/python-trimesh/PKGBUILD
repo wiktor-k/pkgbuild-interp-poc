@@ -1,0 +1,91 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=trimesh
+pkgname=python-$_name
+pkgver=5.1.1
+pkgrel=1
+pkgdesc="Python library for loading and using triangular meshes"
+arch=(any)
+url="https://trimesh.org/"
+license=(MIT)
+depends=(
+  python
+  python-numpy
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-httpx
+  python-jsonschema
+  python-lxml
+  python-manifold3d
+  python-networkx
+  python-pillow
+  python-pytest
+  python-pytest-xdist
+  python-rtree
+  python-scipy
+  python-shapely
+)
+optdepends=(
+  'python-charset-normalizer: encoding'
+  'python-colorlog: print logs with colors'
+  'python-httpx: network requests'
+  'python-jsonschema: validate JSON schemas like GLTF'
+  'python-lxml: handle XML better and faster than built-in XML'
+  'python-manifold3d: triangulation engine'
+  'python-networkx: graph operations'
+  'python-pillow: load images'
+  'python-rtree: vector path handling'
+  'python-scikit-image: for voxel ops'
+  'python-scipy: convex hulls'
+  'python-shapely: vector path handling'
+  'python-sympy: do analytical math'
+  'python-xxhash: hash ndarrays faster than built-in MD5/CRC'
+  #'python-collada: parse collada/dae/zae files'
+  #'python-fcl: collision queries between meshes'
+  #'python-mapbox-earcut: triangulate polygons'
+  #'python-meshio: load mesh formats'
+  #'python-pyglet: preview windows'
+  #'python-svg.path: handle SVG format path strings'
+)
+source=($_name-$pkgver.tar.gz::https://github.com/mikedh/trimesh/archive/refs/tags/$pkgver.tar.gz)
+b2sums=('b41410a4d7101158515a0e62051bcd7c7951b7a724ca0033692ad9efad50b59e896020646fea863c40688c554e4a5e0abce496f5ea53ca76264a3fe433f31f69')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # distribute tests across multiple CPUs
+    -n auto
+    # ignore tests that require missing packages (pyinstrument, pycollada)
+    --ignore tests/test_sweep.py
+    --deselect tests/test_dae.py::DAETest
+    --deselect tests/test_light.py::LightTests::test_scene
+    --deselect tests/test_meta.py::MetaTest::test_svg
+    --deselect tests/test_obj.py::test_multi_nodupe
+    --deselect tests/test_paths.py::test_svg_arc_snap
+    --deselect tests/test_splines.py::SplineTests::test_bezier_example
+    --deselect tests/test_svg.py
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

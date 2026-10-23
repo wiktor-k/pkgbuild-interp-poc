@@ -1,0 +1,37 @@
+pkgname=libprojectm
+pkgver=4.1.6
+pkgrel=2
+arch=('x86_64')
+url='https://github.com/projectM-visualizer/projectm'
+license=('LGPL-2.1-or-later')
+pkgdesc='Music visualizer library which uses 3D accelerated iterative image based rendering'
+makedepends=('glm' 'cmake' 'ninja')
+depends=('libglvnd')
+source=("https://github.com/projectM-visualizer/projectm/releases/download/v${pkgver}/libprojectM-${pkgver}.tar.gz")
+sha256sums=('1b9e6d56c59fe24e5416da4d42e941a34c982811003e43ac88b5aca8afa52c87')
+
+build() {
+    #cd "libprojectM-${pkgver}"
+    [[ -d build ]] && rm -rf build
+    mkdir build
+    cd build
+    cmake \
+        -GNinja \
+        -DENABLE_SYSTEM_GLM=ON \
+        -DENABLE_GLES=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        ../"libprojectM-${pkgver}"
+    cmake \
+        --build \
+        . \
+        --parallel
+}
+
+package() {
+    cd build
+    cmake \
+        --install \
+        . \
+        --prefix "${pkgdir}/usr"
+}

@@ -1,0 +1,43 @@
+pkgbase = dbeaver
+	pkgdesc = Free universal SQL Client for developers and database administrators (community edition)
+	pkgver = 26.2.2
+	pkgrel = 1
+	url = https://dbeaver.io/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = maven
+	makedepends = java-environment>=21
+	depends = java-runtime>=21
+	depends = gtk3
+	depends = gtk-update-icon-cache
+	depends = libsecret
+	conflicts = dbeaver-plugin-sshj-lib
+	conflicts = dbeaver-plugin-apache-poi
+	conflicts = dbeaver-plugin-office
+	replaces = dbeaver-plugin-sshj-lib
+	replaces = dbeaver-plugin-apache-poi
+	replaces = dbeaver-plugin-office
+	source = dbeaver-26.2.2.tar.gz::https://github.com/dbeaver/dbeaver/archive/26.2.2.tar.gz
+	source = dbeaver-common-26.2.2.tar.gz::https://github.com/dbeaver/dbeaver-common/archive/release_26_2_2.tar.gz
+	source = dbeaver-jdbc-libsql-26.2.2.tar.gz::https://github.com/dbeaver/dbeaver-jdbc-libsql/archive/release_26_2_2.tar.gz
+	source = datadam-api-afb5477ab9ab6f90ba8aad27fb0231c6e1727ca3.tar.gz::https://github.com/dbeaver/datadam-api/archive/afb5477ab9ab6f90ba8aad27fb0231c6e1727ca3.tar.gz
+	source = https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.28.0/commons-compress-1.28.0.jar
+	source = https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.19.0/commons-lang3-3.19.0.jar
+	source = io.dbeaver.DBeaver.desktop
+	source = dbeaver.sh
+	source = dbeaver.profile.gz
+	source = dbeaver.hook
+	source = dbeaver-remove.hook
+	sha256sums = 942448e9bcc541f69fc929088ebc2167e01f2541fcf441547ecdd0adbc7c223d
+	sha256sums = 7ed6491e052543e730669faca99a7ba93fb14faf09680d4bdf648505dec2498f
+	sha256sums = eca04f51261e16fd2a0ebd1e51d311f372c859ce072872a7900d0e737751128d
+	sha256sums = 043b6dd35b7462b56a84a49ca351cf40008cb1412cb991b90165b4089df1d4fb
+	sha256sums = e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca
+	sha256sums = 32733ab4bc90b45b63eb72677d886961003fd4ed113e07b1028f9877cb2ac735
+	sha256sums = 9480a7d08f680e10c399db070c5a04cbabf282442602a2ef83d1159fe7c3e88b
+	sha256sums = 406a2980806c394670e88b1ae70134900be376c2ea4a4216610591cc8b557526
+	sha256sums = 1863e74bdcf22b7328e6e8487cbebff7d5360e34bde85c1dd226b168b4737034
+	sha256sums = f8b763ca210bfa4d9a4e407b656ba4f5d1bf2f3f54c67044f7a4dd0c3625fc22
+	sha256sums = be7f999f86f80c26f1df0bcf428581dbd64d5e83e2c8247c362c684cd0d40f7c
+
+pkgname = dbeaver

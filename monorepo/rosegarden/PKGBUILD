@@ -1,0 +1,104 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+# Contributor: Robert Emil Berge <robert@rebi.no>
+
+pkgname=rosegarden
+pkgver=26.06
+pkgrel=1
+pkgdesc="MIDI/audio sequencer and notation editor"
+arch=(x86_64)
+url="https://www.rosegardenmusic.com/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  lilv
+  lirc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt5-base
+  zlib
+)
+makedepends=(
+  alsa-lib
+  cmake
+  dssi
+  fftw
+  git
+  jack
+  ladspa
+  liblrdf
+  liblo
+  libsamplerate
+  libsndfile
+  qt5-tools)
+checkdepends=(
+  lilypond
+  python
+  tex-gyre-fonts
+  ttf-dejavu
+  xorg-server-xvfb
+)
+optdepends=(
+  'cups: Printing support'
+  'evince: Print preview support'
+  'flac: FLAC support'
+  'lilypond: Notation display support'
+  'mupdf: Print preview support'
+  'okular: Print preview support'
+  'timidity++: Softsynth support'
+  'wavpack: Lossless audio codec support'
+)
+provides=(
+  dssi-host
+  ladspa-host
+  lv2-host
+)
+source=(
+  $pkgname::git+https://git.code.sf.net/p/rosegarden/git#tag=$pkgver
+)
+sha512sums=('d6554d39bfb6c005e5041f91ba9b68cc81c8c4cc4544941989e82ac7714d9ff75e21a039aed1a843e13fa078115eb9761e6834726c3a84f2a038005433359d77')
+b2sums=('f27c2b7bae878ce63d544bebb8f16f768ac11ccc717430bfbfbe029c6e1710c84965d2e56f79fb18a064e469b0a61469a54b55158d1a7390b35cc4213fe069d0')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D BUILD_TESTING=ON
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -S $pkgname
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  mkdir -p test-tmp
+  chmod 700 test-tmp
+  export XDG_RUNTIME_DIR="$(pwd)/test-tmp"
+  # disable broken lilypond_export_test: https://sourceforge.net/p/rosegarden/bugs/1640/
+  # disable tests incompatible with debug symbols: https://sourceforge.net/p/rosegarden/bugs/1641/
+  xvfb-run ctest --output-on-failure --test-dir build/test -E '^(lilypond_export_test|test_notationview_selection|convert)$'
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    fftw libfftw3f.so
+    jack libjack.so
+    liblrdf liblrdf.so
+    liblo liblo.so
+    libsamplerate libsamplerate.so
+    libsndfile libsndfile.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname/{AUTHORS,CHANGELOG,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+# vim:set ts=2 sw=2 et:

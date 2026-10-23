@@ -1,0 +1,24 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Bruce <b_a_g99@hotmail.com>
+
+pkgname=groovy-docs
+pkgver=6.0.0
+pkgrel=1
+pkgdesc='Documentation for the Groovy programming language'
+url='https://groovy-lang.org/'
+license=(Apache-2.0)
+arch=(any)
+validpgpkeys=('34441E504A937F43EB0DAEF96A65176A0FB1CD0B') # Paul King <paulk@apache.org>
+source=("https://groovy.jfrog.io/artifactory/dist-release-local/groovy-zips/apache-groovy-docs-$pkgver.zip"
+        "https://downloads.apache.org/groovy/$pkgver/distribution/apache-$pkgname-$pkgver.zip.asc")
+b2sums=('7abcf16b8076965990fa946a7a947e36b381a11e9362c8292f3459583a0d11928c29a4225c969487e35f81335648c51352e345d99628d113cafd4539a348ba16'
+        'SKIP')
+
+prepare() {
+  find "$srcdir" -type f -exec chmod -x {} \;
+}
+
+package() {
+  install -d "$pkgdir/usr/share/doc/groovy-$pkgver"
+  cp -r "groovy-$pkgver" "$pkgdir/usr/share/doc/"
+}

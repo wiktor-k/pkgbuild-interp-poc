@@ -1,0 +1,19 @@
+pkgbase = go-task
+	pkgdesc = A task runner written in Go
+	pkgver = 3.54.0
+	pkgrel = 1
+	url = https://taskfile.dev
+	install = go-task.install
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	source = go-task::git+https://github.com/go-task/task#tag=v3.54.0
+	source = fix-version.patch
+	sha512sums = 73260da7d0b5b1589c1242a02a0078435dfbdd727339524e03ee6a381bedcdd7eb204c94b5743a5fc36ec17d3a04b963dc123a72fbb9d8ccde6857ba9065cf83
+	sha512sums = 5ca079e3d2875d1efe8bba390ae8960445f42b53f309b50cff8a8c13dc3d5ca06065a0bd9ea4504817bbdccc36f7ff39f937817f4feb28fd1d3006dbf382636a
+	b2sums = 49a2f8b4b495e7adceefc9df7c99ef58a31d29ac12d05361c7504b1aec09a0f7a5fe8a18705300563620c8d4b145ccf03b6864dbd845fa3524484bda4a3a5b74
+	b2sums = 99f5fd755334a9c5b0a0375d4cdda6e640444d7550d1c105d41f4b94da9f25f74331465b90bc2f79ab0daa5e3d95d9d27d62cce86646f5c22b6c95947c919a0c
+
+pkgname = go-task

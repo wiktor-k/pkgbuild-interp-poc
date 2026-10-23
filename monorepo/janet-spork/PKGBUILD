@@ -1,0 +1,38 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=janet-spork
+pkgver=1.3.0
+pkgrel=1
+pkgdesc='Official contrib library of various Janet utility modules'
+arch=(x86_64)
+url='https://github.com/janet-lang/spork'
+license=(MIT)
+depends=(janet jpm)
+makedepends=(git)
+options=(staticlibs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('7bca299edb69486891b15427f1f0bd26acda2de4f8ecce05e1fc9b902da8fc040d28738f1da0b2a522c381f85f6717c285bb1e80d0164de6659ced6ac969c303')
+b2sums=('e54e9f021002ec2e748ba440c51e244a57ca681fc9b7a4f72cc6452646a6f75d0b6e0d270a6f22e5e471dd1285ca875771f9bb3562f967f9f987faf3f48e4dd2')
+
+build() {
+  cd "$pkgname"
+
+  jpm build
+}
+
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  # generate required paths
+  local modpath="$(janet -e '(print (dyn :syspath))')"
+  install -vd \
+    "$pkgdir/$modpath" \
+    "$pkgdir/usr/share/man/man1"
+
+  jpm --dest-dir="${pkgdir}" install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

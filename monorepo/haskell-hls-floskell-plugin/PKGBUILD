@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hls-floskell-plugin
+pkgname=haskell-hls-floskell-plugin
+pkgver=2.4.0.0
+pkgrel=30
+pkgdesc="Integration with the Floskell code formatter"
+url="https://hackage.haskell.org/package/hls-floskell-plugin"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-floskell' 'haskell-ghcide' 'haskell-hls-plugin-api' 'haskell-lsp-types')
+makedepends=('ghc' 'uusi' 'haskell-hls-test-utils')
+checkdepends=('git')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz"
+        "$_hkgname-floskell-0.11.patch::https://github.com/haskell/haskell-language-server/commit/92d3ba98161f8b6f7e1b8abec70df9ee6af16216.patch")
+sha512sums=('e6b2aec46ce2c5f99fc5e3f2fb86b9f430a4efe8c591ab83ba35d327ade12bf5dc1603ed8a3597da1d19b1c0335ef7e7856dcca81e4395bbdd0861d08a044c1e'
+            '794b9ed98bd9a6b1b11ae64469afda0d2ccacc07f3c86e453c0268de429eb7dce9a0f301a0592357c6196cc94bdeda1f261547155d74faff0705beb03e00f499')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  sed -i 's/ghc >= 9.5/ghc >= 9.7/' $_hkgname.cabal
+  gen-setup
+  uusi -u floskell
+  # Upstream #3933 adapts the plugin to floskell 0.11's Text API.
+  # Apply only the plugin source hunk from the monorepo patch.
+  awk '/^diff --git a\/plugins\/hls-floskell-plugin\/src\/Ide\/Plugin\/Floskell.hs / {copy=1} copy && /^diff --git / && !/^diff --git a\/plugins\/hls-floskell-plugin\/src\/Ide\/Plugin\/Floskell.hs / {exit} copy {print}' \
+    ../$_hkgname-floskell-0.11.patch | patch -Np3
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

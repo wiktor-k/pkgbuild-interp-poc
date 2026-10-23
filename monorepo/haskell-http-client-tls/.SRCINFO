@@ -1,0 +1,27 @@
+pkgbase = haskell-http-client-tls
+	pkgdesc = http-client backend using the connection package and tls library
+	pkgver = 0.3.6.4
+	pkgrel = 230
+	url = https://github.com/snoyberg/http-client
+	arch = x86_64
+	license = MIT
+	makedepends = ghc
+	makedepends = uusi
+	makedepends = haskell-hspec
+	depends = ghc-libs
+	depends = haskell-case-insensitive
+	depends = haskell-crypton
+	depends = haskell-crypton-connection
+	depends = haskell-data-default
+	depends = haskell-http-client
+	depends = haskell-http-types
+	depends = haskell-memory
+	depends = haskell-network
+	depends = haskell-network-uri
+	depends = haskell-tls
+	source = https://hackage.haskell.org/packages/archive/http-client-tls/0.3.6.4/http-client-tls-0.3.6.4.tar.gz
+	source = haskell-http-client-tls-tls-2.0.patch::https://github.com/snoyberg/http-client/commit/e36f74123bcc18c5cbda50c6749aace324dfe3f1.patch
+	sha512sums = 1c0c2079c19e57d35a7ca8f21a0be381963858aa0af2abbe9124bbd5aafc851b9a3f3fa06a125dd080b59ea46a22e76551621975b3437eb0aaf5b2fc5e4abe92
+	sha512sums = 3f8ab59d31ec9220b20573782792489b333b708006997a4f05d0a40fdcbb0faeda2c55b5e7e03c3dd9c8937af687d450bdc21d7fab04fbae18ad2e592369d806
+
+pkgname = haskell-http-client-tls

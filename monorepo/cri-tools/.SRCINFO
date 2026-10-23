@@ -1,0 +1,20 @@
+pkgbase = cri-tools
+	pkgdesc = CLI and validation tools for Kubelet Container Runtime Interface (CRI)
+	pkgver = 1.37.0
+	pkgrel = 1
+	url = https://github.com/kubernetes-sigs/cri-tools
+	arch = x86_64
+	groups = kubernetes-tools
+	license = Apache-2.0
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = https://github.com/kubernetes-sigs/cri-tools/archive/v1.37.0/cri-tools-v1.37.0.tar.gz
+	sha512sums = 1895be8ba45d3c8f2e5189b795eb61139957c001e0b760a610163bd3aa8260c187a1a2ffe5cd182f88d7379a5875cf357b839e95604a03d5eb29ff1667731370
+	b2sums = 9c69a27d3af6a6afcbe77b1af8f3af2200d363c91c60fc3387ceefd5b8e156d2bd5ebba38d606b2fef7861a34c3f1f14616f9237e31aa730ea28c301f1c24bf5
+
+pkgname = crictl
+	pkgdesc = A CLI for CRI-compatible container runtimes
+
+pkgname = critest
+	pkgdesc = A benchmarking CLI for CRI-compatible container runtimes

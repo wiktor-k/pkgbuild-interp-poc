@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=system-filepath
+pkgname=haskell-system-filepath
+pkgver=0.4.14.1
+pkgrel=159
+pkgdesc="High-level, byte-based file and directory path manipulations"
+url="https://github.com/fpco/haskell-filesystem"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs')
+makedepends=('ghc' 'uusi' 'haskell-chell' 'haskell-chell-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('3b04ff1d7b4d6e08724f791aeb5733f8d5a5e102518250bcc2a0558aee191ed972dab3604b400375bb4f4e2e3b290f281e51b7e8b94d355387e599cdf399d531')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 "license.txt" "${pkgdir}/usr/share/licenses/${pkgname}/license.txt"
+    rm -f "${pkgdir}/usr/share/doc/${pkgname}/license.txt"
+}

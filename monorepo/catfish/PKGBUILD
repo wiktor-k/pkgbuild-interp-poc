@@ -1,0 +1,31 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Alexander Fehr <pizzapunk@gmail.com>
+# Contributor: Pantelis Panayiotou <p.panayiotou@gmail.com>
+# Contributor: loqs <bugs-archlinux@entropy-collector.net>
+
+pkgname=catfish
+pkgver=4.20.1
+pkgrel=2
+pkgdesc="Versatile file searching tool"
+arch=('any')
+url="https://docs.xfce.org/apps/catfish/start"
+license=('GPL-2.0-or-later')
+depends=('dbus-python' 'gtk3' 'python-cairo' 'python-gobject' 'python-pexpect' 'xdg-utils'
+         'xfconf' 'which')
+makedepends=('git' 'meson')
+optdepends=('plocate: search in locate index'
+            'zeitgeist: search in zeitgeist index')
+source=("git+https://gitlab.xfce.org/apps/catfish.git#tag=$pkgname-$pkgver")
+sha256sums=('265ca6b2c4494b74bb41a2d642860d7f15982171e87a18978f7b2173763fc39d')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

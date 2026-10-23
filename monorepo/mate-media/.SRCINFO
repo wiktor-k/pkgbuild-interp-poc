@@ -1,0 +1,28 @@
+pkgbase = mate-media
+	pkgdesc = MATE Media Tools
+	pkgver = 1.28.1
+	pkgrel = 4
+	url = https://github.com/mate-desktop/mate-media
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = mate-common
+	makedepends = mate-panel
+	depends = at-spi2-core
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libcanberra
+	depends = libgcc
+	depends = libmatemixer
+	depends = libxml2
+	depends = mate-desktop
+	depends = pango
+	optdepends = mate-panel: Control volume from the panel
+	source = git+https://github.com/mate-desktop/mate-media.git#tag=v1.28.1
+	b2sums = 98ef780ff690ab78ec38bfcb9f843c70616628aee58c976dc5b4fb580cd971f3d4ad4bc939344b2ee72f7fa80ed205eac6257b09d28867893959b005673f5354
+
+pkgname = mate-media

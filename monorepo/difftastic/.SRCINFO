@@ -1,0 +1,19 @@
+pkgbase = difftastic
+	pkgdesc = An experimental diff tool that compares files based on their syntax
+	pkgver = 0.71.0
+	pkgrel = 1
+	url = https://difftastic.wilfred.me.uk
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	makedepends = mdbook
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = shared-mime-info
+	source = git+https://github.com/Wilfred/difftastic.git#tag=0.71.0
+	sha512sums = 9282b73fd6c863d2eb1d826175a8bb77d9c9cfc2a4f68f49fa834cd6bf1f243af10c379409cfdf403a3dc59a97931cc64601603ab81d22e48f3ce526d3cbd98f
+	b2sums = 9db1c06d2a43902405755d41407fe902dbde3507a7d14d2f990eb002bc63607dce7faef87490c84fd66ad1af737663124dd63f7128ab187396ec58d40c5439d3
+
+pkgname = difftastic

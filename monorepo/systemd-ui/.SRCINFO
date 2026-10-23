@@ -1,0 +1,20 @@
+pkgbase = systemd-ui
+	pkgdesc = Graphical front-end for systemd
+	pkgver = 3
+	pkgrel = 6
+	url = https://github.com/systemd/systemd-ui
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = docbook-xsl
+	makedepends = git
+	makedepends = libxslt
+	makedepends = vala
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libgee
+	depends = libnotify
+	source = git+https://github.com/systemd/systemd-ui.git#tag=v3
+	b2sums = 8940643efb9de7c20e3866e91eab93296ba19450555659ccaeb516a2b34e99f4b6cccd3f5a28172a57e17f876aa62cb894238029d981213122848948a1850cb4
+
+pkgname = systemd-ui

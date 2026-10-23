@@ -1,0 +1,41 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Florian Pritz <bluewind@xinu.at>
+
+pkgname=grafana-zabbix
+pkgver=6.10.0
+pkgrel=1
+pkgdesc="Zabbix plugin for Grafana dashboard"
+arch=('x86_64')
+url="https://github.com/grafana/grafana-zabbix"
+license=('Apache-2.0')
+depends=('grafana')
+makedepends=('yarn' 'npm' 'libfaketime' 'go' 'git' 'nodejs-lts-krypton' 'mage')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('86b0dd82767f3bc532a903241547c34bbedf055fc8b326c87a4fa0960be20f55')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	# Fix tests not working without git clone
+	sed -i 's/jest --watch --onlyChanged/jest/' package.json
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	make install
+	make build
+	make dist-frontend
+	make dist-backend-linux
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	# Force UTC timezone so that tests pass, even after a DST change
+	PATH="${PATH}:/build/go/bin" TZ=UTC make test
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -dm 755 "${pkgdir}/var/lib/grafana/plugins/alexanderzobnin-zabbix-app"
+	cp -rv dist/* "${pkgdir}/var/lib/grafana/plugins/alexanderzobnin-zabbix-app"
+	rm -rf "${pkgdir}/var/lib/grafana/plugins/alexanderzobnin-zabbix-app/node_modules"
+}

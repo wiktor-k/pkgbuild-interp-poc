@@ -1,0 +1,118 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Daniele Basso <d dot bass 05 at proton dot me>
+
+pkgname=bun
+pkgver=1.4.4
+# From https://github.com/oven-sh/bun/blob/main/scripts/build/deps/webkit.ts#L6
+_webkitver=d6375c72affe0f70222cdcb45012b10f0bf3a9d5
+pkgrel=1
+pkgdesc="Incredibly fast JavaScript runtime, bundler, test runner, and package manager – all in one"
+arch=(x86_64 aarch64)
+url="https://github.com/oven-sh/bun"
+license=('MIT')
+depends=(
+  glibc
+  icu
+)
+makedepends=(
+  # Packaging requirements
+  git
+  unzip
+  # bun make dependencies
+  clang
+  cmake
+  lld
+  llvm
+  nasm
+  ninja
+  rustup
+  # WebKit make dependencies
+  python
+  ruby
+  ruby-erb
+  ruby-getoptlong
+)
+options=('!lto')
+source=(
+  "git+$url.git#tag=bun-v$pkgver"
+  "$pkgname-WebKit::git+https://github.com/oven-sh/WebKit.git#commit=$_webkitver"
+  "$pkgname-webkit-typed-array-int32-conversion.patch"
+)
+source_x86_64=(
+  "$pkgname-bootstrap-x64-$pkgver.zip::https://github.com/oven-sh/bun/releases/download/bun-v$pkgver/bun-linux-x64.zip"
+)
+source_aarch64=(
+  "$pkgname-bootstrap-aarch64-$pkgver.zip::https://github.com/oven-sh/bun/releases/download/bun-v$pkgver/bun-linux-aarch64.zip"
+)
+b2sums=('b8e3d89606e9ac5fff5f22efc6b2505325823f324567bfc27901f9c642039f59d707db4c9c1d7582cb51d4abc8d1d820148e025559399f164185d7de52e86e14'
+        '071af31d4d1e01a039890dbc562a4a0d7e789562e451c41aabd38eda7eab0ec5adbb5a50b431ce4f8abf9dfaae5bb45c5986318088b8ac5c41b5f924997b2817'
+        'f7b41bee31d26968154501ad62d8fdc157cac9e0f895035ba9a1ddd30caa2beb83b5cf80f6a0e52dcc1acac874fb07ef7974761764929e6e782866f1aacf35c2')
+b2sums_x86_64=('7b2a977b71d8713cf201e8433b717dc271c3007cb645c16c3bc645eb88b7ae506aba04a0f0a4d10de18cd347506e2f2ccf2f28428f8ac6112789dff660faeceb')
+b2sums_aarch64=('eaff4a9ade73b354362d3b4d76a8a95bea00a4e0161f56b6652e5f2f9d98459f8711436eba1907f73d68eded26ff5f9b06becebdf1d291797718114d30119744')
+
+prepare() {
+  # Fix UB in JSC typed array int32 conversion that causes wrong values
+  # to be stored for numbers > INT32_MAX (https://github.com/oven-sh/bun/issues/28607)
+  patch -Np1 -d $pkgname-WebKit < $pkgname-webkit-typed-array-int32-conversion.patch
+
+  cd $pkgname
+
+  grep -q "WEBKIT_VERSION = \"$_webkitver\"" scripts/build/deps/webkit.ts \
+    || (echo "WebKit version mismatch"; exit 1)
+
+  # Fix compatibility with older CPUs; see
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/bun/-/merge_requests/4.
+  sed -i 's/-march=nehalem/-march=x86-64/' scripts/build/flags.ts
+
+  # libspng unconditionally compiles its SSE4.1 defilter paths, which fails to
+  # build against the x86-64 baseline set above. Drop down to the SSE2 paths.
+  sed -i 's/SPNG_SSE: 4/SPNG_SSE: 1/' scripts/build/deps/libspng.ts
+
+  # Place the WebKit checkout where bun's build system expects local WebKit sources
+  # See also https://bun.sh/docs/project/contributing#building-webkit-locally-+-debug-mode-of-jsc
+  mkdir -p vendor
+  cp -r "$srcdir/$pkgname-WebKit" vendor/WebKit
+}
+
+build() {
+  cd $pkgname
+
+  export PATH="/usr/lib/llvm21/bin:$PATH"
+  case "$CARCH" in
+    x86_64)  _bundir="bun-linux-x64" ;;
+    aarch64) _bundir="bun-linux-aarch64" ;;
+  esac
+  export PATH="$srcdir/$_bundir:$PATH"
+
+  local bun_options=(
+    --profile=release-local
+    --canary=0
+    --build-dir=build/release
+    --cache-dir="$srcdir/build-cache"
+  )
+
+  if [[ ${CARCH} == x86_64* ]]; then
+    bun_options+=(--baseline=on)
+  fi
+
+  bun scripts/build.ts "${bun_options[@]}"
+}
+
+check() {
+  cd $pkgname
+
+  ./build/release/bun --version
+  echo 'console.log("ok")' | ./build/release/bun run -
+}
+
+package() {
+  cd $pkgname
+
+  install -vDm755 build/release/bun "$pkgdir/usr/bin/bun"
+  ln -vs /usr/bin/bun "$pkgdir/usr/bin/bunx"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+
+  install -vDm644 completions/bun.bash "$pkgdir/usr/share/bash-completion/completions/bun"
+  install -vDm644 completions/bun.fish "$pkgdir/usr/share/fish/vendor_completions.d/bun.fish"
+  install -vDm644 completions/bun.zsh "$pkgdir/usr/share/zsh/site-functions/_bun"
+}

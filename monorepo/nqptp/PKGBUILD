@@ -1,0 +1,30 @@
+# Maintainer Anatol Pomozov <anatol.pomozov@gmail.com>
+# Contributor: Logan Sevcik <logan+aur@sevcik.email>
+
+pkgname=nqptp
+pkgver=1.2.8
+pkgrel=1
+pkgdesc="A daemon that monitors timing data from PTP clocks"
+arch=(x86_64)
+url="https://github.com/mikebrady/nqptp"
+license=(GPL-2.0-only)
+source=(https://github.com/mikebrady/nqptp/archive/refs/tags/$pkgver.tar.gz
+	nqptp.sysusers
+)
+sha256sums=('3a2882a299c21605f53bb215ce537f9cc7a1e894476f639ab28562c68fd183a9'
+            '5d98c7093d69d753f73f07939211faf29bbdb3d7e0233ec76ca31a0baa752032')
+
+build() {
+  cd nqptp-$pkgver
+  autoreconf -fi
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd nqptp-$pkgver
+  make DESTDIR="$pkgdir/" install
+  mkdir -p "$pkgdir/usr/lib/systemd/system" "$pkgdir/usr/lib/sysusers.d/"
+  cp nqptp.service "$pkgdir/usr/lib/systemd/system/"
+  cp ../nqptp.sysusers "$pkgdir/usr/lib/sysusers.d/nqptp.conf"
+}

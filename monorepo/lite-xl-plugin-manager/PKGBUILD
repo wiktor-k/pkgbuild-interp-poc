@@ -1,0 +1,39 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=lite-xl-plugin-manager
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='Lite XL Plugin Manager'
+arch=(x86_64 aarch64)
+url='https://github.com/lite-xl/lite-xl-plugin-manager'
+license=(MIT)
+depends=(glibc # libc.so
+         libgit2 libgit2.so
+         libzip libzip.so
+         lite-xl
+         lua # liblua.so
+         mbedtls3 # libmbedcrypto.so libmbedtls.so libmbedx509.so
+         xz liblzma.so
+         zlib libz.so)
+makedepends=(meson)
+replaces=(lpm)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('c4a61a1d0589b40ed651fb4968108c3036ba0ed746dc9173cdc5fcc2666c02b9')
+
+build() {
+	local meson_opts=(
+		install_plugin=true
+		static=true
+		pkg_config_path=/usr/lib/mbedtls3/pkgconfig
+	)
+	# https://github.com/lite-xl/lite-xl-plugin-manager/issues/185
+	CFLAGS+=" -DLPM_VERSION='\"$pkgver\"' -DLPM_DEFAULT_RELEASE=''"
+	arch-meson "$_archive" build ${meson_opts[@]/#/-D }
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "$pkgdir" --skip-subprojects
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" "$_archive/LICENSE"
+}

@@ -1,0 +1,22 @@
+pkgbase = spire
+	pkgdesc = SPIFFE Runtime Environment
+	pkgver = 1.14.1
+	pkgrel = 2
+	url = https://github.com/spiffe/spire
+	arch = x86_64
+	license = Apache
+	makedepends = go
+	depends = glibc
+	source = spire-1.14.1.tar.gz::https://github.com/spiffe/spire/archive/v1.14.1.tar.gz
+	sha512sums = ca952cd602fd071b16a312453b41a4ed442ca48542a3bda47eaeff26b845e678862d4a4d32aab97b5d89cc2e59eeea3fe8846b4ec29868598a1fdae0495665a5
+	b2sums = 4f7792226dae9b768baf86c9ee3a03993f3a48d5587dd2072497129587ab7b918f290e8b654cdc0aca6f045adf259e00d042ebc024fe71a0c38cbc6da5f62267
+
+pkgname = spire-agent
+	pkgdesc = SPIFFE runtime environment (agent)
+	depends = glibc
+	provides = spire-agent
+
+pkgname = spire-server
+	pkgdesc = SPIFFE runtime environment (server)
+	depends = glibc
+	provides = spire-server

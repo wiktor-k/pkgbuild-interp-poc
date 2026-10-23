@@ -1,0 +1,268 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Vesa Kaihlavirta <vesa@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+
+# Special note for devs looking to upgrade this package:
+#   ghc places a unique hash for each library when it is built.
+#   Libraries depend on versions specified by those hashes.
+#   This implies that all libraries need to be rebuilt when ghc is rebuilt.
+
+pkgbase=ghc
+pkgname=(ghc-libs ghc ghc-static)
+pkgver=9.6.7
+pkgrel=3
+pkgdesc='The Glasgow Haskell Compiler'
+arch=('x86_64')
+url='https://www.haskell.org/ghc/'
+license=('BSD-3-Clause')
+makedepends=('ghc-static' 'perl' 'libxslt' 'docbook-xsl' 'python-sphinx' 'haskell-hadrian'
+             'haskell-hscolour' 'texlive-fontsrecommended' 'texlive-latexextra' 'texlive-xetex'
+             'ttf-dejavu' 'alex' 'happy' 'time' 'numactl' 'python-sphinx_rtd_theme')
+checkdepends=('git')
+source=("https://downloads.haskell.org/~ghc/$pkgver/$pkgbase-${pkgver}-src.tar.xz"
+        "https://downloads.haskell.org/~ghc/$pkgver/$pkgbase-${pkgver}-testsuite.tar.xz"
+        "$pkgbase-gcc-15.patch::https://gitlab.haskell.org/ghc/ghc/-/commit/f983a00ffc97b779eb52b10e69e254ec107f8311.patch"
+        ghc-rebuild-doc-index.hook ghc-register.hook ghc-unregister.hook
+        ghc-blackhole-wakeups.patch
+        ghc-core-first-dynamic-linking.patch
+        ghc-shared-libdir.patch
+        ghc-testsuite-egrep.patch
+        ghc-testsuite-grep-patterns.patch
+        ghc-testsuite-pthread-callback.patch
+        ghc-testsuite-wsdeque.patch
+        ghc-testsuite-closure-types.patch
+        ghc-testsuite-T21035.patch
+        ghc-testsuite-T7060.patch)
+sha512sums=('08dae6b3d8ea8f50f1261dcd2e41ad27634b3ee9c9bd47969f6cfcf582cc7ea5b8645c41b47c641a4f9aabf246bd26ce46686084b6520aa974bf5624c4d599c6'
+            '6a9c074011bf9cbde2d8d33014b07ff398a67259aa8bf56c75f34a1edec1328c6fd7f582eb6f41b129b52d22f1f30fa28aec39b4925622a6d385dd84cf8069a3'
+            '1c0d31bde8cf4f7e2deba38a59743b37d18382f8ca2bee37302b491a2e0c36877e0f09eb10ab4a191ad756f150f87114074f32f9e2f99efe100b2bf8bfa8d1b1'
+            'd69e5222d1169c4224a2b69a13e57fdd574cb1b5932b15f4bc6c7d269a9658dd87acb1be81f52fbcf3cb64f96978b9943d10cee2c21bff0565aaa93a5d35fcae'
+            '5f659651d8e562a4dcaae0f821d272d6e9c648b645b1d6ab1af61e4dd690dc5a4b9c6846753b7f935963f001bb1ae1f40cd77731b71ef5a8dbc079a360aa3f8f'
+            '3bdbd05c4a2c4fce4adf6802ff99b1088bdfad63da9ebfc470af9e271c3dd796f86fba1cf319d8f4078054d85c6d9e6a01f79994559f24cc77ee1a25724af2e6'
+            'afc1ac81c27196cb5c75ebf76d845d9db41c2351416d102b363dc8059f21e5388ab43490e44d52d5f7c372646cc40cfa60b29a4997a770402559e13abc8ed3ac'
+            '7bc3effe851fed18270013caba76e0bc8a02ae9e3230adbb766c61eaa42fcfcbc93ba152bf408a804d780b35719fdc57db9bf4c948a420f5e90b4767142f3705'
+            '0feed3dea40774afa62523dfbe0b8c05a57422ae04471505345e7d1a96547e9d1165836706caf0498aae53a2be6b59c074433c1b00c00450e5b7e942714b0df2'
+            '14c2b4634b5aae3543d2544989a92694844e0765e0e03f46e4f55087763b82cbffc75126778196844cb7eaee1e212fb31ba034cc795dad4aae2d424ddf5d482a'
+            '8c683398fa9f82df00f44193b2812600ed8d1e96c4b744daee7203047b94963d88d1a7e9f26ca4f61316a2353ff4f34ce0d6c635328836b9e46bd23da2010d91'
+            'eb3903afbe3d44feedd3b22b15b12f8212749653aba5ff2950ba1174c765a0db71d8393d45d4e88cdada0867c3c5524e0125282c9819c2c082495e27b6826619'
+            '467617f9075bd2b0f0e78d96eff7d5a65f6c09f5377458efa79d2e6d8d5868f5b1d25136aa8e596168a6b547dc8f3da1ef5ee4b4eb413e85c347725196461427'
+            '5ccd4cf1c70b54514ce207ab63e5deaba84a3554cecca23db7814718968df2021a09b241d4f6627c914b6b2e4e034bd8b25e7ba93adad2e0aa203bb7320c0344'
+            '6a42d23adf9303460ab433a746997a0b198222191447f587b53a25759b4086ef3eb4f35577aa6aa203f65d856aa0cc52b11c113928bbb4ba7995971fbdc9c5ee'
+            '795accf0419b88f7748aacae0594a8a72d9a60ffcffe7ddf11f59cefee16907f11007b8b188eccded5b2f39dde6b96f3fe98933f21cf097a797f0ecb57bf4813')
+
+prepare() {
+  cd ghc-$pkgver
+
+  patch -p1 -i ../$pkgbase-gcc-15.patch
+
+  # Fix blackhole handling to prevent lost wakeups, deadlocks, and crashes in parallel programs.
+  # https://gitlab.haskell.org/ghc/ghc/-/merge_requests/14734
+  # https://gitlab.haskell.org/ghc/ghc/-/merge_requests/14963
+  # https://gitlab.haskell.org/ghc/ghc/-/merge_requests/15640
+  patch -p1 -i ../ghc-blackhole-wakeups.patch
+
+  # Reduce startup symbol lookup costs for dynamically linked executables.
+  patch -p1 -i ../ghc-core-first-dynamic-linking.patch
+
+  # Let the system dynamic linker find bundled shared libraries without RPATH.
+  patch -p1 -i ../ghc-shared-libdir.patch
+
+  # devendor rtd-theme for sphinx compatibility
+  rm -r docs/users_guide/rtd-theme
+  sed -i 's/rtd-theme/sphinx_rtd_theme/' docs/users_guide/conf.py
+
+  # detects GCC correctly
+  sed -i 's/grep -q gcc/grep -qi gcc/' m4/fp_gcc_version.m4
+
+  # Avoid obsolescent egrep warnings breaking tests with current GNU grep.
+  # https://gitlab.haskell.org/ghc/ghc/-/issues/22351
+  patch -p1 -i ../ghc-testsuite-egrep.patch
+
+  # Use valid grep expressions instead of escapes that now produce warnings.
+  # https://gitlab.haskell.org/ghc/ghc/-/commit/e305e60cf507808fa31c456ef98295f8f7d00c9d
+  patch -p1 -i ../ghc-testsuite-grep-patterns.patch
+
+  # Match pthread_create's callback type, which recent GCC rejects otherwise.
+  # https://gitlab.haskell.org/ghc/ghc/-/commit/d6d5aafc0d9766f055a708f4d3dab9cba81d995a
+  patch -p1 -i ../ghc-testsuite-pthread-callback.patch
+
+  # Correct the work-stealing test's thread callback and diagnostic formats.
+  # https://gitlab.haskell.org/ghc/ghc/-/merge_requests/12570
+  patch -p1 -i ../ghc-testsuite-wsdeque.patch
+
+  # Use closure pointers and matching format specifiers in the RTS roots test.
+  # https://gitlab.haskell.org/ghc/ghc/-/issues/25237
+  patch -p1 -i ../ghc-testsuite-closure-types.patch
+
+  # Group T21035's compilation outputs to prevent duplicate recipes with parallel make.
+  patch -p1 -i ../ghc-testsuite-T21035.patch
+
+  # Serialize T7060's dump checks, which overwrite the same output files.
+  patch -p1 -i ../ghc-testsuite-T7060.patch
+}
+
+build() {
+  cd ghc-$pkgver
+
+  LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" ./configure \
+    --prefix=/usr \
+    --docdir=/usr/share/doc/ghc \
+    --with-system-libffi
+  hadrian -j --flavour=perf
+}
+
+check() {
+  cd ghc-$pkgver
+  # Run performance tests from release archives without a Git checkout.
+  hadrian test --flavour=perf --summary-metrics=testsuite_metrics.txt
+}
+
+package_ghc-static() {
+  pkgdesc='The Glasgow Haskell Compiler - Static Libraries and Documentation'
+  depends=('ghc')
+
+  cd ghc-$pkgver
+
+  DESTDIR="$pkgdir" LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" hadrian install --flavour=perf --prefix=/usr
+
+  mv "$pkgdir"/usr/lib/ghc-$pkgver/lib/package.conf.d "$srcdir"/static-package.conf.d
+  find "$pkgdir"/usr/lib ! \( -name "*.a" -o -name "*.o" -o -name "*.p_o" -o -name "*.p_hi" -o -name "*.hi" \) -type f -delete
+  find "$pkgdir"/usr/lib -type d -empty -delete
+  mv "$srcdir"/static-package.conf.d "$pkgdir"/usr/lib/ghc-$pkgver/lib/
+  rm "$pkgdir"/usr/lib/ghc-$pkgver/lib/static-package.conf.d/*.copy
+  rm -r "$pkgdir"/usr/bin "$pkgdir"/usr/share/man "$pkgdir"/usr/lib/ghc-$pkgver/bin
+  mv "$pkgdir"/usr/share/doc/ghc{-$pkgver,}
+  ln -s ghc "$pkgdir"/usr/share/doc/ghc-$pkgver
+
+  install -Dm755 libraries/{gen_contents_index,prologue.txt} -t "$pkgdir"/usr/share/doc/ghc/html/libraries/
+  install -Dm644 "$srcdir"/ghc-rebuild-doc-index.hook -t "$pkgdir"/usr/share/libalpm/hooks/
+}
+
+package_ghc() {
+  pkgdesc='The Glasgow Haskell Compiler'
+  install='ghc.install'
+  depends=('gcc' 'ghc-libs' 'perl')
+  provides=("haskell-ghc-pkg=$pkgver"
+            'haskell-haddock=2.29.2'
+            'haskell-hp2ps=0.1'
+            'haskell-hpc-bin=0.68'
+            'haskell-hsc2hs=0.68.9')
+  replaces=('haskell-ghc-pkg'
+            'haskell-haddock'
+            'haskell-hp2ps'
+            'haskell-hpc-bin'
+            'haskell-hsc2hs')
+
+  provides+=("haskell-ghc=$pkgver")
+  replaces+=("haskell-ghc")
+
+  cd ghc-$pkgver
+  DESTDIR="$pkgdir" LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" hadrian install --flavour=perf --prefix=/usr
+
+  # Remove static libs
+  find "$pkgdir"/usr/lib \( -name "*.a" -o -name "*.o" -o -name "*.p_o" -o -name "*.p_hi" -o -name "*.hi" \) -delete
+
+  rm "$pkgdir"/usr/lib/ghc-$pkgver/lib/package.conf.d/*.copy
+
+  # Shared runtime libraries are in ghc-libs.
+  find "$pkgdir"/usr/lib -maxdepth 1 \
+    -name "*.so" ! -name "libHSghc-$pkgver-ghc$pkgver.so" -delete
+
+  # docs moved to ghc-static
+  rm -r "$pkgdir"/usr/share/doc
+
+  install -Dm644 utils/completion/ghc.bash \
+    "$pkgdir/usr/share/bash-completion/completions/ghc"
+
+  install -Dm644 "$srcdir"/ghc-register.hook "$pkgdir"/usr/share/libalpm/hooks/ghc-register.hook
+  install -Dm644 "$srcdir"/ghc-unregister.hook "$pkgdir"/usr/share/libalpm/hooks/ghc-unregister.hook
+
+  install -dm755 "$pkgdir"/usr/share/haskell/{register,unregister}
+}
+
+package_ghc-libs() {
+  pkgdesc='The Glasgow Haskell Compiler - Dynamic Libraries'
+  depends=('gmp' 'libffi' 'numactl')
+  provides=('haskell-array=0.5.8.0'
+            'haskell-base=4.18.3.0'
+            'haskell-binary=0.8.9.1'
+            'haskell-bytestring=0.11.5.4'
+            'haskell-cabal=3.10.3.0'
+            'haskell-cabal-syntax=3.10.3.0'
+            'haskell-containers=0.6.7'
+            'haskell-deepseq=1.4.8.1'
+            'haskell-directory=1.3.8.5'
+            'haskell-exceptions=0.10.7'
+            'haskell-filepath=1.4.301.0'
+            'haskell-ghc-bignum=1.3'
+            'haskell-ghc-boot=9.6.7'
+            'haskell-ghc-boot-th=9.6.7'
+            'haskell-ghc-compact=0.1.0.0'
+            'haskell-ghc-heap=9.6.7'
+            'haskell-ghc-prim=0.10.0'
+            'haskell-haskeline=0.8.2.1'
+            'haskell-hpc=0.6.2.0'
+            'haskell-integer-gmp=1.1'
+            'haskell-libiserv=9.6.7'
+            'haskell-mtl=2.3.1'
+            'haskell-parsec=3.1.16.1'
+            'haskell-pretty=1.1.3.6'
+            'haskell-process=1.6.19.0'
+            'haskell-stm=2.5.1.0'
+            'haskell-template-haskell=2.20.0.0'
+            'haskell-terminfo=0.4.1.6'
+            'haskell-text=2.0.2'
+            'haskell-time=1.12.2'
+            'haskell-transformers=0.6.1.0'
+            'haskell-unix=2.8.6.0'
+            'haskell-xhtml=3000.2.2.1')
+  replaces=('haskell-array'
+            'haskell-base'
+            'haskell-binary'
+            'haskell-bytestring'
+            'haskell-cabal'
+            'haskell-cabal-syntax'
+            'haskell-containers'
+            'haskell-deepseq'
+            'haskell-directory'
+            'haskell-exceptions'
+            'haskell-filepath'
+            'haskell-ghc-bignum'
+            'haskell-ghc-boot'
+            'haskell-ghc-boot-th'
+            'haskell-ghc-compact'
+            'haskell-ghc-heap'
+            'haskell-ghc-prim'
+            'haskell-haskeline'
+            'haskell-hpc'
+            'haskell-integer-gmp'
+            'haskell-libiserv'
+            'haskell-mtl'
+            'haskell-parsec'
+            'haskell-pretty'
+            'haskell-process'
+            'haskell-stm'
+            'haskell-template-haskell'
+            'haskell-terminfo'
+            'haskell-text'
+            'haskell-time'
+            'haskell-transformers'
+            'haskell-unix'
+            'haskell-xhtml')
+
+  provides+=("haskell-ghci=$pkgver")
+  conflicts+=('haskell-ghci')
+
+  cd ghc-$pkgver
+
+  DESTDIR="$pkgdir" LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" hadrian install --flavour=perf --prefix=/usr
+
+  # Compiler library, interfaces, headers, and other executables are in ghc.
+  rm "$pkgdir"/usr/lib/libHSghc-$pkgver-ghc$pkgver.so
+  rm -r "$pkgdir"/usr/lib/ghc-$pkgver "$pkgdir"/usr/bin
+
+  # docs moved to ghc-static, man pages moved to ghc
+  rm -r "$pkgdir"/usr/share/{man,doc}
+
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

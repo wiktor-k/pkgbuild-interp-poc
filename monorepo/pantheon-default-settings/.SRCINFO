@@ -1,0 +1,18 @@
+pkgbase = pantheon-default-settings
+	pkgdesc = Default settings for Pantheon
+	pkgver = 8.1.1
+	pkgrel = 3
+	url = https://github.com/elementary/default-settings.git
+	arch = any
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	depends = accountsservice
+	depends = dbus
+	depends = dconf
+	depends = polkit
+	source = pantheon-default-settings::git+https://github.com/elementary/default-settings.git#tag=8.1.1
+	b2sums = 8253a7b2135bc4f5f3ee6b6b253e2374c23ffed6ae31d599bfca1391d528b3065c6bf3512d30e8177ec68725a76da86c2d945776bb802d08705fd28d68cb3ec9
+
+pkgname = pantheon-default-settings

@@ -1,0 +1,69 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=ruby-unicode-emoji
+_pkgname="${pkgname#ruby-}"
+pkgver=4.3.0
+pkgrel=1
+pkgdesc='Provides Unicode Emoji data and regexes, incorporating the latest standards'
+arch=(any)
+url='https://github.com/janlelis/unicode-emoji'
+license=(MIT)
+depends=(
+  ruby
+  ruby-unicode-version
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-rake
+  ruby-minitest
+)
+options=(!emptydirs)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  "$pkgname-$pkgver-emoji-test.txt::https://www.unicode.org/Public/emoji/latest/emoji-test.txt"
+)
+sha512sums=('a6e191a2635fce1c970503c9287d89cabd0c92564994dbac63ce4eca87cbcf53154626abf8341ad043b84e9572c6ec6df0855d27f19b430e23664d9e40fcb64d'
+            'c4d1a38ddcfe9ed6036865a0494ca9a49fa06ffdf66029b8af6300862137c47c0d96ab8dcfe73b55c670af5de55726a9269682b529ca9b9804b3bb1ed8e30b40')
+b2sums=('ebbc806a8129c441bc23eca9344c5fee24c686428cb4055004ebc7088fe82a0d6ad6b26f484a87c19f95eda9989dc2e9da6f07fadb9883ae0e1d810eb081852c'
+        '83d69fcb279227f6b6ca2ecfc805465684a5eabe8ddac41f9fd4d9c65ab5bd183b8628e2bec4b78dc6e0c8d118138934614f0e24295e8474064646ebc9daeaaa')
+
+prepare() {
+  cp "$pkgname-$pkgver-emoji-test.txt" "$pkgname/spec/data/emoji-test.txt"
+}
+
+build() {
+  cd "$pkgname"
+
+  gem build "$_pkgname.gemspec"
+}
+
+check() {
+  cd "$pkgname"
+
+  rake spec
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+
+  # delete cache
+  rm -rf "$pkgdir/$_gemdir/cache"
+
+  # license
+  install -vd "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "$_gemdir/gems/$_pkgname-$pkgver/MIT-LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname"
+}

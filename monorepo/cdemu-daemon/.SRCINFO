@@ -1,0 +1,25 @@
+pkgbase = cdemu-daemon
+	pkgdesc = CD/DVD-ROM device emulator daemon
+	pkgver = 3.3.1
+	pkgrel = 1
+	url = https://cdemu.sourceforge.io/
+	install = cdemu-daemon.install
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = intltool
+	makedepends = ninja
+	depends = VHBA-MODULE
+	depends = dbus
+	depends = glib2
+	depends = glibc
+	depends = libao
+	depends = libmirage
+	optdepends = alsa-lib: to enable the ALSA audio driver
+	optdepends = pulse-native-provider: to enable the PA audio driver
+	source = cdemu-code::git+https://git.code.sf.net/p/cdemu/code#tag=cdemu-daemon-3.3.1
+	b2sums = 1d5e5f44025144161fa31d71991150091ab989327360bba47309eaadc855b18116d8bde56e28c9d3eb8339f919a71d5795045dc9a4eae15c0cace0ef86ad72ac
+
+pkgname = cdemu-daemon

@@ -1,0 +1,43 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=gnome-firmware
+pkgver=49.0
+pkgrel=1
+pkgdesc="Manage firmware on devices supported by fwupd"
+arch=(x86_64)
+url="https://gitlab.gnome.org/World/gnome-firmware"
+license=(GPL2)
+depends=(gtk4 glib2 fwupd libadwaita libxmlb systemd)
+makedepends=(meson help2man git)
+source=(git+https://gitlab.gnome.org/World/gnome-firmware.git?signed#tag=$pkgver)
+b2sums=('db4cd49b238950b9f1c9d38df9859cde6e38733f73788a9c7f0d2ebc14bfff10359e90661ddae655a20d9a9427ecd6c11d9e1c29f0373e5ae0742ef044ec70c0')
+validpgpkeys=(163EB50119225DB3DF8F49EA17ACBA8DFA970E17) # Richard Hughes <richard@hughsie.com>
+
+prepare() {
+  cd $pkgname
+
+  # Create window in activate phase
+  # https://gitlab.gnome.org/World/gnome-firmware/-/merge_requests/132
+  git cherry-pick -n 5ff87259936736de792428a2972468ffb40f99c5
+
+  # Add D-Bus service file
+  # https://gitlab.gnome.org/World/gnome-firmware/-/merge_requests/133
+  git cherry-pick -n 73b4e274fbffa1a50ff4b4aa51a78f5f0dd4ef42
+
+  # Move into System category
+  # https://gitlab.gnome.org/World/gnome-firmware/-/merge_requests/134
+  git cherry-pick -n 408fc50213a0c717811e9d3f5925df3e588813e8
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

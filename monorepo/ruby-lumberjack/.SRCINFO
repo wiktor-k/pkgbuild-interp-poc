@@ -1,0 +1,19 @@
+pkgbase = ruby-lumberjack
+	pkgdesc = Extension of Ruby's standard Logger for advanced, structured logging
+	pkgver = 2.1.0
+	pkgrel = 1
+	url = https://github.com/bdurand/lumberjack
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-irb
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	checkdepends = ruby-timecop
+	makedepends = git
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/bdurand/lumberjack.git#tag=v2.1.0
+	sha256sums = 79f58f52689018c6ae96b6e8c70b47ab69f8087f197e26dfc7f76ee38b0b29c8
+
+pkgname = ruby-lumberjack

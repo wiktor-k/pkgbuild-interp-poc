@@ -1,0 +1,19 @@
+pkgbase = sscg
+	pkgdesc = Simple Signed Certificate Generator
+	pkgver = 4.0.4
+	pkgrel = 1
+	url = https://github.com/sgallagher/sscg
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = help2man
+	makedepends = meson
+	depends = openssl
+	depends = popt
+	depends = talloc
+	depends = glibc
+	source = git+https://github.com/sgallagher/sscg.git?signed#tag=sscg-4.0.4
+	validpgpkeys = 850A9DD1DBF2ACCC6FC4949145DB85A568286D11
+	sha512sums = c6103fcda1ae9b7a14111964854573f5533e80e18eab2bc213216bf06aa4aad624e2ee95e891caeb6eb052532f5b6c960d74d02cff292c8ffa1235556542d939
+
+pkgname = sscg

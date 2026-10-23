@@ -1,0 +1,45 @@
+# Maintainer: coderobe <coderobe@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Jason Chu <jason@archlinux.org>
+
+pkgname=usbview
+pkgver=3.1
+pkgrel=1
+pkgdesc="Display the topology of devices on the USB bus"
+arch=('x86_64')
+url="http://www.kroah.com/linux/usb/"
+license=('GPL-2.0-only')
+depends=(
+  'gdk-pixbuf2'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'hicolor-icon-theme'
+)
+makedepends=('imagemagick')
+install=${pkgname}.install
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/gregkh/usbview/archive/v${pkgver}.tar.gz")
+sha256sums=('a227ecd382e8079046f89d0a3e5eb3c02ce3ecd8afea4912432ae422106c7aa0')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  ./autogen.sh
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make install \
+    prefix="${pkgdir}/usr" \
+    sysconfdir="${pkgdir}/etc" \
+    localstatedir="${pkgdir}/var"
+}

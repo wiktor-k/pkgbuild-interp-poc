@@ -1,0 +1,94 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgbase=srslte
+pkgname=($pkgbase $pkgbase-avx2)
+_pkgname=srsRAN_4G
+pkgver=25.10
+_pkgver=release_${pkgver//./_}
+pkgrel=3
+pkgdesc='Open source SDR LTE software suite from Software Radio Systems (SRS)'
+arch=('x86_64')
+url='https://www.srslte.com'
+license=('AGPL-3.0-or-later')
+depends=('fftw' 'mbedtls3' 'boost-libs' 'lksctp-tools' 'libconfig'
+         'libuhd' 'soapysdr' 'bladerf' 'zeromq' 'pcsclite' 'srsgui')
+makedepends=('cmake' 'boost')
+provides=('srsue' 'srsenb' 'srsepc')
+conflicts=('srsue' 'srsenb' 'srsepc')
+source=("$_pkgname-$pkgver.tar.gz::https://github.com/srsran/srsRAN/archive/$_pkgver.tar.gz"
+         boost-1.89.patch)
+sha512sums=('4536aa1a6d7d64975dc3003af99244bf4e422a0bb4450f3b0e980473579d4009122dfcd117c7033c3b29d2fcb7ba0b78ae72f4d1aca091e274114d03a1a94c46'
+            '7f1a27593f5269b10c4764416bcf5724a68c530c704cf7df07d74bff8ac61a615429f37923222ea09e4305164ebf3aa3b2641f27fd275b013a166e9a4fde2c9d')
+options=(!lto)
+
+prepare() {
+  cd $_pkgname-$_pkgver
+
+  # Using too old of a version to even attempt to properly fix these
+  sed -e '/-Werror\"/d' -i CMakeLists.txt
+  CXXFLAGS+=' -Wno-error -Wp,-U_GLIBCXX_ASSERTIONS'
+
+  # Disable failing test
+  sed -i '/add_test(ue_rf_failure/d' srsue/src/CMakeLists.txt
+
+  patch -p1 -i ../boost-1.89.patch
+
+  mkdir build
+  cp -r "$srcdir"/$_pkgname-$_pkgver "$srcdir"/$_pkgname-avx2-$_pkgver
+}
+
+build() {
+  echo 'Building srslte...'
+  cd "$srcdir"/$_pkgname-$_pkgver/build
+  export PKG_CONFIG_PATH=/usr/lib/mbedtls3/pkgconfig
+
+  cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DENABLE_GENERIC=True
+
+  make
+
+  echo 'Building srslte-avx2...'
+  cd "$srcdir"/$_pkgname-avx2-$_pkgver/build
+
+  cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DENABLE_GENERIC=True \
+    -DHAVE_AVX2=True
+
+  make
+}
+
+check() {
+  echo 'Running tests for srslte...'
+  cd "$srcdir"/$_pkgname-$_pkgver/build
+
+# network_utils_test fails on build server
+  ctest $(echo $MAKEFLAGS | grep -Po '\-j[0-9][0-9]*') -E 'network_utils_test|s1ap_test|ngap_test'
+
+  echo 'Running tests for srslte-avx2...'
+  cd "$srcdir"/$_pkgname-avx2-$_pkgver/build
+
+  ctest $(echo $MAKEFLAGS | grep -Po '\-j[0-9][0-9]*') -E 'network_utils_test|s1ap_test|ngap_test'
+}
+
+package_srslte() {
+  install=$pkgname.install
+
+  cd $_pkgname-$_pkgver/build
+
+  make DESTDIR="$pkgdir" install
+}
+
+package_srslte-avx2() {
+  pkgdesc="$pkgdesc (with AVX2 extensions)"
+  provides=($pkgbase)
+  conflicts=($pkgbase)
+  install=$pkgname.install
+
+  cd $_pkgname-avx2-$_pkgver/build
+
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,44 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=openwiki
+pkgver=0.7.2
+pkgrel=1
+pkgdesc='A CLI that writes and maintains agent documentation for your codebase'
+arch=(any)
+url=https://github.com/langchain-ai/openwiki
+license=(MIT)
+depends=(
+  bash
+  nodejs
+)
+makedepends=(
+  git
+  npm
+  pnpm
+)
+options=(!debug)
+source=(git+https://github.com/langchain-ai/openwiki.git#tag=v${pkgver})
+b2sums=('d692b52df35178e94e509597e818b00985eba6b14b9ec31df5a9b1b8d105f42dbd5cb76e649f9ad1719539c3adf7d504cc810a00db3e3609465364dcf16efc79')
+
+prepare() {
+  cd openwiki
+  pnpm ci \
+    --cache "${srcdir}/npm-cache" \
+    --ignore-scripts
+}
+
+build() {
+  cd openwiki
+  pnpm pack \
+    --pack-destination "${srcdir}"
+}
+
+package() {
+  npm install \
+    --global \
+    --ignore-scripts \
+    --prefix "${pkgdir}/usr" \
+    --cache "${srcdir}/npm-cache" \
+    "${srcdir}/openwiki-${pkgver}.tgz"
+  install -Dm 644 openwiki/LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

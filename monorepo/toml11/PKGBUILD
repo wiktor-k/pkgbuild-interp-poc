@@ -1,0 +1,32 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=toml11
+pkgver=4.4.0
+pkgrel=1
+pkgdesc='A feature-rich TOML language library for C++11/14/17/20'
+arch=(x86_64)
+url='https://github.com/ToruNiina/toml11'
+license=(MIT)
+makedepends=(git cmake)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('acdec31bd3c87079dd1442cbe608cdcdc552b006aa385df97cf9a30be98f09881ad3f1edae16f4f257a41d1c3cc4f2dc543dd447a4ddfcc2a33762a41a04251b')
+b2sums=('934b65a194edac85d368c825c85a010e6136d8e063665b343f31bd3677d6ce2a0bbceb3c44a497e18f4b9e21eafe80023f7946cd2b549fb5312723a15e1b9834')
+
+build() {
+  local cmake_options=(
+    -S "$pkgname"
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE"
+}

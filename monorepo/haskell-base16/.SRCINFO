@@ -1,0 +1,23 @@
+pkgbase = haskell-base16
+	pkgdesc = Fast RFC 4648-compliant Base16 encoding
+	pkgver = 1.0
+	pkgrel = 28
+	url = https://github.com/emilypi/base16
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ghc
+	makedepends = haskell-base16-bytestring
+	makedepends = haskell-quickcheck
+	makedepends = haskell-random-bytestring
+	makedepends = haskell-tasty
+	makedepends = haskell-tasty-hunit
+	makedepends = haskell-tasty-quickcheck
+	depends = ghc-libs
+	depends = haskell-primitive
+	depends = haskell-text-short
+	source = https://hackage.haskell.org/packages/archive/base16/1.0/base16-1.0.tar.gz
+	source = https://github.com/emilypi/Base16/commit/a230ad5273edc3948f2b8b6914ba743ab4f6d916.patch
+	sha256sums = 86366364910b78609677817cf3f987bf1690e1f75bba04bc91a5ed993d619cde
+	sha256sums = 369a1bb9893f489e33fd39d7e36ed06de183e417911768d3e1e044a28f326cb6
+
+pkgname = haskell-base16

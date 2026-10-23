@@ -1,0 +1,77 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=fractal
+pkgver=14.2
+pkgrel=1
+pkgdesc="Matrix group messaging app"
+arch=(x86_64)
+url="https://gitlab.gnome.org/World/fractal"
+license=(GPL-3.0-only)
+depends=(
+  dconf
+  emoji-font
+  fontconfig
+  gdk-pixbuf2
+  glib2
+  glibc
+  glycin
+  glycin-gtk4  # dlopen'ed
+  graphene
+  gst-plugins-bad-libs
+  gst-plugins-base-libs
+  gst-plugin-gtk4
+  gstreamer
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  lcms2
+  libadwaita
+  libgcc
+  libpipewire
+  libseccomp
+  libshumate
+  openssl
+  org.freedesktop.secrets
+  pango
+  sqlite
+)
+makedepends=(
+  blueprint-compiler
+  clang
+  cmake
+  dart-sass
+  libwebp
+  meson
+  rust
+  xdg-desktop-portal
+)
+optdepends=(
+  'gst-plugins-good: for video support'
+)
+source=(
+  $url/-/archive/$pkgver/$pkgname-$pkgver.tar.gz
+)
+sha512sums=('60fec4504df7206dab1aa959e173dd84b1f2eec58d61a3eb786bd78e7d04716697d81eaecdc99b2ea205466bb027b90ebd9bba91d2db560a2b0c9aaac428ad71')
+b2sums=('c283045f4ae49ce14b2f06067e5e858680577c34795911cf87923f88d8644457378aae4f0ce2c7a03d542eb73d1ea0ffa595e7197f6e77509214fbd44584881d')
+
+prepare() {
+  # NOTE: usptream uses a custom CARGO_HOME from within meson
+  export CARGO_HOME="$(pwd)/build/cargo-home"
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  CFLAGS+=' -ffat-lto-objects'
+  arch-meson $pkgname-$pkgver build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  # NOTE: explicitly prevent rebuild: https://gitlab.gnome.org/GNOME/fractal/-/issues/1327
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

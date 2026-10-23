@@ -1,0 +1,143 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Johannes Maibaum <jmaibaum at gmail dot com>
+# Contributor: Christopher Arndt <aur -at- chrisarndt -dot- de>
+
+_name=setBfree
+pkgbase=setbfree
+pkgname=(setbfree setbfree-common setbfree-lv2 setbfree-standalone)
+pkgver=0.8.17
+pkgrel=1
+pkgdesc="DSP tonewheel organ"
+arch=(x86_64)
+url="https://setbfree.org"
+license=(GPL-2.0-or-later)
+makedepends=(
+  cairo
+  ftgl
+  gendesk
+  glib2
+  jack
+  libglvnd
+  liblo
+  libx11
+  lv2
+  pango
+  ttf-dejavu
+)
+checkdepends=(lv2lint)
+source=(
+  https://github.com/pantherb/$_name/archive/v$pkgver/$_name-$pkgver.tar.gz
+)
+sha512sums=('698339b47ca3eb3d8c2e41a9b0e90fbfebb2091f60789b6c59193d0cdf81e65c3efd897b48a16bf5ac77918c0b4d143195ecf21409fe1439b830f6a4a78b729e')
+b2sums=('29cdbc2961051ad1a26ee6480dc87dde07a4c530397b6f21f51f3fb168112cf047d81118107014c1bada8febea469b86f086fb38371b6500a21c781efafed399')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+prepare() {
+  gendesk -n \
+          --pkgname "${pkgbase}" \
+          --name "${_name}" \
+          --exec "${_name}UI" \
+          --icon "${_name}" \
+          --genericname "${pkgdesc}" \
+          --pkgdesc "${pkgdesc}" \
+          --categories "AudioVideo;Audio"
+  gendesk -n \
+          --pkgname x42-whirl \
+          --name x42-whirl \
+          --genericname "Leslie speaker emulation" \
+          --pkgdesc "Leslie speaker emulation as JACK client" \
+          --categories "AudioVideo;Audio"
+}
+
+build() {
+  export FONTFILE=/usr/share/fonts/TTF/DejaVuSans-Bold.ttf
+  make PREFIX=/usr -C $_name-$pkgver
+}
+
+check() {
+  lv2lint -Mpack -I $_name-$pkgver/b_synth "http://gareus.org/oss/lv2/b_synth"
+  lv2lint -Mpack -I $_name-$pkgver/b_whirl "http://gareus.org/oss/lv2/b_whirl#simple"
+  lv2lint -Mpack -I $_name-$pkgver/b_whirl "http://gareus.org/oss/lv2/b_whirl#extended"
+}
+
+package_setbfree() {
+  depends=(
+    "setbfree-lv2=$pkgver"
+    "setbfree-standalone=$pkgver"
+  )
+
+  make PREFIX=/usr DESTDIR="$pkgdir" install -C $_name-$pkgver
+  install -vDm 644 $_name-$pkgver/{AUTHORS,ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+
+  (
+    cd "$pkgdir"
+    _pick $pkgbase-common usr/share
+
+    _pick $pkgbase-lv2 usr/lib/lv2
+
+    _pick $pkgbase-standalone usr/bin
+  )
+}
+
+package_setbfree-common() {
+  pkgdesc+=" common files"
+  mv -v $pkgname/* "$pkgdir"
+}
+
+package_setbfree-lv2() {
+  pkgdesc+=" LV2 plugin"
+  depends=(
+    cairo
+    ftgl
+    glibc
+    glib2 libgobject-2.0.so
+    libglvnd
+    libx11
+    lv2-host
+    pango libpango-1.0.so libpangocairo-1.0.so
+    setbfree-common
+  )
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+}
+
+package_setbfree-standalone() {
+  pkgdesc+=" JACK standalone"
+  depends=(
+    cairo
+    ftgl
+    glib2 libgobject-2.0.so
+    glibc
+    jack
+    libglvnd
+    liblo
+    libx11
+    pango libpango-1.0.so libpangocairo-1.0.so
+    setbfree-common
+  )
+  groups=(
+    pro-audio
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+
+  # xdg desktop files
+  install -vDm 644 *.desktop -t "$pkgdir/usr/share/applications"
+  # icons
+  install -vDm 644 $_name-$pkgver/doc/{$_name,x42-whirl}.png -t "$pkgdir/usr/share/pixmaps/"
+  # man
+  install -vDm 644 $_name-$pkgver/doc/*.1 -t "$pkgdir/usr/share/man/man1/"
+}

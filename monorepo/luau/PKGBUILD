@@ -1,0 +1,66 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: BrinkerVII <brinkervii@gmail.com>
+
+pkgname=luau
+pkgver=0.743
+pkgrel=1
+epoch=1
+pkgdesc='A fast, small, safe, gradually typed embeddable scripting language derived from Lua'
+arch=(x86_64)
+url="https://github.com/luau-lang/$pkgname"
+license=(MIT)
+depends=(
+	glibc
+	libgcc
+	libstdc++
+)
+makedepends=(cmake)
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('b761f518c9ac3d84e9913dcc2043abe834f9eedd0ec80a260da414f354e85ea3e3ea15143f7ba27c6e3320a48f9e91a6b33a69a4fee71c5345da2346ec26bcbf')
+
+prepare() {
+	cd $pkgname-$pkgver
+	[ ${pkgver:0:2} = "0." ] || {
+		echo "Possibly misstagged version, please verify"
+		return 1
+	}
+}
+
+build() {
+	cd $pkgname-$pkgver
+	local cmake_options=(
+		-D CMAKE_BUILD_TYPE=Release
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D CMAKE_CXX_FLAGS='-Wstringop-overread'
+		-D LUAU_BUILD_TESTS=On
+		-W no-dev
+	)
+	cmake -S . -B build "${cmake_options[@]}"
+	cmake --build build
+}
+
+check() {
+	cd $pkgname-$pkgver
+	./build/Luau.Conformance
+	./build/Luau.UnitTest
+}
+
+package() {
+	cd $pkgname-$pkgver
+	# DESTDIR="$pkgdir" cmake --install build
+	local executables=(
+		luau
+		luau-analyze
+		luau-ast
+		luau-bytecode
+		luau-compile
+		luau-reduce
+	)
+	install -vDm0755 -t "$pkgdir/usr/bin/" "${executables[@]/#/build/}"
+	install -vDm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.txt
+	install -vDm0644 extern/isocline/LICENSE \
+		"$pkgdir/usr/share/licenses/$pkgname/isocline-LICENSE.txt"
+}
+
+# vim: noet

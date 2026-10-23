@@ -1,0 +1,129 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-byebug
+pkgver=13.0.0
+pkgrel=1
+pkgdesc='A simple to use and feature rich debugger for Ruby'
+arch=(x86_64)
+url='https://github.com/deivid-rodriguez/byebug'
+license=(BSD-2-Clause)
+depends=(
+  ruby
+  ruby-irb
+  ruby-reline
+)
+makedepends=(
+  git
+  ruby-rake
+  ruby-rdoc
+)
+checkdepends=(
+  markdownlint
+  ruby-bundler
+  ruby-faraday
+  ruby-faraday-retry
+  ruby-minitest
+  ruby-pry
+  ruby-rake-compiler
+  ruby-rexml
+  ruby-simplecov
+  ruby-yard
+)
+options=(!emptydirs)
+source=(
+  "git+https://github.com/deivid-rodriguez/byebug.git#tag=v$pkgver"
+  "${pkgname}_fix_tests.patch"
+)
+sha512sums=('b6dc8ccee8d615c54ad5c196a171e9e0530db3d33aabca5b3e41308302a23608aa33bf82d94439f6f8e875b0bf74a47c90983a1ed147273d849017fbe9168b02'
+            'fc97d570a1e0fd4ab3419a6351495e59dfe1ca5b954be7d9a0234ea69b4a207f6d7fd16add03e4fb76e9da364e8918694f37873c804457b96a8692321281fab9')
+b2sums=('413e79e15ca73290f5a25d74b872f4097bf96aece75a1ffb1a43a3f89100071def0a2377d72ebf456c0dcc5e688632ce5979d023ded4d0e064fb381ace6cc063'
+        '1ecdb6928d68033a45822c959d5d273a426dc117892ff443b46bc7d3e02585c63fd06d7763910a1ca55453070131b5dbbce045fbefe1547fd480249bd07bb91b')
+
+prepare() {
+  cd byebug
+
+  patch --verbose --strip=1 --input="../${pkgname}_fix_tests.patch"
+
+  sed --in-place --regexp-extended \
+    --expression '/chandler/d' \
+    --expression 's|~>|>=|' \
+    Gemfile \
+    Rakefile
+  sed --in-place --regexp-extended \
+    --expression 's/, ".*"//' \
+    Gemfile
+  sed --in-place --regexp-extended \
+    --expression '/release\.rake/d' \
+    Rakefile
+  sed --in-place --regexp-extended \
+    --expression '/bundler/d' \
+    bin/minitest
+  sed --in-place --regexp-extended \
+    --expression '/add_development_dependency.*bundler/d' \
+    byebug.gemspec
+
+  rm --recursive --verbose \
+    .bundle \
+    Gemfile.lock \
+    tasks/release.rake
+}
+
+build() {
+  cd byebug
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose byebug.gemspec
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    byebug-$pkgver.gem
+
+  rake compile:byebug
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+        -iname "mkmf.log" -o \
+        -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd byebug
+  RUBYOPT="-r bundler/setup" GEM_HOME="tmp_install/$_gemdir" rake test
+}
+
+package() {
+  cd byebug
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

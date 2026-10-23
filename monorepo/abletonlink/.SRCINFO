@@ -1,0 +1,27 @@
+pkgbase = abletonlink
+	pkgdesc = Synchronizes musical beat, tempo, and phase across multiple applications
+	pkgver = 3.1.2
+	pkgrel = 5
+	url = https://github.com/ableton/link
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = catch2
+	makedepends = cmake
+	makedepends = git
+	makedepends = jack
+	makedepends = portaudio
+	depends = asio
+	source = link::git+https://github.com/ableton/link#tag=Link-3.1.2
+	source = asio::git+https://github.com/chriskohlhoff/asio.git
+	source = abletonlink-3.0.5-cmake_system_paths.patch
+	source = abletonlink-3.1.2-devendor_catch2.patch
+	sha512sums = cbe5d459683c4b97aae6f8c10e46a5e2d39824f585267be9d72c2a8a4246d022cd88c5d18986d62a59bb9fda80f43e664521e3b57728bcf70eb06cb4b67baf8c
+	sha512sums = SKIP
+	sha512sums = 826a6e83b6ad859197475551b82f8391844d8d3717a1f2df4a7b16d77d47a1a557ce4c7231a68fa11b7d1112a10746e23875d387efa50af8735df150bb26a6cd
+	sha512sums = 4563f7fd1279537cd5494a00f243ac4e53b40c4f363ac91cbb881479984903fd977aad43d314bff1dadaa9b28cc53c6525d3864007da2eb8f45a81418a018fde
+	b2sums = a519377045ad5b7d09de85155a9caa0daa839747c1e81d898b033340a56fdb8cdbd838376432bdbd3b6f46c59a745757e194f4fb366f49be4ed1ef9fd3d3463d
+	b2sums = SKIP
+	b2sums = 63c23dddf60ebe055f9087f7fe5c7519773a3af055059025d283bb02581a25d3fd0ffec8be2aecde43fb1427400bdaadaee9d8387364d81725484ea5f38bd13a
+	b2sums = abb60e55b0e8d8d74857564bc00fd13115741557d24d64dde71c37126d60f97b64ec74fe0eae85612b7eafd456716749a7a83e120ec675d9cc4bbf7bece294ba
+
+pkgname = abletonlink

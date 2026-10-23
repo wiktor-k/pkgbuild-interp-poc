@@ -1,0 +1,29 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=fzssh
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="a SSH/SFTP library based on libfilezilla"
+url="https://filezilla-project.org"
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=('nettle' 'gmp' 'libfilezilla' 'argon2' 'libstdc++' 'libgcc' 'glibc')
+makedepends=('meson')
+# Upstream download link became (purposely) unstable
+# See https://trac.filezilla-project.org/ticket/13186
+source=("https://sources.archlinux.org/other/packages/${pkgname}/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('0c53178298364404e1fe4ce3d50267cf1238e52b414a6a53356bc43b37811338')
+sha512sums=('51e80e97182d7cca0a8c27f3c33bf17ece35b4d2b69235024a9915cfaf9c49af83a642dd77554c6b2d21b913e9d8889bdbd18859647f560c9473a79555ed932d')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+check() {
+	meson test -C build --print-errorlogs
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

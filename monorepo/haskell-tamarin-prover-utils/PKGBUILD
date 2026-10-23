@@ -1,0 +1,44 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=tamarin-prover-utils
+pkgname=haskell-tamarin-prover-utils
+pkgver=1.12.0
+pkgrel=94
+pkgdesc="Utility library for the tamarin prover"
+url="http://www.infsec.ethz.ch/research/software/tamarin"
+license=("GPL-3.0-only")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-sha' 'haskell-base64-bytestring' 'haskell-blaze-builder'
+         'haskell-dlist' 'haskell-fclabels' 'haskell-graphviz' 'haskell-list-t' 'haskell-safe'
+         'haskell-split' 'haskell-syb')
+makedepends=('ghc')
+source=("tamarin-prover-$pkgver.tar.gz::https://github.com/tamarin-prover/tamarin-prover/archive/$pkgver.tar.gz")
+sha512sums=('b8e79d894fc65fcf046127abc3428f8a61975a598fc231222444cecf47a778410b7b255ed3ef58b932a049bb6d31f3c57d8769a55c653cffe85b71d7da1e3287')
+
+build() {
+    cd "${srcdir}/tamarin-prover-${pkgver}/lib/utils"
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd "${srcdir}/tamarin-prover-${pkgver}/lib/utils"
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd "${srcdir}/tamarin-prover-${pkgver}/lib/utils"
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

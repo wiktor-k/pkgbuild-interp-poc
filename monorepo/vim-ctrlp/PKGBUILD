@@ -1,0 +1,25 @@
+pkgname=vim-ctrlp
+pkgver=1.81
+pkgrel=4
+pkgdesc="Fuzzy file, buffer, mru, tag, etc finder."
+arch=('any')
+url="https://github.com/ctrlpvim/ctrlp.vim"
+license=('custom:vim')
+depends=('vim-plugin-runtime')
+optdepends=('ctags: for searching tags')
+groups=('vim-plugins')
+source=($pkgname-$pkgver.tar.gz::"https://github.com/ctrlpvim/ctrlp.vim/archive/$pkgver.tar.gz")
+sha256sums=('9de452e7c3c2e1831007fdc69149368f9169837681ff46a09e1bca8cbdbebf93')
+
+package() {
+	cd "${srcdir}/ctrlp.vim-$pkgver"
+
+	installpath="${pkgdir}/usr/share/vim/vimfiles"
+
+	install -d "$installpath/autoload/ctrlp/"
+	install -Dm644 autoload/ctrlp/* "$installpath/autoload/ctrlp/"
+	install -Dm644 autoload/ctrlp.vim "$installpath/autoload/ctrlp.vim"
+	install -Dm644 doc/ctrlp.txt "$installpath/doc/ctrlp.txt"
+	install -Dm644 plugin/ctrlp.vim "$installpath/plugin/ctrlp.vim"
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

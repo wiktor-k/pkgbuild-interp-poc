@@ -1,0 +1,82 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <remy@archlinux.org>
+# Contributor: Firmicus <francois.archlinux.org>
+# Contributor: bender02 at gmx dot com
+
+pkgname=asymptote
+pkgver=3.15
+pkgrel=1
+pkgdesc='A vector graphics language (like metapost)'
+arch=(x86_64)
+url='http://asymptote.sourceforge.net/'
+license=(GPL-3.0-only)
+depends=(curl
+         fftw
+         glfw
+         glibc
+         gsl
+         libgcc
+         libglvnd
+         libsigsegv
+         libstdc++
+         libtirpc
+         ncurses
+         readline
+         texlive-basic
+         zlib)
+makedepends=(boost
+             cmake
+             doxygen
+             ghostscript
+             git
+             glm
+             glu
+             imagemagick
+             python
+             texlive-binextra
+             texlive-fontutils
+             texlive-latexextra
+             texlive-plaingeneric
+             vulkan-headers)
+optdepends=('pyside6: for the xasy GUI'
+            'python-cson: for the xasy GUI'
+            'ghostscript: PDF output')
+source=(git+https://github.com/vectorgraphics/asymptote#tag=$pkgver)
+sha256sums=('f1d019d9b8da7c15cdd29dd6c0b4562497c9d0a70039a7af4b9c861879d8ffd3')
+
+prepare() {
+  cd $pkgname
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  CXXFLAGS+=" -I$srcdir/$pkgname" \
+  ./configure --enable-gc=/usr \
+              --prefix=/usr \
+              --with-latex=/usr/share/texmf/tex/latex \
+              --with-context=/usr/share/texmf/tex/context
+  make asy asy-keywords.el base/webgl/asygl.js
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install-asy
+  # this dir contains png files that are already embedded in the pdf documentation:
+  rm -rf "$pkgdir"/usr/share/info/asymptote
+
+  # copy some data files to their correct location
+  mkdir -p "$pkgdir"/usr/share/emacs/site-lisp
+  cp "$pkgdir"/usr/share/asymptote/*.el "$pkgdir"/usr/share/emacs/site-lisp
+  mkdir -p "$pkgdir"/usr/share/vim/vimfiles/syntax
+  cp "$pkgdir"/usr/share/asymptote/*.vim "$pkgdir"/usr/share/vim/vimfiles/syntax
+  mkdir -p "$pkgdir"/usr/share/org.kde.syntax-highlighting/syntax
+  cd "$pkgdir"/usr/share/asymptote/
+  sh asy-kate.sh
+  mv asymptote.xml "$pkgdir"/usr/share/org.kde.syntax-highlighting/syntax
+}

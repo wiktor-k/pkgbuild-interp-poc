@@ -1,0 +1,24 @@
+pkgbase = fossil
+	pkgdesc = Simple, high-reliability, distributed software configuration management
+	pkgver = 2.28
+	pkgrel = 1
+	url = https://www.fossil-scm.org
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = tcl
+	depends = fuse2
+	depends = glibc
+	depends = openssl
+	depends = sqlite
+	depends = zlib
+	optdepends = tcl: diff --tk support
+	source = https://fossil-scm.org/home/tarball/version-2.28/fossil-src-2.28.tar.gz
+	source = fossil.socket
+	source = fossil.service
+	source = fossil-fix-tests.patch
+	b2sums = 81008e2b85fe55ddb1f4e0b88337d6263e290957cdbba90266159fb12cc696cd8474f30b62c89fada56317775732dd2d8f6c538ac377204250e8164278e12f3c
+	b2sums = c08d0f6cf864b10f81af6e27cd1e43c8a6d570085b8da114adbda048d7926e403ee7d208d39a62f24ced6acf9f89b7e91a05d02dcb43a6f9f557238a699b0068
+	b2sums = 9dc1b1bf1425dd2b865cb5e0114df401a66d36583aa40cad9ee8ca1875952c094b6439f4decd0748633fd064bad7c8ba469d21477a72794a17cec38ca4ca9b43
+	b2sums = f88ca1638c5b03d5d97b2fad944d08d0f43be415f93829baf52ee7d1800a49fc2b8f108b366e3dc74d0135e8ab0499b295ae7cfa9322dbfbd4eded563e9416bc
+
+pkgname = fossil

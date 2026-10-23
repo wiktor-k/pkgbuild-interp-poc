@@ -1,0 +1,27 @@
+pkgbase = kst
+	pkgdesc = Fast real-time plotting program with light data analysis capabilities
+	pkgver = 3.0.0
+	pkgrel = 1
+	url = https://kst-plot.kde.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = qt6-tools
+	depends = cfitsio
+	depends = glibc
+	depends = gsl
+	depends = hdf5
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libmatio
+	depends = libstdc++
+	depends = libtiff
+	depends = netcdf-cxx
+	depends = qt6-base
+	depends = qt6-svg
+	source = git+https://invent.kde.org/graphics/kst-plot.git#tag=3.0.0
+	b2sums = 5f747ac7d7488fc42c03cf4e6cfde621b9f49559d4af978e4dbfe4963b17de7815f05325d86d19fdc135c324656ae7fc9f3e45faf2cc25371ac9851c403a819b
+
+pkgname = kst

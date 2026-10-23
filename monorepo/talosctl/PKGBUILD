@@ -1,0 +1,77 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=talosctl
+pkgver=1.14.4
+pkgrel=1
+pkgdesc='CLI for Talos - A modern OS for Kubernetes'
+arch=(x86_64)
+url='https://github.com/siderolabs/talos'
+license=(MPL-2.0)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+https://github.com/siderolabs/talos.git#tag=v${pkgver}?signed")
+sha512sums=('87cfbc1c20f598ac8247f85d496383de8070b84df0981851eec6efd67115b0cd2edbc7659325aab23c6f9bc613d6fe9b9eb48595253617286293b2b7cc4e396d')
+b2sums=('0c3faf65211aba813086c8fd197f7c0d34a513a37e3d7e7dbb078ae915fd875ca4d0abde05a7d3ead6da05be229d6cf1e71d3adfe78b6bde4b68df88cdedf2db')
+validpgpkeys=('DB997306E3102F11C4E8F5527B26396447AB6DFD' # Andrey Smirnov <andrey.smirnov@talos-systems.com>
+              'CC51116A94490FA6FB3C18EB2401FCAE863A06CA' # frezbo (Noel Georgi) <git@frezbo.dev>
+              '15D5721F5F5BAF121495363EFE042E3D4085A811' # Andrey Smirnov <andrey.smirnov@siderolabs.com>
+              '4F8E31286D7997C9625C6F7B322C6F63F594CE7C' # Andrey Smirnov <andrey.smirnov@siderolabs.com>
+              'F2DCEFD8F9F4E29B16C8ABE4F16F84591E26D77F' # Mateusz Urbanek <mateusz.urbanek@siderolabs.com>
+              '8D5378C17C004BA4C1EDEB7E86EC2A4776B60B45') # Justin Garrison <justin.garrison@siderolabs.com>
+
+
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+
+  # https://github.com/siderolabs/talos/blob/d8a435f0e4e093570325b737f89ff3b1205de48e/Dockerfile#L252
+  # upstream switched from using LDFLAGS to go:embed some time ago,
+  # this is how sha/pkgver/etc are added to the binary
+  git rev-parse HEAD > pkg/machinery/gendata/data/sha
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    -o build/talosctl \
+    ./cmd/talosctl
+
+  # generate shell completions
+  for shell in bash fish zsh; do
+    ./build/talosctl completion "$shell" > "build/$shell.completion"
+  done
+}
+
+package() {
+  cd "$pkgname/build"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" talosctl
+
+  # shell completions
+  install -vDm644 bash.completion "$pkgdir/usr/share/bash-completion/completions/talosctl"
+  install -vDm644 fish.completion "$pkgdir/usr/share/fish/vendor_completions.d/talosctl.fish"
+  install -vDm644 zsh.completion "$pkgdir/usr/share/zsh/site-functions/_talosctl"
+}

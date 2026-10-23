@@ -1,0 +1,32 @@
+pkgbase = haxe
+	pkgdesc = Cross-platform toolkit and programming language
+	pkgver = 4.3.7
+	pkgrel = 7
+	url = https://haxe.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	license = MIT
+	makedepends = camlp5
+	makedepends = git
+	makedepends = ocaml
+	makedepends = opam
+	makedepends = ocaml-ptmap
+	makedepends = ocaml-sha
+	makedepends = perl-ipc-system-simple
+	makedepends = perl-string-shellquote
+	depends = mbedtls3
+	depends = neko
+	optdepends = java-environment
+	optdepends = mono
+	optdepends = php
+	optdepends = python
+	source = haxelib_src::git+https://github.com/HaxeFoundation/haxelib#commit=4000137b822989eacb1e1c370470ee1c9ecdf4b8
+	source = hx3compat::git+https://github.com/HaxeFoundation/hx3compat#commit=f1f18201e5c0479cb5adf5f6028788b37f37b730
+	source = haxe-4.3.7::git+https://github.com/HaxeFoundation/haxe#tag=4.3.7
+	source = mbedtls3.patch
+	b2sums = 12e8ab333a1b64056b88346e2dcd97b81d7b7acae0b9a57a9c5f8ef174d5413632436a3975990103d74a2deb99862ddbde6d1c88839c0db926b0faafcb3ca1e8
+	b2sums = b938572cefb9a4398e0076b4450fd681d9d15be978fe3865d16aa26984ef6265965f18a97f93f8b1f6e589b75814ad1c19b60c5c8817b0deb07a41239fc19341
+	b2sums = d4606e594a424573d8ab67055de51c14d46aa659039ddbf03b114dabeb0782b1e2d86cb4b8e60b1734ef20cccfb634fac2abe3ada1ca3a7c4b30dabfc6df83ba
+	b2sums = 2ed093f58f9833f5ba4c6df04027e6dab7012a81fa86fb53cbbed28b6084d824c01beb54bd8b15e86b748103fd3b22857b8352ceabe513084197b507d953ded1
+
+pkgname = haxe

@@ -1,0 +1,23 @@
+pkgbase = system76-scheduler
+	pkgdesc = Auto-configure CFS and process priorities for improved desktop responsiveness
+	pkgver = 2.0.2
+	pkgrel = 3
+	url = https://github.com/pop-os/system76-scheduler
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = clang
+	makedepends = git
+	makedepends = lld
+	makedepends = rust
+	makedepends = just
+	makedepends = linux-headers
+	depends = bcc-libbpf-tools
+	depends = glibc
+	depends = libgcc
+	depends = libpipewire
+	backup = etc/system76-scheduler/config.kdl
+	backup = etc/system76-scheduler/process-scheduler/pop_os.kdl
+	source = git+https://github.com/pop-os/system76-scheduler.git#tag=2.0.2
+	b2sums = 4bf17c797bbd4fc65d8182709bbb21cc991d1233dd33c4b24fbc3b230b17725686c91874f394d2997051f381311268a05b7cd34c73b8c332b7e0edc7d16c763c
+
+pkgname = system76-scheduler

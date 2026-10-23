@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=oryx
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="A TUI for sniffing network traffic using eBPF"
+arch=('x86_64')
+url="https://github.com/pythops/oryx"
+license=('GPL-3.0-only')
+depends=('gcc-libs')
+makedepends=('cargo-nightly' 'bpf-linker')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('b350675f97cad977a3825e187ac8a5128d4dfdf8800dface35b7c245c1b94be854ef5f1ede946ad1aea55aba3db1eec76a0a52bb39f92d73e5d9ee8119e3ba8d')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=nightly
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=nightly
+  cargo xtask build # --release
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export RUSTUP_TOOLCHAIN=nightly
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/debug/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 Readme.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

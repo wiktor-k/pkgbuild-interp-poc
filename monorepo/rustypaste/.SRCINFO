@@ -1,0 +1,16 @@
+pkgbase = rustypaste
+	pkgdesc = A minimal file upload/pastebin service
+	pkgver = 0.18.1
+	pkgrel = 1
+	url = https://github.com/orhun/rustypaste
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	depends = libgcc
+	depends = libstdc++
+	depends = openssl
+	backup = etc/rustypaste/config.toml
+	source = rustypaste-0.18.1.tar.gz::https://github.com/orhun/rustypaste/archive/refs/tags/v0.18.1.tar.gz
+	b2sums = 651693695d3b49a0f0fff0aee90e76133b27c0608dceb9f353b4f46d7ce5debe503ab7f99bbc8cdc2caa15b05e9caf71eb736cad4031e47259a164f6d27c9bfc
+
+pkgname = rustypaste

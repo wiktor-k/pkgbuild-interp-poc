@@ -1,0 +1,28 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+
+pkgname=znc-clientbuffer
+pkgver=1.0.53
+pkgrel=2
+pkgdesc='ZNC module for client specific buffers'
+arch=('x86_64')
+url='https://github.com/CyberShadow/znc-clientbuffer/'
+license=('Apache-2.0')
+depends=(
+    'glibc'
+    'libgcc'
+    'libstdc++'
+    'znc')
+makedepends=(
+    'cmake'
+    'python')
+source=("https://github.com/CyberShadow/znc-clientbuffer/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('36997059dddd1ccf6a8ab7b9ddcd950f0bd049a285bd6bd62e1212fc7bf0a6c903ae8b9e1bfb90b994bbd39537f79664c20b8643e56bad5e028dea5b4871972c')
+
+build() {
+    make -C "${pkgname}-${pkgver}" PREFIX='/usr'
+}
+
+package() {
+    make -C "${pkgname}-${pkgver}" PREFIX='/usr' DESTDIR="$pkgdir" install
+}

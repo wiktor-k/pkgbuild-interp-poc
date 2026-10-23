@@ -1,0 +1,47 @@
+# Maintainer: Robin Broda <coderobe @ archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=nebula
+pkgver=1.11.2
+pkgrel=1
+pkgdesc="A scalable overlay networking tool with a focus on performance, simplicity and security"
+arch=('x86_64')
+url="https://github.com/slackhq/nebula"
+license=('MIT')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        "${pkgname}.service")
+sha512sums=('a929da1cfe53522d2f8d114992e564e773049806388ce93430f8132d1870ebbef214e9cf6ce7c7cba2fbf36595d1688fd8b1d5f1fe8cd2387a79ac98965d2166'
+            '5237b50a98c9af95c97fed5d17cd313353b65e1ca981558e415fe95ce4296247fb3051bf6a59e2d2dd89aee3aef3bf3dbaa815becb5c2033523fbf163551b07f')
+b2sums=('0ffb0d3284658eb90d897513b7d260d7a5d4974de3ba230a7c33150530e13adf4c818a42509b132651650d729235d7c2349ff1f3b9021bac594f41df8fc474b1'
+        '3fb0d210bf96d843c044078d2b7fc3c68f26754aa7b7cdfccf721b62e227de8e6c2ec7c8dbe20b3133c882d01c58c7423f87aa2ef61e9a2d6bbe846779085314')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	mkdir -p build
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+	go build -ldflags "-X main.Build=${pkgver}" -o build ./cmd/...
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	go test ./...
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -vDm 755 build/* -t "${pkgdir}/usr/bin/"
+	install -Dm 644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

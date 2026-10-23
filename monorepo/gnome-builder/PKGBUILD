@@ -1,0 +1,124 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gnome-builder
+pkgver=50.0
+pkgrel=3
+pkgdesc="An IDE for writing GNOME-based software"
+url="https://apps.gnome.org/Builder/"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  autoconf-archive
+  cairo
+  clang
+  cmark
+  ctags
+  dconf
+  desktop-file-utils
+  editorconfig-core-c
+  flatpak
+  gdk-pixbuf2
+  gjs
+  glib2
+  glibc
+  gobject-introspection-runtime
+  gom
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  json-glib
+  jsonrpc-glib
+  libadwaita
+  libdex
+  libgcc
+  libgirepository
+  libgit2-glib
+  libpanel
+  libpeas-2
+  libportal
+  libportal-gtk4
+  libsoup3
+  libspelling
+  libxml2
+  libyaml
+  meson
+  pango
+  python
+  python-lxml
+  python-sphinx
+  sysprof
+  template-glib
+  vala
+  vte4
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  git
+  glib2-devel
+  gobject-introspection
+  llvm
+  mm-common
+  python-lsp-server
+  python-sphinx_rtd_theme
+  yelp-tools
+)
+checkdepends=(
+  weston
+  xdg-desktop-portal-gnome
+)
+optdepends=(
+  'bash-language-server: Shell code assistance'
+  'python-lsp-server: Python code assistance'
+)
+conflicts=(
+  gnome-builder-clang
+  gnome-builder-flatpak
+)
+replaces=(
+  'gnome-builder-clang<=46.1-4'
+  'gnome-builder-flatpak<=46.1-4'
+)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-builder.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('e0266dbdcc6abcf0e96adb197c62ce525c080924eda64f7a7bc599b83e0d7034595bc8da08cba4478eb2e59c67b4015357a393bcf82aeadcef1320ec3b5d7c6a')
+
+prepare() {
+  cd $pkgname
+
+  # Fix start with libdex 1.2.0
+  git cherry-pick -n 4dc88803f84ea11caaac78a39d2084ac6f1313d3
+}
+
+build() {
+  local meson_options=(
+    -D help=true
+    -D network_tests=false
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() (
+  export XDG_RUNTIME_DIR="$PWD/runtime-dir"
+  mkdir -p -m 700 "$XDG_RUNTIME_DIR"
+
+  export WAYLAND_DISPLAY=wl-$pkgname-$RANDOM
+  weston --backend=headless --socket=$WAYLAND_DISPLAY --idle-time=0 &
+  _w=$!
+
+  trap "kill $_w; wait" EXIT
+
+  export NO_AT_BRIDGE=1 GTK_A11Y=none
+  dbus-run-session meson test -C build --print-errorlogs
+)
+
+package() {
+  depends+=(libgit2.so)
+
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

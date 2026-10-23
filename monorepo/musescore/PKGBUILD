@@ -1,0 +1,126 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Cristian Maureira <saint@archlinux.cl>
+# Contributor: Dr.Egg <rwhite@archlinux.us>
+
+pkgname=musescore
+pkgver=4.7.5
+pkgrel=1
+pkgdesc='Create, play and print beautiful sheet music'
+arch=(x86_64)
+url=https://musescore.org/
+license=(GPL-3.0-only)
+groups=(pro-audio)
+depends=(
+  alsa-lib libasound.so
+  bash
+  flac
+  freetype2 libfreetype.so
+  glibc
+  harfbuzz
+  hicolor-icon-theme
+  lame
+  libgcc libgcc_s.so
+  libstdc++ libstdc++.so
+  libopusenc
+  mnxdom
+  pugixml
+  qt6-5compat
+  qt6-base
+  qt6-declarative
+  qt6-networkauth
+  qt6-svg
+  zlib
+)
+makedepends=(
+  cmake
+  doxygen
+  git
+  ninja
+  opus
+  python
+  qt6-tools
+  utf8cpp
+  vulkan-headers
+)
+optdepends=(
+  'ffmpeg: video conversion'
+)
+options=(!lto)
+source=(
+  "$pkgname::git+https://github.com/musescore/MuseScore.git#tag=v${pkgver}"
+  wrapper.sh
+  fix-qt-qml-null-bindings.patch
+  fix-mnxdom-linking.patch
+)
+sha512sums=('242aa4af359484a03a1462ebcf6db6b0c4bde0e70cff1a1f71d18fe92fd611342c0f38f9d2f33207a0912ba0d946dd40605b2f16c6ffb24527b96059f5143e11'
+            '6857c50bf56226fbff27a81b0102ad1623878330993aaf15d3551e8c31a36cbe8afdc1437898e70494e8b6742d97931c471932aa9aaded5fdeeacccf2beb4e05'
+            'e2d235895640c64ba7222761fd2baff37a1239cac3d845a0f23690f35ce6885e44109d16f3582c0b06a7d8391880bd976abfa2dd06c3a5d1a7fa6db511eb0588'
+            '2e7f09a8ad576ca00dd10d5b660ca8fc519bd323f2d9504dfde7ef287380a00e4e9551a526643aa376be9cca4b097408d1ed2d42a1a1b105081a4b1df88050df')
+b2sums=('9f2cd71122877a4c7b395de22c126140063614183fa0a0cc1ee7d11c9f3f410ff8b3db8ce27316bef1b4c5b9c629f64278a505f0dbb98ba4619b57261e8f580c'
+        '312bb237dcf70c712dfbd1aad06cd673b2e50cca45470f94876ead6e901ac663be4c490051855622a09c682a80c0f8c5dc4cf7e55b292c56a2f389f50d29a0ea'
+        '2d943853893f819bcc766406ecce8d9aafa17ba37baea204e1b426fa5548d6b18a768039c715f16b0b369ed83f234f8eebafecbca1af89f56a34d2627df5e3f4'
+        'fc7ff90cdc43ddeb37b8a31536bd8b23fff742817bcab5da7e023bc86f8a363f7abaa114cec88d55f29a0b2972d2893a57868c2c7bb3ef71508666e79865d9c9')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/fix-qt-qml-null-bindings.patch"
+
+  patch -p1 -i "$srcdir/fix-mnxdom-linking.patch"
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_C_FLAGS_RELEASE="$CFLAGS"
+    -D CMAKE_CXX_FLAGS_RELEASE="$CXXFLAGS"
+    -D CMAKE_POSITION_INDEPENDENT_CODE=ON
+    -D CMAKE_SKIP_RPATH=ON
+    # metadata
+    -D MUSE_APP_BUILD_MODE=release
+    -D MUSESCORE_BUILD_CONFIGURATION=app
+    -D MUSESCORE_REVISION="$(git -C "$pkgname" rev-parse --short=7 HEAD)"
+    # use system libraries
+    -D MUE_COMPILE_USE_SYSTEM_FLAC=ON
+    -D MUE_COMPILE_USE_SYSTEM_FREETYPE=ON
+    -D MUE_COMPILE_USE_SYSTEM_HARFBUZZ=ON
+    -D MUE_COMPILE_USE_SYSTEM_LAME=ON
+    -D MUE_COMPILE_USE_SYSTEM_MNXDOM=ON
+    -D MUE_COMPILE_USE_SYSTEM_OPUS=ON
+    -D MUE_COMPILE_USE_SYSTEM_OPUSENC=ON
+    -D MUE_COMPILE_USE_SYSTEM_PUGIXML=ON
+    -D MUE_COMPILE_USE_SYSTEM_UTF8CPP=ON
+    -D MUE_INSTALL_SOUNDFONT=ON
+    # skip all tests
+    -D MUE_BUILD_BRAILLE_TESTS=OFF
+    -D MUE_BUILD_CONVERTER_TESTS=OFF
+    -D MUE_BUILD_ENGRAVING_TESTS=OFF
+    -D MUE_BUILD_IMPORTEXPORT_TESTS=OFF
+    -D MUE_BUILD_NOTATION_TESTS=OFF
+    -D MUE_BUILD_NOTATIONSCENE_TESTS=OFF
+    -D MUE_BUILD_PLAYBACK_TESTS=OFF
+    -D MUE_BUILD_PROJECT_TESTS=OFF
+    -D MUSE_ENABLE_UNIT_TESTS=OFF
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # install wrapper script
+  install -vDm755 "$pkgdir/usr/bin/mscore" -t "$pkgdir/usr/lib/musescore"
+  install -vDm755 wrapper.sh "$pkgdir/usr/bin/mscore"
+}
+
+# vim: ts=2 sw=2 et:

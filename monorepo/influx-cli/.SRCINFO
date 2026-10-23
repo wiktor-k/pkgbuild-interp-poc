@@ -1,0 +1,16 @@
+pkgbase = influx-cli
+	pkgdesc = CLI for managing resources in InfluxDB
+	pkgver = 2.8.0
+	pkgrel = 3
+	url = https://github.com/InfluxData/influx-cli
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	options = !lto
+	backup = etc/influxdb/influxdb.conf
+	source = git+https://github.com/influxdata/influx-cli.git#tag=v2.8.0
+	sha256sums = e1feb0788d3871059f252b9efe382a5d0c5b218ca7aa0e2154981e82ee613dc7
+
+pkgname = influx-cli

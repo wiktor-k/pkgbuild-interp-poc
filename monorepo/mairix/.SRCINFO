@@ -1,0 +1,17 @@
+pkgbase = mairix
+	pkgdesc = A program for indexing and searching emails
+	pkgver = 0.24
+	pkgrel = 5
+	url = https://github.com/vandry/mairix
+	install = mairix.install
+	arch = x86_64
+	license = GPL
+	makedepends = flex
+	makedepends = bison
+	makedepends = git
+	depends = bzip2
+	depends = zlib
+	source = git+https://github.com/vandry/mairix#commit=1cc06f4a73ba4b940008c1ffc398d2ac708cd6d6
+	sha256sums = SKIP
+
+pkgname = mairix

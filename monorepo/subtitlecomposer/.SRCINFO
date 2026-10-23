@@ -1,0 +1,37 @@
+pkgbase = subtitlecomposer
+	pkgdesc = Video subtitle editor
+	pkgver = 0.8.2
+	pkgrel = 6
+	url = https://subtitlecomposer.kde.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = git
+	makedepends = ninja
+	depends = ffmpeg
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = icu
+	depends = kcodecs
+	depends = kcompletion
+	depends = kconfig
+	depends = kconfigwidgets
+	depends = kcoreaddons
+	depends = ki18n
+	depends = kio
+	depends = ktextwidgets
+	depends = kwidgetsaddons
+	depends = kxmlgui
+	depends = libstdc++
+	depends = openal
+	depends = openssl
+	depends = qt6-5compat
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = sonnet
+	source = git+https://invent.kde.org/multimedia/subtitlecomposer.git?signed#tag=v0.8.2
+	validpgpkeys = 76F79007A54A4B68F1547928E2418746EF9D9B26
+	b2sums = fb73579ebaebf33772585475ec16b7aff5fc0e5fac01ceedb84f45310b664719b6d58e099616e39f7ce4c84adf13131d7c89b87d89316ba09b2a18402cc94a19
+
+pkgname = subtitlecomposer

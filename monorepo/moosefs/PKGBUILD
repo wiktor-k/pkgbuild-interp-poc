@@ -1,0 +1,52 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=moosefs
+pkgver=4.59.2
+pkgrel=2
+pkgdesc='High performing and fault tolerant distributed file system'
+url='https://moosefs.com/'
+replaces=(mfs-chunkserver mfs-client mfs-master)
+conflicts=(mfs-chunkserver mfs-client mfs-master)
+arch=(x86_64)
+license=(GPL-2.0-only)
+depends=(fuse3 glibc python zlib)
+makedepends=(git libpcap)
+optdepends=('libpcap: mfsnetdump'
+            'python-legacy-cgi: charts in mfsgui and mfscgiserv')
+source=("git+https://github.com/moosefs/moosefs#tag=v$pkgver"
+        moosefs.tmpfiles
+        moosefs.sysusers)
+b2sums=('d6e34ae8b60b202c2d97bd93abe2b83ab9cec84c3f9b1a3a57742c8ce1559a2e4f56ab75524303e7121fff6ab4665eb2beb478415a2cbfc9ee233fb44ec362fd'
+        '4260e8c09423d8b484a3be835d1de69bd441b3a0d99d3a20a839e7453fabbd8466a3026a113a22d28218212b193c0f9635f744c59f7c4c22ec96340c4d83d088'
+        '138c34c230cb72492d2eafeca2269dc1443018e5cd7c8f6d16c0f50f55f22f3c5e1592f05f4070dce68b6e56fb9c36aabc9a2f52737ba3f9c061eb4f6bc983da')
+
+prepare() {
+  cd $pkgname
+  sed -i '/^PIDFile=/d' systemd/*.service.in
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --localstatedir=/var/lib \
+    --mandir=/usr/share/man \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --sysconfdir=/etc \
+    --with-default-group=mfs \
+    --with-default-user=mfs \
+    --with-rootsbindir=/usr/bin \
+    --with-systemdsystemunitdir=/usr/lib/systemd/system
+  make
+}
+
+package() {
+  make DESTDIR="$pkgdir" -C $pkgname install
+
+  install -Dm644 "$pkgname.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  install -Dm644 "$pkgname.sysusers" "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+
+  install -Dm644 "$pkgdir/var/lib/mfs/metadata.mfs.empty" -t "$pkgdir/usr/share/$pkgname/"
+  rm -r "$pkgdir/var"
+}

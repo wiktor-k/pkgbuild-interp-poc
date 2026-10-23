@@ -1,0 +1,88 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=oxyromon
+pkgver=0.24.0
+pkgrel=1
+pkgdesc='Rusty ROM OrgaNizer'
+arch=(x86_64)
+url=https://github.com/alucryd/oxyromon
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  libgcc
+  zlib
+)
+makedepends=(
+  bchunk
+  cmake
+  ctrtool
+  dolphin-emu-tool
+  git
+  mame-tools
+  maxcso
+  p7zip
+  qt6-base
+  rustup
+  trunk
+  wit
+)
+optdepends=(
+  'bchunk: BIN to ISO support'
+  'cdrtools: IRD support'
+  'ctrtool: CIA support'
+  'dolphin-emu-tool: RVZ support'
+  'mame-tools: CHD support'
+  'maxcso: CSO support'
+  'p7zip: 7Z and ZIP support'
+  'wit: WBFS support'
+)
+source=(git+https://github.com/alucryd/oxyromon.git#tag=${pkgver})
+validpgpkeys=(95220BE99CE6FF778AE0DC670F65C7D881506130) # Maxime Gauduin <alucryd@archlinux.org>
+b2sums=('9a562a193a3c6ec40b72d9745e862b72d3e7c39bc7a806a87c003de06ada82832e398c15a506d3261e639e8c019f6d0eb048a7e45a7c9dcdf4cdffa35b9145a4')
+options=(!lto)
+
+prepare() {
+  cd oxyromon
+  rustup install stable
+  rustup target add wasm32-unknown-unknown
+  cargo fetch \
+    --locked
+  cd frontend
+  cargo fetch \
+    --locked
+}
+
+build() {
+  cd oxyromon
+  export CARGO_PROFILE_RELEASE_LTO=true
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  unset RUSTFLAGS
+  pushd frontend
+  CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUSTFLAGS= \
+    trunk build --release
+  popd
+  cargo build \
+    --features server \
+    --release \
+    --frozen
+}
+
+check() {
+  unset RUSTFLAGS
+  cargo test \
+    --features server \
+    --release \
+    --frozen \
+    --manifest-path oxyromon/Cargo.toml
+}
+
+package() {
+  unset RUSTFLAGS
+  cargo install \
+    --features server \
+    --frozen \
+    --offline \
+    --no-track \
+    --path oxyromon \
+    --root "${pkgdir}/usr"
+}

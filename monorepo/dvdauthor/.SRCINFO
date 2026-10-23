@@ -1,0 +1,26 @@
+pkgbase = dvdauthor
+	pkgdesc = DVD authoring tools
+	pkgver = 0.7.2
+	pkgrel = 16
+	url = http://dvdauthor.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = docbook-sgml
+	makedepends = docbook-utils
+	makedepends = git
+	makedepends = perl-sgmls
+	depends = bash
+	depends = fontconfig
+	depends = freetype2
+	depends = fribidi
+	depends = glibc
+	depends = imagemagick
+	depends = libdvdread
+	depends = libpng
+	depends = libxml2
+	source = git+https://github.com/ldo/dvdauthor.git#tag=0.7.2
+	source = dvdauthor-0.7.2-imagemagick7.patch
+	b2sums = bf79688ded7fa17ae87d0e6dcd60d09e36df57fba2ac6203a5264b64b4bbcd1f81138b583ba52509372ac096efe4551e1e5d3c3d5ff5e6dcdac012e87adabf6e
+	b2sums = e7949e4d5d26f2b54157a13957199b509a4686c70c50be691890d4312b5b7aebf448729ee39328abd7599ed7c7a461942f22f0aa8ff0eb89734c583816203b20
+
+pkgname = dvdauthor

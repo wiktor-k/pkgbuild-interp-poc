@@ -1,0 +1,65 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=xet-core
+pkgname=(python-hf-xet)
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="xet client tech, used in Huggingface Hub"
+arch=(x86_64)
+url=https://github.com/huggingface/xet-core
+license=(Apache-2.0)
+makedepends=(
+  cargo
+  maturin
+  python-installer
+  openssl
+)
+source=($pkgbase-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('6f3f35b676e64e7e0c6bc6a2df4321145c8a12b682060b82b94ac7a8fc214d547b9a7bbf8be9117d70a487ffbf1df5664a8c0c9c1bd746aea2f3d2c8e42b97fc')
+
+prepare() {
+  cd $pkgbase-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  # fix building with LTO
+  CFLAGS+=' -ffat-lto-objects'
+
+  # always use system openssl https://docs.rs/openssl/latest/openssl/
+  export OPENSSL_NO_VENDOR=1
+
+  cd $pkgbase-$pkgver
+  # there don't seem to be any useful tools for users...
+  #cargo build --frozen --release
+
+  # build Python bindings
+  cd hf_xet
+  local maturin_options=(
+    --locked
+    --release
+    --target "$(rustc --print host-tuple)"
+    --strip
+    # wheel compatibility tag - native linux ensures we don't bundle openssl libs
+    # https://github.com/PyO3/maturin/issues/2038
+    --compatibility linux
+    # use native-tls instead of native-tls-vendored
+    --features native-tls
+  )
+  maturin build "${maturin_options[@]}"
+}
+
+package_python-hf-xet() {
+  depends=(
+    glibc
+    libgcc
+    openssl libssl.so libcrypto.so
+    python
+  )
+
+  cd $pkgbase-$pkgver
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  cd hf_xet
+  python -m installer --destdir "$pkgdir" target/wheels/*.whl
+}

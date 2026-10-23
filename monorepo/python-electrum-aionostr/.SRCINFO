@@ -1,0 +1,26 @@
+pkgbase = python-electrum-aionostr
+	pkgdesc = Asyncio nostr client for Python
+	pkgver = 0.1.0
+	pkgrel = 2
+	url = https://github.com/spesmilo/electrum-aionostr
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-click
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-aiohttp
+	depends = python-aiohttp-socks
+	depends = python-aiorpcx
+	depends = python-cryptography
+	depends = python-electrum-ecc
+	optdepends = python-click: for command line interface
+	source = git+https://github.com/spesmilo/electrum-aionostr.git#tag=0.1.0?signed
+	validpgpkeys = 4AD64339DFA05E20B3F6AD51E7B748CDAF5E5ED9
+	sha512sums = 4ad43fcb8766062d889f477697a9bc9c50e3aed6dbdac63a0eab49b6c545c7d66fa05e6576ab09b708f0b5e9279a833a01a272c5fa8e84fce8dce63831c0f433
+
+pkgname = python-electrum-aionostr

@@ -1,0 +1,91 @@
+# Maintainer: schuay <jakob.gruber@gmail.com>
+# Contributor: Brad Fanella <bradfanella@archlinux.us>
+# Contributor: Corrado Primier <bardo@aur.archlinux.org>
+# Contributor: danst0 <danst0@west.de>
+
+# Build order: avr-binutils -> avr-gcc -> avr-libc
+
+pkgname=avr-binutils
+pkgver=2.47
+pkgrel=1
+pkgdesc="A set of programs to assemble and manipulate binary and object files for the AVR architecture"
+arch=('x86_64')
+url="https://www.gnu.org/software/binutils/"
+license=('GPL')
+depends=('glibc' 'zlib' 'libelf')
+options=('!distcc' '!ccache')
+source=(https://ftp.gnu.org/gnu/binutils/binutils-${pkgver}.tar.bz2{,.sig}
+        avr-size.patch)
+sha1sums=('5b1deae7fe38d8334d3df4cbded074e86032a21d'
+          'SKIP'
+          'bb820f761fbbe7379ddf8e75235866c44591c899')
+sha256sums=('3068128c75cda9f898ccb4211d360246e8e195ffcc9dfb655b23ae23a54800e8'
+            'SKIP'
+            '7aed303887a8541feba008943d0331dc95dd90a309575f81b7a195650e4cba1e')
+validpgpkeys=(
+	'3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F'  # Nick Clifton (Chief Binutils Maintainer) <nickc@redhat.com>
+	'5EF3A41171BB77E6110ED2D01F3D03348DB1A3E2'  # "Sam James <sam@cmpct.info>"
+)
+
+_builddir=binutils-build
+
+prepare() {
+    cd "${srcdir}"/binutils-${pkgver}
+
+    # See https://bugs.archlinux.org/task/32504
+    # And https://bugs.archlinux.org/task/40986
+    patch -p1 < "${srcdir}"/avr-size.patch
+
+    # https://bugs.archlinux.org/task/34629
+    sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" libiberty/configure
+
+    rm -rf "${srcdir}"/${_builddir}
+    mkdir "${srcdir}"/${_builddir}
+}
+
+build() {
+    cd "${srcdir}"/binutils-${pkgver}
+
+    config_guess=$(./config.guess)
+
+    cd "${srcdir}"/${_builddir}
+
+    "${srcdir}"/binutils-${pkgver}/configure \
+        --prefix=/usr \
+        --with-lib-path=/usr/lib:/usr/local/lib \
+        --with-bugurl=https://gitlab.archlinux.org/archlinux/packaging/packages/avr-binutils/-/issues \
+        --enable-ld=default \
+        --enable-gold \
+        --enable-plugins \
+        --enable-threads \
+        --with-pic \
+        --disable-werror \
+        --disable-multilib \
+        --build=${config_guess} \
+        --target=avr \
+        $CONFIGFLAG
+
+    # This checks the host environment and makes sure all the necessary tools are available to compile Binutils.
+    make configure-host
+
+    make tooldir=/usr
+}
+
+package() {
+    cd "${srcdir}"/${_builddir}
+
+    make prefix="${pkgdir}"/usr tooldir="${pkgdir}"/usr install
+
+    for bin in ar as nm objcopy objdump ranlib strip readelf; do
+        rm "${pkgdir}"/usr/bin/${bin}
+    done
+
+    rm "$pkgdir"/usr/lib/bfd-plugins/libdep.so
+    rm "$pkgdir"/usr/lib/ldscripts/stamp
+
+    for info in as bfd binutils gprof ld ctf-spec sframe-spec ldint; do
+        mv "${pkgdir}"/usr/share/info/${info}.info "${pkgdir}"/usr/share/info/avr-${info}.info
+    done
+
+    rm -r "${pkgdir}"/usr/share/locale
+}

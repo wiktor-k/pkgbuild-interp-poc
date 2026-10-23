@@ -1,0 +1,36 @@
+pkgbase = kommit
+	pkgdesc = Git gui client
+	pkgver = 1.8.1
+	pkgrel = 2
+	url = https://apps.kde.org/kommit
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = extra-cmake-modules
+	makedepends = dolphin
+	makedepends = git
+	makedepends = kdoctools
+	makedepends = ktexteditor
+	depends = glibc
+	depends = kconfig
+	depends = kconfigwidgets
+	depends = kcoreaddons
+	depends = kcrash
+	depends = kdbusaddons
+	depends = ki18n
+	depends = kiconthemes
+	depends = kio
+	depends = kparts
+	depends = kwidgetsaddons
+	depends = kxmlgui
+	depends = libgit2
+	depends = libstdc++
+	depends = openssl
+	depends = qt6-base
+	depends = qt6-charts
+	depends = sh
+	depends = syntax-highlighting
+	source = git+https://invent.kde.org/sdk/kommit#tag=v1.8.1
+	validpgpkeys = E0A3EB202F8E57528E13E72FD7574483BB57B18D
+	sha256sums = 3280d24a3d2519f914cdfdaf2b61ff25b735fd2805254b15be42822547ff58cd
+
+pkgname = kommit

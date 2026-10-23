@@ -1,0 +1,33 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Marcos Heredia <chelqo@gmail.com>
+# Contributor: Joris Steyn <jorissteyn@gmail.com>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Roman Kyrylych <roman@archlinux.org>
+# Contributor: orelien <aurelien.foret@wanadoo.fr>
+# Contributor: Muflone <webreg@vbsimple.net>
+
+pkgname=httrack
+pkgver=3.50.5
+pkgrel=1
+pkgdesc="An easy-to-use offline browser utility"
+arch=('x86_64')
+url="https://www.httrack.com/"
+license=('GPL-3.0-or-later')
+depends=('bash' 'xdg-utils' 'hicolor-icon-theme' 'openssl')
+source=(https://github.com/xroche/${pkgname}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.gz{,.asc})
+validpgpkeys=('BB71C7E6CB1AD8FAF53FE42A60C3AA7180598EFB') # Xavier Roche
+sha256sums=('4a017e8311035ec02ee2947e14022a5f1291c86c7e67e98ee762c9486f0db39d'
+            'SKIP')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  ./configure --prefix=/usr --enable-static=no
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+}

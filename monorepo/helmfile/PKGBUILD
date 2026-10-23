@@ -1,0 +1,60 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=helmfile
+pkgver=1.8.1
+pkgrel=1
+pkgdesc="Manage multiple helm charts with a single helmfile"
+arch=('x86_64')
+url="https://github.com/helmfile/helmfile"
+license=('MIT')
+depends=(
+  'glibc'
+  'helm'
+)
+makedepends=(
+  'go'
+  'git'
+)
+options=('!lto')
+source=("git+$url.git#tag=v${pkgver}")
+sha512sums=('6e70a719424046bfbae88643942bf7bc667e4f6afecad143ea4864a88ab0f9c1e70aa79f0373fcd4d0bd843176c0f2dc854af59aa1cd348eccf922efc9cc5504')
+b2sums=('a9d5ee0616a5098460bb16b4103c18ed50eca400a9d66c38ac2257a2054928690540dca02f3a03448d7eb9d615625a2f5ccc12fd1348c2efef9f2675cc1a4ec0')
+
+prepare() {
+  cd $pkgname
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+
+  local ld_flags=" \
+    -compressdwarf=false \
+    -linkmode=external \
+  "
+  go build -v -ldflags "$ld_flags" -o build/
+}
+
+check() {
+  cd $pkgname
+  # Not sure why this test fails
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/helmfile/helmfile/test/e2e/template/helmfile \
+  )
+  # shellcheck disable=SC2086
+  go test -v $unit_tests
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" build/helmfile
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

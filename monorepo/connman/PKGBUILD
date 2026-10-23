@@ -1,0 +1,91 @@
+# Maintainer: Christian Rebischke <Chris.Rebischke[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+# Contributor: Lucas De Marchi <lucas.de.marchi@gmail.com>
+
+pkgname=connman
+pkgver=2.0
+pkgrel=1
+pkgdesc="Intel's modular network connection manager"
+arch=('x86_64')
+url="https://git.kernel.org/pub/scm/network/connman/connman.git/"
+license=('GPL-2.0-only')
+depends=(
+  'dbus'
+  'glib2'
+  'glibc'
+  'gnutls'
+  'iptables'
+  'libgcc'
+  'libmnl'
+  'readline'
+)
+makedepends=(
+  'bluez'
+  'iwd'
+  'openconnect'
+  'openvpn'
+  'ppp'
+  'wpa_supplicant'
+)
+optdepends=(
+  'bluez: Support for Bluetooth devices'
+  'iwd: for WiFi devices'
+  'openconnect: for VPN Support'
+  'openvpn: for VPN Support'
+  'pptpclient: for ppp support'
+  'wpa_supplicant: for WiFi devices'
+)
+backup=('etc/connman/main.conf')
+source=(
+  "https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$pkgver.tar.xz"
+  "https://www.kernel.org/pub/linux/network/$pkgname/$pkgname-$pkgver.tar.sign"
+  "allow_group_network.diff"
+)
+b2sums=('205aebbd59f77c87e98c34774f3b727a8b2bbf2889c987406cc623e30e3fd7aa6229b2919a42936cd886a6bf2e71936e8dcedf6adb9b8a96627ea7d31da0d90a'
+        'SKIP'
+        '07303d0ae544ca3e52ae7d2558dc5268115f4c3b370e170f0656b5b1948e3f4dcb20ae930b64dcb9e819ca7e0757e874e9c7a5412ee933bb1af58102c548e72b')
+validpgpkeys=('E932D120BC2AEC444E558F0106CA9F5D1DCF2659') # Marcel Holtmann <marcel@holtmann.org>
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 -i "$srcdir/allow_group_network.diff"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --runstatedir=/run \
+    --bindir=/usr/bin \
+    --sbindir=/usr/bin \
+    --with-systemdunitdir=/usr/lib/systemd/system \
+    --with-tmpfilesdir=/usr/lib/tmpfiles.d \
+    --enable-pptp \
+    --enable-openconnect \
+    --enable-vpnc \
+    --enable-openvpn \
+    --enable-polkit \
+    --enable-client \
+    --enable-nmcompat \
+    --enable-test \
+    --enable-pie \
+    --enable-iwd
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  install -vDm755 -t "$pkgdir/usr/bin" client/connmanctl
+  install -vDm644 -t "$pkgdir/etc/connman" src/main.conf
+  # See FS#48044
+  sed -i 's/ProtectSystem=full/ProtectSystem=true/' "$pkgdir/usr/lib/systemd/system/connman.service"
+}

@@ -1,0 +1,30 @@
+# Maintainer: Chistian Heusel <gromit@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Rumen Jekov <rvjekov@gmail.com>
+# Contributor: Boian Bonev <bbonev@ipacct.com>
+
+pkgname=iotop-c
+_pkgname=iotop
+pkgver=1.33
+pkgrel=1
+pkgdesc="A top utility for IO"
+url="https://github.com/Tomas-M/iotop"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('glibc' 'ncurses')
+makedepends=('git')
+conflicts=('iotop')
+provides=('iotop')
+source=("git+${url}.git#tag=v${pkgver}?signed")
+validpgpkeys=('BA60BC20F37E59444D6D25001365720913D2F22D')
+sha256sums=('bb8627ba9125bc61cf30e243c4fbf843cb98b2d403e8c0da82e1f63e1994cbf2')
+
+build() {
+	cd "${_pkgname}"
+	make
+}
+
+package() {
+	cd "${_pkgname}"
+	make STRIP=: DESTDIR="${pkgdir}" BINDIR="${pkgdir}/usr/bin" install
+}

@@ -1,0 +1,24 @@
+pkgbase = rsop-oct
+	pkgdesc = Stateless OpenPGP (SOP) CLI tool for OpenPGP card devices based on rPGP and rpgpie
+	pkgver = 0.1.9
+	pkgrel = 1
+	url = https://codeberg.org/heiko/rsop
+	arch = x86_64
+	groups = stateless-openpgp
+	license = Apache-2.0 OR MIT
+	license = CC0-1.0
+	makedepends = pcsclite
+	makedepends = rust
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	source = rsop-oct-0.1.9.tar.gz::https://codeberg.org/heiko/rsop/archive/rsop-oct/v0.1.9.tar.gz
+	sha512sums = 3f4fb5a214a201aa796b077d95d8826e4881d698c688d6bec8674752ae9cc8c9980444fc4366548ee81f01b2c64a1249e5c450b3e73c8e8e0e8544d9432c042c
+	b2sums = 4ae33d4301b62020f4aeea540aced8e28a3b798226fea11d8745628c14d24b158f45cc8f0651319913e9d016d0e2de1ea0ba5d01c73a4d6f2acbbd76fc96a527
+
+pkgname = rsop-oct
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = pcsclite
+	depends = libpcsclite.so

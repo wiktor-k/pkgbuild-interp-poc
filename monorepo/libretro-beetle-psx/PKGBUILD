@@ -1,0 +1,58 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgbase=libretro-beetle-psx
+pkgname=(
+  libretro-beetle-psx
+  libretro-beetle-psx-hw
+)
+pkgver=20260930.052947.ged87921996c6
+pkgrel=1
+pkgdesc='Sony PlayStation core'
+arch=(x86_64)
+url=https://github.com/libretro/beetle-psx-libretro
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  libgcc
+  libretro-core-info
+  libstdc++
+  zlib
+)
+makedepends=(
+  git
+  libglvnd
+  mesa
+  vulkan-icd-loader
+)
+source=(libretro-beetle-psx::git+https://github.com/libretro/beetle-psx-libretro.git#commit=${pkgver##*.g})
+b2sums=('f0152b1819f6efea9f348deda41ce42cbb57f6cef85e794e5626f4a0e3628a95790422c73ee9ae793659dc4f26ca259b4e307e888bb9410fadbccb21c8747ec3')
+
+prepare() {
+  cp -r libretro-beetle-psx{,-hw}
+}
+
+build() {
+  make \
+    HAVE_LIGHTREC=1 \
+    SYSTEM_LIBCHDR=0 \
+    SYSTEM_ZLIB=1 \
+    -C libretro-beetle-psx
+  make \
+    HAVE_HW=1 \
+    HAVE_LIGHTREC=1 \
+    SYSTEM_LIBCHDR=0 \
+    SYSTEM_ZLIB=1 \
+    -C libretro-beetle-psx-hw
+}
+
+package_libretro-beetle-psx() {
+  install -Dm 644 libretro-beetle-psx/mednafen_psx_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}
+
+package_libretro-beetle-psx-hw() {
+  depends+=(libgl)
+
+  install -Dm 644 libretro-beetle-psx-hw/mednafen_psx_hw_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}
+
+# vim: ts=2 sw=2 et:

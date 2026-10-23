@@ -1,0 +1,15 @@
+pkgbase = drone-cli
+	pkgdesc = Command line interface for Drone CI
+	pkgver = 1.9.0
+	pkgrel = 1
+	url = https://docs.drone.io/cli
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = drone-cli::git+https://github.com/harness/drone-cli.git#tag=v1.9.0
+	b2sums = 2a7caf00adceed57802ad0ff8be199a0d4fce50c6ade77362a924e0516f0e4ddfed3dca66a8db97ec974d3b2c32fee7cc2cc602e412c992119efde43d8757968
+
+pkgname = drone-cli

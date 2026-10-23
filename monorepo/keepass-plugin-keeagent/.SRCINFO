@@ -1,0 +1,25 @@
+pkgbase = keepass-plugin-keeagent
+	pkgdesc = SSH Agent Plugin for KeePass
+	pkgver = 0.12.1
+	pkgrel = 4
+	url = https://lechnology.com/software/keeagent/
+	arch = any
+	license = GPL2
+	license = BSD
+	license = MIT
+	license = custom:MS-LPL
+	license = custom:WindowsAPICodePack
+	makedepends = git
+	makedepends = msbuild
+	makedepends = nuget
+	depends = keepass
+	optdepends = openssh: For integration with ssh-agent
+	optdepends = gnupg: For integration with GnuPG SSH agent
+	source = git+https://github.com/dlech/keeagent#tag=9e3fefc014889c572e34659ad26619080b5b2443
+	source = git+https://github.com/dlech/sshagentlib
+	source = git+https://github.com/CodesInChaos/chaos.nacl
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+
+pkgname = keepass-plugin-keeagent

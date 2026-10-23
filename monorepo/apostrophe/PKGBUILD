@@ -1,0 +1,68 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=apostrophe
+pkgver=3.5
+pkgrel=1
+pkgdesc='Distraction free Markdown editor'
+arch=(any)
+url='https://apps.gnome.org/Apostrophe/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libspelling
+  pango
+  python
+  python-chardet
+  python-gobject
+  python-pypandoc
+  python-regex
+  python-weasyprint
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+optdepends=(
+  'texlive-bin: Export to LaTeX'
+  'texlive-formatsextra: Export to PDF using XeTeX'
+  'texlive-latex: Inline math preview'
+  'texlive-xetex: Export to PDF using XeTeX'
+)
+source=(
+  "git+https://gitlab.gnome.org/World/apostrophe.git#tag=v$pkgver"
+  apostrophe-weasyprint.patch
+)
+b2sums=(
+  375e70b56b27358680dd10dcd949b465d38a5bb74081949fa7c49d4f873c2c8be91ab3e925afcbe6121c898ffa21f018db664dcff4422934588e55195113b8b9
+  3dd7601fa9cf45cc0a4088ccdb64c95cf775e8cf236a851ff159320d312cd5c64996fb26ae54ece8f268e71cf28a7454200bc019ffc870853dadb84e5deb65b1
+)
+
+prepare() {
+  cd $pkgname
+
+  # Use weasyprint instead of typst for PDF export
+  # https://gitlab.gnome.org/World/apostrophe/-/merge_requests/338
+  git apply -3 ../apostrophe-weasyprint.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

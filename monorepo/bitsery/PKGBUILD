@@ -1,0 +1,39 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=bitsery
+pkgver=5.2.5
+pkgrel=1
+pkgdesc="Header only C++ binary serialization library"
+arch=(any)
+url="https://github.com/fraillt/bitsery"
+license=(MIT)
+makedepends=(
+  cmake
+  gtest
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('bf43550e307713f37fb6d9c7414eeaadd16c14b791be64871c17e8fbbb0028a7818d7108edae7f29cd9522cc16606824d729220c1d018fa79f3340e8e50e5607')
+b2sums=('92e2abe11ac702a5246cb43cb330a2edd6b4f8641a3a848cef7a4e513f37c8ca45c2a3d53d0a297e9f983de98b5e16127b060b7e797ba6e6e67e10ec5550f77e')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D BITSERY_BUILD_TESTS=ON
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build/tests
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

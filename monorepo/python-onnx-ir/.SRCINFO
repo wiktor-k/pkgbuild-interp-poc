@@ -1,0 +1,22 @@
+pkgbase = python-onnx-ir
+	pkgdesc = Efficient in-memory representation for ONNX
+	pkgver = 0.2.1
+	pkgrel = 1
+	url = http://onnx.ai/ir-py/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-numpy
+	depends = python-onnx
+	depends = python-typing_extensions
+	depends = python-ml-dtypes
+	depends = python-rich
+	source = python-onnx-ir::git+https://github.com/onnx/ir-py#tag=v0.2.1
+	sha256sums = a577e85b237c5445337c74554abd392339ed8e1c63858a02edab217114722040
+
+pkgname = python-onnx-ir

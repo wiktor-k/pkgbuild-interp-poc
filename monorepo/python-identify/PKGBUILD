@@ -1,0 +1,45 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
+
+_name=identify
+pkgname=python-identify
+pkgver=2.6.20
+pkgrel=1
+pkgdesc="File identification library for Python"
+arch=(any)
+url="https://github.com/pre-commit/identify"
+license=(MIT)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-ukkonen
+)
+optdepends=(
+  'python-ukkonen: for returning license identifiers'
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('19c05d54961e5108179abab7ae7c8376751a74c9c3f308382c72491c22869b6209591c32f26717eca626ee810683a745bedb478fb6846c75b768772693694438')
+b2sums=('5cc8503aed1022aa7dc9c0491e17bd1f6d327f523c4eee45d4a02ca020267bd3592e2ba831335492d975a8bb9bf66cf5c95c54f11955cf9db64b52b2baf8cd77')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  pytest -vv
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

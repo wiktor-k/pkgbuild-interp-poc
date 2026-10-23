@@ -1,0 +1,28 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: kj_sh604 <406hs_jk@proton.me>
+# Contributor: Bernhard Landauer <oberon@manjaro.org>
+
+pkgname=xfce4-volumed-pulse
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="A volume keys control daemon for Xfce using pulseaudio"
+arch=('x86_64')
+url="https://gitlab.xfce.org/apps/xfce4-volumed-pulse"
+license=('GPL-3.0-only')
+depends=('libnotify' 'pulse-native-provider' 'libkeybinder3' 'xfconf')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+optdepends=('xfce4-notifyd: for OSD notifications')
+source=("git+https://gitlab.xfce.org/apps/xfce4-volumed-pulse.git#tag=$pkgname-$pkgver")
+sha256sums=('68d306b9a7bb8c0f785fb7b05e1322141e57d1e17a40bd5ce7cedfacfa2a7ddd')
+
+build() {
+  arch-meson $pkgname build \
+    --localstatedir=/var
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

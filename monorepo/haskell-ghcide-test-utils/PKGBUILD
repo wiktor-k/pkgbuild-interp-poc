@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=ghcide-test-utils
+pkgname=haskell-ghcide-test-utils
+pkgver=1.9.0.0
+pkgrel=440
+pkgdesc="Test utils for ghcide"
+url="https://github.com/haskell/haskell-language-server/tree/master/ghcide#readme"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-data-default' 'haskell-extra' 'haskell-ghcide'
+         'haskell-hls-plugin-api' 'haskell-lens' 'haskell-lsp-test' 'haskell-lsp-types'
+         'haskell-tasty-hunit')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz"
+        "$pkgname-lsp-test0.15.patch")
+sha256sums=('66b69e0aa0285195ae1af3e9cc968987a71cc24ba6c4e69187b12ee205ef9d38'
+            '5568b210849f4660a15f194a8fbc6b46bcce8efc9c9efdebe55d0db57de8b3c9')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  patch -Np1 -i ../$pkgname-lsp-test0.15.patch
+  gen-setup
+  uusi -u lsp-test
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' 
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

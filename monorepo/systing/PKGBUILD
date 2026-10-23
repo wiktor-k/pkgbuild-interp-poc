@@ -1,0 +1,65 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=systing
+pkgver=1.28.5
+pkgrel=1
+pkgdesc="A libbpf based tracer to help figure out what an application is doing"
+arch=(x86_64)
+url="https://github.com/josefbacik/systing"
+depends=(
+  bpf
+  fmt
+  glibc
+  libbpf
+  libcap
+  libelf
+  libgcc
+  re2
+  zlib
+)
+makedepends=(
+  clang
+  git
+  rust
+  linux
+  jq
+)
+license=(MIT)
+source=(
+  "${pkgname}::git+https://github.com/josefbacik/systing.git#tag=v$pkgver"
+)
+sha512sums=('dd62133c6eb07927f9e675a1b58041fcffcbb936e3699e04481bac8c7a195edaba477b5fe323d6186979d648b9b833e1c175d1dc45a6402e398021c5c2586852')
+b2sums=('f28450b225c57b4e2926b57d592e5d45965731f63b28270af6e67a1d94cfa122d10754d14ac0ac53cc1e59e00ad7aff1ea6a85395a5d55567768c9012f38e556')
+
+# needed to workaround linking error with BPF lib
+options=(!lto)
+
+prepare() {
+  cd $pkgname
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  # TODO: drop once the ICF issue is fixed in devtools
+  export RUSTFLAGS="-C force-frame-pointers=yes"
+
+  for binary in systing{,-util,-analyze}; do
+      cargo build --release --bin $binary
+  done
+}
+
+check() {
+  cd $pkgname
+
+  cargo test -p $pkgname --frozen
+}
+
+package() {
+  cd $pkgname
+  for binary in systing{,-util,-analyze}; do
+      install -vDm 0755 "target/release/$binary" -t "$pkgdir/usr/bin/"
+  done
+  install -vDm 0644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

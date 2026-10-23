@@ -1,0 +1,29 @@
+pkgbase = directx-shader-compiler
+	pkgdesc = Compiler for HLSL to DXIL (DirectX Intermediate Language)
+	pkgver = 1.10.2605.37
+	pkgrel = 1
+	url = https://github.com/microsoft/DirectXShaderCompiler
+	arch = x86_64
+	license = NCSA
+	license = Apache-2.0 WITH LLVM-exception
+	makedepends = clang
+	makedepends = cmake
+	makedepends = git
+	makedepends = libxml2
+	makedepends = ninja
+	makedepends = python
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = directx-shader-compiler::git+https://github.com/microsoft/DirectXShaderCompiler#tag=v1.10.2605.37
+	source = directx-headers::git+https://github.com/microsoft/DirectX-Headers
+	source = git+https://github.com/KhronosGroup/SPIRV-Headers
+	source = git+https://github.com/KhronosGroup/SPIRV-Tools
+	source = 0001-Install-more-components.patch
+	b2sums = f7577fce2433b9b2d6c24cc31bf950b87009acf473391ea50b3a66baaba27a09f5309c8033c5bcfdce3af1f63d0620e63e91087a3d07c2be57f19878049b7b53
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = 22c47f50daaff773357104b46740aa9d81851351a2dafac66ff10e2604374f9e922d361e63478ce82e0610c79f875f928f21bb9706efe0c1469f67b6204c46d4
+
+pkgname = directx-shader-compiler

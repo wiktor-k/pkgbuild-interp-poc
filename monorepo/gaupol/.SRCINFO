@@ -1,0 +1,32 @@
+pkgbase = gaupol
+	pkgdesc = Editor for text-based subtitles
+	pkgver = 2.0.1
+	pkgrel = 1
+	url = https://otsaloma.io/gaupol/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = glib2
+	depends = graphene
+	depends = gst-plugin-gtk4
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = iso-codes
+	depends = libspelling
+	depends = pango
+	depends = python
+	depends = python-charset-normalizer
+	depends = python-gobject
+	optdepends = gst-libav: Extra media codecs
+	optdepends = gst-plugins-bad: Extra media codecs
+	optdepends = gst-plugins-ugly: Extra media codecs
+	source = git+https://github.com/otsaloma/gaupol.git?signed#tag=2.0.1
+	validpgpkeys = 8DD6B3FCDAB33C91EA915B913A584A9504CACA67
+	b2sums = 4832ec57b97d0f07afef3e182efe8b5b33922888679788bb9cd89cf2a4f0de6024dfab9bb6ccde8b2d349f662caa6420483c03ee8a5682fd82afab2065055b25
+
+pkgname = gaupol

@@ -1,0 +1,56 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=junction
+pkgver=1.13
+pkgrel=1
+pkgdesc='Application chooser to open files and links'
+arch=(any)
+url='https://apps.gnome.org/Junction/'
+license=(GPL-3.0-only)
+groups=(gnome-circle)
+depends=(
+  bash
+  dconf
+  gjs
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libportal
+  libportal-gtk4
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://github.com/sonnyp/Junction.git#tag=v$pkgver"
+  git+https://github.com/sonnyp/troll.git
+)
+b2sums=(
+  7f23a8378fc11abf6fcaa792a87ee160248018b77461e901c49383dfa614dba5874e81647bff52a550fb15cf99e4afebf2b7901b2ed2519e43879b28ea5b9b75
+  SKIP
+)
+
+prepare() {
+  cd Junction
+
+  git submodule init
+  git submodule set-url troll "$srcdir/troll"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson Junction build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

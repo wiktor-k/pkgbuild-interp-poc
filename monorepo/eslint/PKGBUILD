@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=eslint
+pkgver=10.13.0
+pkgrel=1
+pkgdesc='An AST-based pattern checker for JavaScript'
+arch=(any)
+url=https://eslint.org
+license=(MIT)
+depends=(
+  acorn
+  nodejs
+)
+makedepends=(
+  git
+  jq
+  npm
+  python
+)
+options=(!emptydirs)
+source=("git+https://github.com/$pkgname/$pkgname.git#tag=v$pkgver")
+b2sums=('d1b7c28015d09394e3625ff038f104932916a74ee1fd084b48d1db4813fa90108965cb7e0a59f705b5eb5c80e6d73dafddaea924bf17d5bfbe83e4494bfb224d')
+
+prepare() {
+  cd $pkgname
+  npm install
+}
+
+check() {
+  cd $pkgname
+  node Makefile.js mocha || warning "Tests failed; known Node.js/yargs ESM issue: https://github.com/nodejs/node/issues/61971"
+}
+
+package() {
+  local mod_dir=/usr/lib/node_modules/$pkgname
+
+  install -d "$pkgdir"/{usr/{bin,share/{doc,licenses}/$pkgname},$mod_dir}
+  ln -s $mod_dir/bin/$pkgname.js "$pkgdir"/usr/bin/$pkgname
+  ln -s $mod_dir/README.md "$pkgdir"/usr/share/doc/$pkgname
+  ln -s $mod_dir/LICENSE "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd $pkgname
+  npm prune --omit=dev
+
+  mapfile -t mod_files < <(jq -r '.files[]' package.json)
+  cp -r "${mod_files[@]}" node_modules package.json "$pkgdir"/$mod_dir
+  chmod +x "$pkgdir"/$mod_dir/bin/$pkgname.js
+
+  # Experimental dedup
+  rm -r "$pkgdir"/$mod_dir/node_modules/acorn
+}

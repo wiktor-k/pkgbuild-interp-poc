@@ -1,0 +1,106 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=erofs-utils
+pkgname=(erofs-utils erofsfuse)
+pkgver=1.9.4
+pkgrel=1
+pkgdesc="Userspace utilities for linux-erofs file system"
+arch=(x86_64)
+url="https://git.kernel.org/pub/scm/linux/kernel/git/xiang/erofs-utils.git"
+license=(
+  Apache-2.0
+  GPL-2.0-or-later
+)
+makedepends=(
+  curl
+  fuse2
+  glibc
+  libdeflate
+  lz4
+  openssl
+  util-linux
+  xxhash
+  xz
+  zlib
+  zstd
+)
+source=($url/snapshot/$pkgname-$pkgver.tar.gz)
+sha512sums=('c78fb83a206fa1a313eae3c54134f892a6eafc6839ee689457c5d4b1f5a7d399f9475a160a9c9173221944e8823e665eecfc0d72b2b2a1563250646d091a9176')
+b2sums=('c191d1b5d311baef354d7c6dd789f2ceec4c3d6c725418d5304bc940627448d6374e09804ff1c61d642e3c125f06bf630e56d0bccaf34d1c36c21696b171b502')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  local configure_options=(
+    --enable-fuse
+    --enable-lzma
+    --enable-multithreading
+    --prefix=/usr
+    --sbindir=/usr/bin/
+    --with-libdeflate
+  )
+
+  cd $pkgname-$pkgver
+  MAX_BLOCK_SIZE=65536 ./configure "${configure_options[@]}"
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  make -k check -C $pkgname-$pkgver
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -vp "$(dirname "$d")"
+    mv -v "$f" "$d"
+    rmdir -vp --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+package_erofs-utils() {
+  depends+=(
+    curl libcurl.so
+    glibc
+    libdeflate libdeflate.so
+    lz4 liblz4.so
+    openssl libcrypto.so
+    util-linux-libs libuuid.so
+    xxhash libxxhash.so
+    xz liblzma.so
+    zstd libzstd.so
+    zlib libz.so
+  )
+  optdepends=(
+    'erofsfuse: for FUSE file system client'
+  )
+
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+
+  cd "$pkgdir"
+  _pick erofsfuse usr/bin/erofsfuse
+  _pick erofsfuse usr/share/man/man1/erofsfuse*
+}
+
+package_erofsfuse() {
+  pkgdesc="FUSE file system client for erofs file system"
+  depends+=(
+    fuse2
+    glibc
+    libdeflate libdeflate.so
+    lz4 liblz4.so
+    xxhash libxxhash.so
+    xz liblzma.so
+    zstd libzstd.so
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{AUTHORS,ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

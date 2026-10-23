@@ -1,0 +1,23 @@
+pkgbase = alure
+	pkgdesc = Utility library to help manage common tasks with OpenAL applications.
+	pkgver = 1.2
+	pkgrel = 11
+	url = https://kcat.tomasu.net/alure.html
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	depends = openal
+	depends = libsndfile
+	depends = libvorbis
+	depends = flac
+	depends = mpg123
+	depends = dumb
+	depends = fluidsynth
+	source = https://kcat.tomasu.net/alure-releases/alure-1.2.tar.bz2
+	source = build.patch
+	source = dumb-2.patch
+	sha256sums = 465e6adae68927be3a023903764662d64404e40c4c152d160e3a8838b1d70f71
+	sha256sums = 21029cfc8900b8270f6c7a79235e09a05d45d0b03b221d9d856a27e98cc0931b
+	sha256sums = 379210476980d5e2754b015d5505dff620ed3297a99c08509c757fa88ef46300
+
+pkgname = alure

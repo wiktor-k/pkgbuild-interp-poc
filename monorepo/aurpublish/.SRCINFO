@@ -1,0 +1,16 @@
+pkgbase = aurpublish
+	pkgdesc = PKGBUILD management/upload framework for the Arch User Repository
+	pkgver = r43.g3b978be
+	pkgrel = 3
+	url = https://github.com/eli-schwartz/aurpublish
+	arch = any
+	license = GPL-2.0-only
+	makedepends = asciidoc
+	depends = git
+	depends = openssh
+	depends = pacman
+	source = git+https://github.com/eli-schwartz/aurpublish.git?signed#commit=3b978be48dde74eae86dff49d55ae29bb4a217ec
+	validpgpkeys = BD27B07A5EF45C2ADAF70E0484818A6819AF4A9B
+	sha256sums = bd67d53fb7a4959ed7c62943b02d47c820c01ec8a4888593027341a24aa72900
+
+pkgname = aurpublish

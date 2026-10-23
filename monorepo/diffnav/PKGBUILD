@@ -1,0 +1,63 @@
+pkgname=diffnav
+pkgver=0.13.0
+pkgrel=1
+pkgdesc='git diff pager based on delta but with a file tree, à la GitHub'
+url='https://github.com/dlvhdr/diffnav'
+arch=(x86_64)
+license=(MIT)
+depends=(
+  git-delta
+  glibc
+)
+makedepends=(
+  go
+)
+optdepends=(
+  "ttf-font-nerd: Nerd font icons"
+)
+options=(!lto)
+source=(
+  "${url}/archive/refs/tags/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+)
+sha512sums=('f0329e03dbfe64ab90dcfe5a1b1a2cad49e30e82deba511c390daf12f6e3b7a9c26b535c13c82dd6a2c980edd247355b188ef9c797099fba08ffbf3f40dda4a8')
+b2sums=('76ccbaec33ecc3c4771e1e2dbd187daaf8c4469d48a4850b9d5c58b55920e2f6395740a753183c5926d7204b0c312cb6107d5163a0c15ab77c3d4d2eb964fab8')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  mkdir -p build
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+  go build -o "build/${pkgname}"
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  go test ./...
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 build/${pkgname} -t "${pkgdir}/usr/bin"
+
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completion bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

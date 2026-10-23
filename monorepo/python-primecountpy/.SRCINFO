@@ -1,0 +1,20 @@
+pkgbase = python-primecountpy
+	pkgdesc = Cython interface to the C++ library primecount
+	pkgver = 0.2.1
+	pkgrel = 3
+	url = https://github.com/dimpase/primecountpy
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cython
+	makedepends = git
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	depends = glibc
+	depends = primecount
+	depends = python
+	depends = python-cysignals
+	source = git+https://github.com/dimpase/primecountpy#tag=v0.2.1
+	sha256sums = aed1b7ed62cd981d43a32aec84c566676b05b5a20b092691a7b312b069706180
+
+pkgname = python-primecountpy

@@ -1,0 +1,22 @@
+pkgbase = python-daemon
+	pkgdesc = Python library to implement a well-behaved Unix daemon process
+	pkgver = 3.1.2
+	pkgrel = 6
+	url = https://pagure.io/python-daemon/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-testscenarios
+	checkdepends = python-testtools
+	makedepends = python-build
+	makedepends = python-changelog-chug
+	makedepends = python-docutils
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-filelock
+	source = https://files.pythonhosted.org/packages/source/p/python_daemon/python_daemon-3.1.2.tar.gz
+	source = python-daemon-3.1.2-lock-file-conversion.patch
+	sha256sums = f7b04335adc473de877f5117e26d5f1142f4c9f7cd765408f0877757be5afbf4
+	sha256sums = 6f2a7fc9df4b07c15552b1dce60f939d6b58ea0b7d462fc68032052a4c2b4aa2
+
+pkgname = python-daemon

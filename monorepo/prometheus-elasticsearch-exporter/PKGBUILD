@@ -1,0 +1,58 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=prometheus-elasticsearch-exporter
+pkgver=1.11.0
+pkgrel=1
+
+pkgdesc='Elasticsearch stats exporter for Prometheus'
+url='https://github.com/prometheus-community/elasticsearch_exporter'
+arch=('x86_64')
+license=('Apache-2.0')
+
+depends=('glibc')
+makedepends=('go' 'git')
+options=(!lto)
+
+backup=('etc/conf.d/prometheus-elasticsearch-exporter')
+
+source=("$pkgname-$pkgver.tar.gz::https://github.com/prometheus-community/elasticsearch_exporter/archive/v$pkgver.tar.gz"
+        prometheus-elasticsearch-exporter.conf
+        prometheus-elasticsearch-exporter.service
+        prometheus-elasticsearch-exporter.sysusers)
+
+sha256sums=('ba4dd128bd5b4362bbde9063979e21fbc71b0b351673f4a12cecefbc566521d8'
+            '5e02085a3aee96ff0364921f3195abdb08c0be8dca2fc3731b2b327e772d4b45'
+            'a3be4e20fe1acdf8330fe939711ac824d59b87f552eb461ee59d40e392a130d0'
+            '63c3513b6c37eb81e0ab94bccdcc96a5f7f71f491678e743485852d3691ecae6')
+
+build() {
+  cd elasticsearch_exporter-$pkgver
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" \
+      -X github.com/prometheus/common/version.Version=$pkgver \
+      -X github.com/prometheus/common/version.Revision=$pkgver \
+      -X github.com/prometheus/common/version.Branch=tarball \
+      -X github.com/prometheus/common/version.BuildUser=someone@builder \
+      -X github.com/prometheus/common/version.BuildDate=$(date -u '+%Y%m%d-%H:%M:%S' --date=@${SOURCE_DATE_EPOCH})" \
+    .
+}
+
+check() {
+  cd elasticsearch_exporter-$pkgver
+  make test
+}
+
+package()  {
+  install -Dm644 prometheus-elasticsearch-exporter.conf "$pkgdir"/etc/conf.d/prometheus-elasticsearch-exporter
+  install -Dm644 prometheus-elasticsearch-exporter.service "$pkgdir"/usr/lib/systemd/system/prometheus-elasticsearch-exporter.service
+  install -Dm644 prometheus-elasticsearch-exporter.sysusers "$pkgdir"/usr/lib/sysusers.d/prometheus-elasticsearch-exporter.conf
+
+  cd elasticsearch_exporter-$pkgver
+
+  install -Dm755 elasticsearch_exporter "$pkgdir"/usr/bin/prometheus-elasticsearch-exporter
+}

@@ -1,0 +1,74 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Miles McLean <mills00013@gmail.com>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Brad Pitcher <bradpitcher@gmail.com>
+# Contributor: Moritz Lipp <mlq@pwmt.org>
+
+pkgbase=networkmanager-l2tp
+pkgname=(networkmanager-l2tp networkmanager-vpn-plugin-l2tp)
+pkgver=1.52.6
+pkgrel=1
+pkgdesc='NetworkManager VPN plugin for L2TP'
+url='https://github.com/nm-l2tp/NetworkManager-l2tp/wiki'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(glib2 glibc gtk4 libgcc libnm libnma-gtk4 libsecret openssl)
+makedepends=(git glib2-devel libnma nspr nss ppp python strongswan xl2tpd)
+source=("git+https://github.com/nm-l2tp/NetworkManager-l2tp#tag=$pkgver")
+b2sums=('f9952c7239823c07ada2d8b4f3b61714d590340283c204d23da3d1320598acc659bc4b9f15f52acfaedaff2a89f27e43ec6a330923b53aec47d06dec16d77e6e')
+_dirname=NetworkManager-l2tp
+
+prepare() {
+  cd $_dirname
+  autoreconf -fvi
+}
+
+build() {
+  cd $_dirname
+  ./configure \
+    --disable-static \
+    --libexecdir=/usr/lib \
+    --localstatedir=/var \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --with-gtk4
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+package_networkmanager-l2tp() {
+  pkgdesc+=' (with GUI)'
+  depends+=("networkmanager-vpn-plugin-l2tp=$pkgver-$pkgrel")
+  optdepends=('libnma: GUI support (GTK 3)')
+  conflicts=(networkmanager-l2tp-gtk{3,4})
+  replaces=(networkmanager-l2tp-gtk{3,4})
+
+  cd $_dirname
+  make DESTDIR="$pkgdir" install dbusservicedir=/usr/share/dbus-1/system.d
+
+  cd "$pkgdir"
+  _pick plugin usr/lib/NetworkManager/VPN
+  _pick plugin usr/lib/NetworkManager/libnm-vpn-plugin-l2tp.so
+  _pick plugin usr/lib/nm-l2tp-service
+  _pick plugin usr/lib/pppd
+  _pick plugin usr/share/dbus-1
+}
+
+package_networkmanager-vpn-plugin-l2tp() {
+  pkgdesc+=' (VPN plugin only)'
+  depends=(glib2 glibc libgcc libnm nspr nss openssl ppp xl2tpd)
+  optdepends=('strongswan: IPSec support')
+
+  mv plugin/* "$pkgdir"
+  install -Dm644 $_dirname/NEWS -t "$pkgdir/usr/share/doc/$pkgbase"
+}

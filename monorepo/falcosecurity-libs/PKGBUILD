@@ -1,0 +1,121 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Alfredo Palhares <masterkorp@masterkorp.net>
+# Contributor: Christian Babeux <christian.babeux@0x80.ca>
+
+pkgbase=falcosecurity-libs
+pkgname=(
+  falcosecurity-libs
+  scap-dkms
+)
+pkgver=0.23.2
+_driverver=9.1.0
+pkgrel=6
+pkgdesc="libsinsp, libscap, the scap kernel module"
+arch=('x86_64')
+url="https://github.com/falcosecurity/libs"
+license=('Apache-2.0')
+makedepends=(
+  'bpf'
+  'clang'
+  'cmake'
+  'git'
+  'grpc'
+  'gtest'
+  'intel-tbb'
+  'jsoncpp'
+  'libbpf'
+  'pandoc'
+  're2'
+  'uthash'
+  'valijson'
+)
+source=(
+  "$pkgbase::git+https://github.com/falcosecurity/libs.git#tag=$pkgver"
+  "https://falco-distribution.s3.eu-west-1.amazonaws.com/fixtures/libs/scap_files/kexec_arm64.scap"
+  "https://falco-distribution.s3.eu-west-1.amazonaws.com/fixtures/libs/scap_files/kexec_x86.scap"
+  "https://falco-distribution.s3.eu-west-1.amazonaws.com/fixtures/libs/scap_files/sample.scap"
+  "https://falco-distribution.s3.eu-west-1.amazonaws.com/fixtures/libs/scap_files/scap_2013.scap"
+)
+b2sums=('921535e78009365fc61c551a39e690f78862023caa9b56e3d6fbe771aafcd2c6b38a5a2d17131e174fe6b92c8b3e88d26f7e1e2350ae8b2306b1066a6c3dc9b5'
+        'e14149c463545b2ce2d165a16e17ef534e092d0439c414c1286b295322cb233344acb844301ff2e5a8cbcdd9c73515c181eef398fe2edbe1bf4058f0d83469fb'
+        '91628bf803379967727d489eb67f62a4ef5c765ee1784932a5bf5cc39cc6c89a04eed807b88610b44da9f5ea37d08059f33f21743cd3d7a64efab712f4e21469'
+        '26896c6bb62895c54db381e3095f58907ad0cf6e8c74a10782a1d9768d4101c3749d4bf9f7355e9e33e691411fc24e6da546b182ea539a8608b96c3119c9085e'
+        '2dfb2d9174c88ddb856d56fcd0b1f5b3aa1b9151830397118910140d47590fd44790537a08a18eb1e3f070c4ae885d8d6207924cdaff8614f2f3e83bffe8faf0')
+
+prepare() {
+  install -vDm644 -t $pkgbase/build/scap_files \
+    kexec_arm64.scap \
+    kexec_x86.scap \
+    sample.scap \
+    scap_2013.scap
+}
+
+build() {
+  cmake -B build -S $pkgbase \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DFALCOSECURITY_LIBS_VERSION="$pkgver" \
+    -DDRIVER_VERSION=$_driverver+driver \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_DRIVER=OFF \
+    -DUSE_BUNDLED_DEPS=OFF \
+    -DBUILD_LIBSCAP_EXAMPLES=OFF \
+    -DBUILD_LIBSINSP_EXAMPLES=OFF
+  cmake --build build
+}
+
+check() {
+  cmake --build build --target run-unit-test-libsinsp
+}
+
+_pick() {
+  local dest="$1"
+  shift
+  for obj in "$@"; do
+    mkdir -p "$dest/$(dirname "$obj")/"
+    mv -v -t "$dest/$(dirname "$obj")/" "$obj"
+  done
+}
+
+package_falcosecurity-libs() {
+  pkgdesc='libscap and libsinsp libraries to communicate with the scap kernel driver'
+  depends=(
+    'glibc'
+    'intel-tbb'
+    'jsoncpp'
+    'libelf'
+    'libgcc'
+    'libstdc++'
+    'protobuf'
+    're2'
+    'uthash' # header-only, required by installed headers
+    'zlib'
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" $pkgbase/{NOTICES,COPYING,LICENSE}
+
+  cd "$pkgdir"
+  _pick "$srcdir/scap-dkms" usr/src
+  # Remove empty dirs
+  rm -vr "$pkgdir/usr/include/falcosecurity/driver/configure"
+  rm -vr "$pkgdir/usr/include/falcosecurity/libscap/engine/gvisor/proto"
+  rm -vr "$pkgdir/usr/include/falcosecurity/libsinsp/sinsp_debug"
+}
+
+package_scap-dkms() {
+  pkgdesc="DKMS kernel module for sysdig"
+  depends=(
+    'dkms'
+    'falcosecurity-libs'
+  )
+  conflicts=('sysdig-dkms')
+  replaces=('sysdig-dkms')
+
+  mv "$srcdir/scap-dkms/"* "$pkgdir"
+  mv -v "$pkgdir/usr/src/scap-$_driverver+driver" "$pkgdir/usr/src/scap-$_driverver"
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" $pkgbase/{NOTICES,COPYING,LICENSE}
+}

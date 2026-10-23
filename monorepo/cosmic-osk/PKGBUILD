@@ -1,0 +1,46 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=cosmic-osk
+pkgver=1.10.0
+pkgrel=1
+pkgdesc='On-screen keyboard for the COSMIC desktop environment'
+arch=(x86_64)
+url=https://github.com/pop-os/cosmic-osk
+license=(GPL-3.0-only)
+groups=(cosmic)
+depends=(
+  libgcc
+  glibc
+  libxkbcommon
+  systemd-libs
+  wayland
+)
+makedepends=(
+  cargo
+  clang
+  git
+  just
+  lld
+)
+source=(
+  git+https://github.com/pop-os/cosmic-osk.git#tag=epoch-${pkgver}
+)
+b2sums=('6a75b9f9dc75e20de17586a652a2cdb410026da05ab57837dd0c577f44cd9fe958e0e858b151ae3017792d50a02fc6d62851a4dd1a7cd09a19d7058681686592')
+
+prepare() {
+  cd cosmic-osk
+  cargo fetch --locked
+}
+
+build() {
+  cd cosmic-osk
+  RUSTFLAGS+=" -C link-arg=-fuse-ld=lld"
+  just build-release --frozen
+}
+
+package() {
+  cd cosmic-osk
+  just rootdir="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

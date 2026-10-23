@@ -1,0 +1,20 @@
+pkgbase = opensearch-dashboards-anomaly-detection-plugin
+	pkgdesc = OpenSearch Dashboards Anomaly Detection Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://opensearch.org/docs/latest/monitoring-plugins/ad/index/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = python
+	makedepends = git
+	depends = opensearch-dashboards=3.9.0
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/anomaly-detection-dashboards-plugin.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = ccd4f4bac4168bd1bde53642d23a4cd0da61c9562b2fd6334071f53769a034d1
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-anomaly-detection-plugin

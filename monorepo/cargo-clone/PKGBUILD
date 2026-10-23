@@ -1,0 +1,44 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Funami
+
+pkgname=cargo-clone
+pkgver=1.2.4
+pkgrel=2
+pkgdesc="A cargo subcommand to fetch the source code of a Rust crate"
+arch=('x86_64')
+url="https://github.com/JanLikar/cargo-clone"
+license=('Apache-2.0' 'MIT')
+depends=('cargo' 'curl' 'glibc' 'libgcc' 'libgit2' 'libssh2' 'openssl' 'sqlite' 'zlib')
+checkdepends=('git')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('58e86bd3440fc103572f6d8ff20ff1f99cf1e676cddb29975f204a9cb03f5b14')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export LIBSSH2_SYS_USE_PKG_CONFIG=1
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export LIBSSH2_SYS_USE_PKG_CONFIG=1
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  depends+=('libcrypto.so' 'libcurl.so' 'libssh2.so' 'libssl.so' 'libsqlite3.so')
+  install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

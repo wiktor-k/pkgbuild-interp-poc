@@ -1,0 +1,38 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=4ti2
+pkgver=1.6.15
+pkgrel=1
+pkgdesc='A software package for algebraic, geometric and combinatorial problems on linear spaces'
+arch=(x86_64)
+url='https://4ti2.github.io/'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         glpk
+         gmp
+         libgcc
+         libstdc++
+         sh)
+makedepends=(git)
+source=(git+https://github.com/4ti2/4ti2#tag=Release_${pkgver//./_})
+sha256sums=('473b740bcb6fbb63d231cbef6f30c28cefb11c38d3b317ee98610996c3b2f868')
+
+prepare() {
+  cd $pkgname
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-shared \
+    --disable-static
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool # Fix overlinking
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

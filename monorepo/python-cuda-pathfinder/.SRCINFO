@@ -1,0 +1,22 @@
+pkgbase = python-cuda-pathfinder
+	pkgdesc = Utilities for locating CUDA components
+	pkgver = 1.8.3
+	pkgrel = 1
+	epoch = 1
+	url = https://nvidia.github.io/cuda-python/cuda-pathfinder/latest/index.html
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	makedepends = cuda
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	depends = python
+	source = python-cuda::git+https://github.com/NVIDIA/cuda-python#tag=cuda-pathfinder-v1.8.3
+	b2sums = 2178f6e2ccfc3d2d142c9223250d210347c9d1982b9c538f285f4a24337ff544186092f54e4744ad75b97ff07693679647ce94154f548b93d86a579f40b28eee
+
+pkgname = python-cuda-pathfinder

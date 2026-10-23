@@ -1,0 +1,23 @@
+pkgbase = python-sparsediffpy
+	pkgdesc = Python bindings for SparseDiffEngine
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/SparseDifferentiation/SparseDiffPy
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-scikit-build-core
+	depends = cblas
+	depends = glibc
+	depends = python
+	depends = python-numpy
+	source = git+https://github.com/SparseDifferentiation/SparseDiffPy#tag=v0.8.0
+	source = git+https://github.com/SparseDifferentiation/SparseDiffEngine
+	source = git+https://github.com/SparseDifferentiation/sparsediff_linalg
+	sha256sums = 10040bd83a469c34c2f4321ea10cfe7bd1e3d3e89b62d96ccdd9fb0f3aa20410
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = python-sparsediffpy

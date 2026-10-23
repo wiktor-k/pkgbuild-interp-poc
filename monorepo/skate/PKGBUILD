@@ -1,0 +1,92 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Christian Muehlhaeuser <muesli at gmail dot com>
+
+pkgname=skate
+pkgver=1.1.0
+pkgrel=1
+pkgdesc='A personal key value store'
+arch=('x86_64')
+url='https://github.com/charmbracelet/skate'
+license=('MIT')
+depends=('glibc')
+makedepends=('git' 'go')
+options=('!lto')
+source=("git+$url.git#tag=v$pkgver")
+sha512sums=('b4e66a87607c65e1dc739c2975ddb9344daf69dc39198bc0ba64d4e719f885cb25deef23294e5b09895a5fef2f803d88997dfbdf2fc5c7119f0526c901050b57')
+b2sums=('9270ef2ea1cbcb9ce78c8e325eb2d1e71d9ac98813dc022462c961ee0d5fb18bdb32759aae329887038f96f32d79af1673435dea6a84787865d66040164e3838')
+
+prepare() {
+  cd skate
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd skate
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.Version=$pkgver \
+    -X main.CommitSHA=$(git rev-parse HEAD)" \
+    -o build \
+    .
+
+  # generate man page
+  ./build/skate man > build/skate.1
+
+  # ensure reproducibility of man page
+  # i'm not 100% sure where the man sub-command gets the date from, i assume
+  # it uses $TODAYS_DATE, so this should make the man page reproducible
+  local _commit_date=$(git show --no-patch --format=%cd --date=format:%Y-%m-%d)
+
+  sed \
+    -i build/skate.1 \
+    -e "s/\"[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}\"/\"$_commit_date\"/"
+
+  # generate shell completion
+  for shell in bash fish zsh; do
+    ./build/skate completion "$shell" > "build/$shell.completion"
+  done
+}
+
+check() {
+  cd skate
+
+  go test -v ./...
+}
+
+package() {
+  cd skate
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/skate
+
+  # shell completion
+  install -vDm644 build/bash.completion "$pkgdir/usr/share/bash-completion/completions/skate"
+  install -vDm644 build/fish.completion "$pkgdir/usr/share/fish/vendor_completions.d/skate.fish"
+  install -vDm644 build/zsh.completion "$pkgdir/usr/share/zsh/site-functions/_skate"
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" build/skate.1
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

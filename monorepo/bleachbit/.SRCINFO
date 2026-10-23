@@ -1,0 +1,22 @@
+pkgbase = bleachbit
+	pkgdesc = Deletes unneeded files to free disk space and maintain privacy
+	pkgver = 6.0.6
+	pkgrel = 1
+	url = https://www.bleachbit.org/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = glib2
+	depends = gtk3
+	depends = pango
+	depends = python
+	depends = python-chardet
+	depends = python-gobject
+	depends = python-psutil
+	depends = python-requests
+	depends = python-urllib3
+	source = git+https://github.com/bleachbit/bleachbit.git#tag=v6.0.6?signed
+	validpgpkeys = A9E582E4054A159315EDC943D6D447B02B4D4C9D
+	sha256sums = 07739d7035ad89ff83231faa313a726bf592ae33b1f57fb49a193ad0d27cbd7d
+
+pkgname = bleachbit

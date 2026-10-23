@@ -1,0 +1,46 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Jose Valecillos <valecillosjg (at) gmail (dot) com>
+# Contributor: Olivier Ramonat <olivier at ramonat dot fr>
+pkgname=gource
+pkgver=0.56
+pkgrel=4
+pkgdesc="software version control visualization"
+license=(GPL-3.0-or-later)
+arch=(x86_64)
+url=https://gource.io/
+depends=(
+  'boost-libs'
+  'freetype2'
+  'libstdc++'
+  'libgcc'
+  'glew'
+  'glibc'
+  'glu'
+  'libglvnd'
+  'libpng'
+  'pcre2'
+  'sdl2'
+  'sdl2_image'
+)
+makedepends=('boost' 'glm' 'mesa')
+source=(https://github.com/acaudwell/Gource/releases/download/gource-${pkgver}/gource-${pkgver}.tar.gz)
+sha512sums=('31f8fe4790d18ee985f4a5173b13b2ff16ba39916df6e79e3df7f066ae31d1ed0ab381e17cf18f0374abdccee5cb30810dd2ec80e308e2a2afa011ed5f5d309f')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+}
+# vim: ts=2:sw=2 et:

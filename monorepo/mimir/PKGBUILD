@@ -1,0 +1,75 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=mimir
+pkgver=3.2.2
+pkgrel=1
+pkgdesc='A scalable long-term storage for Prometheus'
+arch=(x86_64)
+url='https://grafana.com/oss/mimir/'
+license=(AGPL-3.0-only)
+depends=(glibc)
+makedepends=(git go)
+backup=(etc/mimir.yaml)
+options=(!lto)
+source=(
+  "$pkgname::git+https://github.com/grafana/mimir.git#tag=mimir-$pkgver"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+  config.yaml
+)
+sha512sums=('afb7064acd0eb7cfc9b2eb0a355a831bc4bd1f4526f38a231cfec87106c286b17f5038ddf45ea9357e8265e8e694acc8745263d1be785b2dcd177e70f686a1d7'
+            'fd6694cab7a9b6a6321e2b9b8e354748f9f01192abfd8503cd0dbb8fa795496cf09273ded41aed9c74d0b3ead3d950829c20042149e5efd6a2dfbc81f2b31e51'
+            'ab9f134794683a8c8fcfd22e3c5269bcf7f9f9f192c08055340132c0df32c37f7e15454c0f7ec3b66be0ebc15cdca456983e6a366da808bdfebd6adf980a2ee9'
+            'db9cd21527bbd2555ef76b635aee46be043b547c96dabdb298cc00036984d419d810206f7cf2dbc0acda3a4c5b0f071f1b353c3da80b56ee414a60ded77988a9'
+            '35d3b252273f43eb992c51dc8222d8220526e53da816e6f8a07580de7a50d756b056559f262bcd803c8f19920bc839ebb7abb1430f342e97605dbacbe8dc6a94')
+b2sums=('1d07ff5a332e66f49d0c4c93083b83fe730c1289f73e9a087f7491f1e2331fa9c1888c8e647d974249f2fcaf6915a2c573218182385978994396325d88026b13'
+        'b1220c02c9cebbfbc65869a01dac92438ab87df557c67c27489f005b695303591c729a2c172a5e5254bd03276ac4c3d146498b18b6984595db9dc0ebc2a5e814'
+        'd883a71514089e153b1e0911f69c514f70f18f33b00776466dd762e906ac8de170890efaf00124419052b087f780f81206bc94559342022950e9abeb1e6f8f5d'
+        'edc4e9e301e889dfa47528e411459a970f97feb9ca07a3fcc33b60c16adb988109543bc746689e82ac688caca0c60b75abe7d0cc80662d22de665712ff650bb8'
+        '573a19bda1baa73260364bf31bddcc5cd0fc6dc98f69d8ff8a549187cf7f47ecddb35e7141dd638acdb916579e408e6c9f860889847bbe130ccc7383fc4ba899')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+}
+
+build() {
+  cd "$pkgname"
+
+  # verify dependencies
+  go mod verify
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X github.com/grafana/mimir/pkg/util/version.Branch=main \
+    -X github.com/grafana/mimir/pkg/util/version.Revision=$(git rev-parse --short HEAD) \
+    -X github.com/grafana/mimir/pkg/util/version.Version=$pkgver" \
+    -o build \
+    ./cmd/...
+}
+
+package() {
+  # systemd integration
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  install -vDm640 config.yaml "$pkgdir/etc/$pkgname.yaml"
+
+  cd "$pkgname"
+
+  install -vDm755 -t "$pkgdir/usr/bin" build/*
+}

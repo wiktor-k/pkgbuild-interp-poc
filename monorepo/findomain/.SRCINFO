@@ -1,0 +1,17 @@
+pkgbase = findomain
+	pkgdesc = The fastest and cross-platform subdomain enumerator, do not waste your time
+	pkgver = 10.0.1
+	pkgrel = 2
+	url = https://github.com/Findomain/Findomain
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	optdepends = postgresql: for subdomain monitoring
+	options = !lto
+	source = https://github.com/Findomain/Findomain/archive/10.0.1/findomain-10.0.1.tar.gz
+	b2sums = 0ca6e4307a8a0f1be44757d7fefa4cc664d84de547618518822b0593a6291655cc7609924e2d9993853ba5f23a1560627307a25ed7a1e891e83ad5285662339e
+
+pkgname = findomain

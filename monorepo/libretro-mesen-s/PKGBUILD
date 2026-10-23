@@ -1,0 +1,27 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-mesen-s
+pkgver=20241218.084431.g1768b4fc83fa
+pkgrel=1
+pkgdesc='Super Nintendo Entertainment System core'
+arch=(x86_64)
+url=https://github.com/SourMesen/Mesen-S
+license=(GPL-3.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libretro-core-info
+  libstdc++
+)
+makedepends=(git)
+source=(git+https://github.com/SourMesen/Mesen-S.git#commit=${pkgver##*.g})
+b2sums=('36726eea113821dc31914176db6e850308fec62b567cc9870c6f039019b15c802e4495a340870b3aae95858566d5861d77c0eb7cff6cc4f39a42d5290ce63942')
+
+build() {
+  make -C Mesen-S/Libretro
+}
+
+package() {
+  install -Dm 644 Mesen-S/Libretro/mesen-s_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}

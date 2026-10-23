@@ -1,0 +1,101 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_name=ethon
+pkgname=ruby-${_name}
+pkgver=0.18.0
+pkgrel=1
+pkgdesc="Libcurl wrapper"
+arch=('any')
+url="https://github.com/typhoeus/ethon"
+license=('MIT')
+depends=('ruby' 'ruby-ffi' 'curl')
+makedepends=('git' 'ruby-rdoc')
+checkdepends=(
+  'ruby-rspec'
+  'ruby-bundler'
+  'ruby-rake'
+  'ruby-sinatra'
+  'ruby-mime-types'
+  'ruby-webrick'
+  'ruby-mustermann'
+  'ruby-rack'
+  'ruby-rackup'
+  'ruby-benchmark-ips'
+  'ruby-patron'
+)
+options=(!emptydirs)
+noextract=(${_name}-${pkgver}.gem)
+source=(
+  ${pkgname}::git+$url.git#tag=v$pkgver
+)
+sha256sums=('80d572958f769d53d26cfa2fc5aeada1710132b15419fbc20d24505fa4778bef')
+
+prepare() {
+  cd "${pkgname}"
+  sed --in-place --regexp-extended \
+    -e 's|~>|>=|g' \
+    -e '/curb/d' \
+    Gemfile
+}
+
+build() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_name}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_name}-${pkgver}.gem"
+
+  rm "${_name}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_name}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_name}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install/${_gemdir}" rake spec
+}
+
+package() {
+  cd "${pkgname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

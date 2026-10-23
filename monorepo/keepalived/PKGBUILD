@@ -1,0 +1,58 @@
+# Maintainer: Sébastien Luttringer
+# Contributor: Andrea Zucchelli <zukka77@gmail.com>
+
+pkgname=keepalived
+pkgver=2.4.3
+pkgrel=1
+pkgdesc='Failover and monitoring daemon for LVS clusters'
+arch=('x86_64')
+url='https://www.keepalived.org/'
+license=('GPL-2.0-or-later')
+backup=('etc/keepalived/keepalived.conf'
+        'etc/sysconfig/keepalived')
+depends=('glibc' 'kmod' 'libmnl' 'libnftnl' 'libnl' 'openssl' 'file' 'iptables' 'systemd-libs')
+optdepends=('ipset: ipset support')
+makedepends=('git' 'ipset')
+options=('!emptydirs')
+source=("git+https://github.com/acassen/keepalived.git#tag=v${pkgver}")
+sha256sums=('72977cb751ff84f3a914ad3cef6c2081c3eee89a724181069fb867bbd13a1e27')
+
+prepare() {
+  cd "${pkgname}"
+
+  autoreconf -fi
+}
+
+build() {
+  # trick broken ./configure systemctl test
+  printf "#!/bin/sh\necho -.mount\n" > systemctl
+  chmod +x systemctl
+  PATH=$PWD:$PATH
+
+  cd "${pkgname}"
+
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --sbindir=/usr/bin \
+    --localstatedir=/var \
+    --runstatedir=/run \
+    --enable-bfd \
+    --enable-json
+  make
+}
+
+package() {
+  cd "${pkgname}"
+
+  make DESTDIR="${pkgdir}" install
+
+  # move conf file to correct name
+  mv "${pkgdir}"/etc/keepalived/keepalived.conf{.sample,}
+
+  # move examples to /usr/share
+  install -d -m 0755 "${pkgdir}/usr/share/${pkgname}"
+  mv "${pkgdir}/etc/keepalived/samples" "${pkgdir}/usr/share/$pkgname/samples"
+}
+
+# vim:set ts=2 sw=2 et:

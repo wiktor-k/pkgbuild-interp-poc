@@ -1,0 +1,23 @@
+pkgbase = python-pyproj
+	pkgdesc = Python interfaces to PROJ.4 library
+	pkgver = 3.8.0
+	pkgrel = 1
+	url = https://github.com/pyproj4/pyproj
+	arch = x86_64
+	license = custom
+	checkdepends = python-pytest
+	checkdepends = python-numpy
+	checkdepends = python-pandas
+	checkdepends = python-shapely
+	checkdepends = python-xarray
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = cython
+	depends = proj
+	depends = python-certifi
+	source = https://github.com/pyproj4/pyproj/archive/3.8.0/python-pyproj-3.8.0.tar.gz
+	sha256sums = e54d74babf5fed2d9a693670d0b782cd8c76080e509b82256fb5c97f80af5490
+
+pkgname = python-pyproj

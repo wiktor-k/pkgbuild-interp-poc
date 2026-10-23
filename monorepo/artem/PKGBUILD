@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: FineFindus <Finefindusgh@gmail.com>
+
+pkgname=artem
+pkgver=3.0.0
+pkgrel=4
+pkgdesc='Convert images from multiple formats (jpg, png, webp, etc…) to ASCII art, written in Rust'
+arch=(x86_64)
+url='https://github.com/finefindus/artem'
+license=(MPL-2.0)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  rust
+)
+options=(!lto)
+source=("git+https://github.com/FineFindus/artem.git#tag=v$pkgver")
+b2sums=(3072fe099570878becc0e3364195aaebb2490099cfaee133c94a89096ea0070e5e385ffea154f7a52fe49b691bc2f38cb773658681f1555a081cbe3637fc3023)
+
+
+prepare() {
+  cd $pkgname
+
+  # apply color to svg files
+  git cherry-pick -n 66edbdbd161bf57e153d214db361f920508c6fe8
+
+  # rotate images based on EXIF data
+  git cherry-pick -n 679c0c19fc42a889e24f81482837bf78e8e9dad0
+  git cherry-pick -n bd5146bb10fd38dd50f56770f43b49b1703228b7
+
+  CARGO_HOME="$srcdir/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  CARGO_HOME="$srcdir/cargo-home" \
+    CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    cargo build --frozen --release --all-features
+}
+
+package() {
+  cd $pkgname/target/release
+  install -Dm755 -t "$pkgdir/usr/bin/" artem
+  install -Dm644 -t "$pkgdir/usr/share/bash-completion/completions/" build/artem-*/out/artem.bash
+  install -Dm644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" build/artem-*/out/artem.fish
+  install -Dm644 -t "$pkgdir/usr/share/zsh/site-functions" build/artem-*/out/_artem
+  install -Dm644 -t "$pkgdir/usr/share/man/man1/" build/artem-*/out/artem.1
+}

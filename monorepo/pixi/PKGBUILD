@@ -1,0 +1,83 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=pixi
+pkgver=0.83.0
+pkgrel=1
+pkgdesc="A package management and workflow tool"
+arch=('x86_64')
+url="https://github.com/prefix-dev/pixi"
+license=(BSD-3-Clause)
+depends=(glibc # libc.so libm.so ld-linux-x86-64.so
+         libgcc libgcc_s.so
+         openssl
+         bzip2 libbz2.so)
+makedepends=(cargo)
+checkdepends=(git
+              sdl2)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('6bc374e6634721e8dd1caff3f2ef2769487c1100d3f0ab92f1d7bd2a58127b0ea2e6be5ee6d3bea4e5d50ee20de2f13e0b80f2d11354e56881968f4b406d9240')
+
+_srcenv() {
+  cd "$pkgname-$pkgver"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -ffat-lto-objects'
+  export OPENSSL_NO_VENDOR=true
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+  mkdir -p completions
+}
+
+build() {
+  _srcenv
+  cargo build --frozen --release
+  local _completion="target/release/$pkgname completion"
+  $_completion --shell bash >"completions/$pkgbase"
+  $_completion --shell fish >"completions/$pkgbase.fish"
+  $_completion --shell zsh >"completions/_$pkgbase"
+}
+
+check() {
+  _srcenv
+  # Most of the skipped tests are here because the whole suite is flakey and sometimes
+  # passes, other time it runs into some sort of race conditions.
+  local skipped=(
+    add_tests
+    install_filter_tests::install_filter_skip_with_deps_hard_exclusion
+    install_tests::install_all_skips_unsupported_environments
+    install_tests::install_conda_meta_history
+    install_tests::quick_validate_refreshes_resolved_platform
+    update_tests
+    virtual_package_detector_host_review_tests
+    virtual_package_detector_tests
+    # does stuff with temp dirs and locks our chroots don't like
+    source_package_tests::locked_accepts_branch_build_source_after_upstream_moves
+    source_package_tests::test_abbreviated_git_rev_build_source_keeps_lock_satisfied
+    source_package_tests::test_git_path_lock_behaviour
+    # https://github.com/prefix-dev/pixi/issues/5383
+    tests::test_env_vars_are_set
+    tests::test_rust_is_in_build_requirements
+    tests::test_rust_is_not_added_if_already_present
+  )
+  cargo test --frozen --release -- ${skipped[@]/#/--skip }
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+  install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -Dm0664 -t "$pkgdir/usr/share/bash-completion/completions/" "completions/$pkgname"
+  install -Dm0664 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "completions/$pkgname.fish"
+  install -Dm0664 -t "$pkgdir/usr/share/zsh/site-functions/" "completions/_$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,32 @@
+pkgbase = amd-debug-tools
+	pkgdesc = A collection of Python-based tools for debugging AMD platforms, particularly Zen-based systems.
+	pkgver = 0.2.22
+	pkgrel = 1
+	url = https://git.kernel.org/pub/scm/linux/kernel/git/superm1/amd-debug-tools.git
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-setuptools-git-versioning
+	makedepends = python-wheel
+	depends = acpica
+	depends = fwupd
+	depends = python
+	depends = python-cysystemd
+	depends = python-dbus
+	depends = python-gobject
+	depends = python-jinja
+	depends = python-matplotlib
+	depends = python-numpy
+	depends = python-packaging
+	depends = python-pandas
+	depends = python-pyudev
+	depends = python-seaborn
+	depends = python-setuptools
+	depends = python-tabulate
+	source = git+https://git.kernel.org/pub/scm/linux/kernel/git/superm1/amd-debug-tools.git#tag=0.2.22
+	sha256sums = 638fdab9b33dc6b0e3c5994a9ed826d542db07c69e7fdafc64eb4b1adfb22c3e
+
+pkgname = amd-debug-tools

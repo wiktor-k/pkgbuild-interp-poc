@@ -1,0 +1,18 @@
+pkgbase = pgvector
+	pkgdesc = Open-source vector similarity search for Postgres
+	pkgver = 0.8.7
+	pkgrel = 1
+	url = https://github.com/pgvector/pgvector
+	arch = x86_64
+	license = PostgreSQL
+	checkdepends = perl
+	checkdepends = perl-ipc-run
+	checkdepends = pifpaf
+	makedepends = clang
+	makedepends = git
+	makedepends = llvm
+	depends = postgresql
+	source = git+https://github.com/pgvector/pgvector.git#tag=v0.8.7
+	sha512sums = 9d94c69ea619bf6a612b87bf8a0116b76005bc43fe551acdf223e5c99a2b84af9bea9fcde4250b3dfba1c792746448980e994b35d80ab988985601697e76d83e
+
+pkgname = pgvector

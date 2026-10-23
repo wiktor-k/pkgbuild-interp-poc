@@ -1,0 +1,26 @@
+pkgbase = deepin-application-manager
+	pkgdesc = App manager of Deepin Desktop Environment
+	pkgver = 1.2.63
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/dde-application-manager
+	arch = x86_64
+	groups = deepin
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = gtest
+	makedepends = treeland-protocols
+	depends = dtk6core
+	depends = qt6-base
+	depends = qt6-wayland
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = systemd-libs
+	depends = deepin-daemon
+	depends = libxkbcommon
+	source = git+https://github.com/linuxdeepin/dde-application-manager.git#tag=1.2.63
+	sha512sums = d0cd3eb571d8a127c7d6d71a4ccd59d03ad5a0aac765d496dea2692fb91a8cf978121138831e69bec7abeb6b8a86ee5c1d745525eb2ab702f740fab2b2de3f8a
+
+pkgname = deepin-application-manager

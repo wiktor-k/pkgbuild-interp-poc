@@ -1,0 +1,25 @@
+pkgbase = authoscope
+	pkgdesc = Scriptable network authentication cracker
+	pkgver = 0.8.1
+	pkgrel = 3
+	url = https://github.com/kpcyrd/authoscope
+	install = authoscope.install
+	arch = x86_64
+	license = GPL3
+	makedepends = cargo
+	depends = openssl
+	depends = lua52
+	depends = libcap
+	depends = zlib
+	provides = badtouch
+	conflicts = badtouch
+	replaces = badtouch
+	source = https://github.com/kpcyrd/authoscope/archive/v0.8.1/authoscope-0.8.1.tar.gz
+	source = https://github.com/kpcyrd/authoscope/releases/download/v0.8.1/authoscope-0.8.1.tar.gz.asc
+	validpgpkeys = 64B13F7117D6E07D661BBCE0FE763A64F5E54FD6
+	sha512sums = 98c73346584860badf9fa18f98900419d0cf8b391c651cf864c325ab302281f8a3186038acc4e7bc8d2bb35dc948f2f524120a13aff7883b7938d9a96de08b08
+	sha512sums = SKIP
+	b2sums = 9a22267b8d3620a0a5d0867e9f6214673730fdd405c2fb4b3562a9fbea9b571a9a8c02a3be5074b72a5dfeaf7d8d2b3a42877c6b9a24d531e7c389ad56e83688
+	b2sums = SKIP
+
+pkgname = authoscope

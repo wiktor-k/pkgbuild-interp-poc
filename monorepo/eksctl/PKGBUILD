@@ -1,0 +1,68 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: David Birks <david@birks.dev>
+# Contributor: Mike Williamson <mike at korora dot ca>
+
+pkgname=eksctl
+pkgver=0.231.0
+pkgrel=1
+pkgdesc='Command line tool for creating clusters on Amazon EKS'
+url='https://github.com/eksctl-io/eksctl'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  'glibc'
+  'kubectl'
+)
+makedepends=(
+  'git'
+  'go'
+)
+options=('!lto')
+source=("git+${url}.git#tag=v${pkgver}")
+b2sums=('de49d458896c96c3a9500450a9bbb2b6332b6cff6c91fc70a3b75b93098d2df2fce662905e3e6a58e332c0579175c5d8d4934d5a6ec52f939945f412f319c07d')
+
+prepare() {
+  cd ${pkgname}
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd ${pkgname}
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="${srcdir}"
+  local ld_flags=" \
+    -X github.com/eksctl-io/eksctl/pkg/version.gitTag=${pkgver} \
+    -compressdwarf=false \
+    -linkmode=external \
+  "
+  go build -v -ldflags "${ld_flags}" ./cmd/eksctl
+}
+
+check() {
+  cd ${pkgname}
+  # Skipping pkg/iam/oidc - test hangs due to TLS server issues
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/weaveworks/eksctl/pkg/iam/oidc
+  )
+  # shellcheck disable=SC2086
+  go test -v ${unit_tests}
+}
+
+package() {
+  cd ${pkgname}
+  install -vDm 755 -t "$pkgdir/usr/bin" ${pkgname}
+  install -vDm 644 -t "${pkgdir}/usr/share/doc/${pkgname}" README.md
+
+  ./${pkgname} completion bash | install -vDm 644 /dev/stdin \
+    "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  ./${pkgname} completion zsh | install -vDm 644 /dev/stdin \
+    "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  ./${pkgname} completion fish | install -vDm 644 /dev/stdin \
+    "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+}

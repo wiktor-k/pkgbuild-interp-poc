@@ -1,0 +1,17 @@
+pkgbase = angle-grinder
+	pkgdesc = Slice and dice logs on the command line
+	pkgver = 0.19.6
+	pkgrel = 3
+	url = https://github.com/rcoh/angle-grinder
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = jemalloc
+	source = angle-grinder::git+https://github.com/rcoh/angle-grinder.git#tag=v0.19.6
+	sha512sums = 8a2be3b63fc502b27ec4a454e10ccfd6f4255e40b1b90b44539b1e0be4973cd9e3db934320809ca1c1833360ec3ef23d2cbd9667a0c7a8e4428b751ffdc0c24a
+	b2sums = 6cc2a58ee9b1fbdb65d8ab864dc4e825beefa3dfdb292ad6a00b74a455464dd6cd6262146ba7ea5ce26a036877b87e984a55cc50e76c12dd775ca6f25c3ec490
+
+pkgname = angle-grinder

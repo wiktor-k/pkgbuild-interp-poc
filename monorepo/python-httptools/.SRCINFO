@@ -1,0 +1,19 @@
+pkgbase = python-httptools
+	pkgdesc = Fast HTTP parser
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/MagicStack/httptools
+	arch = x86_64
+	license = MIT
+	makedepends = cython
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = llhttp
+	source = git+https://github.com/MagicStack/httptools#tag=v0.8.0
+	source = git+https://github.com/nodejs/http-parser.git
+	b2sums = 7d90b76b7482c48ccd0e29e7ea11eb59956bb0b7dc4e1b9185f21ac32954ad1d5563e175ab897c5a2dc13b901426a0cd3bf41a20b52101b0cf491b704c3aeeea
+	b2sums = SKIP
+
+pkgname = python-httptools

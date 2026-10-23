@@ -1,0 +1,22 @@
+pkgbase = vapoursynth-plugin-bestsource
+	pkgdesc = BestSource plugin for VapourSynth
+	pkgver = R22
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/vapoursynth/bestsource
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	depends = libgcc
+	depends = libstdc++
+	depends = ffmpeg
+	depends = glibc
+	depends = vapoursynth
+	depends = xxhash
+	source = git+https://github.com/vapoursynth/bestsource.git#tag=R22
+	b2sums = e865878e5aac40385c3773ebe62f79ec367a5eeb3f801a0c03daebe1c3a519a135ac2ac88e1d8f59bbba40fdf46dd467bed4d3efd3712e115d1e8c8e5fea93f4
+
+pkgname = vapoursynth-plugin-bestsource

@@ -1,0 +1,60 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Eric Biggers <ebiggers3 at gmail dot com>
+
+pkgname=fscrypt
+pkgver=0.3.7
+pkgrel=1
+pkgdesc='A tool for managing Linux filesystem encryption'
+arch=('x86_64')
+url='https://github.com/google/fscrypt'
+license=('Apache-2.0')
+depends=(
+  'glibc'
+  'pam'
+)
+makedepends=('go')
+options=('!lto')
+source=(
+  "https://github.com/google/fscrypt/archive/v$pkgver/fscrypt-$pkgver.tar.gz"
+  "$pkgname.pam"
+)
+b2sums=('a0b045150ee6f144b5c4209f399df045d774157fe38714d58dab2398d3849d03d833f2c7510af4ed22442f9a78fe063ad15b220445de3370041ffee9dac34328'
+        'bdfb7cf185a0070f82bfa8f4ee05fc2fffba6c3b8327ff07b91a99d31bf61024e35f22d296c60cf56971c51c9c1cfc07126830c93ee39c7d5a485676611cf0fe')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="$srcdir"
+
+  local ld_flags=" \
+    -compressdwarf=false \
+    -linkmode=external \
+  "
+  go build -v -ldflags "$ld_flags" ./cmd/fscrypt
+  go build -v -ldflags "$ld_flags" -buildmode=c-shared -o pam_fscrypt.so ./pam_fscrypt
+}
+
+check() {
+  cd $pkgname-$pkgver
+  go test -v ./...
+}
+
+package() {
+  install -vDm644 fscrypt.pam "$pkgdir/etc/pam.d/fscrypt"
+
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" fscrypt
+  install -vDm755 -t "$pkgdir/usr/lib/security" pam_fscrypt.so
+  install -vDm644 cmd/fscrypt/fscrypt_bash_completion \
+    "$pkgdir/usr/share/bash-completion/completions/fscrypt"
+}

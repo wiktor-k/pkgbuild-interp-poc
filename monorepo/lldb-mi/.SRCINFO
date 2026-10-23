@@ -1,0 +1,18 @@
+pkgbase = lldb-mi
+	pkgdesc = LDB's machine interface driver
+	pkgver = 0.0.1
+	pkgrel = 8
+	url = https://lldb.llvm.org/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = llvm
+	depends = glibc
+	depends = libstdc++
+	depends = lldb
+	depends = llvm-libs
+	source = git+https://github.com/lldb-tools/lldb-mi#tag=0.0.1
+	sha256sums = 84c1b790bd5ee55ec65d86f067d7ce8a898f8bee60a75bf3ab901d3653bd024b
+
+pkgname = lldb-mi

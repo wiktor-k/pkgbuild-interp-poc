@@ -1,0 +1,29 @@
+pkgbase = python-octaviaclient
+	pkgdesc = Octavia client for OpenStack Load Balancing
+	pkgver = 3.15.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-octaviaclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-hacking
+	checkdepends = python-requests-mock
+	checkdepends = python-oslotest
+	checkdepends = python-stestr
+	checkdepends = python-testscenarios
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-cliff
+	depends = python-keystoneauth1
+	depends = python-openstackclient
+	depends = python-osc-lib
+	depends = python-oslo-serialization
+	depends = python-oslo-utils
+	depends = python-pbr
+	depends = python-requests
+	source = git+https://github.com/openstack/python-octaviaclient.git#tag=3.15.0
+	sha512sums = 2b125237424bcaf2dd34714fe4d4ab28d746255a6019f8f925b5e7fc27b1363d3f93cf89f599fddfd45f4ef284231f655076743ab9b3f1b595cdc8df1388b397
+
+pkgname = python-octaviaclient

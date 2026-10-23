@@ -1,0 +1,20 @@
+pkgbase = python-pyclip
+	pkgdesc = Cross-platform clipboard utilities supporting both binary and text data
+	pkgver = 0.7.0
+	pkgrel = 9
+	url = https://pypi.org/project/pyclip/
+	arch = any
+	license = Apache-2.0
+	checkdepends = xorg-server-xvfb
+	checkdepends = xclip
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = python
+	optdepends = xclip: Support for X11
+	optdepends = wl-clipboard: Support for Wayland
+	source = pyclip-0.7.0.tar.gz::https://github.com/spyoungtech/pyclip/archive/v0.7.0.tar.gz
+	sha256sums = 6fd5e0eaa40ff349959d1cee2872eee90ae32065cc5df9714b1066981535acde
+
+pkgname = python-pyclip

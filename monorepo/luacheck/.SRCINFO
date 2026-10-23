@@ -1,0 +1,16 @@
+pkgbase = luacheck
+	pkgdesc = A tool for linting and static analysis of Lua code
+	pkgver = 1.2.0
+	pkgrel = 4
+	url = https://github.com/lunarmodules/luacheck
+	arch = any
+	license = MIT
+	makedepends = luarocks
+	depends = lua54
+	depends = lua54-argparse
+	depends = lua54-filesystem
+	optdepends = lua-lanes: for parallel checking
+	source = https://github.com/lunarmodules/luacheck/archive/v1.2.0/luacheck-1.2.0.tar.gz
+	sha256sums = 8efe62a7da4fdb32c0c22ec1f7c9306cbc397d7d40493c29988221a059636e25
+
+pkgname = luacheck

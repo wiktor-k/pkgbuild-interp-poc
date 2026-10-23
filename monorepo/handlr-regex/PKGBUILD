@@ -1,0 +1,53 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: ftilde <ftilde at tamepointer dot tld for germany>
+
+pkgname=handlr-regex
+_pkgname=handlr
+pkgver=0.13.0
+pkgrel=1
+pkgdesc="Powerful alternative to xdg-utils written in Rust"
+arch=('x86_64')
+url="https://github.com/Anomalocaridid/handlr-regex"
+license=('MIT')
+provides=('handlr')
+replaces=('handlr')
+conflicts=('handlr')
+depends=('shared-mime-info')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('e6188712ca11dac71e854131b1f14639974128d1a8f6b8c29d73762cdaf170277dbdb8825e00e458a9ab67c1f6c7630484d1f2a0ff1439de0beefb0291f3d706')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+  mkdir -p completions
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  COMPLETE=bash target/release/$_pkgname >"completions/$_pkgname"
+  COMPLETE=fish target/release/$_pkgname >"completions/$_pkgname.fish"
+  COMPLETE=zsh target/release/$_pkgname >"completions/_$_pkgname"
+  echo "$PWD/target/release/$_pkgname|/usr/bin/$_pkgname"
+  for f in completions/*; do
+    sed -i "s|$PWD/target/release/$_pkgname|/usr/bin/$_pkgname|g" "$f"
+  done
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$_pkgname" -t "$pkgdir/usr/share/bash-completion/completions"
+  install -Dm 644 "completions/$_pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm 644 "completions/_$_pkgname" -t "$pkgdir/usr/share/zsh/site-functions"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,33 @@
+pkgbase = gnome-nettool
+	pkgdesc = Graphical interface for various networking tools
+	pkgver = 42.0
+	pkgrel = 4
+	url = https://gitlab.gnome.org/GNOME/gnome-nettool
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = bind
+	makedepends = git
+	makedepends = meson
+	makedepends = net-tools
+	makedepends = nmap
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = iputils
+	depends = libgtop
+	depends = pango
+	depends = whois
+	optdepends = bind: DNS lookup
+	optdepends = net-tools: Network statistics
+	optdepends = nmap: Port scanning
+	source = git+https://gitlab.gnome.org/GNOME/gnome-nettool.git#tag=gnome-nettool-42-0
+	source = 0001-Fix-build-with-recent-Meson.patch
+	b2sums = 7ebe7ea4164df45e1d3316a1b43e27644d34b108f8b6f8395cdbc9a8c30a61c7e78d6264bd5d0f972f81c0116540637462692d3fbf2111d868689e7c16bc71b9
+	b2sums = ca105075b2f8ffd805d2dc5df515856319b6c3da3796c67ec03e1303923c660c909c75e413e26952a7e116bbc1872a3bf3ae76b117a5c9b5d15f28dd5f30f40d
+
+pkgname = gnome-nettool

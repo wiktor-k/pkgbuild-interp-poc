@@ -1,0 +1,69 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-klotski
+pkgver=3.38.2
+pkgrel=5
+pkgdesc="Slide blocks to solve the puzzle"
+url="https://wiki.gnome.org/Apps/Klotski"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgee
+  libgnome-games-support
+  librsvg
+)
+makedepends=(
+  git
+  gobject-introspection
+  meson
+  vala
+  yelp-tools
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-klotski.git#tag=$pkgver"
+  0001-Set-prgname-to-application-ID.patch
+  0002-Fix-setting-application-name.patch
+  0003-Don-t-create-window-in-startup-phase.patch
+)
+b2sums=('7a3be2584ea6399799d163b0effca5129a5a7bf773998f39a517f90d184fdb72476def3897fc71ae95b0266d12998ff7f340822c45145ab3c77fae5b388846f1'
+        '621449435ec417e17e2e280fdcf0892527016b032b6448f247e7e48232ab8ccb8a4063b38c1ac195967e5762c0d95bc393b049b51ba75d0b6fd4d754f7a5db85'
+        'd13c965dfa8d9db82382c571a50dec06ae3c999bfff634bbb8abfc2d8c749314b13d5d71f6ccb20073bb31c9ac737fe636fafd1fef70fcb57ec5322712f757e9'
+        'f35bd598de8e57ad1650f96caa9fa8ea1faa16c0bd608d4625d3f88dda4822d689684343c876b6a366d1bbf12ccb863df87b0e111b5a0fcf4801a472573d498b')
+
+prepare() {
+  cd $pkgname
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/gnome-klotski/-/merge_requests/20
+  git apply -3 ../0001-Set-prgname-to-application-ID.patch
+
+  # Fix setting application name
+  # https://gitlab.gnome.org/GNOME/gnome-klotski/-/merge_requests/21
+  git apply -3 ../0002-Fix-setting-application-name.patch
+
+  # Don't create window in startup phase
+  # https://gitlab.gnome.org/GNOME/gnome-klotski/-/merge_requests/22
+  git apply -3 ../0003-Don-t-create-window-in-startup-phase.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  DESTDIR="$pkgdir" meson install -C build
+}
+
+# vim:set sw=2 sts=-1 et:

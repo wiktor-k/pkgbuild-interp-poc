@@ -1,0 +1,20 @@
+pkgbase = swappy
+	pkgdesc = A Wayland native snapshot editing tool
+	pkgver = 1.8.0
+	pkgrel = 1
+	url = https://github.com/jtheoof/swappy
+	arch = x86_64
+	license = MIT
+	makedepends = meson
+	makedepends = scdoc
+	makedepends = git
+	depends = cairo
+	depends = gtk3
+	depends = pango
+	optdepends = wl-clipboard: copy to clipboard support
+	optdepends = otf-font-awesome: to draw the paint icons properly
+	source = git+https://github.com/jtheoof/swappy.git#tag=v1.8.0?signed
+	validpgpkeys = F44D05A50F6C9EB5C81BCF966A6B35DBE9442683
+	b2sums = 25534144ba1ab6c74e9dc9d349aa8ea9405958911ff4cadc24a81d67c2ff848c8e2673ad9f64cba31022b92270fa823616f4f5dbee1a9ecbb829b69be7efd573
+
+pkgname = swappy

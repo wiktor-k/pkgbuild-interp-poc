@@ -1,0 +1,60 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: Tyler Langlois <ty |at| tjll |dot| net>
+# Contributor: Tim Meusel <tim@bastelfreak.de>
+pkgname=consul-template
+pkgver=0.43.1
+pkgrel=1
+pkgdesc='Template rendering, notifier, and supervisor for HashiCorp Consul and Vault data'
+arch=('x86_64')
+url='https://github.com/hashicorp/consul-template'
+license=('MPL-2.0')
+backup=("etc/${pkgname}/${pkgname}.hcl")
+makedepends=('go' 'git')
+depends=('glibc')
+optdepends=('consul: interpolate values from a distributed key/value store'
+            'vault: reference secure secrets in template files')
+source=("git+${url}#tag=v${pkgver}"
+        "${pkgname}.service"
+        "${pkgname}.hcl")
+sha512sums=('91855b3bda0d5aee8ce90e1962b5dae38f8637f57ef6d6f967d120da61e7f74cd5338fef8e47d17e9985067d1846fb50336545c7d3581870de1e785a30185fed'
+            '227b5ed1afc291c9664666872a993f1325ba42edbaaf8b9c7d81e5d4d352a940ee3bf198d4ff4533e4c942070e175d1eed8e411dd79d52f82a9bf6123fdabdcf'
+            'c9d9f555c3c82c88878b797e54d0de85efd38fafeeb40d87683a715cd1cb2e45ca382a2a89e04be84647c1555e67afebf3ba3035435dcd627c153db96ec9f9e2')
+options=(!lto)
+
+prepare() {
+  cd "${pkgname}"
+
+  go mod download
+}
+
+build() {
+  cd "${pkgname}"
+
+  _commit="$(git rev-parse --short HEAD)"
+
+  go build -v \
+    -buildmode=pie \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -o consul-template-binary \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" \
+              -X \"github.com/hashicorp/consul-template/version.GitCommit=${_commit}\"" \
+    .
+}
+
+package() {
+  cd "${pkgname}"
+  install -Dm755 consul-template-binary "${pkgdir}/usr/bin/consul-template"
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  install -Dm644 "README.md" "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+  for f in {configuration,modes,observability,plugins,templating-language}.md; do
+    install -Dm644 "docs/${f}" "${pkgdir}/usr/share/doc/${pkgname}/${f}"
+  done
+  cp -r examples "${pkgdir}/usr/share/doc/${pkgname}"
+
+  install -Dm644 "${srcdir}/${pkgname}.hcl" "${pkgdir}/etc/${pkgname}/${pkgname}.hcl"
+  install -Dm644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+}

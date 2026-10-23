@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-sys-virt
+pkgver=12.7.0
+pkgrel=2
+pkgdesc="Represent and manage a libvirt hypervisor connection"
+arch=('x86_64')
+license=('GPL-2.0-or-later' 'Artistic-1.0-Perl')
+url="https://metacpan.org/release/Sys-Virt"
+depends=('libvirt' 'perl')
+makedepends=('perl-cpan-changes' 'perl-module-build' 'perl-xml-xpath' 'perl-test-pod'
+             'perl-test-pod-coverage')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/D/DA/DANBERR/Sys-Virt-v$pkgver.tar.gz")
+sha512sums=('647a3d129778e04d26e3f0015b7e4fecd9057ca970ab69bca73893131d0e3889e47c29f6bdfe548c0b88a61d7b0f0599d7b8c6cf4930acedef50b44897fb09e8')
+
+build() {
+  cd Sys-Virt-v$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Sys-Virt-v$pkgver
+  make test
+}
+
+package() {
+  cd Sys-Virt-v$pkgver
+  make DESTDIR="$pkgdir" install
+}

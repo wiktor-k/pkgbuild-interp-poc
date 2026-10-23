@@ -1,0 +1,26 @@
+pkgbase = vl-convert
+	pkgdesc = Convert Vega-Lite chart specifications to SVG, PNG, or Vega
+	pkgver = 1.9.0
+	pkgrel = 2
+	url = https://github.com/vega/vl-convert
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	makedepends = cargo
+	makedepends = maturin
+	makedepends = python-installer
+	source = vl-convert-1.9.0.tar.gz::https://github.com/vega/vl-convert/archive/refs/tags/v1.9.0.tar.gz
+	b2sums = ed0d4f42e19f3b7a24d96e45e679ec9febdf8b324aaae9653ff0293a0d4341e967a2556a6866f540051fdf94c6aed5e4e78408915dfbcaf521bac5ef6c0d08f6
+
+pkgname = vl-convert
+	depends = glibc
+	depends = libgcc
+	depends = zlib
+	depends = libz.so
+
+pkgname = python-vl-convert
+	depends = glibc
+	depends = libgcc
+	depends = python
+	depends = zlib
+	depends = libz.so

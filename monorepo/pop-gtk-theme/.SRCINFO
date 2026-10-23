@@ -1,0 +1,19 @@
+pkgbase = pop-gtk-theme
+	pkgdesc = System76 Pop GTK+ Theme
+	pkgver = 20240816.165528.g25ea85d97126
+	pkgrel = 1
+	url = https://github.com/pop-os/gtk-theme
+	arch = any
+	license = CC-BY-SA-4.0
+	license = GPL-3.0-only
+	license = LGPL-2.1-only
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = sassc
+	optdepends = ttf-fira-mono: Recommended monospace font
+	optdepends = ttf-fira-sans: Recommended interface font
+	source = pop-gtk-theme::git+https://github.com/pop-os/gtk-theme.git#commit=25ea85d97126
+	b2sums = f56e7ce19f1c22b5f291cc5a95ee574d01337246f9fe72c681161912e4a10a218794253f3a40aada4702b25d82073993c36b160104b14b259e9f805f9ad7ea75
+
+pkgname = pop-gtk-theme

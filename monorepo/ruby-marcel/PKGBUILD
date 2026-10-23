@@ -1,0 +1,54 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='marcel'
+pkgname="ruby-${_gemname}"
+pkgver=1.2.1
+pkgrel=1
+pkgdesc='Simple mime type detection using magic numbers, filenames, and extensions'
+arch=('any')
+url='https://github.com/rails/marcel'
+license=('Apache' 'MIT')
+options=(!emptydirs)
+depends=('ruby')
+makedepends=('ruby-bundler' 'ruby-rake')
+checkdepends=('ruby-minitest' 'ruby-rack')
+source=(
+  "${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+)
+sha512sums=('146bca723538bbc1079b799bda2fb66f29ac9596574dc80ec3979fb1ed3a303b87728c592a2b73c6d390e7ab9e87f9b7d988ea7c6fdffa7b882e38f62ba3d5a2')
+b2sums=('60a7e29b2c1ae2f4fb272e79fbd707cc6f4f95dc10a3651b12cd97584cca2cb5b3eadc5aa863e0e0eb46888f222292aeda69e2194ef23619b4da738116e61a1d')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # we dont need debuggers for testing
+  sed --in-place --regexp-extend '/byebug/d' "${_gemname}.gemspec"  test/test_helper.rb
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  rake build
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}/${_gemdir}" -n "${pkgdir}/usr/bin" "pkg/${_gemname}-${pkgver}.gem"
+
+  rm "${pkgdir}/${_gemdir}/cache/${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 APACHE-LICENSE MIT-LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

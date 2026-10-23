@@ -1,0 +1,21 @@
+pkgbase = debootstrap
+	pkgdesc = Bootstrap a basic Debian system
+	pkgver = 1.0.145
+	pkgrel = 1
+	url = https://tracker.debian.org/pkg/debootstrap
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = distro-info
+	depends = perl
+	depends = wget
+	optdepends = gnupg: check release signatures
+	optdepends = debian-archive-keyring: check release signatures for Debian
+	optdepends = debian-ports-archive-keyring: check release signatures for Debian Ports
+	optdepends = ubuntu-keyring: check release signatures for Ubuntu
+	source = git+https://salsa.debian.org/installer-team/debootstrap.git#tag=1.0.145
+	source = arch-detect.patch
+	sha512sums = c926ee4396d00a7a5d4363259ffcbda4997bc835bb574c9408ba1aa4ddea608285d5cc51e7547f51f6fa1e1612e9c3bedd37061efa689db16d8dce560d251c25
+	sha512sums = b1fdff6142326c2a5075e457181a85cb2a37848c777f128f4c0eb3740980784d25d4f143a76b97c90ef252463cc5d8bd0797b2544c27b6dd8e05a6258a6b0c02
+
+pkgname = debootstrap

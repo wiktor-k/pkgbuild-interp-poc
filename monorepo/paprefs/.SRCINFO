@@ -1,0 +1,27 @@
+pkgbase = paprefs
+	pkgdesc = Configuration dialog for PulseAudio
+	pkgver = 1.2
+	pkgrel = 4
+	url = https://freedesktop.org/software/pulseaudio/paprefs/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = libpulse
+	makedepends = lynx
+	makedepends = meson
+	makedepends = tidy
+	depends = atkmm
+	depends = glib2
+	depends = glibc
+	depends = glibmm
+	depends = gtk3
+	depends = gtkmm3
+	depends = libgcc
+	depends = libsigc++
+	depends = libstdc++
+	depends = pulse-native-provider
+	source = git+https://gitlab.freedesktop.org/pulseaudio/paprefs.git?signed#tag=v1.2
+	validpgpkeys = B61E1D411D57BD16F11536162477064CE8B9F3BD
+	b2sums = fabb9185280f08246645c105cf1d4c923a6030b536bdc7a72ce5cf290a6a22f6ef9f9ab7d930c8e575e512ab4af360e45ea1069ed2957e3becf054aa1f2081dc
+
+pkgname = paprefs

@@ -1,0 +1,24 @@
+pkgbase = cl-cffi
+	pkgdesc = Common Foreign Function Interface for Common Lisp
+	pkgver = 0.24.1.r49.g71fdf5d
+	pkgrel = 1
+	url = https://cffi.common-lisp.dev/
+	arch = any
+	license = MIT
+	checkdepends = sbcl
+	checkdepends = cl-bordeaux-threads
+	checkdepends = cl-rt
+	makedepends = git
+	depends = common-lisp
+	depends = cl-asdf
+	depends = cl-babel
+	depends = cl-alexandria
+	depends = cl-trivial-features
+	depends = cl-ppcre
+	depends = cl-json
+	depends = libffi
+	source = cl-cffi::git+https://github.com/cffi/cffi#commit=71fdf5d4864dd07a74534c953350041ceaa93f0e
+	sha512sums = 1ca99aa44ccc8dc2ab80c437c84f22d6844031dc9ff37b8797420b4b8207204b4fe14447e83c342642600eb325b2d08b9157e5517a7e6ce43624a1c70a2bc4bf
+	b2sums = 77ddd8b5ebce913f81e14d623579649eaaddb498eca38f47a51ceacedc38af54d407dc931fa1d788fa12a878cc00c63acf0033d9010401162f2265519f862e99
+
+pkgname = cl-cffi

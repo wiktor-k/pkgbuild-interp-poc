@@ -1,0 +1,65 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+
+pkgname=hipdnn
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='Graph-based deep learning library for AMD GPUs'
+arch=('x86_64')
+url='https://github.com/ROCm/rocm-libraries/tree/develop/projects/hipdnn'
+license=('MIT')
+depends=(
+  'rocm-core'
+  'hip-runtime-amd'
+  'miopen-hip'
+  'glibc'
+  'gcc-libs'
+  'flatbuffers'
+)
+makedepends=(
+  'cmake'
+  'ninja'
+  'rocm-cmake'
+  'rocm-llvm'
+  'rocm-toolchain'
+  'python'
+  'nlohmann-json'
+  'spdlog'
+  'gtest'
+)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/ROCm/rocm-libraries/releases/download/rocm-$pkgver/$pkgname.tar.gz")
+sha256sums=('a782fe3e807bb40989129a302683a8978f6a753cf5202b0452e8e2f2c432de83')
+
+prepare() {
+  cd ${pkgname}
+  find . -type f -name "CMakeLists.txt" -exec sed -i 's/-Werror//' {} +
+  sed -i 's/flatc/flatbuffers::flatc/g' sdk/CMakeLists.txt
+  sed -i 's/flatbuffers::flatbuffers/flatbuffers::flatbuffers_shared/g' sdk/CMakeLists.txt
+}
+
+build() {
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  local cmake_args=(
+    -Wno-dev
+    -S ${pkgname}
+    -G Ninja
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_CXX_COMPILER=amdclang++
+    -D GPU_TARGETS="$(rocm-supported-gfx -e gfx1010,gfx1012,gfx1153)"
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS} -fcf-protection=none"
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+    -D HIP_DNN_SKIP_TESTS=ON
+    -D ENABLE_CLANG_TIDY=OFF
+    -D ENABLE_CLANG_FORMAT=OFF
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  cd ${pkgname}
+  install -Dm644 "LICENSE.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

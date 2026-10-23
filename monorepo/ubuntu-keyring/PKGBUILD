@@ -1,0 +1,20 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Andre Vaillancourt <g.andre.vaillancourt@gmail.com>
+# Contributor: Thomas Weischuh <thomas t-8ch de>
+
+pkgname=ubuntu-keyring
+pkgver=2026.08.18
+pkgrel=1
+pkgdesc="OpenPGP keys of the Ubuntu archive"
+arch=('any')
+url="https://mirrors.kernel.org/ubuntu/pool/main/u/ubuntu-keyring"
+license=('GPL-2.0-or-later')
+depends=('gnupg')
+source=("https://mirrors.kernel.org/ubuntu/pool/main/u/ubuntu-keyring/ubuntu-keyring_$pkgver.tar.xz")
+sha512sums=('46c0050ff9bcea1fc11c538242b1c6ea197d1bb68ad9a6a084d1fb69ef73bea6059a34a4ce1ea66ee11340dad03514e31a77375c3a7bb1d09b8df4036c3690f9')
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm644 keyrings/*-{keyring,keys}.gpg -t "$pkgdir"/usr/share/keyrings/
+  install -Dm644 keyrings/ubuntu-keyring-*.gpg -t "$pkgdir"/etc/apt/trusted.gpg.d/
+}

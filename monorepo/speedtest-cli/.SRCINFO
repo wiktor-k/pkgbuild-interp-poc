@@ -1,0 +1,17 @@
+pkgbase = speedtest-cli
+	pkgdesc = Command line interface for testing internet bandwidth using speedtest.net
+	pkgver = 2.1.3
+	pkgrel = 11
+	url = https://github.com/sivel/speedtest-cli
+	arch = any
+	license = Apache-2.0
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = python
+	source = https://github.com/sivel/speedtest-cli/archive/v2.1.3/speedtest-cli-2.1.3.tar.gz
+	source = serverlist.patch
+	sha512sums = e2ecd9b4eea95e3641045c3da217ec5a39846b26c1f773fdd31c6ffe3cb5e35341320fc1992f865af48afd1a704c4d4224f9ec4048abb69131ee2f32385ae94c
+	sha512sums = b8026642d76494be8af608f16e6b3c8470a11309813f989cb07e71574ea2ec7a700c5f112d8dcaff284ebcd086ec93be0eacef2eaf2caaa81847662c329337ea
+
+pkgname = speedtest-cli

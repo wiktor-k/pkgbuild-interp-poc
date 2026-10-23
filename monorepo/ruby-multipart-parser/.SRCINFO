@@ -1,0 +1,20 @@
+pkgbase = ruby-multipart-parser
+	pkgdesc = A simple parser for multipart MIME messages, written in Ruby
+	pkgver = 0.1.1
+	pkgrel = 6
+	url = https://github.com/danabr/multipart-parser
+	arch = any
+	license = MIT
+	checkdepends = ruby-test-unit
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	makedepends = ruby-rdoc
+	makedepends = git
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/danabr/multipart-parser#commit=9b9c4acb7c441d20a2c5a596ec4aecdecf6ebfe9
+	source = fix-broken-tests.patch
+	sha512sums = SKIP
+	sha512sums = b955ab17fa167411a18ca950ee29a0db37e00ebd70e492a149a44f1937cc3eefcaf22201fa7d8c4464fcffc96b65829ef3741501bb32022ccbb770eb057a428d
+
+pkgname = ruby-multipart-parser

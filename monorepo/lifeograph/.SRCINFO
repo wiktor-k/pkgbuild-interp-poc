@@ -1,0 +1,36 @@
+pkgbase = lifeograph
+	pkgdesc = Private journal, diary and note taking application
+	pkgver = 3.1.4
+	pkgrel = 1
+	url = https://lifeograph.sourceforge.net/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = pybind11
+	depends = cairomm-1.16
+	depends = enchant
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = glibmm-2.68
+	depends = gtk4
+	depends = gtkmm-4.0
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libgcrypt
+	depends = libshumate
+	depends = libsigc++-3.0
+	depends = libstdc++
+	depends = pango
+	depends = pangomm-2.48
+	depends = python
+	depends = python-docx
+	depends = python-jedi
+	source = git+https://gitlab.com/bilheps/lifeograph.git#tag=v3.1.4
+	source = lifeograph-fix-parameter.patch
+	validpgpkeys = A1DD7BBF56F328A5B0679657BC797409ACE27593
+	b2sums = d42aa119df14940beae1cced9a022b75a05f603807882381ae6fd972c07ba9810d595b26af8895bf6af0764cc842a6afcdd258e9fcaff21fb4bc1d94bc6e7d94
+	b2sums = 051ee2dccecf9da7c2e91058690e947d07aebcd21aefe552c5be256cad1f16b724f3e3cc4bda44b57c6531bc2017321566b3a2e3899202dcee8bf870ff24a981
+
+pkgname = lifeograph

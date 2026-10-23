@@ -1,0 +1,60 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=ripasso
+pkgver=0.7.0
+pkgrel=5
+pkgdesc="A simple password manager written in Rust"
+arch=('x86_64')
+url="https://github.com/cortex/ripasso"
+license=('GPL3')
+depends=('openssl' 'libxcb' 'libgpg-error' 'zlib' 'gpgme' 'libgit2' 'nettle3')
+makedepends=('gettext' 'cargo' 'cargo-edit' 'clang' 'python' 'gtk4')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/release-$pkgver.tar.gz")
+sha512sums=('64a0a8fa0debbf16e6df41f26eec99f9cdb351305fb24ca1073f5c97d255ace15d4019de0bdd353cc396efc3ca7e7667da55d2eab9c37313d60b47533ea8352c')
+options=('!lto')
+
+prepare() {
+  mv "$pkgname-release-$pkgver" "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver"
+  # Update crate to allow build agaist libgit2-1.9, already upstreamed but not released
+  cargo upgrade -p git2@0.20.0
+# Update nettle-sys to fix build with clang 22
+  cargo update -p nettle-sys --precise 2.3.2
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export LIBGIT2_NO_VENDOR=1
+  PKG_CONFIG_PATH=/usr/lib/nettle3/pkgconfig \
+  RUSTFLAGS+=" -L/usr/lib/nettle3" \
+  cargo build -p "ripasso-cursive" --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export LIBGIT2_NO_VENDOR=1
+  PKG_CONFIG_PATH=/usr/lib/nettle3/pkgconfig \
+  RUSTFLAGS+=" -L/usr/lib/nettle3" \
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  depends+=('libgit2.so')
+  install -Dm0755 "target/release/ripasso-cursive" "$pkgdir/usr/bin/$pkgname"
+  install -Dm0644 "target/man-page/cursive/ripasso-cursive.1" "$pkgdir/usr/share/man/man1/$pkgname.1"
+  install -Dm0644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+
+  mkdir -p "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/de.mo" "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/fr.mo" "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/it.mo" "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/nb.mo" "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/nn.mo" "$pkgdir/usr/share/ripasso/"
+  install -Dm0644 "target/translations/cursive/sv.mo" "$pkgdir/usr/share/ripasso/"
+}
+
+# vim: ts=2 sw=2 et:

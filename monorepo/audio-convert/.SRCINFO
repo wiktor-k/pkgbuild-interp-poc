@@ -1,0 +1,24 @@
+pkgbase = audio-convert
+	pkgdesc = A script with an easy to use interface to convert audio files: wav, mp3, ogg, flac, aac, mpc, ape and wma
+	pkgver = 0.3.1.1
+	pkgrel = 10
+	url = https://savannah.nongnu.org/projects/audio-convert
+	arch = any
+	license = GPL
+	depends = bash
+	depends = zenity
+	optdepends = faac: for aac support
+	optdepends = faad2: for aac support
+	optdepends = flac: for flac support
+	optdepends = id3lib: for mp3 support
+	optdepends = lame: for mp3 support
+	optdepends = mplayer: for wma support
+	optdepends = musepack-tools: for mpc support
+	optdepends = vorbis-tools: for ogg support
+	source = https://savannah.nongnu.org/download/audio-convert/audio-convert-0.3.1.1.tar.bz2
+	source = https://savannah.nongnu.org/download/audio-convert/audio-convert-0.3.1.1.tar.bz2.sig
+	validpgpkeys = 1CF3EC073D659B59A5907F731345ECD025721889
+	sha256sums = 7b37d5fc2a4dd62885910b6424f5ff6870c329ed4f4f51feeeb952152c7d9d2b
+	sha256sums = SKIP
+
+pkgname = audio-convert

@@ -1,0 +1,24 @@
+pkgbase = python-gitlab
+	pkgdesc = Python wrapper for the GitLab API
+	pkgver = 8.6.0
+	pkgrel = 1
+	url = https://github.com/python-gitlab/python-gitlab
+	arch = any
+	license = LGPL-3.0-or-later
+	checkdepends = python-pytest
+	checkdepends = python-pyyaml
+	checkdepends = python-responses
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-requests
+	depends = python-requests-toolbelt
+	optdepends = python-argcomplete: for autocompletion
+	optdepends = python-pyyaml: for YAML support
+	source = python-gitlab-8.6.0.tar.gz::https://github.com/python-gitlab/python-gitlab/archive/v8.6.0/python-gitlab-v8.6.0.tar.gz
+	sha512sums = fb346de0630b6b7cacf855b6d041f970346cef402049be14782c1e077e5d27f7d62a70c8b1bddaa48f2540037d45cc1d18cb82ba992bb8ebba235dd1c08a5684
+	b2sums = b260df690407b12831a527f16c038102fd48ad24a9bc103a646db4f8a880d1d450e31e0ea69dc443a002af95437647996f8cb1b60323f7e55be8ba4ad1b3efb3
+
+pkgname = python-gitlab

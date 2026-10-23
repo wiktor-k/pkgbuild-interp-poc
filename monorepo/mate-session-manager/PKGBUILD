@@ -1,0 +1,82 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-session-manager
+pkgver=1.28.0
+pkgrel=3
+pkgdesc="The MATE Session Handler"
+arch=(x86_64)
+url='https://github.com/mate-desktop/mate-session-manager'
+license=(GPL-2.0-or-later)
+depends=(
+  bash
+  cairo
+  dbus
+  dbus-glib
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libepoxy
+  libgcc
+  libglvnd
+  libice
+  libsm
+  libx11
+  libxau
+  libxcomposite
+  libxext
+  libxrender
+  libxtst
+  mate-desktop
+  systemd-libs
+)
+makedepends=(
+  docbook-xsl
+  git
+  glib2-devel
+  mate-common
+  xmlto
+  xtrans
+)
+optdepends=(
+  'gnome-keyring: keyring support'
+  'xdg-user-dirs-gtk: manage user directories'
+)
+groups=(mate)
+source=(
+  "git+https://github.com/mate-desktop/mate-session-manager.git#tag=v$pkgver"
+  git+https://github.com/mate-desktop/mate-submodules.git
+)
+b2sums=(
+  5f4bd2e402e658bb1c93b9466965d8e9887a157a3c55084c6f63772fefc4100f8fb10be669fc86bb18fa719f4c8ef23965b99c63ac43b1aaa77e0115ae9b2f1b
+  SKIP
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git config submodule.mate-submodules.url "$srcdir/mate-submodules"
+  git -c protocol.file.allow=always submodule update
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --libexecdir="/usr/lib/$pkgname" \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

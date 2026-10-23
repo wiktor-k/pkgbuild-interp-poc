@@ -1,0 +1,16 @@
+pkgbase = eog-plugins
+	pkgdesc = Plugins for Eye of Gnome
+	pkgver = 44.1
+	pkgrel = 3
+	url = https://wiki.gnome.org/Apps/EyeOfGnome/Plugins
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	depends = eog
+	depends = python-gobject
+	source = git+https://gitlab.gnome.org/GNOME/eog-plugins.git#tag=44.1
+	b2sums = 4dd845ddba303d8f2acfd40bc30e10087ab3d179b2c01b0bf62cd9bd94b0ee8d701fd1fc14ea352d8c2c22cf7002cb6162f0797804508003e343b0afdbce4d8e
+
+pkgname = eog-plugins

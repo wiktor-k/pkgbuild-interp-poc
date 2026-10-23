@@ -1,0 +1,17 @@
+pkgbase = libomemo-c
+	pkgdesc = Fork of libsignal-protocol-c adding support for OMEMO XEP-0384 0.5.0+
+	pkgver = 0.5.1
+	pkgrel = 1
+	url = https://github.com/dino/libomemo-c
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = protobuf-c
+	source = git+https://github.com/dino/libomemo-c#tag=v0.5.1
+	source = cmake-4.patch
+	sha256sums = 997e56d1ca8f8d2d3644cf51a7fabbe805947fb892fff9da109ce597d952915d
+	sha256sums = 667523eab8a91621787334bf99c7519ef46be4a0c9b14e567189d76a601ab74c
+
+pkgname = libomemo-c

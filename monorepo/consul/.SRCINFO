@@ -1,0 +1,27 @@
+pkgbase = consul
+	pkgdesc = A tool for service discovery, monitoring and configuration.
+	pkgver = 2.0.4
+	pkgrel = 1
+	url = https://www.consul.io
+	install = consul.install
+	arch = x86_64
+	license = BUSL-1.1
+	makedepends = git
+	makedepends = go
+	makedepends = yarn
+	makedepends = nodejs-lts-krypton
+	makedepends = pnpm
+	depends = glibc
+	backup = etc/default/consul
+	source = git+https://github.com/hashicorp/consul#tag=v2.0.4
+	source = consul.service
+	source = consul.default
+	source = consul.sysusers
+	source = example.json
+	sha512sums = 2a784e72df317100ed31f34ea037dffb6825699772c778922ddfdb41fc37e2d93e457e1352881ad9132bacaecc6e96ee0a6a232f78d5fd06564d3236c14ce13a
+	sha512sums = c70b9d1556f6c7ecb2e915ab685f289cef0e31198bd2e50c74a0483bbfb387beec67334f539a90adbf68b61b07946e98b300ab8a8e26e53b35f4ab4894adeb04
+	sha512sums = ec5a800529a297c709fa383c094ecf106351cf0f8ac7b613b972d415d77fe001088902d7ab805e63e78a8e6360323fec1b795db5a4446df1e21b9b4ed31e7079
+	sha512sums = f6d66e970f7cdbba2f1a3d15d89df5dfa33810d6330dae0aaf42dee0938354667a505c39c65db74fe3c06c8f753bc6155a64419fa31b4445ccbe23f5e6a685c6
+	sha512sums = c4292b8f56ee955ed7385a49843fd90d6434029891b3e1e724cb2fc841514c06e2554a26d3937c114371b18c2168c4e64319eb2cbd726ee8b35870df19089348
+
+pkgname = consul

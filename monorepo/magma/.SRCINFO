@@ -1,0 +1,44 @@
+pkgbase = magma
+	pkgver = 2.10.0
+	pkgrel = 1
+	url = https://icl.utk.edu/magma/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = python
+	makedepends = gcc-fortran
+	makedepends = cuda
+	makedepends = rocm-core
+	makedepends = rocm-toolchain
+	makedepends = hip-runtime-amd
+	makedepends = hipblas
+	makedepends = hipsparse
+	depends = blas
+	depends = lapack
+	optdepends = python: for examples and tests
+	optdepends = gcc-fortran: Fortran interface
+	options = !lto
+	source = magma::git+https://github.com/icl-utk-edu/magma.git#tag=v2.10.0
+	source = magma-cuda-smaller-cuda-binaries.patch::https://github.com/icl-utk-edu/magma/pull/83.patch
+	sha256sums = 4ce599fec02a871aec6e1c2cea93e596364fddee6790113a552baca75fcb407b
+	sha256sums = bbe40b25601de852389e169335c0ee85a60fa4e634cf246ff74decf3a218cd91
+
+pkgname = magma-cuda
+	pkgdesc = Matrix Algebra on GPU and Multicore Architectures (with CUDA)
+	depends = blas
+	depends = lapack
+	depends = cuda
+	provides = magma
+	replaces = magma
+
+pkgname = magma-hip
+	pkgdesc = Matrix Algebra on GPU and Multicore Architectures (with ROCm/HIP)
+	depends = blas
+	depends = lapack
+	depends = hip-runtime-amd
+	depends = hipblas
+	depends = hipsparse
+	provides = hipmagma
+	replaces = hipmagma

@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-audioencoder-flac
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="FLAC Audio Encoder add-on for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/audioencoder.flac'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-audioencoder')
+makedepends=('cmake' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/audioencoder.flac/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('0d5caa123f8d0f84fca49f782009457e3665fe281241af9654dc30f0f0150c0d30b082c983bf3f9f75332a82555349a947531e5cbe00742ed42692e5e9cff0ce')
+
+build() {
+    cd "audioencoder.flac-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi')
+    cd "audioencoder.flac-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

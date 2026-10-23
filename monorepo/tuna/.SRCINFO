@@ -1,0 +1,25 @@
+pkgbase = tuna
+	pkgdesc = Thread and IRQ affinity setting GUI and cmd line tool
+	pkgver = 0.21
+	pkgrel = 1
+	epoch = 1
+	url = https://git.kernel.org/pub/scm/utils/tuna/tuna.git/
+	arch = any
+	groups = realtime
+	license = GPL-2.0-only
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-linux-procfs
+	optdepends = python-gobject: for oscilloscope
+	optdepends = python-matplotlib: for oscilloscope
+	optdepends = python-numpy: for oscilloscope
+	optdepends = python-perf: for process view
+	backup = etc/tuna.conf
+	source = https://git.kernel.org/pub/scm/utils/tuna/tuna.git/snapshot/tuna-0.21.tar.gz
+	sha512sums = 0f9968a47d2596706f633d4a2f666a84665af3233475bfa2c7ac07ee82f9504e8f4973633deb4e5d4d0eca627661d722e565a0954c41d46cc1ab910bbd249b0c
+	b2sums = f11d60058936f8f1cd4987fc1ba99d20c54a4f99c5478d695e3a555467317b45780591251e21787cfcdf6bd2dad974d27d0a9d6558913816ec383de53d110bae
+
+pkgname = tuna

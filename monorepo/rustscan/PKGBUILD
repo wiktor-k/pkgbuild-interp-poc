@@ -1,0 +1,46 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Gobidev <adrian[dot]groh[at]t-online[dot]de>
+# Contributor: Hao Long <aur@esd.cc>
+
+pkgname=rustscan
+pkgver=2.4.1
+pkgrel=2
+pkgdesc='A modern port scanner'
+arch=(x86_64)
+url='https://github.com/rustscan/RustScan'
+license=(GPL-3.0-or-later) # https://github.com/RustScan/RustScan/issues/615
+depends=(glibc libgcc)
+makedepends=(git rust)
+optdepends=('nmap: Script engine support')
+checkdepends=(python)
+options=(!lto)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('5ee958867d09193f1a752bad352260d79f61c06dcf535b09be9ace08e6bfceeb1b48682edc20de91d1c7570827f33453ab6dafe4ef085d7857802a673fe3e1ac')
+b2sums=('2a2c6437a58825697c12a8b120d8062d95487a092a8d149b894c0b551797e6c2fd17aec211afaeadd5cb4a9298af356af5e289134f5b663000744a23d29cb283')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$pkgname"
+
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/rustscan
+}

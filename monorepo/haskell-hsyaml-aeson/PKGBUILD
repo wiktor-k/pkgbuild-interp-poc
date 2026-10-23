@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=HsYAML-aeson
+pkgname=haskell-hsyaml-aeson
+pkgver=0.2.0.2
+pkgrel=143
+pkgdesc="JSON to YAML Adapter"
+url="https://github.com/haskell-hvr/hsyaml-aeson"
+license=('GPL')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-hsyaml' 'haskell-scientific'
+         'haskell-unordered-containers' 'haskell-vector')
+makedepends=('ghc' 'uusi')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('8776940243c32248571b08e070c6e8e2aad7309a35ec7b9d51c08d0ae68a414e026bd503e96fed6c12790b8aa660428b67ecfb239b108ae1ef94844b157bab0f')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver    
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "${pkgdir}/usr/share/doc/${pkgname}/LICENSE.GPLv2"
+}

@@ -1,0 +1,20 @@
+pkgbase = lsdvd
+	pkgdesc = Console application that displays the content of a DVD
+	pkgver = 0.21
+	pkgrel = 1
+	url = https://sourceforge.net/projects/lsdvd/
+	arch = x86_64
+	license = GPL-2.0-only
+	checkdepends = cdrtools
+	checkdepends = dvdauthor
+	checkdepends = jq
+	checkdepends = k3b
+	checkdepends = ruby
+	makedepends = git
+	depends = glibc
+	depends = libdvdread
+	depends = libxml2
+	source = lsdvd::git+https://git.code.sf.net/p/lsdvd/git#tag=0.21
+	sha512sums = d1381de6ec2c0156576cd47b3c98e36672f0e8f4cb61cf8fe3eca1ea8e95876901603834fac04e541f84b46b4927fac1cb78cdb790c95d9b55727f8e49e3a43f
+
+pkgname = lsdvd

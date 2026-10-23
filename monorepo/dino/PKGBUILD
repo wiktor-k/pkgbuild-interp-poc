@@ -1,0 +1,31 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=dino
+pkgver=0.5.1
+pkgrel=3
+pkgdesc="Modern XMPP (Jabber) chat client written in Vala"
+url="https://dino.im"
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('glib2' 'glib-networking' 'gtk4' 'libadwaita' 'gpgme' 'libgee' 'libgcrypt' 'libomemo-c'
+         'libsoup3' 'sqlite' 'qrencode' 'libnice' 'gstreamer'
+         'gst-plugins-base' 'gst-plugins-good' 'libsrtp' 'webrtc-audio-processing' 'gdk-pixbuf2')
+makedepends=('git' 'meson' 'vala' 'ninja')
+source=("https://github.com/dino/dino/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz"{,.asc})
+sha256sums=('0b265ee3551dcddad5b62e188bdcab2cbb61a0d6a7e72107b2518a156b3ed665'
+            'SKIP')
+validpgpkeys=('A32134DD19952FB12EC43E4501FABCC83FEA225E')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+check() {
+	meson test -C build --print-errorlogs
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

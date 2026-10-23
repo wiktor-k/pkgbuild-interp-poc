@@ -1,0 +1,22 @@
+pkgbase = haskell-hls-floskell-plugin
+	pkgdesc = Integration with the Floskell code formatter
+	pkgver = 2.4.0.0
+	pkgrel = 30
+	url = https://hackage.haskell.org/package/hls-floskell-plugin
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = git
+	makedepends = ghc
+	makedepends = uusi
+	makedepends = haskell-hls-test-utils
+	depends = ghc-libs
+	depends = haskell-floskell
+	depends = haskell-ghcide
+	depends = haskell-hls-plugin-api
+	depends = haskell-lsp-types
+	source = https://hackage.haskell.org/packages/archive/hls-floskell-plugin/2.4.0.0/hls-floskell-plugin-2.4.0.0.tar.gz
+	source = hls-floskell-plugin-floskell-0.11.patch::https://github.com/haskell/haskell-language-server/commit/92d3ba98161f8b6f7e1b8abec70df9ee6af16216.patch
+	sha512sums = e6b2aec46ce2c5f99fc5e3f2fb86b9f430a4efe8c591ab83ba35d327ade12bf5dc1603ed8a3597da1d19b1c0335ef7e7856dcca81e4395bbdd0861d08a044c1e
+	sha512sums = 794b9ed98bd9a6b1b11ae64469afda0d2ccacc07f3c86e453c0268de429eb7dce9a0f301a0592357c6196cc94bdeda1f261547155d74faff0705beb03e00f499
+
+pkgname = haskell-hls-floskell-plugin

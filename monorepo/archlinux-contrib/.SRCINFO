@@ -1,0 +1,30 @@
+pkgbase = archlinux-contrib
+	pkgdesc = Collection of contrib scripts used in Arch Linux
+	pkgver = 20261009
+	pkgrel = 1
+	url = https://github.com/archlinux/contrib
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = python
+	depends = bash
+	depends = pyalpm
+	optdepends = python-requests: for security tracker
+	optdepends = jq: for rebuild-todo
+	optdepends = devtools: for rebuild-todo
+	optdepends = pacman-contrib: to enable pacdiff usage in the checkservices script
+	optdepends = python-httpx: for check-pkg-urls
+	optdepends = python-tqdm: for check-pkg-urls
+	optdepends = ripgrep: for pkggrep
+	optdepends = parallel: for pkggrep & greposcope
+	optdepends = rebuilderd-tools: for greposcope
+	source = git+https://github.com/archlinux/contrib.git#tag=20261009?signed
+	validpgpkeys = C100346676634E80C940FB9E9C02FF419FECBE16
+	validpgpkeys = 86CFFCA918CF3AF47147588051E8B148A9999C34
+	validpgpkeys = F00B96D15228013FFC9C9D0393B11DAA4C197E3D
+	validpgpkeys = 6F779ADE247A6B8A0F72CC13C047D4F328B52585
+	validpgpkeys = E499C79F53C96A54E572FEE1C06086337C50773E
+	validpgpkeys = 262A58EC6C51F7EA395B2E2DFDC3040B92ACA748
+	sha256sums = cd06fe43277145df66c8c23576113293f836c2c535ea0dc17a828f41f8ff98c7
+
+pkgname = archlinux-contrib

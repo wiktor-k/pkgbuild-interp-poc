@@ -1,0 +1,115 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langsmith
+pkgver=0.12.3
+pkgrel=1
+pkgdesc="Client library to connect to the LangSmith Observability and Evaluation Platform"
+arch=('any')
+url="https://github.com/langchain-ai/langsmith-sdk"
+license=('MIT')
+depends=(
+  'python'
+  'python-anyio'
+  'python-distro'
+  'python-httpx2'
+  'python-orjson'
+  'python-packaging'
+  'python-pydantic'
+  'python-requests'
+  'python-requests-toolbelt'
+  'python-sniffio'
+  'python-typing_extensions'
+  'python-uuid-utils'
+  'python-websockets'
+  'python-xxhash'
+  'python-zstandard'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-attrs'
+  'python-cachetools'
+  'python-dataclasses-json'
+  'python-httpx'
+  'python-langchain-core'
+  'python-multipart'
+  'python-opentelemetry-api'
+  'python-opentelemetry-exporter-otlp-proto-http'
+  'python-opentelemetry-sdk'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-pytest-httpx'
+  'python-pytest-rerunfailures'
+  'python-pytest-retry'
+  'python-pytest-socket'
+  'python-pytest-timeout'
+  'python-rich'
+  'python-vcrpy'
+)
+optdepends=(
+  'python-langchain-core: LangChain runnable integration support'
+  'python-cachetools: LiveKit and Pipecat tracing support'
+  'python-pytest: LangSmith pytest plugin support'
+  'python-rich: enhanced pytest output support'
+  'python-vcrpy: VCR support'
+  'python-opentelemetry-api: OpenTelemetry tracing support'
+  'python-opentelemetry-sdk: OpenTelemetry tracing support'
+  'python-opentelemetry-exporter-otlp-proto-http: OpenTelemetry export support'
+)
+source=("git+https://github.com/langchain-ai/langsmith-sdk.git#tag=v$pkgver")
+sha512sums=('937834fa436103941e83414903515be00cbce728b9771cd4a44d78b20ed4a685ed8cceed063096b90a4670f929cc70c5546e389f8980923626319723d46d829b')
+
+prepare() {
+  cd langsmith-sdk/python
+
+  # Avoid deprecated asyncio.iscoroutinefunction on Python 3.14.
+  # https://github.com/langchain-ai/langsmith-sdk/commit/eba0d4b31976aebbaba15de899b37ccbb191274a
+  git cherry-pick -n eba0d4b31976aebbaba15de899b37ccbb191274a
+
+  # uuid-utils 1.0 replaces timestamp/nanos with a single nanoseconds argument.
+  # https://github.com/aminalaee/uuid-utils/pull/194
+  sed -i \
+    -e '/seconds, nanos = _to_timestamp_and_nanos(nanoseconds)/d' \
+    -e 's/_uuid_utils_uuid7(timestamp=seconds, nanos=nanos)/_uuid_utils_uuid7(nanoseconds=nanoseconds)/' \
+    langsmith/_internal/_uuid.py
+  sed -i 's/uuid-utils>=0.12.0,<1.0/uuid-utils>=1.0.0,<2.0/' pyproject.toml
+}
+
+build() {
+  cd langsmith-sdk/python
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langsmith-sdk/python
+
+  # Evaluation/integration tests use live services; external/wrapper tests need unpackaged optional stacks.
+  # Prompt model round-trip cases need unpackaged langchain-anthropic/langchain-openai.
+  # Benchmarks need optional benchmarking stacks and are not package tests.
+  PYTHONPATH="$PWD/tests/httpx2_alias:$PWD" pytest \
+    --ignore=bench \
+    --ignore=tests/evaluation \
+    --ignore=tests/external \
+    --ignore=tests/integration_tests \
+    --ignore=tests/unit_tests/wrappers/test_google_adk.py \
+    --ignore=tests/unit_tests/wrappers/test_strands_agents.py \
+    --deselect='tests/unit_tests/test_client.py::test_pull_prompt[True-tools-manifest_data0]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_prompt[True-structured-manifest_data1]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_prompt[True-none-manifest_data2]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_prompt[True-none-manifest_data3]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_and_push_prompt[True-tools-manifest_data0]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_and_push_prompt[True-structured-manifest_data1]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_and_push_prompt[True-none-manifest_data2]' \
+    --deselect='tests/unit_tests/test_client.py::test_pull_and_push_prompt[True-none-manifest_data3]'
+}
+
+package() {
+  cd langsmith-sdk/python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 ../LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

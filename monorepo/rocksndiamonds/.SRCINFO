@@ -1,0 +1,23 @@
+pkgbase = rocksndiamonds
+	pkgdesc = game similiar to Boulderdash with lots of levels
+	pkgver = 4.4.2.4
+	pkgrel = 1
+	url = https://www.artsoft.org/rocksndiamonds/
+	arch = x86_64
+	license = GPL-2.0-only
+	depends = sdl2
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = sdl2_net
+	source = https://www.artsoft.org/RELEASES/linux/rocksndiamonds/rocksndiamonds-4.4.2.4-linux.tar.gz
+	source = rocksndiamonds.desktop
+	sha256sums = 59ebdc8985923919a3f3cd7ceb2e9a073ca5b4755ffda0f908f4bf498bc61f99
+	sha256sums = f92b604abeeda66aa28d06ae2d8b0ea89aedfd7686d3f8c73d8c0b05ad039439
+
+pkgname = rocksndiamonds
+	depends = sdl2
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = sdl2_net
+	depends = rocksndiamonds-data
+	optdepends = rocksndiamonds-contrib

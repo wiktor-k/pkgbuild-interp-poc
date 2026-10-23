@@ -1,0 +1,69 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-geopy
+_name=${pkgname#python-}
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="Geocoding library for Python"
+arch=(any)
+url="https://github.com/geopy/geopy"
+license=(MIT)
+depends=(
+  python
+  python-geographiclib
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-aiohttp
+  python-docutils
+  python-pytest-asyncio
+  python-pytest-aiohttp
+  python-pytest
+  python-pytz
+  python-requests
+  python-urllib3
+  python-yarl
+)
+optdepends=(
+  'python-aiohttp: for async http support'
+  'python-pytz: for timezone support'
+  'python-requests: for requests support'
+  'python-urllib3: for requests support'
+  'python-yarl: for async http support'  # implicit dependency: https://github.com/geopy/geopy/issues/614
+)
+source=("git+$url?signed#tag=$pkgver")
+sha512sums=('ade50bd7e2a703594d96bb93a8df99dc821b8bdd25966542dbf89cc2223bbc71993d8a870916c6a44b7c55e58d2cf1c1dd64bd72542ee585b642b02e8860e716')
+b2sums=('8a9c2253ede9b12af2877e3c29e513c82a5212ac2fddda412ea59b8ba755271abe38ccd825aa6cedbf11aa5f505a105d10a720399f5f1ad669c8e507caa086ce')
+validpgpkeys=('A18FE9F6F570D5B4E1E1853FAA7B5406547AF062') # Kostya Esmukov <kostya@esmukov.ru>
+
+pkgver() {
+  cd $_name
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  cd $_name
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+
+  cd $_name
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {AUTHORS,README.rst} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

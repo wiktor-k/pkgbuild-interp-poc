@@ -1,0 +1,78 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: éclairevoyant
+# Contributor: nullgemm <nullgemm@mailbox.org>
+
+pkgname=ly
+pkgver=1.4.1
+pkgrel=1
+pkgdesc="TUI display manager"
+arch=(x86_64)
+url="https://codeberg.org/fairyglade/ly"
+license=('WTFPL')
+depends=(pam glibc libxcb)
+makedepends=(git zig)
+install=ly.install
+optdepends=('xorg-xauth: for X server sessions'
+            'libxcb: for X server sessions')
+backup=(
+    etc/$pkgname/{config.ini,setup.sh}
+    etc/pam.d/ly
+)
+_zig_deps=(
+    # From build.zig.zon:
+    aro-5f5a050569a95ecc40a426f0c3666ae7ef987ede.tar.gz::https://codeberg.org/ziglang/arocc/archive/5f5a050569a95ecc40a426f0c3666ae7ef987ede.tar.gz
+    clap-fc1e5cc3f6d9d3001112385ee6256d694e959d2f.tar.gz::https://github.com/Hejsil/zig-clap/archive/fc1e5cc3f6d9d3001112385ee6256d694e959d2f.tar.gz
+    ini-3b733e10adc6c4c48050709b97a22258bc2e6156.tar.gz::https://github.com/AshAmetrine/ziglibs-ini/archive/3b733e10adc6c4c48050709b97a22258bc2e6156.tar.gz
+    termbox2-c7f241e8888ce243e1748b05c26a42fcfaaad936.tar.gz::https://github.com/AnErrupTion/termbox2/archive/c7f241e8888ce243e1748b05c26a42fcfaaad936.tar.gz
+    translate-c-7a1a9fdc4ab00835748a6657ecbb835e3d5d45f7.tar.gz::https://codeberg.org/ziglang/translate-c/archive/7a1a9fdc4ab00835748a6657ecbb835e3d5d45f7.tar.gz
+    zigini-a665d081dda42664a96da2840ea09c5ccf9d0692.tar.gz::https://github.com/AshAmetrine/zigini/archive/a665d081dda42664a96da2840ea09c5ccf9d0692.tar.gz
+)
+source=("git+$url.git#tag=v${pkgver}"
+        "${_zig_deps[@]}")
+noextract=("${_zig_deps[@]}")
+b2sums=('71ebccd0a951682d0207e4cee4cf5ebb77550eb4e43b5b6591dd5c42fd9bb0ef500193a955cc33a865f95f50f3782e6016c2b260aa3c41b002d194415d7c3cdf'
+        '57783b4960f297d518ce691e27c34ff5cf90dac315b3f503b736417b724bd95bc0952fd92e27dc5821617b4ad35c4fa1fee524e6f069cf2c5cb090f274cb5f81'
+        '146092d61f1eab9d2d00b3acbc02a5a177867147f53f9a8e7c904cb943302c5b31cf8136a7e229a596b18d4a52674de1d7847f9127b6929d657209b26d730033'
+        '060dc6c11b4a5a517d69ed7e5dace0200fcb22f1ee839158ef296def55db5af17dd002a4e0243fbf9c9f4b986419077bbfeff90fdc369466e33099d5053f4f9c'
+        '5a0e1a8a28194a64fa20b1fccc488e88eb269e0590a4c63166f3dd31fa2849c5dd2bf687a728ef7781ef54064d5d246cc627e13a80bc98dc806bfc27488d6d59'
+        'd4b3d371567e77605b6e0fc1df37e6e326bc21f4d77bc2359525f3434c663fee0e412b4008b2a0dc2f3cf5adf81d3d791bf9dca51dda7cf44a6dc4ecd01f08e0'
+        'b828e59292e5ab894244c3850c929c93d6332e6de0593df80372546284931ca652eb87528de4888a9c637f03c45b2568cc86d2fe084363061cf00c647982c717')
+
+prepare() {
+    cd "$pkgname"
+    for dep in "${_zig_deps[@]}"; do
+        zig fetch --global-cache-dir ../zig-global-cache "../${dep%%::*}"
+    done
+}
+
+build() {
+    cd "$pkgname"
+    zig build \
+      --search-prefix /usr \
+      -Ddest_directory="$pkgdir" \
+      -Dname="ly-dm" \
+      --global-cache-dir ../zig-global-cache \
+      --system zig-pkg \
+      --build-id=sha1 \
+      -Dtarget=native-linux.6.6-gnu.2.40 \
+      -Dcpu=baseline \
+      -Doptimize=ReleaseSafe
+}
+
+package() {
+    cd "$pkgname"
+
+    zig build \
+      --search-prefix /usr \
+      -Ddest_directory="$pkgdir" \
+      -Dname="ly-dm" \
+      --global-cache-dir ../zig-global-cache \
+      --system zig-pkg \
+      --build-id=sha1 \
+      -Dtarget=native-linux.6.6-gnu.2.40 \
+      -Dcpu=baseline \
+      -Doptimize=ReleaseSafe \
+      installexe
+
+    install -Dm644 license.md "$pkgdir/usr/share/licenses/$pkgname/WTFPL"
+}

@@ -1,0 +1,25 @@
+pkgbase = libkysdk-base
+	pkgdesc = Kylin SDK basic library
+	pkgver = 3.0.1.0
+	pkgrel = 2
+	url = https://gitee.com/openkylin/libkysdk-base
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = dbus
+	depends = glibc
+	depends = gtk3
+	depends = libgcc
+	depends = libstdc++
+	depends = glib2
+	depends = openssl
+	depends = qt5-base
+	depends = sqlite
+	depends = systemd-libs
+	depends = yaml-cpp
+	source = git+https://gitee.com/openkylin/libkysdk-base.git#tag=upstream/3.0.1.0
+	sha512sums = e982f08d816d1212590f0ae74d7d8a8a64e3b88d3b6b8d4b991643ded951d6507ad0be14f6d5b1704bb92f00c5342bcd74b38013e6c98ef6e9d52015fc3ead35
+
+pkgname = libkysdk-base

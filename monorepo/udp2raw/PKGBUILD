@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Rudolf <archlinux dot org at daniel-rudolf dot de>
+# Contributor: Peter Cai <peter at typeblog dot net>
+
+pkgname=udp2raw
+pkgver=20230206.0
+_commit=e5ecd33ec4c25d499a14213a5d1dbd5d21e0dd63
+pkgrel=3
+pkgdesc='A tunnel that turns UDP traffic into encrypted UDP/FakeTCP/ICMP traffic using raw sockets'
+url='https://github.com/wangyu-/udp2raw'
+arch=('x86_64')
+depends=('iptables')
+makedepends=('git')
+conflicts=('udp2raw-tunnel')
+provides=('udp2raw-tunnel')
+replaces=('udp2raw-tunnel')
+license=('MIT')
+source=("git+https://github.com/wangyu-/udp2raw.git#commit=$_commit"
+        "udp2raw@.service")
+sha512sums=('SKIP'
+            '2ab2a0de053e049fe0eec9b0b377caf765ba90ca56556088f6b6136579dcf47c09c4377c4ab82976a5625dcc62d15b08c9c5752838bdbe1e6b784db23993a6a3')
+
+build() {
+  cd udp2raw
+  make OPT="$CXXFLAGS $LDFLAGS" dynamic
+}
+
+package() {
+  cd udp2raw
+  install -Dm755 udp2raw_dynamic "$pkgdir"/usr/bin/udp2raw
+  install -Dm644 example.conf -t "$pkgdir"/etc/udp2raw/
+  install -Dm644 "$srcdir"/udp2raw@.service -t "$pkgdir"/usr/lib/systemd/system/
+  install -Dm644 LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  install -Dm644 README.md "$pkgdir"/usr/share/doc/$pkgname/README.md
+}

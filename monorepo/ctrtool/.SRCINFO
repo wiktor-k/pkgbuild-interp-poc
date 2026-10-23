@@ -1,0 +1,17 @@
+pkgbase = ctrtool
+	pkgdesc = A tool to read/extract Nintendo 3DS files
+	pkgver = 1.3.0
+	pkgrel = 2
+	url = https://github.com/3DSGuy/Project_CTR
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/3DSGuy/Project_CTR.git#tag=e8f5f529c54ff9b22a2491a480ffa69206bf7b19
+	source = ctrtool-flags.patch
+	b2sums = 378741afd23a1571d3604a802f5695d1a108ab8b50bf943cef8e30d5eabaa43d6ea1616e96e0e94721f4b1f093d9a25bbb9484b7f434d439665e160c1355d2e7
+	b2sums = 6db2c9d99ab289f50a7a60f2296dbb2a2d8179f4b2c10552a78f7b02da657baa38fc191c2653b7a78af8b15a523d12f4c4425baa222908a68d9039c794c6ed19
+
+pkgname = ctrtool

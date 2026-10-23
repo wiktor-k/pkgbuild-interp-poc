@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_name=hsluv-python
+pkgname=python-hsluv
+pkgver=5.0.5
+pkgrel=1
+pkgdesc="A Python implementation of HSLuv (revision 4)"
+arch=(any)
+url="https://github.com/hsluv/hsluv-python"
+license=(MIT)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('8e344f0907410b5003edcbf6c323782eafbb1f05913fc1100606ba7e4395a868d70070cf8f1ea8db0195d6727b8a8706c75a9b171ce6baf212735fb886efed74')
+b2sums=('95251e7d3e058760fe50977ede7c76c6b0e9e25797090613ae36392dbf3d02e0f39cdcff37fa1af05adc8c33c18e6dec4cd3fb30906905f24089851d3222fefe')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  export PYTHONPATH="build:$PYTHONPATH"
+  pytest -vv
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

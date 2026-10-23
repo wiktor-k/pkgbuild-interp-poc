@@ -1,0 +1,19 @@
+pkgbase = xchm
+	pkgdesc = Viewer for CHM files (GUI front-end to chmlib)
+	pkgver = 1.40
+	pkgrel = 1
+	url = https://github.com/rzvncj/xCHM
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = chmlib
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = wxwidgets-common
+	depends = wxwidgets-gtk3
+	source = git+https://github.com/rzvncj/xCHM.git#tag=1.40
+	b2sums = 580784a648451f150029fd4613e7b588b09663b38cf6dc907b8cd86c625c14c573f9bbcd26fcf8e1e99b5b4a16acf7531d11c730a2307175ff107de47372fea2
+
+pkgname = xchm

@@ -1,0 +1,68 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-system-monitor
+pkgver=1.28.1
+pkgrel=4
+pkgdesc="A system monitor for MATE"
+arch=(x86_64)
+url='https://github.com/mate-desktop/mate-system-monitor'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  glibmm
+  gtk3
+  gtkmm3
+  libgcc
+  libgtop
+  librsvg
+  libsigc++
+  libstdc++
+  libxml2
+  pango
+  polkit
+  systemd-libs
+)
+makedepends=(
+  git
+  glib2-devel
+  mate-common
+  yelp-tools
+)
+groups=(mate-extra)
+source=("git+https://github.com/mate-desktop/mate-system-monitor.git#tag=v$pkgver")
+b2sums=(e8dfd26819226c2d184df8919304e48cafdaab42b18eaf6056ce2f05fbcaecd55326f0b282d06125c76e36af4d108e58a9586143a1b961f8630ee2077fe7f410)
+
+prepare() {
+  cd $pkgname
+
+  # Fix window size growing with client-side decorations
+  # https://github.com/mate-desktop/mate-system-monitor/pull/276
+  git cherry-pick -n 33e45b5435103a27c954b63fdec2cac014f57b7d
+
+  # Remove OnlyShowIn from mate-system-monitor.desktop
+  # https://github.com/mate-desktop/mate-system-monitor/pull/277
+  sed -i '/^OnlyShowIn=/d' mate-system-monitor.desktop.in.in
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --libexecdir="/usr/lib/$pkgname" \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

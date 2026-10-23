@@ -1,0 +1,100 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=superlu_dist
+pkgver=9.3.0
+pkgrel=1
+pkgdesc='Distributed memory, MPI based SuperLU'
+arch=(x86_64)
+url='https://github.com/xiaoyeli/superlu_dist'
+license=(BSD-3-Clause-LBNL)
+depends=(
+  blas
+  glibc
+  lapack
+  libgcc
+  libgomp
+  openmpi
+)
+makedepends=(
+  cmake
+  gcc-fortran
+  #ninja
+  python
+)
+checkdepends=(
+  python-mpi4py
+  python-numpy
+  python-scipy
+)
+optdepends=(
+  'python-mpi4py: for Python interface'
+  'python-numpy: for Python interface'
+  'python-scipy: for Python interface'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+b2sums=('42fb1c25b911c5f898039ae263478accf49478be8df0207a7f387630257200bd040dbea392760c12b87ef438b33c345917b282d68c15b06fda86bc6aef245515')
+
+prepare() {
+  cd "$srcdir"/$pkgname-$pkgver
+
+  # Remove non-prototype declarations of fopen
+  # https://github.com/xiaoyeli/superlu_dist/pull/185
+  sed -i -e 's|\*fp, \*fopen()|\*fp|g' -e 's|\*fopen(), ||g' $(find -name '*.c')
+
+  # Fix finding the libsuperlu_dist_python.so library
+  sed -i "s|os.getenv('SUPERLU_PYTHON_LIB_PATH')|os.getenv('SUPERLU_PYTHON_LIB_PATH', '/usr/lib')|" PYTHON/pdbridge.py
+
+  # Fix importing pdbridge in example scripts
+  sed -i 's|import pdbridge|import superlu_dist.pdbridge as pdbridge|' PYTHON/*.py
+  sed -i 's|from pdbridge import|from superlu_dist.pdbridge import|' PYTHON/*.py
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-$pkgver
+    # FIXME: ninja does not work: ninja: build stopped: multiple rules generate FORTRAN/superlupara_mod.mod.
+    #-G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DBUILD_SHARED_LIBS=ON
+    -Denable_doc=OFF
+    -Denable_examples=OFF
+    -Denable_python=ON
+    -Denable_tests=ON
+    -DTPL_ENABLE_LAPACKLIB=ON
+    -DTPL_ENABLE_PARMETISLIB=OFF
+    -DTPL_ENABLE_INTERNAL_BLASLIB=OFF
+    -DCMAKE_INSTALL_INCLUDEDIR=include/superlu_dist/
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check(){
+  OMP_NUM_THREADS=4 \
+  ctest --test-dir build --output-on-failure
+
+  PYTHONPATH=$pkgname-$pkgver/PYTHON \
+  SUPERLU_PYTHON_LIB_PATH=build/PYTHON \
+  python -c "import pdbridge; pdbridge.load_library(0)"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir"/usr/share/doc/$pkgname/
+  install -vDm 644 $pkgname-$pkgver/DOC/ug.pdf -t "$pkgdir"/usr/share/doc/$pkgname/
+  install -vDm 644 $pkgname-$pkgver/License.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # install Python utility functions
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -vdm 755 "$pkgdir$site_packages"/$pkgname/
+  mv -v "$pkgdir"/usr/lib/PYTHON/pdbridge.py "$pkgdir$site_packages"/$pkgname/
+
+  # install Python examples in proper location
+  install -vdm 755 "$pkgdir"/usr/share/doc/$pkgname/examples/
+  mv -v "$pkgdir"/usr/lib/PYTHON/*.py "$pkgdir"/usr/share/doc/$pkgname/examples/
+
+  rm -frv "$pkgdir"/usr/lib/PYTHON/
+}

@@ -1,0 +1,53 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: Hao Long <aur@esd.cc>
+# Contributor: Aaron Blair <aaron@aaronpb.me>
+
+pkgname=gobuster
+pkgver=3.8.2
+pkgrel=1
+pkgdesc="Directory/File, DNS and VHost busting tool written in Go"
+arch=('x86_64')
+url="https://github.com/OJ/gobuster"
+license=('Apache-2.0')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'go'
+)
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/OJ/gobuster/archive/v${pkgver}.tar.gz")
+sha256sums=('6919232eafbd0c4bbc9664d7f434b6a8d82133aa09f1400341ef6985ceff208a')
+b2sums=('d17e87d593ac5f76dd9543a3022ca53f03fcd890754fb52c5bbb71b2d4fd0a2a0e4813a46761b50c59141b3673775cbdffc71651ad2a54b053e550e107d9602a')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode=external" \
+    .
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  go test ./...
+  ./gobuster --help
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 -t "${pkgdir}/usr/bin" \
+    gobuster
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

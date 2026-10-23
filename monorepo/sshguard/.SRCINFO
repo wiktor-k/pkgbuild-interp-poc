@@ -1,0 +1,20 @@
+pkgbase = sshguard
+	pkgdesc = Brute force detector for SSH, Exim, VSFTPD and more. Blocks by ip with iptables
+	pkgver = 2.6.0
+	pkgrel = 1
+	url = https://www.sshguard.net/
+	arch = x86_64
+	license = GPL
+	optdepends = iptables
+	optdepends = nftables
+	optdepends = firewalld
+	optdepends = ipset
+	backup = etc/sshguard.conf
+	source = https://downloads.sourceforge.net/sourceforge/sshguard/sshguard-2.6.0.tar.gz
+	source = tmpfile.conf
+	source = sshguard.service
+	sha256sums = 17cf44e29ce7853bd2df1425785947a097eda1d4f87ffb03a92d4c98bae4654d
+	sha256sums = cd2ba683f25a650a29dd465ec7eb507826af46822d1a1ea6116a052c77c4148f
+	sha256sums = 5dda7a47c11898142fcc21cf8e76c0c7009814a0d924675feacb3df084a0fa1b
+
+pkgname = sshguard

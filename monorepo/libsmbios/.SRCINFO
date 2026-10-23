@@ -1,0 +1,21 @@
+pkgbase = libsmbios
+	pkgdesc = A library for providing access to as much BIOS information as possible
+	pkgver = 2.4.3
+	pkgrel = 9
+	url = https://github.com/dell/libsmbios
+	arch = x86_64
+	license = GPL
+	license = custom
+	makedepends = libxml2
+	makedepends = python
+	makedepends = chrpath
+	makedepends = doxygen
+	makedepends = git
+	makedepends = cppunit
+	makedepends = help2man
+	depends = glibc
+	optdepends = python: tools
+	source = git+https://github.com/dell/libsmbios.git#commit=5b72244ca0d09c7f228d571ec2d5d20183486c11
+	sha256sums = SKIP
+
+pkgname = libsmbios

@@ -1,0 +1,79 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=komikku
+pkgver=51.1.0
+pkgrel=1
+pkgdesc='Manga and comics reader for GNOME'
+arch=(any)
+url='https://apps.gnome.org/Komikku/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  graphene
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libsoup3
+  pango
+  python
+  python-beautifulsoup4
+  python-brotli
+  python-cairo
+  python-colorthief
+  python-cryptography
+  python-dateparser
+  python-ebooklib
+  python-emoji
+  python-gobject
+  python-jxlpy
+  python-keyring
+  python-lxml
+  python-magic
+  python-natsort
+  python-piexif
+  python-pillow
+  python-pyjwt
+  python-pypdf
+  python-pytz
+  python-rarfile
+  python-requests
+  python-tzlocal
+  python-unidecode
+  python-urllib3
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  python-curl_cffi
+  python-pytesseract
+)
+optdepends=(
+  'python-curl_cffi: for impersonating browser requests'
+  'python-pytesseract: OCR translator'
+)
+source=("git+https://codeberg.org/valos/Komikku.git#tag=v$pkgver")
+b2sums=(600e2bd0bfe9eaabbb9578d5e44028d500ec3eacef0f9127f0a4b78ac9b29e109b4163504f6d9227fd5951baab564c779e85c49fb8962184dc435fa6c7f1b994)
+
+prepare() {
+  cd Komikku
+}
+
+build() {
+  arch-meson Komikku build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

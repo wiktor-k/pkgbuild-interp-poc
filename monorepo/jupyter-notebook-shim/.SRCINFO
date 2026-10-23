@@ -1,0 +1,21 @@
+pkgbase = jupyter-notebook-shim
+	pkgdesc = Provides a way for JupyterLab and other frontends to switch to Jupyter Server for their Python Web application backend
+	pkgver = 0.2.4
+	pkgrel = 4
+	url = https://github.com/jupyterlab/notebook_shim
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest-jupyter
+	checkdepends = python-pytest-tornasync
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = ipython
+	depends = jupyter-server
+	depends = python
+	depends = python-jupyter-core
+	depends = python-traitlets
+	source = https://github.com/jupyter/notebook_shim/releases/download/v0.2.4/notebook_shim-0.2.4.tar.gz
+	sha256sums = b4b2cfa1b65d98307ca24361f5b30fe785b53c3fd07b7a47e89acb5e6ac638cb
+
+pkgname = jupyter-notebook-shim

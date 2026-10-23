@@ -1,0 +1,75 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Anas Elgarhy <anas.elgarhy.dev@gmail.com>
+pkgname=smolvm
+pkgver=1.31.3
+pkgrel=1
+pkgdesc='Tool to build & run portable, lightweight, self-contained virtual machines'
+arch=('x86_64')
+url='https://github.com/smol-machines/smolvm'
+license=('Apache-2.0')
+depends=('seatd' 'crun' 'jq' 'e2fsprogs' 'util-linux' 'libcap' 'gzip' 'tar' 'libgcc' 'zlib' 'oniguruma' 'sqlite' 'zstd')
+makedepends=('git' 'rust' 'musl' 'rust-musl' 'cargo-make' 'bc' 'python-pyelftools' 'libepoxy' 'virglrenderer'
+              'clang' 'lld')
+provides=('smolvm')
+source=("git+https://github.com/smol-machines/smolvm#tag=v${pkgver}"
+        "git+https://github.com/smol-machines/libkrun"
+        "git+https://github.com/smol-machines/libkrunfw"
+        "git+https://github.com/smol-machines/smolvm-sdk"
+        'smolvm-build-fixes.patch')
+sha256sums=('2c3eeef3c272bb25fa32880a98edd292bec7fe7f2e42bf54739b6a7595a7c6f8'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'ace64d0f406db5d1bd902059a909f219ad44655c8b9d0cc70072114fabdab011')
+
+prepare() {
+  cd "$pkgname"
+
+  # We're using their libkrun fork because supposedly it adds features that
+  # they need and we can't use the Arch packages.
+  git submodule init
+  git config submodule.libkrun.url "${srcdir}/libkrun"
+  git config submodule.libkrunfw.url "${srcdir}/libkrunfw"
+  git config submodule.smolvm-sdk.url "${srcdir}/smolvm-sdk"
+  git -c protocol.file.allow=always submodule update
+
+  patch -p1 < ../smolvm-build-fixes.patch
+
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+  export CFLAGS+=' -ffat-lto-objects'
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  # Use lld for the musl target as --icf=safe is not supported by GNU ld.
+  export CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_RUSTFLAGS='-Clink-arg=-fuse-ld=lld'
+
+  cargo make build-libkrunfw
+  cargo make build-libkrun
+  cargo make build-agent
+  cargo make agent-rootfs
+  cargo make build
+}
+
+package() {
+  cd "$pkgname"
+
+  # Point the wrapper at the packaged locations instead of script-relative ones
+  sed -i \
+      -e 's|^SMOLVM_BIN=.*|SMOLVM_BIN=/usr/lib/smolvm/smolvm-bin|' \
+      -e 's|^SMOLVM_LIB=.*|SMOLVM_LIB=/usr/lib/smolvm/lib|' \
+      -e 's|^SMOLVM_BUNDLED_ROOTFS=.*|SMOLVM_BUNDLED_ROOTFS=/usr/lib/smolvm/agent-rootfs|' \
+      scripts/smolvm-wrapper.sh
+
+  install -Dm755 target/release/smolvm "$pkgdir/usr/lib/smolvm/smolvm-bin"
+  install -Dm755 scripts/smolvm-wrapper.sh "$pkgdir/usr/bin/smolvm"
+  install -d "$pkgdir/usr/lib/smolvm/"
+  cp -a target/agent-rootfs/ "$pkgdir/usr/lib/smolvm/agent-rootfs"
+  cp -a lib/linux-$CARCH/ "$pkgdir/usr/lib/smolvm/lib"
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}
+

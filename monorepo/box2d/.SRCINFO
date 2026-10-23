@@ -1,0 +1,25 @@
+pkgbase = box2d
+	pkgdesc = 2D rigid body simulation library for games
+	pkgver = 3.2.0
+	pkgrel = 1
+	url = http://www.box2d.org/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = git
+	makedepends = wayland
+	makedepends = gtk3
+	makedepends = libxinerama
+	makedepends = libxkbcommon
+	makedepends = libxkbcommon-x11
+	makedepends = libxt
+	makedepends = xorg-xrandr
+	makedepends = libxcursor
+	makedepends = xorg-xinput
+	makedepends = glfw
+	depends = glibc
+	source = box2d-3.2.0.tar.gz::https://github.com/erincatto/Box2D/archive/v3.2.0.tar.gz
+	sha512sums = 874bde300e7e33e950152f1d86cb4e2989cd7e30b2d89ac29d9596d9251b514972285eaba19b2d2941870f6d0e446265bf22e4d2a6df287f2c9807e0a82c8ed1
+
+pkgname = box2d

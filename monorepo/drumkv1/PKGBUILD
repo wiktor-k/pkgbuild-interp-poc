@@ -1,0 +1,132 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+
+pkgbase=drumkv1
+pkgname=(
+  drumkv1
+  drumkv1-common
+  drumkv1-lv2
+  drumkv1-standalone
+)
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="An old-school drum-kit sampler"
+arch=(x86_64)
+url="https://drumkv1.sourceforge.io/"
+license=(GPL-2.0-or-later)
+makedepends=(
+  alsa-lib
+  cmake
+  jack
+  libgcc
+  liblo
+  libsndfile
+  libstdc++
+  lv2
+  qt6-base
+  qt6-svg
+  qt6-tools
+)
+source=(https://download.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.gz)
+sha512sums=('3456dd992476da0f9edf8afbcc08912b74fc6e49206809853b9341e6d5273d469756bc1ac01caa9533cc9b89ce2e0c398a91afcbe6d1291d5eaf63f2d6e98078')
+b2sums=('7631822eeccadb416b001bd33261c64e170b7d0b1b824554a8fa52e8bbb3f90c36351988b7789379107ee566ab196a5b82471d836a02919c19f355b72b81d606')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CONFIG_QT6=ON
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package_drumkv1() {
+  depends=(
+    $pkgbase-{lv2,standalone}=$pkgver
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  (
+    cd "$pkgdir"
+
+    # have find-libdeps resolve dependencies properly:
+    # https://gitlab.archlinux.org/archlinux/devtools/-/issues/102
+    find usr/lib -type f -iname "*.so" -exec chmod +x {} \;
+
+    _pick $pkgbase-common usr/share/$pkgbase
+    _pick $pkgbase-lv2 usr/lib/lv2
+    _pick $pkgbase-standalone usr/{bin,share}
+  )
+}
+
+package_drumkv1-common() {
+  pkgdesc+=" - common files"
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+package_drumkv1-lv2() {
+  pkgdesc+=" - LV2 plugin"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  depends=(
+    "drumkv1-common=$pkgver"
+    glibc
+    libgcc
+    libsndfile libsndfile.so
+    libstdc++
+    lv2-host
+    qt6-base
+    qt6-svg
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+package_drumkv1-standalone() {
+  pkgdesc+=" - standalone"
+  groups=(
+    pro-audio
+  )
+  depends=(
+    alsa-lib
+    "drumkv1-common=$pkgver"
+    glibc
+    hicolor-icon-theme
+    jack
+    libgcc
+    liblo
+    libsndfile libsndfile.so
+    libstdc++
+    qt6-base
+    qt6-svg
+  )
+  optdepends=(
+    'new-session-manager: for session management using the standalone application'
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/{ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

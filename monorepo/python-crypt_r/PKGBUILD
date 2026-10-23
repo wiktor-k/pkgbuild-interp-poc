@@ -1,0 +1,49 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-crypt_r
+_name=${pkgname#python-}
+pkgver=3.13.1
+pkgrel=1
+pkgdesc="A copy of the crypt module that was removed in Python 3.13"
+arch=(x86_64)
+url="https://github.com/fedora-python/crypt_r/"
+license=(
+  PSF-2.0
+)
+depends=(
+  glibc
+  libxcrypt
+  python
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('9a75fe79a42a82d81f0976e9ccb1dc8c8954f5e32ddb3a9fe58cb6412a8748e0505f508b84c341bb12c22336a7a04394d695820919d17a5431688c63bdd9c3ee')
+b2sums=('1f07cbaafa21dac7db80e1ca02861da308dfa767f5c6474e55a57cba326fb11e19010ff8e0d20e5a4e7b077a95b584e9904d2d20bac8d4d93c7a4a0134a83f55')
+
+prepare() {
+  cd $_name-$pkgver
+  sed --quiet '62,120p' LICENSE > PSF-2.0.txt
+}
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local python_version=$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')
+
+  cd $_name-$pkgver
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-$python_version" python -m unittest discover -v tests/
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 PSF-2.0.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

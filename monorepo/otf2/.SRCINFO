@@ -1,0 +1,22 @@
+pkgbase = otf2
+	pkgdesc = Open Trace Format 2, a scalable trace data format and support library
+	pkgver = 3.2
+	pkgrel = 1
+	url = https://perftools.pages.jsc.fz-juelich.de/cicd/otf2/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = chrpath
+	makedepends = python
+	source = https://perftools.pages.jsc.fz-juelich.de/cicd/otf2/tags/otf2-3.2/otf2-3.2.tar.gz
+	sha256sums = 82b3a88a550cb8c3cec8fd45eca82cdcbaf945209977482471b4b5e430d64a8d
+
+pkgname = otf2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	optdepends = otf2-docs: API documentation and examples
+	optdepends = python-jinja: otf2-template
+
+pkgname = otf2-docs
+	pkgdesc = Open Trace Format 2, a scalable trace data format and support library (documentation)

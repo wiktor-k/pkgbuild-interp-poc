@@ -1,0 +1,23 @@
+pkgbase = python-jupyter-ydoc
+	pkgdesc = Document structures for collaborative editing using Ypy
+	pkgver = 4.1.1
+	pkgrel = 1
+	url = https://jupyter.org/
+	arch = any
+	license = MIT
+	checkdepends = hypercorn
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-websockets
+	checkdepends = python-pycrdt-websocket
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-nodejs-version
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-anyio
+	depends = python-pycrdt
+	source = git+https://github.com/jupyter-server/jupyter_ydoc#tag=v4.1.1
+	sha256sums = d797c72103ef9c488ffce26445a6d533b9b5386c9859fb9967b683f3f3f74dcc
+
+pkgname = python-jupyter-ydoc

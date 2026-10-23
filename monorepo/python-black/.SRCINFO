@@ -1,0 +1,34 @@
+pkgbase = python-black
+	pkgdesc = Uncompromising Python code formatter
+	pkgver = 26.10.1
+	pkgrel = 1
+	url = https://github.com/psf/black
+	arch = any
+	license = MIT
+	checkdepends = ipython
+	checkdepends = python-aiohttp
+	checkdepends = python-parameterized
+	checkdepends = python-pytest
+	checkdepends = python-tokenize-rt
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-fancy-pypi-readme
+	makedepends = python-hatch-vcs
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-click
+	depends = python-mypy_extensions
+	depends = python-packaging
+	depends = python-pathspec
+	depends = python-platformdirs
+	depends = python-pytokens
+	optdepends = ipython: for Jupyter notebook support
+	optdepends = python-tokenize-rt: for Jupyter notebook support
+	optdepends = python-aiohttp: for the blackd HTTP server
+	optdepends = python-colorama: for colored diffs
+	source = python-black::git+https://github.com/psf/black#tag=26.10.1
+	sha512sums = 46cbeb33168d5292a9bedbf9adcbf3e02a15857f00007480c5c4789b378eaf128291221829f6a4b82c80b180b7035ef02210e9ad4b39b4ded710b715959ed125
+	b2sums = 451841e95b5b984996793ad503b2b8fa6d7250bac5859c1bdff79a648a26623cfe9bf756027c764f6d4ce99a4b5c4d88ed09ef3596c29a1c6618dd2f3fff5ee8
+
+pkgname = python-black

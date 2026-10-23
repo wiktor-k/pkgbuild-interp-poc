@@ -1,0 +1,19 @@
+pkgbase = python-validators
+	pkgdesc = Python Data Validation for Humans
+	pkgver = 0.36.0
+	pkgrel = 1
+	url = https://python-validators.github.io/validators
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-eth-hash
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = python
+	optdepends = python-eth-hash: for eth_address validator
+	source = git+https://github.com/python-validators/validators.git#tag=0.36.0
+	sha512sums = db242203efddca51f215831bae9e56c71d324393da496806b295a71432ac933a93bc0d448005d0d2fc34be994d1ec3cd40aea525c55fe6c9072cd8476a1a3ac1
+
+pkgname = python-validators

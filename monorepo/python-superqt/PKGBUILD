@@ -1,0 +1,50 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Lorenzo Gaifas <brisvag at gmail dot com>
+
+pkgname=python-superqt
+pkgver=0.8.2
+pkgrel=1
+pkgdesc='Missing widgets and components for Qt-python'
+arch=(any)
+url='https://pyapp-kit.github.io/superqt/'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-pint
+  python-pygments
+  python-qtpy
+)
+makedepends=(
+  git
+  python-build
+  python-hatch-vcs
+  python-hatchling
+  python-installer
+)
+checkdepends=(
+  python-numpy
+  python-pytest
+  python-pytest-qt
+  python-pyqt6
+)
+source=("git+https://github.com/pyapp-kit/superqt#tag=v$pkgver")
+b2sums=('8cee74416fea1af4eb0c33c36e62543e376afab4ec3df61be55af5ba565e90e24819794fdaa21a982236b063430bf70d6a2063f0370fd49eae5e061c72b5af5e')
+
+build() {
+  cd ${pkgname#python-}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}
+  PYTHONPATH="$PWD/src" QT_QPA_PLATFORM=offscreen pytest \
+    --deselect tests/test_eliding_label.py \
+    --deselect tests/test_eliding_line_edit.py \
+    --ignore tests/test_iconify.py
+}
+
+package() {
+  cd ${pkgname#python-}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

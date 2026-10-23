@@ -1,0 +1,55 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: Jacobo Arvelo <unix4all@ya.com>
+# Contributor: Douglas Soares de Andrade <douglas@archlinux.org>
+
+pkgname=wesnoth
+# NOTE: Odd minor versions are unstable! Do not package those.
+pkgver=1.18.8
+epoch=1
+pkgrel=2
+pkgdesc="A turn-based strategy game on a fantasy world"
+arch=('x86_64')
+license=('GPL')
+url="https://www.wesnoth.org/"
+depends=('sdl2_mixer' 'sdl2_image' 'boost-libs' 'pango' 'dbus' 'lua54')
+makedepends=('boost' 'cmake' 'git' 'ninja' 'python')
+options=(!emptydirs)
+source=("git+https://github.com/wesnoth/wesnoth.git#tag=${pkgver}"
+         boost-1.89.patch)
+sha512sums=('7c0035cbd3ec346c1f4224073fabb1432ef472fe59842ab74789aa5c5abda208acde09e3cdafd597a2cbd52b7b2d4bdd1b8cb43e51fcb2ae92345eee74896e69'
+            'd982b8d9b6b96f95aa80b4d2b5de0217d15baba0a0f70c066534090d4eaf6d6a7088bf77146c72b4d89a8ff0cf864b844ee852d63e7a2e28b6748c555b9480a7')
+
+prepare() {
+  cd $pkgname
+  # patch -p1 -i ../boost-1.89.patch
+}
+
+build() {
+  cd "$pkgname"
+
+  cmake \
+      -GNinja \
+      -Bbuild \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DENABLE_TOOLS=ON \
+      -DFIFO_DIR=/run/wesnothd \
+      -DENABLE_DISPLAY_REVISION=OFF \
+      -DENABLE_SYSTEM_LUA=ON
+  ninja -C build
+}
+
+package() {
+  cd "$pkgname"
+
+  DESTDIR="$pkgdir" ninja -C build install
+
+  # See https://forums.wesnoth.org/viewtopic.php?t=51038
+  echo "Linux repository" > "$pkgdir"/usr/share/wesnoth/data/dist
+
+  mkdir -p "$pkgdir"/usr/lib/{tmpfiles.d,systemd/system}
+  install -Dm644 packaging/systemd/wesnothd.sysusers.conf.in "$pkgdir"/usr/lib/sysusers.d/wesnoth.conf
+  sed "s|@FIFO_DIR@|/run/wesnothd|" packaging/systemd/wesnothd.tmpfiles.conf.in > "$pkgdir"/usr/lib/tmpfiles.d/wesnothd.conf
+  sed -e "s|@FIFO_DIR@|/run/wesnothd|" -e "s|@BINARY_SUFFIX@||" -e "s|@CMAKE_INSTALL_FULL_BINDIR@|/usr/bin|" packaging/systemd/wesnothd.service.in > "$pkgdir"/usr/lib/systemd/system/wesnothd.service
+}

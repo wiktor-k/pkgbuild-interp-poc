@@ -1,0 +1,37 @@
+pkgbase = yosys
+	pkgdesc = A framework for RTL synthesis
+	pkgver = 0.66
+	pkgrel = 1
+	url = https://yosyshq.net/yosys/
+	arch = x86_64
+	license = ISC
+	checkdepends = gmock
+	checkdepends = iverilog
+	checkdepends = gtkwave
+	makedepends = boost
+	makedepends = git
+	makedepends = pybind11
+	makedepends = python-cxxheaderparser
+	depends = abc
+	depends = bash
+	depends = glibc
+	depends = libffi
+	depends = libgcc
+	depends = python
+	depends = protobuf
+	depends = readline
+	depends = tcl
+	depends = zlib
+	depends = libstdc++
+	optdepends = graphviz: Schematics display support
+	optdepends = xdot: Display netlists
+	optdepends = yices: default solver for yosys-smtbmc
+	optdepends = cvc4: alternative solver for yosys-smtbmc
+	optdepends = z3: alternative solver for yosys-smtbmc
+	options = !lto
+	source = git+https://github.com/YosysHQ/yosys#tag=v0.66
+	source = git+https://github.com/jarro2783/cxxopts
+	sha512sums = bedfe50db1e51b3c385df4a243590c558dffae124ef0625ea73ef908000a9271febee5ddeef0523e8d7eba49bdf25bc5a4e005535f483ed240d8e62a4477797e
+	sha512sums = SKIP
+
+pkgname = yosys

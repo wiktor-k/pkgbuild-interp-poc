@@ -1,0 +1,37 @@
+pkgbase = java-atk-wrapper
+	pkgdesc = ATK wrapper for screen reader access to Java Swing applications
+	pkgver = 0.44.0
+	pkgrel = 2
+	url = https://gitlab.gnome.org/GNOME/java-atk-wrapper/
+	arch = x86_64
+	license = LGPL
+	makedepends = gobject-introspection
+	makedepends = gtk3
+	makedepends = xorg-xprop
+	makedepends = at-spi2-atk
+	makedepends = autoconf-archive
+	makedepends = java-environment=8
+	makedepends = java-environment=11
+	makedepends = java-environment=17
+	makedepends = java-environment=21
+	makedepends = java-environment=25
+	options = !emptydirs
+	source = https://gitlab.gnome.org/GNOME/java-atk-wrapper/-/archive/0.44.0/java-atk-wrapper-common-0.44.0.tar.bz2
+	sha256sums = 6d2a063226258ac45664281a057fc267f743a6ea9193342a647a270858c206d6
+	sha512sums = e016001a230d903589321035008016ca3556ece20338a577e1f90d679d8f620549824051f3be7f9510af258aac0016315115cc392bfea2fbf7668fc818469d9d
+
+pkgname = java-atk-wrapper-common
+	pkgdesc = ATK wrapper for screen reader access to Java Swing applications - common files
+	depends = xorg-xprop
+	depends = atk
+	depends = at-spi2-atk
+
+pkgname = java-atk-wrapper-openjdk
+
+pkgname = java-atk-wrapper-openjdk8
+
+pkgname = java-atk-wrapper-openjdk11
+
+pkgname = java-atk-wrapper-openjdk17
+
+pkgname = java-atk-wrapper-openjdk21

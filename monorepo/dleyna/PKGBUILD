@@ -1,0 +1,115 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgbase=dleyna
+pkgname=(
+  dleyna
+  dleyna-docs
+  python-dleyna
+)
+pkgver=0.8.5
+pkgrel=1
+pkgdesc="Services and D-Bus APIs to access UPnP and DLNA media devices"
+url="https://gitlab.gnome.org/World/dLeyna"
+arch=(x86_64)
+license=(LGPL-2.1-only)
+depends=(
+  glib2
+  glibc
+  gssdp
+  gupnp
+  gupnp-av
+  gupnp-dlna
+  libgcc
+  libsoup3
+  libxml2
+)
+makedepends=(
+  git
+  meson
+  python
+  python-dbus
+  python-docutils
+  python-gobject
+  python-sphinx
+  python-sphinx_rtd_theme
+)
+source=("git+https://gitlab.gnome.org/World/dLeyna.git?signed#tag=v$pkgver")
+b2sums=('9e1148239207ddd28bb621e9704def759a5c1ec911dfe2a53f55b3a401c248bf74ceaa0e7020bc8df9fa7c2b86490a76987b3c8f6c5f70d343d2bc69ff94abee')
+validpgpkeys=(
+  AC9CD4E32D7C7F6357BA8ADD10F6E970175D29E1 # Jens Georg <mail@jensge.org>
+)
+
+prepare() {
+  cd dLeyna
+}
+
+build() {
+  local meson_options=(
+    -D log_type=glib
+  )
+
+  arch-meson dLeyna build "${meson_options[@]}"
+  meson compile -C build
+  meson compile -C build docs
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+package_dleyna() {
+  provides=(
+    dleyna-connector-dbus
+    dleyna-core
+    dleyna-renderer
+    dleyna-server
+    libdleyna-core-1.0.so
+  )
+  replaces=(
+    'dleyna-connector-dbus<=0.4.1-1'
+    'dleyna-core<=0.7.0-3'
+    'dleyna-renderer<=0.7.2-1'
+    'dleyna-server<=0.7.2-1'
+  )
+  conflicts=("${replaces[@]}")
+
+  meson install -C build --destdir "$pkgdir"
+
+  _pick python "$pkgdir"/usr/lib/python*
+}
+
+package_dleyna-docs() {
+  pkgdesc+=" - documentation"
+  depends=()
+
+  mkdir -p "$pkgdir/usr/share/doc"
+  cp -a build/doc/docs "$pkgdir/usr/share/doc/$pkgbase"
+
+  # Remove sphinx cache files
+  rm -r "$pkgdir/usr/share/doc/$pkgbase/.doctrees"
+}
+
+package_python-dleyna() {
+  pkgdesc+=" - Python bindings"
+  depends=(
+    dleyna
+    glib2
+    python
+    python-dbus
+    python-gobject
+  )
+
+  mv python/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

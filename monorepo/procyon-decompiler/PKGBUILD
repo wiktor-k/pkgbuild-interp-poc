@@ -1,0 +1,49 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Aditya Sirish <aditya@saky.in>
+
+pkgname=procyon-decompiler
+pkgver=0.6.0
+pkgrel=5
+pkgdesc='A Java decompiler, inspired by ILSpy and Mono.Cecil'
+arch=(any)
+url='https://github.com/mstrobel/procyon'
+license=(Apache-2.0)
+depends=(sh java-runtime)
+makedepends=(git jdk8-openjdk)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  wrapper.sh
+  gradle-repro.patch
+)
+sha512sums=('fbd3fdffd54304807a9f98b2713bee70099a3009c1221a9f851633f257ad056f5017c8562a4fa115ede26709c5be869b19253698bb28808329fedd48413e673b'
+            '728dc9e3876a8374bd5503092ad6215aab863865c23a24c73ef3acab0f764a5e01eb9405482903247be9fd43b3eae214836a5b2549d9a749b544d2bfce3a44d0'
+            '7d2554c99eff9dab3ebc50fa108f2aa73ed091eff7d3a08b75531a3ff807f55cf1cea4f2c9e1e34bf41c2b05f9430b1048c391007b6a9bfd305bfb8e38d7b005')
+b2sums=('8308d197f305b16da67a1d6856dfee20a1b4b3eb58ddfa7970fbbd7b2f004653496995106abbf8644ec7bba3111d3dc2b66facf8ae9d30c78af0a6e69e34d931'
+        '5dc6e2054663ebb967729ea916b566f1f84bca1e2f17146b7833b12c21cb66853769dd27d589869ccf38ce6633a66d856515486e7cba9ae5d8aa6e3ab305b397'
+        '51fe976ff80bb20f4363b3a5ee0f4ee1336dad63f1b3c38a9a337bf203a67694867527cda5f77027cad71643fa2f6af9d4786bbf87e5c76aa13d770a757de0dd')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/gradle-repro.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # Force the system to build the package using JDK 8
+  export PATH="/usr/lib/jvm/java-8-openjdk/bin/:$PATH"
+  export JAVA_HOME="/usr/lib/jvm/java-8-openjdk"
+
+  ./gradlew Procyon.Decompiler:build
+}
+
+package() {
+  cd "$pkgname"
+
+  # wrapper
+  install -vDm755 "$srcdir/wrapper.sh" "$pkgdir/usr/bin/$pkgname"
+
+  # jar
+  install -vDm644 "build/Procyon.Decompiler/libs/$pkgname-$pkgver.jar" "$pkgdir/usr/share/java/$pkgname/$pkgname.jar"
+}

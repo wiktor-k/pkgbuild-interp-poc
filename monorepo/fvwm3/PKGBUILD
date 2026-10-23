@@ -1,0 +1,73 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgname=fvwm3
+pkgver=1.1.5
+pkgrel=1
+pkgdesc='Virtual window manager for the X windows system, originally derived from twm'
+arch=(x86_64)
+url='https://www.fvwm.org/'
+license=(GPL-2.0-or-later)
+depends=(
+  bash
+  cairo
+  fontconfig
+  fribidi
+  glib2
+  glibc
+  libevent
+  libice
+  libpng
+  librsvg
+  libsm
+  libx11
+  libxcursor
+  libxext
+  libxfixes
+  libxft
+  libxpm
+  libxrandr
+  libxrender
+  perl
+  python
+  python-pyxdg
+)
+makedepends=(
+  asciidoctor
+  git
+  go
+  libxkbcommon
+  meson
+  xtrans
+)
+optdepends=(
+  'dmenu: Default run command'
+  'stalonetray: System tray support'
+  'xterm: Default terminal emulator'
+)
+source=("git+https://github.com/fvwmorg/fvwm3.git#tag=$pkgver")
+b2sums=(4e8689a512a8b0346f484f3a4fc84dfc30685632b9def1a6065c000333ea06d9b42f867c0d566697b5dedbc7be06f3b5ea8613ba749635d9c53dbf3249d757fc)
+
+prepare() {
+  cd $pkgname/bin/FvwmPrompt
+  export GOPATH="$srcdir"
+  go mod download -modcacherw
+}
+
+build() {
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOPATH="$srcdir"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  arch-meson $pkgname build \
+    -D mandoc=true
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" $pkgname/COPYING
+}

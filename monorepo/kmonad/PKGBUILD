@@ -1,0 +1,53 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=kmonad
+pkgver=0.4.5
+pkgrel=35
+pkgdesc="Advanced keyboard remapping utility"
+url="https://hackage.haskell.org/package/kmonad"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-cereal' 'haskell-hashable' 'haskell-hinotify' 'haskell-lens' 'haskell-megaparsec'
+         'haskell-optparse-applicative' 'haskell-resourcet' 'haskell-rio' 'haskell-unliftio')
+makedepends=('ghc' 'uusi' 'haskell-hspec' 'haskell-hspec-discover' 'git')
+source=("git+https://github.com/kmonad/kmonad.git#tag=$pkgver")
+sha256sums=('f76e9ed6dfadd3a0fc65b2894a127c822226adf69b641dfe4c401de3f5d991b3')
+
+prepare() {
+  cd $pkgname
+  gen-setup
+}
+
+build() {
+  cd $pkgname
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' \
+    -f-dext -f-kext
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $pkgname
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $pkgname
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+
+  install -Dm644 startup/kmonad@.service -t "$pkgdir"/usr/lib/systemd/system/
+}

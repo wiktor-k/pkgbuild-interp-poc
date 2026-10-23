@@ -1,0 +1,17 @@
+pkgbase = nginx-mod-auth-pam
+	pkgdesc = Nginx module to use PAM for simple http authentication
+	pkgver = 1.5.5
+	pkgrel = 21
+	url = https://github.com/sto/ngx_http_auth_pam_module
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = nginx
+	makedepends = nginx-src
+	depends = pam
+	backup = etc/nginx/modules.d/20-auth-pam.conf
+	source = https://github.com/sto/ngx_http_auth_pam_module/archive/v1.5.5/ngx_http_auth_pam_module-1.5.5.tar.gz
+	sha256sums = 98a71617d9119ae784993e3789ce8766fdf2ff2479691f3dc6cf8d8763f8d364
+
+pkgname = nginx-mod-auth-pam
+	depends = pam
+	depends = nginx

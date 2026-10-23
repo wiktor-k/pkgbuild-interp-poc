@@ -1,0 +1,26 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Bastien Dejean <nihilhill@gmail.com>
+
+pkgname=sxhkd
+pkgver=0.6.3
+pkgrel=1
+pkgdesc='Simple X hotkey daemon'
+arch=(x86_64)
+url='https://github.com/baskerville/sxhkd'
+license=(BSD-2-Clause)
+depends=(xcb-util-keysyms)
+makedepends=(git xcb-util)
+source=("git+$url#tag=$pkgver")
+b2sums=('97ebcbe9de147955637ae72d9518a72c0295a66ad16d319b245b0fecf92bff2676142ef261396449563f26e49bf8d80b5b9a21b580d574e2a93d74a240fc0279')
+
+build() {
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+  make -C $pkgname PREFIX=/usr
+}
+
+package() {
+  cd $pkgname
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+  install -Dm644 LICENSE \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

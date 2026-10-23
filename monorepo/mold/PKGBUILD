@@ -1,0 +1,63 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Adrian Perez de Castro <aperez@igalia.com>
+
+pkgname=mold
+pkgver=3.0.0
+pkgrel=4
+pkgdesc='A Modern Linker'
+arch=(x86_64)
+url='https://github.com/rui314/mold'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  zlib
+  zstd
+)
+makedepends=(
+  git
+  rust
+)
+options=(!lto)
+source=(
+  "${pkgname}::git+${url}.git#tag=v${pkgver}"
+  no-libexec.patch
+)
+sha512sums=('70c1bd175355665242abbfedba14ac85ffe8f9d03ae77bff488cfb73175f75d3458e3dae0ce4f6f25ec7618f8ef8599b598138c606802adedd7b02ce953c0b3f'
+            'e064ff28a7c42fa04482e213f49f077b99da6114384722e644e1774c3fc3c23921bb74da328584bd0d5135d72fd0306d58be93da91edb5ef93b3a82b31094577')
+b2sums=('ef8d5860d6175085492b4af3edc5058cf23ae3ffe6634fd0232876e838333e09a8e0c47746950d8ecf555e838f987263e291b9825c6eca2a64f9df0e2a56c76a'
+        '3342df17eeec665b1ed802134d7e6d179722c9ec2c03f16da6f2b1f23c97141c48392ab6d4b5910e8342c1a7a3827006fba85b7dd1167292762f3e7132d4b7aa')
+
+prepare() {
+  cd "$pkgname"
+
+  # prefer /usr/lib over /usr/libexec
+  patch -p1 -i "$srcdir/no-libexec.patch"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  # prefer system zstd
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+
+  cargo build --frozen --release --package mold-cli
+}
+
+check() {
+  cd "$pkgname"
+
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname"
+
+  DESTDIR="$pkgdir" PREFIX=/usr ./install-mold.sh
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

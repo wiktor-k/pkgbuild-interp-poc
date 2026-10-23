@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgbase=gimagereader
+pkgname=(gimagereader-gtk gimagereader-qt gimagereader-common)
+pkgver=3.4.3
+pkgrel=3
+url='https://github.com/manisandro/gImageReader'
+pkgdesc='Gtk/Qt front-end to tesseract-ocr'
+arch=('x86_64')
+license=('GPL3')
+depends=('djvulibre' 'gtksourceviewmm' 'gtkspellmm' 'libtesseract.so' 'libxml++' 'libzip' 'podofo' 'poppler-glib'
+         'poppler-qt6' 'qt6-imageformats' 'qtspell' 'quazip-qt6' 'sane' 'tesseract')
+makedepends=('cmake' 'intltool' 'ninja' 'python-gobject')
+source=("$url/releases/download/v$pkgver/$pkgbase-$pkgver.tar.xz")
+sha256sums=('4604b53e8d952c68ce4198d7b8d864327ef6afaf597e7909f6b31f0eb9b4c425')
+
+build() {
+  cmake -S $pkgbase-$pkgver -B build-gtk -G Ninja \
+    -DCMAKE_INSTALL_PREFIX='/usr' \
+    -DINTERFACE_TYPE=gtk
+  cmake --build build-gtk
+
+  cmake -S $pkgbase-$pkgver -B build-qt -G Ninja \
+    -DCMAKE_INSTALL_PREFIX='/usr' \
+    -DINTERFACE_TYPE=qt6
+  cmake --build build-qt
+}
+
+package_gimagereader-gtk() {
+  pkgdesc='Gtk front-end to tesseract-ocr'
+  depends=('gimagereader-common' 'djvulibre' 'gtksourceviewmm' 'gtkspellmm' 'libxml++' 'libzip'
+           'podofo' 'poppler-glib' 'sane' 'tesseract')
+
+  DESTDIR="$pkgdir" cmake --install build-gtk
+
+  # Split gimagereader-common
+  mkdir gimagereader-common
+  mv "$pkgdir"/usr/share/{doc,icons,locale} gimagereader-common
+}
+
+package_gimagereader-qt() {
+  pkgdesc='Qt front-end to tesseract-ocr'
+  depends=('gimagereader-common' 'djvulibre' 'podofo' 'poppler-qt6' 'qt6-imageformats' 'qtspell'
+           'quazip-qt6' 'sane' 'tesseract')
+
+  DESTDIR="$pkgdir" cmake --install build-qt
+
+  # Split gimagereader-common
+  rm -r "$pkgdir"/usr/share/{doc,icons,locale}
+}
+
+package_gimagereader-common() {
+  pkgdesc='Common files for gImageReader'
+  depends=('hicolor-icon-theme')
+
+  mkdir -p "$pkgdir"/usr/share
+  mv gimagereader-common/* "$pkgdir/usr/share"
+}

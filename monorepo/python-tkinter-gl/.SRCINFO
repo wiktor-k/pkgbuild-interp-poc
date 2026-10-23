@@ -1,0 +1,19 @@
+pkgbase = python-tkinter-gl
+	pkgdesc = An OpenGL drawing surface for tkinter based on TkGL
+	pkgver = 1.1
+	pkgrel = 1
+	url = https://snappy.computop.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	depends = glibc
+	depends = libglvnd
+	depends = libx11
+	depends = python
+	source = git+https://github.com/3-manifolds/tkinter_gl#tag=v1.1_as_released
+	sha256sums = 698bb7286e0b26e0e547fc648e29546bc48cdad4868a3c25ad23f1f74b004ebd
+
+pkgname = python-tkinter-gl

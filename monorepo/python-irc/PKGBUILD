@@ -1,0 +1,52 @@
+# Maintainer: Kyle Keen <keenerd@gmail.com>
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@vdwaa.nl>
+# Contributor: Pierre Chapuis <catwell@archlinux.us>
+# Contributor: Stefano Esposito <ragnarok@email.it>
+
+pkgname=python-irc
+pkgver=20.5.0
+pkgrel=2
+pkgdesc="IRC (Internet Relay Chat) protocol client library for Python"
+arch=('any')
+url="https://pypi.python.org/pypi/irc"
+license=(MIT)
+depends=(
+  python-jaraco.collections
+  python-jaraco.functools
+  python-jaraco.logging
+  python-jaraco.stream
+  python-jaraco.text
+  python-more-itertools
+  python-pytz
+  python-tempora
+)
+makedepends=('python-build' 'python-installer' 'python-setuptools-scm' 'python-wheel')
+checkdepends=(python-pytest python-pytest-enabler python-pygments)
+source=("https://files.pythonhosted.org/packages/source/i/irc/irc-$pkgver.tar.gz"
+         fix-event-loop.patch)
+sha256sums=('8ddbfd19f71204ceceba7b7c72724b15b3fa87bab5e81e45a75bef736a1a3c76'
+            '0303b0b354cac8ddd7dea7d9b721fabfd5ef1c73c0c29c31d462ca2a80e7f840')
+
+prepare() {
+  cd irc-$pkgver
+  patch -p1 -i ../fix-event-loop.patch
+}
+
+build() {
+  cd "irc-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "irc-$pkgver"
+  pytest -vv .
+}
+
+package() {
+  cd "irc-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 *.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 scripts/*.py -t "$pkgdir/usr/share/doc/$pkgname/scripts/"
+}

@@ -1,0 +1,29 @@
+pkgbase = dillo
+	pkgdesc = A small, fast graphical web browser built on FLTK
+	pkgver = 3.3.0
+	pkgrel = 1
+	url = https://dillo-browser.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = brotli
+	depends = fltk1.3
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libjpeg-turbo
+	depends = libpng
+	depends = libstdc++
+	depends = libwebp
+	depends = libx11
+	depends = openssl
+	depends = perl
+	depends = zlib
+	backup = etc/dillo/dillorc
+	backup = etc/dillo/domainrc
+	backup = etc/dillo/dpidrc
+	backup = etc/dillo/keysrc
+	source = git+https://git.dillo-browser.org/dillo?signed#tag=v3.3.0
+	validpgpkeys = 32E65EC501A1B6FDF8190D293EE6BA977EB2A253
+	sha512sums = d833191b3877f225f5fe90f9fa9cffa2402854700eb9e66bcc223da77da15890bd7ce60ece16fd8b6d07b9f565868516a70f9286704c24a5f95373305c88cfcc
+
+pkgname = dillo

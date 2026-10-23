@@ -1,0 +1,73 @@
+# Maintainer: Maxime Gauduin <alucryd@gmail.com>
+# Contributor: zeroclaw-labs <bot@zeroclaw.dev>
+# Contributor: Ralph Torres <mail@ralphptorr.es>
+# Contributor: SteamedFish <steamedfish@hotmail.com>
+
+pkgbase=zeroclaw
+pkgname=(
+  zeroclaw
+  zeroclaw-acp-bridge
+  zerocode
+)
+pkgver=0.8.6
+pkgrel=1
+pkgdesc='Zero overhead. Zero compromise. 100% Rust. The fastest, smallest AI assistant.'
+arch=(x86_64)
+url=https://github.com/zeroclaw-labs/zeroclaw
+license=(
+  Apache-2.0
+  MIT
+)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  cargo
+  clang
+  git
+  nodejs-lts
+  npm
+  rust
+)
+source=(git+https://github.com/zeroclaw-labs/zeroclaw.git#tag=v${pkgver})
+b2sums=('3f43edf805b5aa718b5e53572a3c69eb35cceeb74bb6e7c607b799b98d2fd7e0573da90af6223f31fe787cd8bf6b50c1d065bd6c6b933056dc50a22869a73d9e')
+
+prepare() {
+  cd zeroclaw
+  cargo fetch --locked
+  cd web
+  npm ci
+}
+
+build() {
+  cd zeroclaw
+  export CC=clang
+  export CXX=clang++
+  cargo web build
+  cargo build \
+    --release \
+    --frozen \
+    --features "acp-bridge,browser-native,channel-acp-server,channel-git,channel-matrix,channel-mattermost,embedded-web,plugins-wasm-cranelift,provider-github,sandbox-bubblewrap,sandbox-landlock,webauthn"
+  cd apps/zerocode
+  cargo build \
+    --release \
+    --frozen \
+    -p zerocode
+}
+
+package_zeroclaw() {
+  install -Dm 755 zeroclaw/target/release/zeroclaw -t "${pkgdir}"/usr/bin/
+  install -Dm 644 zeroclaw/LICENSE-MIT -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_zeroclaw-acp-bridge() {
+  install -Dm 755 zeroclaw/target/release/zeroclaw-acp-bridge -t "${pkgdir}"/usr/bin/
+  install -Dm 644 zeroclaw/LICENSE-MIT -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_zerocode() {
+  install -Dm 755 zeroclaw/target/release/zerocode -t "${pkgdir}"/usr/bin/
+  install -Dm 644 zeroclaw/LICENSE-MIT -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

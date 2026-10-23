@@ -1,0 +1,46 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=bulky
+pkgver=4.2
+pkgrel=2
+pkgdesc='Utility to rename files and directories'
+arch=(any)
+url='https://github.com/linuxmint/bulky'
+license=(GPL-3.0-or-later)
+groups=(x-apps)
+depends=(
+  bash
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  python
+  python-gobject
+  python-setproctitle
+  python-unidecode
+  xapp-symbolic-icons
+)
+makedepends=(git)
+source=("git+https://github.com/linuxmint/bulky.git#tag=$pkgver")
+b2sums=(4bf3751eb29bdd2142c0e7a5190e01c9d3f8fc52b8d7e2b499acf2590cbda29ed180fd1a878527ab9746b8af12bf66d3b2276f73b5825be434f9dd8fbe76bc27)
+
+prepare() {
+  cd $pkgname
+
+  # Set version number
+  sed -i "s/__DEB_VERSION__/$pkgver/" usr/lib/bulky/bulky.py
+}
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  cp -r usr "$pkgdir"
+
+  python -m compileall -d /usr/lib "$pkgdir/usr/lib"
+  python -O -m compileall -d /usr/lib "$pkgdir/usr/lib"
+}

@@ -1,0 +1,27 @@
+pkgbase = drgn
+	pkgdesc = Programmable debugger
+	pkgver = 0.3.0
+	pkgrel = 1
+	url = https://github.com/osandov/drgn
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	checkdepends = check
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = libelf
+	depends = libgcc
+	depends = libgomp
+	depends = libkdumpfile
+	depends = pcre2
+	depends = python
+	optdepends = python-prompt_toolkit: enhanced terminal support in contrib/ptdrgn.py
+	optdepends = debuginfod: for libdebuginfod support
+	optdepends = xz: for MiniDebugInfo support
+	source = drgn::git+https://github.com/osandov/drgn#tag=v0.3.0
+	sha256sums = 02f4bcd57bf4cd8304e377a437fdc2a02960ecf8fc885b8a5099ac98fada3b2d
+
+pkgname = drgn

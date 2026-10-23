@@ -1,0 +1,122 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=ambix
+pkgname=(ambix ambix-lv2)
+pkgver=0.3.0
+pkgrel=2
+pkgdesc="Ambisonic plug-ins with variable order for use in Digital Audio Workstations"
+arch=(x86_64)
+url="https://github.com/kronihias/ambix"
+license=(GPL-2.0-or-later)
+makedepends=(
+  alsa-lib
+  cmake
+  eigen
+  fftw
+  gcc-libs
+  glibc
+  juce
+  libglvnd
+  libxcursor
+  libxinerama
+  libxrandr
+)
+checkdepends=(lv2lint)
+source=(
+  $url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz
+  $pkgname-0.3.0-system-juce.patch
+)
+sha512sums=('d57ecd19f33fed98f9a4579f74f411880e85b42f56c095d47406d4c6a387a90279b84261c687721f4d13541dd6e3e8e751ce94d46ae533fc97d856d1e3e343e5'
+            '56af95ac088329ce38d8c1839ec806646b29c1b96672c3e4b05c35569a7a176d1a3da0640e46b39db12c7c586629289be1703a5ddb3cf39e1d095b275636647e')
+b2sums=('44215ded9b0649089dcfbf83f510fb9f46f419498e03e463f187d077f34cab972b85890aa771a832f2797014b0dff9d320eab2c0e46790b28f209355b73a3091'
+        '3637b17650630e3428682caaeee93b6b3cf55b5f5a3648b0a166f397eb10e2224b4e36e6338fee72b6c7c7c12e29f3482483d30724daba22541ee2dc851b0d25')
+
+_plugin_names=(
+  ambix_binaural
+  ambix_converter
+  ambix_decoder
+  ambix_directional_loudness
+  ambix_encoder_i2
+  ambix_encoder_i4
+  ambix_encoder_i6
+  ambix_encoder_i8
+  ambix_encoder
+  ambix_maxre
+  ambix_mirror
+  ambix_rotator
+  ambix_rotator_z
+  ambix_vmic
+  ambix_warp
+  ambix_widening
+)
+
+prepare() {
+  # use system provided juce
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-0.3.0-system-juce.patch
+  # Use CMake's up-to-date Eigen3 finder instead of the bundled stale copy.
+  rm -f $pkgname-$pkgver/cmake/FindEigen3.cmake
+  # Add Arch's Eigen include root for legacy '#include <Eigen/...>' paths.
+  sed -i '/include_directories(${EIGEN3_INCLUDE_DIR} ${FFTW3_INCLUDE_DIR})/i include_directories(BEFORE /usr/include/eigen3)' \
+    $pkgname-$pkgver/CMakeLists.txt
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D BUILD_LV2=ON
+    -D BUILD_STANDALONE=OFF
+    -D BUILD_VST=OFF
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D OpenGL_GL_PREFERENCE=GLVND
+    -D WITH_ZITA_CONVOLVER=ON
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  local plugin
+  for plugin in "${_plugin_names[@]}"; do
+    lv2lint -I build/lv2_o5/${plugin}_o5.lv2/ "http://www.matthiaskronlachner.com/${plugin}_o5" || echo "Known to fail: https://github.com/kronihias/ambix/issues/29"
+  done
+}
+
+package_ambix() {
+  depends=(
+    $pkgbase-lv2
+  )
+  conflicts=($pkgbase-{standalone,vst})
+}
+
+package_ambix-lv2() {
+  pkgdesc+=" - LV2 plugins"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  depends=(
+    fftw libfftw3f.so libfftw3f_threads.so
+    freetype2 libfreetype.so
+    glibc
+    libgcc
+    libglvnd
+    libjpeg-turbo
+    libpng
+    libstdc++
+    zlib
+  )
+  optdepends=(
+    'lv2-host: for using a dedicated host'
+  )
+
+  local plugin
+
+  for plugin in "${_plugin_names[@]}"; do
+    install -vDm 755 build/lv2_o5/${plugin}_o5.lv2/*.so -t "$pkgdir/usr/lib/lv2/${plugin}_o5.lv2/"
+    install -vDm 644 build/lv2_o5/${plugin}_o5.lv2/*.ttl -t "$pkgdir/usr/lib/lv2/${plugin}_o5.lv2/"
+  done
+}

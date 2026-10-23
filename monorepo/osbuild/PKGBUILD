@@ -1,0 +1,47 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Contributor: Achilleas Koutsou <achilleas@koutsou.net>
+
+pkgname=osbuild
+pkgdesc='Build Pipelines for Operating System Artifacts'
+pkgver=194
+pkgrel=1
+url="https://www.osbuild.org"
+arch=(any)
+license=(Apache-2.0)
+depends=(bubblewrap curl e2fsprogs qemu-img python util-linux python-yaml python-jsonschema python-toml skopeo)
+makedepends=(make python-docutils python-build python-installer python-setuptools python-wheel)
+optdepends=('dnf5: build rpm/dnf images'
+            'pacman: build pacman images')
+source=($pkgname-$pkgver.tar.gz::https://github.com/osbuild/osbuild/archive/refs/tags/v${pkgver}.tar.gz solver.json)
+sha256sums=('c6d9e686f7571c6cee5aaf54ac5f7d7b8eb17905a35cdcb3b51df7f2633dad6b'
+            '2e2fd516faa92ab7b9b4c093b9a862a454c6def8bc4ea6d6b007d34bd17af7cb')
+
+prepare() {
+  cd $pkgname-$pkgver
+}
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make man
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -m 0755 -d "$pkgdir/usr/lib/osbuild/osbuild"
+
+  for group in assemblers devices inputs runners schemas sources stages mounts ; do
+    cp -vdr --no-preserve=ownership "$group" "$pkgdir/usr/lib/osbuild/"
+  done
+
+  # dnf devsolve script
+  install -Dm755 tools/osbuild-depsolve-dnf "$pkgdir/usr/lib/osbuild/osbuild-depsolve-dnf"
+
+  # use dnf5
+  install -Dm755 $srcdir/solver.json "$pkgdir/usr/lib/osbuild/solver.json"
+
+  # udev rules
+  install -Dm644 data/10-osbuild-inhibitor.rules "$pkgdir"/usr/lib/udev/rules.d/10-osbuild-inhibitor.rules
+}

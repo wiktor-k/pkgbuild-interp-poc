@@ -1,0 +1,23 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Laszlo Papp <djszapi @ gmail at com>
+# Contributor: Dmitry ixaphire_at-gmail-dot+com
+
+pkgname=vim-jad
+pkgver=1.3_1329
+pkgrel=8
+pkgdesc='Automatically decompile Java class files and display Java code'
+arch=(any)
+url='https://www.vim.org/scripts/script.php?script_id=446'
+license=(custom:YegappanCustom)
+depends=(vim-plugin-runtime jad)
+groups=(vim-plugins)
+install=$pkgname.install
+source=("$pkgname::https://www.vim.org/scripts/download_script.php?src_id=${pkgver#*_}"
+        YegappanCustom.txt)
+b2sums=('f992908478619b29f5c0d92736242a5ac0ad91eafb3f53949c90e56b6422f4e03b9d7bf1d1b2e50bb2526f6d11432547732469d2461ea043f915e93def82cc31'
+        'f9b5e6f72ebba7052ccc9178ec49dfa49b1639c74c9e77c4f273ec86cdfebac14c051c062dbe88828fe12592816e06bcdee007327ac14cf2a94a0efaffb7248f')
+
+package() {
+  install -Dm644 $pkgname "$pkgdir/usr/share/vim/vimfiles/plugin/jad.vim"
+  install -Dm644 YegappanCustom.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,37 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+# Contributor: Chris Brannon <cmbrannon79@gmail.com>
+# Contributor: Jaroslaw Swierczynski <swiergot@aur.archlinux.org>
+# Contributor: Alexander Fehr <pizzapunk@gmail.com>
+
+pkgname=python-fuse
+pkgver=1.0.9
+pkgrel=2
+arch=('x86_64')
+pkgdesc="Python bindings for FUSE"
+url="https://github.com/libfuse/python-fuse"
+license=('LGPL-3.0-or-later')
+depends=(
+  'fuse2'
+  'glibc'
+  'python'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('2c0514b2ead677fd20ed12d340ddd14983dd55bd27a6e0d213995700f8dfe783930e33d6df93e7042584e2205d9fcc9b27fc159c39bc21e79a7934b402b89c4b')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,56 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Contributor: Philippe Proulx <pproulx@efficios.com>
+# Contributor: Manuel Mendez <mmendez534 at gmail dot com>
+
+pkgbase='lttng-ust'
+pkgname=('lttng-ust' 'python-lttngust')
+pkgver=2.16.0
+pkgrel=1
+arch=('x86_64')
+url="https://lttng.org/"
+license=('LGPL-2.1-only' 'MIT' 'GPL-2.0-only' 'BSD-3-Clause' 'BSD-2-Clause' 'GPL-3.0-or-later')
+makedepends=('asciidoc' 'xmlto' 'libxml2' 'python' 'liburcu>=0.7.2' 'util-linux' 'numactl' 'python-setuptools')
+source=("https://lttng.org/files/${pkgbase}/${pkgbase}-${pkgver}.tar.bz2"{,.asc})
+sha512sums=('d41e40e6a8a079491f9f832455f242a085676de722d8752fe598e614b7d28f655e125c3012b02159e197bb1aa72e3a65a5f6aa2ecde79ce28843b8e92f5ed78c'
+            'SKIP')
+validpgpkeys=('2A0B4ED915F2D3FA45F5B16217280A9781186ACF')
+
+prepare() {
+    cd $pkgname-$pkgver
+    sed -e '/SETUPTOOLS_USE_DISTUTILS/d' -i src/python-lttngust/Makefile.{in,am} # Fix broken Python version detection
+}
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+
+    # build lttng-ust
+    ./configure \
+        --prefix='/usr' \
+        --enable-man-pages
+    make
+}
+
+check() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    make check
+}
+
+package_lttng-ust() {
+    pkgdesc="LTTng user space tracing libraries for LTTng"
+    depends=('liburcu>=0.7.2' 'util-linux' 'python' 'numactl')
+    cd "${srcdir}/${pkgbase}-${pkgver}"
+    make DESTDIR="${pkgdir}" install
+    install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -D -m644 LICENSES/*.txt "${pkgdir}/usr/share/licenses/${pkgname}/"
+}
+
+package_python-lttngust() {
+    pkgdesc='LTTng-UST Python Bindings'
+    depends=('lttng-ust' 'python')
+    cd "${srcdir}/${pkgbase}-${pkgver}/src/python-lttngust"
+    make DESTDIR="${pkgdir}" install
+
+    cd "${srcdir}/${pkgbase}-${pkgver}"
+    install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -D -m644 LICENSES/*.txt "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

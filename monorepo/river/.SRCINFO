@@ -1,0 +1,29 @@
+pkgbase = river
+	pkgdesc = a non-monolithic Wayland compositor
+	pkgver = 0.5.0
+	pkgrel = 1
+	url = https://isaacfreund.com/software/river/
+	arch = x86_64
+	license = 0BSD
+	license = CC-BY-SA-4.0
+	license = GPL-3.0-only
+	license = MIT
+	makedepends = git
+	makedepends = scdoc
+	makedepends = wayland-protocols
+	makedepends = zig
+	makedepends = clang
+	depends = glibc
+	depends = libevdev
+	depends = libinput
+	depends = libxkbcommon
+	depends = pixman
+	depends = wayland
+	depends = wlroots0.20
+	depends = xorg-xwayland
+	conflicts = river-classic
+	source = git+https://codeberg.org/river/river.git#tag=v0.5.0?signed
+	validpgpkeys = 5FBDF84DD2278DB2B8AD8A5286DED400DDFD7A11
+	sha256sums = 4ebf58cb64a9cb21838c241233edcde0d2274c2f8175d222cb147b993b2d7e7d
+
+pkgname = river

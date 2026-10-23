@@ -1,0 +1,26 @@
+pkgbase = python-pycrdt-websocket
+	pkgdesc = CRDTs based on Yrs
+	pkgver = 0.16.5
+	pkgrel = 1
+	url = https://github.com/y-crdt/pycrdt-websocket
+	arch = any
+	license = MIT
+	checkdepends = hypercorn
+	checkdepends = python-httpx-ws
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-trio
+	checkdepends = python-websockets
+	checkdepends = uvicorn
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	depends = python-anyio
+	depends = python-pycrdt
+	depends = python-pycrdt-store
+	source = git+https://github.com/y-crdt/pycrdt-websocket#tag=0.16.5
+	sha256sums = 3f38372fe81a37a0a6a3db669cc158fccdcc21c51e690b6c51f59b6723d384a2
+
+pkgname = python-pycrdt-websocket

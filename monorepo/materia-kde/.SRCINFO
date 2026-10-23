@@ -1,0 +1,20 @@
+pkgbase = materia-kde
+	pkgdesc = Materia theme for KDE Plasma 5
+	pkgver = 20220823
+	pkgrel = 4
+	url = https://github.com/PapirusDevelopmentTeam/materia-kde
+	arch = any
+	license = GPL3
+	options = !strip
+	source = https://github.com/PapirusDevelopmentTeam/materia-kde/archive/20220823/materia-kde-20220823.tar.gz
+	sha256sums = 2731ffbf22e6fa4afa321fd677d3981c9a3851b9bca1e65d2439e6f3f6b735bf
+
+pkgname = materia-kde
+	depends = qt5-graphicaleffects
+	depends = qt5-quickcontrols2
+	optdepends = materia-gtk-theme: Matching GTK theme
+	optdepends = kvantum-theme-materia: Materia theme for Kvantum Qt style (recommended)
+
+pkgname = kvantum-theme-materia
+	pkgdesc = Materia theme for KDE Plasma 5
+	depends = kvantum

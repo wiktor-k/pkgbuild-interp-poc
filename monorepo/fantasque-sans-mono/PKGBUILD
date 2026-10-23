@@ -1,0 +1,26 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: George Rawlinson <george@rawlinson.net.nz>
+
+pkgbase=fantasque-sans-mono
+pkgname=(
+  otf-fantasque-sans-mono
+  ttf-fantasque-sans-mono
+)
+pkgver=1.8.0
+pkgrel=3
+pkgdesc='Font family with a great monospaced variant for programmers'
+arch=(any)
+url=https://github.com/belluzj/fantasque-sans
+license=(OFL-1.1)
+source=("$pkgbase-$pkgver.tar.gz::$url/releases/download/v$pkgver/FantasqueSansMono-Normal.tar.gz")
+b2sums=('93be1372341f8b64ea88146af369d5942615e132e760e83f0d111c2bd67afb03677f725023111e8fd64abfa951e78d4444ee083c0a99ad6df800e7df69ee4699')
+
+package_otf-fantasque-sans-mono() {
+  install -Dm644 -t "$pkgdir"/usr/share/fonts/OTF OTF/*.otf
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/"${pkgname[0]}" LICENSE.txt
+}
+
+package_ttf-fantasque-sans-mono() {
+  install -Dm644 -t "$pkgdir"/usr/share/fonts/TTF TTF/*.ttf
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/"${pkgname[1]}" LICENSE.txt
+}

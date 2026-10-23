@@ -1,0 +1,28 @@
+# A PAM module allowing authentication via an /etc/passwd-like file
+# Contributor: Mark Dovermann <mdovermann@ceruleanmicrosystems.com>
+# Contributor: David Rosenstrauch <darose@darose.net>
+# Contributor: Jenya Sovetkin <e dot sovetkin at gmail dot com>
+# Contributor: Darko Luketic <info@icod.de>
+
+pkgname=libpam_pwdfile
+pkgver=2.0
+pkgrel=2
+pkgdesc="A PAM module allowing authentication via an /etc/passwd-like file"
+arch=('x86_64')
+url="https://git.tiwe.de/libpam-pwdfile.git"
+license=('GPL-2.0-or-later')
+depends=('pam' 'libxcrypt')
+optdepends=('whois: mkpasswd tool to create passwords from command line')
+source=(https://git.tiwe.de/libpam-pwdfile.git/snapshot/libpam-pwdfile-$pkgver.tar.gz)
+sha256sums=('981c286923c2018ececb5025ba0b27020ffa964d8b8d426ff58ad7f156e72424')
+
+build() {
+  cd "$srcdir/libpam-pwdfile-${pkgver}"
+  make
+}
+
+package() {
+  cd "$srcdir/libpam-pwdfile-${pkgver}"
+  make PAM_LIB_DIR="$pkgdir/usr/lib/security" INSTALL=$(which install) install
+  install -Dm0644 README "$pkgdir"/usr/share/doc/$pkgname/README
+}

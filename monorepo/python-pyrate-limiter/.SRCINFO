@@ -1,0 +1,22 @@
+pkgbase = python-pyrate-limiter
+	pkgdesc = Python Rate-Limiter using Leaky-Bucket Algorithm
+	pkgver = 4.5.1
+	pkgrel = 1
+	url = https://github.com/vutran1710/PyrateLimiter
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	depends = python
+	optdepends = python-filelock: concurrent sqlite backend
+	optdepends = python-redis: redis backend
+	source = python-pyrate-limiter::git+https://github.com/vutran1710/PyrateLimiter#tag=v4.5.1
+	source = remove-uv-dynamic-versioning.patch
+	sha512sums = 56c573ab0518b6d230d5cc3b2d9864fb64b3f40f378dc1cdb79b9049578c9a3d1013f0c47f8d6566d2bc93d0b9350d99f83c861d400485b06fb31d204ed21136
+	sha512sums = 82022fd57ae79270cf65e33e02be823bb9e5541171e4532650c0c2ca46c70ee7ddcba5cbf9d5e95350702726972136e39644f7f281799e0032c33088a80e5936
+	b2sums = c2a7c5c9941d6ce330165b7b9266119a396572bb75b85ac50a884b7bab41ee6491aebf2f3317027e17c64edb6c184ef43588944d499a02aee8a268983ae29e84
+	b2sums = 36bfc646fb7952c0ca3cd45b6b5892a578844604783c76772d323eaec58de8d7a46b95668ff0b2e0eab3187406979980d7a57b7ace03a12a93843269095bef29
+
+pkgname = python-pyrate-limiter

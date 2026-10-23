@@ -1,0 +1,29 @@
+pkgbase = luakit
+	pkgdesc = Fast, small, webkit based browser framework extensible by Lua
+	pkgver = 2.4.0
+	pkgrel = 3
+	url = https://luakit.github.io/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = help2man
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libgcc
+	depends = libsoup3
+	depends = lua51-filesystem
+	depends = lua51-socket
+	depends = luajit
+	depends = pango
+	depends = sqlite
+	depends = webkit2gtk-4.1
+	optdepends = gstreamer: video playback
+	backup = etc/xdg/luakit/rc.lua
+	backup = etc/xdg/luakit/theme.lua
+	source = git+https://github.com/luakit/luakit.git#tag=2.4.0
+	b2sums = 2f0ae6fc1987f4a238126f9f122ae67ea7844dda67a74b098e95ef9e3f0ab8a1ff6da63b1fe468d1920b522c2658ac3817f9ffa15183043d64e98678c89ebb79
+
+pkgname = luakit

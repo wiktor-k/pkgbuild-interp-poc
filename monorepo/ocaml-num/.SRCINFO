@@ -1,0 +1,17 @@
+pkgbase = ocaml-num
+	pkgdesc = Library for arbitrary-precision integer and rational arithmetic that used to be part of the OCaml core distribution
+	pkgver = 1.6
+	pkgrel = 4
+	url = https://github.com/ocaml/num
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = dune
+	makedepends = ocaml-findlib
+	depends = ocaml
+	options = !strip
+	options = !makeflags
+	options = !debug
+	source = ocaml-num-1.6.tar.gz::https://github.com/ocaml/num/archive/v1.6.tar.gz
+	sha512sums = 5cb32dfa9a9f0ad375bfd89079e9b1422979f3c089f61ef2300ad9cc64fb1fc25ed1f86b0267eb017f12ae41a574a959df5bfa39ab22c2be2f1ac84c3c671bdf
+
+pkgname = ocaml-num

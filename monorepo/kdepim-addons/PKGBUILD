@@ -1,0 +1,92 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=kdepim-addons
+pkgver=26.08.2
+pkgrel=1
+pkgdesc='Addons for KDE PIM applications'
+arch=(x86_64)
+url='https://kontact.kde.org'
+license=(GPL-2.0-or-later LGPL-2.0-or-later)
+depends=(akonadi
+         akonadi-calendar
+         akonadi-contacts
+         akonadi-import-wizard
+         akonadi-mime
+         calendarsupport
+         discount
+         glibc
+         gpgmepp
+         grantleetheme
+         incidenceeditor
+         kcalendarcore
+         kcalutils
+         kcmutils
+         kcodecs
+         kcolorscheme
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcontacts
+         kcoreaddons
+         kdeclarative
+         kguiaddons
+         ki18n
+         kiconthemes
+         kidentitymanagement
+         kimap
+         kio
+         kirigami
+         kirigami-addons
+         kitemmodels
+         kitemviews
+         kitinerary
+         kldap
+         kmailtransport
+         kmime
+         kpimtextedit
+         kpkpass
+         kservice
+         ktextaddons
+         ktexttemplate
+         ktnef
+         kwidgetsaddons
+         kxmlgui
+         libgcc
+         libgravatar
+         libkleo
+         libksieve
+         libstdc++
+         mailcommon
+         mailimporter
+         messagelib
+         pimcommon
+         prison
+         qgpgme
+         qt6-base
+         qt6-declarative
+         qt6-webengine
+         sh
+         syntax-highlighting)
+makedepends=(corrosion
+             extra-cmake-modules
+             kdoctools
+             kaddressbook)
+groups=(kde-applications
+        kde-pim)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('d01ea99b6e7938f05f0d3b6332c60e1a4148a14883f1b48acd69951d95c39dc2'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+options=(!lto)
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

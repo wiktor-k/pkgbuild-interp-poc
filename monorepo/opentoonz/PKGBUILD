@@ -1,0 +1,139 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: cyrant <cyrant at tuta dot io>
+
+pkgname=opentoonz
+pkgver=1.8.0
+pkgrel=3
+pkgdesc='A full-featured 2D animation creation software'
+arch=(x86_64)
+url='https://opentoonz.github.io/e/'
+license=(BSD-3-Clause)
+depends=(
+  libusb
+  cblas
+  ffmpeg
+  freeglut
+  glew
+  libmypaint
+  libtiff
+  opencv
+  qt5-base
+  qt5-multimedia
+  qt5-script
+  qt5-serialport
+  qt5-svg
+  superlu
+  zlib
+  libjpeg-turbo
+  hicolor-icon-theme
+  libpng
+  xz
+  lzo
+  sh
+  lz4
+  libglvnd
+  glu
+  kissfft
+)
+makedepends=(
+  git
+  boost
+  boost-libs
+  cmake
+  ninja
+  qt5-tools
+)
+source=(
+  "$pkgname::git+https://github.com/opentoonz/opentoonz#tag=v$pkgver"
+  ffmpeg-path.patch
+  lzo-fix.patch
+  tiff-fix.patch
+  remove-toonzrle.patch
+  tiffiop-fix.patch
+  kissfft-fix.patch
+  opencv-5.patch
+)
+sha512sums=('4418928150f0789cdd17a8d265a27cfb9f4e7b00329bbfc7ef609364a0f98828f7e637c3a1a08f35cd67f798b1daf260db10631e6ca950314f68a87e23efe179'
+            'f73d0f99b99cc0d54fce1c617cd3e374b32a041cffb45ebfcb51a4da5aaf6bdfb59051d3c0c345f89175b7b143a95ba398a1965eaad0cae6b7d2ad6e30114542'
+            '4f405cd2bcf711bc8af13af42e56483c0af99aaf6bfbce816dc0ae39499b8766c7253a3b15953bc5e4c378b29e261ef25325205b604d67a5539dc6f7051286e8'
+            '8890045c0fa2cd0e45202f1e6fb7f2b122ad91a8beb5108b3107bf5e62cce95653dfee66da4a80b6111c1e81a3c17e34362e86369b82311b05d21c7bc956c31b'
+            '66829fd3a2aa43a6057d621a236a8c99bbdbbab054ae2efcf0d4827af0701a4da75812f6ce6456f4bab3efcd3f4db6bd4e3f413eb00a04cb7e05ca2c1bfeee3d'
+            '53f1b10e8030c58661ebae604365fdd98ef6515203879eae7006170e7f3149a5752f17743cb9ff1399ef71bd767ddf37cf77829ac225f7d1ea0bb631d10920cc'
+            'f0f944a7b03df934ddff91b9cdd1f96d990fe754f8135af7885f1d7b8b2b35c5c15efe2bd558f5a88feaf2a8595b87ec4478a237940428f34384b388902b2e7b'
+            'c305ded644c60037b0d34d32896960a48be15783b8d4bd1aba1135fcff79c1a7e34b2d6822a45bfc46f34690c477f22c80dd836fdd48c2cfbdc0b70b90db8ce7')
+b2sums=('e4c82f9d894dbc83538d69d9b3ff1b95bfc06460d01bc5643df05a573fe7827d48a38649e204a16f51d7cf60193a0ad2d0ffa7aaca39f233e6213937b3617888'
+        'c7686c10e959a1d58a2a526d91da5c1debfc6384d6d22fe0b78162ae67c52af476925cefa34befcb91eb92297ac82bc7d4359ca5875f9898a97012424a3d6db0'
+        'b24b4fbeb19e07efcea73f420eccc11fa578756eeab4802e19771632847dc0589c1b52c4c710f5997c91551c7958619f83eefcebb3022908db919939be6ba93a'
+        'b41fdcc3c13c645aeaaca6839d57006a5103cf66c4cd068b6cf5150c959ff3cc03b278906aeb2a7d4863d80bfc53bec4fd5f0c3c9179c888ecfe756401702563'
+        '59ad342ffb5a0d092cac997755613067826bb6ac6ac9b0bc5bd216ec21c860fda1dacec2e87ad3821938652e49cbb33b6e870a2c33e51b355030365e5b6ee7e6'
+        'a928bf2f16400a90f48d9b0376a90aebb098fe8631a9341252a40a572ce6fb243afecb3cc93b003517505a2719522dbf09d280eb31d6a74e26508bac49a2991d'
+        'a119ecfce36aada0e32defdb6ba47c26b34ce722a5d9570d3a22fd83ee12878c8305fb587cb784dd9e11d352e3dd1a02ee9f9d27704b50d7a14045add8785cac'
+        '76febe13be37e3a5c22f3aab555a41928c5ca9fa5bb17c0cef7fe9f3256589ba932fc27a7eafc8d4aa1bd7884dd5c11dcd17f025b5c90a5b5faab17a0b90f424')
+
+prepare() {
+  cd "$pkgname"
+
+  # prefer system libraries
+  pushd thirdparty
+  rm -rf boost glew glut libjpeg-turbo libmypaint libpng-1.6.21 libusb lz4 lzo superlu tiff-4.0.3 zlib-1.2.8 kiss_fft
+  popd
+
+# canon
+# openblas
+# quicktime
+# tinyexr
+
+  # specify path for ffmpeg
+  patch -p1 -i "$srcdir/ffmpeg-path.patch"
+
+  # use system libtiff
+  patch -p1 -i "$srcdir/tiff-fix.patch"
+
+  # disable toonzrle due to libtiff internal API access
+  patch -p1 -i "$srcdir/remove-toonzrle.patch"
+
+  # use libtiff external APIs
+  patch -p1 -i "$srcdir/tiffiop-fix.patch"
+
+  # use system lzo
+  patch -p1 -i "$srcdir/lzo-fix.patch"
+
+  # use system kissfft
+  patch -p1 -i "$srcdir/kissfft-fix.patch"
+
+  # fix build with opencv 5
+  patch -p1 -i ../opencv-5.patch
+}
+
+build() {
+  # WITH_TRANSLATION doesn't do anything, generated translations aren't installed
+  local cmake_options=(
+    -B build
+    -S "$pkgname/toonz/sources"
+    -G Ninja
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_SKIP_RPATH=YES
+    -D WITH_TRANSLATION=OFF
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -D CMAKE_C_STANDARD=17
+    -D WITH_SYSTEM_LZO=ON
+    -D WITH_SYSTEM_SUPERLU=ON
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+    libstdc++ libstdc++.so
+  )
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE.txt"
+}

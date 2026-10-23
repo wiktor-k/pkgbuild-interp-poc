@@ -1,0 +1,21 @@
+pkgbase = cadical
+	pkgdesc = A simplified, fast and reliable CDCL SAT solver
+	pkgver = 3.0.1
+	pkgrel = 2
+	url = https://github.com/arminbiere/cadical
+	arch = x86_64
+	license = MIT
+	checkdepends = gzip
+	checkdepends = zlib
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	optdepends = 7zip: 7z compressed input/output support
+	optdepends = bzip2: bzip2 compressed input/output support
+	optdepends = gzip: gzip compressed input/output support
+	optdepends = xz: xz and LZMA compressed input support
+	source = git+https://github.com/arminbiere/cadical.git#tag=rel-3.0.1
+	sha256sums = 2349b65517b15d91d56000473c1a3dc5dd72b0f2a1ce032b30792236599b7e20
+
+pkgname = cadical

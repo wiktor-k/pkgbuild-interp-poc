@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=perl-params-classify
+pkgver=0.015
+pkgrel=11
+pkgdesc="argument type classification"
+arch=(x86_64)
+license=('Artistic-2.0')
+url="https://search.cpan.org/~zefram/Params-Classify"
+options=(!emptydirs)
+depends=('perl')
+makedepends=('perl-module-build')
+source=("https://search.cpan.org/CPAN/authors/id/Z/ZE/ZEFRAM/Params-Classify-$pkgver.tar.gz")
+sha256sums=('398ec15cd899fcd8bef3db9ea1748bf631f15f6c32be203e475b67df510a5914')
+
+build() {
+  cd "$srcdir"/Params-Classify-$pkgver
+  perl Build.PL installdirs=vendor destdir="$pkgdir/"
+  perl Build
+}
+
+package() {
+  cd "$srcdir"/Params-Classify-$pkgver
+  perl Build install
+}

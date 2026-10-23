@@ -1,0 +1,48 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Aoibhinn Nic Aoidh <oibindnicaoidh@gmail.com>
+# Contributor: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+# Contributor: J. W. Birdsong <jwbirdsong@gmail.com>
+
+pkgname=luakit
+pkgver=2.4.0
+pkgrel=3
+pkgdesc='Fast, small, webkit based browser framework extensible by Lua'
+arch=(x86_64)
+url=https://luakit.github.io/
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  libgcc
+  libsoup3
+  lua51-filesystem
+  lua51-socket
+  luajit
+  pango
+  sqlite
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  help2man
+)
+optdepends=('gstreamer: video playback')
+backup=(
+  etc/xdg/luakit/rc.lua
+  etc/xdg/luakit/theme.lua
+)
+source=(git+https://github.com/luakit/luakit.git#tag=${pkgver})
+b2sums=('2f0ae6fc1987f4a238126f9f122ae67ea7844dda67a74b098e95ef9e3f0ab8a1ff6da63b1fe468d1920b522c2658ac3817f9ffa15183043d64e98678c89ebb79')
+
+build() {
+  make DEVELOPMENT_PATHS=0 PREFIX=/usr USE_LUAJIT=1 -C luakit
+}
+
+package() {
+  make DESTDIR="${pkgdir}" PREFIX=/usr -C luakit install
+}

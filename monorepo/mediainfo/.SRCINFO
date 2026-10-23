@@ -1,0 +1,30 @@
+pkgbase = mediainfo
+	pkgdesc = Supplies technical and tag information about media files
+	pkgver = 26.10
+	pkgrel = 1
+	url = https://mediaarea.net
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = wxwidgets-gtk3
+	depends = libmediainfo=26.10
+	depends = libzen
+	depends = libstdc++
+	depends = libgcc
+	depends = glibc
+	source = mediainfo-26.10.tar.gz::https://github.com/MediaArea/MediaInfo/archive/v26.10.tar.gz
+	sha512sums = 9233defc6d77e639537d4217745556f1ca1369395651c728213cf0a087dc35f69f2f7630134bc0ddd51d1521f600e09985167f3bc98d9237780b5aea425874c0
+	b2sums = 6a731b771bcc4370f9974d1d691a1a6615a5c5d6448fe049f8537284750270a096ad241bd042be22016964fc99bf040235cc317aa984409612934ce51926e268
+
+pkgname = mediainfo
+	pkgdesc = Supplies technical and tag information about media files (CLI interface)
+
+pkgname = mediainfo-gui
+	pkgdesc = Supplies technical and tag information about media files (GUI interface)
+	depends = libmediainfo=26.10
+	depends = libzen
+	depends = libstdc++
+	depends = libgcc
+	depends = glibc
+	depends = wxwidgets-common
+	depends = wxwidgets-gtk3
+	depends = hicolor-icon-theme

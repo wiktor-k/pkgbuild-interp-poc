@@ -1,0 +1,38 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=vali
+pkgver=0.1.1
+pkgrel=2
+pkgdesc='A C library and code generator for Varlink'
+arch=(x86_64)
+url="https://gitlab.freedesktop.org/emersion/vali"
+license=('MIT')
+depends=(
+  'aml'
+  'glibc'
+  'json-c'
+)
+makedepends=('meson')
+source=(
+  "https://gitlab.freedesktop.org/emersion/vali/-/releases/v$pkgver/downloads/vali-$pkgver.tar.gz"
+  "https://gitlab.freedesktop.org/emersion/vali/-/releases/v$pkgver/downloads/vali-$pkgver.tar.gz.sig"
+)
+b2sums=('fe238199bd1e8960ca25ee48c46621465725f2f668a9e50fe5855368a9b574353581a4b12f1e88ae233509920cb7dd7858fe87102f12e7395bd4b5f40686183b'
+        'SKIP')
+validpgpkeys=('34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48')  # Simon Ser (emersion)
+
+build() {
+  arch-meson "$pkgname-$pkgver" build
+  ninja -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  cd "$pkgname-$pkgver"
+  install -vDm0644 "LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm0644 "README.md" -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,28 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_pyname=verlib2
+pkgname=python-$_pyname
+pkgver=26.2
+pkgrel=1
+pkgdesc='a standalone variant of packaging.version, without anything else'
+arch=(any)
+url='https://github.com/pyveci/verlib2'
+license=(BSD-2-Clause)
+_pydeps=(versioningit)
+depends=(python "${_pydeps[@]/#/python-}")
+makedepends=(python-{build,installer,wheel}
+             python-setuptools)
+_archive="$_pyname-$pkgver"
+source=("https://files.pythonhosted.org/packages/source/${_pyname::1}/$_pyname/$_archive.tar.gz")
+sha256sums=('0740a3b35755a9d8ebb933ffce989f3776113fe319ab62df5fa20f7c14343d58')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

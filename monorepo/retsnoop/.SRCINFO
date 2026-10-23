@@ -1,0 +1,22 @@
+pkgbase = retsnoop
+	pkgdesc = A tool for investigating kernel error call stacks
+	pkgver = 0.11
+	pkgrel = 1
+	url = https://github.com/anakryiko/retsnoop
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = git
+	makedepends = clang
+	makedepends = cargo
+	makedepends = llvm
+	depends = glibc
+	depends = libelf
+	depends = zlib
+	source = git+https://github.com/anakryiko/retsnoop.git#tag=v0.11
+	source = git+https://github.com/libbpf/libbpf.git
+	source = git+https://github.com/libbpf/bpftool.git
+	sha256sums = c74cae2f322e350b7e5ba76738c9a1b6ca8f9474d43b8747ea5c81d41ab813b3
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = retsnoop

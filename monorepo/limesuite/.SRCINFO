@@ -1,0 +1,26 @@
+pkgbase = limesuite
+	pkgdesc = Driver and GUI for LMS7002M-based SDR platforms (LimeSDR, etc.)
+	pkgver = 23.11.0
+	pkgrel = 9
+	url = https://github.com/myriadrf/LimeSuite
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = octave
+	depends = sqlite3
+	depends = wxwidgets-gtk3
+	depends = freeglut
+	depends = libusb
+	depends = soapysdr
+	depends = wget
+	depends = gnuplot
+	depends = glew
+	depends = fltk
+	optdepends = octave: Octave plugin
+	provides = soapylms7
+	conflicts = soapylms7
+	source = limesuite-23.11.0.tar.gz::https://github.com/myriadrf/LimeSuite/archive/v23.11.0.tar.gz
+	sha512sums = 0f96f92952af4470d5a9cc407c2d25348123876eab8d589371ad6105f9871dfe6e2317e634509bfd950ffb9ae30338e6fc7936ad9030c1119be442080a5174e7
+
+pkgname = limesuite

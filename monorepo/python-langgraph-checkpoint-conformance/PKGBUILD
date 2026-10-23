@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langgraph-checkpoint-conformance
+pkgver=0.0.2
+pkgrel=1
+pkgdesc="Conformance test suite for LangGraph checkpointer implementations"
+arch=('any')
+url="https://github.com/langchain-ai/langgraph/tree/main/libs/checkpoint-conformance"
+license=('MIT')
+depends=(
+  'python'
+  'python-langchain-core'
+  'python-langgraph-checkpoint'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+)
+checkdepends=(
+  'python-pytest'
+  'python-pytest-asyncio'
+)
+source=("git+https://github.com/langchain-ai/langgraph.git#commit=6242b99e061a9de9f702ea903e141380f5041b2a")
+sha512sums=('279af30b3d988defd56afef04714533ad1d1770cb5ae944c15bff87ab5549faff97a48c70862c9a336d0e7c3f25563fbd1bf1cd47f951946947b79558b411284')
+
+build() {
+  cd langgraph/libs/checkpoint-conformance
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langgraph/libs/checkpoint-conformance
+  python -m pytest
+}
+
+package() {
+  cd langgraph/libs/checkpoint-conformance
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 "$srcdir"/langgraph/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

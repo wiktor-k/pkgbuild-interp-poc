@@ -1,0 +1,66 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=kondo
+pkgname=(kondo kondo-ui)
+pkgver=0.9
+pkgrel=1
+pkgdesc='Save disk space by cleaning non-essential files from software projects'
+arch=('x86_64')
+url='https://github.com/tbillington/kondo'
+license=('MIT')
+depends=('gcc-libs')
+makedepends=('cargo' 'pango' 'gdk-pixbuf2' 'gtk3')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+        "$pkgname-$pkgver-depend-on-0.9.patch")
+sha512sums=('b8a2db6eb6a8b54e792fdce9e9d29f79daf4b3017067ed8f56a5be62a29b5ff3420979d67dc9ea412e75e26114447988be3d7e8542fe17803aebc95909fed9ce'
+            '1b5c76bce9c05bd6d3a2fc9846142e9884a063edca127a41e913df94b45aadfc3411bd353f352d03c964b1533120e603c40d68a62cd04c68aabf31e25a7521b6')
+options=('!lto')
+
+prepare() {
+	cd "$pkgname-$pkgver"
+	patch -Np1 -i "$srcdir/$pkgname-$pkgver-depend-on-0.9.patch"
+
+	# download dependencies
+	_opts="--locked --target $(rustc --print host-tuple)"
+	cargo fetch $_opts
+	cargo fetch $_opts --manifest-path "$pkgname-ui/Cargo.toml"
+}
+
+build() {
+	cd "$pkgname-$pkgver"
+
+	_opts="--frozen --release"
+	cargo build $_opts
+	cargo build $_opts --manifest-path "$pkgname-ui/Cargo.toml"
+}
+
+package_kondo() {
+	cd "$pkgname-$pkgver"
+
+	# binary
+	install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+
+	# documentation
+	install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+	# license
+	install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+package_kondo-ui() {
+	pkgdesc='Save disk space by cleaning non-essential files from software projects (UI)'
+	depends+=('glib2' 'cairo' 'gtk3')
+	cd "${pkgname%-ui}-$pkgver"
+
+	# binary
+	install -vDm755 -t "$pkgdir/usr/bin" "$pkgname/target/release/$pkgname"
+
+	# documentation
+	install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+	# license
+	install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim: ts=2 sw=2 et:

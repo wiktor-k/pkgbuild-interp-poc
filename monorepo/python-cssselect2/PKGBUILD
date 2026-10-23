@@ -1,0 +1,48 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Simon Sapin <simon dot sapin at exyr dot org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+
+pkgname=python-cssselect2
+pkgver=0.10.1
+pkgrel=1
+pkgdesc='CSS selectors for Python ElementTree'
+arch=(any)
+url='https://github.com/Kozea/cssselect2'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-tinycss2
+  python-webencodings
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-flit-core
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('c0276a67e8abacfad66cac154baabe981937a446086ca460de52bae474729b72aa41c7113acb8ac23244abfc4d0db10e1c1e13e396dd4df45632603c19545724')
+b2sums=('48e4ed516a6e7f6b9c435f90b83fb5010d4c3ba1be730c943d986d6a2c695c821a1f72a055dc268e6c76cf031a5685b63365fc00401fee312b2ddf6a6b293b79')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

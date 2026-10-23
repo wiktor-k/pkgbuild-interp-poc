@@ -1,0 +1,63 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Jordan Cook <JCook83@gmail.com>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+
+pkgname=python-pyrate-limiter
+pkgdesc='Python Rate-Limiter using Leaky-Bucket Algorithm'
+pkgver=4.5.1
+pkgrel=1
+arch=(any)
+url=https://github.com/vutran1710/PyrateLimiter
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+)
+optdepends=(
+  'python-filelock: concurrent sqlite backend'
+  'python-redis: redis backend'
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  remove-uv-dynamic-versioning.patch
+)
+sha512sums=('56c573ab0518b6d230d5cc3b2d9864fb64b3f40f378dc1cdb79b9049578c9a3d1013f0c47f8d6566d2bc93d0b9350d99f83c861d400485b06fb31d204ed21136'
+            '82022fd57ae79270cf65e33e02be823bb9e5541171e4532650c0c2ca46c70ee7ddcba5cbf9d5e95350702726972136e39644f7f281799e0032c33088a80e5936')
+b2sums=('c2a7c5c9941d6ce330165b7b9266119a396572bb75b85ac50a884b7bab41ee6491aebf2f3317027e17c64edb6c184ef43588944d499a02aee8a268983ae29e84'
+        '36bfc646fb7952c0ca3cd45b6b5892a578844604783c76772d323eaec58de8d7a46b95668ff0b2e0eab3187406979980d7a57b7ace03a12a93843269095bef29')
+
+prepare() {
+  cd "$pkgname"
+
+  # does not work as advertised
+  # https://github.com/astral-sh/uv/issues/14561
+  patch -p1 -i "$srcdir/remove-uv-dynamic-versioning.patch"
+
+  sed \
+    -e "s/dynamic = \[\"version\"\]/version = \"$pkgver\"/" \
+    -i pyproject.toml
+
+  sed \
+    -e "s/0\.0\.0/$pkgver/" \
+    -i pyrate_limiter/_version.py
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim: ts=2 sw=2 et:

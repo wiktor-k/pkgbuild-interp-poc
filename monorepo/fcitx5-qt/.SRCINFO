@@ -1,0 +1,27 @@
+pkgbase = fcitx5-qt
+	pkgdesc = Fcitx5 Qt Library (Qt5 & Qt6 integrations)
+	pkgver = 5.1.16
+	pkgrel = 2
+	url = https://github.com/fcitx/fcitx5-qt
+	arch = x86_64
+	groups = fcitx5-im
+	license = LGPL-2.1-or-later
+	license = BSD-3-Clause
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = qt5-base
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libxcb
+	depends = libxkbcommon
+	depends = fcitx5
+	depends = qt6-base
+	depends = wayland
+	source = git+https://github.com/fcitx/fcitx5-qt.git#tag=5.1.16?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 7f50a7530a666182342d0dd59d6a614de29576a9718e3048922fe759e3f0fa1f65ac40388360fee8fd67ec3c402472518739d02f1367692bd6e7d9c5f346a258
+
+pkgname = fcitx5-qt

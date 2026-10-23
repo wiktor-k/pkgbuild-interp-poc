@@ -1,0 +1,32 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+
+pkgname=python-ioctl-opt
+pkgver=1.3.1
+pkgrel=1
+pkgdesc="Pythonified Linux asm-generic/ioctl.h"
+url="https://github.com/vpelletier/python-ioctl-opt"
+arch=(any)
+license=("GPL-2.0-or-later")
+depends=(
+	"python"
+)
+makedepends=(
+	"python-build"
+	"python-installer"
+	"python-setuptools"
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/vpelletier/python-ioctl-opt/archive/${pkgver}.tar.gz")
+sha256sums=('004eb68f116ecfe741347617af55e097936698bbf990b6a558a56dce4635234a')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-screensaver-biogenesis
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="BioGenesis screensaver for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/screensaver.biogenesis'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-screensaver')
+makedepends=('cmake' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/screensaver.biogenesis/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('d83693819e09d787d6b8423303abb1b79c671ea675c536e46fd22ac7e50d605efd5db6434572e08f528d3195286a37440968513bd56b2ea917f6fa5d516b4726')
+
+build() {
+    cd "screensaver.biogenesis-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi')
+    cd "screensaver.biogenesis-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

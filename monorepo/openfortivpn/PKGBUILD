@@ -1,0 +1,50 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+
+pkgname=openfortivpn
+pkgver=1.24.1
+pkgrel=1
+pkgdesc="An open implementation of Fortinet's proprietary PPP+SSL VPN solution"
+arch=(x86_64)
+url=https://github.com/adrienverge/openfortivpn
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  openssl
+  ppp
+  resolvconf
+  systemd-libs
+)
+makedepends=(
+  git
+  systemd
+)
+backup=(etc/openfortivpn/config)
+_tag=a40a2d588733d48534eb78cd17b90142e5ba039b
+source=(git+https://github.com/adrienverge/openfortivpn.git#tag=${_tag})
+sha256sums=('83f9e0894c363e454333ae4575a743358fedde95bc173b39e31dfb47373d473f')
+
+prepare() {
+  cd openfortivpn
+  autoreconf -fiv
+}
+
+pkgver() {
+  cd openfortivpn
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  cd openfortivpn
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --enable-resolvconf
+  make
+}
+
+package() {
+  make DESTDIR="${pkgdir}" -C openfortivpn install
+}
+
+# vim: ts=2 sw=2 et:

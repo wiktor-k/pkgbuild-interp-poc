@@ -1,0 +1,45 @@
+pkgbase = radare2
+	pkgdesc = Open-source tools to disasm, debug, analyze and manipulate binary files
+	pkgver = 6.2.2
+	pkgrel = 1
+	url = https://radare.org
+	arch = x86_64
+	license = GPL-3.0-only AND LGPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	depends = capstone
+	depends = file
+	depends = glibc
+	depends = libuv
+	depends = libzip
+	depends = lz4
+	depends = sh
+	depends = xxhash
+	depends = zlib
+	depends = zydis
+	optdepends = python-r2pipe: r2pipe scripts (r2sptrace.py)
+	optdepends = r2ghidra: ghidra decompiler plugin
+	options = !emptydirs
+	source = git+https://github.com/radareorg/radare2.git#tag=6.2.2
+	source = git+https://github.com/radareorg/sdb.git#tag=2.5.2
+	source = qjs::git+https://github.com/quickjs-ng/quickjs.git#commit=9d15fb60b67c45fd0de413bb49e48f8dacebac16
+	source = git+https://github.com/radareorg/radare2-testbins.git#commit=71a65843d445ac412afa7afccace03d55eef4362
+	b2sums = 6681111fcf9ffcaa64f31869ea73f55d1eeeeb9c969237ad8f4fd27b99d89dc7806d8d430618e68680a83cce3e10eb0e6aba6bb45de3679352f5784d88739078
+	b2sums = d2fb48477b7ad36af4195714ae93739ca6a76ffd044ae5de82fb46f5359ef76622ca561a04bfe375bba38c06af8ad210ffcc8fcb9e0be975af12cedd9a3a6306
+	b2sums = bf0111950a6c1d7b5add926649088dcddbfdadd8ce827c0cf31e3dabf79702e7530b38cd868c447947bce41cb0e2c96a1073024d59ad44cdb9ecfc531f0d2610
+	b2sums = f042c23f07188b7ef87b68391188c83d770578ce8422db54c7db48232dc563914c3a1c49bece69a363c2e4f56f76cfb7f64e54eea380d06534bcffe4586fbd17
+
+pkgname = radare2
+	depends = capstone
+	depends = file
+	depends = glibc
+	depends = libuv
+	depends = libzip
+	depends = lz4
+	depends = sh
+	depends = xxhash
+	depends = zlib
+	depends = zydis
+	depends = libcapstone.so
+	depends = libmagic.so
+	depends = libzip.so

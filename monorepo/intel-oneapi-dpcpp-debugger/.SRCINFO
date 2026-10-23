@@ -1,0 +1,20 @@
+pkgbase = intel-oneapi-dpcpp-debugger
+	pkgdesc = Intel OneAPI GDB
+	pkgver = 2026.0.0_220
+	pkgrel = 1
+	url = https://software.intel.com/content/www/us/en/develop/tools/oneapi.html
+	arch = x86_64
+	license = LicenseRef-Intel-EULA-Developer-Tools
+	depends = intel-oneapi-common
+	depends = sh
+	depends = glibc
+	depends = gcc-libs
+	depends = zlib
+	depends = libffi
+	provides = intel-oneapi-dpcpp-debugger-eclipse-cfg
+	conflicts = intel-oneapi-basekit
+	noextract = intel-oneapi-dpcpp-debugger-2026.0-2026.0.0-220_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-dpcpp-debugger-2026.0-2026.0.0-220_amd64.deb
+	b2sums = d90a63fe1a6277551b77e196767d28ad0db55a6f93b5eb76fc574dfb4b1a5b449b2b9c27e70267397d785a8798d5cca1bc4ce7f7239b55ac65cb54e6c7b7f342
+
+pkgname = intel-oneapi-dpcpp-debugger

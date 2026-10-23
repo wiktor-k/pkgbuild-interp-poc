@@ -1,0 +1,34 @@
+pkgbase = drone
+	pkgdesc = Continuous Delivery platform built on container technology
+	pkgver = 2.28.2
+	pkgrel = 1
+	url = https://drone.io
+	arch = x86_64
+	makedepends = git
+	makedepends = go
+	options = !lto
+	source = drone::git+https://github.com/harness/harness.git#tag=v2.28.2
+	source = systemd.service
+	source = tmpfiles.conf
+	source = sysusers.conf
+	sha512sums = a7d56b5659fb64c78741efee569a11a55e2c31c5e5dc5e615cbf8c2e86ca12a91bb6715ae7988479016982e25081615da871dd8cc71d9f1b09ff5f32c20b8eed
+	sha512sums = 44b29c1388ea6cd0a064c1384f3224d164a37f9ca85fdb956ffafa1ddbcb11f3f01f91701d3b8ce341a593cd85a52cbf102f6549d3c722d6ff8f8eb9cc572ab1
+	sha512sums = dfdc522b0e17f6b68d86f6599020bc75328de84aa1a393c53a0edc5ed229fb6ef99a0b544eebca6f9eee1b9f2ce04906bcca105792bccf2e49cdd51f10026886
+	sha512sums = ffb6063109948dbf05d89ceb5e7686f8e9acce549a842c99e40b8966f862de0c90637fb0c3fb25b3ed9a6119181eabefec716c4a44fb57707ac1e42c001e07fb
+	b2sums = b44bcbffcfaa48ae3df0e7fdc532a56da5462d6b44637bedf2a8f0f42a7d15825803a988fb2e5090765c9bd92fcbc9f888685b55cc38cb6315b15182b97afef4
+	b2sums = ed1d5aebd207997ae2a523786eab0c6a3500080a294864ed5eb6e6251a827ef85a8b2c3bbfdc0ce41bb2f67e14dc65ae627c595688eabb4d822df2f4c971a449
+	b2sums = 9c1bf8e4a382190f2d1bd560ef5c4a9fadad8c38dcd3cf3b79af42f6d0c16de533ba2d5f6cf676003e4ca6b745833e5e100baf4328111cf540ac5f43f67c6145
+	b2sums = 098f67ddf919adf039c37deac0b78e22a2b631497683602b484955bb410475d41694fe4c285355af7747d60c3aa4a92ccb18a32e76d71f41fdcfad3b8c527a90
+
+pkgname = drone
+	pkgdesc = Continuous Delivery platform built on container technology (Enterprise Edition)
+	license = LicenseRef-Drone-Non-Commercial
+	depends = glibc
+	conflicts = drone-oss
+
+pkgname = drone-oss
+	pkgdesc = Continuous Delivery platform built on container technology (Community Edition)
+	license = Apache-2.0
+	depends = glibc
+	depends = docker
+	conflicts = drone

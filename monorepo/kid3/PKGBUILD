@@ -1,0 +1,61 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Alois Nespor <alois.nespor@gmail.com>
+
+pkgbase=kid3
+pkgname=('kid3-common' 'kid3-qt' 'kid3')
+pkgver=3.10.2
+pkgrel=1
+pkgdesc="An MP3, Ogg/Vorbis and FLAC tag editor"
+arch=('x86_64')
+url="https://kid3.kde.org/"
+license=('GPL-2.0-or-later')
+makedepends=('cmake' 'extra-cmake-modules' 'chromaprint' 'python' 'taglib' 'libmp4v2'
+             'qt6-tools' 'clang' 'qt6-declarative' 'qt6-multimedia' 'kdoctools' 'kxmlgui' 'kio')
+changelog=$pkgbase.changelog
+source=(https://prdownloads.sourceforge.net/$pkgbase/$pkgbase-$pkgver.tar.gz{,.sig})
+validpgpkeys=('7D09794C2812F62194B081C14CAD34426E354DD2') # Urs Fleisch
+sha256sums=('a9bef0e4f90cf5d5626658ac4b34f6cac23c3b2749b3a91470ad506864316104'
+            'SKIP')
+
+build() {
+  export CXXFLAGS+=' -DNDEBUG' # FS#69904
+  cmake -B build -S ${pkgbase}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_APPS="CLI;Qt;KDE" \
+    -DWITH_MP4V2=ON \
+    -DWITH_FFMPEG=ON \
+    -DWITH_GSTREAMER=ON \
+    -Wno-dev
+  cmake --build build
+}
+
+package_kid3-common() {
+  pkgdesc="An MP3, Ogg/Vorbis and FLAC tag editor, CLI version and common files"
+  depends=('chromaprint' 'flac' 'libmp4v2' 'libvorbis' 'qt6-base' 'taglib')
+  optdepends=('qt6-declarative: GUI support library'
+              'qt6-multimedia: GUI support library')
+
+  DESTDIR="${pkgdir}" cmake --install build
+
+  rm -r "$pkgdir"/usr/bin/kid3{,-qt} \
+        "$pkgdir"/usr/share/{applications,icons,kxmlgui5,metainfo}
+}
+
+package_kid3-qt() {
+  pkgdesc="An MP3, Ogg/Vorbis and FLAC tag editor, Qt version"
+  depends=("kid3-common=$pkgver" 'qt6-declarative' 'qt6-multimedia')
+
+  DESTDIR="${pkgdir}" cmake --install build/src/app/qt
+}
+
+package_kid3() {
+  pkgdesc="An MP3, Ogg/Vorbis and FLAC tag editor, KDE version"
+  depends=("kid3-common=$pkgver" 'kxmlgui' 'qt6-declarative' 'qt6-multimedia' 'kio')
+
+  DESTDIR="${pkgdir}" cmake --install build/src/app
+
+  rm -r "$pkgdir"/usr/bin/kid3-{cli,qt} \
+        "$pkgdir"/usr/share/applications/org.kde.kid3-qt.desktop \
+        "$pkgdir"/usr/share/icons/hicolor/*/apps/kid3-qt.{png,svg} \
+        "$pkgdir"/usr/share/metainfo/org.kde.kid3-qt.appdata.xml
+}

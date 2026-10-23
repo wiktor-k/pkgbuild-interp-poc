@@ -1,0 +1,49 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-requests-ratelimiter
+pkgver=0.10.0
+pkgrel=1
+pkgdesc='A general-purpose rate-limiting library for python-requests'
+arch=(any)
+url='https://github.com/JWCook/requests-ratelimiter'
+license=(MIT)
+depends=(
+  python
+  python-requests
+  python-pyrate-limiter
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+)
+checkdepends=(
+  python-pytest
+  python-requests-mock
+  python-requests-cache
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('3d9decd7caadaf412a12762d25f950b1294a28f3545b63882b15d4c6f2c41f73aaafdd3b1fb68d33183fc439bd7efed7da3aabfbad19111d98f615408f3c1104')
+b2sums=('b1e5eb0475cdeea81ab8dbf9f51a52e4bfb7153900a8e45001ad39cec7390185f37044624df59af03208f2acda883feb2d10ddce5f013482eb67b11dbc09d43c')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

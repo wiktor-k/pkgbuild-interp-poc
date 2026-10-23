@@ -1,0 +1,38 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Jameson Pugh <imntreal@gmail.com>
+
+pkgname=python-voluptuous-serialize
+pkgver=2.7.0
+pkgrel=3
+pkgdesc='Convert voluptuous schemas to JSON'
+arch=(any)
+url=https://github.com/balloob/voluptuous-serialize
+license=(Apache-2.0)
+depends=(
+  python
+  python-voluptuous
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=(git+https://github.com/balloob/voluptuous-serialize.git#tag=${pkgver})
+b2sums=('d6a2bf905ea46e43c0c823b10ce4ff478542495fc0e00a0c268a779af758f14dfdfe8c4dc4205e1514e969781459bef629e9d1f1bda1c590b0d76ead0a5ec707')
+
+build() {
+  cd voluptuous-serialize
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd voluptuous-serialize
+  PYTHONPATH=$PWD/build/lib pytest
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" voluptuous-serialize/dist/*.whl
+}

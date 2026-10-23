@@ -1,0 +1,38 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=gitlab-ci-ls
+pkgver=1.4.0
+pkgrel=1
+pkgdesc='Language server for Gitlab CI'
+arch=(x86_64)
+url=https://github.com/alesbrelih/gitlab-ci-ls
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  openssl
+)
+makedepends=(
+  git
+  rust
+)
+options=(!lto)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('3a18471e4abc24b4e97ec99f811e91abc5198632e87c5b9cfd04398b7b11938d17a8bf108bccb6ab240dca1e35f274bffbe8542b353527e253c09a80c3f5ebf2')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --locked --offline
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname \
+    vscode-extension/LICENSE.txt
+}

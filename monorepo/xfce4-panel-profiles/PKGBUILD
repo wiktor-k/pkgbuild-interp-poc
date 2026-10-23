@@ -1,0 +1,26 @@
+# Maintainer: Robin Candau <antiz@archlinux.org> 
+# Contributor: twa022 <twa022 at gmail dot com>
+# Contributor: Bernhard Landauer <oberon@manjaro.org>
+
+pkgname=xfce4-panel-profiles
+pkgver=1.1.1
+pkgrel=1
+pkgdesc="Simple application to manage Xfce panel layouts"
+arch=('any')
+url="https://docs.xfce.org/apps/xfce4-panel-profiles/start"
+license=('GPL-3.0-only')
+depends=('xfce4-panel' 'python' 'python-gobject' 'python-psutil')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/apps/xfce4-panel-profiles.git#tag=$pkgname-$pkgver")
+sha256sums=('4bc7a0a07c1600173a497efe8ebda26431089f3cf9458941409a10f396621f47')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

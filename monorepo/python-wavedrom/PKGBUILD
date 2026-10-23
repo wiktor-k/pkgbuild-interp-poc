@@ -1,0 +1,75 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-wavedrom
+_pkgname=${pkgname#python-}
+pkgver=2.0.3.post3
+pkgrel=1
+pkgdesc='Convert WaveDrom compatible JSON files into SVG format'
+arch=(any)
+url='https://github.com/wallento/wavedrompy'
+license=(MIT)
+depends=(
+  python
+  python-svgwrite
+  python-pyyaml
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pillow
+  python-cairosvg
+  xmldiff
+)
+source=(
+  "$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/source/${_pkgname::1}/${_pkgname//-/_}/${_pkgname//-/_}-$pkgver.tar.gz"
+  remove-six.patch
+  remove-deprecated-items.patch
+)
+sha512sums=('6df141c5f12b318da5fe1274e5d29f1f0e498a6cf3bdea9c545614cfa6944c00b81716a46486947a8650df9681e762599a4bc579f4ac22e26bdb47f3b5ac5a0a'
+            '081a15f94e172fa759019f565ea26485d3bab992a2deab3688879d8e85988f8a02d4a82183a81b904d1b3fdddf5e7f3eca8a1e7e4a3c6e778cd1e8202385113d'
+            '13b5f023aae6dd6ac10cfb0b7d6e1c5083bdba4261c249bfbb01108db6ab45aa1880bbbabb18bda238c40fe37f2804191e149e084310db365a2a09ae3efaaea0')
+b2sums=('74000f14efb5ea6d2d4d3f14085698f020dcc288efb5a9072385373b8a6e81d8c40b43667fd930ad50b10e8b506d1af04fff815f3c62224fcb3c25e2467e1182'
+        '3bf05f5c2148668ba4545e6ed2f50992c00e4f767113c0216562e7bbf4bd0b5eebd63bd973bdf2d7549439e9ad738575faed6b4fbb5c98f7d79e17b4a0377373'
+        '142d2f96b5533055384764a16ce35d02e58c217f9b17d1dbfed7267a76a35f5dec17fdeb2a93dd15835dabb599690aa05580d0de315f56c18b462809f02d7e05')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+
+  # remove dependency on python-six
+  patch -p1 -i "$srcdir/remove-six.patch"
+
+  # remove deprecated items
+  patch -p1 -i "$srcdir/remove-deprecated-items.patch"
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+
+  # install to temporary directory
+  python -m installer --destdir="$PWD/tmp_install" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$PWD/tmp_install$site_packages"
+
+  pytest -v --deselect test/test_render.py::test_upstream
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

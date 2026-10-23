@@ -1,0 +1,62 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=arch-repro-status
+pkgver=1.4.3
+pkgrel=3
+pkgdesc="Check the reproducibility status of your Arch Linux packages"
+arch=('x86_64')
+url="https://gitlab.archlinux.org/archlinux/arch-repro-status"
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+  'libalpm.so'
+  'libssl.so'
+)
+makedepends=(
+  'cargo'
+  'git'
+)
+groups=('archlinux-tools')
+source=(
+  "git+$url.git#tag=v$pkgver"
+  '0001-fix-deps-update-alpm-for-pacman-7.1.patch'
+)
+sha512sums=('c44e9ec2017827ebfdd1dc9f544600b2ed9a365c4136d2c69190e98b807842ec5a2963a8575af2ad98ce24e7eb3503440560cbc453f0bedd344ab76e559a4f39'
+            'bb711b046b21f8bdc9ae4531500791ce24f9e4a230087de9e716ae2b8f39bd5fc99cd62a9c92f547a0c880db003f02b6038a7b248fac82246aeda1a73248ba18')
+options=('!lto')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd "$pkgname"
+  git apply -3 ../0001-fix-deps-update-alpm-for-pacman-7.1.patch
+  mkdir completions/
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+  cargo build --frozen --release
+  OUT_DIR=completions/ ./target/release/$pkgname-completions
+}
+
+check() {
+  cd "$pkgname"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "man/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+  install -Dm 644 "completions/$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions"
+}

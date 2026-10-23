@@ -1,0 +1,43 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Maintainer: Daniel Maslowski <info@orangecms.org>
+
+pkgbase=pycosat
+pkgname=(python-pycosat)
+pkgver=0.6.6
+pkgrel=4
+arch=(x86_64)
+url='https://github.com/conda/pycosat'
+pkgdesc='Python bindings to picosat (a SAT solver)'
+license=(MIT)
+depends=(glibc
+         python)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/conda/pycosat#tag=$pkgver
+        python-3.13.patch)
+sha256sums=('630413dfe55853d653c28cdfe79f3f37e591bcb0d41afe7dd4365163838694bb'
+            '4f47f35f0e840df87e0994dfabe680172260a426f61e72afec9226ee04093ffc')
+
+prepare() {
+  patch -d $pkgbase -p1 < python-3.13.patch
+}
+
+build() {
+  cd $pkgbase
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgbase
+  PYTHONPATH="$PWD"/$(ls -d build/lib*) \
+  python test_pycosat.py
+}
+
+package_python-pycosat() {
+  cd $pkgbase
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

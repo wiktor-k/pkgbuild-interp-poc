@@ -1,0 +1,20 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: gkmcd <g at dramati dot cc>
+# Contributor: Wyatt J. Brown <sushidudeteam at gmail dot com>
+
+pkgname=prettyping
+pkgver=1.1.0
+pkgrel=1
+epoch=1
+pkgdesc='A ping wrapper making the output prettier, more colorful, more compact, and easier to read.'
+arch=('any')
+url='https://github.com/denilsonsa/prettyping'
+license=('MIT')
+depends=('bash' 'awk' 'iputils')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/denilsonsa/prettyping/archive/v$pkgver.tar.gz")
+sha512sums=('a96dad0fa6b5fb991b58fc51458b7d3b49034d1f4f471e1fb647912e5ae4a9474678d75546416a163d32982a7a395044012f6308bddc64c61d989b761e4c0374')
+
+package() {
+	install -Dm644 "$srcdir/prettyping-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+	install -Dm755 "$srcdir/prettyping-$pkgver/prettyping" "$pkgdir/usr/bin/prettyping"
+}

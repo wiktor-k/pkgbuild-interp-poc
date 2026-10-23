@@ -1,0 +1,54 @@
+pkgbase = dmd
+	pkgdesc = D programming language compiler and standard library
+	pkgver = 2.113.0
+	pkgrel = 2
+	epoch = 1
+	url = https://www.dlang.org
+	arch = x86_64
+	groups = dlang
+	groups = dlang-dmd
+	makedepends = git
+	makedepends = ldc
+	noextract = dmd.2.113.0.linux.tar.xz
+	source = git+https://github.com/dlang/dmd.git#tag=v2.113.0
+	source = git+https://github.com/dlang/phobos.git#tag=v2.113.0
+	source = http://downloads.dlang.org/releases/2.x/2.113.0/dmd.2.113.0.linux.tar.xz
+	source = http://downloads.dlang.org/releases/2.x/2.113.0/dmd.2.113.0.linux.tar.xz.sig
+	source = dmd.conf
+	source = dmd-doc.desktop
+	validpgpkeys = F3F896F3274BBD9BBBA59058710592E7FB7AF6CA
+	validpgpkeys = F8A26D5D7572ECA06EC7973182C52E37A8BC8393
+	validpgpkeys = 30AE2FC45DE4153268ED91754CF5FA5326CC62EB
+	sha256sums = 931881817185ca39237ef51a494fb33eff20d9c76d89b9343462df527698c4c8
+	sha256sums = ae1420ac7a80c790a95dddc43dbe3df0a5ab4b39ba0d58b7431aa7e8f7a11ebf
+	sha256sums = b342ab8bd40cc0c46407692b31d7cd69661ff01da686234f426949e881727294
+	sha256sums = SKIP
+	sha256sums = 3d639e89528fed1da90006f4dfb2b0fdc41308da5a96d953381ff4ccf257c035
+	sha256sums = 4b7b8722b3fa11082f0f332397b1b66c85b30ce773c43c3fedcba5768a1484b1
+
+pkgname = dmd
+	pkgdesc = The D programming language reference compiler
+	license = BSL-1.0
+	depends = gcc
+	depends = libphobos
+	optdepends = dtools: collection of useful utilities for development in D
+	optdepends = gcc-multilib: to cross-compile 32-bit applications
+	optdepends = dmd-docs: documentation and sample code for D
+	provides = d-compiler=2.113.0
+	backup = etc/dmd.conf
+
+pkgname = dmd-docs
+	pkgdesc = Documentation and sample code for D programming language
+	license = BSL-1.0
+	depends = dmd
+
+pkgname = libphobos
+	pkgdesc = The Phobos standard library for D programming language
+	license = BSL-1.0
+	provides = d-runtime=2.113.0
+	provides = d-stdlib=2.113.0
+	provides = libphobos-devel=2.113.0
+	conflicts = libphobos-devel
+	replaces = libphobos-devel
+	options = staticlibs
+	options = !strip

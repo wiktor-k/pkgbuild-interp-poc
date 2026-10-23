@@ -1,0 +1,48 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Maxim Baz <archlinux at maximbaz dot com>
+
+pkgname=yubikey-touch-detector
+pkgver=1.15.0
+pkgrel=1
+pkgdesc="A tool that can detect when your YubiKey is waiting for a touch"
+url="https://github.com/maximbaz/yubikey-touch-detector"
+arch=('x86_64')
+license=('ISC')
+depends=('glibc' 'gpgme' 'hicolor-icon-theme')
+makedepends=('go' 'scdoc')
+optdepends=('gnupg: for GPG'
+            'openssh: for SSH')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz"
+        "${url}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.gz.asc")
+b2sums=('395ae42c8c1a1fab4290535ea0627a9db14a4f45a59f3222b2574cfbe0db8909590ac8548b425cc4d5555110b9754c524b4fb0a12515b9ad3f1b9b4afdec72bf'
+        'SKIP')
+validpgpkeys=('56C3E775E72B0C8B1C0C1BD0B5DB77409B11B601')
+
+prepare(){
+	cd "${pkgname}-${pkgver}"
+	mkdir -p build/
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+	go build -ldflags="-s -w -linkmode=external -buildid=''" -o "build/${pkgname}"
+
+	scdoc < "${pkgname}.1.scd" > "${pkgname}.1"
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm 755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 "${pkgname}.service" "${pkgdir}/usr/lib/systemd/user/${pkgname}.service"
+	install -Dm 644 "${pkgname}.socket" "${pkgdir}/usr/lib/systemd/user/${pkgname}.socket"
+	install -Dm 644 "${pkgname}.png" "${pkgdir}/usr/share/icons/hicolor/128x128/apps/${pkgname}.png"
+	install -Dm 644 "${pkgname}.1" "${pkgdir}/usr/share/man/man1/${pkgname}.1"
+	install -Dm 644 service.conf.example "${pkgdir}/usr/share/doc/${pkgname}/service.conf.example"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md" 
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

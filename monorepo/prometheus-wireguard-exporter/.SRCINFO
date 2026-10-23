@@ -1,0 +1,22 @@
+pkgbase = prometheus-wireguard-exporter
+	pkgdesc = A Prometheus exporter for WireGuard, written in Rust.
+	pkgver = 3.6.6
+	pkgrel = 2
+	url = https://github.com/MindFlavor/prometheus_wireguard_exporter
+	install = prometheus-wireguard-exporter.install
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	depends = wireguard-tools
+	source = prometheus-wireguard-exporter-3.6.6.tar.gz::https://static.crates.io/crates/prometheus_wireguard_exporter/prometheus_wireguard_exporter-3.6.6.crate
+	source = prometheus-wireguard-exporter.service
+	source = prometheus-wireguard-exporter.conf
+	source = prometheus-wireguard-exporter.sysusers
+	source = prometheus-wireguard-exporter.install
+	sha512sums = 81b6fa1b0fa0bef17a97d841b2fe42c88a80d4c5d0bca8d82aaf24e24b2eeefdac6e283c729aabc9c0c0420d5277d2bd0e733054ed286346f3db166c32858a8a
+	sha512sums = 9df12fd511a9a179351d46a9de1d439b72b7e9658ef2ae68d62e2ef9bbe6657707ff3aba36f45213caca1462a7bb85005b1ded2b924dbf40542ff930f0631155
+	sha512sums = 63520a99e021d7eaa53b7ea8d832698f116507ccba6d322cd33005c43aa1d65179437c0320662ba99fefe4e9bf23457bc3360dba22a4ee79d261dd21c2ba8074
+	sha512sums = 52c5e10f8d156efc18e1f44076023b36efb799d7446d016d07a9d8ff9480e49273878d1a460146d3300732f2a82e0608cbc5d4c04465640677d0a8b491368594
+	sha512sums = fe8e41c85543a0e0d745aa57752f4139654547c9ae07cb4a8ac9d8679c8075f310bb0b6b73dc984cb52672b2416f364ce0371eaa16285e4ee3e576131f32f00c
+
+pkgname = prometheus-wireguard-exporter

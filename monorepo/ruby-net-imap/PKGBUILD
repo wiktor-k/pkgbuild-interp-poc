@@ -1,0 +1,104 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='net-imap'
+pkgname="ruby-${_gemname}"
+pkgver=0.5.15
+pkgrel=1
+pkgdesc='Ruby client api for Internet Message Access Protocol'
+arch=('any')
+url="https://github.com/ruby/${_gemname}"
+license=('RUBY' 'BSD-2-CLAUSE')
+depends=(
+  ruby
+  ruby-net-protocol
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-base64
+  ruby-bundler
+  ruby-rake
+  ruby-test-unit
+  ruby-test-unit-ruby-core
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('3fec4dd0b7027c4d255f2f08c43e7961911fbdf67c0da2a423dcc94856e36765f007c06753b6f7e95d707f92097643b225d09c88301638c05f39b0eead893b71')
+b2sums=('ca553c844948b7afaefcc521cc8e55b6f4d133eea3c035c42ff6cb43e3d1c940024dfb473335c2dc664ed00d8377149e41988f365d7c8c29af866a68d5b108a6')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # we don't build from a git checkout
+  sed --in-place --regexp-extended 's|`git ls-files -z 2>/dev/null`\.split\("\\x0"\)|`find . -type f -not -path "*/\.git*" -printf "%P\n"`\.split\("\n"\)|' "${_gemname}.gemspec"
+
+  sed --in-place --regexp-extended \
+    --expression '/group :test/,/end/d' \
+    Gemfile
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" SIMPLECOV_DISABLE="true" rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

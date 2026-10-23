@@ -1,0 +1,25 @@
+pkgbase = python-pdftotext
+	pkgdesc = Simple PDF text extraction
+	pkgver = 4.0.0
+	pkgrel = 1
+	url = https://sr.ht/~jalan/pdftotext/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = poppler
+	depends = python
+	source = git+https://git.sr.ht/~jalan/pdftotext#tag=v4.0.0
+	b2sums = 36030371b4d94a399a06e043a9d45315672b54bb0b89a44c06a508b236be7c10ba32f5c6b3aef66689b6f8f65b15697bba7e31c9d495c3aacccbbbaed9203956
+
+pkgname = python-pdftotext
+	depends = poppler
+	depends = python
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libstdc++
+	depends = libstdc++.so

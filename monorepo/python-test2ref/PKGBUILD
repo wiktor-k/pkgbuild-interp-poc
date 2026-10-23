@@ -1,0 +1,34 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=python-test2ref
+pkgver=1.2.3
+pkgrel=1
+pkgdesc="Testing Against Learned Reference Data"
+arch=('any')
+url="https://test2ref.readthedocs.io/"
+license=('MIT')
+depends=('python' 'python-binaryornot')
+makedepends=('python-build' 'python-installer' 'git' 'python-pdm-backend')
+checkdepends=('python-pytest' 'python-pytest-cov')
+source=(
+  "$pkgname::git+https://github.com/nbiotcloud/test2ref#tag=v$pkgver"
+)
+b2sums=('0d66b1bcb8e685380425b21062abbc814453644f8e805150fb83c24e90e071187aa87ae25d302267bddf8c8b51b03bfeb79284150edd8f5342549636e5399525')
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+  python -m pytest
+}
+
+package() {
+  cd "$pkgname"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

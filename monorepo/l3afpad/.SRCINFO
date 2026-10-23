@@ -1,0 +1,33 @@
+pkgbase = l3afpad
+	pkgdesc = Simple GTK plain text editor
+	pkgver = 0.8.18.1.11
+	pkgrel = 10
+	url = https://github.com/stevenhoneyman/l3afpad
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = intltool
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	source = git+https://github.com/stevenhoneyman/l3afpad.git#tag=v0.8.18.1.11
+	source = l3afpad.appdata.xml
+	source = l3afpad-redraw-line-numbers.patch
+	source = l3afpad-themed-icon.patch
+	source = l3afpad-keywords.patch
+	source = l3afpad-right-padding.patch
+	source = l3afpad-wrap-mode.patch
+	source = l3afpad-linenumber-color.patch
+	b2sums = c057db90f13a8f2d2973482eeadbbaba33baf94ee71d2ba94684faa5a4136e58bc26e4b44addf19985867a2988c50d0cb70a2a1450f68ea3f6921c9157e81aad
+	b2sums = b6f46419d49acfa39bce2c5705f72cecf9bca494a33f5eb14424fa31acd10abc814ae978af8863a0eafa1a78f7082f3579bc61bc00af5bd758e64691ffb32364
+	b2sums = 53537d9ef5b2060fd3a638f222c8003cf80a4a399495e6c9a4a4ab4e2ab1f8cf1e838ff9720c3f18b7126f5c3e2b0fe4f378ec07e6f1f0fd87bda01229845720
+	b2sums = 2138d93534b1d4b3d0e6c9dc7354c859c9792319c33e3a91f22ca57867486b7c4bb9ec3b82b77b028a777407db283bd9304917be22d14947aeca1e8802d0a70d
+	b2sums = 18121ed3047324b4ce31463b3ed9ee99e8feac5be47308570203f732f0570130025ba92c456574d395df5001d5c9da5e875b29e321cf95a7700cc30a6055965a
+	b2sums = f764423f9a1f95e4783638ddb762bb12d2b0581e915463261e2c99c6c4e9ee22763bfd785f6092f41ecb38fea8ed30f55f4b1c368d1f0b2f5429493e562e8d59
+	b2sums = 0f2251c6abb199cd9e6725f4e3a645521e9e227b095cc4b43811d812112561ff0e565ef4d1a5413d6d6bcf903156158cd2ab02e4cade7476a49fc41ec0103498
+	b2sums = 0eb2ed4696e3d8cb32ddf749fb689d0205f8cb292b574d1095a2f4bfaaf53adcb0f6294c998a02b7bf4666da4c79228e0523fcb4ac83169d563442674ab9c082
+
+pkgname = l3afpad

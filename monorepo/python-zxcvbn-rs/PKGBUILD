@@ -1,0 +1,49 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=python-zxcvbn-rs
+pkgver=0.3.0
+pkgrel=3
+pkgdesc="Python bindings for zxcvbn-rs, the Rust implementation of zxcvbn"
+url="https://github.com/fief-dev/zxcvbn-rs-py"
+arch=(x86_64)
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  python
+)
+makedepends=(
+  git
+  maturin
+  python-installer
+  rust
+)
+source=(
+  "git+$url#tag=v$pkgver"
+)
+b2sums=('b3528fc6d4d69e88fcd9d7a1709bf651892568b549e96710ddacd238d4165074ced57af31546b17ad4a315a7e16f8e16902785fcad55777c2795f26c5132c512')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd zxcvbn-rs-py
+  cargo fetch --locked
+}
+
+build() {
+  cd zxcvbn-rs-py
+
+  maturin build --release --frozen
+}
+
+package() {
+  cd zxcvbn-rs-py
+  python -m installer -d "$pkgdir" target/wheels/*.whl
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set sw=2 sts=-1 et:

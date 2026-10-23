@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-pw-check
+pkgver=6.0.12
+pkgrel=1
+pkgdesc='Tool to verify the validity of the password'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-pw-check"
+license=('GPL-3.0-or-later')
+depends=('cracklib' 'gtk3' 'iniparser')
+makedepends=('deepin-gettext-tools' 'git' 'go')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-pw-check.git#tag=$pkgver")
+sha512sums=('fadad015e59362876020fc85f8a6559ed477ccb79c2b65d5bd572e98ea019c70737447096af88fc6300f8b1507a5e20639cb62e6af1c9bf2c51edb98240fe919')
+
+prepare() {
+  cd deepin-pw-check
+  patch -p1 -i rpm/0001-Mangle-Suit-Cracklib2.9.6.patch
+  sed -i 's|gcc |gcc ${CFLAGS} ${LDFLAGS} |;/export GOPATH/d' Makefile
+}
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  export GOPATH="${srcdir}/gopath"
+
+  cd deepin-pw-check
+  make
+}
+
+package() {
+  cd deepin-pw-check
+  make libexecdir=/usr/lib DESTDIR="$pkgdir" PKG_FILE_DIR=/usr/lib/pkgconfig PAM_MODULE_DIR=/usr/lib/security install
+}

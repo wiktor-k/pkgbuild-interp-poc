@@ -1,0 +1,20 @@
+pkgbase = yubikey-personalization-gui
+	pkgdesc = Yubico YubiKey Personalization GUI
+	pkgver = 3.1.25
+	pkgrel = 4
+	url = https://github.com/Yubico/yubikey-personalization-gui
+	arch = x86_64
+	license = BSD
+	makedepends = imagemagick
+	depends = yubikey-personalization
+	depends = qt5-base
+	depends = libxkbcommon-x11
+	provides = yubikey-personalization-tool
+	conflicts = yubikey-personalization-tool
+	source = https://developers.yubico.com/yubikey-personalization-gui/Releases/yubikey-personalization-gui-3.1.25.tar.gz
+	source = https://developers.yubico.com/yubikey-personalization-gui/Releases/yubikey-personalization-gui-3.1.25.tar.gz.sig
+	validpgpkeys = 0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A
+	sha256sums = 680b8ba8251c828847ffddd520165ac14927c2c6ee4ae39cfa9022ad7dd9dece
+	sha256sums = SKIP
+
+pkgname = yubikey-personalization-gui

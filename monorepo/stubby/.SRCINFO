@@ -1,0 +1,18 @@
+pkgbase = stubby
+	pkgdesc = DNS Privacy stub resolver
+	pkgver = 0.4.3
+	pkgrel = 2
+	url = https://dnsprivacy.org/wiki/display/DP/DNS+Privacy+Daemon+-+Stubby
+	arch = x86_64
+	license = BSD
+	makedepends = cmake
+	makedepends = git
+	depends = getdns
+	depends = libsystemd
+	depends = libyaml
+	backup = etc/stubby/stubby.yml
+	source = git+https://github.com/getdnsapi/stubby.git?signed#tag=b9a56ea629b9abdc2aaaf5aa7d7b568143b3d9c7
+	validpgpkeys = DC34EE5DB2417BCC151E5100E5F8F8212F77A498
+	sha256sums = SKIP
+
+pkgname = stubby

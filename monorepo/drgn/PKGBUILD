@@ -1,0 +1,55 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Omar Sandoval <osandov at osandov dot com>
+
+pkgname=drgn
+pkgver=0.3.0
+pkgrel=1
+pkgdesc='Programmable debugger'
+arch=('x86_64')
+url='https://github.com/osandov/drgn'
+license=('LGPL-2.1-or-later')
+depends=(
+    'glibc'
+    'libelf'
+    'libgcc'
+    'libgomp'
+    'libkdumpfile'
+    'pcre2'
+    'python'
+)
+makedepends=(
+    'git'
+    'python-build'
+    'python-installer'
+    'python-setuptools'
+    'python-wheel'
+)
+optdepends=(
+    'python-prompt_toolkit: enhanced terminal support in contrib/ptdrgn.py'
+    'debuginfod: for libdebuginfod support'
+    'xz: for MiniDebugInfo support'
+)
+checkdepends=('check')
+source=("$pkgname::git+https://github.com/osandov/drgn#tag=v${pkgver}")
+sha256sums=('02f4bcd57bf4cd8304e377a437fdc2a02960ecf8fc885b8a5099ac98fada3b2d')
+
+build() {
+    cd $pkgname
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "$pkgname"
+    # this is not affected by the setup.py test removal:
+    # https://github.com/osandov/drgn/issues/435
+    python setup.py test
+}
+
+package() {
+    cd "$pkgname"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -d "$pkgdir/usr/share/drgn"
+    cp -dR --no-preserve=ownership contrib tools "$pkgdir/usr/share/drgn"
+    find "$pkgdir/usr/share/drgn" -name '*.pyc' -delete
+    rmdir "$pkgdir/usr/share/drgn/tools/__pycache__" || true
+}

@@ -1,0 +1,33 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=mcqd
+pkgver=1.0.0
+pkgrel=5
+pkgdesc='Maximum Clique Algorithm for finding a maximum clique in an undirected graph'
+arch=(x86_64)
+url='http://insilab.org/maxclique/'
+license=(GPL-3.0-or-later)
+depends=(glibc
+         libgcc
+         libstdc++)
+makedepends=(git)
+source=(git+https://gitlab.com/janezkonc/mcqd#tag=v$pkgver
+        mcqd-silent.patch)
+sha256sums=('a78429207f0395952a33294bef43858f7c22d164dd32719c1a571ec74e772f5d'
+            '89b186a032d3b2e542c38ab601a9c5b8ed11f0385a3473fece3778409e9c7045')
+
+prepare() {
+  patch -d $pkgname < mcqd-silent.patch # Silence debug output
+}
+
+build() {
+  cd $pkgname
+  g++ ${CXXFLAGS} ${LDFLAGS} mcqd.cpp -o mcqd
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 mcqd "$pkgdir"/usr/bin/mcqd
+  install -Dm644 mcqd.h "$pkgdir"/usr/include/mcqd.h
+  install -D COPYING "$pkgdir"/usr/share/licenses/mcqd/COPYING
+}

@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: sum01 <sum01@protonmail.com>
+
+pkgname=cpp-httplib
+pkgver=0.62.0
+pkgrel=1
+pkgdesc='A C++ header-only HTTP/HTTPS server and client library'
+arch=(any)
+url=https://github.com/yhirose/cpp-httplib
+license=(MIT)
+makedepends=(
+  brotli
+  git
+  meson
+  ninja
+  mbedtls
+  openssl
+  python
+  zlib
+  zstd
+)
+checkdepends=(gtest)
+optdepends=(
+  'brotli: Brotli compression support'
+  'mbedtls: HTTPS support'
+  'openssl: HTTPS support'
+  'zlib: Zlib compression support'
+  'zstd: Zstandard compression support'
+)
+source=(git+${url}.git#tag=v${pkgver})
+b2sums=('59c1b160c8d2b045cc287cb35768cccdea24a4998cde30a454db3f371ac10e05417e54d040f48f65d5d11236ee9a8b9c9d258c17c987bdb90a79126b613e37b5')
+
+build() {
+  arch-meson cpp-httplib build
+  meson compile -C build
+}
+
+#check() {
+#  ctest --test-dir build -F
+#}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  install -Dm 644 cpp-httplib/LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

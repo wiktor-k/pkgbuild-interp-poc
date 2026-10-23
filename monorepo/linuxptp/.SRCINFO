@@ -1,0 +1,15 @@
+pkgbase = linuxptp
+	pkgdesc = An implementation of the Precision Time Protocol (PTP) according to IEEE standard 1588 for Linux
+	pkgver = 4.4
+	pkgrel = 2
+	url = https://linuxptp.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = glibc
+	depends = nettle
+	source = linuxptp::git+https://git.code.sf.net/p/linuxptp/code#tag=v4.4
+	sha512sums = 7f60b8d5c70c116fbfa80a7c506613aa3920d2f1d36811b9992e226bef49271005c0cc7d5bbd7a9a0f8313145bff3ca538425989eb56e612b97b15965940a9df
+	b2sums = 8e01b1c80fee454dc55d20e89d229a65fd976f740940f9d9de6336e912e14ccf5585a6ef6d01ac8893181c3e59ba4420aa9a487b1d13db6892960476e515c1aa
+
+pkgname = linuxptp

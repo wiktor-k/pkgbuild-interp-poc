@@ -1,0 +1,24 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=perl-authen-radius
+pkgver=0.37
+pkgrel=1
+pkgdesc="perl radius client"
+arch=('any')
+url="https://search.cpan.org/dist/Authen-Radius/"
+license=('Artistic-2.0')
+depends=('perl-data-hexdump>=0.02' 'perl-net-ip')
+options=('!emptydirs')
+source=(https://search.cpan.org/CPAN/authors/id/P/PO/PORTAONE/Authen-Radius-$pkgver.tar.gz)
+sha256sums=('41af6b620715ded7392d4a7b4433a1f6869387ebb5135ff90f88198de1332bd1')
+
+build() {
+  cd  "$srcdir"/Authen-Radius-$pkgver
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd  "$srcdir"/Authen-Radius-$pkgver
+  make install DESTDIR="$pkgdir"
+}

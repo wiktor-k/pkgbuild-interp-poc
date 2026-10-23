@@ -1,0 +1,18 @@
+pkgbase = check-sieve
+	pkgdesc = Syntax checker for Sieve scripts
+	pkgver = 1.0.1
+	pkgrel = 1
+	url = https://github.com/dburkart/check-sieve
+	arch = x86_64
+	license = MIT
+	checkdepends = python
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	options = !buildflags
+	source = check-sieve::git+https://github.com/dburkart/check-sieve#tag=v1.0.1
+	sha512sums = 269f97421e4b4c0b7d406418fffc6a0bca53d902f7ca496bd1f37719c656a1564c91db513e65f1bed9736c4e43eb974863219e629a428c6833f655d2b8e1d8fb
+	b2sums = a733aa8c650666dd22c55b95da3be311e7b6d6af9e4aecc60fa4d17c11a5a9d8dda874f19c50b5d06da2481a16592be1540f987da64f88959d5c1eda67fa5736
+
+pkgname = check-sieve

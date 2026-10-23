@@ -1,0 +1,57 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=miller
+pkgver=6.22.0
+pkgrel=1
+pkgdesc='Name-indexed data processing tool'
+arch=(x86_64)
+url='https://github.com/johnkerl/miller'
+license=(BSD-2-Clause)
+makedepends=(go git)
+options=(!lto)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('9c28e5a32dd204d6ca9edb3b5ebec54a679404486dc774186576c4dacb1a7df4c9a8cd6820568db3bad96d0ce05343ccd2bd39171969afcfbfaabd8c0712e4e2')
+b2sums=('d0867f0c7b1231026f51017cca58dd8f7cce5bb8902608f984d4fc85bf22d508547827e7b4c3a423d2bda990bbe010436a85a83fae7f6db2562fe911e5ee03ad')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    ./cmd/mlr
+}
+
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" mlr
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" man/mlr.1
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

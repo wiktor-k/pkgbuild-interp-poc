@@ -1,0 +1,72 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=myMPD
+pkgname=mympd
+pkgver=26.1.1
+pkgrel=1
+pkgdesc="A standalone and lightweight web-based MPD client"
+arch=(x86_64)
+url="https://github.com/jcorporation/myMPD"
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  libutf8proc
+  lua54
+)
+makedepends=(
+  cmake
+  flac
+  jq
+  libid3tag
+  openssl
+  pcre2
+  perl
+)
+optdepends=(
+  'libnewt: for mympd-config'
+  'sh: for mympd-config'
+)
+source=($url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('5be2e65c276ca9eb40a553595ee1ea143922720e0c959aa071355143e71bae786547030fd5f51d9c273c17c8d473d1119450491b705063c9307624bd01dd5a5a')
+b2sums=('24fd8d57e64cbf0a987bfc50f00581249663234d8a86bcbb82d01653efd72e6d676560a3084926c2898f82790da4e979cb4924c95731da6e843716eaa29456c7')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D MYMPD_ENABLE_FLAC=ON
+    -D MYMPD_BUILD_TESTING=ON
+    -S $_name-$pkgver
+    -W no-dev
+  )
+
+  # CMAKE_BUILD_TYPE=None does not automatically disable compiling in debug mode, so we do this specifically
+  CFLAGS+=" -DNDEBUG"
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  local ctest_options=(
+    --exclude-regex "^test_utf8wrap$"
+    --test-dir build
+    --output-on-failure
+  )
+
+  ctest "${ctest_options[@]}"
+}
+
+package() {
+  depends+=(
+    flac libFLAC.so
+    libid3tag libid3tag.so
+    openssl libssl.so
+    pcre2 libpcre2-8.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $_name-$pkgver/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  touch -d "yesterday" "$pkgdir/usr/bin/$pkgname"
+  ls -lahR "$pkgdir/usr/bin/"
+}

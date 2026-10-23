@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Kasei Wang <cnsdwpc at gmail.com>
+
+pkgname=brook
+pkgver=20270101
+pkgrel=1
+pkgdesc="A cross-platform proxy/vpn software"
+arch=('x86_64')
+url="https://github.com/txthinking/brook"
+license=('GPL-3.0-only')
+options=('!lto')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/txthinking/brook.git#tag=v$pkgver")
+sha512sums=('db3340e02b3509cfc3bc58b51cd16b133a1572245a124fb5b28fc5d28db8b26456ed5ee882bfb79418219949fec4528a07240839d96193c4e4053142f655df79')
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+
+  cd brook/cli/brook
+  go build -o brook
+}
+
+package() {
+  cd brook/cli/brook
+  install -Dm755 brook -t "$pkgdir"/usr/bin/
+}

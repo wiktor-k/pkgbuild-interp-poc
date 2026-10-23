@@ -1,0 +1,43 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=elastic
+pkgver=1.0.4
+pkgrel=1
+pkgdesc='Design and export spring physics-based animations to use with libadwaita'
+arch=(x86_64)
+url='https://apps.gnome.org/Elastic/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  template-glib
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  vala
+)
+source=("git+https://gitlab.gnome.org/World/elastic.git#tag=$pkgver")
+b2sums=(348802c8d116330ec7aa53f791f20a61af745886ed540ccf04f62abadb6dce3dacc1aacbf681bbc774a9171a5a259e1a79455e6b51629930c015e9e936fc340e)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  ln -s app.drey.Elastic "$pkgdir/usr/bin/elastic"
+}

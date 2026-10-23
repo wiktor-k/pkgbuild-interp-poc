@@ -1,0 +1,63 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=decoder
+pkgver=0.10.0
+pkgrel=1
+pkgdesc='QR code scanner and generator'
+arch=(x86_64)
+url='https://apps.gnome.org/Decoder/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  graphene
+  gst-plugin-gtk4
+  gst-plugin-pipewire
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  sqlite
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=("git+https://gitlab.gnome.org/World/decoder.git#tag=$pkgver")
+b2sums=(2c68ec57ba47edd45c7f899c9cbb2524c98cf1c302014648871361ba09e632672e942ebc4d0a14b24b414fb57597a363b9015ed7e6c51102351916aa1cdf523e)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    LIBSQLITE3_SYS_USE_PKG_CONFIG=1 \
+    meson compile -C build
+}
+
+check() {
+  LIBSQLITE3_SYS_USE_PKG_CONFIG=1 \
+    meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

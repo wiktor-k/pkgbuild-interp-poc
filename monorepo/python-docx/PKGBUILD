@@ -1,0 +1,44 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-docx
+pkgver=1.2.0
+pkgrel=2
+pkgdesc='Create and modify Word documents with Python'
+arch=(any)
+url='https://github.com/python-openxml/python-docx'
+license=(MIT)
+depends=(
+  python
+  python-lxml
+  python-typing_extensions
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pyparsing
+  python-pytest
+)
+source=("git+https://github.com/python-openxml/python-docx.git#tag=v$pkgver")
+b2sums=(e28d559cd5b9db89566b0db891a3ec9afcfbe0e02a9689792b23c7ce29003f1659dd20d4ce782831ba0b3112fad368b180fa4604ee3a1cb13432a5fd0378c0da)
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  PYTHONPATH="$PWD/build/lib" \
+    pytest --ignore=tests/opc/test_phys_pkg.py -W ignore::pyparsing.warnings.PyparsingDeprecationWarning
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

@@ -1,0 +1,56 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Simon Legner <Simon.Legner@gmail.com>
+# Contributor: peippo <christoph+aur@christophfink.com>
+
+pkgbase=protozero
+pkgname=(
+  protozero
+  protozero-docs
+)
+pkgver=1.8.2
+pkgrel=1
+pkgdesc="Minimalist protocol buffer decoder and encoder in C++"
+url="https://github.com/mapbox/protozero"
+arch=('any')
+license=('BSD-2-Clause AND Apache-2.0')
+makedepends=(
+  'clang'
+  'cmake'
+  'doxygen'
+  'graphviz'
+  'protobuf'
+)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('68d1df951b4d8397355c8fc9ffed40d9c06282a877fe847403feac6edcee3ef1')
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DIWYU_TOOL=/usr/bin/iwyu-tool
+  cmake --build build
+}
+
+check() {
+  cd ${pkgbase}-${pkgver}
+  ctest --test-dir build --output-on-failure
+}
+
+package_protozero() {
+  cd ${pkgbase}-${pkgver}
+  DESTDIR="${pkgdir}" cmake --install build
+  install -vDm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE.md
+}
+
+package_protozero-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+
+  cd ${pkgbase}-${pkgver}
+  mkdir -vp "${pkgdir}/usr/share/doc"
+  cp -vr build/doc/html "${pkgdir}/usr/share/doc/${pkgbase}"
+  install -vDm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE.md
+}

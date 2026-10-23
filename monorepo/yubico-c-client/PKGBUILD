@@ -1,0 +1,50 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgname=yubico-c-client
+_shortname=ykclient
+pkgver=2.15
+pkgrel=7
+pkgdesc='Yubico YubiKey client C library'
+arch=('x86_64')
+url='https://github.com/Yubico/yubico-c-client'
+license=('BSD')
+depends=('curl' 'yubico-c')
+makedepends=('git' 'help2man')
+provides=("${_shortname}")
+conflicts=("${_shortname}")
+validpgpkeys=('0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A') # Klas Lindfors <klas@yubico.com>
+source=("git+https://github.com/Yubico/yubico-c-client.git#tag=ykclient-${pkgver}?signed")
+sha256sums=('3dd6eef72917bb0a07e89c862a6a5f4c80ba5e5a7dc55b223971f5912554f96c')
+
+prepare() {
+  cd 'yubico-c-client'
+
+  # https-ify urls and drop v1 selftest
+  git cherry-pick -n \
+    '0d45452e7fbe47e77e78ff23b480c77fd9c06f2b'
+
+  autoreconf -fvi
+}
+
+build() {
+  cd 'yubico-c-client'
+
+  ./configure \
+    --prefix=/usr
+  make
+}
+
+check() {
+  cd 'yubico-c-client'
+
+  make check
+}
+
+package() {
+  cd 'yubico-c-client'
+
+  install -D -m0644 COPYING "${pkgdir}/usr/share/licenses/yubico-c-client/COPYING"
+  install -D -m0644 README "${pkgdir}/usr/share/doc/yubico-c-client/README"
+  make DESTDIR="${pkgdir}/" install
+}
+

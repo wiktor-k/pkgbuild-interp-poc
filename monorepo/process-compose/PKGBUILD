@@ -1,0 +1,52 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+pkgname=process-compose
+pkgver=1.122.0
+pkgrel=1
+pkgdesc="A simple and flexible scheduler and orchestrator to manage non-containerized applications"
+arch=(x86_64)
+url="https://f1bonacc1.github.io/process-compose/"
+license=('Apache-2.0')
+depends=(glibc)
+makedepends=(go)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/F1bonacc1/process-compose/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('ec4fc618ccf88d1d049842cb873cfa08f8fbd8d4ee8eff6c3a1c020be8005157')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  local _pkg _date
+  # Cannot use upstream makefile as it insists on disabling CGO
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+
+  _pkg="github.com/f1bonacc1/process-compose/src/config"
+  _date=$(date -u -Is --date=@"$SOURCE_DATE_EPOCH" | sed 's/\+00:00/Z/')
+
+  go build -ldflags="-linkmode=external -X ${_pkg}.Version=v${pkgver} -X ${_pkg}.Date=${_date}" \
+    -o bin/$pkgname ./
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  go test ./...
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 -t "$pkgdir/usr/bin" bin/$pkgname
+
+  # Generate shell completion files
+  mkdir --parents --verbose "$pkgdir"/usr/share/zsh/site-functions "$pkgdir"/usr/share/bash-completion/completions "$pkgdir"/usr/share/fish/vendor_completions.d/
+  "$pkgdir"/usr/bin/process-compose completion bash > "$pkgdir"/usr/share/bash-completion/completions/$pkgname
+  "$pkgdir"/usr/bin/process-compose completion fish > "$pkgdir"/usr/share/fish/vendor_completions.d/$pkgname.fish
+  "$pkgdir"/usr/bin/process-compose completion zsh > "$pkgdir"/usr/share/zsh/site-functions/_$pkgname
+}

@@ -1,0 +1,98 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: schuay <jakob.gruber@gmail.com>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+# Contributor: Jeff Mickey <jeff@archlinux.org>
+# Contributor: Thayer Williams <thayer@archlinux.org>
+
+pkgname=dopewars
+pkgver=1.6.2
+pkgrel=4
+pkgdesc='Turn based strategy game based on "Drug Wars" from 1984'
+arch=(x86_64)
+url='https://dopewars.sourceforge.io'
+license=(GPL-2.0-only)
+depends=(gtk3)
+makedepends=(
+  git
+  alsa-lib
+  audiofile
+  gendesk
+  sdl2
+  sdl2_mixer
+  ncurses
+)
+optdepends=(
+  'sdl2: for the graphical interface'
+  'alsa-lib: for audio'
+  'audiofile: for audio'
+  'sdl2_mixer: for audio'
+)
+backup=(srv/dopewars/dopewars.sco)
+source=(
+  "git+https://github.com/benmwebb/dopewars#tag=v$pkgver"
+  dopewars.service
+  dopewars.socket
+  fix-translations.patch
+)
+sha512sums=('17b2ac789ba36c8c340a814c2601f3b90743bbeb51a2bbf2e19a7183f52e5b4c3abf39a4951d6fc2441d571468b3902a374e7c1d56bd223df28646b22f1426ec'
+            'bfefc25934bc327fdb44ab3a37566f0cf48aa1473e47e8db6a097104f7ab2d89472eecd858d104c994f8c7a9c4ed9ca4302143852ae031804060b2ce9a2df57a'
+            '4b3234f6d74940ac06e4b59c0155bf79b45641b16342407785efd9d59eb2369e7d7f426311383603cf767159a9c1c459116d0391c7cfc50f5c77dfbe77df415f'
+            '4ce4ae27513134e774bdd81e15e0a74c236f86548f98db44d1512583b10b1c523b4ca4e4d423b32f405ee3f1574f3f9ccf1274ede57e2f6f78391132f0afc6d1')
+b2sums=('070cb44064d2eb57dc7d67f4fcc5fea06ff5edeba1ae67de8d0fb9dd2982e52446f5e891bec7dca835b8826d463b6408f87736cc57cbbf4dc310367f6c78e650'
+        '094e4c569fb399ee8701855583db0acde19d13a1cec4c90e3ac21feee946c4f302563880d6be67433a57b30f9dc540b6d26d06121ecc88799c5c37d934a45ccd'
+        '438f7a315eb0af93051c2498b3d81823ce74a121c90a04e16f8d0c8f15d6aa4ddc569203100a38732a3c83a3b8a08c8880b7b9e4a2d23cdcac070e5567767d73'
+        'aad5278d0471140ec3cfed9363c4b9f3e0a16c004ddee0f81d5d65fa3b615b85bd48eaa54ddad0db550b098ea7f72239b5b9cdd31d9689c3b5c1df0c00baa680')
+
+prepare() {
+  gendesk -f -n \
+    --icon="$pkgname-pill" \
+    --pkgname "$pkgname" \
+    --pkgdesc "$pkgdesc"
+
+  cd "$pkgname"
+
+  # fix broken translations
+  patch -p1 -i "$srcdir/fix-translations.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # Fix FTBFS with GCC 15
+  export CFLAGS+=' -std=gnu17'
+
+  autoreconf -vfi
+
+  ./configure \
+    --localstatedir=/srv/dopewars \
+    --mandir=/usr/share/man \
+    --prefix=/usr
+
+  make
+}
+
+package() {
+  depends+=(
+    glibc
+    ncurses libncursesw.so
+    curl libcurl.so
+  )
+
+  make -C $pkgname \
+    DESKTOPDIR="$pkgdir/usr/share/applications" \
+    DESTDIR="$pkgdir" \
+    install
+
+  install -vDm644 -t "$pkgdir/usr/share/applications" dopewars.desktop
+
+  # systemd integration
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" dopewars.{service,socket}
+
+  # Fix permissions
+  chmod 2755 "$pkgdir/usr/bin/dopewars"
+  chown root:games "$pkgdir/usr/bin/dopewars"
+  chown -R root:games "$pkgdir/srv/dopewars"
+  chmod 0775 "$pkgdir/srv/dopewars"
+  chmod 0664 "$pkgdir/srv/dopewars/dopewars.sco"
+}

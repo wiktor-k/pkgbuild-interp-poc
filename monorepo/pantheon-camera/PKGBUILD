@@ -1,0 +1,48 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-camera
+pkgver=8.0.2
+pkgrel=1
+pkgdesc='The Pantheon Camera Application'
+arch=(x86_64)
+url=https://github.com/elementary/camera
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  gstreamer
+  gst-plugins-base-libs
+  gst-plugins-good
+  gtk4
+  hicolor-icon-theme
+  libcanberra.so
+  libgranite-7.so
+)
+makedepends=(
+  appstream
+  git
+  intltool
+  meson
+  vala
+)
+_tag=46e6bcd298653bcaafddfe2f0f9321d5040968f5
+source=(pantheon-camera::git+https://github.com/elementary/camera.git#tag=${_tag})
+b2sums=('f695cae69d71439acec7e7207b9aa14d03da5fc8071beba8e2b2b530dd7380842f01235d934e9d58fa31db3dd0ef632c4393c7c46537566717451d6a5969e197')
+
+pkgver() {
+  cd pantheon-camera
+  git describe --tags
+}
+
+build() {
+  arch-meson pantheon-camera build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

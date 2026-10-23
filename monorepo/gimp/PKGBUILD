@@ -1,0 +1,137 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Daniel Isenmann <daniel@archlinux.org>
+
+pkgname=gimp
+pkgver=3.2.6
+pkgrel=2
+pkgdesc='GNU Image Manipulation Program'
+url='https://www.gimp.org/'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  # Core deps
+  'appstream' #'libappstream.so'
+  'babl' 'libbabl-0.1.so'
+  'cairo' 'libcairo.so'
+  'fontconfig' 'libfontconfig.so'
+  'freetype2' 'libfreetype.so'
+  'gdk-pixbuf2' 'libgdk_pixbuf-2.0.so'
+  'gegl' 'libgegl-0.4.so' 'libgegl-npd-0.4.so'
+  'glib2' 'libgio-2.0.so' 'libglib-2.0.so' 'libgmodule-2.0.so' 'libgobject-2.0.so'
+  'glibc'
+  'gtk3' 'libgdk-3.so' 'libgtk-3.so'
+  'harfbuzz' 'libharfbuzz.so'
+  'hicolor-icon-theme'
+  'iso-codes'
+  'json-glib' 'libjson-glib-1.0.so'
+  'lcms2' 'liblcms2.so'
+  'libgcc' 'libgcc_s.so'
+  'libgexiv2' 'libgexiv2.so'
+  'libgirepository' 'libgirepository-1.0.so'
+  'libgomp' 'libgomp.so'
+  'libmypaint' #'libmypaint.so'
+  'libstdc++' 'libstdc++.so'
+  'libunwind' 'libunwind.so'
+  'mypaint-brushes'
+  'pango' 'libpango-1.0.so' 'libpangocairo-1.0.so' 'libpangoft2-1.0.so'
+  'python-gobject'
+  'python-cairo'
+  'zlib' 'libz.so'
+
+  # Plugins deps
+  'aalib' #'libaa.so'
+  'bzip2' 'libbz2.so'
+  'libarchive' 'libarchive.so'
+  'libgudev' 'libgudev-1.0.so'
+  'libheif' 'libheif.so'
+  'libjpeg-turbo' 'libjpeg.so'
+  'libjxl' 'libjxl.so' 'libjxl_threads.so'
+  'libmng' #'libmng.so'
+  'libpng' 'libpng16.so'
+  'librsvg' 'librsvg-2.so'
+  'libtiff' 'libtiff.so'
+  'libwebp' 'libwebpdemux.so' 'libwebpmux.so' 'libwebp.so'
+  'libwmf' #'libwmf-0.2.so' 'libwmflite-0.2.so'
+  'libx11' #'libX11.so'
+  'libxcursor' #'libXcursor.so'
+  'libxext' #'libXext.so'
+  'libxfixes' #'libXfixes.so'
+  'libxmu' #'libXmu.so'
+  'libxpm' #'libXpm.so'
+  'openexr' #'libIex-3_4.so' 'libOpenEXR-3_4.so'
+  'openjpeg2' #'libopenjp2.so'
+  'poppler-data'
+  'poppler-glib' 'libpoppler-glib.so'
+  'xz' 'liblcms2.so'
+)
+makedepends=(
+  'alsa-lib'
+  'bash-completion'
+  'cfitsio'
+  'ghostscript'
+  'gi-docgen'
+  'git'
+  'gjs'
+  'glib2-devel'
+  'gobject-introspection'
+  'gtk-doc'
+  'gvfs'
+  'intltool'
+  'meson'
+  'qoi'
+  'vala'
+)
+optdepends=(
+  'alsa-lib: for MIDI event controller module'
+  'bash-completion: for bash completion support'
+  'cfitsio: for FITS support'
+  'ghostscript: for PostScript support'
+  'gjs: for JavaScript scripting support'
+  'gutenprint: for sophisticated printing only as gimp has built-in cups print support'
+  'gvfs: for HTTP/S support (and many other schemes)'
+)
+install=gimp.install
+source=(
+  git+https://gitlab.gnome.org/GNOME/gimp.git#tag=GIMP_${pkgver//./_}
+  git+https://gitlab.gnome.org/GNOME/gimp-data.git
+)
+sha256sums=('a6f43eec310dddde776d41e6a572f925d40506c41b8664aed039ec007eab9521'
+            'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.gimp-data.url "$srcdir/gimp-data"
+  git -c protocol.file.allow=always submodule update
+
+  # a request to gitlab for bug url fails, causes by anubis - disable for now
+  sed -i '/appstreamcli.found/,$d' desktop/meson.build
+}
+
+build() {
+  local meson_options=(
+    --sysconfdir=/etc
+    --libexecdir=/usr/bin \
+    -Dopenmp=enabled
+    -Dcheck-update=no
+    -Dbug-report-url='https://gitlab.archlinux.org/archlinux/packaging/packages/gimp/-/issues'
+    -Dopenexr=enabled
+    -Dilbm=disabled
+    -Dheadless-tests=disabled # enabled by default, depends on xorg-server-xvfb
+  )
+
+  arch-meson ${pkgname} build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

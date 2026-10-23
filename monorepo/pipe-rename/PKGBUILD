@@ -1,0 +1,41 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=pipe-rename
+pkgver=1.6.7
+pkgrel=1
+pkgdesc='Rename your files using your favorite text editor'
+arch=(x86_64)
+url='https://github.com/marcusbuffett/pipe-rename'
+license=(MIT)
+depends=(glibc libgcc)
+makedepends=(git rust)
+options=(!lto)
+source=("$pkgname::git+$url.git#tag=$pkgver")
+sha512sums=('72dbd75ff7e5674f6430695379a847ac8d301b02f1347c1bbcee2daf98ed3c2291db64d3c01b111e6547dfbcc1675f8d2fb59881595637df8812949a0accae0b')
+b2sums=('149ab60d97381753c7b19e129bf453493818d476f6dbb4268db95f52afb69356b96a1656db2ba338dc8b9c964a58e427d93d623cd69ea0805b11e72aa100c0f6')
+
+prepare() {
+  cd "$pkgname"
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/renamer
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

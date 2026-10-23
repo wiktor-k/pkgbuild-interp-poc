@@ -1,0 +1,128 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=ocrfeeder
+pkgver=0.8.5
+pkgrel=11
+pkgdesc='Document layout analysis and optical character recognition application'
+arch=(any)
+url='https://wiki.gnome.org/Apps/OCRFeeder'
+license=(GPL-3.0-or-later)
+depends=(
+  gdk-pixbuf2
+  ghostscript
+  glib2
+  gtk3
+  gtkspell3
+  hicolor-icon-theme
+  iso-codes
+  pango
+  python
+  python-cairo
+  python-gobject
+  python-odfpy
+  python-pillow
+  python-pyenchant
+  python-reportlab
+  python-sane
+  unpaper
+)
+makedepends=(
+  git
+  intltool
+  yelp-tools
+)
+optdepends=(
+  'ocrad: character recognition'
+  'tesseract: character recognition'
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/ocrfeeder.git#tag=$pkgver"
+  ocrfeeder-11.patch
+  ocrfeeder-12.patch
+  ocrfeeder-16.patch
+  ocrfeeder-17.patch
+  ocrfeeder-18.patch
+  ocrfeeder-19.patch
+  ocrfeeder-20.patch
+  ocrfeeder-22.patch
+  ocrfeeder-25.patch
+  ocrfeeder-26.patch
+  ocrfeeder-27.patch
+  ocrfeeder-29.patch
+)
+b2sums=(
+  a74150bf64cacab33ec11be5d01012f97024f3c8fb3bba57c7f70491fd5065cb1e841b606776e0937186007f8227998094df72cd0fb5a18c2922afde66a84e8c
+  59ce2a2aa2542fc0294bb287468e1b1ac2aac4389c3845247cae86652263ba03b7a88743f70c870264589cfe14bea5972f0abe897fc670021d313ea54fa5f91c
+  b00b25fd19fcb8b78db16e1b75203a91d5dfbde080712161273eef712dadb8e1eddc4e99e025141599c0c4d73cd6552fe1232921d143f96c4b164c6dd6718414
+  0b55bb1b8353cb4008d41972060f2e2093bcec3cbedcdef9e773e3f85b20d2e46c7c5c22d91cb30d50f149ea6cfeb5feaaaef8f7f3a784df5252544e8775df8f
+  c99998efb6000340b7c22a6ccb294ced9bd9d2ea4fc5cf6289dfdfa09acccb48b9c3b187c59416327e6416d4a79988bb7848af24d2dcfa5fbc17cf85ddda875c
+  ce1b975a0c3c830644e989412426a0b434f9ca4f4aa29cbe124303a335164bec0511c495df8b3849cbf38c955856cc6a325b5e8d59876db11b7f06593c61745b
+  3ec9433984fd634db7207b549ab7b7978fd31878c66bd8b31ad8a5dd303a72896950594bddc956c0a8608db4177020f96d827e9fb91ece6b036c5b1b1d329a0f
+  f73b46b108c531d7ea6be1fdf880541729819569c030c9747b32ba45defdaf09ed39b6492d8c6f7056c36446c5bd239962cb87656226342328a800580a99d228
+  a969308c8d66d49db90af83123514c094f5ae07de543e1458994d7ddcb06519f914b8f3750acaed70a9b26bd5b7c1757d20c7e2ffafd35e3c4cc9bab792a751c
+  9b533c9216da1a8ecbd2777f040e57c119156cba283cfeb5aba684aff800d4d932b7499dd84390ca9f695f02047164230d505be0787cec8c7742cccc0324c0d4
+  956b92dfac2dfefd3ff8711a17dfb27aa32d4147673c5b14937ca1f0f5f21e708b4a9f42a4b059a77e4d3472f4b4a28f0471f0ba5f8dd65bd355ee4110f544b5
+  10f6caa4d70d7c288a2e84cced8307c48798305cd400a6e84e9063775302ef52629791c2e5404555b89c5595dfbccddeebf6b3cd6ed3247a19eeb68b595c2872
+  c1c9c9761f4e62d372ce8d148b28f838b4e8bebb71062eccb1310515227e5052be3c81955e37cf58e32e9e854d4134a7f64af580fb130d6eccbc9d4c0c9ad1ad
+)
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/11
+  git apply -3 ../ocrfeeder-11.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/12
+  # git apply -3 ../ocrfeeder-12.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/16
+  git apply -3 ../ocrfeeder-16.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/17
+  git apply -3 ../ocrfeeder-17.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/18
+  git apply -3 ../ocrfeeder-18.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/19
+  git apply -3 ../ocrfeeder-19.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/20
+  git apply -3 ../ocrfeeder-20.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/22
+  git apply -3 ../ocrfeeder-22.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/25
+  git apply -3 ../ocrfeeder-25.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/26
+  git apply -3 ../ocrfeeder-26.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/27
+  git apply -3 ../ocrfeeder-27.patch
+
+  # https://gitlab.gnome.org/GNOME/ocrfeeder/-/merge_requests/29
+  git apply -3 ../ocrfeeder-29.patch
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+check() {
+  cd $pkgname
+  make -k check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

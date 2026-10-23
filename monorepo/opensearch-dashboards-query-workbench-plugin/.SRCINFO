@@ -1,0 +1,20 @@
+pkgbase = opensearch-dashboards-query-workbench-plugin
+	pkgdesc = OpenSearch Dashboards Query Workbench Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://docs.opensearch.org/latest/dashboards/query-workbench/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = python
+	makedepends = git
+	depends = opensearch-dashboards=3.9.0
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/dashboards-query-workbench.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = 2fbe105b1f677103cc5a8ac1d3c8ce383ffca10a18bc4e2b223c8d205f040430
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-query-workbench-plugin

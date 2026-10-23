@@ -1,0 +1,17 @@
+pkgbase = apt-swarm
+	pkgdesc = Experimental p2p gossip network for OpenPGP signature transparency 🥸
+	pkgver = 0.6.1
+	pkgrel = 1
+	url = https://github.com/kpcyrd/apt-swarm
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	depends = libgcc
+	depends = glibc
+	options = !lto
+	backup = etc/apt-swarm.conf
+	source = https://github.com/kpcyrd/apt-swarm/archive/v0.6.1/apt-swarm-0.6.1.tar.gz
+	sha256sums = 85be1acc35494b2c63f20155b7e27801786fd7ce4039c00f324e30a3fb1d353c
+	b2sums = bbe6e35363404af8168e633d5287ab9c6dd147255433cd157cdf5050be019e39bf7898d04cb373c5f747df3ac9f986d712bf4d451972f93dde26f22d5c5539a2
+
+pkgname = apt-swarm

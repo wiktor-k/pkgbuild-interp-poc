@@ -1,0 +1,19 @@
+pkgbase = ruby-vcr
+	pkgdesc = Record your test suite's HTTP interactions and replay them during future test runs for fast, deterministic, accurate tests.
+	pkgver = 6.4.0
+	pkgrel = 1
+	url = https://benoittgt.github.io/vcr
+	arch = any
+	license = Hippocratic-2.1
+	license = MIT
+	makedepends = git
+	makedepends = ruby-rspec
+	makedepends = ruby-test-unit
+	makedepends = ruby-rake
+	makedepends = ruby-pry
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/vcr/vcr.git#tag=v6.4.0
+	sha256sums = a79f01eebb29ea2bb84eaa03d577f97eaa46e282af111b7941f2b3a7baa5bea0
+
+pkgname = ruby-vcr

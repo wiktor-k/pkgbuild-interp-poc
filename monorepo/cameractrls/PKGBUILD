@@ -1,0 +1,41 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Mark Wagie <mark dot wagie at tutanota dot com>
+pkgname=cameractrls
+pkgver=0.6.10
+pkgrel=3
+pkgdesc="Camera controls for Linux"
+arch=('any')
+url="https://github.com/soyersoyer/cameractrls"
+license=('GPL-3.0-only')
+depends=('gtk4' 'libjpeg-turbo' 'python' 'python-gobject' 'sdl2' 'systemd')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+        https://github.com/soyersoyer/cameractrls/commit/a09a3ea80276ee4c8d8e52eed82518433f7f9a16.patch)
+sha256sums=('6d3ab918e1d92e36131a8571f3bca995e87c3a2c49b4475969b9e6b9c23777c5'
+            '37eb88908a6dc3c76a897454210b2e5322225e05b300c5c1cd018c1a6553ccdb')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # Use Gtk 4
+  desktop-file-edit --set-key=Exec --set-value=cameractrlsgtk4 pkg/hu.irl.cameractrls.desktop
+
+  # Fix for https://gitlab.archlinux.org/archlinux/packaging/packages/cameractrls/-/work_items/7
+  patch -Np1 -i "$srcdir"/a09a3ea80276ee4c8d8e52eed82518433f7f9a16.patch
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -Dm755 camera{ctrls,ctrlsd,ctrlsgtk4,ptzgame,ptzmidi,ptzspnav,view}.py -t \
+    "${pkgdir}${site_packages}/CameraCtrls/"
+  install -Dm644 "pkg/hu.irl.cameractrls.svg" -t "${pkgdir}${site_packages}/CameraCtrls/images/"
+  install -Dm644 "pkg/hu.irl.cameractrls.metainfo.xml" -t "$pkgdir/usr/share/metainfo/"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -Dm644 pkg/hu.irl.cameractrls.desktop -t "$pkgdir/usr/share/applications/"
+
+  install -d "$pkgdir"/usr/{bin,share/icons/hicolor/scalable/apps}
+  ln -s "${site_packages}/CameraCtrls/cameractrls.py" "$pkgdir/usr/bin/${pkgname}"
+  ln -s "${site_packages}/CameraCtrls/cameractrlsd.py" "$pkgdir/usr/bin/${pkgname}d"
+  ln -s "${site_packages}/CameraCtrls/cameractrlsgtk4.py" "$pkgdir/usr/bin/${pkgname}gtk4"
+  ln -s "${site_packages}/CameraCtrls/images/hu.irl.cameractrls.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/hu.irl.cameractrls.svg"
+}

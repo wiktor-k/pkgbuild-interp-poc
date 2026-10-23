@@ -1,0 +1,54 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=nginx-mod-echo
+pkgver=0.65
+pkgrel=5
+
+_modname="${pkgname#nginx-mod-}"
+
+pkgdesc='Nginx module that provides directives "echo", "sleep", "time" and more'
+arch=('x86_64')
+makedepends=('nginx' 'nginx-src')
+url="https://github.com/openresty/echo-nginx-module"
+license=('BSD-2-Clause')
+
+source=(https://github.com/openresty/$_modname-nginx-module/archive/v$pkgver/$_modname-$pkgver.tar.gz)
+sha256sums=('448393d4da20a14922c424d575ecc274990cd02e9882efa24b52ed40cc1a50af')
+backup=('etc/nginx/modules.d/20-echo.conf')
+
+prepare() {
+	mkdir -p build
+	cd build
+	ln -sf /usr/src/nginx/auto
+	ln -sf /usr/src/nginx/src
+}
+
+build() {
+	cd build
+	auto/configure \
+		--with-ld-opt="$LDFLAGS" \
+		--with-compat \
+		--add-dynamic-module=../$_modname-nginx-module-$pkgver
+	make modules
+}
+
+package() {
+	if [[ "$BUILDTOOL" == devtools ]]; then
+		local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+		# this is added to PKGINFO data
+		depends+=($nginx_dep)
+	else
+		# this is added to SRCINFO data
+		depends+=(nginx)
+	fi
+
+	install -Dm644 "$srcdir/"$_modname-nginx-module-$pkgver/LICENSE \
+	               "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	install -dm0755 "$pkgdir"/etc/nginx/modules.d
+
+	cd build/objs
+	for mod in *.so; do
+		install -Dm755 $mod "$pkgdir"/usr/lib/nginx/modules/$mod
+		echo "load_module \"/usr/lib/nginx/modules/$mod\";" >> "$pkgdir/etc/nginx/modules.d/20-echo.conf"
+	done
+}

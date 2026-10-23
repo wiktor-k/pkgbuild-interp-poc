@@ -1,0 +1,30 @@
+pkgbase = alot
+	pkgdesc = Terminal-based MUA for the notmuch mail system
+	pkgver = 0.12
+	pkgrel = 1
+	url = https://github.com/pazz/alot
+	arch = any
+	license = GPL-3.0-or-later
+	checkdepends = procps-ng
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-sphinx
+	makedepends = python-setuptools-scm
+	depends = desktop-file-utils
+	depends = notmuch
+	depends = python-configobj
+	depends = python-gpgme
+	depends = python-magic
+	depends = python-twisted
+	depends = python-urwid
+	depends = python-urwidtrees
+	depends = python-cffi
+	depends = python-mailcap
+	source = git+https://github.com/pazz/alot.git#tag=v0.12
+	validpgpkeys = B7838D65FEE80DED1DCA494D94340367D7D6C5AA
+	sha512sums = 63f97df56f9444d2cd0d2c1276da295f4fe473a617b51e16176db6cb2d73ef059f0536d447cfd8d492babba75c5c5ecef8077cc62bd8d146b20114bc613112a2
+
+pkgname = alot

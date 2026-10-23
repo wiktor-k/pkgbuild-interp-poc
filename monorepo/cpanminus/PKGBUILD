@@ -1,0 +1,63 @@
+# Maintainer: Florian Pritz <bluewind@xinu.at>
+
+pkgname=cpanminus
+pkgver=1.7049
+pkgrel=1
+pkgdesc='Get, unpack, build, and install modules from CPAN'
+arch=(any)
+url='https://github.com/miyagawa/cpanminus'
+license=('Artistic-1.0-Perl OR GPL-1.0-or-later')
+depends=(perl curl)
+provides=("perl-app-cpanminus=$pkgver")
+options=(!emptydirs)
+source=("$pkgname-$pkgver.tar.gz::https://cpan.metacpan.org/authors/id/M/MI/MIYAGAWA/App-cpanminus-$pkgver.tar.gz")
+sha512sums=('47037f08f6e4883f980880343357892cd23315ecad4db194fb5e925cb94b203b68c7290b67720fdc0fa6a938bb13472d1379e9dd03747f4c4be73378e2e22fe1')
+b2sums=('0add24866084d3b5316f66b91b9ec3eed3ff93f3f9e667027a03ff8bc10006c848bd62f23925985107482c91c1b64e753da9f3f57230e03b108cd688d9466e38')
+
+_ddir="App-cpanminus-$pkgver"
+
+prepare() {
+  cd "$_ddir"
+
+  # Patch for CVE-2024-45321
+  # https://security.metacpan.org/2024/08/26/cpanminus-downloads-code-using-insecure-http.html
+  #
+  /usr/bin/perl -pi -E \
+    's{http://(www\.cpan\.org|backpan\.perl\.org|cpan\.metacpan\.org|fastapi\.metacpan\.org|cpanmetadb\.plackperl\.org)}{https://$1}g' \
+    bin/cpanm
+
+  # Don't use LWP::UserAgent. It will fail if LWP::Protocol::https is not
+  # installed. This makes cpanm use curl instead
+  # https://github.com/Perl/docker-perl/issues/169
+  #
+  /usr/bin/perl -pi -E 's{try_lwp=>1}{try_lwp=>0}g' bin/cpanm
+}
+
+build() {
+  cd "$_ddir"
+
+  export PERL_MM_USE_DEFAULT=1 PERL_AUTOINSTALL=--skipdeps
+  unset PERL5LIB PERL_MM_OPT
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  cd "$_ddir"
+
+  export PERL_MM_USE_DEFAULT=1
+  unset PERL5LIB
+  make test
+}
+
+package() {
+  cd "$_ddir"
+
+  make install INSTALLDIRS=vendor DESTDIR="$pkgdir"
+}
+
+# Local Variables:
+# mode: shell-script
+# sh-basic-offset: 2
+# End:
+# vim:set ts=2 sw=2 et:

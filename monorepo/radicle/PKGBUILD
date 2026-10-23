@@ -1,0 +1,150 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: Ivan Shapovalov <intelfx@intelfx.name>
+
+pkgname=radicle
+pkgver=1.10.3
+pkgrel=1
+pkgdesc="open source, peer-to-peer code collaboration stack built on Git"
+url="https://radicle.dev"
+arch=('x86_64')
+license=('Apache-2.0 OR MIT')
+depends=(
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+  'libgit2' 'libgit2.so'
+)
+makedepends=(
+  'git'
+  'cargo'
+  'asciidoctor'
+)
+provides=('radicle-node' 'radicle-cli')
+conflicts=('radicle-node' 'radicle-cli')
+replaces=('radicle-node' 'radicle-cli')
+source=(
+  "radicle::git+https://seed.radicle.dev/z3gqcJUoA1n9HaHKufZs5FCSGazv5.git#tag=releases/${pkgver}"
+  "radicle-node.system."{service,socket}
+  "radicle-node.user."{service,socket}
+  "radicle-node.dnssd"
+  "radicle.sysusers"
+  "radicle.tmpfiles"
+)
+sha256sums=('b911fabefd7357608cb8f96c4eb4c963c6babcb1bd5636cc27219990c73f52f6'
+            'a28384b2ead6ecb8cb11e55c8bf9c7ebc723037b84dc372ced5cfe6d166af7e6'
+            'f6080eb6fcce49cd3df5eeb58e9774a1b6557299ee3cb3869d92d8ea1ad8750f'
+            '9858187380b6a55608a27b653d576bcb3d28590a34ec29a71efb7c5987306816'
+            '70b7e0b3cba838237d5fafe29eeff3240a33306566aef0a8673c4c76b11544ea'
+            'de4c0f975be63282c0df0c89748b34751d51693459358baecb7c28e5f433fbef'
+            'a1e2557c628108fea04deca8c9ea343e0ad5516187c74f6e5e28b535bba86873'
+            'ce1aa0aabd7f42aacdb1b84e931c2a0c1fecef405bd45bf90f2d8c21ed9b0b81')
+b2sums=('cf5fed0fdef0defce6db1c4909457f8ef8ec19699dafc0a2d6de54f82509652ed563539865caa6daf86ceb64c2f9d1734b56861fa223c9e40e545f75d3fe57ec'
+        '14d3033ff232682b35d3f3a94436b86ad57f3be767e4681c18d1a8a4435968c31e0c36b5b617734035e75be144c99db7447be70741430962c614f0c17a59fecd'
+        'ef60f99e65177accd1b34447dab134ad26b576050ff15c9bfd6483bacaef801106a6ff5694383b7446b366818b1545c6506ccd6d1b153532b99b15361ddd8e41'
+        '18ade1de3d3195e8b4cfcb0c479d2f597b53cbb83bde559d69abd34587c8c45371c12e242621c92607c3202f2f4ee3fb21b462fc5150939f50744cc045baccff'
+        '46872e0bd50bbf1528321de5522a9af95227fe43f7880db50968cfd1572a719bd55b874f56f55cd5d4e653565504799d1e54ac16cabe29f65a08089985fdaa27'
+        '0276bce489e05115e7a63454aa0fa508d7bffba2add4249d1fcd449137104bc75882f5ff06077216fec5cbede5f2a1f8699e82bbc3fda3bf3b2354dfcf5dd0ac'
+        '2b1d7d9781b0ed32a7fb0a9f06680b38190865c1b4a60fb1960b5fce9dcb844a8e5290a94836ca14685a706851819fc4851dca37ce1b2ddc68052f24d1138fee'
+        '02f8acc948291256ff70e8ba0258233cf168ef923736806dc6ed5ba817fda619c7fc938eaf42be8a8dd8a117609090de99cf7e28a4391e77bdb7080008cf902a')
+
+prepare() {
+  cd "${pkgname}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}"
+
+  # _Disable_ cross-toolchain LTO because we are using different toolchains
+  # for C/C++ and Rust code (i.e., LLVM LTO is incompatible with GCC LTO).
+  # In this project, C/C++ code is linked into Rust code. Therefore, apply
+  # a workaround to force generation of normal object code on C side:
+  CFLAGS+=" -ffat-lto-objects"
+  CXXFLAGS+=" -ffat-lto-objects"
+
+  export LIBGIT2_NO_VENDOR=1
+
+  export RADICLE_VERSION="${pkgver}"
+  cargo build \
+    -p radicle-cli \
+    -p radicle-node \
+    -p radicle-remote-helper \
+    --frozen \
+    --release \
+    --bins
+
+  mkdir -p target/release/man
+  scripts/build-man-pages.sh target/release/man *.adoc
+}
+
+check() {
+  local _test_skips=(
+    # https://radicle.zulipchat.com/#narrow/stream/369277-heartwood/topic/Flaky.20tests/near/438352360
+    "tests::e2e::test_connection_crossing"
+    # https://radicle.zulipchat.com/#narrow/stream/369277-heartwood/topic/Clone.20Partial.20Fail.20Flake
+    rad_clone_partial_fail
+    # this test seems flaky
+    rad_init_sync_preferred
+  )
+
+  cd "${pkgname}"
+
+  # Tests want to open many files.
+  ulimit -n hard
+
+  # Tests require the newly built tools, add them to $PATH
+  PATH="$PWD/target/release:$PATH"
+  cargo test \
+    --frozen \
+    -- \
+    "${_test_skips[@]/#/--skip=}"
+}
+
+package() {
+  install -Dm644 $pkgname.sysusers "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+  install -Dm644 $pkgname.tmpfiles "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+
+  cd radicle
+
+  install -Dm755 \
+    target/release/rad \
+    target/release/radicle-node \
+    target/release/git-remote-rad \
+    -t "${pkgdir}/usr/bin"
+
+  # Man pages
+  install -Dm644 \
+    target/release/man/*.1 \
+    -t "${pkgdir}/usr/share/man/man1"
+
+  # Completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/rad" completion bash > "${pkgdir}/usr/share/bash-completion/completions/rad"
+  "${pkgdir}/usr/bin/rad" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_rad"
+  "${pkgdir}/usr/bin/rad" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/rad.fish"
+
+  # Systemd units (.socket+.service, system and user)
+  local _t
+  for _t in service socket; do
+    install -Dm644 \
+      "${srcdir}/radicle-node.system.${_t}" \
+      "${pkgdir}/usr/lib/systemd/system/radicle-node.${_t}"
+    install -Dm644 \
+      "${srcdir}/radicle-node.user.${_t}" \
+      "${pkgdir}/usr/lib/systemd/user/radicle-node.${_t}"
+  done
+  # Example DNS-SD service definition for systemd-resolved
+  # (must be customized per node, so we cannot install it as-is)
+  install -Dm644 \
+    "${srcdir}/radicle-node.dnssd" \
+    -t "${pkgdir}/usr/share/doc/${pkgname}/systemd"
+
+  # License
+  install -Dm644 \
+    LICENSE-MIT \
+    LICENSE-APACHE \
+    -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

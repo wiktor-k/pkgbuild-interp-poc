@@ -1,0 +1,37 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Michael Armbruster <michael@armbrust.me>
+
+pkgname=nsz
+pkgver=5.0.0
+pkgrel=2
+pkgdesc='Nintendo Switch homebrew compatible NSP/XCI compressor/decompressor'
+arch=(any)
+url=https://github.com/nicoboss/nsz
+license=(MIT)
+depends=(
+  python
+  python-enlighten
+  python-pycryptodome
+  python-zstandard
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=('python-kivy: GUI support')
+source=(git+https://github.com/nicoboss/nsz.git#tag=${pkgver})
+b2sums=('2ed7bedd3ecbbbdfe9c3bf683a584479da7edf687e1aefb854a54e2ef90f6a5bced0c4dda259178ed05d935c714a97f458bd5267010a503775f30f83385a6c1e')
+
+build() {
+  cd nsz
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd nsz
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm644 LICENSE.md -t "${pkgdir}"/usr/share/licenses/$pkgname
+}

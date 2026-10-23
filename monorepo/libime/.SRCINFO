@@ -1,0 +1,32 @@
+pkgbase = libime
+	pkgdesc = A library to support generic input method implementation
+	pkgver = 1.1.17
+	pkgrel = 1
+	url = https://github.com/fcitx/libime
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	license = BSD-3-Clause
+	license = MIT
+	makedepends = git
+	makedepends = boost
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	makedepends = python
+	depends = boost-libs
+	depends = fcitx5
+	noextract = lm_sc.arpa-20260629.tar.zst
+	noextract = dict-20260907.tar.zst
+	noextract = table-20240108.tar.zst
+	source = git+https://github.com/fcitx/libime.git#tag=1.1.17?signed
+	source = git+https://github.com/kpu/kenlm.git
+	source = https://download.fcitx-im.org/data/lm_sc.arpa-20260629.tar.zst
+	source = https://download.fcitx-im.org/data/dict-20260907.tar.zst
+	source = https://download.fcitx-im.org/data/table-20240108.tar.zst
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 7234f866f723f86d7ddf8d3fcb665146a6e7376a286da7dce0ab4a0838df3bfe9648c0ad82994fbc131c22667df55f3379bbec9e611aaf82aee29bdb5d1ca886
+	sha512sums = SKIP
+	sha512sums = ae9b77e7ab3007579f5e7455d340e310caaca92b93387bd1025e895f355456601471decac36d8addc02deba9e79f6e8cbf453718d93f04780f0b1b815822e014
+	sha512sums = 14cebfdac7edd200f1f755f1d024804d43030aac8faa41d0a7186ab0d8350f297e8f301c50d08de00750ffb19d914710043193b2b9ff5c2eeda3ccb02c6d4256
+	sha512sums = 0d1642ff84e5da2c5b95710e17439bda11b39d3f65d53426bdc03a775dbe592ae64bff8f9191ce27c57b92db8cfed8284a3b6a4f7f02f8ab7fcc8f28cfa0c0ff
+
+pkgname = libime

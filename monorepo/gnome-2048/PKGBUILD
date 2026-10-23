@@ -1,0 +1,62 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gnome-2048
+pkgver=50.2
+pkgrel=1
+pkgdesc="Obtain the 2048 tile"
+arch=(x86_64)
+url="https://gitlab.gnome.org/GNOME/gnome-2048"
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  pango
+)
+makedepends=(
+  appstream
+  desktop-file-utils
+  git
+  itstool
+  meson
+  rust
+  vala
+)
+options=(!lto)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-2048.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('4d9e06cdb5c4ceac88b8863083a67354066cec31b48cafb5995a5cf0a83f96f587b471b7202638230daf834044ad6ab817259e1fbae16eed08c58799f0d158fe')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" cargo fetch --locked --target host-tuple
+}
+
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

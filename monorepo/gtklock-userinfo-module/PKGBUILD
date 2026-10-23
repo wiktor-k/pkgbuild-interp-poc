@@ -1,0 +1,23 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Jovan Lanik <jox969@gmail.com>
+
+pkgname=gtklock-userinfo-module
+pkgver=4.0.1
+pkgrel=2
+pkgdesc="gtklock module adding user info to the lockscreen"
+url="https://github.com/jovanlanik/gtklock-userinfo-module"
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('gtk3' 'accountsservice' 'gtklock')
+makedepends=('meson')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('0478a7628ba0499a34213bbf40548e2840843ecd0f503df88f9436c5d7fbf0da')
+
+build() {
+        arch-meson "${pkgname}-${pkgver}" build
+        meson compile -C build
+}
+
+package() {
+        meson install -C build --destdir "${pkgdir}"
+}

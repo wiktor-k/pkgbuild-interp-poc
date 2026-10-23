@@ -1,0 +1,64 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=lapce
+pkgver=0.4.6
+pkgrel=4
+pkgdesc='Lightning-fast and Powerful Code Editor'
+arch=(x86_64)
+url=https://lapce.dev
+_url="https://github.com/$pkgname/$pkgname"
+license=(Apache-2.0)
+depends=(expat
+         fontconfig
+         freetype2
+         glibc # libc.so libm.so
+         libgcc libgcc_s.so
+         libgit2 libgit2.so
+         libssh2 libssh2.so
+         libxcb
+         libxkbcommon
+         openssl libcrypto.so libssl.so)
+makedepends=(cargo
+             python
+             cmake)
+_archive="$pkgname-$pkgver"
+source=("$_url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('c6790771ed0af5e242d2410d930197412af4c21c07a5a33ae5d6ac596ca7380a')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+	export LIBGIT2_NO_VENDOR=1
+	export LIBSSH2_SYS_USE_PKG_CONFIG=1
+	export OPENSSL_NO_VENDOR=true
+	# See https://github.com/lapce/lapce/pull/2374 and https://bugs.archlinux.org/task/78922
+	export RELEASE_TAG_NAME="v$pkgver"
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --all-features
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"{,-proxy}
+	local lname=dev.lapce.lapce
+	install -Dm0644 -t "$pkgdir/usr/share/applications/" extra/linux/$lname.desktop
+	install -Dm0644 -t "$pkgdir/usr/share/metainfo/" extra/linux/$lname.metainfo.xml
+	install -Dm0644 extra/images/logo_color.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/$lname.svg"
+	install -Dm0644 extra/images/logo.png "$pkgdir/usr/share/pixmaps/$lname.png"
+}

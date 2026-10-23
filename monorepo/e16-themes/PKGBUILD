@@ -1,0 +1,35 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgname=e16-themes
+pkgver=1.0.3
+pkgrel=1
+pkgdesc='Themes for E16'
+arch=(any)
+url='https://www.enlightenment.org/e16'
+license=(MIT-advertising)
+depends=(e16)
+makedepends=(git)
+source=("git+https://git.enlightenment.org/e16/e16-themes.git#tag=v$pkgver")
+b2sums=(52f6ffc9f0ddddf52f3ae4a1584833d9ef7fa47a627b141ba87b94c5f0c178c0e79d84a9e07a4d3e79a68701a4e240f2a884ff87920b0ddf039b06e1c4798bdf)
+
+prepare() {
+  cd e16-themes
+  autoreconf -fi
+}
+
+build() {
+  cd e16-themes
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd e16-themes
+  make DESTDIR="$pkgdir" install
+  chown -R root:root "${pkgdir}"/usr/share/*
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}

@@ -1,0 +1,25 @@
+pkgbase = budgie-desktop-view
+	pkgdesc = Desktop icons implementation for the Budgie Desktop
+	pkgver = 10.10.2
+	pkgrel = 1
+	url = https://github.com/BuddiesOfBudgie/budgie-desktop-view
+	arch = x86_64
+	groups = budgie
+	license = Apache-2.0
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = gtk-layer-shell
+	depends = libxfce4windowing
+	source = git+https://github.com/BuddiesOfBudgie/budgie-desktop-view.git#tag=v10.10.2
+	validpgpkeys = 96B4A0291094A86A2B7E3367DD672FE9A2BE5892
+	validpgpkeys = 0E0D97562A4EC8BD8E329DCDAA7A2325E04B609B
+	b2sums = 693a9fe30d05799edcaba542f3ce5e373c6a825ef33ec44d418fc40b05bbd865387856ecedf7747f68315cb9a899a352fe4346e68c473965adbeb6c3f024d156
+
+pkgname = budgie-desktop-view

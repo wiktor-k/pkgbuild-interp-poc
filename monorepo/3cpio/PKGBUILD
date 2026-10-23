@@ -1,0 +1,61 @@
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+
+pkgname=3cpio
+pkgver=0.14.0
+#_commit=213416e787f147c2c5066ef45b83fa58aa0d30db
+pkgrel=2
+pkgdesc='Manage Linux kernel initramfs cpio files written in Rust'
+arch=('x86_64')
+url='https://github.com/bdrung/3cpio'
+license=('ISC')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  asciidoctor
+  git
+  rust
+)
+checkdepends=(
+  bzip2 
+  pigz 
+  lz4
+  lzop 
+  xz 
+  zstd
+)
+optdepends=(
+  'bzip2: Support for bzip2 compressed initramfs image'
+  'lz4: Support for lz4 compressed initramfs image'
+  'lzop: Support for lzo compressed initramfs image'
+  'pigz: Support for gzip compressed initramfs image'
+  'xz: Support for lzma or xz compressed initramfs image'
+  'zstd: Support for zstd compressed initramfs image'
+)
+source=(
+  git+https://github.com/bdrung/3cpio.git#tag=${pkgver}
+)
+validpgpkeys=(
+  A62D2CFBD50B9B5BF360D54B159EB5C4EFC8774C # Benjamin Drung bdrung@debian.de
+)
+b2sums=('e2aaa6983d111b2320de8bc1a4bc9b405c41cc1399639f6e4dbe3b1653ded6ba482ced204ffedb31f107f4876cb3784ea849d6c411cbdb15a1c52ee278bc2a0d')
+
+build() {
+  cd "${pkgname}"
+  cargo build --release --locked
+  asciidoctor -b manpage man/3cpio.1.adoc
+}
+
+check() {
+  cd "${pkgname}"
+  cargo test --release --locked
+}
+
+package() {
+  cd "${pkgname}"
+  install -Dm 644 man/3cpio.1 "${pkgdir}/usr/share/man/man1/3cpio.1"
+  install -Dm755 target/release/3cpio "${pkgdir}/usr/bin/3cpio"
+  install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+

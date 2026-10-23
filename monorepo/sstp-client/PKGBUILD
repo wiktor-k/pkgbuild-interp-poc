@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Echizen Ryoma <echizenryoma.zhang@gmail.com>
+# Contributor: Dmitry V. Luciv <dluciv@dluciv.name>
+# Contributor: Martchus <martchus@gmx.net>
+
+pkgname=sstp-client
+pkgver=1.0.20
+pkgrel=3
+epoch=1
+pkgdesc="SSTP client stable revision"
+arch=("x86_64")
+url="http://sstp-client.sourceforge.net/"
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libevent' 'openssl')
+makedepends=('git' 'ppp')
+optdepends=('ppp')
+install=$pkgname.install
+source=('50-sstp.PROFILE.sh.sample'
+        'sstp.options.sample'
+        "git+https://gitlab.com/sstp-project/sstp-client.git#tag=$pkgver")
+sha512sums=('56859f24a3599d3f68f432e36661f43e08aeb8cb3bf959ddede6028a426117c06f0221ffd91c852bf9f4f34069d8adc7a199db6679f75daf508713e12735484d'
+            'a817dbfc9038f240bf0cbed295b654587070226c71fbf89fee4cd6a6d7912629cb2e15e7ae2b74c9a5e42e756bc6819c95bbb493503ac6921b4b01a571bf5430'
+            'a2fb04221052e4d63b001c9e52ba6cf1335466098ee4c2d46a3260da2c053c5a8acf3a30765c51d4cef8df9d737e08d4a70a868344d86bdfab8601e6f86a657e')
+
+prepare() {
+  cd $pkgname
+  ./autogen.sh
+}
+
+build() {
+  pppd_version="$(pppd --version 2>&1 | awk '{print $3}')"
+  cd $pkgname
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --localstatedir=/ \
+    --sysconfdir=/etc \
+    --with-pppd-plugin-dir=/usr/lib/pppd/$pppd_version
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $pkgname
+
+  make DESTDIR="$pkgdir" install
+
+  install -d "$pkgdir"/run/sstpc
+  install -d "$pkgdir"/etc/sstpc
+  install -d "$pkgdir"/etc/ppp/ip-up.d
+
+  install -Dm644 "$srcdir"/sstp.options.sample "$pkgdir"/etc/sstpc/sstp.options.sample
+  install -Dm744 "$srcdir"/50-sstp.PROFILE.sh.sample "$pkgdir"/etc/ppp/ip-up.d/50-sstp.PROFILE.sh.sample
+
+  rm -rf "$pkgdir"/var
+  rm -rf "$pkgdir"/run
+}

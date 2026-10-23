@@ -1,0 +1,34 @@
+pkgbase = python-librosa
+	pkgdesc = Python library for music and audio analysis
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://librosa.org
+	arch = any
+	license = ISC
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-audioread
+	depends = python-cycler
+	depends = python-decorator
+	depends = python-joblib
+	depends = python-lazy-loader
+	depends = python-matplotlib
+	depends = python-msgpack
+	depends = python-numba
+	depends = python-numpy
+	depends = python-pooch
+	depends = python-resampy
+	depends = python-scikit-learn
+	depends = python-scipy
+	depends = python-soundfile
+	depends = python-soxr
+	depends = python-typing_extensions
+	source = python-librosa::git+https://github.com/librosa/librosa.git#tag=1.0.0
+	sha512sums = 5711b5bbfdaac45c0a1453dcf3501577bde39833db6cb2ff119bff4f17676b67755f22cae8a1e3ff95b87929c7a1432f85340218dfe8d96408d5dc6c3b284e8a
+	b2sums = 6c0d5d3588ec1474bc27881230e4708df8c2ad36ef290f4106dabeb7f957f868d40e89e6e88ae7af1727fbd133dca3d32f5f8867799b124548181a75d7d160ee
+
+pkgname = python-librosa

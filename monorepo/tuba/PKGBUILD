@@ -1,0 +1,67 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Luna Jernberg <lunajernberg@gnome.org>
+
+pkgname=tuba
+pkgver=0.11.1
+pkgrel=1
+pkgdesc='Browse the Fediverse'
+arch=(x86_64)
+url='https://apps.gnome.org/Tuba/'
+license=('GPL-3.0-only')
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gst-libav
+  gstreamer
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  icu
+  json-glib
+  libadwaita
+  libclapper
+  libclapper-gtk
+  libgee
+  libgexiv2
+  libsecret
+  libsoup3
+  libspelling-1.so
+  libxml2
+  org.freedesktop.secrets
+  pango
+  webkitgtk-6.0
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+groups=(gnome-circle)
+source=("git+https://github.com/GeopJr/Tuba.git#tag=v$pkgver")
+b2sums=('607a888613ef43138ec0c253e64540fba7947672f6480ce3bee0880b7644b0af22e0ffacf0f5e94084b885b8562f37de154a863b9de7bcf89675b4502daadb0c')
+
+prepare() {
+  cd Tuba
+}
+
+build() {
+  local meson_options=(
+    -D clapper=true
+  )
+
+  arch-meson Tuba build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  ln -sr "$pkgdir"/usr/bin/{dev.geopjr.Tuba,tuba}
+}

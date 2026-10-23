@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-picker
+pkgver=6.0.12
+pkgrel=1
+pkgdesc='Color picker tool for deepin'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-picker"
+license=('GPL-3.0-or-later')
+depends=('dtk6gui' 'dtk6widget' 'qt6-base' 'glibc' 'libgcc' 'libstdc++' 'hicolor-icon-theme')
+makedepends=('git' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-picker.git#tag=$pkgver")
+sha512sums=('e0763372a83441fef7a8a7f4d0c23509715476c21b93f2ec61ae096d738b01b8aa0f0a8eaa774786cfbcda21be43abf94542b648a8cf08f1730238e33570abb8')
+
+build() {
+  cd deepin-picker
+  qmake6 PREFIX=/usr
+  make
+}
+
+package() {
+  cd deepin-picker
+  make INSTALL_ROOT="$pkgdir" install
+}

@@ -1,0 +1,55 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=req
+pkgname=haskell-req
+pkgver=3.13.4
+pkgrel=128
+pkgdesc="HTTP client library"
+url="https://github.com/mrkkrp/req"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-authenticate-oauth' 'haskell-blaze-builder'
+         'haskell-case-insensitive' 'haskell-crypton-connection' 'haskell-data-default-class'
+         'haskell-http-api-data' 'haskell-http-client' 'haskell-http-client-tls'
+         'haskell-http-types' 'haskell-modern-uri' 'haskell-monad-control' 'haskell-retry'
+         'haskell-transformers-base' 'haskell-unliftio-core')
+makedepends=('git' 'ghc' 'uusi' 'haskell-quickcheck' 'haskell-hspec' 'haskell-hspec-core')
+source=("git+https://github.com/mrkkrp/req#tag=$pkgver")
+sha512sums=('6e9ea22db92f2dde8fe8257854de50d7e2b22a02deeb0ccee69754c72a36739f486a3c0f096377212956ee6abbe35ccc2bc6eb9604bf8958f554d23de16d37f5')
+
+prepare() {
+  cd $_hkgname
+  gen-setup
+}
+
+build() {
+  cd $_hkgname
+    
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname
+  # Tests require network access and are flaky
+  runhaskell Setup test --show-details=direct || echo "Tests failed"
+}
+
+package() {
+  cd $_hkgname
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.md
+}

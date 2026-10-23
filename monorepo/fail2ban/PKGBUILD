@@ -1,0 +1,90 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Geoffroy Carrier <geoffroy.carrier@koon.fr>
+# Contributor: michalzxc
+# Contributor: nbags <neilbags@gmail.com>
+
+pkgname=fail2ban
+pkgver=1.1.1
+pkgrel=1
+pkgdesc='Bans IPs after too many failed authentication attempts'
+arch=('any')
+url='https://www.fail2ban.org/'
+license=('GPL-2.0-or-later')
+depends=(
+  'python-pyinotify'
+  'python-systemd'
+  'sqlite'
+  'whois'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+optdepends=(
+  'firewalld: for a firewall backend'
+  'ipset: for a firewall backend'
+  'iptables: for a firewall backend'
+  'nftables: for a firewall backend'
+)
+backup=(
+  'etc/fail2ban/fail2ban.conf'
+  'etc/fail2ban/jail.conf'
+  'etc/logrotate.d/fail2ban'
+)
+source=(
+  "git+https://github.com/$pkgname/$pkgname.git#tag=$pkgver?signed"
+)
+b2sums=('96ed91a7e78ad97a333bc8de199cefad32d02bcd8df3c4bc4bb22b357514d47829a757e40f0660b85987864594326a56154e6be21863db8e30abfab486cda370')
+validpgpkeys=('E6C3F631FBDA716B070C6ED94141C485A81A88CB') # Sergey G. Brester (sebres) <serg.brester@sebres.de>
+
+prepare() {
+  cd $pkgname
+  # Restore Arch banaction defaults pending upstream fix:
+  # https://github.com/fail2ban/fail2ban/pull/4224
+  sed -i '/^\[DEFAULT\]$/a banaction = iptables-multiport\nbanaction_allports = iptables-allports\n' config/paths-arch.conf
+  sed -i 's|self.install_dir|"/usr/bin"|' setup.py
+  sed -i 's/^before = paths-debian.conf/before = paths-arch.conf/' config/jail.conf
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd $pkgname
+  ./bin/fail2ban-testcases
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 build/fail2ban.service \
+    "$pkgdir"/usr/lib/systemd/system/$pkgname.service
+  install -Dm644 build/fail2ban.socket \
+    "$pkgdir"/usr/lib/systemd/system/$pkgname.socket
+  install -Dm644 files/fail2ban-logrotate \
+    "$pkgdir"/etc/logrotate.d/fail2ban
+  install -Dm644 files/bash-completion \
+    "$pkgdir"/usr/share/bash-completion/completions/fail2ban
+
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 man/*.1
+  install -Dm644 -t "$pkgdir"/usr/share/man/man5 man/*.5
+
+  cd "$pkgdir"
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  cp -rl ./"$site_packages"/{etc,usr} .
+  rm -r ./"$site_packages"/{etc,usr}
+
+  # PEP 517 wheels omit empty data directories from setup.py.
+  install -dm755 etc/fail2ban/{fail2ban,jail}.d var/lib/fail2ban
+
+  # fix sendmail location
+  sed -i 's/sbin/bin/g' etc/fail2ban/action.d/sendmail*.conf
+}

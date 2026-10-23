@@ -1,0 +1,79 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=onboard
+pkgver=1.4.1
+pkgrel=14
+pkgdesc='On-screen keyboard useful on tablet PCs or for mobility impaired users'
+arch=('x86_64')
+url='https://launchpad.net/onboard'
+license=('GPL-3.0-or-later')
+depends=(
+  'at-spi2-core'
+  'cairo'
+  'dconf'
+  'gdk-pixbuf2'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'hicolor-icon-theme'
+  'hunspell'
+  'iso-codes'
+  'libcanberra'
+  'libgcc'
+  'libstdc++'
+  'libx11'
+  'libxi'
+  'libxkbfile'
+  'libxtst'
+  'pango'
+  'python'
+  'python-cairo'
+  'python-dbus'
+  'python-gobject'
+  'systemd-libs'
+)
+makedepends=(
+  'python-build'
+  'python-distutils-extra'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+optdepends=('mousetweaks: hover click with mouse')
+source=(
+  "https://launchpad.net/$pkgname/${pkgver%.*}/$pkgver/+download/$pkgname-$pkgver.tar.gz"{,.asc}
+  "$pkgname-python-3-12.patch"
+  "$pkgname-thread-state.patch"
+  "$pkgname-replace-custom-bool-typedef-with-stdbool-header.patch"
+)
+b2sums=('9833cda373b4df28a8e4a0c9ae81069633903ec04ad22208390f3cc21b5540ae225aae553ef1b934832b6ba7ab1ba76e6e1c2c5d10cdc16b06dc2f5ac8d152b8'
+        'SKIP'
+        'e5f237344241a3e077e016205dd3a7dba25f7c6f59941c46f663ba32885f89bc982db1bc84799faad44ca6e1da94564a617c7c8179b687756e1f10a1e26f2439'
+        '95a215f3173ef1798176394005c8d5c82c027689072e508271b70f07b28b653afb6bce2f129233e3adbe88e1e86b3afdee246c002a0bf1cbce8ff0b2885a8fc6'
+        'ccc05356c5b2000fe851a37dc8780b0a01e0ae0cb7a8ee3ebd6e3ea8f1225e0d37216c9c0b8fab5397ca5e33c07b6ad0ce5f8cb2145e86499254305cfd19d591')
+validpgpkeys=('BCFE9B5A71A0B0F860521CF963087078B67DCFED') # Francesco Fumanti
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 < ../$pkgname-python-3-12.patch
+  patch -Np1 < ../$pkgname-thread-state.patch
+  patch -Np1 < ../$pkgname-replace-custom-bool-typedef-with-stdbool-header.patch
+}
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Move autostart desktop file to correct location
+  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  local site_packages="$pkgdir/usr/lib/python$python_version/site-packages"
+  install -vDm644 -t "$pkgdir/etc/xdg/autostart/" \
+    "$site_packages/etc/xdg/autostart/onboard-autostart.desktop"
+  rm -vr "$site_packages/etc"
+}

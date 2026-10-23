@@ -1,0 +1,32 @@
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Christopher Bayliss <christopher.j.bayliss@gmail.com>
+# Contributor: Albert De La Fuente Vigliotti
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: vonpupp
+
+pkgname=xiphos
+pkgver=4.5.0
+pkgrel=1
+pkgdesc='A Bible study tool for GTK3'
+arch=(x86_64)
+url='https://xiphos.org'
+license=(GPL-2.0-only)
+depends=('biblesync' 'icu' 'libbiblesync.so' 'libicui18n.so'
+         'libspeechd' 'minizip' 'sword' 'webkit2gtk-4.1')
+makedepends=('appstream' 'cmake' 'git' 'glib2-devel' 'itstool')
+source=("git+https://github.com/crosswire/xiphos.git#tag=$pkgver")
+sha256sums=('a3c10eafeeea9d352507f53e48e2fc98255ed66e6533b517316ffb4afb928793')
+
+build() {
+  cmake -B build -S "$pkgname" \
+      -DCMAKE_BUILD_TYPE=None \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DEPUB=OFF \
+      -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

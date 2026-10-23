@@ -1,0 +1,118 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Tom Gundersen <teg@jklm.no>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: Thomas Weißschuh <thomas t-8ch de>
+# Contributor: Florian Pritz <bluewind@xinu.at>
+
+pkgbase=transmission
+pkgname=(transmission-cli transmission-gtk transmission-qt)
+pkgdesc='Fast, easy, and free BitTorrent client'
+pkgver=4.1.3
+pkgrel=2
+arch=(x86_64)
+url="http://www.transmissionbt.com/"
+license=(GPL-2.0-or-later)
+depends=(curl
+         libb64
+         libdeflate
+         libevent
+         libnatpmp
+         miniupnpc)
+makedepends=(cmake
+             dht
+             glibmm-2.68
+             gtk4
+             gtkmm-4.0
+             intltool
+             ninja
+             npm
+             qt6-base
+             qt6-svg
+             qt6-tools
+             systemd)
+_archive="$pkgbase-$pkgver"
+source=("https://github.com/transmission/transmission/releases/download/$pkgver/$_archive.tar.xz"
+        transmission-cli.sysusers
+        transmission-cli.tmpfiles)
+sha256sums=('ce7d2d8b101f7eb54bc3cf0bc55f52f7ebd4a25fa48e00bdca9a7e0fc02617da'
+            '641310fb0590d40e00bea1b5b9c843953ab78edf019109f276be9c6a7bdaf5b2'
+            '1266032bb07e47d6bcdc7dabd74df2557cc466c33bf983a5881316a4cc098451')
+
+build() {
+	export CFLAGS+=' -ffat-lto-objects'
+	cd "$_archive"
+	local cmake_flags=(
+		CMAKE_BUILD_TYPE=RelWithDebInfo
+		CMAKE_INSTALL_PREFIX=/usr
+		ENABLE_CLI=ON
+		ENABLE_DAEMON=ON
+		ENABLE_GTK=ON
+		ENABLE_MAC=OFF
+		ENABLE_QT=ON
+		ENABLE_TESTS=ON
+		ENABLE_UTILS=ON
+		ENABLE_UTP=ON
+		INSTALL_LIB=ON
+		REBUILD_WEB=ON
+		RUN_CLANG_TIDY=OFF
+		USE_SYSTEM_B64=ON
+		USE_SYSTEM_DEFLATE=ON
+		USE_SYSTEM_DHT=ON
+		USE_SYSTEM_EVENT2=ON
+		USE_SYSTEM_MINIUPNPC=ON
+		USE_SYSTEM_NATPMP=ON
+		USE_SYSTEM_PSL=ON
+		USE_SYSTEM_UTP=OFF
+		WITH_CRYPTO=openssl
+	)
+	cmake -G Ninja -S . -B build ${cmake_flags[@]/#/-D }
+	cmake --build build --config Release
+}
+
+check() {
+	cd "$_archive"
+	cd build
+	# Exclude test that fails on the build server
+	ctest --output-on-failure -j "$(nproc)" -E LT.DhtTest.usesBootstrapFile
+}
+
+_install_component() {
+	(cd $srcdir/$pkgbase-$pkgver/build; DESTDIR="$pkgdir" ninja $1/install)
+}
+
+package_transmission-cli() {
+	pkgdesc+=' (CLI tools, daemon and web client)'
+	depends+=(systemd)
+	cd "$_archive"
+	for dir in daemon cli web utils; do
+		_install_component $dir
+	done
+	install -d "$pkgdir"/usr/share/$pkgbase
+	cp -a build/web/public_html/ "$pkgdir"/usr/share/$pkgbase
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+	install -Dm0644 "$srcdir/$pkgname.sysusers" "$pkgdir/usr/lib/sysusers.d/$pkgbase.conf"
+	install -Dm0644 "$srcdir/$pkgname.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/$pkgbase.conf"
+}
+
+package_transmission-gtk() {
+	pkgdesc+=' (GTK+ GUI)'
+	depends+=(gtk4
+	          gtkmm-4.0
+                  hicolor-icon-theme)
+	optdepends=('libnotify: Desktop notification support'
+	            'transmission-cli: daemon and web support')
+	cd "$_archive"
+	_install_component gtk
+	_install_component po
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}
+
+package_transmission-qt() {
+	pkgdesc+=' (Qt GUI)'
+	depends+=(qt6-base
+	          qt6-svg)
+	optdepends=('transmission-cli: daemon and web support')
+	cd "$_archive"
+	_install_component qt
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}

@@ -1,0 +1,26 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: twa022 <twa022 at gmail dot com>
+
+pkgname=thunar-vcs-plugin
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="SVN and GIT integration for Thunar"
+arch=('x86_64')
+url="https://docs.xfce.org/xfce/thunar/thunar-vcs-plugin"
+license=('GPL-2.0-or-later')
+depends=('thunar' 'git' 'subversion')
+makedepends=('meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/thunar-plugins/thunar-vcs-plugin.git#tag=$pkgname-$pkgver")
+sha256sums=('e1644766718e6d6bec8bb6d6bc2ff9ae2b0d672b913fc971b4033187863d850d')
+
+build() {
+  arch-meson $pkgname build \
+    --libexecdir=/usr/lib/xfce4
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

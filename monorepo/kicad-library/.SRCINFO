@@ -1,0 +1,30 @@
+pkgbase = kicad-library
+	pkgdesc = Assorted libraries for KiCad
+	pkgver = 10.0.7
+	pkgrel = 1
+	url = http://kicad.org/
+	arch = any
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = cmake
+	makedepends = python
+	options = !strip
+	options = !debug
+	source = git+https://gitlab.com/kicad/libraries/kicad-packages3D.git#tag=10.0.7
+	source = git+https://gitlab.com/kicad/libraries/kicad-symbols.git#tag=10.0.7
+	source = git+https://gitlab.com/kicad/libraries/kicad-templates.git#tag=10.0.7
+	source = git+https://gitlab.com/kicad/libraries/kicad-footprints.git#tag=10.0.7
+	sha512sums = 60ffb567d0bdf5a12517dddef5eb54b484743fc2712d728dbf5605bd90aa9cf28387f0364bb2f8ce48388bfcab3e67e798b5846a60c29a370296f3a7f476d38e
+	sha512sums = 4243f06a85d67b5496cb1b3fc502414a7b5e4dbeed506e2f833bde748f519b8cab6ae7ad42bc6bdd964a2ad3ca55df24427c0694957fe1839d9c7084cc7cd8c2
+	sha512sums = 46b8685d7104decb21569aacad2a7941bb3101b09428039e3e17068a1261fa3e26c5a0dd2767ca56264f3bb5bf25358587a0878d50e698776375ab2ad9d9ddd6
+	sha512sums = b7c36a6e1be9c5d1e8264426804b1daabcb4606c52fadd4639e0e96d260b09cf7d9b570a22b6d6a646918577e52400b3eeefa24d1412d948e391bbc1d077f974
+	b2sums = b720787cbe264fa7e45e882ad209fb99b316c04c4233fe582ec34900fb67d4ad79aa0a6bb6cd619add6a0e0d57cec7e4dae1ba302e3b69aa226fd7673d368038
+	b2sums = 883f74bd050c4c63c90b3ce910b2d476ffca9b2286f6f17a2083ed3f9380db081bc62edf8ae178d468d57e0808fae1672099c6cc0df22e4980cd596b4885098c
+	b2sums = c54b437f06d78baa1123ad0e16028f12068082cbfb9a51c64abc7f44d62499761304bf3a5f97e0374f5f9cf3de6bcbf8aab3bdbc576747eb794cd669ec26fab6
+	b2sums = e4f1cd0f4c82c61bdca53a9adbffac374b353a92d85a4cf31b3cb8820a142dd9616343baf9c34bf01e3da42a2175f458f0594aafc0279212157b99de6be59659
+
+pkgname = kicad-library
+	pkgdesc = KiCad symbol, footprint and template libraries
+
+pkgname = kicad-library-3d
+	pkgdesc = KiCad 3D model libraries

@@ -1,0 +1,70 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=vcpkg
+pkgver=2026.09.26
+_pkgver="${pkgver//./-}"
+pkgrel=1
+pkgdesc='C++ library manager'
+arch=(x86_64)
+url='https://vcpkg.io'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  fmt
+  unzip
+  zip
+  cmake
+  ninja
+  git
+  curl
+)
+install=vcpkg.install
+source=(
+  "$pkgname::git+https://github.com/microsoft/vcpkg-tool#tag=$_pkgver"
+  vcpkg.sh
+)
+sha512sums=('50788d9843851b51829e8dd05b355911345e6adb23831f9daca3aa0397f64123a24c4eb87b47ccadf57fa1bf096ca2c19cb911f7bd7d343759214c723d3fa5fe'
+            'a71f4de5044197871b01d66db0453c8df228d690b259972fd4cf242806f3eac65d80e3c794ce511ce03b69f95d6c40ab20989e6fd9907efc962337d5dfbdf4f6')
+b2sums=('1019cb186001e31ea753b2decdb6c9b10f1f6128f1eb1f4301c8927a23f49d737ae2a1e99a5478d71233d9a8a7c626c73264f7e9b1c0aae31f85ba82c7b4b8d2'
+        'c67bb718f04146ae72ba5d7a290d08079e965cc330db11c98b94de355cd4a6ff489dbd4c363c940f4a96a1fd7ff8a754ff0efb62156e81bcccfd80376b4d0e39')
+
+build() {
+  local cmake_options=(
+    -S "$pkgname"
+    -B build
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX='/usr'
+    -D CMAKE_SKIP_INSTALL_RPATH=ON
+    -D VCPKG_DEVELOPMENT_WARNINGS=OFF
+    -D VCPKG_DEPENDENCY_EXTERNAL_FMT=ON
+    -D VCPKG_BASE_VERSION="$_pkgver"
+    -D VCPKG_VERSION="$(git -C $pkgname rev-parse HEAD)"
+    -D BUILD_TESTING=OFF
+    -D VCPKG_WARNINGS_AS_ERRORS=OFF
+    -D VCPKG_BUILD_TLS12_DOWNLOADER=OFF
+    -D VCPKG_BUILD_FUZZING=OFF
+    -D VCPKG_EMBED_GIT_SHA=OFF
+    -D VCPKG_BUILD_BENCHMARKING=OFF
+    -D VCPKG_ADD_SOURCELINK=OFF
+    -D VCPKG_LIBCURL_DLSYM=OFF
+    -W no-author
+  )
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # override environment variables
+  install -vDm644 -t "$pkgdir/etc/profile.d" vcpkg.sh
+
+  # license
+  cd "$pkgname"
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt NOTICE.txt
+}

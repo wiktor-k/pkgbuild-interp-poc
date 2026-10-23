@@ -1,0 +1,79 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Oliver Sherouse <oliver DOT sherouse AT gmail DOT com>
+# Contributor: David Scholl <djscholl@gmail.com> 
+# Contributor: David Pretty <david.pretty@gmail.com> 
+
+pkgbase=python-rpy2
+pkgname=(python-rpy2
+         python-rpy2-rinterface
+         python-rpy2-robjects)
+pkgver=3.6.9
+pkgrel=1
+pkgdesc='A very simple, yet robust, Python interface to the R Programming Language'
+arch=(x86_64)
+url='https://rpy2.github.io/'
+license=(GPL-2.0-or-later)
+makedepends=(git
+             python-build
+             python-cffi
+             python-installer
+             python-jinja
+             python-setuptools
+             python-tzlocal
+             python-wheel
+             r)
+checkdepends=(ipython
+              python-pytest)
+source=(git+https://github.com/rpy2/rpy2#tag=RELEASE_${pkgver//./_})
+sha256sums=('ef21147bcd3b54bcf2fa222cc249d5ad47db1ba3535b2212e99a06aa4f19ba8a')
+
+build() {
+  cd rpy2/rpy2-rinterface
+  python -m build --wheel --no-isolation
+
+  cd ../rpy2-robjects
+  python -m build --wheel --no-isolation
+
+  cd ../
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd rpy2
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m installer rpy2-rinterface/dist/*.whl 
+  test-env/bin/python -m installer rpy2-robjects/dist/*.whl 
+  test-env/bin/python -m pytest -v
+}
+
+package_python-rpy2() {
+  depends=(python-rpy2-rinterface
+           python-rpy2-robjects)
+  cd rpy2
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+package_python-rpy2-rinterface() {
+  depends=(glibc
+           python
+           python-cffi
+           python-numpy
+           r)
+
+  cd rpy2/rpy2-rinterface
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+package_python-rpy2-robjects() {
+  depends=(python
+           python-jinja
+           python-numpy
+           python-rpy2-rinterface
+           python-tzlocal)
+  optdepends=('python-pandas: conversion between rpy and pandas')
+
+  cd rpy2/rpy2-robjects
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+

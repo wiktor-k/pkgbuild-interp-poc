@@ -1,0 +1,25 @@
+pkgbase = odin
+	pkgdesc = Data-oriented programming language
+	pkgver = dev_2026_10
+	pkgrel = 1
+	url = https://odin-lang.org/
+	arch = x86_64
+	license = BSD-3-Clause
+	license = Zlib
+	checkdepends = mbedtls
+	makedepends = git
+	makedepends = llvm21
+	makedepends = setconf
+	depends = clang
+	depends = libx11
+	depends = llvm21-libs
+	depends = miniaudio
+	depends = python
+	depends = raylib
+	options = staticlibs
+	source = git+https://github.com/odin-lang/Odin#tag=dev-2026-10
+	source = raygui-5.0.tar.gz::https://github.com/raysan5/raygui/archive/refs/tags/5.0.tar.gz
+	b2sums = b5cd4f27c04a4375aafa5b7090745fcd41b2ffafcceeb86b7568eb1f57ba0532612d4334ff66b213672e401dcd5bdb71e8f822b5e9a43d5e554f2c153485aee3
+	b2sums = 6f97a2174de0f8b140b8f534386ac92d9425f69ce93ae4dc45c131afd39d812aa5ec8c640144fb36ac7ff818c8ce373f0cfc2ff7c7ed23c22218cea4323766e6
+
+pkgname = odin

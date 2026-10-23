@@ -1,0 +1,20 @@
+pkgbase = ruby-maxitest
+	pkgdesc = Minitest + all the features you always wanted
+	pkgver = 6.2.0
+	pkgrel = 1
+	url = https://github.com/grosser/maxitest
+	arch = any
+	license = MIT
+	checkdepends = procps-ng
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-minitest
+	options = !emptydirs
+	source = git+https://github.com/grosser/maxitest.git#tag=v6.2.0
+	sha512sums = 429c7d10557ac25a1c615a1441e9a48b253fc4f12255c4edf615b0c494894b56c1bde26aa103e1fab8c4d8f1219ab47ba9ccab7855e83b1aa1ff65a3c8331e67
+
+pkgname = ruby-maxitest

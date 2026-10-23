@@ -1,0 +1,71 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Yassine Oudjana <y.oudjana@protonmail.com>
+# Contributor: Philip Goto <philip.goto@gmail.com>
+# Contributor: GI Jack <GI_Jack@hackermail.com>
+
+pkgname=gnome-calls
+pkgver=51.1
+pkgrel=1
+pkgdesc="Phone dialer and call handler"
+url="https://gitlab.gnome.org/GNOME/calls"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  callaudiod
+  dconf
+  evolution-data-server
+  feedbackd
+  folks
+  glib2
+  glibc
+  gom
+  gsound
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libgee
+  libmm-glib
+  libpeas-2
+  libsecret
+  mobile-broadband-provider-info
+  sofia-sip
+)
+makedepends=(
+  appstream
+  git
+  glib2-devel
+  meson
+  python-docutils
+  vala
+)
+groups=(gnome-extra)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/calls.git?signed#tag=v${pkgver/[a-z]/_&}"
+  "git+https://gitlab.gnome.org/World/Phosh/libcall-ui.git#commit=3a2044f8e7c45387954ed35d22c6b6309e6751d6"
+)
+b2sums=('d722105c89e80226e96fb44d59d2564a7c19bc14fabd9c1be3c7e12285b1489236e09292ef0a8a2c62b3e23b4c11f1adb262ef24113f9f5e5808501f2b84a8ac'
+        '8dad81a738c228ef5c6cfcd317c7b60f63001569e3a781bba06bdc49bae822923c5ebc7206a2d51b9e885174196a6bdd216dffd61ea375e73d5adbe9cdf3311d')
+validpgpkeys=(
+  B9386554B7DD266BCB8E29A990F0C9B18A6B4A19 # Evangelos Ribeiro Tzaras <devrtz@fortysixandtwo.eu>
+  0DB3932762F78E592F6522AFBB5A2C77584122D3 # Guido Günther <agx@sigxcpu.org>
+)
+
+build() {
+  local meson_options=(
+    -D gtk_doc=true
+  )
+
+  # Inject libcall-ui subproject
+  export MESON_PACKAGE_CACHE_DIR="$srcdir"
+
+  arch-meson calls build "${meson_options[@]}"
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

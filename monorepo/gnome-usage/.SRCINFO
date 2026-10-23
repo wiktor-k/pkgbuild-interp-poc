@@ -1,0 +1,34 @@
+pkgbase = gnome-usage
+	pkgdesc = View information about use of system resources
+	pkgver = 48.0
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Usage
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = accountsservice
+	makedepends = gamemode
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libadwaita
+	depends = libgee
+	depends = libgtop
+	depends = libnm
+	depends = pango
+	depends = tinysparql
+	optdepends = accountsservice: show user tags for processes
+	optdepends = gamemode: show processes requesting game mode
+	source = git+https://gitlab.gnome.org/GNOME/gnome-usage.git#tag=48.0
+	source = 0001-Add-D-Bus-service-file.patch
+	b2sums = e52ebf855515a26a171cac84dfcc0a9fc2fe8850c820b7d403d606eb1e98c85794d70f1f76931b2f9d2fa0f1c377841972795c9d2e3c2972861b8324b4d73cdb
+	b2sums = 34066b9a090b5466bfbb215a726e566a3268e7036075e712db580c2cb6e5d83ec1eaee5f5f71737ac383939d1183aff05ab284e75ddb15f59e3c577bb16ee155
+
+pkgname = gnome-usage

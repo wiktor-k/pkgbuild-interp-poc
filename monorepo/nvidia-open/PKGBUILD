@@ -1,0 +1,37 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+
+pkgname=nvidia-open
+pkgver=615.78.08
+pkgrel=3
+pkgdesc="NVIDIA open kernel modules"
+arch=('x86_64')
+url="https://github.com/NVIDIA/open-gpu-kernel-modules"
+depends=("nvidia-utils=${pkgver}" 'libglvnd')
+makedepends=('linux-headers' "nvidia-open-dkms=$pkgver")
+license=('MIT AND GPL-2.0-only')
+options=('!strip' '!debug')
+conflicts=('nvidia')
+replaces=('nvidia<=580.119.02-2')
+provides=('NVIDIA-MODULE')
+
+build() {
+    _kernver=$(</usr/src/linux/version)
+
+    fakeroot dkms build --dkmstree "${srcdir}" -m nvidia/${pkgver} -k ${_kernver}
+}
+
+package() {
+    depends=('linux' "nvidia-utils=${pkgver}" 'libglvnd')
+
+    _kernver="$(</usr/src/linux/version)"
+
+    install -Dt "${pkgdir}/usr/lib/modules/${_kernver}/extramodules" -m644 nvidia/${pkgver}/${_kernver}/${CARCH}/module/*.ko
+
+    # compress each module individually
+    find "$pkgdir" -name '*.ko' -exec zstd --rm -19 {} +
+
+    install -Dm644 /usr/share/licenses/nvidia-open-dkms/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set sw=2 et:

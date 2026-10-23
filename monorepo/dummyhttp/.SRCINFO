@@ -1,0 +1,15 @@
+pkgbase = dummyhttp
+	pkgdesc = Super simple HTTP server that replies a fixed body with a fixed response code
+	pkgver = 1.1.3
+	pkgrel = 1
+	url = https://github.com/svenstaro/dummyhttp
+	arch = x86_64
+	license = MIT
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = dummyhttp-1.1.3.tar.gz::https://github.com/svenstaro/dummyhttp/archive/v1.1.3.tar.gz
+	sha512sums = f8bc9e57284a039fe10675326be1854b3bbf32db5a9033cc278692f097cca3c09e33964c5672dd25650ff1ceab20aa7b56b8aa053facecfb86b9d16a18a8cdb1
+
+pkgname = dummyhttp

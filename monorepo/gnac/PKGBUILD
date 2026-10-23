@@ -1,0 +1,112 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnac
+pkgver=0.2.4.1
+pkgrel=17
+pkgdesc='Audio converter for GNOME'
+arch=(x86_64)
+url='https://gitlab.gnome.org/Archive/gnac'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gst-plugins-base
+  gst-plugins-base-libs
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libnotify
+  libxml2
+)
+makedepends=(
+  git
+  intltool
+  yelp-tools
+)
+optdepends=(
+  'gst-libav: Extra media codecs'
+  'gst-plugins-bad: Extra media codecs'
+  'gst-plugins-good: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+)
+source=(
+  "git+https://gitlab.gnome.org/Archive/$pkgname.git?signed#tag=$pkgname-$pkgver"
+  gnac.appdata.xml
+  gnac-glib-debug.patch
+  gnac-gcc10.patch
+  gnac-gstreamer-1.0.patch
+  gnac-profiles-properties.patch
+  gnac-fix-advanced-fields.patch
+  gnac-opus-support.patch
+  gnac-optional-resample.patch
+  gnac-yelp-tools.patch
+)
+b2sums=(
+  a6881f49441515cef6b25513bd1f65ce5c9a3b4d3ae424648c76b4cd072d2d406acb935f01bd079ecf846f947d15aa09c7a6a60a3c8d202e4a8499437ff4f735
+  d473125de5e81c0629507009cfad1e044ebfcea6a3dc6c4ab0b02467846bbaa26d6931beaf20458449261e9c808fb32f80ed540a0b4a0e58a3f03e2a0c9f9e86
+  cb1ad788623af48a49aeb72137885b631b7a5178395d904fcbe8000dfad7af5301db8622bdbb2196de078f3bb87719402af02ceeab3dd3f6b0e227d5bd0d415f
+  80e7ff2776c2ae492d13c7597fbde20f5558cf92813df7196dc214bf2359c174669455d6c86216dc5ccc0c52e761c87fcb88a3825a94061cff2e2adad802e59c
+  8ab54384cc6b9fc2c15fe400066c8e91dc406dbdb9df18f7c4e479a4522d969637a7979f4088d4210bc139d9368f941e9cd030fee8ff0b9cc1bf685b016c90d9
+  0528433b4c8e6c604674706b9e00ab7dfcd8e30af631cb5e8f304d2284d9902b7497a16c1ac84062e9997cb58a7f8bf564a15bc0982d485c0aeb4e75578d84c2
+  1dcd6b7779d3c7fe6c78cffa321b7df5c3bbf815c56b9458fb082b324f8d34501c8a139502babdf1d2d98fd8aa06e2012b8a4111461ae074515cf416c90a0d63
+  2daa2abb70248883199bdc1b53c89b249b5c3fda122e58b08d60c15670ff09a3f12e6bf4e67f72f4950b36e0ff76f13a5df06cd22e577db48a119f062ebd29d2
+  506a7d8f79828a81f2ee786eef9d8d1457c87184b4dd3ad133d0583397c390d4fc1eaa8d4bad16e95cf47091f2b56c067c7ec118c6b7c9e3f5ab93ccf4e43e9a
+  ee3aec1d04b98a6824266fb5669152b0863f85f0d89a1359bbc231f096e4418cc30032b7c41d6ff9312653ad9b755efbf4d7258eefd710dc21aa805dadb2ddf7
+)
+validpgpkeys=(115E21637E06A8EDACFD29C60100808D8E15DDE1) # Benoît Dupasquier <bdupasqu@src.gnome.org>
+
+prepare() {
+  cd $pkgname
+
+  # Use GLib debug functions
+  git cherry-pick -n 46c37c04967c06d1f8ded3b40161b9d9fcb8ff8d
+  git apply -3 ../gnac-glib-debug.patch
+
+  # Fix build with GCC 10
+  git apply -3 ../gnac-gcc10.patch
+
+  # Port to GStreamer 1.0
+  git apply -3 ../gnac-gstreamer-1.0.patch
+
+  # Fix close event of profiles properties window
+  git apply -3 ../gnac-profiles-properties.patch
+
+  # Fix handling advanced fields
+  git apply -3 ../gnac-fix-advanced-fields.patch
+
+  # Add support for OPUS format
+  git apply -3 ../gnac-opus-support.patch
+
+  # Add option to disable resample
+  git apply -3 ../gnac-optional-resample.patch
+
+  # Don't use deprecated gnome-doc-utils
+  git cherry-pick -n bf5c7838406673acabaf9197efbd16140e83d1a6
+  git cherry-pick -n f87dc37bc8c1a0b09455916d1551de3fb5ae90f0
+  git apply -3 ../gnac-yelp-tools.patch
+
+  # Don't use deprecated gnome-common
+  sed -i '/GNOME_/d' configure.ac
+
+  # Don't install icon into pixmaps
+  sed -i '/pixmaps/d' data/icons/Makefile.am
+
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../gnac.appdata.xml "$pkgdir/usr/share/metainfo/gnac.appdata.xml"
+}

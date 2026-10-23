@@ -1,0 +1,30 @@
+# Maintainer:
+# Contributor: Peter Mattern <pmattern at arcor dot de>
+
+_pyname=pyuca
+pkgname=python-$_pyname
+pkgver=1.2
+pkgrel=5
+pkgdesc='Python implementation of the Unicode Collation Algorithm (UCA)'
+arch=(any)
+url='https://github.com/jtauber/pyuca'
+license=(MIT)
+depends=(python)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/jtauber/pyuca#tag=v$pkgver)
+sha256sums=('ba2065046c7ecb83c3f39a623b0fa37601259187f589ad3591c7d809c3e03f4a')
+
+build() {
+  cd pyuca
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd pyuca
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

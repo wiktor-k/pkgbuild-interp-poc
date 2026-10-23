@@ -1,0 +1,37 @@
+# Maintainer: Anatol Pomozov
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Thomas Krug <t.krug@elektronenpumpe.de>
+
+pkgname=libserialport
+pkgver=0.1.2
+pkgrel=1
+pkgdesc='A minimal library that provides OS abstraction when interfacing serial ports'
+arch=('x86_64')
+url='https://sigrok.org/wiki/Libserialport'
+license=('LGPL-3.0-or-later')
+depends=('glibc')
+makedepends=('git')
+source=("git+git://sigrok.org/libserialport#tag=$pkgname-$pkgver")
+sha512sums=('26dacebf4b2adc015de0cdbbbe6c7a8bb1d631b0543eb5c5cb67e70b72d4c5fcf0732177851a6a169a677f81d83fcd14c01a6c0640df283b9e72b051d59d1b7a')
+
+prepare() {
+  cd $pkgname
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

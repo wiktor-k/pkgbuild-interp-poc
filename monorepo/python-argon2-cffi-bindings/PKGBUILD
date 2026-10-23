@@ -1,0 +1,45 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-argon2-cffi-bindings
+pkgver=26.1.0
+pkgrel=1
+pkgdesc='Low-level CFFI bindings for Argon2'
+arch=(x86_64)
+url='https://github.com/hynek/argon2-cffi-bindings'
+license=(MIT)
+depends=(
+  argon2
+  glibc
+  python
+  python-cffi
+)
+makedepends=(
+  python-build
+  python-installer
+  python-scikit-build-core
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('f439d79b284c18267cccec15fd7cbc2ad9da3bb7df0048e185287cb11ccff45591caee2a852fbc8552ecec534bf5d662d5a1d32aa8cee6805ea30d1923733a7d')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
+  export ARGON2_CFFI_USE_SYSTEM=1
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

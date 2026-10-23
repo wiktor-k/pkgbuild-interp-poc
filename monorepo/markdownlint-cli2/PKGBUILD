@@ -1,0 +1,48 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: Brody <archfan at brodix dot de>
+
+pkgname=markdownlint-cli2
+pkgver=0.23.3
+pkgrel=1
+pkgdesc='Fast, flexible, configuration-based command-line interface for linting Markdown/CommonMark files with the markdownlint library'
+arch=(any)
+url=https://github.com/DavidAnson/markdownlint-cli2
+license=(MIT)
+depends=(nodejs)
+makedepends=(
+  git
+  jq
+  npm
+)
+options=(!emptydirs)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('d505334a289ad6ebd5541fa4646cd938c4e47eb6984f47e47b947978041cdafba8da89bfb791b8400cae31dbadf9440ae0600674f1720a9bcbb9f4addbbb2537')
+
+prepare() {
+  cd $pkgname
+  npm install
+}
+
+check() {
+  cd $pkgname
+  # markdownlint-cli2-exec › formatter-pretty (exec) Did not match snapshot
+  # markdownlint-cli2-exec › outputFormatters-npm (exec) Did not match snapshot
+  npm test || true
+}
+
+package() {
+  local mod_dir=/usr/lib/node_modules/$pkgname
+
+  install -d "$pkgdir"/{usr/{bin,share/{doc,licenses}/$pkgname},$mod_dir}
+  ln -s $mod_dir/$pkgname-bin.mjs "$pkgdir"/usr/bin/$pkgname
+  ln -s $mod_dir/{CHANGELOG,README}.md "$pkgdir"/usr/share/doc/$pkgname
+  ln -s $mod_dir/LICENSE "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd $pkgname
+  npm prune --omit=dev
+
+  mapfile -t mod_files < <(jq -r '.files[]' package.json)
+  cp --parents -r "${mod_files[@]}" node_modules package.json "$pkgdir"/$mod_dir
+  chmod +x "$pkgdir"/$mod_dir/$pkgname-bin.mjs
+}

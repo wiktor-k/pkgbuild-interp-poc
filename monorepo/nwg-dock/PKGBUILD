@@ -1,0 +1,39 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-dock
+pkgver=0.4.3
+pkgrel=4
+pkgdesc="GTK3-based dock for sway Wayland compositor"
+url="https://github.com/nwg-piotr/nwg-dock"
+arch=('x86_64')
+license=('MIT')
+depends=('gtk3' 'gtk-layer-shell')
+makedepends=('go')
+optdepends=('nwg-drawer: default application launcher')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('e4c617ae1b4c6ebca623d728a130591d3240750132f3fdfc8e1c0bcc19c572f2')
+
+prepare(){
+        cd "${pkgname}-${pkgver}"
+        mkdir -p build/
+}
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        export CGO_CPPFLAGS="${CPPFLAGS}"
+        export CGO_CFLAGS="${CFLAGS}"
+        export CGO_CXXFLAGS="${CXXFLAGS}"
+        export CGO_LDFLAGS="${LDFLAGS}"
+        export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+        go build -ldflags="-s -w -linkmode=external -buildid=''" -o "build/${pkgname}" *.go
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+	install -Dm 755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 config/* -t "${pkgdir}/usr/share/${pkgname}/"
+	install -Dm 644 images/* -t "${pkgdir}/usr/share/${pkgname}/images/"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

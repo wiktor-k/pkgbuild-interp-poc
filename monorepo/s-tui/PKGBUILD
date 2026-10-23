@@ -1,0 +1,47 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Robin Broda <coderobe @ archlinux.org>
+# Contributor: Lars Hagström <lars@foldspace.nu>
+
+pkgname=s-tui
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="Terminal UI stress test and monitoring tool "
+arch=(any)
+url="https://github.com/amanusk/s-tui"
+license=(GPL-2.0-only)
+depends=(
+  python
+  python-psutil
+  python-urwid
+  stress
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytest-mock
+)
+optdepends=(
+  'python-numpy: for built-in stress tool'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('77313bce4091d4210854c36696dc5ca9c9ac3f250747a683b4dc04546a7ca91e9c2f4509604d7067a0b61d44e37b97c1c2dc8db22d09980f2fbc324a4f67e625')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname-$pkgver
+  pytest
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,30 @@
+pkgbase = mate-sensors-applet
+	pkgdesc = A MATE Panel applet to display readings from hardware sensors, including CPU temperature, fan speeds and voltage readings
+	pkgver = 1.28.0
+	pkgrel = 5
+	url = https://github.com/mate-desktop/mate-sensors-applet
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = docbook-xsl
+	makedepends = git
+	makedepends = mate-common
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libnotify
+	depends = libx11
+	depends = libxnvctrl
+	depends = lm_sensors
+	depends = mate-panel
+	optdepends = hddtemp: get HDD temperatures
+	optdepends = udisks2: get HDD temperatures
+	source = git+https://github.com/mate-desktop/mate-sensors-applet.git#tag=v1.28.0
+	b2sums = 26e67062020673ada31c6c8c4516b342e9856cc4493c85f78eb390f35d72964bf059cf60f9066c5ef040d9afe6131d601b447db65b3bcd74d2eae1de26d964d6
+
+pkgname = mate-sensors-applet

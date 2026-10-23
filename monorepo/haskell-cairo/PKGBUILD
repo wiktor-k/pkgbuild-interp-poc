@@ -1,0 +1,42 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=haskell-cairo
+pkgver=0.13.12.0
+pkgrel=89
+pkgdesc="Binding to the cairo library for Gtk2Hs."
+url="https://hackage.haskell.org/package/cairo"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'cairo' 'haskell-utf8-string')
+makedepends=("haskell-gtk2hs-buildtools" "mesa" 'ghc')
+conflicts=('gtk2hs-cairo')
+provides=('gtk2hs-cairo')
+replaces=('gtk2hs-cairo')
+source=("https://hackage.haskell.org/packages/archive/cairo/${pkgver}/cairo-${pkgver}.tar.gz")
+sha512sums=('7bc55a3fd6a069273f798137a749e1d338ee63620a95fcfa7839f718808cc80497f5b7ce0310912b5f26c0401eb287e3c1d1b1291a9678e5bb118323f46eeb6d')
+
+build() {
+    cd "${srcdir}/cairo-${pkgver}"
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd "${srcdir}/cairo-${pkgver}"
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd "${srcdir}/cairo-${pkgver}"
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+}

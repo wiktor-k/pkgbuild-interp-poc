@@ -1,0 +1,28 @@
+pkgbase = python-jupyter-sphinx
+	pkgdesc = Jupyter Sphinx Extensions
+	pkgver = 0.5.3
+	pkgrel = 4
+	url = https://github.com/jupyter/jupyter-sphinx/
+	arch = any
+	license = BSD
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = ipython
+	depends = jupyter-nbclient
+	depends = jupyter-nbconvert
+	depends = jupyter-nbformat
+	depends = python
+	depends = python-docutils
+	depends = python-ipywidgets
+	depends = python-jupyter-client
+	depends = python-sphinx
+	depends = python-traitlets
+	source = git+https://github.com/jupyter/jupyter-sphinx#tag=v0.5.3
+	source = fix-tests.patch
+	sha256sums = c8a6b2a1a621132890dfe06321668a15a251b2b8c803a714462483febc9aaab5
+	sha256sums = 4c26dc8893823b98b038ffb18bee629ebc9282c0ffc0b0470cc982f5d8fac25b
+
+pkgname = python-jupyter-sphinx

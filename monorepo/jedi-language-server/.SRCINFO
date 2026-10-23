@@ -1,0 +1,21 @@
+pkgbase = jedi-language-server
+	pkgdesc = Language server for Jedi
+	pkgver = 0.47.0
+	pkgrel = 1
+	url = https://github.com/pappasam/jedi-language-server
+	arch = any
+	license = MIT
+	checkdepends = python-lsp-jsonrpc
+	checkdepends = python-pyhamcrest
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	depends = python-docstring-to-markdown
+	depends = python-jedi
+	depends = python-pygls
+	source = git+https://github.com/pappasam/jedi-language-server.git#tag=v0.47.0
+	b2sums = 1371d9c2ff015c17a6a117b6fdd98b49c633d79c1656dc1015cc3edce4618cf88c69ef6778c31ad64e8d6d6d38c1adbcae870be40b6a62608eae047012c8c897
+
+pkgname = jedi-language-server

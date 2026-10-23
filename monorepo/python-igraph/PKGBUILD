@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Lukasz Pozarlik <lpozarlik@gmail.com>
+
+_pyname=igraph
+pkgname=python-$_pyname
+pkgver=1.0.0
+pkgrel=2
+url='https://igraph.org/python/'
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+pkgdesc='Python bindings for the igraph library'
+depends=(glibc
+         igraph
+         python
+         python-numpy
+         python-texttable)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/igraph/python-igraph#tag=$pkgver)
+sha256sums=('f80f95a5925db7cd09ce1470e01f06a91928850f827f8706f8674383faf7dd90')
+
+build() {
+  cd $pkgname
+  IGRAPH_USE_PKG_CONFIG=1 \
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd $pkgname
+  PYTHONPATH="$PWD"/`ls -d build/lib.*` python -m unittest
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl 
+}

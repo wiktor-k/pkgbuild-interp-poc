@@ -1,0 +1,27 @@
+pkgbase = gnome-taquin
+	pkgdesc = Move tiles so that they reach their places
+	pkgver = 3.38.1+r45+g1ee5d8e
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Taquin
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gsound
+	depends = gtk3
+	depends = hicolor-icon-theme
+	source = git+https://gitlab.gnome.org/GNOME/gnome-taquin.git#commit=1ee5d8e8772c668acfc9f6cb1c84d1fb953edc50
+	source = 0001-Set-prgname-to-application-ID.patch
+	source = 0002-Don-t-create-window-in-startup-phase.patch
+	b2sums = 04dbba1b335ce18fbb1b83398510c1dad75da656e589af01d8f9e6cbb481626e97d8295fcc7842c576bf3d04bd3493526bcfbc1d35950ae6ba2f3c54e4ba2a21
+	b2sums = 51985b28076ac14e5770c234efda7ad478bd6933529b6ed966448535631825d0c1719d49149d75552b8c8b0c53badef6494613f8e2fbbae26045c4065e800e7f
+	b2sums = 37f6f2a46505a55f1219c515cf5f325a091a21ca1e8ca990199a00e028cc990e28cd1316d33fad092c6e68d3c2c680ab50b333ca901bdc4b680c443e9bc61b5d
+
+pkgname = gnome-taquin

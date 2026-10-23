@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-desktop-theme
+pkgver=1.1.31
+pkgrel=1
+pkgdesc='Theme resources for Deepin desktop environment'
+arch=('any')
+url="https://github.com/linuxdeepin/deepin-desktop-theme"
+license=('CC-BY-4.0')
+makedepends=('git' 'cmake' 'ninja')
+optdepends=('adobe-source-han-sans-otc-fonts: theme standard font')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-desktop-theme.git#tag=$pkgver")
+sha512sums=('64dd8e5501e72cc29ac4723199fe4de1538f92288c308a73143a5b64629b92856ef806a5f51586de092a9feca4f87b1f5dce8502625762fecd97e516510f1aa1')
+
+prepare() {
+  cd deepin-desktop-theme
+  # Remove bundled converter tools, suggested by upstream for theme-only packaging.
+  sed -i '/xdgicon2dci/d;/deepin-xdgicon-convert/d' tools/CMakeLists.txt
+}
+
+build() {
+  cd deepin-desktop-theme
+  cmake . -GNinja -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+package() {
+  cd deepin-desktop-theme
+  DESTDIR="$pkgdir" ninja install
+}

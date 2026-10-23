@@ -1,0 +1,58 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=openfpgaloader
+pkgver=1.2.0
+pkgrel=1
+pkgdesc='Universal utility for programming FPGA'
+arch=(x86_64)
+url='https://github.com/trabucayre/openFPGALoader'
+license=(Apache-2.0)
+depends=(
+  libftdi
+  libftdi-compat
+  hidapi libhidapi-libusb.so
+  systemd-libs libudev.so
+  libusb
+  zlib
+  glibc
+  libgcc libgcc_s.so
+  libstdc++ libstdc++.so
+)
+makedepends=(
+  git
+  cmake
+  systemd
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('0cb71c9ee426d8ae79d81c2bf3868c1edbb312e6993ee1a425d6e467cc46ae09c7fd997bfe6d5fd405d23f4d462a1743570df88b99c7c6f7eb8e7514c4a41e11')
+b2sums=('fef631baae29746befebbe30bbdf4ad2423145403b62467d72b4e32af6296c56933fe4017420f5100bc2829016ed18624ce06c0ce13188226260da24495934a0')
+
+prepare() {
+  cd "$pkgname"
+
+  sed -i 's|MODE="664", GROUP="plugdev"|MODE="666"|g' 99-openfpgaloader.rules
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D ENABLE_UDEV=ON
+    -D ENABLE_CMSISDAP=ON
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -vDm644 -t "$pkgdir/usr/lib/udev/rules.d" "$pkgname/99-openfpgaloader.rules"
+}
+

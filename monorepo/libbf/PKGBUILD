@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=libbf
+pkgver=2021.03.27
+_ver=${pkgver//./-}
+pkgrel=1
+pkgdesc="A small library to handle arbitrary precision floating point numbers"
+arch=('x86_64')
+url="https://bellard.org/libbf/"
+license=('MIT')
+depends=('mpfr')
+source=("https://bellard.org/quickjs/quickjs-$_ver.tar.xz")
+sha512sums=('eeb810083484df213bc658a8703ca3ef094b7789c2b49eed86cb4068c9f9da401ad0300261d61a163c6ea82306f3ef50bf8e29a64920f704fd8958ef08a7286c')
+
+build() {
+  cd quickjs-$_ver
+  CC="gcc -Wall $CFLAGS $LDFLAGS -DCONFIG_MPFR"
+  $CC -c -fPIC libbf.c cutils.c
+  $CC -shared -o libbf.so libbf.o cutils.o
+}
+
+package() {
+  cd quickjs-$_ver
+  install -Dm755 libbf.so -t "$pkgdir"/usr/lib/
+  install -Dm644 libbf.h -t "$pkgdir"/usr/include/
+}
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,25 @@
+pkgbase = lib32-vulkan-validation-layers
+	pkgdesc = Vulkan Validation Layers (32-bit)
+	pkgver = 1.4.363.0
+	pkgrel = 1
+	url = https://www.vulkan.org/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = lib32-libxrandr
+	makedepends = lib32-vulkan-icd-loader
+	makedepends = lib32-vulkan-utility-libraries
+	makedepends = lib32-wayland
+	makedepends = ninja
+	makedepends = python-lxml
+	makedepends = spirv-headers
+	makedepends = vulkan-headers
+	depends = lib32-gcc-libs
+	depends = lib32-glibc
+	depends = lib32-spirv-tools
+	options = !lto
+	source = git+https://github.com/KhronosGroup/Vulkan-ValidationLayers#tag=vulkan-sdk-1.4.363.0
+	b2sums = c7425c08f9bed5c06cae1141c6cc4fa3ffaf87cefa88823d7f525014a532e33474b14fbecfe5e8f5393ea83e9d2b32fa80148e079693ef007c06126b2563d605
+
+pkgname = lib32-vulkan-validation-layers

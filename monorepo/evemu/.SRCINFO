@@ -1,0 +1,19 @@
+pkgbase = evemu
+	pkgdesc = Tools and bindings for kernel input event device emulation and data capture and replay
+	pkgver = 2.7.0
+	pkgrel = 13
+	url = https://www.freedesktop.org/wiki/Evemu
+	arch = x86_64
+	license = GPL3
+	makedepends = asciidoc
+	makedepends = python
+	makedepends = xmlto
+	depends = libevdev
+	optdepends = python: Python 3 bindings
+	source = https://www.freedesktop.org/software/evemu/evemu-2.7.0.tar.xz
+	source = https://www.freedesktop.org/software/evemu/evemu-2.7.0.tar.xz.sig
+	validpgpkeys = 0A75E35E0FAEE97EC769103E2F2670AC164DB36F
+	sha256sums = 78c9400d55eeeb5ab75161360543f9376438c4da4934cb34cdda5b46021ae379
+	sha256sums = SKIP
+
+pkgname = evemu

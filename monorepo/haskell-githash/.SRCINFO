@@ -1,0 +1,19 @@
+pkgbase = haskell-githash
+	pkgdesc = Some handy Template Haskell splices for including the current git hash and branch in the code of your project
+	pkgver = 0.1.7.0
+	pkgrel = 64
+	url = https://github.com/snoyberg/githash
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ghc
+	makedepends = haskell-hpack
+	makedepends = haskell-hspec
+	makedepends = haskell-temporary
+	makedepends = haskell-unliftio
+	depends = ghc-libs
+	depends = haskell-th-compat
+	depends = git
+	source = git+https://github.com/snoyberg/githash.git#tag=githash-0.1.7.0
+	sha512sums = a00b7338403a7d3765503d4d86bcd8cd5f979ba969988d54f3b0ee4ffdb1062efc696d92e1c7d462dc15e0f3d7f46934308220207a22e5664ffe8a1a168c0528
+
+pkgname = haskell-githash

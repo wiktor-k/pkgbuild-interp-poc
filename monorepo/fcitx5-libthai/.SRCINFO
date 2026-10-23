@@ -1,0 +1,17 @@
+pkgbase = fcitx5-libthai
+	pkgdesc = Libthai Wrapper for Fcitx5
+	pkgver = 5.1.11
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-libthai
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	depends = fcitx5
+	depends = libthai
+	source = git+https://github.com/fcitx/fcitx5-libthai.git#tag=5.1.11?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 69c05c208268ffc3c9d4ac45078eeb03fe990ff53e884c2d961b9438f35193c1142bc41151db81451cba859542008a22f715592e234989762d36e51f80aad5df
+
+pkgname = fcitx5-libthai

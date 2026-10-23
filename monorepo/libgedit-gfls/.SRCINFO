@@ -1,0 +1,22 @@
+pkgbase = libgedit-gfls
+	pkgdesc = File loading and saving library
+	pkgver = 0.5.0
+	pkgrel = 1
+	epoch = 1
+	url = https://gitlab.gnome.org/World/gedit/libgedit-gfls
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = gtk-doc
+	makedepends = gtk3
+	makedepends = meson
+	depends = glib2
+	depends = glibc
+	provides = libgedit-gfls-1.so
+	source = git+https://gitlab.gnome.org/World/gedit/libgedit-gfls.git#tag=0.5.0
+	validpgpkeys = 08C0A6B1A08310A45363B328426F014A261FD87F
+	b2sums = 76124bd191b8460ca4341ceea3192b4aa153e75ef206d4a6e4727b84a5307e589f1f67911da20887515f2924e0944c8e5eadb329876c48ed9eb34ebd3fbb6cc2
+
+pkgname = libgedit-gfls

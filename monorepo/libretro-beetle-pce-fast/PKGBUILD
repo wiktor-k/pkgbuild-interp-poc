@@ -1,0 +1,33 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-beetle-pce-fast
+pkgver=20260925.164010.g1c693c630121
+pkgrel=1
+pkgdesc='NEC PC Engine/CD core'
+arch=(x86_64)
+url=https://github.com/libretro/beetle-pce-fast-libretro
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libretro-core-info
+  libstdc++
+  zlib
+)
+makedepends=(git)
+source=(libretro-beetle-pce-fast::git+https://github.com/libretro/beetle-pce-fast-libretro.git#commit=${pkgver##*.g})
+b2sums=('966668d0696e50a91be297b192d32d055ccf06b81eb3508af75714aa304599092358868b46ffae6ec7274d4452ed107ebacdfacd12566e7334177b0c4b46ea37')
+
+build() {
+  make \
+    SYSTEM_LIBCHDR=0 \
+    SYSTEM_ZLIB=1 \
+    -C libretro-beetle-pce-fast
+}
+
+package() {
+  install -Dm 644 libretro-beetle-pce-fast/mednafen_pce_fast_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,45 @@
+pkgbase = maxima
+	pkgdesc = A sophisticated computer algebra system
+	pkgver = 5.50.0
+	pkgrel = 5
+	url = http://maxima.sourceforge.net
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = ecl
+	makedepends = emacs
+	makedepends = git
+	makedepends = python
+	makedepends = sbcl
+	options = !zipman
+	source = maxima::git://git.code.sf.net/p/maxima/code#tag=5.50.0
+	source = maxima-sbcl-gmp.patch
+	source = 0001-ECL-Fix-autoconf-options-on-whitespace.patch
+	source = fix-limit-regression.patch
+	sha256sums = 23bad9ff9ca61a60c588ce2f7156f491b2ebc488425477224a8e116bb2e1a1aa
+	sha256sums = 7e85da0b6672b096d7aefac861573a57323dfe805e08d033781448f7ca6ed856
+	sha256sums = 05f6f82550e03af3927379d71a4e2a762ea523fa0c0ea1021741c7dd51414c32
+	sha256sums = e84924c50963516c3d4b243c96ec87b6c9212fab3ea8d0b94afbb0a5d35e5194
+
+pkgname = maxima
+	depends = maxima-backend
+	depends = texinfo
+	optdepends = gnuplot: plotting capabilities
+	optdepends = rlwrap: readline support via /usr/bin/rmaxima
+	optdepends = tk: graphical xmaxima interface
+	replaces = maxima-ecl<5.45.1-9
+
+pkgname = maxima-sbcl
+	pkgdesc = SBCL backend for Maxima
+	depends = sbcl=2.6.9
+	provides = maxima-backend
+
+pkgname = maxima-ecl
+	pkgdesc = ECL backend for Maxima
+	depends = ecl=26.5.5
+	depends = glibc
+	provides = maxima-backend
+
+pkgname = maxima-fas
+	pkgdesc = Maxima FAS module for ECL
+	depends = ecl=26.5.5
+	depends = maxima

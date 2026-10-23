@@ -1,0 +1,24 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=ocaml-ptmap
+pkgver=2.0.5
+pkgrel=5
+pkgdesc='Maps over integers implemented as Patricia trees'
+arch=(x86_64)
+url='https://github.com/backtracking/ptmap'
+license=(LGPL-2.1-only)
+depends=(ocaml ocaml-seq ocaml-stdlib-shims)
+makedepends=(dune)
+options=(!debug !makeflags !strip)
+source=("$pkgname-$pkgver.tar.gz::$url/releases/download/$pkgver/ptmap-$pkgver.tbz")
+b2sums=('96e291be16a7c91bbb49a273f1e73843de400409ed4760f061ac64417480a538963bae9dbe760108c78126b942d3a415ba42c2e4bf414b4cddd7ccafb4ad90ff')
+
+build() {
+  cd ptmap-$pkgver
+  dune build
+}
+
+package() {
+  cd ptmap-$pkgver
+  dune install --prefix="$pkgdir/usr" --libdir="$pkgdir/usr/lib/ocaml"
+}

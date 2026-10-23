@@ -1,0 +1,76 @@
+pkgbase = geonkick
+	pkgdesc = A free software percussion synthesizer
+	pkgver = 3.9.0
+	pkgrel = 1
+	url = https://geonkick.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = lv2lint
+	makedepends = cairo
+	makedepends = cmake
+	makedepends = glibc
+	makedepends = gtkmm3
+	makedepends = hicolor-icon-theme
+	makedepends = jack
+	makedepends = libgcc
+	makedepends = libsndfile
+	makedepends = libstdc++
+	makedepends = libx11
+	makedepends = libxkbcommon
+	makedepends = libxkbcommon-x11
+	makedepends = lv2
+	makedepends = pango
+	makedepends = rapidjson
+	makedepends = vst3sdk
+	makedepends = xcb-util
+	makedepends = xcb-util-cursor
+	makedepends = xcb-util-keysyms
+	source = https://gitlab.com/Geonkick-Synthesizer/geonkick/-/archive/v3.9.0/geonkick-v3.9.0.tar.gz
+	sha512sums = eacf85d1279daad092e85e0b6a343c7a2a28e5921ba1bce953f4852e140fb8ab039988ad46c2cc2174d22eca76e58befbf37920ff09aeaf39d9e669db2c381d3
+	b2sums = 5aa21f285eae52ce740447c1bc90d3ebc04df699ea6355fe49bc59c969d95eda290072d9a11c9e0a7e3699d25c9ad7d39e51c07965c80070e3961d548746863c
+
+pkgname = geonkick
+	depends = geonkick-lv2=3.9.0
+	depends = geonkick-standalone=3.9.0
+	depends = geonkick-vst3=3.9.0
+
+pkgname = geonkick-common
+	pkgdesc = A free software percussion synthesizer - common files
+
+pkgname = geonkick-lv2
+	pkgdesc = A free software percussion synthesizer - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = cairo
+	depends = geonkick-common=3.9.0
+	depends = glibc
+	depends = libgcc
+	depends = libsndfile
+	depends = libstdc++
+	depends = libx11
+	depends = lv2-host
+
+pkgname = geonkick-standalone
+	pkgdesc = A free software percussion synthesizer - JACK standalone
+	groups = pro-audio
+	depends = cairo
+	depends = geonkick-common=3.9.0
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = jack
+	depends = libgcc
+	depends = libsndfile
+	depends = libstdc++
+	depends = libx11
+
+pkgname = geonkick-vst3
+	pkgdesc = A free software percussion synthesizer - VST3 plugin
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = cairo
+	depends = geonkick-common=3.9.0
+	depends = glibc
+	depends = libgcc
+	depends = libsndfile
+	depends = libstdc++
+	depends = vst3-host

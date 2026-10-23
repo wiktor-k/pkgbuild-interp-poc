@@ -1,0 +1,47 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Jelle van der Waa <jelle@archlinux.org
+
+_name=sqlalchemy-continuum
+pkgname=python-sqlalchemy-continuum
+pkgver=1.8.0
+pkgrel=1
+pkgdesc='Versioning and auditing extension for SQLAlchemy'
+url='https://github.com/kvesteri/sqlalchemy-continuum'
+arch=('any')
+license=('BSD-3-Clause')
+depends=('python' 'python-sqlalchemy')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('sqlite' 'python-pytest' 'python-flexmock' 'python-psycopg2' 'python-mysql-connector'
+              'python-flask' 'python-flask-login' 'python-flask-sqlalchemy'
+              'python-sqlalchemy-i18n')
+optdepends=('python-flask: flask plugin'
+            'python-flask-login: flask plugin'
+            'python-flask-sqlalchemy: flask plugin'
+            'python-sqlalchemy-i18n: internationalization')
+options=('!makeflags')
+source=(https://files.pythonhosted.org/packages/source/${_name::1}/${_name//-/_}/${_name//-/_}-${pkgver}.tar.gz)
+sha512sums=('9c6f69ff865aa35d4717068335ce67469aff5beec66e448807f142599957887406b0af1bc85a0fdcadf239d3b6c9b387f343295a0acf41397d0f0e1ffa670824')
+b2sums=('bc144bd6269c1353ea55e68f352b5c224f8ee9d21d23a5d94b811fe049ec6b0348bb61065ffb79363cb1e2e80154d5f118af6b907a1e4baf852916cfea88b122')
+
+prepare() {
+  cd ${_name/-/_}-${pkgver}
+}
+
+build() {
+  cd ${_name/-/_}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_name/-/_}-${pkgver}/tests
+  DB=sqlite pytest -k 'not test_flask' || true
+}
+
+package() {
+  cd ${_name/-/_}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

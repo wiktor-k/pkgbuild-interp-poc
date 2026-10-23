@@ -1,0 +1,23 @@
+pkgbase = freecell-solver
+	pkgdesc = A program that automatically solves layouts of Freecell and similar variants of Card Solitaire
+	pkgver = 6.16.0
+	pkgrel = 1
+	url = https://fc-solve.shlomifish.org
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = gperf
+	makedepends = perl-moo
+	makedepends = perl-path-tiny
+	makedepends = perl-template-toolkit
+	makedepends = python-pysol_cards
+	makedepends = python-six
+	makedepends = rinutils
+	depends = bash
+	depends = glibc
+	optdepends = python-pysol_cards: for the Python interface
+	optdepends = python-six: for the Python interface
+	source = https://fc-solve.shlomifish.org/downloads/fc-solve/freecell-solver-6.16.0.tar.xz
+	sha256sums = 71b8882e68f1be62529069018d0c732b75078669077c96348279575849f34313
+
+pkgname = freecell-solver

@@ -1,0 +1,39 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=python-olefile
+_pyname=olefile
+pkgver=0.47
+pkgrel=5
+pkgdesc='Python library to parse, read and write Microsoft OLE2 files (formerly OleFileIO_PL)'
+url='https://www.decalage.info/olefile'
+arch=('any')
+license=('BSD')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+replaces=('python3-olefileio')
+conflicts=('python3-olefileio')
+source=(${_pyname}-${pkgver}.tar.gz::https://github.com/decalage2/olefile/archive/v${pkgver}.tar.gz)
+sha512sums=('efd73092f4fb428a91066c11fd319a60fa43e46f7abc4e7ba38627f11e19a6fbba227d1307ee308d1297e97b3fff30e6e497c50d7f708204e20122ea01dddfd8')
+
+build() {
+  (cd ${_pyname}-${pkgver}
+    python -m build --wheel --no-isolation
+  )
+}
+
+check() {
+  (cd ${_pyname}-${pkgver}
+    py.test
+  )
+}
+
+package() {
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md doc/*.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=dtkcommon
+pkgver=6.7.51
+pkgrel=1
+pkgdesc='DTK common files'
+arch=('any')
+url="https://github.com/linuxdeepin/dtkcommon"
+license=('BSD-3-Clause')
+depends=('dconf')
+makedepends=('git' 'cmake' 'ninja')
+source=("git+https://github.com/linuxdeepin/dtkcommon.git#tag=$pkgver")
+sha512sums=('3604ed64aad778003c95073778c4eb77f6469ca1509dd9c28acd9b197be0a4493f337fbd6cfee3066f86d96cd759870c2f5e371dd540395f35b6d1cae6402ac2')
+
+build() {
+  cd dtkcommon
+  cmake . -GNinja \
+    -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+package() {
+  cd dtkcommon
+  DESTDIR="$pkgdir" ninja install
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,44 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-ebooklib
+pkgver=0.20
+pkgrel=1
+pkgdesc='Python library for EPUB2/EPUB3 manipulation and processing'
+arch=(any)
+url='https://github.com/aerkalov/ebooklib'
+license=(AGPL-3.0-or-later)
+depends=(
+  python
+  python-lxml
+  python-six
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("git+https://github.com/aerkalov/ebooklib.git#tag=v$pkgver")
+b2sums=(57cc886a88fe14dbfa30b61f73241cc6a5f6d56570908814ef41bddd46cd7198317ef1213c129ddb42fc5a8052e86b9b4e7ceb42ae0d7ee8f572200ded136387)
+
+build() {
+  cd ebooklib
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ebooklib
+  PYTHONPATH="$PWD/build/lib" \
+    pytest
+}
+
+package() {
+  cd ebooklib
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  python -m sphinx -b html docs "$pkgdir/usr/share/doc/$pkgname/html"
+  rm -r "$pkgdir/usr/share/doc/$pkgname/html/.doctrees"
+}

@@ -1,0 +1,36 @@
+pkgbase = gnome-logs
+	pkgdesc = A log viewer for the systemd journal
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Logs
+	arch = x86_64
+	groups = gnome
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gsettings-desktop-schemas
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = pango
+	depends = systemd
+	depends = systemd-libs
+	source = git+https://gitlab.gnome.org/GNOME/gnome-logs.git#tag=50.0
+	source = 0001-gl-application-Add-CTRL-Q-to-quit.patch
+	source = 0002-gl-window-Fix-GtkInfoBar-being-blank.patch
+	source = 0003-Fix-crash-when-invalid-journal-opened.patch
+	source = 0004-Add-new-window-command-line-option.patch
+	b2sums = 2a3d9b62ebb146832540b43e18f9a83339735157040b412d53410c4e77053ad32a00281574b29b1c58d0ed12699f2060fe5dc456f482c9049a0e0d962e7aaa55
+	b2sums = de9c538a53c0dd7fda5f38bc38360a8564df8b10a65201e08718e03b3795b90db8d8162bbfe1255929eba2728d679375d92e46f0e7e4bc430720a1c2567d771c
+	b2sums = 88925a3383b6ad2a564b5aa6d2450e0f3976c07f7e1011ab7f72f50aae9b8d3195985e57a08ed8e4d148d9fbb0ff9357e4a27e88739630291eda6d56299ed831
+	b2sums = 45ec10e5f31d25f27b4ad28422432ef7c7e7a0a2697bbbc9c09a5f12b3a703cff9255080c5d5d42fbeda1b2927216fecf9393fc6d27cb3873238e9653c6a0bd3
+	b2sums = 2cfb6e1b842098bd616992d175317127e8f6744ec23c7a85a4471b561a31e465be2b4c40ce35716bc9ef075953ecdd3ad911fb898ad3739707af0ce3bb902d93
+
+pkgname = gnome-logs

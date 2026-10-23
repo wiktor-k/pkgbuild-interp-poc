@@ -1,0 +1,27 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=fyi
+pkgdesc='A command line utility and notify-send alternative to send desktop notifications'
+pkgver=1.0.4
+pkgrel=1
+url="https://codeberg.org/dnkl/$pkgname"
+arch=(x86_64)
+license=(MIT)
+depends=(dbus)
+makedepends=(meson
+             ninja
+             scdoc)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha256sums=('6d196b4725df02dba39ca736c0f5b485f6a204a98f68de6bbe8155bdc1e56d24')
+
+build() {
+	cd "$pkgname"
+	arch-meson . build
+	meson compile -C build
+}
+
+package() {
+	cd "$pkgname"
+	meson install -C build --destdir "$pkgdir"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

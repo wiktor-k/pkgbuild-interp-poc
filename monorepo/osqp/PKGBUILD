@@ -1,0 +1,31 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=osqp
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='The Operator Splitting QP Solver'
+url='https://osqp.org/'
+license=(Apache-2.0)
+arch=(x86_64)
+depends=(glibc)
+makedepends=(cmake
+             git
+             python-numpy
+             python-scipy)
+source=(git+https://github.com/osqp/osqp#tag=v$pkgver)
+sha256sums=('f717a32c7aff62ffae9a4a8bc2a288544ee34efd6a2478a6c23f1f3b592aca60')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DOSQP_BUILD_UNITTESTS=ON
+  cmake --build build
+}
+
+check() {
+  cmake --build build --target test
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

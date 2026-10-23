@@ -1,0 +1,83 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=opencloud
+pkgver=8.1.0
+pkgrel=2
+pkgdesc='Open source platform for file management, sharing & collaboration'
+arch=(x86_64)
+url='https://opencloud.eu'
+license=(Apache-2.0)
+depends=(glibc sqlite)
+makedepends=(
+  git
+  go
+  pnpm
+)
+backup=(etc/opencloud/config.env)
+install=opencloud.install
+options=(!lto)
+source=(
+  "$pkgname::git+https://github.com/opencloud-eu/opencloud#tag=v${pkgver/_/-}"
+  version-strings.patch
+  config.env
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+)
+sha512sums=('b966cfc4c01d65cfd6f372701a7a4c639d738ac48c92436e8062bfe5fcf3cbe9c4e38581b1789b2303658b071a39897b501e82f1e0c2e76d427a2f9715282733'
+            '861ab227953acb1fe8f687766cc46389c1c2d8ae7c80998e69ceb34907abdaa48ab473953fb67aa6b2c38251286af49827fdc73593d87cc1e080e63fab0c5d5d'
+            '808896bc1f5715b33f88a8dfcab5e8425a967d029427d9713f74f09b1280a29359148b95a1e2ea39cd71400190fb1e5c2d01b8753d5dbb00facf4be697c12f55'
+            'a9adf35032aa4594c303e268f2b0eb4fc67bd95a57c849e02f5226739b7ed1a517d34a28233d10ae753b946ff3da8a1b615b6c20627dc3e6b9249a97233ac7e3'
+            'bd4c449165e0b314cde60437b30214286a0605ccf8ae233fa587d904c16f9225cb822d8636d182b11f91224aa42969f28fc99400b692c2265c47b51b49e2d188'
+            'db82871e0f1e57cf852d4ad10116505c62b46d5dab5c87a15628847cdde16331e09cc7968ed7e1ad0bed266ba30e22b48a9673e2a334e6c7b1be709fe6fd986a')
+b2sums=('e69b251ebd50a35b91e8b3e53a89ff5d17e54f8b830e607ea9f55e4dadb003dbbded4237afb65ff654f61bfd00c4c96b309fc5d5146bf6450120c1026a499295'
+        '72c52a4def07888b6e441d464099719a5720ae01b3d2f42c5bf4b651712961ef6afa4c074c0270c20c57b33f7c8f02af185bf36c39857b72737b455298b1e5bd'
+        'ac120e3b8d34d7a2196fbe54d2cbbab8e56f614666869eff1c5033e2d26db183dca16c7694d48de9192c21f6dba14763c3e5146eb31fdcc84650079a377b4a39'
+        'e5088f3156304401de4f1eab9a57aed84c6940b447fbe45d7e650c07d108273ee155c3e5230e7280c11ae5e1a7dd8e1649d48c1ad588dea15de9349dbeda3081'
+        'f3d58599ee2360b9ce4aab31c3b1e7235b04a6eb61be99a8850ec1d89a2a49839c451de6ef3a092561fc95f6e42a844ebf3d3075866e250e01d98237d8eb4ae4'
+        'a661cce8e6601cfc7c46130766f1b7778aeeec60719e926f0fe57d89f53a718708f4fcd14558d072b5a4941afff6e49b0040e5cf9348de0b2774e7d984f15ffa')
+
+prepare() {
+  cd "$pkgname"
+
+  # ensure reproducible strings
+  patch -p1 -i "$srcdir/version-strings.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  export GOPATH="$srcdir"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+
+  # generate web assets
+  make generate
+
+  # generate binary
+  make TAGS="disable_crypt libsqlite3" -C opencloud build
+
+  # generate shell completions
+  for shell in bash fish zsh; do
+    ./opencloud/bin/opencloud completion "$shell" > "$shell.completion"
+  done
+}
+
+package() {
+  # systemd integration
+  install -vDm640 -t "$pkgdir/etc/opencloud" config.env
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/opencloud.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/opencloud.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/opencloud.conf"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" opencloud/bin/opencloud
+
+  # shell completions
+  install -vDm644 bash.completion "$pkgdir/usr/share/bash-completion/completions/opencloud"
+  install -vDm644 fish.completion "$pkgdir/usr/share/fish/vendor_completions.d/opencloud.fish"
+  install -vDm644 zsh.completion "$pkgdir/usr/share/zsh/site-functions/_opencloud"
+}

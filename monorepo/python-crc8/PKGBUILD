@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-crc8
+pkgver=0.2.1
+pkgrel=1
+pkgdesc="A module with the CRC8 algorithm for Python"
+url="https://github.com/niccokunzmann/crc8"
+license=('MIT')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/niccokunzmann/crc8.git#tag=v$pkgver")
+sha512sums=('95e86401f9d6b8bc6a88da870e9fa0e123fa9ec3f8748cfb37533e47c48b617ea04fba7867118fe6745cbea9895f816e8548532e571381dc72c8fa108ed5710a')
+
+build() {
+  cd crc8
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd crc8
+  python test_crc8.py
+}
+
+package() {
+  cd crc8
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

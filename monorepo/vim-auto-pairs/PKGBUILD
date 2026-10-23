@@ -1,0 +1,31 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Felip Manyer i Ballester <archlinux at res hyphen telae dot cat>
+# Contributor: Andy Weidenbaum <archbaum@gmail.com>
+
+pkgname=vim-auto-pairs
+_pkgname=auto-pairs
+pkgver=2.0.0
+pkgrel=2
+pkgdesc="Insert or delete brackets, parens, quotes in pair"
+url="http://www.vim.org/scripts/script.php?script_id=3599"
+arch=('any')
+license=('MIT')
+depends=('vim-plugin-runtime')
+groups=('vim-plugins')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/jiangmiao/auto-pairs/archive/v${pkgver}.tar.gz")
+sha256sums=('f20e109a61b4640eb424ada90200ff578027e5307c1202b103c265a9cfa193c4')
+
+prepare() {
+	cd "${_pkgname}-${pkgver}"
+
+	# Generate a proper license file from the `License` section of the README
+	sed -n '/^License/,$p' README.md > LICENSE
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}"
+	
+	install -Dm 644 "plugin/${_pkgname}.vim" "${pkgdir}/usr/share/vim/vimfiles/plugin/${_pkgname}.vim"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

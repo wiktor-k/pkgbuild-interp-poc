@@ -1,0 +1,25 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: ajs124 < aur AT ajs124 DOT de > 
+
+pkgname=firetools
+pkgver=0.9.72
+pkgrel=2
+pkgdesc='Graphical user interface of Firejail'
+arch=('x86_64')
+url='https://firejail.wordpress.com/'
+license=('GPL')
+makedepends=('git')
+depends=('firejail' 'qt5-base' 'qt5-svg')
+source=("git+https://github.com/netblue30/firetools.git#tag=${pkgver}")
+sha256sums=('6039230bb6b171084f206f42bd6cd7ffb1019865a15583c2c71a0ef560186f4a')
+#validpgpkeys=('F951164995F5C4006A73411E2CCB36ADFC5849A7') # netblue (firejail key)
+
+build() {
+    cd "${pkgname}"
+    ./configure --prefix='/usr'
+    make
+}
+
+package() {
+    make -C "${pkgname}" DESTDIR="$pkgdir" install
+}

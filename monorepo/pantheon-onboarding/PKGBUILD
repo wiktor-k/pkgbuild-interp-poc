@@ -1,0 +1,39 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-onboarding
+pkgver=8.1.0
+pkgrel=1
+pkgdesc='Onboarding app for new users'
+arch=(x86_64)
+url=https://github.com/elementary/onboarding
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita-1.so
+  libgranite-7.so
+  pantheon-wayland
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+source=(pantheon-onboarding::git+https://github.com/elementary/onboarding.git#tag=${pkgver})
+
+build() {
+  arch-meson pantheon-onboarding build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:
+b2sums=('5fff6800795f74c2cfda39bd0e0f4fbe3453e868c4778139413a38c3c71348fafa66b3a59cf30af1d102fd29e27b2e9502017fef2bf25e836d0fce9f9666e5e5')

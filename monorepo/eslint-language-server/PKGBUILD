@@ -1,0 +1,44 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Dmytro Meleshko <qzlgeb.zryrfuxb@tznvy.pbz(rot13)>
+
+pkgname=eslint-language-server
+pkgver=3.0.24
+pkgrel=1
+pkgdesc='Language server for ESLint'
+arch=(any)
+url=https://github.com/microsoft/vscode-eslint
+license=(MIT)
+depends=(nodejs)
+makedepends=(
+  git
+  npm
+)
+provides=("vscode-$pkgname")
+source=("git+$url.git#tag=release/$pkgver")
+b2sums=('cef3e18b0a780bae14578a9f24c42f84dcd22f4427d561cc49dda4a421186cc6dd19e18e2e8fd977e3cab9dd8768491a5a3234876d7de24763f9913dbbac8dd5')
+
+prepare() {
+  cd vscode-eslint
+  npm ci
+}
+
+build() {
+  cd vscode-eslint
+  npm run compile:server
+}
+
+package() {
+  local mod_dir=/usr/lib/node_modules/$pkgname
+
+  install -d "$pkgdir"/{usr/bin,$mod_dir}
+  printf '%s\n' '#!/usr/bin/env node' "require('$mod_dir/out/eslintServer.js');" >"$pkgdir"/usr/bin/$pkgname
+  chmod +x "$pkgdir"/usr/bin/$pkgname
+  ln -s $pkgname "$pkgdir"/usr/bin/vscode-$pkgname
+
+  cd vscode-eslint
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.md
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname License.txt
+
+  cd server
+  cp -r node_modules out package.json "$pkgdir"/$mod_dir
+}

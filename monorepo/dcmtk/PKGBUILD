@@ -1,0 +1,99 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=dcmtk
+pkgname=(dcmtk dcmtk-docs)
+pkgver=3.7.1
+pkgrel=1
+pkgdesc="A collection of libraries and applications implementing large parts the DICOM standard"
+arch=(x86_64)
+url="http://dicom.offis.de/dcmtk"
+license=(BSD-3-Clause)
+makedepends=(
+  cmake
+  doxygen
+  ninja
+  # depends
+  glibc
+  libgcc
+  libpng
+  libstdc++
+  libtiff
+  libxml2
+  openjpeg2
+  openssl
+  zlib
+)
+source=(
+  https://dicom.offis.de/download/dcmtk/dcmtk${pkgver//./}/$pkgname-$pkgver.tar.gz
+  unversion-install-dirs.patch
+)
+b2sums=('b8ce8844a9ceb69bf2aa7f1be82de540a7b3dbb50e06ff2913d018db9d0dcc5a3c1824bdfe87d361b97f86fdf513e475a5c2aef3ad0cd93e6bfd4e0d684d7e35'
+        '4edaad50ce43cc2e7f8ad3d1fd6339051a9a3b29d22779777c71207c8eb62f23eb633549e7c2927c3a392210d429d90391ed3100c6603e7fe98e9fc1b472a91f')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+prepare() {
+  cd $pkgbase-$pkgver
+
+  # Do not install in versioned directories
+  patch -p1 -i ../unversion-install-dirs.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgbase-$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_INSTALL_DATADIR=/usr/share/$pkgbase
+    -DCMAKE_INSTALL_SYSCONFDIR=/etc/$pkgbase
+    -DBUILD_SHARED_LIBS=ON
+    -DDCMTK_ENABLE_PRIVATE_TAGS=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build --target all DOXYGEN
+}
+
+package_dcmtk() {
+  depends=(
+    glibc
+    libgcc
+    libpng libpng16.so
+    libstdc++
+    libtiff libtiff.so
+    libxml2 libxml2.so
+    openjpeg2
+    openssl libcrypto.so
+    zlib libz.so
+  )
+  optdepends=(
+    'dcmtk-docs: DCMTK documentation'
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  (
+    cd "$pkgdir"
+    _pick $pkgbase-docs usr/share/doc
+  )
+  install -vDm 644 $pkgbase-$pkgver/COPYRIGHT -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # Remove empty files
+  find "$pkgdir" -type f -empty -exec rm -v {} \;
+}
+
+package_dcmtk-docs() {
+  pkgdesc+=" - documentation"
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 $pkgbase-$pkgver/COPYRIGHT -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

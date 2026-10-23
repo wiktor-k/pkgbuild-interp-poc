@@ -1,0 +1,66 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=jwm
+pkgver=2.4.6
+pkgrel=2
+pkgdesc='Lightweight window manager for the X11 Window System'
+arch=(x86_64)
+url='https://joewing.net/projects/jwm/'
+license=(MIT)
+depends=(
+  cairo
+  glib2
+  glibc
+  libjpeg-turbo
+  libpng
+  librsvg
+  libx11
+  libxext
+  libxft
+  libxinerama
+  libxmu
+  libxpm
+  libxrender
+  pango
+)
+makedepends=(git)
+backup=(etc/system.jwmrc)
+source=(
+  "git+https://github.com/joewing/jwm.git#tag=v$pkgver"
+  jwm.desktop
+)
+b2sums=(
+  e7600cfcec1c64c93d3996b02ebe1e8564d878ce8296905fea27178aee043fb99241e3ff0375dee6f007ff09f58605783d33613789b2bf7b66f58750d3f4421e
+  a9e1424b6a7d4e3031ef05d1c3783a259360c37c073e14e1ab6f0edf97ead9c51df28a59486ec75db94b0754f98adf5356cce50fe6aeb1ba7e6244dade0946c9
+)
+
+prepare() {
+  cd $pkgname
+  sed -i 's|/usr/local/share/|/usr/share/|' example.jwmrc
+  sed -i 's/AM_GNU_GETTEXT_VERSION/AM_GNU_GETTEXT_REQUIRE_VERSION/' configure.ac
+  touch AUTHORS ChangeLog NEWS
+
+  # Automake is used only for gettext
+  mv Makefile.in{,.bak}
+  echo 'SUBDIRS = po' > Makefile.am
+  autoreconf -fiv -I /usr/share/gettext/m4/
+  mv Makefile.in{.bak,}
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 -t "$pkgdir/usr/share/xsessions/" ../jwm.desktop
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

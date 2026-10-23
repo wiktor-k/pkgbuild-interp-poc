@@ -1,0 +1,45 @@
+pkgbase = modrinth-app
+	pkgdesc = Minecraft launcher to play your favorite mods and keep them up to date.
+	pkgver = 0.21.10
+	pkgrel = 1
+	url = https://modrinth.com/app
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = pnpm
+	makedepends = java-environment=21
+	makedepends = git
+	makedepends = npm
+	makedepends = node-gyp
+	depends = libgcc
+	depends = glibc
+	depends = sh
+	depends = libvips
+	depends = cairo
+	depends = desktop-file-utils
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libsoup3
+	depends = pango
+	depends = webkit2gtk-4.1
+	depends = libgl
+	depends = libpulse
+	depends = libx11
+	depends = libxcursor
+	depends = libxext
+	depends = libxxf86vm
+	optdepends = xorg-xrandr: for older minecraft versions
+	optdepends = java-environment: system java
+	options = !lto
+	source = modrinth-app::git+https://github.com/modrinth/code#tag=v0.21.10
+	source = modrinth-app.desktop
+	source = modrinth-app.sh
+	source = modrinth-file-extensions.xml
+	sha256sums = b9b46319192d05d155ec9c1897dfe783adb31726b50b7d64ce8638bf465b6839
+	sha256sums = d83aecff95d7cbd1d3270608c659d184e5035ccf244d57b00ce10cebe4970ec1
+	sha256sums = 10665019b386d88974f123017c12bb464e4897769819b7ae6468e5264892b472
+	sha256sums = e0b3eab49465709ed5053dc1fa4206071ab32657d25bd1f9c01850d696715cff
+
+pkgname = modrinth-app

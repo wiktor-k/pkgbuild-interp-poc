@@ -1,0 +1,18 @@
+pkgbase = udp514-journal
+	pkgdesc = forward syslog from network (udp/514) to systemd-journald
+	pkgver = 0.3.0
+	pkgrel = 2
+	url = https://github.com/eworm-de/udp514-journal
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = discount
+	makedepends = git
+	depends = glibc
+	depends = systemd-libs
+	depends = libsystemd.so
+	depends = systemd
+	source = git+https://github.com/eworm-de/udp514-journal.git?signed#tag=0.3.0
+	validpgpkeys = BD84DE71F493DF6814B0167254EDC91609BC9183
+	sha256sums = 41d62f98b2a6ff6eadbd34d750c0bb19ae9274535b146fc3f76596c60f6b7134
+
+pkgname = udp514-journal

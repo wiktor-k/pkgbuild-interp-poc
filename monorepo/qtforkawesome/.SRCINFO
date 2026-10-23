@@ -1,0 +1,35 @@
+pkgbase = qtforkawesome
+	pkgdesc = Library that bundles ForkAwesome for use within Qt applications
+	pkgver = 0.3.4
+	pkgrel = 3
+	url = https://github.com/Martchus/qtforkawesome
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = graphviz
+	makedepends = ninja
+	makedepends = perl-yaml-libyaml
+	makedepends = qt6-tools
+	makedepends = qtutilities
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-declarative
+	source = qtforkawesome-0.3.4.tar.gz::https://github.com/Martchus/qtforkawesome/archive/v0.3.4.tar.gz
+	source = Fork-Awesome-1.2.0.tar.gz::https://github.com/ForkAwesome/Fork-Awesome/archive/refs/tags/1.2.0.tar.gz
+	sha256sums = 001324d008b44a136ec296733d5ef9bd519ea93ec820d5144163b98dc888f23b
+	sha256sums = 23fba5f191f204e0414c547bf4c9b10fd7ca42c151260e8f64698449a75fbdb3
+
+pkgname = qtforkawesome
+	optdepends = qtforkawesome-doc: for API documentation
+	provides = libqtforkawesome.so
+	provides = libqtquickforkawesome.so
+	provides = qtforkawesome-qt6
+	conflicts = qtforkawesome-qt6
+	replaces = qtforkawesome-qt6
+
+pkgname = qtforkawesome-doc
+	pkgdesc = Library that bundles ForkAwesome for use within Qt applications - API documentation
+	depends = 

@@ -1,0 +1,15 @@
+pkgbase = elfio
+	pkgdesc = Header-only C++ library for reading and generating ELF files
+	pkgver = 3.12
+	pkgrel = 2
+	url = https://github.com/serge1/ELFIO
+	arch = any
+	license = MIT
+	makedepends = cmake
+	makedepends = gtest
+	source = elfio-3.12.tar.gz::https://github.com/serge1/ELFIO/archive/refs/tags/Release_3.12.tar.gz
+	source = elfio-stdint.patch::https://github.com/serge1/ELFIO/commit/34d2c64237bb40f09879e7421db120e50e7e2923.patch
+	sha256sums = e4ebc9ce3d6916461bc3e7765bb45e6210f0a9b93978bf91e59b05388c024489
+	sha256sums = a9ef3f57af26a6e4052fdf21b86d6bb3ab6e0f9d25ab8f5d7f1374de4d5de098
+
+pkgname = elfio

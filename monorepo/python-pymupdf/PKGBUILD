@@ -1,0 +1,163 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+_name=PyMuPDF
+pkgname=python-pymupdf
+pkgver=2.0
+pkgrel=1
+pkgdesc="Python bindings for MuPDF's rendering library"
+arch=(x86_64)
+url="https://github.com/pymupdf/PyMuPDF"
+license=(AGPL-3.0-or-later)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  libmupdf
+  python
+  python-mupdf
+)
+makedepends=(
+  python-build
+  python-distro
+  python-installer
+  python-pipcl
+  python-psutil
+  python-setuptools
+  python-wheel
+  swig
+  systemd
+)
+checkdepends=(
+  mypy
+  python-fonttools
+  python-pillow
+  python-pytest
+  tesseract-data-eng
+)
+optdepends=(
+  #'python-pymupdf-fonts: for extra fonts'  # TODO: package
+  'python-fonttools: for building font subsets using fontTools'
+  'python-pillow: for image file saving using pillow'
+)
+source=(
+  $_name-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz
+  remove-clang-and-swig-dependencies.patch
+  remove-pip-call-in-tests.patch
+)
+sha512sums=('57a9c25ed31330a5bb17814e08379dab54cf87f2c7232679cc3728ecc1d1f507e94e282df0033c8c370c342c146e3b068d8893579d84808a4a218233dd52117e'
+            '62c1c1abd896aee3ba3b456ad5bc03c488a30c9e5f00e7623a68005827ffc6698359b475d5aa164e68fee5d5ff586d92573c430026bf4fd86b34f4a064905009'
+            '8ddd524e124d579091f98b75ab02ed87a7dc431c1d85cf9b8da645a4935d3f7c1361d6796618cb1da05be95be05a694ab9b039a42c92012434cda6283158a0e7')
+b2sums=('c1b908a33fdea3c94c78c804ed99c32bfe9342ae4ff2eb881e2a3c41000c68410f313d4441883b2dc73f556a5b43b982009485367863c886c901f169d06df414'
+        '49b7b808bb67a484c98771e330a7cae0bd41b8bce896e25413bef068353c95158163b03dd4cb8f217d571e59ae5b22d5902b96451148be0a2d7827c568dfd893'
+        '411b25296ed19f033270fe62afe12fe635c6c11e7d5d078188c76bef193e28ec2b461450d1366c80e2edad919baf730342ca84f02d9adbfbe7f3bce912884d88')
+
+prepare() {
+  # remove bundled mupdf sources
+  rm -frv $pkgname/*.tgz
+  cd $_name-$pkgver
+  # we package clang and swig and don't need python-clang or python-swig
+  patch -Np1 < $srcdir/remove-clang-and-swig-dependencies.patch
+  # patch out hardcoded pip call to install test dependencies
+  patch -Np1 < $srcdir/remove-pip-call-in-tests.patch
+}
+
+build() {
+  local cflags=(
+    -I/usr/include
+    -I/usr/include/freetype2
+    -I/usr/include/harbuzz
+    -I/usr/include/mupdf
+  )
+  local ldflags=(
+    -lfreetype
+    -lgumbo
+    -lharfbuzz
+    -ljbig2dec
+    -ljpeg
+    -lleptonica
+    -lmupdf
+    -lopenjp2
+    -ltesseract
+  )
+
+  cd $_name-$pkgver
+  # build against system libmupdf
+  export PYMUPDF_SETUP_MUPDF_BUILD=''
+  # provide tessdata location
+  export TESSDATA_PREFIX="/usr/share/tessdata"
+  # build against mupdf's C++/ Python language bindings
+  export PYMUPDF_SETUP_IMPLEMENTATIONS=b
+  CFLAGS+=" ${cflags[@]}"
+  LDFLAGS+=" ${ldflags[@]}"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    # disable broken test, that upstream is not interested in fixing or disabling: https://github.com/pymupdf/PyMuPDF/issues/2127
+    --deselect tests/test_pixmap.py::test_color_count
+    --deselect tests/test_pixmap.py::test_3050
+    --deselect tests/test_pixmap.py::test_3854
+    --deselect tests/test_textextract.py::test_4180
+    --deselect tests/test_tesseract.py::test_3842
+    # disable test that shells out to pip: https://github.com/pymupdf/PyMuPDF/issues/2950
+    --deselect tests/test_font.py::test_fontarchive
+    --deselect tests/test_general.py::test_subset_fonts
+    --deselect tests/test_general.py::test_4533
+    --deselect tests/test_general.py::test_4702
+    # we do not care about flake8
+    --deselect tests/test_flake8.py::test_flake8
+    # no point testing code quality or spellcheck on our side
+    --deselect tests/test_pylint.py::test_pylint
+    --deselect tests/test_codespell.py::test_codespell
+    # some textbox stuff again: https://github.com/pymupdf/PyMuPDF/issues/3398
+    --deselect tests/test_textbox.py::test_textbox3
+    # tries to download / install stuff through git and pip
+    --deselect tests/test_barcode.py::test_barcode
+    --deselect tests/test_font.py::test_4457
+    --deselect tests/test_font.py::test_5049
+    --deselect tests/test_general.py::test_open2
+    --deselect tests/test_pixmap.py::test_4445
+    --deselect tests/test_pixmap.py::test_5001
+    --deselect tests/test_memory.py::test_4751
+    --deselect tests/test_general.py::test_3569
+    --deselect tests/test_general.py::test_5054
+    --deselect tests/test_configurations.py::test_configuration_layout
+    --deselect tests/test_pixmap.py::test_5082
+
+    --deselect tests/test_markdown_support.py::test_archive_markdown
+    --deselect tests/test_markdown_support.py::test_archive_links
+    --deselect tests/test_markdown_support.py::test_markdown_style
+    --deselect tests/test_markdown_support.py::test_markdown_save
+    --deselect tests/test_markdown_support.py::test_markdown_bad_unicode
+
+    # Various assertions failures, need to investigate that
+    --deselect=tests/test_svg.py::test_5118
+    --deselect=tests/test_tables.py::test_table1
+    --deselect=tests/test_tables.py::test_table2
+    --deselect=tests/test_tables.py::test_add_lines
+    --deselect=tests/test_tables.py::test_3148
+    --deselect=tests/test_tables.py::test_paths_param
+    --deselect=tests/test_tables.py::test_boxes_param
+    --deselect=tests/test_tables.py::test_dotted_grid
+    --deselect=tests/test_tables.py::test_4017
+    --deselect=tests/test_tables.py::test_md_styles
+    --deselect=tests/test_tables.py::test_table_extract_stable_after_second_find_tables
+  )
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$_site_packages:$PYTHONPATH"
+  export PATH="$PWD/test_dir/usr/bin:$PATH"
+  pytest "${pytest_options[@]}" tests/
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

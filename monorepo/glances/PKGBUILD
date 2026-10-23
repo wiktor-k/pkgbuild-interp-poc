@@ -1,0 +1,67 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Sébastien Luttringer <seblu@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Francois Boulogne <fboulogne at april dot org>
+
+pkgname=glances
+pkgver=4.5.8
+pkgrel=1
+pkgdesc="CLI curses-based monitoring tool"
+url="https://nicolargo.github.io/glances"
+arch=('any')
+license=('LGPL-3.0-or-later')
+depends=('python' 'python-psutil' 'python-defusedxml' 'python-orjson' 'python-pydantic' 'python-packaging' 'python-jinja' 'python-shtab')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+optdepends=('hddtemp: HDD temperature monitoring support'
+            'uvicorn: for WebUI / RestFull API'
+            'python-fastapi: for WebUI / RestFull API'
+            'python-docker: for the Docker monitoring support'
+            'python-podman: for the Podman monitoring support'
+            'python-pylxd: for the LXC/LXD Containers monitoring support'
+            'python-matplotlib: for graphical/chart support'
+            'python-netifaces2: for the IP plugin'
+            'python-zeroconf: for the autodiscover mode'
+            'python-pystache: templating engine'
+            'python-elasticsearch: for the Elastic Search export module'
+            'python-pika: for the RabbitMQ/ActiveMQ export module'
+            'python-prometheus_client: for the Prometheus export module')
+backup=("etc/${pkgname}/${pkgname}.conf"
+        "etc/conf.d/${pkgname}")
+install="${pkgname}.install"
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/nicolargo/glances/archive/v${pkgver}.tar.gz"
+        "${pkgname}-env.conf"
+        "${pkgname}.service"
+        "${pkgname}-web.service"
+        'disable_update_check.patch')
+sha512sums=('684ccd4693e27c0a01ed777aa7b9b2cea0c163b9b33c2c8cbee76606fc40a32f4a15be48cba68711c39c5a6e9569f9ee3d08d0b6b6c6374713289d9435d22afc'
+            '05f1a7dfb293fd52eabdc877950fed01c8407d84f4c4959f292c4b91e653dd86b4a7d3145c3b2e237920f8fd3d5e05bbc0999d95aa72b56e083a55cf3e72b913'
+            '59ae41f63ac4893b760548ef3ae24912f683530dba97029768c555fd37e6e3c9f9236ec71c571ed538807171c3371e804d7e5ac4de691790bd8124f1cff228f1'
+            '58f50f3041aae588e7a9daaee11f22c5b8201137cc7181e2f34cac6f38392160b61ce1b9de15b2c631caa4e8db347f836fb4ce4ddacc19f2b98e1efcf01d94d8'
+            'debe0bdd62fae124d17e559476327db22f916e5f0b3186b0ba0bc6254437617285b455ead961edb5c9654d42236db56c302a0c750dce4a8446611b8a3fe2c175')
+b2sums=('7a8c568eac9e732b28dadc953c97c4de449ed7072cb63772af76622ed4381319a3d6362a075500f9b1bd25bb08fbc19b2b173ef9676be1c6d17f134717b25295'
+        'e1218752e5ed8e3d42a5f9b7a1497839bb7f8666f45c4caf4fa8307666f0ee1c3f5c5213377421bfa18160ea0eb4ff3a3469c3501b4b56f00843be7adffac93e'
+        '583e248b54912ebba106b8a3d7be0691975d6b8b4af0d940d90f8eca8df7f4e4494713639fac44f4c9b342f31ebab4614abedaf729573378b947e204f647b917'
+        '18469b7451f4670c89825837999d58d54b125276949f4c578de59adc389865560333a30a582dd0eed8e58c9ef320cd7936823bc28b3440ecdd03ba9801d2a0b8'
+        '574d49f96729e698de77868d74812f0efd9861043f25a8f473431440654481f60fcce9f1c457f1900651b157d94f67835c67b548a4bc1957c9123d41e0a9b0a1')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	# Disable default update check in the config file
+	patch -Np1 -i "${srcdir}/disable_update_check.patch"
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 644 "conf/${pkgname}.conf" "${pkgdir}/etc/${pkgname}/${pkgname}.conf"
+	install -Dm 644 "${srcdir}/${pkgname}-env.conf" "${pkgdir}/etc/conf.d/${pkgname}"
+	install -Dm 644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+	install -Dm 644 "${srcdir}/${pkgname}-web.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}-web.service"
+}

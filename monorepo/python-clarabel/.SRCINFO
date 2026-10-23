@@ -1,0 +1,19 @@
+pkgbase = python-clarabel
+	pkgdesc = Interior-point solver for convex conic optimisation problems
+	pkgver = 0.11.1
+	pkgrel = 3
+	url = https://github.com/oxfordcontrol/Clarabel.rs
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = python
+	source = git+https://github.com/oxfordcontrol/Clarabel.rs#tag=v0.11.1
+	sha256sums = 5cffa7d3971db186ae534bd69c2dcb985f74679b7205b1c9361dca41a5806ace
+
+pkgname = python-clarabel

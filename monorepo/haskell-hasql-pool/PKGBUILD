@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+
+_hkgname=hasql-pool
+pkgname=haskell-hasql-pool
+pkgver=0.8.0.5
+pkgrel=8
+pkgdesc="A pool of connections for Hasql"
+url="https://github.com/nikita-volkov/hasql-pool"
+license=('MIT')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-hasql')
+makedepends=('ghc' 'uusi' 'haskell-hspec')
+checkdepends=('pifpaf' 'postgresql' 'haskell-async' 'haskell-rerebase')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('4fe397043003ec737b61a6039a0d01c7259b6fab92873be181e42197dd145ca4ab1bc7c0ec64fd68abf84eb6cb04166be189875c441f52b9ba545fac28aacd8c')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+    sed -i 's/5432/9824/' test/Main.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+
+    eval $(pifpaf run postgresql --host 127.0.0.1)
+    createuser -s postgres
+    runhaskell Setup test --show-details=direct
+    pifpaf_stop
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

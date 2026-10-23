@@ -1,0 +1,54 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=python-sphinxcontrib-trio
+_pyname=${pkgname/python-/}
+pkgver=1.2.0
+pkgrel=1
+pkgdesc='Make Sphinx better at documenting Python functions and methods'
+url='https://github.com/python-trio/sphinxcontrib-trio'
+arch=(any)
+license=(MIT)
+depends=(
+  python
+  python-sphinx
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-cssselect
+  python-lxml
+  python-pytest
+)
+source=(
+  https://github.com/python-trio/sphinxcontrib-trio/archive/v${pkgver}/${_pyname}-${pkgver}.tar.gz
+)
+sha512sums=('47142b2633358526baae0f98e4e17aca4c257d4b6539a860d92946c4d711f761fa2b12994010c30e1eb020ee66f295ee96b638fcd853508039e2e5b9a8fb3c41')
+
+build() {
+  cd ${_pyname}-${pkgver}
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd ${_pyname}-${pkgver}
+  # https://github.com/python-trio/sphinxcontrib-trio/issues/260
+  PYTHONPATH=. py.test -k 'not test_end_to_end'
+}
+
+package() {
+  cd ${_pyname}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm 644 README.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+  # Symlink license file
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s "${site_packages}/${_pyname//-/_}-${pkgver}.dist-info/LICENSE" \
+    "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,78 @@
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: GreyXor <greyxor@protonmail.com>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Chris Tam <lchris314 at gmail dot com>
+# Contributor: Daniel Micay <danielmicay at gmail dotcom>
+# Contributor: David Herrmann <dh.herrmann@googlemail dot com>
+
+pkgbase=kmscon
+pkgname=(
+  kmscon
+  kmscon-terminfo
+)
+pkgver=10.0.4
+pkgrel=1
+arch=('x86_64')
+pkgdesc='Kernel Mode Setting (KMS) and DRM based virtual Console Emulator'
+url='https://github.com/kmscon/kmscon'
+license=('MIT')
+backup=('etc/kmscon/kmscon.conf')
+depends=(
+  bash
+  dbus
+  glib2
+  glibc
+  libdrm
+  libtsm
+  libxkbcommon
+  systemd-libs
+  zlib
+)
+makedepends=(
+  check
+  docbook-xsl
+  freetype2
+  git
+  libxslt
+  linux-api-headers
+  libglvnd
+  meson
+  pango
+)
+optdepends=(
+  'fontconfig: for freetype font rendering'
+  'inotify-tools: for kmscon-launch-gui waiting mechanism'
+  'libglvnd: for accelerated video output'
+  'libx11: for XKB compose support'
+  'pango: for pango font rendering'
+)
+source=(
+  git+${url}.git#tag=v${pkgver}
+)
+b2sums=('3a66b706770ba090bba65ed0910a893fc7e2466dd239d758f3486408cc27cb6147895be5ac53c6d8a16ba57d393e05fe3d1699f391bfa504b31efcc2ab6dc26e')
+
+#prepare() {
+#  cd "$pkgname"
+  #  git pull origin pull/366/head         
+#}
+
+build() {
+  arch-meson "$pkgname" build
+  meson compile -C build
+}
+
+package_kmscon() {
+  depends+=(kmscon-terminfo)
+  meson install -C build --destdir="$pkgdir"
+  install -Dm644 $pkgname/COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+  rm -r "$pkgdir"/usr/share/terminfo
+}
+
+package_kmscon-terminfo() {
+  pkgdesc='Terminfo for kmscon'
+  depends=()
+  optdepends=()
+  mkdir -p "$pkgdir/usr/share/terminfo/k"
+  tic -x kmscon/scripts/terminfo/kmscon.ti -o "$pkgdir/usr/share/terminfo/"
+  install -Dm644 $pkgbase/COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

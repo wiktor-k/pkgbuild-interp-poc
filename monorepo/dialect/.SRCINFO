@@ -1,0 +1,37 @@
+pkgbase = dialect
+	pkgdesc = Translation app for GNOME based on Google Translate and other online services
+	pkgver = 2.6.1
+	pkgrel = 3
+	url = https://apps.gnome.org/Dialect/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gst-python
+	depends = gstreamer
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libsecret
+	depends = libsoup3
+	depends = libspelling
+	depends = python
+	depends = python-beautifulsoup4
+	depends = python-gobject
+	depends = python-gtts
+	source = git+https://github.com/dialect-app/dialect.git#tag=2.6.1
+	source = dialect-po::git+https://github.com/dialect-app/po
+	source = dialect-dbus-activatable.patch
+	b2sums = d881f7e7427b0feb6eae0eeb6ba3455bee56034391d4b50ce6ef3b3bef95f50c1766b265265c9511654e197fc016f6ed8166f9f62f83a734994d4fae9023ebd6
+	b2sums = SKIP
+	b2sums = 24dd584e65474dcee062b3bcef06141288f6d85e8951f6fafa1f2fadd895b477ce94b1f59b8abcbd0ece1b0c0c8407b6bf8e557f338587bb223163deccd165c5
+
+pkgname = dialect

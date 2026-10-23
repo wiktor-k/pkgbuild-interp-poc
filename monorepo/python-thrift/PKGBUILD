@@ -1,0 +1,23 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+
+pkgname=python-thrift
+pkgver=0.22.0
+pkgrel=1
+pkgdesc='Python bindings for the Apache Thrift RPC system'
+arch=(x86_64)
+license=(Apache)
+url='https://thrift.apache.org/'
+depends=(python)
+makedepends=(python-setuptools)
+source=(https://dlcdn.apache.org/thrift/${pkgver}/thrift-${pkgver}.tar.gz)
+sha256sums=('794a0e455787960d9f27ab92c38e34da27e8deeda7a5db0e59dc64a00df8a1e5')
+
+check() {
+  cd thrift-$pkgver/lib/py
+  # python setup.py test TODO: run tests
+}
+
+package() {
+  cd thrift-$pkgver/lib/py
+  python setup.py install --root="$pkgdir" --optimize=1
+}

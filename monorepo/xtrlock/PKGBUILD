@@ -1,0 +1,37 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Michal Hybner <dta081@gmail.com>
+
+pkgname=xtrlock
+pkgver=2.18
+pkgrel=1
+pkgdesc='Minimal X display lock program'
+url='https://packages.debian.org/sid/xtrlock'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  libcrypt.so
+  libx11
+  libxcrypt
+  libxfixes
+  libxi
+)
+source=(https://ftp.debian.org/debian/pool/main/x/xtrlock/xtrlock_${pkgver}.tar.xz)
+sha512sums=('9236c025e70911073aa80cd0ce51e3fb9b4612cb045a69cf059e705f37512ade9f61fbbf1bfe311cc72bc96b6d0453f09250872ad8ef2a70d1454407c8be1bee')
+b2sums=('8627546069ccd1c51a026e92ec327ef895e57cf60d7bd57f09dbea9fdd6fe94e3cebde3cbac2636d5fa23fb6ac8d73386bc354c5183c43920c52c59c029cef5a')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make -f Makefile.noimake \
+    CFLAGS="${CFLAGS} -DSHADOW_PWD -DMULTITOUCH" \
+    LDLIBS="-lX11 -lcrypt -lXi" \
+    xtrlock
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 4755 xtrlock -t "${pkgdir}/usr/bin"
+  install -Dm 644 xtrlock.man "${pkgdir}/usr/share/man/man1/xtrlock.1"
+}
+
+# vim: ts=2 sw=2 et:

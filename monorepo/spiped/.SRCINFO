@@ -1,0 +1,17 @@
+pkgbase = spiped
+	pkgdesc = Secure pipe daemon
+	pkgver = 1.6.4
+	pkgrel = 2
+	url = https://www.tarsnap.com/spiped.html
+	arch = x86_64
+	license = BSD-2-Clause
+	checkdepends = procps-ng
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	source = spiped::git+https://github.com/Tarsnap/spiped#tag=1.6.4
+	sha512sums = 0672d3072ea7a451293a2550ec008cacbfca86277078d67834d86aa9c519919c9e8109db195bac6eee3543b3f463f734fe9d517c9c556ef4cc36ec843a5f79a2
+	b2sums = 880d289ffeb50a5472bebcc986504a4e208e1e2179f186d6802e4d8fe3ac8545666e0ca87a625b6fbb71314832c8babac978f8fdf367d47aea6996bd6c25bb4c
+
+pkgname = spiped

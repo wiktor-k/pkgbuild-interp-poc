@@ -1,0 +1,24 @@
+pkgbase = ruby-http_parser.rb
+	pkgdesc = Ruby bindings to https://github.com/ry/http-parser and https://github.com/a2800276/http-parser.java
+	pkgver = 0.8.1
+	pkgrel = 1
+	url = http://github.com/tmm1/http_parser.rb
+	arch = i686
+	arch = x86_64
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-rake-compiler
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	options = !emptydirs
+	source = ruby-http_parser.rb::git+https://github.com/tmm1/http_parser.rb.git#tag=v0.8.1
+	source = ruby-http_parser.rb-http-parser.java::git+https://github.com/tmm1/http-parser.java
+	source = ruby-http_parser.rb-http-parser::git+https://github.com/nodejs/http-parser.git
+	sha256sums = bc7b37d90aeb8dabd605d02be2156a47c51f15493aef8e3a232fb87fcd2f8d88
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = ruby-http_parser.rb

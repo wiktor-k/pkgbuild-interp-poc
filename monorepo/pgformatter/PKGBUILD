@@ -1,0 +1,50 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Marco44 (Marc Cousin) <cousinmarc at gmail dot com>
+
+pkgname=pgformatter
+pkgver=5.11
+pkgrel=1
+pkgdesc='A PostgreSQL SQL syntax beautifier'
+arch=(any)
+url='https://github.com/darold/pgformatter'
+license=(PostgreSQL)
+depends=(perl)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('ed76ddc18996f359324381488a6487d76c7c12eb406bf4d379b2f5541201208b9295fdc48a7be526366a63bd76a23df9579e628ffffb33f45016d60a3716ef1d')
+b2sums=('6c8b4ce315bcfc27ad6542b70b84061a6a4d19874200ed994508b0d409cd5324b1751ead539165605cdcd785f9e317b48d10d5a30513eb8880babeea1d41e098')
+
+build() {
+  cd "$pkgname"
+
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1 PERL_AUTOINSTALL=--skipdeps
+
+  perl Makefile.PL
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1
+
+  make test
+}
+
+package() {
+  cd "$pkgname"
+
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  make install INSTALLDIRS=vendor DESTDIR="$pkgdir"
+
+  # provide symlink in /usr/bin for non-interactive shells
+  ln -sf /usr/bin/vendor_perl/pg_format "$pkgdir/usr/bin/pg_format"
+
+  # delete usr/lib as it's empty ...
+  rm -rf "$pkgdir/usr/lib"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

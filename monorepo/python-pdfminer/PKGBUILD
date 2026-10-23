@@ -1,0 +1,36 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=pdfminer
+pkgname=python-${_pkg}
+pkgver=20260107
+pkgrel=1
+pkgdesc="Python PDF Parser"
+arch=(any)
+url="https://github.com/pdfminer/pdfminer.six"
+license=(MIT)
+depends=(python-charset-normalizer python-cryptography)
+makedepends=(python-build python-installer python-setuptools python-setuptools-scm python-wheel cython)
+checkdepends=(python-pytest)
+# Provided tarballs do not include tests
+#source=(${url}/releases/download/${pkgver}/${_pkg}.six-${pkgver}.tar.gz)
+source=(${url}/archive/${pkgver}/${_pkg}-${pkgver}.tar.gz)
+sha256sums=('37422ae18834db5d8aec46cdc82f2588b9c50aeae5b5941c9de63ec107a046bc')
+
+build() {
+  cd ${_pkg}.six-${pkgver}
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver \
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkg}.six-${pkgver}
+  PYTHONPATH="${PWD}"/build/lib:"${PWD}" pytest -vv --color=yes
+}
+
+package() {
+  cd ${_pkg}.six-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+  # Fix ownership
+  chmod a+r "${pkgdir}"$(python -c "import site; print(site.getsitepackages()[0])")/pdfminer/cmap/*
+}

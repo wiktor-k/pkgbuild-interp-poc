@@ -1,0 +1,71 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jonathan Liu <net147@gmail.com>
+
+pkgname=ossp
+pkgver=1.3.3
+pkgrel=1
+pkgdesc="Emulate OSS device using CUSE"
+url="https://github.com/OpenMandrivaSoftware/ossp"
+arch=(x86_64)
+license=(GPL-2.0-only)
+depends=(
+  fuse3
+  glibc
+  libpulse
+)
+makedepends=(
+  cmake
+  git
+  ninja
+  systemd
+)
+source=(
+  "git+$url#tag=v$pkgver"
+  0001-Allow-one-to-set-slave-installation-path-during-comp.patch
+)
+b2sums=('c0ffc2b97c815e86f9634a863951b191775ddd630e5fc698967b2b9bf2ce97bf9ca39e156a331167da845003244d23fe8690c189c8f930a199f3e6b500077a7d'
+        '798de17b2009972b3f353ebdfd6dc2b634fd7e1d520712b1d254a9c0f59b5e77ddf8d59dc0e10c2053166e30b8bb7a06d577f3f5b76fc54a2eb9ccddc5ae0e77')
+
+prepare() {
+  cd ossp
+
+  # Fix launching slave; taken from Debian
+  git apply -3 ../0001-Allow-one-to-set-slave-installation-path-during-comp.patch
+}
+
+build() {
+  local cmake_options=(
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_SBINDIR=bin
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -D SLAVESDIR=/usr/lib/ossp
+  )
+
+  cmake -S ossp -B build -G Ninja "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 /dev/stdin "$pkgdir/usr/lib/systemd/system/osspd.service" <<END
+[Unit]
+Description=OSS Userspace Bridge
+
+[Service]
+ExecStart=/usr/bin/osspd -f
+
+[Install]
+WantedBy=multi-user.target
+END
+
+  install -Dm644 /dev/stdin "$pkgdir/usr/lib/modules-load.d/$pkgname.conf" <<END
+cuse
+snd-seq-oss
+END
+
+  install -Dt "$pkgdir/usr/share/doc/$pkgname" -m644 ossp/README
+}
+
+# vim:set sw=2 et:

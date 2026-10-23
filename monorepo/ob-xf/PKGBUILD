@@ -1,0 +1,228 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=ob-xf
+pkgname=(
+  ob-xf-common
+  ob-xf-standalone
+  ob-xf-vst3
+  ob-xf-lv2
+  ob-xf-clap
+)
+pkgver=1.0.3
+pkgrel=1
+pkgdesc='Virtual analog synthesizer based on the Oberheim OB-X, OB-Xa and OB-8 synths'
+arch=(x86_64)
+url='https://github.com/surge-synthesizer/OB-Xf'
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+_common_depends=(
+  glibc
+  libgcc
+  libstdc++
+  cairo
+  fontconfig
+  freetype2
+  libx11
+  libxcb
+  libxkbcommon-x11
+  xcb-util
+  xcb-util-cursor
+  xcb-util-image
+  xcb-util-keysyms
+  xcb-util-renderutil
+  xdg-utils
+  fmt
+)
+makedepends=(
+  "${_common_depends[@]}"
+  git
+  cmake
+  libsndfile
+  python
+  libxrandr
+  libxinerama
+  libxcursor
+  alsa-lib
+  jack
+)
+replaces=(ob-xd)
+options=(!lto)
+source=(
+  "$pkgbase::git+$url#tag=v$pkgver"
+  devendor-libs.patch
+  'github.com-juce-framework-JUCE::git+https://github.com/juce-framework/JUCE'
+  'github.com-surge-synthesizer-sst-cmake::git+https://github.com/surge-synthesizer/sst-cmake'
+  'github.com-simd-everywhere-simde::git+https://github.com/simd-everywhere/simde'
+  'github.com-surge-synthesizer-sst-cpputils::git+https://github.com/surge-synthesizer/sst-cpputils'
+  'github.com-surge-synthesizer-sst-basic-blocks::git+https://github.com/surge-synthesizer/sst-basic-blocks'
+  'github.com-surge-synthesizer-sst-plugininfra::git+https://github.com/surge-synthesizer/sst-plugininfra'
+  'github.com-sudara-melatonin_inspector::git+https://github.com/sudara/melatonin_inspector'
+  'github.com-free-audio-clap-juce-extensions::git+https://github.com/free-audio/clap-juce-extensions'
+  'github.com-free-audio-clap::git+https://github.com/free-audio/clap'
+  'github.com-free-audio-clap-helpers::git+https://github.com/free-audio/clap-helpers'
+  'github.com-ODDSound-MTS-ESP::git+https://github.com/ODDSound/MTS-ESP'
+  'github.com-gulrak-filesystem::git+https://github.com/gulrak/filesystem'
+)
+sha512sums=('e166379ffec06d23e2bd57798a6e35fe58ef56b17782a9b0c3d3c3edfa2e7f90a7bc64710d87c8ef78e3da65e18e235ed51749a3e9dd344c4018b6e4aa00d089'
+            '7cb468b2ff5e7321d793ee9d98b61f42db728bcbac7fd54f77021dc22c9f9145d93e17f121441619fc9d07a074444bb2d1e4f6d97e53425879f75f3d9aa2f6a7'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('bfdd018fd92fbc3f4fec9a494f5a51691d7246671f31ad52f10e8f7341973840f2f65046ea98af1e0673aeb59be5eafead8d1b22e6a8d7f9ffa5a8e12ce1b945'
+        '28f037d8c8db04bd1cadef6072f752d57fa958f19fa565c8a11fae0f647a3ed3371a9b88fa58a139ab42e3ce803296058cdc5a1a5dd544048daaec3053c848cc'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgbase"
+
+  # explicitly state which submodules to use,
+  # omitting devendored & unused submodules
+  git submodule init \
+    libs/JUCE \
+    libs/sst/sst-cmake \
+    libs/simde \
+    libs/sst/sst-cpputils \
+    libs/sst/sst-basic-blocks \
+    libs/sst/sst-plugininfra \
+    libs/melatonin_inspector \
+    libs/clap-juce-extensions \
+    libs/MTS-ESP
+
+  git config submodule.libs/JUCE.url "$srcdir/github.com-juce-framework-JUCE"
+  git config submodule.libs/sst/sst-cmake.url "$srcdir/github.com-surge-synthesizer-sst-cmake"
+  git config submodule.libs/simde.url "$srcdir/github.com-simd-everywhere-simde"
+  git config submodule.libs/sst/sst-cpputils.url "$srcdir/github.com-surge-synthesizer-sst-cpputils"
+  git config submodule.libs/sst/sst-basic-blocks.url "$srcdir/github.com-surge-synthesizer-sst-basic-blocks"
+  git config submodule.libs/sst/sst-plugininfra.url "$srcdir/github.com-surge-synthesizer-sst-plugininfra"
+  git config submodule.libs/melatonin_inspector.url "$srcdir/github.com-sudara-melatonin_inspector"
+  git config submodule.libs/clap-juce-extensions.url "$srcdir/github.com-free-audio-clap-juce-extensions"
+  git config submodule.libs/MTS-ESP.url "$srcdir/github.com-ODDSound-MTS-ESP"
+
+  git -c protocol.file.allow=always submodule update
+
+  # setup git submodules for sst-plugininfra
+  pushd libs/sst/sst-plugininfra
+  git submodule init
+  git config submodule.libs/filesystem/filesystem.url "$srcdir/github.com-gulrak-filesystem"
+  git -c protocol.file.allow=always submodule update
+  popd
+
+  # setup git submodules for clap-juce-extensions
+  pushd libs/clap-juce-extensions
+  git submodule init
+  git config submodule.clap-libs/clap.url "$srcdir/github.com-free-audio-clap"
+  git config submodule.clap-libs/clap-helpers.url "$srcdir/github.com-free-audio-clap-helpers"
+  git -c protocol.file.allow=always submodule update
+  popd
+
+  # devendor libs
+  patch -p1 -i "$srcdir/devendor-libs.patch"
+}
+
+build() {
+  cd "$pkgbase"
+
+  # binaries and shared libs have executable stack:
+  # https://github.com/surge-synthesizer/surge/issues/1701
+  export LDFLAGS="$LDFLAGS,-z,noexecstack"
+
+  local cmake_options=(
+    -B build
+    -S .
+    -D CMAKE_INSTALL_PREFIX='/usr'
+    -D CMAKE_INSTALL_LIBDIR='/usr/lib'
+    -D CMAKE_BUILD_TYPE=Release
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package_ob-xf-common() {
+  pkgdesc='Common files for OB-Xf'
+
+  cd "$pkgbase"
+
+  # so far, only installs assets (themes/presets)
+  DESTDIR="$pkgdir" cmake --install build
+}
+
+package_ob-xf-standalone() {
+  pkgdesc+=' - standalone'
+  depends=(
+    "ob-xf-common=$pkgver"
+    hicolor-icon-theme
+    "${_common_depends[@]}"
+  )
+  optdepends=(
+    'jack: audio backend'
+    'alsa-lib: audio backend'
+  )
+
+  cd "$pkgbase"
+
+  install -vDm755 -t "$pkgdir/usr/bin" build/OB-Xf_artefacts/Release/Standalone/OB-Xf
+}
+package_ob-xf-vst3() {
+  pkgdesc+=' - VST3 plugin'
+  groups+=(vst3-plugins)
+  depends=(
+    "ob-xf-common=$pkgver"
+    "${_common_depends[@]}"
+    vst3-host
+  )
+
+  cd "$pkgbase"
+
+  install -vd "$pkgdir/usr/lib/vst3"
+  cp -vr build/OB-Xf_artefacts/Release/VST3/* "$pkgdir/usr/lib/vst3"
+}
+package_ob-xf-lv2() {
+  pkgdesc+=' - LV2 plugin'
+  groups+=(lv2-plugins)
+  depends=(
+    "ob-xf-common=$pkgver"
+    "${_common_depends[@]}"
+    lv2-host
+  )
+  cd "$pkgbase"
+
+  
+  install -vd "$pkgdir/usr/lib/lv2"
+  cp -vr build/OB-Xf_artefacts/Release/LV2/* "$pkgdir/usr/lib/lv2"
+}
+package_ob-xf-clap() {
+  pkgdesc+=' - CLAP plugin'
+  groups+=(clap-plugins)
+  depends=(
+    "ob-xf-common=$pkgver"
+    "${_common_depends[@]}"
+    clap-host
+  )
+
+  cd "$pkgbase"
+
+  install -vDm644 -t "$pkgdir/usr/lib/clap" build/OB-Xf_artefacts/Release/CLAP/*
+}

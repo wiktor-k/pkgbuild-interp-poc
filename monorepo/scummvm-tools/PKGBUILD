@@ -1,0 +1,34 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Jérémie Dimino <jeremie@dimino.org>
+# Contributor: Sebastian Hase <sebastian_hase@gmx.de>
+# Contributor: Joe Davison <joe@thosedamnpeanuts.com>
+pkgname=scummvm-tools
+pkgver=2.9.0
+pkgrel=2
+pkgdesc="A set of tools that enable you to convert, compress and decode game datafiles for ScummVM"
+url="http://www.scummvm.org/"
+license=('GPL')
+depends=('libpng' 'wxwidgets-gtk3' 'flac' 'libvorbis')
+arch=('x86_64')
+source=("https://www.scummvm.org/frs/scummvm-tools/${pkgver}/scummvm-tools-${pkgver}.tar.xz")
+sha512sums=('5e15b14520ca25b2c394e2884f1058d027700c6ec5fc82fab5262f41e5434f871934ccda6fe977d0be8eb8f6d26b96e8d2b5597aa481c8a3eb67f07374f3f0f6')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  export CXXFLAGS+=" -ffat-lto-objects"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -d "${pkgdir}"/usr/bin
+
+  make DESTDIR="${pkgdir}" install
+
+  install -Dm 644 README "${pkgdir}"/usr/share/doc/scummvm-tools/README
+  install -Dm 644 convert_dxa.sh "${pkgdir}"/usr/share/doc/scummvm-tools/samples/convert_dxa.sh
+}
+#vim: sw=2 ts=2 et:

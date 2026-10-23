@@ -1,0 +1,33 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Adam Perkowski <adas1per@protonmail.com>
+
+pkgname=tukai
+pkgver=0.2.3
+pkgrel=1
+pkgdesc="Interactive typing tool with switchable templates"
+arch=('x86_64')
+url="https://github.com/hlsxx/$pkgname"
+license=('MIT')
+depends=('libx11' 'gcc-libs')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('d14ab87bfdfb8312cd12c6f671486ae0afde0036441cf0d1df0f425f7278d9bd')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release --all-features
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

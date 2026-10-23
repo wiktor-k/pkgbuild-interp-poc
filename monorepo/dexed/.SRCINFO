@@ -1,0 +1,111 @@
+pkgbase = dexed
+	pkgdesc = A software synth closely modelled on the Yamaha DX7
+	pkgver = 1.0.1
+	pkgrel = 2
+	url = https://asb2m10.github.io/dexed
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-3.0-only
+	makedepends = alsa-lib
+	makedepends = cmake
+	makedepends = curl
+	makedepends = freetype2
+	makedepends = gendesk
+	makedepends = git
+	makedepends = jack
+	makedepends = libx11
+	makedepends = libxrandr
+	makedepends = libxinerama
+	makedepends = libxcursor
+	source = dexed::git+https://github.com/asb2m10/dexed#tag=v1.0.1
+	source = github.com-steinbergmedia-vst3sdk::git+https://github.com/steinbergmedia/vst3sdk
+	source = github.com-surge-synthesizer-tuning-library::git+https://github.com/surge-synthesizer/tuning-library
+	source = github.com-surge-synthesizer-surgesynthteam_tuningui::git+https://github.com/surge-synthesizer/surgesynthteam_tuningui
+	source = github.com-ODDSound-MTS-ESP::git+https://github.com/ODDSound/MTS-ESP
+	source = github.com-juce-framework-JUCE::git+https://github.com/juce-framework/JUCE
+	source = github.com-free-audio-clap-juce-extensions::git+https://github.com/free-audio/clap-juce-extensions
+	source = github.com-free-audio-clap::git+https://github.com/free-audio/clap
+	source = github.com-free-audio-clap-helpers::git+https://github.com/free-audio/clap-helpers
+	source = github.com-steinbergmedia-vst3_base::git+https://github.com/steinbergmedia/vst3_base
+	source = github.com-steinbergmedia-vst3_cmake::git+https://github.com/steinbergmedia/vst3_cmake
+	source = github.com-steinbergmedia-vst3_doc::git+https://github.com/steinbergmedia/vst3_doc
+	source = github.com-steinbergmedia-vst3_pluginterfaces::git+https://github.com/steinbergmedia/vst3_pluginterfaces
+	source = github.com-steinbergmedia-vst3_public_sdk::git+https://github.com/steinbergmedia/vst3_public_sdk
+	source = github.com-steinbergmedia-vst3_tutorials::git+https://github.com/steinbergmedia/vst3_tutorials
+	source = github.com-steinbergmedia-vstgui::git+https://github.com/steinbergmedia/vstgui
+	sha512sums = 00b45fda896779e7b94f0c9ee54670a7fa8861223e9b871d93c70d6dbe4bf027e2e692f75227655fd1fbf72442a5daec2c57c0eff066599d659ec58ee38df9e1
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	b2sums = d9592754f7d2eee1c8dcebc1cb1bd97105c648ce1a21de51c26a5ebb3fb5c958b7de17c9802fbde9b716be8140f89339d6b65ff5c97786ac3049e2b8f7fb4808
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = dexed
+	depends = dexed-docs=1.0.1
+	depends = dexed-clap=1.0.1
+	depends = dexed-vst3=1.0.1
+	depends = dexed-standalone=1.0.1
+
+pkgname = dexed-docs
+	pkgdesc = A software synth closely modelled on the Yamaha DX7 - documentation
+
+pkgname = dexed-clap
+	pkgdesc = A software synth closely modelled on the Yamaha DX7 - CLAP plugin
+	groups = pro-audio
+	groups = clap-plugins
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = freetype2
+	depends = clap-host
+	optdepends = dexed-docs: documentation
+
+pkgname = dexed-vst3
+	pkgdesc = A software synth closely modelled on the Yamaha DX7 - VST3 plugin
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = freetype2
+	depends = vst3-host
+	optdepends = dexed-docs: documentation
+
+pkgname = dexed-standalone
+	pkgdesc = A software synth closely modelled on the Yamaha DX7 - standalone
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = freetype2
+	depends = hicolor-icon-theme
+	depends = jack
+	optdepends = dexed-docs: documentation

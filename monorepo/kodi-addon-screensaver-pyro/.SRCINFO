@@ -1,0 +1,19 @@
+pkgbase = kodi-addon-screensaver-pyro
+	pkgdesc = Pyro screensaver for Kodi
+	pkgver = 21.0.2
+	pkgrel = 6
+	epoch = 1
+	url = https://github.com/xbmc/screensaver.pyro
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-screensaver
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-screensaver-pyro-21.0.2.tar.gz::https://github.com/xbmc/screensaver.pyro/archive/21.0.2-Omega.tar.gz
+	sha512sums = d9ddcc4a2db3feb37a7852b30d3965756c67989c86f698d3138258d12e46617cb9adf5c45d3099818f07c85255a58ee51c900bf4cd0077874dbfe920fa8cb59d
+
+pkgname = kodi-addon-screensaver-pyro
+	depends = kodi

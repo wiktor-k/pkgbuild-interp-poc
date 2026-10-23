@@ -1,0 +1,21 @@
+pkgbase = oo7
+	pkgdesc = A Secret Service provider
+	pkgver = 0.6.0
+	pkgrel = 5
+	url = https://linux-credentials.github.io/oo7/oo7/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = meson
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	provides = org.freedesktop.secrets
+	conflicts = gnome-keyring
+	source = git+https://github.com/linux-credentials/oo7#tag=0.6.0
+	sha256sums = 83ba6e03392471f1381d756a10af20915ecab99cea8533bbd42aac995c5fc118
+
+pkgname = oo7

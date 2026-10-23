@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-persistent
+pkgver=6.8
+pkgrel=1
+pkgdesc="Translucent persistent objects"
+arch=('x86_64')
+license=('ZPL-2.1')
+url="https://github.com/zopefoundation/persistent/"
+depends=('python-cffi' 'python-zope-interface' 'python-zope-deferredimport')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('python-zope-testrunner' 'python-manuel')
+source=("git+https://github.com/zopefoundation/persistent.git#tag=$pkgver")
+sha512sums=('673454d9e06de0b90fd65885a3e9df80a6b5f2d91a71d08c5472f3eedecd688acdf1e613b623128d060f4696d3d9d7d9777397ec18fbb03af3350ee4d392b5a7')
+
+build() {
+  cd persistent
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd persistent
+  local builddir=(build/lib.*)
+  PYTHONPATH="$PWD/${builddir[0]}" python -m zope.testrunner --test-path=src
+}
+
+package() {
+  cd persistent
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

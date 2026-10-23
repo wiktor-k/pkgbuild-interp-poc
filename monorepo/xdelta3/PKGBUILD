@@ -1,0 +1,60 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Eduard "bekks" Warkentin <eduard.warkentin@gmail.com>
+# Contributor: Henning Garus <henning.garus@gmail.com>
+
+pkgname=xdelta3
+pkgver=3.2.2
+pkgrel=1
+pkgdesc='Diff utility for binary files'
+arch=(x86_64)
+url='https://github.com/jmacd/xdelta'
+license=(Apache-2.0)
+depends=(xz)
+makedepends=(git cmake ninja)
+provides=(libxdelta3.so)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('e1c0cd33ba9b951e3d48e9144f3553ccbee6e10dc30f29d61b363b8ba9907495cb86bcdfb1c5e1f976d3d3b0ade1fa7b0933efa84968ae10c1f9fb0e55b4a2d0')
+b2sums=('0a0438e5b0b822b21319fa5c770cef313b9ccd80755b67089cdec8a9a4c386077bff29fc45f9abbc6e7be4905c806b9729b5d66916f71a81bcddaa125e71bcc2')
+
+build() {
+  cd "$pkgname"
+
+  local cmake_options=(
+    -B build
+    -S xdelta3
+    -G Ninja
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BUILD_SHARED_LIBS=ON
+    -D XD3_ARMOR=OFF
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+check() {
+  cd "$pkgname"
+
+  local excluded_tests="test_armor"
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel $(nproc)
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_flags[@]}"
+}
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  DESTDIR="$pkgdir" cmake --install build
+}

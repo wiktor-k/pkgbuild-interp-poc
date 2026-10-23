@@ -1,0 +1,40 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+# Contributor: Mark Wagie <mark dot wagie at proton dot me>
+# Contributor: Michael Riegert <michael at eowyn net>
+# Contributor: Felix Golatofski <contact@xdfr.de>
+# Contributor: Sibren Vasse <arch@sibrenvasse.nl>
+# Contributor: Daniel M. Capella <polyzen@archlinux.info>
+# Contributor: Morten Linderud <morten@linderud.pw>
+
+pkgname=python-pychromecast
+_pkgname=pychromecast
+pkgver=14.0.10
+pkgrel=1
+pkgdesc="Library for Python to communicate with the Google Chromecast"
+arch=('any')
+url="https://github.com/home-assistant-libs/pychromecast"
+license=('MIT')
+depends=(
+	'python-casttube'
+	'python-protobuf'
+	'python-zeroconf'
+)
+makedepends=(
+	'python-build'
+	'python-installer'
+	'python-setuptools'
+)
+source=("${_pkgname}-${pkgver}.tar.gz::https://github.com/home-assistant-libs/pychromecast/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('ce9f966c4d555165a1b30e6c5879794760248535e31498a190ca20111d40a4d8')
+
+build() {
+	cd "${_pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

@@ -1,0 +1,61 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=nginx-mod-redis
+pkgver=0.3.9
+pkgrel=33
+
+_modname="${pkgname#nginx-mod-}"
+
+pkgdesc='Nginx module for redis caching'
+arch=('x86_64')
+makedepends=('nginx' 'nginx-src')
+url="https://www.nginx.com/resources/wiki/modules/redis/"
+license=('BSD-2-Clause')
+
+source=(
+	https://people.freebsd.org/~osa/ngx_http_redis-$pkgver.tar.gz
+	nginx-1.23.patch
+)
+sha256sums=('21f87540f0a44b23ffa5df16fb3d788bc90803b255ef14f9c26e3847a6f26f46'
+            'd2720b51c5292037d5780e05d47568b93125f10ca205275ca99b300390499637')
+backup=('etc/nginx/modules.d/20-redis.conf')
+
+prepare() {
+	mkdir -p build
+	cd build
+	ln -sf /usr/src/nginx/auto
+	ln -sf /usr/src/nginx/src
+
+	cd "$srcdir/ngx_http_redis-$pkgver"
+	patch -p1 -i ../nginx-1.23.patch
+}
+
+build() {
+	cd build
+	auto/configure \
+		--with-ld-opt="$LDFLAGS" \
+		--with-compat \
+		--add-dynamic-module=../ngx_http_redis-$pkgver
+	make modules
+}
+
+package() {
+	if [[ "$BUILDTOOL" == devtools ]]; then
+		local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+		# this is added to PKGINFO data
+		depends+=($nginx_dep)
+	else
+		# this is added to SRCINFO data
+		depends+=(nginx)
+	fi
+
+	install -Dm644 "$srcdir"/ngx_http_redis-$pkgver/LICENSE \
+	               "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	install -dm0755 "$pkgdir"/etc/nginx/modules.d
+
+	cd build/objs
+	for mod in *.so; do
+		install -Dm755 $mod "$pkgdir"/usr/lib/nginx/modules/$mod
+		echo "load_module \"/usr/lib/nginx/modules/$mod\";" >> "$pkgdir/etc/nginx/modules.d/20-redis.conf"
+	done
+}

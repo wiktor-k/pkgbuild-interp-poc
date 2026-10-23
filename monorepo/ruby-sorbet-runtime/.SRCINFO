@@ -1,0 +1,24 @@
+pkgbase = ruby-sorbet-runtime
+	pkgdesc = Sorbet's runtime type checking component
+	pkgver = 0.6.13342
+	pkgrel = 1
+	url = https://github.com/sorbet/sorbet
+	arch = any
+	license = Apache-2.0
+	checkdepends = ruby-concurrent
+	checkdepends = ruby-minitest
+	checkdepends = ruby-mocha
+	checkdepends = ruby-parser
+	checkdepends = ruby-rake
+	checkdepends = ruby-subprocess
+	makedepends = ruby-rdoc
+	depends = ruby
+	options = !emptydirs
+	source = https://github.com/sorbet/sorbet/archive/0.6.13342.20260716135343-aafce23c1/ruby-sorbet-runtime-0.6.13342.20260716135343-aafce23c1.tar.gz
+	source = ruby-sorbet-runtime_fix_tests.patch
+	sha512sums = edd45d26f172738998f37278c384fbbf31f9f53f17db46f89c7b569748599c7833da404464254758604671ea9276d7df34e542cc8cb6f6a6d9a3be581fb4bfc6
+	sha512sums = a39f61f680da5c2d2dc83aec4e5358686eaa3834f76eaa68c85e0f7d7d32ad9bf97953395ab805ca5669e7d98c144469b68e19a9028e5ff90f4c917dd059538b
+	b2sums = 4c1a68a34dde3261e7c665f747b1b0be1fc7999fd168433eaaebab9876556c2701b3fc4ec4e1bdac7fcb474c70ba5aa6fd2fc1a38c88618b847b918f3657539a
+	b2sums = a9c2e83f4e04509db40b21f827208eb0ec03ebaae7f3971ddd2dcd0253fe00baf74b905a7a81079d23ac6f939a2e092bba3d5db7c415b1f70283ad1b65de715b
+
+pkgname = ruby-sorbet-runtime

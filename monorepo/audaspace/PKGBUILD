@@ -1,0 +1,75 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=audaspace
+pkgver=1.5.0
+pkgrel=8
+pkgdesc="A high level and feature rich audio library written in C++ with language bindings"
+arch=(x86_64)
+url="https://audaspace.github.io/"
+license=(Apache-2.0)
+depends=(
+  'ffmpeg'
+  'fftw'
+  'glibc'
+  'jack'
+  'libgcc'
+  'libpulse'
+  'libsndfile'
+  'libstdc++'
+  'openal'
+  'sdl2'
+)
+makedepends=(
+  'cmake'
+  'python'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+  'python-numpy'
+)
+optdepends=(
+  'python: python language bindings'
+  'python-numpy: python language bindings'
+)
+source=("https://github.com/neXyon/audaspace/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+         ffmpeg-9.patch)
+sha512sums=('9c463c2ddfc2de10537590d678bcdee09e15f3f3ca386aebe8eb0a9f7bd9249b7a8cab51aabc9fd8fc640842bb78ae1ad229521144c3796894f0205217b23479'
+            '9b5bfc3c83836c9d4d022c3f56c2aa92e53f0a7a47bcff77a3dec93b9154abb173d63b226892472f2f7d180b716e05cf3ad166df3e40373ac3e30f155b52b37f')
+b2sums=('7fae3f864675af38d3ec6402be2f6d08d9458ca0d4d27151b51a4fb556cde089a5892f5a66cd193b99b620826ee3ac5af33a10e7925971036cf893fd06f64349'
+        'f947690dfc9bdc2c49f662270afa4d9f43bb2a8a22cb3d214906de6840e3171581af4a28c970f4b2cb2d8f5137056fe6b4c709fcda59628153b7cb3fe199b0f5')
+
+prepare() {
+  # Fix build with ffmpeg 8
+  sed -i 's#AV_INPUT_BUFFER_MIN_SIZE#16384#' "$pkgbase-$pkgver"/plugins/ffmpeg/FFMPEGReader.cpp
+  # Fix build with ffmpeg 9
+  patch -d $pkgbase-$pkgver -p1 < ffmpeg-9.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D DEFAULT_PLUGIN_PATH=/usr/lib/$pkgname/plugins
+    -D WITH_JACK=ON
+    -D WITH_PYTHON=ON
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+
+  cd build
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  python -m installer --destdir="$pkgdir" build/dist/*.whl
+}

@@ -1,0 +1,17 @@
+pkgbase = prometheus-json-exporter
+	pkgdesc = Prometheus exporter which scrapes remote JSON by JSONPath
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/prometheus-community/json_exporter
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	depends = glibc
+	options = !lto
+	backup = etc/prometheus/json.yml
+	source = prometheus-json-exporter-0.8.0.tar.gz::https://github.com/prometheus-community/json_exporter/archive/v0.8.0.tar.gz
+	source = systemd.service
+	sha512sums = 59abccdcfc68306566b031fedc9c6daf142c54987e265052666c2c680398ba0d0a7c3c67e1d4269863fa04bba0a0cf4a73c7f62ab1f6690ca36b6b93cf70359d
+	sha512sums = fec356ad3b683e80cd3c8932f40278b49e475a048cec17978f102f0b5b191e1e6f84970bc99c205d1f0319d65999a00b6acdfac139127619f3cbe24ebdd74b9d
+
+pkgname = prometheus-json-exporter

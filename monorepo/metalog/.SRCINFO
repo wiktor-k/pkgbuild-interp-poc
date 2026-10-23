@@ -1,0 +1,18 @@
+pkgbase = metalog
+	pkgdesc = A modern replacement for syslogd and klogd
+	pkgver = 20260221
+	pkgrel = 1
+	url = http://metalog.sourceforge.net
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = autoconf-archive
+	depends = glibc
+	depends = pcre2
+	provides = logger
+	backup = etc/metalog.conf
+	source = https://github.com/hvisage/metalog/archive/refs/tags/20260221.tar.gz
+	source = metalog.service
+	sha256sums = 74758d711cf264aa8eb78caf4887998cb7bea0876c34d8ec19bd59fb8991349f
+	sha256sums = d6e51d73683d2d460f9b9cf253f85118a6c63266d0d3a161100f80f148f4c430
+
+pkgname = metalog

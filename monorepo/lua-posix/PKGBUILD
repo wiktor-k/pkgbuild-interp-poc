@@ -1,0 +1,55 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Christian Krause ("wookietreiber") <christian.krause@mailbox.org>
+
+pkgbase=lua-posix
+_rockname=${pkgbase#lua-}
+_project="${pkgbase//-}"
+pkgname=("$pkgbase" "lua51-$_rockname" "lua52-$_rockname" "lua53-$_rockname" "lua54-$_rockname")
+pkgver=37.0
+_rockrel=1
+pkgrel=1
+pkgdesc='POSIX bindings for Lua'
+arch=(x86_64 i686)
+url="https://github.com/$_project/$_project"
+license=(MIT)
+depends=(libxcrypt
+         libcrypt.so)
+makedepends=(lua
+             lua51
+             lua52
+             lua53
+             lua54
+             luarocks)
+# checkdepends=(specl)
+_archive="$_project-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('3a0cf9fc9459ae0975afd1e24ea552decfcda2231651a0d3bd6e1f075e089e01')
+
+_package() {
+	cd "$_archive"
+	depends+=("${pkgname%-*}"
+	          "${pkgname%-*}-bit32")
+	luarocks --lua-version="$1" --tree="$pkgdir/usr/" \
+		make --deps-mode=none --no-manifest "$_archive-$_rockrel.rockspec"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}
+
+package_lua-posix() {
+	_package 5.5
+}
+
+package_lua54-posix() {
+	_package 5.4
+}
+
+package_lua51-posix() {
+	_package 5.1
+}
+
+package_lua52-posix() {
+	_package 5.2
+}
+
+package_lua53-posix() {
+	_package 5.3
+}

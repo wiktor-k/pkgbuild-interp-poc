@@ -1,0 +1,56 @@
+# Maintainer: Ivy Foster <escondida@iff.ink>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Lukas Jirkovsky <l.jirkovsky@gmail.com>
+
+# (2019) Gentium Plus is upstream's replacement for Gentium, now called Gentium Basic.
+# (2025) Gentium is now upstream's replacement for Gentium Plus
+
+_pkgname=gentium
+pkgbase=$_pkgname-plus-font
+pkgname=(ttf-$_pkgname ttf-$_pkgname-book ttf-$_pkgname-plus)
+pkgver=7.000
+pkgrel=2
+pkgdesc='Font supporting a wide range of Latin- and Cyrillic-based alphabets'
+url="https://software.sil.org/$_pkgname"
+arch=(any)
+license=(OFL-1.1-RFN)
+_archive1="${_pkgname^}-$pkgver"
+_archive2="${_pkgname^}Book-$pkgver"
+_archive3="${_pkgname^}Plus-6.200"
+source=("https://software.sil.org/downloads/r/$_pkgname/$_archive1.zip"
+        "https://software.sil.org/downloads/r/$_pkgname/$_archive2.zip"
+        "https://software.sil.org/downloads/r/${pkgbase%%-*}/$_archive3.zip")
+sha256sums=('313e64963ba27851356060a725d36ce01680e5c5c63f46e4b40f15741c043e21'
+            'fa4e35bcea62dd68befabf4bb7c2765aacd2691f51ec8ae008f5f913ef49f419'
+            '9b21103b79961149b6508791572acb3b2fe7eb621474c57d5e4ee37e76d7b073')
+
+package_ttf-gentium() {
+	cd "$_archive1"
+	replaces=(#$pkgname-plus
+	          "$pkgbase")
+	provides=(#"$pkgname-plus=$pkgver"
+	          "$pkgbase=$pkgver"
+	          "${pkgname#ttf-}-font=$pkgver")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" ${_archive1%-*}-*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.txt FONTLOG.txt documentation/pdf/*
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}
+
+package_ttf-gentium-book () {
+	cd "$_archive2"
+	provides=("${pkgname#ttf-}-font=$pkgver")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" ${_archive2%-*}-*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.txt FONTLOG.txt documentation/pdf/*
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}
+
+package_ttf-gentium-plus () {
+	cd "$_archive3"
+	# pkgver=6.200
+	# pkgrel=6
+	provides=("${pkgname#ttf-}-font=$pkgver")
+	desc+="(legacy 6.200 version)"
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" ${_archive3%-*}-*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.txt FONTLOG.txt documentation/pdf/*
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+}

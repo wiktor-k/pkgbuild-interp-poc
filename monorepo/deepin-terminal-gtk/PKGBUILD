@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-terminal-gtk
+pkgver=5.0.4.4
+pkgrel=2
+pkgdesc='Default terminal emulation application for Deepin, the old gtk version'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-terminal-gtk"
+license=('GPL3')
+depends=('vte3' 'libsecret' 'libgee' 'libwnck3' 'expect')
+makedepends=('cmake' 'ninja' 'vala')
+optdepends=('deepin-menu: for native menu integration under DDE'
+            'zssh: for remote management support')
+conflicts=('deepin-terminal' 'deepin-terminal-old')
+provides=('deepin-terminal' 'deepin-terminal-old')
+replaces=('deepin-terminal-old')
+source=("https://github.com/linuxdeepin/deepin-terminal-gtk/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('a47a5b816f410b7233e63c57de8da549a5001c50f50fea4236e4974098c80cb7e2038f26928518848530675e33bdaf50186dea34a7d5b2ce80ebadadb7032dcc')
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DTEST_BUILD=OFF \
+    -DUSE_VENDOR_LIB=OFF \
+    -DVERSION=$pkgver \
+    ../deepin-terminal-gtk-$pkgver
+  ninja
+}
+
+package() {
+  cd build
+  DESTDIR="$pkgdir" ninja install
+  ln -s deepin-terminal "$pkgdir"/usr/bin/x-terminal-emulator
+}

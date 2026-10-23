@@ -1,0 +1,23 @@
+pkgbase = yaak-cli
+	pkgdesc = A fast, secure, and offline API client (CLI)
+	pkgver = 0.7.1
+	pkgrel = 2
+	url = https://yaak.app/
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	makedepends = npm
+	depends = bzip2
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	depends = sqlite
+	depends = xz
+	depends = zstd
+	options = !lto
+	source = yaak-cli-0.7.1.tar.gz::https://github.com/mountain-loop/yaak/archive/refs/tags/yaak-cli-0.7.1.tar.gz
+	sha256sums = 5ab3e78c7cddf0d028c2d390e847dea26bc6c39eae7802a4d5fb75192d207c03
+
+pkgname = yaak-cli

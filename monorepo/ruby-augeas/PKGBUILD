@@ -1,0 +1,48 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Contributor: Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Contributor: Greg Sutcliffe <greg.sutcliffe at gmail dot com>
+
+_gemname=ruby-augeas
+pkgname="$_gemname"
+pkgver=0.6.0
+pkgrel=3
+pkgdesc='Provides Ruby bindings for augeas'
+arch=('x86_64')
+url='https://augeas.net'
+license=('LGPL-2.1-only')
+depends=('ruby' 'augeas')
+makedepends=('rubygems' 'ruby-rdoc' 'ruby-rake' 'zip')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/hercules-team/${pkgname}/archive/release-${pkgver}.tar.gz")
+noextract=("$_gemname-$pkgver.gem")
+sha512sums=('1ab073215cb7a6cc85ca492199f83d4a5c36cd8bbffff026aa65fc1b13843b5a2cb32fc37be9ee885f8f88f1ae377f200035fcc2420ba483a480cdc988f5a47e')
+options=(!emptydirs)
+
+prepare() {
+  cd "${pkgname}-release-${pkgver}"
+  sed -i '/s.description/a s.license = "LGPL-2.1-only"' Rakefile # fix license
+  sed -i '/s.autorequire/d' Rakefile # remove deprecated option
+}
+
+build() {
+  cd "${pkgname}-release-${pkgver}"
+  #gem build --verbose --strict
+  rake package
+}
+package() {
+  cd "${pkgname}-release-${pkgver}"
+  ls
+  # _gemdir is defined inside package() because if ruby[gems] is not installed on
+  # the system, makepkg will exit with an error when sourcing the PKGBUILD.
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install --no-user-install --ignore-dependencies --install-dir "${pkgdir}${_gemdir}" --bindir "${pkgdir}/usr/bin" "pkg/${pkgname}-${pkgver}.gem"
+  rm -rf ${pkgdir}/${_gemdir}/extensions/*/*/${_gemname}-${pkgver}/{mkmf.log,gem_make.out}
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+  rm -rf "${pkgdir}/${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext"
+  rm -rf "${pkgdir}/${_gemdir}/gems/${_gemname}-${pkgver}/ext"
+
+  install -Dm 644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm 644 README.md NEWS AUTHORS -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

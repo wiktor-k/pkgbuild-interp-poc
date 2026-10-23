@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-memory-allocator
+_pyname=memory_allocator
+pkgver=0.2.1
+pkgrel=1
+pkgdesc='An extension class to allocate memory easily with cython'
+arch=(x86_64)
+url='https://github.com/sagemath/memory_allocator'
+license=(
+  GPL-3.0-or-later
+)
+depends=(
+  python
+)
+makedepends=(
+  cython
+  git
+  glibc
+  meson-python
+  python-build
+  python-installer
+)
+source=(
+  git+https://github.com/sagemath/memory_allocator#tag=v$pkgver
+)
+sha256sums=('088491a2dc10f287a59440051af6e57fcc3986d8cdacffb599dfa850c2ffa932')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

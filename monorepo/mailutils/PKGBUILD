@@ -1,0 +1,50 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=mailutils
+pkgver=3.21
+pkgrel=1
+pkgdesc="MUA command line tool (mailx)"
+arch=(x86_64)
+url="https://www.gnu.org/software/mailutils/"
+license=('GPL')
+depends=('libldap' 'pam' 'gnutls' 'gsasl')
+makedepends=('emacs')
+options=(!emptydirs)
+validpgpkeys=('325F650C4C2B6AD58807327A3602B07F55D0C732'
+	      '4BE4E62655488EB92ABB468F79FFD94BFCE230B1')
+source=(https://ftp.gnu.org/gnu/mailutils/mailutils-$pkgver.tar.bz2{,.sig}
+        fix-build.patch)
+sha512sums=('61e8e0a4582f5689656a6beca62aa2ee78f74c5cf01cf80530a6cc5912e73e6483528676a297d1adcf42eb9a43b0f1cfc415657629917fd8b64978707fad9492'
+            'SKIP'
+            'f9e5333a02aa1f55fe94c442ebecfa0a665a2d7ceb9e8c1aa5e566db13891390ad2cd823c8b9701024e991f54ed97377f95264cb36f9bea6ebe2801ca4519013')
+
+prepare() {
+  cd "$srcdir/mailutils-$pkgver"
+  patch -Np1 -i ../fix-build.patch
+}
+
+build() {
+  cd "$srcdir/mailutils-$pkgver"
+  unset CFLAGS
+  unset CXXFLAGS
+  ./configure \
+	--prefix=/usr \
+	--sbindir=/usr/bin \
+	--libexecdir=/usr/lib/$pkgname \
+	--sysconfdir=/etc \
+	--with-gdbm \
+	--with-gnutls \
+	--disable-python \
+	--without-guile
+  make
+}
+
+package() {
+  cd "$srcdir/mailutils-$pkgver"
+  make -j1 DESTDIR="$pkgdir" install
+  rm -f "$pkgdir"/usr/share/info/dir
+  mv "$pkgdir"/usr/bin/mail "$pkgdir"/usr/bin/gnu-mail
+  mv "$pkgdir"/usr/share/man/man1/mail.1 "$pkgdir"/usr/share/man/man1/gnu-mail.1
+  chown -R root:root "$pkgdir"
+}

@@ -1,0 +1,48 @@
+pkgbase = amavisd-new
+	pkgdesc = High-performance interface between mailer (MTA) and content checkers
+	pkgver = 2.12.3
+	pkgrel = 1
+	url = https://gitlab.com/amavis/amavis
+	arch = any
+	license = GPL
+	depends = perl>=5.8.2
+	depends = perl-archive-zip>=1.14
+	depends = perl-convert-tnef
+	depends = perl-convert-uulib>=1.4-5
+	depends = perl-mime-tools
+	depends = perl-mailtools>=1.58
+	depends = perl-net-libidn
+	depends = perl-net-server>=0.88
+	depends = perl-io-socket-inet6
+	depends = perl-io-stringy
+	depends = perl-unix-syslog>=1.1-4
+	depends = perl-mail-dkim>=0.31
+	depends = perl-berkeleydb>=0.42
+	depends = perl-json
+	depends = perl-http-message
+	depends = perl-libwww
+	depends = perl-lwp-protocol-https
+	depends = perl-net-ssleay
+	depends = bzip2
+	depends = gzip
+	optdepends = arj: Decoder for: .arj .exe
+	optdepends = lrzip: Decoder for: .lrz
+	optdepends = lz4: Decoder for: .lz4
+	optdepends = lzo: Decoder for: .lzo
+	optdepends = p7zip: Decoder for: .7z
+	optdepends = unrar: Decoder for: .rar
+	optdepends = rpmextract: Decoder for: .rpm
+	backup = etc/amavisd/amavisd.conf
+	backup = etc/amavisd/amavisd-custom.conf
+	source = https://gitlab.com/amavis/amavis/-/archive/v2.12.3/amavis-v2.12.3.tar.bz2
+	source = amavisd.service
+	source = amavisd.sysusers
+	source = amavisd.tmpfiles
+	source = perl-crypt-v0.34-fix.patch
+	sha512sums = edb0de71f3c058e47d1ea9b261b1f8d2525c3718b53b8f19130d36b676c2f50eb5a50d878c06f36080f49984f0ba4e5c8b166aab5f4980c61ea7024e801d5369
+	sha512sums = 5028913479808c02a74682987ed5289d094c1ae2e37874b8c45a6abcc825f2e9d9a46acf9ee010897a5a41e5f9256507cc4d7b9e535c46b03cc06b560dddd908
+	sha512sums = e1709c05889e9141d37a36e38f7e242b49b5048ab428a30e4319c3fc2b8e9d48ea806fde27b596a7a709f88157ae5264e34cb1d3e7e242fc4a2ebc616cf9fb8a
+	sha512sums = bedbd1b270ccbfbbc9ef5682cc9491d6e7895b8b6cb7634a84175c0f469373f325fd694296a9a7aa8c1f09b6571162066e3fc98c555a4d971216fc6721842c9d
+	sha512sums = e8c6231763b04adb61ef8a9ad6e1e1610a6282b25486d2dd8620bbb3fe390c251f508ffe076a10ab35e9f7ff271fe370677c9aad8bddd75c3454d20fd61a56f1
+
+pkgname = amavisd-new

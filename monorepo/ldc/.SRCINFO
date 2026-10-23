@@ -1,0 +1,41 @@
+pkgbase = ldc
+	pkgdesc = A D Compiler based on the LLVM Compiler Infrastructure including D runtime and libphobos2
+	pkgver = 1.43.0
+	pkgrel = 2
+	epoch = 3
+	url = https://github.com/ldc-developers/ldc
+	arch = x86_64
+	groups = dlang
+	groups = dlang-ldc
+	license = BSD-3-Clause AND BSL-1.0 AND Apache-2.0 WITH LLVM-exception
+	makedepends = git
+	makedepends = cmake
+	makedepends = llvm22
+	makedepends = lld
+	makedepends = ldc
+	makedepends = ninja
+	options = !lto
+	source = git+https://github.com/ldc-developers/ldc#commit=ad42ba07be491c79a16a04e17ce54c06d8943c03
+	source = ldc-phobos::git+https://github.com/ldc-developers/phobos.git
+	sha256sums = c994bbe93257350a9fdbb599c3ed035b5da250f30c6d818932080a2536686ccb
+	sha256sums = SKIP
+
+pkgname = ldc
+	depends = liblphobos
+	depends = llvm22-libs
+	depends = gcc
+	depends = compiler-rt22
+	depends = curl
+	provides = d-compiler=2.113.0
+	backup = etc/ldc2.conf/00-docs.conf
+	backup = etc/ldc2.conf/30-compiler.conf
+	backup = etc/ldc2.conf/50-target-default.conf
+	backup = etc/ldc2.conf/51-target-wasm-base.conf
+	backup = etc/ldc2.conf/55-target-wasm-naked.conf
+	backup = etc/ldc2.conf/70-compiler-rt.conf
+
+pkgname = liblphobos
+	depends = curl
+	provides = d-runtime
+	provides = d-stdlib
+	options = staticlibs

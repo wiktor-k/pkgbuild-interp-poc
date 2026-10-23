@@ -1,0 +1,27 @@
+pkgbase = nfoview
+	pkgdesc = Simple NFO file viewer in GTK+ 4
+	pkgver = 2.2
+	pkgrel = 1
+	url = https://otsaloma.io/nfoview/
+	arch = any
+	license = GPL-3.0-or-later
+	checkdepends = python-pytest
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = gobject-introspection-runtime
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	optdepends = ttf-cascadia-code: recommended font
+	source = git+https://github.com/otsaloma/nfoview.git?signed#tag=2.2
+	validpgpkeys = 8DD6B3FCDAB33C91EA915B913A584A9504CACA67
+	sha256sums = 54710475a47477b63e286e410a1718fd8a5f529b807840b2f57cbcdf83b08310
+
+pkgname = nfoview

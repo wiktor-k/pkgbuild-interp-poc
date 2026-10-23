@@ -1,0 +1,67 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=gersemi
+pkgname=python-$_name
+pkgver=0.29.2
+pkgrel=1
+pkgdesc="A formatter to make your CMake code the real treasure"
+arch=(x86_64)
+url="https://github.com/blankspruce/gersemi"
+license=(MPL-2.0)
+depends=(
+  glibc
+  libgcc
+  python
+  python-yaml
+  sqlite
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-rust
+)
+checkdepends=(
+  git
+  python-pytest
+  python-pytest-xdist
+  python-pydantic
+  python-lark-parser
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+b2sums=('79322e62d79de4f896a6b6b7e9e5340111057df424945b0f2d9a70b3de891ad479f4c49bd83a3a070e9a534841b10989b21575c0f437a6f822d6207d746e84cf')
+
+build() {
+  cd $_name-$pkgver
+
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+
+  python -m build --wheel --no-isolation
+
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # distribute tests across multiple CPUs
+    -n auto
+    # failing as of 0.27.2
+    --deselect tests/test_configuration.py::test_schema_in_repository_is_consistent_with_configuration_definition
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  # the tests use Python subprocess module to execute gersemi, so we must actually activate the venv
+  (
+    source test-env/bin/activate
+    python -m pytest "${pytest_options[@]}" tests
+  )
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

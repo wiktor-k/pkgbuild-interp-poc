@@ -1,0 +1,31 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Miguel de Val-Borro <miguel.deval@gmail.com>
+
+pkgname=python-sphinx-bootstrap-theme
+pkgver=0.8.1
+pkgrel=8
+pkgdesc="Sphinx Bootstrap Theme"
+arch=(any)
+url=http://ryan-roemer.github.io/sphinx-bootstrap-theme/
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(git+https://github.com/ryan-roemer/sphinx-bootstrap-theme.git#tag=v${pkgver})
+b2sums=('eb5d74f9bd3de5e5e1d553dc78eb9e3703ee7c98e04c56aaa38c20d7e69f70683b8c2e7b94f888161db9dec2d49b9acb4dd0226b3ababb4193c461bf17695a38')
+
+build() {
+  cd sphinx-bootstrap-theme
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd sphinx-bootstrap-theme
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm 644 LICENSE.txt -t "${pkgdir}"/usr/share/licenses/python-sphinx-bootstrap-theme/
+}

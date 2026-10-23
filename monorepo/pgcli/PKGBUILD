@@ -1,0 +1,73 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: a821
+# Contributor: asm0dey <pavel.finkelshtein+AUR@gmail.com>
+# Contributor: Sven-Hendrik Haase <svenstaro@archlinux.org>
+
+pkgname=pgcli
+pkgver=4.7.1
+pkgrel=1
+pkgdesc='A command line interface for PostgreSQL with auto-completion and syntax highlighting'
+arch=(any)
+url='https://www.pgcli.com/'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-cli_helpers
+  python-click
+  python-configobj
+  python-pgspecial
+  python-prompt_toolkit
+  python-psycopg
+  python-pygments
+  python-setproctitle
+  python-sqlparse
+  python-tzlocal
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-sshtunnel
+)
+optdepends=(
+  'python-keyring: for keyring integration'
+  'python-sshtunnel: for accessing remote instances over SSH'
+)
+source=("$pkgname::git+https://github.com/dbcli/pgcli.git#tag=v$pkgver")
+sha512sums=('91807c44e9b5eb7c07ae60dfd28982bf625ac7f257257545fb5d6e70aa33449aa1882113a85f32387a9e6218f5f1db1eb7365af05d740971f5d44bf906c0fbbd')
+b2sums=('e936bc2c010e486afadb6635ad4b7a66b321be5708bbb3c0e12165932089bcc7ed4c22a11ca82c9301c7f967e386b1994992e246371494fd86cdcfb3c0fe637e')
+
+build() {
+  cd "$pkgname"
+
+  export SETUPTOOLS_SCM_PRETEND_VERSION="$pkgver"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $pkgname
+  # install to temporary location, as importlib is used
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

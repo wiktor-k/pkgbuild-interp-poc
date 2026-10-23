@@ -1,0 +1,51 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=linuxwave
+pkgver=0.3.0
+_gitcommit=5bc4794867eb7065ddb0d76d51170bb724e611db
+pkgrel=1
+pkgdesc="Generate music from the entropy of Linux"
+arch=('x86_64')
+url="https://github.com/orhun/linuxwave"
+license=('MIT')
+makedepends=('zig' 'git')
+source=(
+  "${pkgname}::git+$url#commit=$_gitcommit"
+)
+sha256sums=('95a2061038060651b53479e9cd4df79d9401530fd94effdd0f55e5df4d117d08')
+
+build() {
+  cd "$pkgname"
+  DESTDIR="build" zig build \
+    --summary all \
+    --global-cache-dir ../zig-global-cache \
+    --prefix /usr \
+    --search-prefix /usr \
+    --release=safe \
+    -Dtarget=native-linux.6.1-gnu.2.38 \
+    -Dcpu=baseline \
+    -Dpie=true
+}
+
+check() {
+  cd "$pkgname"
+  zig build test \
+    --summary all \
+    --global-cache-dir ../zig-global-cache \
+    --prefix /usr \
+    --search-prefix /usr \
+    --release=safe \
+    -Dtarget=native-linux.6.1-gnu.2.38 \
+    -Dcpu=baseline \
+    -Dpie=true
+}
+
+package() {
+  cd "$pkgname"
+  cp -a build/* "$pkgdir"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "man/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

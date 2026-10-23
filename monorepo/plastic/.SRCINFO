@@ -1,0 +1,20 @@
+pkgbase = plastic
+	pkgdesc = A NES emulator with GUI and TUI
+	pkgver = 0.3.5
+	pkgrel = 1
+	url = https://github.com/Amjad50/plastic
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = alsa-lib
+	depends = gcc-libs
+	depends = alsa-lib
+	source = plastic-0.3.5.tar.gz::https://github.com/Amjad50/plastic/archive/v0.3.5.tar.gz
+	sha512sums = 5819fa8bd6e2c7ad7d7f1b0becec72791dc4413f65c32b813a5d4543b5f69da4aa9f865eceecc5aae79072f6848fc6ca6ec6bf08348826fb73d41e7827b9a4d1
+
+pkgname = plastic
+
+pkgname = plastic_tui
+	depends = gcc-libs
+	depends = alsa-lib
+	depends = systemd-libs

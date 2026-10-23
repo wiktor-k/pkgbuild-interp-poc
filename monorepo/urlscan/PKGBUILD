@@ -1,0 +1,38 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: Maxim Baz <archlinux at maximbaz dot com>
+
+pkgname=urlscan
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Mutt and terminal url selector"
+url="https://github.com/firecat53/urlscan"
+arch=('any')
+license=('GPL-2.0-or-later')
+depends=('python-urwid')
+makedepends=(
+    'python-build'
+    'python-hatch-vcs'
+    'python-hatchling'
+    'python-installer'
+    'python-wheel'
+)
+optdepends=(
+    'xclip: Clipboard support for X11 environments'
+    'wl-clipboard: Clipboard support for Wayland'
+)
+# Use PyPi release tarballs since the GitHub releases don't have version
+# metadata
+source=("$pkgname-$pkgver.tar.gz::https://pypi.io/packages/source/u/urlscan/urlscan-$pkgver.tar.gz")
+sha256sums=('27ffbc49a98da0f3d0a533b23e04c71784d4e10fbf2ee4e1f443ef39364fce5b')
+
+build() {
+    cd "$pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    # Common licenses don't need to be copied over
+    rm "$pkgdir/usr/share/doc/urlscan/LICENSE"
+}

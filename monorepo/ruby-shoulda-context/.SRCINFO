@@ -1,0 +1,31 @@
+pkgbase = ruby-shoulda-context
+	pkgdesc = Minitest & Test::Unit context framework
+	pkgver = 2.0.0
+	pkgrel = 9
+	url = https://github.com/thoughtbot/shoulda-context
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-byebug
+	checkdepends = ruby-irb
+	checkdepends = ruby-m
+	checkdepends = ruby-minitest
+	checkdepends = ruby-mocha
+	checkdepends = ruby-pry
+	checkdepends = ruby-pry-byebug
+	checkdepends = ruby-rake
+	checkdepends = ruby-snowglobe
+	checkdepends = ruby-test-unit
+	checkdepends = ruby-warnings_logger
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/thoughtbot/shoulda-context.git#tag=v2.0.0
+	source = ruby-shoulda-context_exists.patch::https://github.com/thoughtbot/shoulda-context/commit/ee3aeb239ea69c9a855d64e8c1cfda87958c833d.patch
+	sha512sums = c06011503e8666ec3b6eaa40be7f477feb5925767885b9d5161bd7d60d03cef9935105ba268a8055506f871cd5402cc014c165d870b2016f65733af9a1945069
+	sha512sums = 25a10a6448ae630a06faa7f2c4a98dce7d6148cc4e2e1761975c1d260cc3231ca3c4adb523c06d35847794efc4978ae042fbfe75aa98f2a3adc79ab38b77c522
+	b2sums = b41df5851ac20d9226eb853872494b4e6d3dc7eadc56b465065ac3b072edd5e0bbee0ba7fe3c00b08ef7233faafa5bfd739aa7205b738db8158e2a9329a0059c
+	b2sums = 8b8210c86825dda93f9dd93711c374bd15bd9a9629d0b5d3f31802034beff71f11f3c46fd28455efa3a34e9bf2ab8274eea639710c570eedd5ccb23dd9e6918c
+
+pkgname = ruby-shoulda-context

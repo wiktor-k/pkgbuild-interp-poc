@@ -1,0 +1,46 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Contributor: Philippe Proulx <eeppeliteloop@gmail.com>
+_pkgname=barectf
+pkgname=python-barectf
+pkgver=3.1.2
+pkgrel=4
+pkgdesc='Generator of ANSI C tracers which output CTF'
+arch=('any')
+url='http://barectf.org'
+license=('MIT')
+depends=('python-termcolor' 'python-yaml' 'python-jsonschema' 'python-jinja')
+makedepends=('patchutils' 'python-poetry-core' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-pytest')
+_git='https://github.com/efficios/barectf'
+source=("$pkgname-$pkgver.tar.gz::$_git/archive/v$pkgver.tar.gz"
+        "$pkgname-remove-pkg_resources.patch::$_git/commit/e16d289546bb4f6b0d909f79b8d6188eabe32640.patch"
+        "$pkgname-pytest9.patch::$_git/commit/fa164b5b47bd3410faa4afd982ee3fd684e291f9.patch")
+sha256sums=('bad30bee4370408a101e6cca7af325cf9875e1a1a0fd712219603f44ac2e7ec8'
+            'da7985d6b75b0403199efb518c959de350835aafc471933acd6992bc861a1903'
+            'db15f966fcbd56a0d0e5c62deba16d7570f06250141e857ef203d335c2e1e652')
+
+prepare() {
+    cd "$_pkgname-$pkgver"
+    # The pyproject.toml and poetry.lock hunks do not apply to the release
+    filterdiff -p1 -i 'barectf/*' -i 'tests/*' \
+        "$srcdir/$pkgname-remove-pkg_resources.patch" \
+        "$srcdir/$pkgname-pytest9.patch" |
+        patch -Np1 --no-backup-if-mismatch
+}
+
+build() {
+    cd "$_pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd "$_pkgname-$pkgver"
+    python -m pytest
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

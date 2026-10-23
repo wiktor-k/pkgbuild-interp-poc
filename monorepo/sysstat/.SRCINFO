@@ -1,0 +1,18 @@
+pkgbase = sysstat
+	pkgdesc = a collection of performance monitoring tools (iostat,isag,mpstat,pidstat,sadf,sar)
+	pkgver = 12.8.0
+	pkgrel = 1
+	url = https://sysstat.github.io/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = systemd
+	depends = glibc
+	depends = lm_sensors
+	optdepends = tk: to use isag
+	optdepends = gnuplot: to use isag
+	backup = etc/conf.d/sysstat
+	backup = etc/conf.d/sysstat.ioconf
+	source = https://github.com/sysstat/sysstat/archive/v12.8.0/sysstat-12.8.0.tar.gz
+	sha512sums = 42ddf7131b690be8927ceacdc35c23d6f1295f52446db68ecc2ea619e0e7ec955157b146216474e271bd0db242b3348e8ba4c8ebc03e518ac69b2564eec71857
+
+pkgname = sysstat

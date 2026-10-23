@@ -1,0 +1,22 @@
+pkgbase = kodi-addon-visualization-shadertoy
+	pkgdesc = Shadertoy visualizer for Kodi
+	pkgver = 21.0.2
+	pkgrel = 6
+	epoch = 1
+	url = https://github.com/xbmc/visualization.shadertoy
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-visualization
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = glm
+	makedepends = jsoncpp
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-visualization-shadertoy-21.0.2.tar.gz::https://github.com/xbmc/visualization.shadertoy/archive/21.0.2-Omega.tar.gz
+	sha512sums = 01a5c1652ab501803331ed33a0449d43a33ac250a3ba4b806e37ec4110fefbba8f03fc62337f1d076e625fbd88201884380a73cad28c986c97c62dde9463f4af
+
+pkgname = kodi-addon-visualization-shadertoy
+	depends = kodi
+	depends = glm
+	depends = jsoncpp

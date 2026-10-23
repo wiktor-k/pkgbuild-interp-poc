@@ -1,0 +1,23 @@
+pkgbase = kodi-addon-imagedecoder-heif
+	pkgdesc = Kodi heif/heic imagedecoder addon
+	pkgver = 21.0.3
+	pkgrel = 6
+	url = https://github.com/xbmc/imagedecoder.heif
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-imagedecoder
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = kodi-dev
+	makedepends = libheif
+	makedepends = tinyxml2
+	options = !lto
+	source = kodi-addon-imagedecoder-heif-21.0.3.tar.gz::https://github.com/xbmc/imagedecoder.heif/archive/refs/tags/21.0.3-Omega.tar.gz
+	source = 0001-Fix-memroy-leak-in-HEIF-image-decoder.patch::https://patch-diff.githubusercontent.com/raw/xbmc/imagedecoder.heif/pull/85.patch
+	sha512sums = 342ee83dedb0e1f48f7a302227405bbfee0f57b3a249af1154afe646c682a73d433a7d72262c4d7276a63b9dcbf9ee1d4bf656328ba2cd8ff2b84ece778c79c9
+	sha512sums = 61fa10ba190a9ee9fca75228371736813724dda28bbad15f36bddb93d84cfa88afeec2b02bc218c124a8fd092f223489b2e8f8698ba11e04499c5fd13a105dfa
+
+pkgname = kodi-addon-imagedecoder-heif
+	depends = kodi
+	depends = libheif
+	depends = tinyxml2

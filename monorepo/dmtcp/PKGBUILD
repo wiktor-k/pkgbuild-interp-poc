@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=dmtcp
+pkgver=4.2.0
+pkgrel=1
+pkgdesc='Distributed MultiThreaded CheckPointing'
+url='https://dmtcp.sourceforge.io'
+arch=('x86_64')
+license=('LGPL-3.0-or-later')
+depends=('bash' 'glibc' 'libgcc' 'libstdc++')
+makedepends=('git' 'dash' 'emacs' 'gdb' 'java-environment' 'openmpi' 'procps-ng'
+'python' 'screen' 'strace' 'tcsh' 'vim' 'zsh')
+source=("git+https://github.com/dmtcp/dmtcp.git#tag=v$pkgver")
+sha256sums=('328338570b7112fab3582a72d3d28b96379c8259b2f117c4050f2698fb392c9f')
+b2sums=('ebd9072844075295cddb0e1f291dfc6279c41f603470242650032f5de1b382034bb238c7f5a269b49231a73399b31a2dfd20b1381849d08da35911aa6d884f48')
+
+prepare() {
+  cd $pkgname
+  # Install version.h under /usr/include/dmtcp instead of /usr/include.
+  # https://github.com/dmtcp/dmtcp/pull/1269
+  git show 9f464015 -- src/Makefile.am | git apply -3
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc
+  make
+}
+
+package() {
+  make DESTDIR="$pkgdir" install -C $pkgname
+}

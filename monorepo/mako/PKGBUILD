@@ -1,0 +1,58 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: Maxim Baz <archlinux at maximbaz dot com>
+# Contributor: Drew DeVault
+
+pkgname=mako
+pkgver=1.11.0
+pkgrel=1
+pkgdesc='Lightweight notification daemon for Wayland'
+arch=("x86_64")
+url='https://mako-project.org'
+license=('MIT')
+depends=(
+	"cairo"
+	"gdk-pixbuf2"
+	"glib2"
+	"glibc"
+	"pango"
+	"systemd-libs"
+	"wayland"
+)
+makedepends=(
+  "meson"
+  "scdoc"
+  "systemd"
+  "wayland-protocols"
+)
+optdepends=("jq: support for 'makoctl menu'")
+source=(
+	"https://github.com/emersion/mako/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz"
+	"https://github.com/emersion/mako/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz.sig"
+	"systemd-dbus-activation.patch"
+)
+b2sums=('f916755b933fcd94be954d037bf0711a0a117e0aea227087e7c1dca0f5f5ab1545b80750a8aff1d4c8830a02a190e654f8fe161350d975145f7c67a829e4cd3c'
+        'SKIP'
+        '83491ee24e1d0b69382b83ac876e4d75a43f8061307ae8ef0d9cd45d6118a91bca75dd4d64766b5d01470bb22d2df764646e6de0bf4a1784bf3fdd730a7f8efc')
+validpgpkeys=("34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48") # emersion <contact@emersion.fr>
+
+prepare() {
+	patch -Np1 -d $pkgname-$pkgver < systemd-dbus-activation.patch
+}
+
+build() {
+	arch-meson \
+		-Dbash-completions=true \
+		-Dfish-completions=true \
+		-Dzsh-completions=true \
+		-Dsd-bus-provider=libsystemd \
+		$pkgname-$pkgver build
+	ninja -C build
+}
+
+package() {
+	DESTDIR="$pkgdir" ninja -C build install
+
+  cd $pkgname-$pkgver
+	install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+	install -vDm644 -t "$pkgdir/usr/lib/systemd/user" contrib/systemd/mako.service
+}

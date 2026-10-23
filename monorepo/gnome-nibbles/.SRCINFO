@@ -1,0 +1,32 @@
+pkgbase = gnome-nibbles
+	pkgdesc = Guide a worm around a maze
+	pkgver = 4.6.2
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Nibbles
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = glibmm-2.68
+	depends = gsound
+	depends = gtk4
+	depends = gtkmm-4.0
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libsigc++-3.0
+	depends = libstdc++
+	depends = pango
+	depends = pangomm-2.48
+	source = git+https://gitlab.gnome.org/GNOME/gnome-nibbles.git?signed#tag=4.6.2
+	validpgpkeys = 31F449AE968CBE194119A3AD1F1DC770CE79E68B
+	validpgpkeys = 9CE6D700965C6A1D6F7B4A1C18B04BB8340E3EC5
+	b2sums = d651de872229f6504906c99880e82875854b2dd933c68041eb8a16792a25d47461bcaadc851944a85bab9a3e4ec53463b41ebd66563286789c5a8bd3ab188a3d
+
+pkgname = gnome-nibbles

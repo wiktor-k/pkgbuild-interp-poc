@@ -1,0 +1,25 @@
+# Maintaier: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=liborigin
+pkgver=3.0.4
+pkgrel=1
+pkgdesc='A library for reading OriginLab OPJ project files'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+url='https://sourceforge.net/projects/liborigin/'
+depends=(glibc
+         libgcc
+         libstdc++)
+makedepends=(cmake)
+source=(https://downloads.sourceforge.net/project/liborigin/liborigin/${pkgver%.*}/liborigin-$pkgver.tar.gz)
+sha256sums=('b1bf35f72e39892ad351bed4a3e724aee6cfa673281dea2c78cceb9042a74e57')
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

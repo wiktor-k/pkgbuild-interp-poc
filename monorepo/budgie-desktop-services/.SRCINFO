@@ -1,0 +1,23 @@
+pkgbase = budgie-desktop-services
+	pkgdesc = Logic orchestrator for budgie-desktop
+	pkgver = 1.0.2
+	pkgrel = 3
+	url = https://forge.moderndesktop.dev/BuddiesOfBudgie/budgie-desktop-services
+	arch = x86_64
+	groups = budgie
+	license = MPL-2.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	makedepends = toml11
+	makedepends = vulkan-headers
+	depends = glibc
+	depends = kwayland
+	depends = qt6-base
+	depends = wayland
+	source = git+https://forge.moderndesktop.dev/BuddiesOfBudgie/budgie-desktop-services.git#tag=1.0.2
+	validpgpkeys = 0E0D97562A4EC8BD8E329DCDAA7A2325E04B609B
+	b2sums = 9dd00ed3f464735dc545667c8f7067de9e47336dcb44c2a518dac69dbed45a9577d98439cbc715cd8c422d2bf1d9d2fb8819cc1747f73d7ec599308beb14c501
+
+pkgname = budgie-desktop-services

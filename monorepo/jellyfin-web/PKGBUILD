@@ -1,0 +1,40 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+
+pkgname=jellyfin-web
+pkgver=12.2
+pkgrel=1
+pkgdesc='Web client for Jellyfin'
+arch=(any)
+url='https://jellyfin.org'
+license=(GPL-2.0-or-later)
+makedepends=(
+  git
+  nodejs
+  npm
+)
+source=("$pkgname::git+https://github.com/jellyfin/jellyfin-web#tag=v$pkgver")
+sha512sums=('68048c7723a77332d81538b6e789bc03c4872a4f0bdb5b433e83917c45b6d1bdfb37212da23b56f707c360f35108444103302273c3fe507a6e7fc0cedce6f1d6')
+b2sums=('8ba749c58741abbc21f02c5d192b3a806ee39442073ad7a76f25d348a41b92d74fa38d3b96afedb2a1002854991f91cc8b94b90b959337e19bf0f7d57f1a5628')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  npm ci --no-audit --no-fund --no-update-notifier
+}
+
+build() {
+  cd "$pkgname"
+
+  npm run build:production
+}
+
+package() {
+  cd "$pkgname"
+
+  install -vd "$pkgdir/usr/share/jellyfin/web"
+  cp -vr dist/* "$pkgdir/usr/share/jellyfin/web"
+}
+
+# vim: ts=2 sw=2 et:

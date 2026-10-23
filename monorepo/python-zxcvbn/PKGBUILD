@@ -1,0 +1,41 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-zxcvbn
+_pkgname=zxcvbn-python
+pkgver=4.5.0
+pkgrel=2
+pkgdesc="Python implementation of Dropbox's realistic password strength estimator"
+arch=(any)
+url='https://github.com/dwolfhub/zxcvbn-python'
+license=(MIT)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('8c6887da9d4084060011a37f705528b24bf6d69452b92280df99290ac108934d93aeb7eec827381787e78753a5c6c3af486cf4cdceb0ff8726c96a60aa36d5e2')
+b2sums=('941f1ec1f13de0dd41c87aa6ffba8c8fb29338f5b4b7c8dba36d8436a7ceae549f14bcd05137f751239b336f0037e8ca2770f86eb493611296a9557a0512f68e')
+
+build() {
+  cd $_pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pkgname-$pkgver
+  pytest
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}
+
+# vim: ts=2 sw=2 et:

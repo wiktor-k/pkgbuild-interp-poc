@@ -1,0 +1,43 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=git-branchless
+pkgver=0.11.1
+pkgrel=2
+pkgdesc='High-velocity monorepo-scale workflow for Git'
+url="https://github.com/arxanas/$pkgname"
+arch=(x86_64)
+license=(Apache-2.0 MIT)
+depends=(git
+         libgit2
+         sqlite)
+makedepends=(cargo)
+checkdepends=(git)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('e71f3e0b6cdbe9948dcabd6e70a18a29285d8a6af3e54bf91192f1aea7099c7c')
+
+prepare() {
+	cd "$_archive"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "$_archive"
+	export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	cd "$_archive"
+	# https://github.com/arxanas/git-branchless/issues/266
+	export TEST_GIT=$(which git) TEST_GIT_EXEC_PATH=$(git --exec-path)
+	# https://github.com/arxanas/git-branchless/issues/1416
+	# cargo test --frozen --all-features
+}
+
+package () {
+	cd "$_archive"
+	local _target="target/release/$pkgname"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$_target"
+	$_target install-man-pages "$pkgdir/usr/share/man/"
+}

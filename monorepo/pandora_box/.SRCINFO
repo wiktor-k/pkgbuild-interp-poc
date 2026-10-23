@@ -1,0 +1,18 @@
+pkgbase = pandora_box
+	pkgdesc = Syd's log inspector & profile writer
+	pkgver = 0.24.0
+	pkgrel = 1
+	url = https://gitlab.exherbo.org/sydbox/sydbox/-/tree/main/pandora
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = syd
+	provides = pandora
+	source = git+https://gitlab.exherbo.org/sydbox/sydbox.git#tag=pandora-0.24.0?signed
+	validpgpkeys = 5DF763560390A149AC6C14C7D076A377FB27DE70
+	sha256sums = 84a9b20d464360ffd8e61b71cbad44527a8af16bcc48c5eac20dcdced8c8d73f
+
+pkgname = pandora_box

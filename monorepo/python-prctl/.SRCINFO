@@ -1,0 +1,24 @@
+pkgbase = python-prctl
+	pkgdesc = Python(ic) interface to the linux prctl syscall
+	pkgver = 1.8.1
+	pkgrel = 9
+	url = https://github.com/seveas/python-prctl
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = iputils
+	checkdepends = procps-ng
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = libcap
+	source = git+https://github.com/seveas/python-prctl.git#tag=v1.8.1
+	source = skip-tests.diff
+	source = setuptools-62.1.diff
+	sha512sums = 54f1a1bc20fb617e5b99c3d9058b79b380048329e4e256b00f7f351b4f3bd986ff4740dd198371dce520f35eb7ec28547acd524c2283f29cb0b610160d67e6d0
+	sha512sums = d7aa5bf2a1854892d2a62fd78f713e6a9df5ff7b6d44a676316970dba348590151d6db5e0583d039db816d361793c8d2f143836bd4113f881e823c741f462bed
+	sha512sums = 7ad2c724860db6c8d3b4e767696e18cedd96a567a97ad14ac2dc29d0bb2f0dc01961775b6dac704dfcee6b00db89b9768f99dc0e68cdbf09ddc0ba4e1027a81a
+
+pkgname = python-prctl

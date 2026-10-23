@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Evangelos Foutras <foutrelis@archlinux.org>
+# Contributor: Jose Riha <jose1711 gmail com>
+
+pkgname=gcompris-qt
+pkgver=26.2
+pkgrel=1
+pkgdesc='Educational software suite comprising of numerous activities for children aged 2 to 10'
+arch=(x86_64)
+url='https://gcompris.net/'
+license=(AGPL-3.0-only)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  openssl
+  qml-box2d
+  qt6-base
+  qt6-charts
+  qt6-declarative
+  qt6-graphs
+  qt6-imageformats
+  qt6-multimedia
+  qt6-sensors
+  qt6-svg
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  git
+  kdoctools
+  ninja
+  qt6-tools
+)
+source=("git+https://invent.kde.org/education/gcompris.git#tag=V$pkgver")
+b2sums=(e5c508286c3373c3ea752983bc9077573489a959d04bf159954c6a98d8653336632c7f92ebeac887d3899428f902718b39adbeb6aedc05718ea6bf04f51ee4d6)
+validpgpkeys=(D2FAAB621F618D42685B427B63D7264C05687D7E) # Timothée Giet <animtim@gmail.com>
+
+prepare() {
+  cd gcompris
+}
+
+build() {
+  cmake -S gcompris -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D COMPILE_DOC=ON \
+    -D PACKAGE_SERVER=ON \
+    -D QML_BOX2D_LIBRARY=/usr/lib/qt6/qml/Box2D
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

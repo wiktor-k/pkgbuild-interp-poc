@@ -1,0 +1,64 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Dominik Heidler <dheidler@gmail.com>
+
+pkgname=gnuradio-iqbal
+pkgver=0.38.3
+pkgrel=3
+pkgdesc="Gnuradio I/Q balancing"
+arch=(x86_64)
+url="https://cgit.osmocom.org/gr-iqbal/"
+license=(GPL-3.0-or-later)
+depends=(
+  gcc-libs
+  glibc
+  python
+  python-pygccxml
+)
+makedepends=(
+  boost
+  cmake
+  fftw
+  git
+  gmp
+  gnuradio
+  libvolk
+  pybind11
+)
+provides=(libgnuradio-iqbalance.so)
+replaces=(gr-iqbal)
+source=(
+  "$pkgname::git+https://gitea.osmocom.org/sdr/gr-iqbal.git#tag=v$pkgver"
+  "git+https://gitea.osmocom.org/sdr/libosmo-dsp.git"  # TODO: package this instead
+   boost-1.89.patch
+)
+b2sums=('456b73f7fa85192b29610a81de6c8485c33d0ee5d826b64d843ad80b60ee87c30a58938dbfbaddacbf700ed106a384e91d7638bb2cde73c7598828125eea46ea'
+        'SKIP'
+        'cdad9ddb905e9d36f5ce7e26c6554be7225305db1c7708b085de5fabd57709973782834e0b54c7364aef5fc0f9e3ae48c28d0f5fbfc62392ab1046d056beb213')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git submodule set-url libosmo-dsp "$srcdir/libosmo-dsp"
+  git -c protocol.file.allow=always submodule update
+
+  patch -p1 -i ../boost-1.89.patch
+}
+
+build() {
+  cmake -S $pkgname -B build \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -W no-dev \
+    -D CMAKE_LIBRARY_PATH=/usr/lib
+  cmake --build build
+}
+
+package() {
+  depends+=(
+    fftw libfftw3f.so
+    gnuradio libgnuradio-pmt.so libgnuradio-runtime.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,29 @@
+pkgbase = audio-sharing
+	pkgdesc = Share current computer audio playback in the form of an RTSP stream
+	pkgver = 0.2.4
+	pkgrel = 4
+	url = https://apps.gnome.org/AudioSharing/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gst-rtsp-server
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/World/AudioSharing.git#tag=0.2.4
+	source = audio-sharing-pipewire.patch
+	b2sums = 83f95756eeebc4d1574959a934b57dc217a981ffd37268c44698a4c2652854636559ce0494c0403aa791db9d49d376bb19e12479ae7b33ffadd4bc0f6ee7ffa8
+	b2sums = a3a4fced87117166438cea6019dc63f2cc5a5d0619fd190c6b4fd4a1bba1e8a896ace1ddad3d4658457aa5ff21464bcbae2439aea014fc37b154daf76167c244
+
+pkgname = audio-sharing

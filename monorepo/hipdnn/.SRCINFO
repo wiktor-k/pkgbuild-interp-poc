@@ -1,0 +1,26 @@
+pkgbase = hipdnn
+	pkgdesc = Graph-based deep learning library for AMD GPUs
+	pkgver = 7.2.4
+	pkgrel = 1
+	url = https://github.com/ROCm/rocm-libraries/tree/develop/projects/hipdnn
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = rocm-cmake
+	makedepends = rocm-llvm
+	makedepends = rocm-toolchain
+	makedepends = python
+	makedepends = nlohmann-json
+	makedepends = spdlog
+	makedepends = gtest
+	depends = rocm-core
+	depends = hip-runtime-amd
+	depends = miopen-hip
+	depends = glibc
+	depends = gcc-libs
+	depends = flatbuffers
+	source = hipdnn-7.2.4.tar.gz::https://github.com/ROCm/rocm-libraries/releases/download/rocm-7.2.4/hipdnn.tar.gz
+	sha256sums = a782fe3e807bb40989129a302683a8978f6a753cf5202b0452e8e2f2c432de83
+
+pkgname = hipdnn

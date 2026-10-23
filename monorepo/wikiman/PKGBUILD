@@ -1,0 +1,32 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Filip Parag <aur@filiparag.com>
+
+pkgname=wikiman
+pkgver=2.14.1
+pkgrel=2
+pkgdesc="Offline search engine for manual pages, Arch Wiki, Gentoo Wiki and other documentation"
+arch=('any')
+url="https://github.com/filiparag/wikiman"
+license=('MIT')
+makedepends=('make')
+depends=('man' 'fzf' 'ripgrep' 'awk' 'w3m' 'findutils' 'coreutils' 'sed' 'grep' 'parallel')
+optdepends=('arch-wiki-docs: enable Arch Wiki')
+source=(
+  "${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+  "${pkgname}-fix-fish-completion-install-dir.patch"
+)
+sha256sums=('5a8964b3200c7f9d1c05555fff81fc90f76e0624de7f1d14628933f3480333cb'
+            '26dcc2391c152435f2048db71388ce4669575c57af076b62284ad9f50610c142')
+backup=('etc/wikiman.conf')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  patch -Np1 < ../${pkgname}-fix-fish-completion-install-dir.patch
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  make prefix=${pkgdir} install
+}
+
+# vim: ts=2 sw=2 et:

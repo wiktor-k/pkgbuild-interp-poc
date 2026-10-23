@@ -1,0 +1,74 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=release-plz
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='Release Rust packages without using the command line'
+arch=(x86_64)
+url="https://github.com/MarcoIeni/$pkgname"
+license=(MIT Apache-2.0)
+depends=(curl libcurl.so
+         glibc # libc.so libm.so ld-linux-x86-64.so
+         libgcc libgcc_s.so
+         libgit2 libgit2.so
+         openssl libssl.so
+         sqlite libsqlite3.so
+         zstd libzstd.so)
+makedepends=(cargo
+             git)
+optdepends=('cargo-semver-checks: check for API breaking changes')
+source=("git+$url.git#tag=$pkgname-v$pkgver")
+sha256sums=('0843a94c72e2fc4bafc2e61e38ae28ee1429a5c5d3df648ccd7ae4f4e5e68774')
+
+_srcenv() {
+	cd "$pkgname"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -fno-lto -O0'
+	CPPFLAGS+=' -fno-lto -O0'
+	export LIBGIT2_NO_VENDOR=1
+	export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+	export ZSTD_SYS_USE_PKG_CONFIG=1
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+	mkdir -p completions
+}
+
+build() {
+	_srcenv
+	cargo build --release --frozen --no-default-features
+	local compgen="target/release/$pkgname generate-completions"
+	$compgen bash > "completions/$pkgname"
+	$compgen fish > "completions/$pkgname.fish"
+	$compgen zsh > "completions/_$pkgname"
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		semver_check::tests::checks_private_library_with_versionless_dependency
+		semver_check::tests::only_major_changes_are_incompatible
+		update::semver_check_builds_in_a_temporary_target_directory_by_default
+		update::semver_check_preserves_explicit_default_target_directory
+		update::semver_check_preserves_target_directory_from_cargo_config
+	)
+	cargo test --frozen --no-default-features -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	cd "$pkgname"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE-MIT
+	install -Dm0644 -t "$pkgdir/usr/share/bash-completion/completions/" "completions/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "completions/$pkgname.fish"
+	install -Dm0644 -t "$pkgdir/usr/share/zsh/site-functions/" "completions/_$pkgname"
+}

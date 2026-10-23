@@ -1,0 +1,21 @@
+pkgbase = srsgui
+	pkgdesc = A graphics library for software radio
+	pkgver = 2.0
+	pkgrel = 5
+	url = https://github.com/srsLTE/srsGUI
+	arch = x86_64
+	license = AGPL3
+	makedepends = cmake
+	makedepends = boost
+	depends = qt5-base
+	depends = qwt-qt5
+	source = srsGUI-2.0.tar.gz::https://github.com/srsLTE/srsGUI/archive/release_2_0_qt5.tar.gz
+	source = srsgui-qwt-6.2.patch
+	source = boost-1.83.patch
+	source = boost-1.89.patch
+	sha512sums = 9d766a80fc81b015f5c8dbed3fa97d417496a0e4db11bd23a66bae4c3a2d7e0206f2569af8884d01b40702416dab6add52cc0ef04f29b176aba99de00466a88d
+	sha512sums = 1097681e57d0548db36db9ab1331e6e96554b44618b21ee08631e188e092796d57ec49c0456055b633026246eb652f75cd7470c60bb530ebf246d92cd9f28b5e
+	sha512sums = fb01776c9477b0c7f0fc3e983585500512f0c87a8f0d2df6732cf7c0d2e67a7f50b21e75b6e2ca78e40723a8683463139c627174171815e44ce1172cdaa50503
+	sha512sums = 2ee18480b8e1497c816755fe20100fd35f3918f66b6975e69f5e93e49e02b320d493f6f08eaa02ce315fc50c0bea7101d7a78e2ca8dc50bf33f2a28cac7aa8fd
+
+pkgname = srsgui

@@ -1,0 +1,63 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-requests-cache
+pkgver=1.3.3
+pkgrel=1
+pkgdesc='Persistent HTTP cache for python requests'
+arch=(any)
+url='https://github.com/requests-cache/requests-cache'
+license=(BSD-2-Clause)
+depends=(
+  python
+  python-requests
+  python-urllib3
+  python-attrs
+  python-cattrs
+  python-platformdirs
+  python-url-normalize
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+)
+checkdepends=(
+  python-pytest
+  python-requests-mock
+  python-rich
+  python-pymongo
+  python-responses
+  python-redis
+  python-tenacity
+)
+optdepends=(
+  'python-boto3: DynamoDB support'
+  'python-botocore: DynamoDB support'
+  'python-pymongo: MongoDB support'
+  'python-redis: Redis support'
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('576538f8803699d94ac2c154224015562c975a23485904363f2e796138caa7c7a8ef19f2a2298a41e9b9e94e8ab61988e76e7823147dc7e2529fda360ebf9216')
+b2sums=('7043cec976c0cfe969d687cb60e33b4cbd597d9d20e88ebfb122104a88c4d6be2102437acd44addd68bbd1033f18a0633234ab6d5644ff975a9f8cf38df77dab')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+#check() {
+#  cd "$pkgname"
+#
+#  pytest -v
+#}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,51 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=textdistance
+pkgname=python-${_pkg}
+pkgver=4.6.3
+pkgrel=4
+pkgdesc="Compute distance between sequences"
+arch=(any)
+url="https://github.com/life4/textdistance"
+license=(MIT)
+depends=(
+    python-jellyfish
+    python-numpy
+    python-levenshtein
+    python-pyxdameraulevenshtein
+)
+makedepends=(
+    python-build
+    python-installer
+    python-setuptools
+    python-wheel
+)
+checkdepends=(
+    python-pytest
+    python-hypothesis
+    python-isort
+    python-pylev
+    python-py_stringmatching
+    python-tabulate
+)
+# PyPi tarballs do not have the tests
+#source=(https://files.pythonhosted.org/packages/source/${_pkg::1}/${_pkg}/${_pkg}-${pkgver}.tar.gz)
+source=(${url}/archive/${pkgver}/${_pkg}-${pkgver}.tar.gz)
+sha256sums=('1efec1ec903d62969413c552e07cde8ecdad7259e6a5c4c1e516007ed7ad5f47')
+
+build() {
+  cd ${_pkg}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkg}-${pkgver}
+  # Failing tests, reported by email
+  pytest --deselect tests/test_external.py
+}
+
+package() {
+  cd ${_pkg}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+}

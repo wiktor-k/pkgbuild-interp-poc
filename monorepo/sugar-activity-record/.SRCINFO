@@ -1,0 +1,29 @@
+pkgbase = sugar-activity-record
+	pkgdesc = Activity to record audio, video and take photos for Sugar
+	pkgver = 201
+	pkgrel = 1
+	url = https://github.com/sugarlabs/record-activity
+	arch = any
+	groups = sugar-fructose
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gst-plugins-good
+	depends = gst-python
+	depends = gstreamer
+	depends = gtk3
+	depends = librsvg
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-dbus
+	depends = python-gobject
+	depends = sugar-toolkit-gtk3
+	depends = telepathy-glib
+	source = git+https://github.com/sugarlabs/record-activity.git#tag=v201
+	b2sums = 88d76d406063378fbe3730c4869240189d9bf6509de3dbf949583afc4916a3a3885dc8c30ae774e853e9840be31218081230a13296a234aae7cb7fdcaba90354
+
+pkgname = sugar-activity-record

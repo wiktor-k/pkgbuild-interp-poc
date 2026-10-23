@@ -1,0 +1,36 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cargo-binstall
+pkgver=1.25.1
+pkgrel=1
+pkgdesc="Binary installation for Rust projects"
+arch=('x86_64')
+url="https://github.com/cargo-bins/cargo-binstall"
+license=('GPL-3.0-only')
+depends=('cargo' 'glibc' 'libgcc')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('862ff87fbacc030c065cb342217fab07e6826de05e0549c51dd306e2e2c5033a')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  CFLAGS+=" -ffat-lto-objects"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

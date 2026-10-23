@@ -1,0 +1,63 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Morteza NourelahiAlamdari <m@0t1.me>
+# Contributor: Samuel Walladge <aur at swalladge dot net>
+
+pkgname=peco
+pkgver=0.6.0
+pkgrel=1
+pkgdesc='Simplistic interactive filtering tool'
+arch=(x86_64)
+url='https://github.com/peco/peco'
+license=(MIT)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('9717d845319cc6bf268cb1e6a35663fe3a9b55448ab8fb4bf1dbe9f937f4c4df8d7011948ea746c58cbdacdcd8ef64c4d37182ad6f89db51c55aabef78110309')
+b2sums=('4d19b3808ff182bbe0356b89efa1571ebd150367064bd98ed122a28ce452074b529279db1445b80f75aedb6c2f0e048cff2c8ff96cde8bd1031945dd3e5dcb0d')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    -o build \
+    ./cmd/...
+
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "build/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}
+
+# vim:set ts=2 sw=2 et:

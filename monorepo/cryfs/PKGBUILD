@@ -1,0 +1,48 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Andy Weidenbaum <archbaum@gmail.com>
+# Contributor: kaylyn
+# Contributor: Giuseppe Calà <jiveaxe@gmail.com>
+
+pkgname=cryfs
+pkgver=1.0.3
+pkgrel=6
+pkgdesc='Cryptographic filesystem for the cloud'
+arch=(x86_64)
+depends=(boost-libs
+         fmt
+         fuse2
+         glibc
+         libgcc
+         libgomp
+         libstdc++
+         spdlog)
+makedepends=(boost
+             cmake
+             git
+             python
+             range-v3)
+url='https://www.cryfs.org'
+license=(LGPL-3.0-only)
+source=(git+https://github.com/cryfs/cryfs#tag=$pkgver)
+sha256sums=('d2d24bafdddd60ea36857547cd59eab03482d766e450cd2517faf09dafe6f5e9')
+validpgpkeys=(5D5EC7BC6F1443EC2AF7177A9E6C996C991D25E1) # CryFS Team <messmer@cryfs.org>
+
+prepare() {
+  cd $pkgname
+  sed -e '/Release/d' -i doc/CMakeLists.txt # Install man page also with dafault build type
+}
+
+build() {
+  cmake -B build -S cryfs \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=OFF \
+    -DCRYFS_UPDATE_CHECKS=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm 644 $pkgname/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname
+  install -Dm 644 $pkgname/README.md -t "$pkgdir"/usr/share/doc/$pkgname
+}

@@ -1,0 +1,35 @@
+pkgbase = x11vnc
+	pkgdesc = VNC server for real X displays
+	pkgver = 0.9.17
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/LibVNC/x11vnc/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = avahi
+	depends = glibc
+	depends = openssl
+	depends = libvncserver
+	depends = libx11
+	depends = libxcomposite
+	depends = libxcrypt
+	depends = libxdamage
+	depends = libxext
+	depends = libxfixes
+	depends = libxi
+	depends = libxinerama
+	depends = libxrandr
+	depends = libxtst
+	depends = sh
+	depends = xorg-xdpyinfo
+	optdepends = net-tools: for -auth guess
+	optdepends = tk: for GUI support
+	optdepends = xf86-video-dummy: for Xdummy script
+	source = git+https://github.com/LibVNC/x11vnc.git#commit=e2b726a8c0464051afda01648072af6835aaa5f7?signed
+	source = x11vnc.service
+	validpgpkeys = 968479A1AFF927E37D1A566BB5690EEEBB952194
+	sha256sums = 8fb290d3c56970441651f541f1dff3993c6b17147b84483a38f607ef02875eb8
+	sha256sums = cfb19d44e09e960e2fdb958c9258bccf23c2677715314985f7e819f1dcedb6e4
+
+pkgname = x11vnc

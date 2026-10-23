@@ -1,0 +1,41 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Jiachen YANG <farseerfc@gmail.com>
+# Contributor: Marcus Scheunemann
+
+pkgname=python-markdown-math
+pkgver=0.9
+pkgrel=2
+pkgdesc="Math extension for Python-Markdown"
+arch=('any')
+url="https://github.com/mitya57/python-markdown-math"
+license=('BSD-3-Clause')
+depends=(
+  'python'
+  'python-markdown'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("git+$url#tag=$pkgver?signed")
+sha256sums=('dfe579ed6247bde4d9decc28246c49888b4a6976e85cd760657006217cbe589d')
+validpgpkeys=('F24299FF1BBC9018B906A4CB6026936D2F1C8AE0') # Dmitry Shachnev <mitya57@debian.org>
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  python -m unittest -v test.py
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

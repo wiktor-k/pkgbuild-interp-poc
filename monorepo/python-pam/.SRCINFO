@@ -1,0 +1,19 @@
+pkgbase = python-pam
+	pkgdesc = Pure Python interface to the Pluggable Authentication Modules system
+	pkgver = 2.1.0
+	pkgrel = 1
+	url = https://github.com/FirefighterBlu3/python-pam
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-poetry-core
+	depends = python
+	depends = pam
+	source = python-pam::git+https://github.com/FirefighterBlu3/python-pam#tag=v2.1.0
+	sha512sums = b8ad916b7355b79629f89738a55747858639e3da42525878604f217587361952c47900a0feeed129f3e3a4884c96997e08c603a4f0cb3e1c0d46c56f7d2188cc
+	b2sums = 51042dfdf6aedea748b049cee7687ee8ac9fd53740f967916686689200c343e07b7ffee3f513ae473ee372f87c8205571dcac0e584f3e1c97e2856269b262923
+
+pkgname = python-pam

@@ -1,0 +1,51 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Julien Nicoulaud <julien.nicoulaud@gmail.com>
+# Contributor: Hyacinthe Cartiaux <hyacinthe.cartiaux@free.fr>
+
+pkgname=ruby-tins
+_pkgname="${pkgname#ruby-}"
+pkgver=1.61.0
+pkgrel=1
+pkgdesc='All the stuff that is not good/big enough for a real library'
+arch=(any)
+url='https://github.com/flori/tins'
+license=(MIT)
+depends=(ruby ruby-bigdecimal ruby-sync ruby-mize)
+makedepends=(git ruby-rake)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('48669f6ddb41ae15cd1841ff55ed59fe464940d1cd88621090f13a1d5f2c37a4ecba376653abcdb9c6ded47d71bbc852d27283f52ecc54b05a13e9a934cb1241')
+b2sums=('9101d8cafadef7cf8556a5b85c23019d6a972f7e1741357edcb082e30e99feb194c4d4ce8416666f021aaf5fb72b7d370db8456d4ebc1ef00d9fee9e4e6de990')
+
+prepare() {
+  cd "$pkgname"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' tins.gemspec
+}
+
+build() {
+  cd "$pkgname"
+
+  gem build tins.gemspec
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

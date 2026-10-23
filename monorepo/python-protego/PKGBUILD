@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-protego
+pkgver=0.7.0
+pkgrel=1
+pkgdesc="A pure-Python robots.txt parser with support for modern conventions"
+url="https://github.com/scrapy/protego"
+license=('BSD-3-Clause')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-hatchling' 'python-installer')
+checkdepends=('python-pytest' 'python-pytest-timeout')
+source=("git+https://github.com/scrapy/protego.git#tag=$pkgver")
+sha512sums=('b2ac8c69a1b927472a011b2d5200622f93e3c9e31b12fef6d02491eb1006de3fa8328a2d99d496dd7dbbd73ffe7c48cb0fcfd3dac48bb26747f47ef0fe765b97')
+
+build() {
+  cd protego
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd protego
+  PYTHONPATH="$PWD"/src pytest tests
+}
+
+package() {
+  cd protego
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

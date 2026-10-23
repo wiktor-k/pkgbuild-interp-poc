@@ -1,0 +1,24 @@
+pkgbase = hashcat
+	pkgdesc = Multithreaded advanced password recovery utility
+	pkgver = 7.1.2
+	pkgrel = 2
+	epoch = 1
+	url = https://hashcat.net/hashcat
+	arch = x86_64
+	license = MIT
+	makedepends = opencl-headers
+	makedepends = rust
+	depends = ocl-icd
+	depends = xxhash
+	depends = zlib
+	depends = minizip
+	provides = libhashcat.so
+	source = https://hashcat.net/files/hashcat-7.1.2.tar.gz
+	source = https://hashcat.net/files/hashcat-7.1.2.tar.gz.asc
+	source = hashcat-fix-wrong-crc-include-on-m17220_a3-pure.cl.patch::https://github.com/hashcat/hashcat/commit/66d2f3b9c0e3e75c62c9f10f766d042fecf8f457.patch
+	validpgpkeys = A70833229D040B4199CC00523C17DA8B8A16544F
+	sha512sums = 89213058aaa2be3aa62dfab8acd5c61a7c8bd58a63ce2c3c1472960e122ca554f63482cb201f4e285acb97d94b1c1038bc93a203d66bd5a428f31ad8c709873c
+	sha512sums = SKIP
+	sha512sums = 070a83c853716a56adf74ba779c07c4e4850df569116ea58f0ee2adda5c72e0e6b2b452847b6913c46cb5df3ea9f548345d40eb47ad1777cf28767cbb7407ec0
+
+pkgname = hashcat

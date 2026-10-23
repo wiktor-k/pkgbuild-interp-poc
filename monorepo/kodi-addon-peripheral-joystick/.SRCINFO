@@ -1,0 +1,17 @@
+pkgbase = kodi-addon-peripheral-joystick
+	pkgdesc = Joystick support for Kodi
+	pkgver = 21.1.23
+	pkgrel = 6
+	url = https://github.com/xbmc/peripheral.joystick
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-peripheral
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-peripheral-joystick-21.1.23.tar.gz::https://github.com/xbmc/peripheral.joystick/archive/21.1.23-Omega.tar.gz
+	sha512sums = 6c948680ec919076479c47031a75eefd7e6bad7d3f40d8b1a9d38e1f831b136cdab9381fa624e7d0255bd7bc558bf6b34ea4f38021724067059abc7df6917aae
+
+pkgname = kodi-addon-peripheral-joystick
+	depends = kodi

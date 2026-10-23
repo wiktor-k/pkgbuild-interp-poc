@@ -1,0 +1,50 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: NOGISAKA Sadata <ngsksdt@gmail.com>
+# Contributor: Kohei Suzuki <eagletmt@gmail.com>
+
+pkgname=ghq
+pkgver=1.11.2
+pkgrel=1
+pkgdesc="Remote repository management made easy"
+arch=(x86_64)
+url="https://github.com/x-motemen/ghq"
+license=(MIT)
+depends=(glibc)
+makedepends=(go)
+checkdepends=(git)
+options=(!lto)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('b9f12843cfbbf84a45df989da336abc3f401c8aaf59b621d75c10d1ed8e25b70333a397250a689b5ea1f458bc95d884e45637c4dea69c8665cdf5be8ac4d1ed6')
+
+prepare() {
+  cd $pkgname-$pkgver
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  # shellcheck disable=SC2153
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="$srcdir"
+
+  local ldflags="-compressdwarf=false -linkmode=external"
+  go build -v -ldflags="$ldflags" .
+}
+
+check() {
+  cd $pkgname-$pkgver
+  go test -v .
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" ghq
+  install -vDm644 misc/bash/_ghq "$pkgdir/usr/share/bash-completion/completions/ghq"
+  install -vDm644 misc/zsh/_ghq "$pkgdir/usr/share/zsh/site-functions/_ghq"
+  install -vDm644 misc/fish/ghq.fish "$pkgdir/usr/share/fish/vendor_completions.d/ghq.fish"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

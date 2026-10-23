@@ -1,0 +1,75 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=gitfourchette
+pkgver=1.11.0
+pkgrel=1
+pkgdesc='The comfortable Git UI'
+arch=(any)
+url='https://gitfourchette.org'
+license=(GPL-3.0-only)
+depends=(
+  python
+  python-pygit2
+  python-pyqt6
+  python-pygments
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  libicns
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+	python-pytest
+	python-pytest-qt
+	python-pytest-cov
+	python-pytest-xdist
+	python-ruff
+)
+optdepends=(
+  'python-psutil: memory indicator'
+  'python-mfusepy: mount git tree as fuse filesystem'
+)
+source=(
+  "$pkgname::git+https://github.com/jorio/gitfourchette#tag=v$pkgver"
+  reproducible-metadata.patch
+)
+sha512sums=('904632a0c50ea2603125ea026868d303e3ec43381053a284470b6f0234c884305f4636c24348c99310f84549be3a4f763d7ca6e6f72b537188b1d3dc6aaa35e4'
+            '93674636c7d6847e8f4e8b4cfbb4fb4fd934c51c082eb185c1cfef9faff2f96a6d89a5f152c8ef25ba051202379684db5ef5fbd7eda63810d1f54fbe1621d5ab')
+b2sums=('c9f9f32d95eb676c5e12a6842484e60620e8c53ff0c141faf93c8eab84fe408b0249101ac223ff9252927e89135f3efef59af07dc5c487c0c29977395096bacd'
+        '548ab1749858ab5da2c0812b0209c3705fd8411477da1c95b857f25e4706d88a213f3f19942e5d66a44be285dc343db41589b70fb556782bd4c6b93e972b0178')
+
+prepare() {
+  cd "$pkgname"
+
+  # prefer reproducible metadata
+  patch -p1 -i "$srcdir/reproducible-metadata.patch"
+
+  # update metadata
+  python update_resources.py --freeze pyqt6
+
+  # extract hires icon (gitfourchette_512x512x32.png)
+  icns2png -x pkg/pyinstaller/gitfourchette.icns
+  mv gitfourchette_512x512x32.png org.gitfourchette.gitfourchette.png
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # appdata
+  install -vDm644 -t "$pkgdir/usr/share/applications" pkg/flatpak/*.desktop
+  install -vDm644 -t "$pkgdir/usr/share/icons/hicolor/256x256/apps" pkg/flatpak/*.png
+  install -vDm644 -t "$pkgdir/usr/share/icons/hicolor/512x512/apps" org.gitfourchette.gitfourchette.png
+  install -vDm644 -t "$pkgdir/usr/share/metainfo" pkg/flatpak/*.metainfo.xml
+}

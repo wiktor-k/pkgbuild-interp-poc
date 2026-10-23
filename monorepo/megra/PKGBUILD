@@ -1,0 +1,52 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=megra
+_name=${pkgname}.rs
+pkgver=0.0.18
+pkgrel=2
+pkgdesc="The Mégra Live Coding Language"
+arch=(x86_64)
+url="https://codeberg.org/parkellipsen/megra.rs"
+license=(GPL-3.0-or-later)
+depends=(
+  alsa-lib
+  bzip2
+  glibc
+  jack  # dlopened
+  libgcc
+  openssl
+  zstd
+)
+makedepends=(
+  rust
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz
+)
+sha512sums=('eaa8df978e1b665e88eaa676b6b1a8dab73f4f82ce033216b28e81ff4667055bb0c1dc0beb093f2865656c2fec6dfa99faf4f10a3d21ebd28c4c20fc5c680618')
+b2sums=('bb353b25014a68293fc346077d533c9dff9a9f8e69af9a7d2dcd9064be62678cf7852b1068708242092854a9a5dd2e97d84c0c50729359d2d2590867b68da0ee')
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  CFLAGS+=" -ffat-lto-objects"
+  cargo build --frozen --release --features low_latency
+}
+
+check() {
+  cd $_name
+  cargo test --frozen
+}
+
+package() {
+  cd $_name
+  install -vDm 755 target/release/${pkgname}_rs -t "$pkgdir/usr/bin/"
+  install -vDm 644 helper_functions/* -t "$pkgdir/usr/share/doc/$pkgname/helper_functions/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 changelogs/*.md "$pkgdir/usr/share/doc/$pkgname/"
+}

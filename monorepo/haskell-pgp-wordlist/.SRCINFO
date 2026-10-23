@@ -1,0 +1,21 @@
+pkgbase = haskell-pgp-wordlist
+	pkgdesc = Translate between binary data and a human-readable collection of words.
+	pkgver = 0.1.0.3
+	pkgrel = 846
+	url = https://github.com/quchen/pgp-wordlist
+	arch = x86_64
+	license = BSD
+	checkdepends = haskell-doctest
+	checkdepends = haskell-hunit
+	checkdepends = haskell-tasty
+	checkdepends = haskell-tasty-hunit
+	checkdepends = haskell-tasty-quickcheck
+	makedepends = ghc
+	depends = ghc-libs
+	depends = haskell-vector
+	source = https://hackage.haskell.org/packages/archive/pgp-wordlist/0.1.0.3/pgp-wordlist-0.1.0.3.tar.gz
+	source = haskell-pgp-wordlist-missing-functor.patch::https://github.com/quchen/pgp-wordlist/commit/214304abc2b9b1213e6ea0f4bcc6f0b8033ada22.patch
+	sha512sums = b7c6db47c1f9a0b10c5c94ea46b8eee282988e5990ef3dafa2d07a5bfc0718572b04494d23ddab063811ef2452546d6b17010c6490a89031f4b071f1a43d989b
+	sha512sums = acb47b814ed793119c388694074c7d1f69dd7ba1001b614b238356e9a53b4b709f207444dba58214fec7acc621d448c3a6a0326f0b8060ca13f30651506db324
+
+pkgname = haskell-pgp-wordlist

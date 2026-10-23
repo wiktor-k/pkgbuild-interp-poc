@@ -1,0 +1,137 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Maikel Wever <maikelwever@gmail.com>
+# Contributor: Asterios Dimitriou <asterios@pci.gr>
+# Contributor: Benjamin Asbach <archlinux-aur.lxd@impl.it>
+# Contributer: nightuser <nightuser.android at gmail.com>
+
+pkgbase=incus
+pkgname=(incus incus-tools)
+pkgver=7.5.1
+_pkgver="${pkgver/.0/}"
+pkgrel=1
+pkgdesc="Powerful system container and virtual machine manager"
+arch=('x86_64')
+url="https://linuxcontainers.org/incus/"
+license=('Apache-2.0')
+depends=('glibc' 'libgcc' 'lxc' 'lxcfs' 'squashfs-tools' 'dnsmasq' 'cowsql' 'libuv' 'ebtables' 'raft' 'sqlite' 'libcap' 'acl'
+
+          # VM Support
+          'qemu-base' 'qemu-chardev-spice' 'qemu-hw-usb-redirect'
+          'qemu-hw-display-virtio-vga' 'qemu-hw-display-virtio-gpu'
+          'qemu-audio-spice'
+)
+makedepends=('go' 'git' 'tcl' 'apparmor' 'libseccomp' 'systemd')
+optdepends=(
+    'lvm2: lvm2 support'
+    'thin-provisioning-tools: thin provisioning support'
+    'btrfs-progs: btrfs storage driver support'
+    'minio: storage buckets support'
+    'cdrtools: VM support'
+    'systemd-libs: unix device hotplug support'
+    'apparmor: apparmor support'
+    'xdelta3: support delta downloads of images'
+    'skopeo: OCI support'
+    'umoci: OCI support'
+)
+source=("https://linuxcontainers.org/downloads/incus/incus-$_pkgver.tar.xz"{,.asc}
+        "incus.socket"
+        "incus.service"
+        "incus-user.socket"
+        "incus-user.service"
+        "incus.sysusers")
+validpgpkeys=('602F567663E593BCBD14F338C638974D64792D67'  # Stéphane Graber <stgraber@stgraber.org>
+             )
+sha256sums=('93338baa19016b1b406f5c8275306ee20afbaf3e3d4b32ea203ad75583266c6a'
+            'SKIP'
+            '602a8035cc51b8e0c4ca265e31ebf96c7977db4239d384d8f60fed0d2d0317c4'
+            '81057039527f852f2b7d2fe25495b09543d3f031e0d83e56b9225014edbbebfb'
+            '50288528ea910d186157a2515c5200b3b073f645922fb581d1913f236f14667d'
+            'cc543319242d0904aaed6ae802350737e998a5a947590d1be907d66a7a51accb'
+            '90beead5dbde947936a58df8773519c49d92a2028881ae0ec81ee5402510e39a')
+
+prepare() {
+  cd "$pkgbase-${_pkgver}"
+
+  mkdir bin
+  go mod verify
+}
+
+build() {
+  cd "$pkgbase-${_pkgver}"
+
+  export CGO_LDFLAGS_ALLOW="-Wl,-z,now"
+  GO_LDFLAGS="-compressdwarf=false -linkmode external"
+
+  # linux agents
+  GOARCH=amd64 CGO_ENABLED=0 go build -o bin/incus-agent.linux.x86_64 -tags=agent,netgo ./cmd/incus-agent/...
+  GOARCH=arm64 CGO_ENABLED=0 go build -o bin/incus-agent.linux.aarch64 -tags=agent,netgo ./cmd/incus-agent/...
+  GOARCH=386 CGO_ENABLED=0 go build -o bin/incus-agent.linux.i686 -tags=agent,netgo ./cmd/incus-agent/...
+
+  # windows agents
+  GOARCH=amd64 GOOS=windows CGO_ENABLED=0 go build -o bin/incus-agent.windows.x86_64 -tags=agent,netgo ./cmd/incus-agent/...
+  GOARCH=arm64 GOOS=windows CGO_ENABLED=0 go build -o bin/incus-agent.windows.aarch64 -tags=agent,netgo ./cmd/incus-agent/...
+  GOARCH=386 GOOS=windows CGO_ENABLED=0 go build -o bin/incus-agent.windows.i686 -tags=agent,netgo ./cmd/incus-agent/...
+
+  # macos agents
+  GOARCH=amd64 GOOS=darwin CGO_ENABLED=0 go build -o bin/incus-agent.macos.x86_64 -tags=agent,netgo ./cmd/incus-agent/...
+  GOARCH=arm64 GOOS=darwin CGO_ENABLED=0 go build -o bin/incus-agent.macos.aarch64 -tags=agent,netgo ./cmd/incus-agent/...
+
+  export GOFLAGS="-buildmode=pie -modcacherw"
+  go build -v -ldflags "${GO_LDFLAGS}" -tags "netgo" -o bin/ ./cmd/incus-migrate/...
+  for tool in fuidshift incus lxc-to-incus incusd incus-benchmark incus-simplestreams incus-user; do
+    go build -v -ldflags "${GO_LDFLAGS}" -tags "libsqlite3" -o bin/ ./cmd/$tool
+  done
+}
+
+package_incus() {
+  cd "$pkgbase-${_pkgver}"
+
+  for tool in incus incus-migrate; do
+    install -v -p -Dm755 "bin/$tool" "${pkgdir}/usr/bin/$tool"
+  done
+
+  # excluded from $PATH
+  for tool in incusd incus-user; do
+    install -v -p -Dm755 "bin/$tool" "${pkgdir}/usr/lib/incus/$tool"
+  done
+
+  # VM Agents
+  for agent in bin/incus-agent.*; do
+    install -v -p -Dm755 "${agent}" "${pkgdir}/usr/lib/incus/agents/${agent##*/}"
+  done
+
+  # Package license
+  install -v -Dm644 "COPYING"  "${pkgdir}/usr/share/licenses/${pkgname}/LICENCE"
+
+  # systemd files
+  install -v -Dm644 "${srcdir}/"incus.{service,socket} -t "${pkgdir}/usr/lib/systemd/system"
+  install -v -Dm644 "${srcdir}/"incus-user.{service,socket} -t "${pkgdir}/usr/lib/systemd/system"
+  install -v -Dm644 "${srcdir}/$pkgname.sysusers" "${pkgdir}/usr/lib/sysusers.d/$pkgname.conf"
+
+  # logs
+  install -v -dm700 "${pkgdir}/var/log/incus"
+
+  # documentation
+  install -d "${pkgdir}/usr/share/doc/incus/"
+  rm -rf doc/html
+  cp -vr doc/* "${pkgdir}/usr/share/doc/incus/"
+  rm -f "${pkgdir}/usr/share/doc/incus/conf.py" # not necessary
+
+  # shell completions
+  ./bin/incus completion bash | install -Dm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/incus"
+  ./bin/incus completion zsh | install -Dm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_incus"
+  ./bin/incus completion fish | install -Dm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/incus.fish"
+}
+
+package_incus-tools() {
+  conflicts=('lxd')
+  cd "$pkgbase-${_pkgver}"
+  for tool in fuidshift lxc-to-incus incus-benchmark incus-simplestreams; do
+    install -v -p -Dm755 "bin/$tool" "${pkgdir}/usr/bin/$tool"
+  done
+  # Package license
+  install -v -Dm644 "COPYING"  "${pkgdir}/usr/share/licenses/${pkgname}/LICENCE"
+}
+
+# vim:set ts=2 sw=2 et:

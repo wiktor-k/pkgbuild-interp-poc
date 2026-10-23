@@ -1,0 +1,20 @@
+pkgbase = lib32-libxtst
+	pkgdesc = X11 Testing -- Resource extension library (32-bit)
+	pkgver = 1.2.5
+	pkgrel = 2
+	url = https://xorg.freedesktop.org/
+	arch = x86_64
+	license = custom
+	makedepends = gcc-multilib
+	makedepends = xorg-util-macros
+	depends = lib32-libxext
+	depends = lib32-libxi
+	depends = lib32-libxfixes
+	depends = libxtst
+	source = https://xorg.freedesktop.org//releases/individual/lib/libXtst-1.2.5.tar.xz
+	source = https://xorg.freedesktop.org//releases/individual/lib/libXtst-1.2.5.tar.xz.sig
+	validpgpkeys = 4A193C06D35E7C670FA4EF0BA2FB9E081F2D130E
+	sha256sums = b50d4c25b97009a744706c1039c598f4d8e64910c9fde381994e1cae235d9242
+	sha256sums = SKIP
+
+pkgname = lib32-libxtst

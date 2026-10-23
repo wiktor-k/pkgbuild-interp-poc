@@ -1,0 +1,67 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=contrast
+pkgver=0.0.11
+pkgrel=3
+pkgdesc='Checks whether the contrast between two colors meet the WCAG requirements'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/design/contrast'
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  pango
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.gnome.org/World/design/contrast.git#tag=$pkgver"
+  contrast-fix-color-picker.patch
+)
+b2sums=(
+  f406ab497ecd6b70ca1a70a5e41df65bfd56a86b2c6ebc949d9a02f0b10d845024fcbfeaa5b3facd695e19aa9a64a62f0de352c65aaed3140e780c5f90623286
+  fdc6fb57462135d81bf0f078cd836e7bc311658dc13907cc69a996ff39eca5f527de6ab6bf7aa118d4ead777da2b2e8159d91b9ad905e8c03cdaa36bd9187e16
+)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.gnome.org/World/design/contrast/-/merge_requests/44
+  git cherry-pick -n fc520c05ff5d5fda7a9e3fba4509545cc0ba688d
+
+  # https://gitlab.gnome.org/World/design/contrast/-/merge_requests/43
+  git cherry-pick -n d4e769a73c2cc0cd0402a2a1fc3f33595dea712a
+
+  # https://gitlab.gnome.org/World/design/contrast/-/merge_requests/45
+  git apply -3 ../contrast-fix-color-picker.patch
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

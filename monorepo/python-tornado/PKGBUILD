@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+
+pkgname=python-tornado
+pkgver=6.6.0
+pkgrel=1
+pkgdesc='open source version of the scalable, non-blocking web server and tools'
+arch=('x86_64')
+url='https://www.tornadoweb.org/'
+license=('Apache-2.0')
+depends=('glibc' 'python')
+optdepends=('python-pycurl: for tornado.curl_httpclient'
+            'python-twisted: for tornado.platform.twisted')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools')
+# Deprecated CaresResolver requires pycares 4 and will not support Arch's pycares 5.
+# https://github.com/tornadoweb/tornado/blob/v6.6.0/docs/caresresolver.rst
+checkdepends=('python-hypothesis' 'python-pycurl' 'python-twisted')
+source=("git+https://github.com/tornadoweb/tornado.git#tag=v$pkgver")
+sha512sums=('c3869ed45aa0c1403edd6f21ea3257438cca23cc836625438d889a6c2fe8e621e0e3980831816419bf860fd381e2bcfc8b4d5d039a2c4021c31f9ca24026402f')
+
+export TORNADO_EXTENSION=1
+
+build() {
+  cd tornado
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd tornado
+  python -m venv --system-site-packages --without-pip "$srcdir/venv"
+  "$srcdir/venv/bin/python" -m installer dist/*.whl
+  cd "$srcdir"
+  "$srcdir/venv/bin/python" -bb -m tornado.test
+  "$srcdir/venv/bin/python" -O -m tornado.test
+  "$srcdir/venv/bin/python" -m tornado.test --httpclient=tornado.curl_httpclient.CurlAsyncHTTPClient
+  "$srcdir/venv/bin/python" -m tornado.test --resolver=tornado.netutil.ThreadedResolver
+}
+
+package() {
+  cd tornado
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

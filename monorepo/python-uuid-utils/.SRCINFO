@@ -1,0 +1,22 @@
+pkgbase = python-uuid-utils
+	pkgdesc = Fast, drop-in replacement for Python's uuid module, powered by Rust
+	pkgver = 1.1.0
+	pkgrel = 1
+	url = https://github.com/aminalaee/uuid-utils
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-pytest-codspeed
+	makedepends = cargo
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	makedepends = python-wheel
+	depends = glibc
+	depends = libgcc
+	depends = python
+	source = git+https://github.com/aminalaee/uuid-utils.git#tag=1.1.0
+	sha512sums = 0aabaf0d947fa71b2350aedb9e23d290eb7e8c2b5a63114192d8ed24e2c5a94498b7b73b0e5cc61591bd5e845543371098d0245891e84c62832f881ac04b54ce
+
+pkgname = python-uuid-utils

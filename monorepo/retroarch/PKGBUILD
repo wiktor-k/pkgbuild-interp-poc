@@ -1,0 +1,105 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Themaister <maister@archlinux.us>
+# Contributor: lifning <definelightning@gmail.com>
+
+pkgname=retroarch
+pkgver=1.22.2
+pkgrel=5
+pkgdesc='Reference frontend for the libretro API'
+arch=(x86_64)
+url=http://www.libretro.com/
+license=(GPL-3.0-only)
+groups=(libretro)
+depends=(
+  alsa-lib
+  dbus
+  ffmpeg
+  #flac
+  fontconfig
+  fribidi
+  glibc
+  libass.so
+  libdrm
+  libfreetype.so
+  libgcc
+  libgl
+  libpipewire
+  libpulse
+  libstdc++
+  libudev.so
+  libusb
+  libx11
+  libxcb
+  libxext
+  libxinerama
+  libxkbcommon
+  libxrandr
+  libxxf86vm
+  libxv
+  mesa
+  openssl
+  qt6-base
+  sdl2
+  v4l-utils
+  wayland
+  zlib
+  xz
+)
+makedepends=(
+  gamemode
+  git
+  libdecor
+  vulkan-icd-loader
+  wayland-protocols
+)
+optdepends=(
+  'gamemode: GameMode support'
+  'libdecor: Wayland decorations'
+  'libretro-overlays: Collection of overlays'
+  'libretro-shaders: Collection of shaders'
+  'python: retroarch-cg2glsl'
+  'retroarch-assets-glui: GLUI UI/UX assets'
+  'retroarch-assets-ozone: Ozone UI/UX assets'
+  'retroarch-assets-xmb: XMB UI/UX assets'
+)
+backup=(etc/retroarch.cfg)
+source=(
+  git+https://github.com/libretro/RetroArch.git#tag=v${pkgver}
+  retroarch-config.patch
+  ffmpeg-9.patch
+)
+b2sums=('001cf261cda10fc42e9261d9eae56452d23904cba544f906fa96db8db149bf3f4cd5ce5a84f90c591b5501cd3e7637be131a2a25342dca745b2ad0161a4755f6'
+        '5ecbe57126c7f9b66bdf189f0af2f1cec031cb68ea85bb9609847ba9beb0e720c902cd3330d7c286901a73e6c2e272c3f04166cf9a47bb6f80097f19dde8ce3a'
+        'b3e9c4d7e3c99d8baba0cb6a602c3f529e2ce4be2e38fc42366806986a47000bc85934362d53eb8385480c43d63c05bc087a93cf59cfa176b8dc1085f0873dc0')
+
+prepare() {
+  cd RetroArch
+  patch -Np1 -i ../retroarch-config.patch
+  patch -p1 -i ../ffmpeg-9.patch
+}
+
+build() {
+  cd RetroArch
+  ./configure \
+    --prefix=/usr \
+    --enable-builtinmbedtls \
+    --disable-builtinzlib \
+    --disable-cg \
+    --disable-jack \
+    --disable-oss \
+    --disable-sdl \
+    --enable-dbus
+    #--disable-builtinflac \
+  make
+  make -C libretro-common/audio/dsp_filters
+  make -C gfx/video_filters
+}
+
+package() {
+  cd RetroArch
+  make DESTDIR="${pkgdir}" install
+  install -Dm 644 libretro-common/audio/dsp_filters/*.{dsp,so} -t "${pkgdir}"/usr/lib/retroarch/filters/audio/
+  install -Dm 644 gfx/video_filters/*.{filt,so} -t "${pkgdir}"/usr/lib/retroarch/filters/video/
+}
+
+# vim: ts=2 sw=2 et:

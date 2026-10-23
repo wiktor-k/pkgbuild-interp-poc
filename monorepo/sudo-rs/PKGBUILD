@@ -1,0 +1,70 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+
+pkgname=sudo-rs
+pkgver=0.2.15
+pkgrel=1
+pkgdesc="A memory-safe implementation of sudo and su"
+arch=('x86_64')
+url="https://github.com/trifectatechfoundation/sudo-rs"
+license=('Apache-2.0 AND MIT')
+depends=(
+  glibc
+  libgcc
+  pam
+)
+makedepends=(
+  cargo
+  git
+)
+checkdepends=(
+  # Not really needed directly, but the tests assume it exists
+  procps-ng
+)
+optdepends=(
+  "sudo: default configuration files"
+  "apparmor: apparmor support"
+)
+source=(git+https://github.com/trifectatechfoundation/sudo-rs.git#tag=v${pkgver}?signed)
+sha256sums=('0965affa2a629b7bdcfb94d554892843a5cd3f3df20acaef49ee3a34cf6c7792')
+validpgpkeys=(C2E4CAC4B12225DE1C3BB1C9289D082003D01E95) # Marc Schoolderman
+
+prepare() {
+  cd "$pkgname"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+  cargo build --release --frozen --features apparmor
+}
+
+check() {
+  cd "$pkgname"
+  cargo test --frozen --features apparmor
+}
+
+package() {
+  local section
+
+  cd "$pkgname"
+
+  install -Dm4755 target/release/sudo "$pkgdir/usr/bin/sudo-rs"
+  install -Dm4755 target/release/su "$pkgdir/usr/bin/su-rs"
+  install -Dm0755 target/release/visudo "$pkgdir/usr/bin/visudo-rs"
+
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE-*
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname" CHANGELOG.md README.md SECURITY.md
+
+  # Rename man pages with an -rs suffix so we don't conflict with sudo
+  install -Dm0644 docs/man/su.1.man "$pkgdir/usr/share/man/man1/su-rs.1"
+  install -Dm0644 docs/man/sudo.8.man "$pkgdir/usr/share/man/man8/sudo-rs.8"
+  install -Dm0644 docs/man/sudoers.5.man "$pkgdir/usr/share/man/man5/sudoers-rs.5"
+  install -Dm0644 docs/man/visudo.8.man "$pkgdir/usr/share/man/man8/visudo-rs.8"
+
+  # sudoedit links for convenience
+  ln "$pkgdir/usr/bin/sudo-rs" "$pkgdir/usr/bin/sudoedit-rs"
+  ln "$pkgdir/usr/share/man/man8/sudo-rs.8" "$pkgdir/usr/share/man/man8/sudoedit-rs.8"
+}
+
+# vim:set ts=2 sw=2 et:

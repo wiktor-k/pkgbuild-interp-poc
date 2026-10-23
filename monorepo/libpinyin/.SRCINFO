@@ -1,0 +1,17 @@
+pkgbase = libpinyin
+	pkgdesc = Library to deal with pinyin
+	pkgver = 2.10.3
+	pkgrel = 2
+	url = https://github.com/libpinyin/libpinyin
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = kyotocabinet
+	depends = glib2
+	noextract = libpinyin-model20.text.tar.gz
+	source = git+https://github.com/libpinyin/libpinyin.git#tag=2.10.3
+	source = libpinyin-model20.text.tar.gz::https://downloads.sourceforge.net/libpinyin/model20.text.tar.gz
+	sha512sums = 7402fcdf759f608fdb1ce8cb397f95e9872b2ef6ee09a5d70a4950c7a0051bd9f7095cbdbd12e97dff32ada3a15f3f5df73c1cf0a446163dfaea1d34a9b8ccbf
+	sha512sums = ed4d0607ad35e0e7ea424670539ddcd81a2b03c1da914b9c00cb748cf065f29471502d40b9a189852001da1fb9178c3bcc4675d7efebea5d081d78bfeee9b5d6
+
+pkgname = libpinyin

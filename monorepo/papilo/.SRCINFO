@@ -1,0 +1,26 @@
+pkgbase = papilo
+	pkgdesc = Parallel Presolve for Integer and Linear Optimization
+	pkgver = 3.0.2
+	pkgrel = 1
+	url = https://www.scipopt.org/
+	arch = x86_64
+	license = LGPL-3.0-only
+	makedepends = boost
+	makedepends = cmake
+	makedepends = gcc-fortran
+	makedepends = git
+	depends = blas
+	depends = boost-libs
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libgfortran
+	depends = libquadmath
+	depends = libstdc++
+	depends = tbb
+	source = git+https://github.com/scipopt/papilo#tag=v3.0.2
+	source = shared-libs.patch
+	sha256sums = a90802fa310e933e51cc826ee46dd39e4e21f801960d2718e6d078f53fab6e08
+	sha256sums = 957ff8289f3695fef86533b3c32f082b27c7d2e7d472964c214f7c2244c0099d
+
+pkgname = papilo

@@ -1,0 +1,25 @@
+pkgbase = firecracker
+	pkgdesc = Secure and fast microVMs for serverless computing
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://firecracker-microvm.github.io
+	arch = x86_64
+	license = Apache-2.0
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = rust
+	makedepends = clang
+	makedepends = cmake
+	options = !lto
+	options = !buildflags
+	source = firecracker::git+https://github.com/firecracker-microvm/firecracker.git#tag=v1.17.0
+	sha512sums = 94e1f07904a60500cf3b129a8ed440760a8b846e382d7c7f59176f3902e41005935c543128ac30dca8970d9848e4b0fcc1fe11dbfc05ff97e25979065be692b1
+	b2sums = d00df4e98bae893273c201c3f02b51858ea481853ecaeb6eaf65eee0090d2f76f9543a76733c47571f9e959e8c71b4b61db54d91cb8fbb3602b08e68147b40a9
+
+pkgname = firecracker
+	depends = glibc
+	depends = libgcc
+	depends = libseccomp
+
+pkgname = firecracker-docs
+	pkgdesc = Secure and fast microVMs for serverless computing (documentation)

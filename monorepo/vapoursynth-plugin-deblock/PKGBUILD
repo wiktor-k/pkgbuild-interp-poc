@@ -1,0 +1,32 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Gustavo Alvarez <sl1pkn07@gmail.com>
+
+pkgname=vapoursynth-plugin-deblock
+pkgver=9
+pkgrel=1
+pkgdesc='Deblock plugin for VapourSynth'
+arch=(x86_64)
+url=https://github.com/HolyWu/VapourSynth-Deblock
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  libgcc
+  vapoursynth
+)
+makedepends=(
+  git
+  meson-python
+  python-build
+  python-installer
+)
+source=(git+${url}.git#tag=r${pkgver})
+b2sums=('075323f6bae462d000bf310a75cdb12c340ef7736d3b6ea422bc490560916bdde08906278cdf9ffedad67ab981d5d6e875731748260adfe08da980e620805f3b')
+
+build() {
+  cd VapourSynth-Deblock
+  python -m build --wheel --no-isolation
+}
+
+package(){
+  python -m installer --destdir="${pkgdir}" VapourSynth-Deblock/dist/*.whl
+}

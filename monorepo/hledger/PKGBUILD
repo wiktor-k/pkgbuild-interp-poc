@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=hledger
+pkgver=1.52.4
+pkgrel=37
+pkgdesc="Command-line interface for the hledger accounting system"
+url="http://hledger.org"
+license=('GPL-3.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-ansi-terminal' 'haskell-cmdargs'
+         'haskell-data-default' 'haskell-decimal' 'haskell-diff' 'haskell-extra' 'haskell-githash'
+         'haskell-hashable' 'haskell-hledger-lib' 'haskell-http-client' 'haskell-http-types'
+         'haskell-lucid' 'haskell-math-functions' 'haskell-megaparsec' 'haskell-microlens'
+         'haskell-modern-uri' 'haskell-regex-tdfa' 'haskell-req' 'haskell-safe'
+         'haskell-shakespeare' 'haskell-split' 'haskell-tabular' 'haskell-tasty' 'haskell-temporary'
+         'haskell-text-ansi' 'haskell-timeit' 'haskell-unordered-containers' 'haskell-utf8-string'
+         'haskell-utility-ht' 'haskell-wizards')
+makedepends=('ghc' 'haskell-extra' 'haskell-timeit')
+source=("https://hackage.haskell.org/packages/archive/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('d4e7f409eb2d199b25fb2e1f442292baa799ee6d65078907abf9d3748f5c7e9cb07e55fe022a19112a4f8253477ac6fc5e2af0c5655918b861b2a3ce27134817')
+
+prepare() {
+    cd $pkgname-$pkgver
+    # This backtracks upstream bug fixes for 2410 and 2512, but we're blocked on
+    # this being baked into our (not so fresh) ghc-libs package for the moment.
+    sed -i -e '/haskeline/s/0.8.4.0/0.8/' hledger.cabal
+}
+
+build() {
+    cd $pkgname-$pkgver
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -fthreaded --ghc-option='-pie'
+    LC_CTYPE=en_US.UTF-8 runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $pkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $pkgname-$pkgver
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+
+    install -Dm644 embeddedfiles/hledger.1 -t "$pkgdir"/usr/share/man/man1/
+    install -Dm644 shell-completion/hledger-completion.bash "$pkgdir"/usr/share/bash-completion/completions/hledger
+}

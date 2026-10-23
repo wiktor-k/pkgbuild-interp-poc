@@ -1,0 +1,113 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar
+pkgver=0.121
+pkgrel=7
+pkgdesc='Sugar GTK shell'
+arch=(any)
+url='https://github.com/sugarlabs/sugar'
+license=(GPL-3.0-or-later)
+depends=(
+  bash
+  dconf
+  gdk-pixbuf2
+  glib2
+  gst-python
+  gstreamer
+  gtk3
+  gtksourceview4
+  gvfs
+  libgudev
+  libnm
+  libsoup3
+  libwnck3
+  libxklavier
+  metacity
+  mobile-broadband-provider-info
+  openssh
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  python-gwebsockets
+  python-xapian
+  sugar-toolkit-gtk3
+  telepathy-gabble
+  telepathy-glib
+  telepathy-mission-control
+  telepathy-salut
+  upower
+  webkit2gtk-4.1
+  xdg-user-dirs
+)
+makedepends=(
+  git
+  intltool
+  python-empy
+)
+source=(
+  "git+https://github.com/sugarlabs/$pkgname.git#tag=v$pkgver"
+  dont-overwrite-settings.patch
+)
+b2sums=(
+  3573456d8a9a13d20185f2cd152d7da0890ac25e80f2318d1c5453f73805e905b8fa3a6885bf82124b11907d991ecc541af8b55453c118407533a4d528d31958
+  aaf88f96a69d0c53b551b2e8e81bf5ed30e41a5711212fd7f80b08f0722eaa8528dc6d236cfc382b8457a90fb48d10c995694bebe797260e7fdfe4a1daba6166
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix build
+  git cherry-pick -n 892178ac11fa7d024b6062d956fe76f07499be3e
+
+  # DSA keys are no longer supported by OpenSSH
+  # https://github.com/sugarlabs/sugar/issues/1004
+  sed -i 's/-t dsa/-t rsa/' src/jarabe/intro/window.py
+
+  # Replace deprecated ConfigParser readfp with read_file
+  # https://github.com/sugarlabs/sugar/pull/1005
+  sed -i 's/cp.readfp/cp.read_file/' src/jarabe/model/update/microformat.py
+
+  # Don't raise error when country name not found
+  # https://github.com/sugarlabs/sugar/pull/1006
+  sed -i 's/return self\._data\[country_code\]/return self._data.get(country_code, country_code)/' extensions/cpsection/modemconfiguration/model.py
+
+  # Port to GtkSource 4
+  # https://github.com/sugarlabs/sugar/pull/1007
+  sed -i "s/'GtkSource', '3.0'/'GtkSource', '4'/" src/jarabe/view/viewsource.py
+
+  # Use correct D-Bus config location
+  sed -i '/^nmservicedir =/ s/sysconfdir/datadir/' data/Makefile.am
+
+  # Don't overwrite default GNOME settings
+  patch -Np1 -i ../dont-overwrite-settings.patch
+
+  # Set XDG_CURRENT_DESKTOP
+  sed -i '/Set default language/i export XDG_CURRENT_DESKTOP="X-Sugar"\n' bin/sugar.in
+
+  mkdir m4
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  rm -r "$pkgdir"/usr/share/sugar/extensions/cpsection/updater/
+
+  # Set default settings only for the Sugar session
+  echo "[org.gnome.desktop.interface:X-Sugar]
+cursor-theme='sugar'
+
+[org.gnome.metacity:X-Sugar]
+compositor='none'" > "$pkgdir/usr/share/glib-2.0/schemas/00_sugar.gschema.override"
+}

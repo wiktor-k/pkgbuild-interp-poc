@@ -1,0 +1,16 @@
+pkgbase = lib32-fakeroot
+	pkgdesc = Tool for simulating superuser privileges (32-bit)
+	pkgver = 1.37.2
+	pkgrel = 3
+	epoch = 1
+	url = https://tracker.debian.org/pkg/fakeroot
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = po4a
+	depends = lib32-glibc
+	depends = fakeroot
+	source = fakeroot-archive::git+https://github.com/eworm-de/fakeroot.git#tag=upstream/1.37.2-2026-01-17-8d7bc2eb
+	sha256sums = 46f44681cc939dd3f127761717830c0bfa72e1568191d4df071ae297013591e3
+
+pkgname = lib32-fakeroot

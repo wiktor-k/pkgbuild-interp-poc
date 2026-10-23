@@ -1,0 +1,17 @@
+pkgbase = wiremix
+	pkgdesc = A simple TUI audio mixer for PipeWire
+	pkgver = 0.11.0
+	pkgrel = 1
+	url = https://github.com/tsowell/wiremix
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	makedepends = clang
+	depends = gcc-libs
+	depends = libpipewire
+	options = !lto
+	source = wiremix-0.11.0.tar.gz::https://github.com/tsowell/wiremix/archive/v0.11.0.tar.gz
+	sha256sums = 62a7cace79c9af537e0917a6d4e5da66b2efe2b4abc5f08c0fbaed727acc8c9f
+
+pkgname = wiremix

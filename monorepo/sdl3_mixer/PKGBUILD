@@ -1,0 +1,32 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=sdl3_mixer
+pkgver=3.2.4
+pkgrel=1
+pkgdesc="A simple multi-channel audio mixer (Version 3)"
+arch=('x86_64')
+url="https://github.com/libsdl-org/SDL_mixer"
+license=('MIT')
+depends=('glibc' 'sdl3' 'libvorbis' 'libmodplug' 'mpg123' 'flac' 'opusfile' 'libxmp')
+makedepends=('fluidsynth' 'cmake' 'ninja')
+optdepends=('fluidsynth: MIDI software synth, replaces built-in timidity')
+source=("https://github.com/libsdl-org/SDL_mixer/releases/download/release-${pkgver}/SDL3_mixer-${pkgver}.tar.gz"{,.sig})
+sha512sums=('cfbd23bc1a730371b8b8232b8b72f6187a84e0fc6fb80ae0e546b023e1a7acb6115da3e010a4e1cdc3a6a8f7a4506ee1c110127cbb91f1094807da9c462e5b77'
+            'SKIP')
+validpgpkeys=('0900104363B4C9D4223DE149D913FE7D4B61D39B') # Sam Lantinga
+
+build() {
+  CFLAGS+=" -ffat-lto-objects"
+  cmake -S SDL3_mixer-${pkgver} \
+    -B build -G Ninja \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D SDLMIXER_TESTS_INSTALL=OFF \
+    -D SDLMIXER_EXAMPLES_INSTALL=OFF
+cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+
+  install -Dm644 SDL3_mixer-${pkgver}/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

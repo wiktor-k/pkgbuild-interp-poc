@@ -1,0 +1,16 @@
+pkgbase = symposium
+	pkgdesc = Tool for extending AI coding agents with project-specific context
+	pkgver = 0.5.1
+	pkgrel = 1
+	url = https://github.com/symposium-dev/symposium
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	depends = cargo
+	provides = cargo-agents
+	conflicts = cargo-agents
+	options = !lto
+	source = symposium-0.5.1.tar.gz::https://github.com/symposium-dev/symposium/archive/refs/tags/symposium-v0.5.1.tar.gz
+	sha256sums = e5e8ce87aa4c643bb5914bd60b4596d78dc1c9f84c6bdd02a1d6a280e63844bb
+
+pkgname = symposium

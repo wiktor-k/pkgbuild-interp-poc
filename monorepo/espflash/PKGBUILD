@@ -1,0 +1,60 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=espflash
+pkgver=4.6.0
+pkgrel=1
+pkgdesc="Cargo subcommand for flashing Espressif devices over serial"
+url='https://github.com/esp-rs/espflash'
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+provides=('cargo-espflash')
+conflicts=('cargo-espflash')
+replaces=('cargo-espflash')
+options=(!lto)
+source=(https://github.com/esp-rs/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('4d6fd3b57e7fc33480df9e4db403352632a3d8af486ed2721a8f5ab3c666195e')
+b2sums=('303a716bf44616c6e318d67c698382fe03323c52ada95c5d4857cded4d0db328bcfe246f242459f06543d654d5d6316ea3c4108dc701a514cf75f65eb9f4e9c4')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  cargo fetch --target "$(rustc --print host-tuple)" --locked
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen --workspace
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/espflash \
+    target/release/cargo-espflash
+
+  # install completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+    "${pkgdir}/usr/share/zsh/site-functions" \
+    "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completions bash >"${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions zsh >"${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions fish >"${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+
+  # licenses
+  install -Dm 644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE-*
+}
+
+# vim: ts=2 sw=2 et:

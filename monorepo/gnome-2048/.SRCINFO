@@ -1,0 +1,28 @@
+pkgbase = gnome-2048
+	pkgdesc = Obtain the 2048 tile
+	pkgver = 50.2
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-2048
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = desktop-file-utils
+	makedepends = git
+	makedepends = itstool
+	makedepends = meson
+	makedepends = rust
+	makedepends = vala
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = pango
+	options = !lto
+	source = git+https://gitlab.gnome.org/GNOME/gnome-2048.git#tag=50.2
+	b2sums = 4d9e06cdb5c4ceac88b8863083a67354066cec31b48cafb5995a5cf0a83f96f587b471b7202638230daf834044ad6ab817259e1fbae16eed08c58799f0d158fe
+
+pkgname = gnome-2048

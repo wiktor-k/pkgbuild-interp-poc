@@ -1,0 +1,82 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='googleapis-common-protos-types'
+pkgname="ruby-${_gemname}"
+pkgver=1.23.0
+pkgrel=1
+pkgdesc='Common protocol buffer types used by Google APIs'
+arch=('any')
+url="https://github.com/googleapis/common-protos-ruby"
+license=('Apache-2.0')
+depends=(
+  ruby
+  ruby-google-protobuf
+)
+makedepends=(
+  ruby-rdoc
+)
+options=('!emptydirs')
+source=("${url}/archive/${_gemname}%2Fv${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('ca7270d2539064acf978dad1207708547f39711e2052400074914b94af2cef45bfa647a648e299842c67e29eeeccce0fb86fd26bca9ea0255dc9e7cc1184fd4b')
+b2sums=('c51ea1477f74281c28e5679b5759bbf4665007d807405898820880b4c6544fe968098c112aa2eaa65f2411db36fcb9b7c5da566b9b59e28ca22502db2bce37c6')
+
+prepare() {
+  cd "common-protos-ruby-${_gemname}-v${pkgver}/${_gemname}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "common-protos-ruby-${_gemname}-v${pkgver}/${_gemname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+package() {
+  cd "common-protos-ruby-${_gemname}-v${pkgver}/${_gemname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 ../LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

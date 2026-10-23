@@ -1,0 +1,57 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Mubashshir <ahmubashshir@gmail.com>
+
+pkgname=python-jq
+pkgver=1.13.0
+pkgrel=1
+pkgdesc='Python bindings for jq'
+arch=(x86_64)
+url=https://github.com/mwilliamson/jq.py
+license=(BSD-2-Clause)
+depends=(
+  jq
+  python
+)
+makedepends=(
+  cython
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url.git#tag=$pkgver")
+sha512sums=('43dd64f391fb0d38dd3dba414f9dec5a9a191f05f4d85190a7f7119961673d6fc5a3c4dc5b35a9bfc68ee2e2f9eb5f0c00968f2e20eeaeaf40d254b3bf3a8e7d')
+b2sums=('2fb946782296362d69a1e23ede9034c6f8d3027cd6b171bad28b55a283dc45891ac0211f6401eec06c18aaf165b27d3da0262e866c841c75aa2640b6d6d2ae11')
+
+build() {
+  cd "$pkgname"
+
+  cython -3 jq.pyx
+  JQPY_USE_SYSTEM_LIBS=1 python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  local pytest_options=(
+    -vv
+  )
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

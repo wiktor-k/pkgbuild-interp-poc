@@ -1,0 +1,85 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-play
+pkgver=20260903.184445.g83700b2c31e5
+pkgrel=1
+pkgdesc='Sony PlayStation 2 core'
+arch=(x86_64)
+url=https://github.com/jpd002/Play-
+license=(MIT)
+groups=(libretro)
+depends=(
+  bzip2
+  glew
+  glibc
+  glu
+  icu
+  libgl
+  libretro-core-info
+  zlib
+)
+makedepends=(
+  cmake
+  git
+  libglvnd
+)
+source=(
+  libretro-play::git+https://github.com/jpd002/Play-.git#commit=${pkgver##*.g}
+  play-CodeGen::git+https://github.com/jpd002/Play--CodeGen.git
+  play-Dependencies::git+https://github.com/jpd002/Play-Dependencies.git
+  git+https://github.com/gulrak/filesystem.git
+  play-Framework::git+https://github.com/jpd002/Play--Framework.git
+  play-libchdr::git+https://github.com/jpd002/libchdr.git
+  play-Nuanceur::git+https://github.com/jpd002/Nuanceur.git
+  git+https://github.com/SDWebImage/SDWebImage.git
+  git+https://github.com/Cyan4973/xxHash.git
+  git+https://github.com/facebook/zstd.git
+)
+b2sums=('3d1fb815aa5d9a87c667fbcd3abd1879d998045b9093122defcc81333c673736a2ed385879adb8f5d2787b418795a28839d1fd40eb2a0794ce6e59f7e9d554d7'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd libretro-play
+  for submodule in deps/{CodeGen,Dependencies,Framework,Nuanceur,libchdr}; do
+    git submodule init ${submodule}
+    git config submodule.${submodule}.url ../play-${submodule#*/}
+  done
+  git -c protocol.file.allow=always submodule update
+  cd deps/Dependencies
+  git submodule init SDWebImage
+  git config submodule.SDWebImage.url ../../../SDWebImage
+  git submodule init ghc_filesystem
+  git config submodule.ghc_filesystem.url ../../../filesystem
+  git submodule init xxHash
+  git config submodule.xxHash.url ../../../xxHash
+  git submodule init zstd
+  git config submodule.zstd.url ../../../zstd
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  cmake -S libretro-play -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -DBUILD_LIBRETRO_CORE=ON \
+    -DBUILD_PLAY=OFF \
+    -DBUILD_TESTS=OFF \
+    -DENABLE_AMAZON_S3=OFF \
+    -Wno-dev
+  make -C build
+}
+
+package() {
+  install -Dm 644 build/Source/ui_libretro/play_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+  install -Dm 644 libretro-play/License.txt -t "${pkgdir}"/usr/share/licenses/libretro-play/
+}
+
+# vim: ts=2 sw=2 et:

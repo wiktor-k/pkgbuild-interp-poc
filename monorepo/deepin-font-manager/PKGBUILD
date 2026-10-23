@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-font-manager
+pkgver=6.5.43
+pkgrel=1
+pkgdesc='A font management tool for Deepin desktop'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-font-manager"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-svg' 'fontconfig' 'freetype2' 'glibc' 'libgcc' 'libstdc++' 'hicolor-icon-theme')
+makedepends=('git' 'cmake' 'deepin-file-manager' 'ninja' 'qt6-tools' 'clang')
+optdepends=('deepin-file-manager: font preview in file manager')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-font-manager.git#tag=$pkgver")
+sha512sums=('5d470ef1128d8147d46e0854060d070828a0e17ccd23a8feea8b3489a72da19d8e3ebb14d28edf372f6aee55b8c54eec34a38277950f78abb294b55e01976aea')
+
+prepare() {
+  cd deepin-font-manager
+
+  # Linking the bare dfm library name does not propagate its include directory.
+  sed -i '/# dfm-base typically provides include directories through imported targets/,+1c\    target_include_directories(${APP_PLUGIN} PRIVATE ${${DFM_BASE_PACKAGE}_INCLUDE_DIR})' \
+    deepin-font-preview-plugin/CMakeLists.txt
+}
+
+build() {
+  cd deepin-font-manager
+  cmake -GNinja . -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver
+  ninja
+}
+
+package() {
+  cd deepin-font-manager
+  DESTDIR="$pkgdir" ninja install
+}

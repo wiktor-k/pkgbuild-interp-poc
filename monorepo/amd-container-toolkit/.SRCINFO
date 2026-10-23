@@ -1,0 +1,15 @@
+pkgbase = amd-container-toolkit
+	pkgdesc = Tools that streamline the use of AMD GPUs with containers.
+	pkgver = 1.3.0
+	pkgrel = 1
+	url = https://github.com/ROCm/container-toolkit
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	source = amd-container-toolkit::git+https://github.com/ROCm/container-toolkit.git#tag=v1.3.0
+	sha512sums = 42fa79781165719977453f00036bcabdeb5c4feac632836f92d5e05fc299872a5d5833ec08c6e326c8f9fec6f19df7fae9dcdbf24e97771d9cfab231fb819ae7
+
+pkgname = amd-container-toolkit

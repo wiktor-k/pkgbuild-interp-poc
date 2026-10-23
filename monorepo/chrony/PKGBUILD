@@ -1,0 +1,101 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+# Contributor: Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Patrick Leslie Polzer <leslie.polzer@gmx.net>
+# Contributor: cdhotfire <cdhotfire@gmail.com>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+# Contributor: Elisamuel Resto <ryuji@simplysam.us>
+
+pkgname=chrony
+pkgver=4.9
+pkgrel=1
+pkgdesc='Lightweight NTP client and server'
+url=https://chrony-project.org/
+arch=('x86_64')
+license=('GPL-2.0-only')
+depends=(
+  'glibc'
+  'gnutls'
+  'libcap' 'libcap.so'
+  'libedit' 'libedit.so'
+  'libseccomp' 'libseccomp.so'
+  'nettle' 'libnettle.so'
+  'sh'
+)
+makedepends=(
+  'asciidoctor'
+  'git'
+  'pps-tools'
+)
+options=('!emptydirs')
+backup=('etc/chrony.conf')
+source=(
+  "git+https://gitlab.com/chrony/chrony.git?signed#tag=$pkgver"
+  chrony.sysusers
+  chrony.tmpfiles
+)
+b2sums=('a420a4ffb4b920aa9887f1bd871587e1dffb83f18979d8bb870a823b1200163e7e4f1022c3971de74fa707c410af8b411c923378fe14cf0e7278b069e1a4910b'
+        'a7aba9192a1b9ba512e78e768c5f5b3c630db0cfff23dd231f1254c5389ee8d750c6c33667cb9cec65712f3e2ef595a66d1dd87faf500a68e8b15d33fec162dc'
+        'e709df2f97b523ef1c7a9dae3232ccbd235ac8f025eba866165272f8ba0372a0aba965d3aae1402395e43331bd629b9d8f3fbffd75fc254f4a7e5ecd47f73130')
+validpgpkeys=(
+  '8F375C7E8D0EE125A3D3BD51537E2B76F7680DAC' # Miroslav Lichvar <mlichvar@redhat.com>
+)
+
+prepare() {
+  cd $pkgname
+  git cherry-pick -n fee12ec914cce805cc704a4c2804d75b4933ad2f # Fix build with nettle 4.0
+  sed -i \
+    -e 's|pool pool.ntp.org|pool 2.arch.pool.ntp.org|g' \
+    -e 's|server ntp1.example.net|server 0.arch.pool.ntp.org|g' \
+    -e 's|server ntp2.example.net|server 1.arch.pool.ntp.org|g' \
+    -e 's|server ntp3.example.net|server 3.arch.pool.ntp.org|g' \
+    examples/chrony.conf.example*
+  sed 's|/usr/sbin|/usr/bin|g' -i examples/*.service
+  echo $pkgver > version.txt
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-scfilter \
+    --enable-ntp-signd \
+    --with-user=chrony \
+    --with-sendmail=/usr/bin/sendmail \
+    --with-hwclockfile=/etc/adjtime \
+    --sbindir=/usr/bin \
+    --with-pidfile=/run/chrony/chronyd.pid
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="${pkgdir}" install install-docs
+
+  install -vDm 644 "${srcdir}/chrony.sysusers" "${pkgdir}/usr/lib/sysusers.d/chrony.conf"
+  install -vDm 644 "${srcdir}/chrony.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/chrony.conf"
+  install -vDm 644 examples/{chronyd,chrony-wait}.service -t "${pkgdir}/usr/lib/systemd/system"
+  install -vDm 644 examples/chrony.logrotate "${pkgdir}/etc/logrotate.d/chrony"
+  install -vDm 644 README NEWS -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm 644 examples/* -t "${pkgdir}/usr/share/doc/${pkgname}/examples"
+  echo "chronyd.service" | install -vDm 644 /dev/stdin "${pkgdir}/usr/lib/systemd/ntp-units.d/50-chrony.list"
+
+  install -vDm 644 examples/chrony.conf.example3 "${pkgdir}/etc/chrony.conf"
+  sed -i \
+    -e '/^! pool /s/^! //' \
+    -e '/^! leapseclist /s/^! //' \
+    -e '/^! makestep 1.0 3/s/^! //' \
+    -e '/^! rtcsync/s/^! //' \
+    "${pkgdir}/etc/chrony.conf"
+
+  rmdir -v "${pkgdir}"{/var/lib/chrony,/var/lib}
+}
+
+# vim: ts=2 sw=2 et:

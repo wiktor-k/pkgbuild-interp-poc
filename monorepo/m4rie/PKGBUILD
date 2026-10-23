@@ -1,0 +1,38 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <oudomphe@clipper.ens.fr>
+
+pkgname=m4rie
+pkgver=20250128
+pkgrel=2
+pkgdesc='Algorithms for linear algebra over F_2^e'
+arch=(x86_64)
+url='https://bitbucket.org/malb/m4rie'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         m4ri)
+makedepends=(git)
+source=(git+https://bitbucket.org/malb/m4rie#tag=$pkgver)
+sha256sums=('ed9b73f77b6c8825bdaea40b28b6ecd4a6f9e99b559b1f3af10adb9e4f6ef7a0')
+
+prepare() {
+  cd $pkgname
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-openmp
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make install DESTDIR="$pkgdir"
+}

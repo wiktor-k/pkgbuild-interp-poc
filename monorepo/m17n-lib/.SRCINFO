@@ -1,0 +1,26 @@
+pkgbase = m17n-lib
+	pkgdesc = Multilingual text processing library (runtimes)
+	pkgver = 1.8.7
+	pkgrel = 1
+	url = https://www.nongnu.org/m17n/
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = anthy
+	makedepends = ispell
+	depends = libxft
+	depends = m17n-db
+	depends = fribidi
+	depends = libthai
+	depends = libxml2
+	depends = gd
+	depends = libotf
+	optdepends = anthy: to use the anthy input method
+	optdepends = ispell: to use the ispell input method
+	options = !makeflags
+	options = !emptydirs
+	source = git+https://git.savannah.nongnu.org/git/m17n/m17n-lib.git#tag=REL-1-8-7
+	validpgpkeys = D68584F9B40A6502FD7C53015F592A4029890630
+	sha256sums = f982ffffd252b08b9be567c9a4431461c674ede76be72a1cafe9d398b6233f42
+
+pkgname = m17n-lib

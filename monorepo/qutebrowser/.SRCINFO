@@ -1,0 +1,25 @@
+pkgbase = qutebrowser
+	pkgdesc = A keyboard-driven, vim-like browser based on Python and Qt
+	pkgver = 3.7.0
+	pkgrel = 1
+	url = https://www.qutebrowser.org/
+	arch = any
+	license = GPL-3.0-only
+	makedepends = asciidoc
+	makedepends = python-setuptools
+	depends = python-jinja
+	depends = python-pyqt6
+	depends = python-yaml
+	depends = qt6-base
+	depends = python-pyqt6-webengine
+	optdepends = python-adblock: adblocking backend
+	optdepends = python-pygments
+	optdepends = pdfjs-legacy: displaying PDF in-browser
+	options = !emptydirs
+	source = https://github.com/qutebrowser/qutebrowser/releases/download/v3.7.0/qutebrowser-3.7.0.tar.gz
+	source = https://github.com/qutebrowser/qutebrowser/releases/download/v3.7.0/qutebrowser-3.7.0.tar.gz.asc
+	validpgpkeys = 27F3BB4FC217EECB858578AEEF7EE4D039690B7B
+	sha256sums = c7f95884ea5e6675e584025bea55cff950c47d749aff7f415f68da03fcce0f92
+	sha256sums = SKIP
+
+pkgname = qutebrowser

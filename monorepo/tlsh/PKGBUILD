@@ -1,0 +1,83 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgbase=tlsh
+pkgname=(tlsh python-tlsh)
+pkgver=4.12.0
+pkgrel=2
+pkgdesc='Fuzzy matching library that generates a hash value which can be used for similarity comparisons'
+url='https://github.com/trendmicro/tlsh'
+arch=(x86_64)
+license=(Apache-2.0)
+makedepends=(
+  cmake
+  python
+  gcc-libs
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(https://github.com/trendmicro/${pkgbase}/archive/refs/tags/${pkgver}/${pkgbase}-${pkgver}.tar.gz)
+sha256sums=('93d206e999d51b25bc800f01c1a88dd632849b1555ca8680264486738f39f3c2')
+sha512sums=('6085d63430a7f5e89565d5e5c03da3bb5717cdf95cd7d75cf0008559f78df1bf35303015c84e3eb0b06ae35cc8ef58c90a0164051237a7c7ec251e46a25c1103')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  # remove garbage
+  sed '/set(CMAKE_EXE_LINKER_FLAGS/d' -i CMakeLists.txt
+  sed '/set(CMAKE_CXX_FLAGS/d' -i CMakeLists.txt
+  sed 's|TLSH_SHARED_LIBRARY 0|TLSH_SHARED_LIBRARY 1|' -i src/CMakeLists.txt
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  mkdir -p build
+  (cd build
+    cmake .. \
+      -DCMAKE_BUILD_TYPE=None \
+      -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+      -DCMAKE_CXX_FLAGS="${CXXFLAGS} ${CPPFLAGS}" \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    make
+  )
+  (cd bin
+    cmake -E create_symlink tlsh_unittest tlsh
+  )
+  (cd py_ext
+    python -m build --wheel --no-isolation
+  )
+}
+
+check() {
+  cd ${pkgbase}-${pkgver}
+  (cd build
+    make test
+  )
+  (cd Testing
+    ./test.sh
+  )
+}
+
+package_tlsh() {
+  depends=(
+    glibc
+    gcc-libs
+  )
+  provides=(libtlsh.so)
+  cd ${pkgbase}-${pkgver}
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm 755 bin/tlsh_unittest -t "${pkgdir}/usr/bin"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+package_python-tlsh() {
+  depends=(
+    python
+    glibc
+    gcc-libs
+  )
+  cd ${pkgbase}-${pkgver}/py_ext
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

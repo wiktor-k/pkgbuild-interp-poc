@@ -1,0 +1,110 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Mahdi Sarikhani <mahdisarikhani@outlook.com>
+# Contributor: Anna <morganamilo@gmail.com>
+
+pkgname=super-productivity
+_desktopname=superproductivity
+pkgver=19.2.0
+_electronversion=43
+pkgrel=1
+pkgdesc="An advanced todo list app with timeboxing and time tracking capabilities"
+arch=('x86_64')
+url="https://super-productivity.com"
+license=('MIT')
+depends=('bash' "electron${_electronversion}" 'glibc' 'hicolor-icon-theme' 'libgcc')
+makedepends=('cargo' 'nodejs-lts-jod' 'npm')
+provides=('superproductivity')
+conflicts=('superproductivity')
+replaces=('superproductivity')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/johannesjo/${pkgname}/archive/v${pkgver}.tar.gz"
+        "0001-build-exclude-wayland-idle-helper-from-asar-archive.patch"
+        "${_desktopname}.desktop"
+        "${_desktopname}.metainfo.xml" # Taken from <https://github.com/flathub/com.super_productivity.SuperProductivity>
+        "${pkgname}.sh")
+sha256sums=('d82e2334d81d90fad91a4d0a05ab5d7ebc2c0c9764e6651c17499cc362a4e6ab'
+            'e04715ef0c4c798d7c0fc6f9ad25df784cd96ffa65c62ef446d5950bbfe7e1a1'
+            'e310fa4c0749b8568b9516fe96f285ec1d1d05f8371795a7ef30733c4620f98d'
+            '63ee2a1bd359b78da5e9b52e0f8dac8e37791d62f146a426d621f16f42ac00bd'
+            '01ddd1a8a63ec2dea24e666828e7800857d69a4a46f16c302be27458f5847fd0')
+
+prepare() {
+    sed -e "
+        s/@electronversion@/${_electronversion}/g
+        s/@appname@/${pkgname}/g
+        s/@runname@/app.asar/g
+        s/@cfgdirname@/${pkgname}/g
+        s/@options@/--ozone-platform-hint=auto/g
+    " -i "${srcdir}/${pkgname}.sh"
+
+    cd "${pkgname}-${pkgver}"
+
+    # Exclude binary from app.asar so we can create debug package
+    patch -Np1 -i "${srcdir}/0001-build-exclude-wayland-idle-helper-from-asar-archive.patch"
+    sed -i "s|path.dirname(process.execPath)|path.dirname(app.getAppPath())|g" electron/idle-time-handler.ts
+
+    # Disable update checking by default
+    sed -i \
+        '/isCheckForUpdates/s/true/false/' \
+        src/app/features/config/default-global-config.const.ts
+
+    export ELECTRON_SKIP_BINARY_DOWNLOAD=1
+
+    NODE_ENV=development npm ci
+
+    pushd electron/wayland-idle-helper
+    cargo fetch --locked --target host-tuple
+    popd
+}
+
+build() {
+    cd "${pkgname}-${pkgver}"
+
+    export ELECTRON_SKIP_BINARY_DOWNLOAD=1
+    export SYSTEM_ELECTRON_VERSION="$(electron${_electronversion} -v | sed 's/v//g')"
+    local electronDist="/usr/lib/electron${_electronversion}"
+
+    npm run buildFrontend:prod:es6
+    npm run electron:build
+
+    # clean up sourcemaps
+    find .tmp/angular-dist -name '*.map' -type f -delete
+    find node_modules -name '*.map' -type f -print -delete
+
+    # delete test and example cases
+    find node_modules -name test.js -type f -print -delete
+    find electron -name '*.test.cjs' -type f -print -delete
+    find node_modules -name example.js -type f -print -delete
+
+    # delete source code
+    rm -rf electron/wayland-idle-helper
+
+    # clean up build scripts
+    rm -f electron/tsconfig.electron.json
+    rm -rf electron/scripts
+
+    # delete docs
+    find node_modules -iname 'readme*' -type f -print -delete
+    find node_modules -iname '*.md' -type f -print -delete
+
+    # for reproducible builds
+    sed -i "s/\"timestamp\": [0-9]*/\"timestamp\": ${SOURCE_DATE_EPOCH}000/" .tmp/angular-dist/browser/ngsw.json
+
+    NODE_ENV=production npm exec -c "electron-builder --linux dir -c.electronDist=${electronDist} -c.electronVersion=${SYSTEM_ELECTRON_VERSION}"
+}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+
+    install -Dm644 .tmp/app-builds/linux*-unpacked/resources/app.asar -t "${pkgdir}/usr/lib/${pkgname}"
+    install -Dm755 .tmp/app-builds/linux*-unpacked/wayland-idle-helper -t "${pkgdir}/usr/lib/${pkgname}"
+
+    install -Dm755 "${srcdir}/${pkgname}.sh" "${pkgdir}/usr/bin/${pkgname}"
+    install -Dm644 "${srcdir}/${_desktopname}.desktop" -t "${pkgdir}/usr/share/applications"
+    install -Dm644 "${srcdir}/${_desktopname}.metainfo.xml" -t  "${pkgdir}/usr/share/metainfo"
+    for i in 16 32 48 64 128 256 512 1024; do
+        install -Dm644 "build/icons/${i}x${i}.png" "${pkgdir}/usr/share/icons/hicolor/${i}x${i}/apps/${pkgname}.png"
+    done
+
+    install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

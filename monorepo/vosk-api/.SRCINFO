@@ -1,0 +1,56 @@
+pkgbase = vosk-api
+	pkgdesc = Offline speech recognition toolkit
+	pkgver = 0.3.50
+	pkgrel = 7
+	url = https://alphacephei.com/vosk/
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = ffmpeg
+	checkdepends = python-numpy
+	makedepends = cmake
+	makedepends = git
+	makedepends = gradle
+	makedepends = java-environment=21
+	makedepends = python
+	makedepends = python-build
+	makedepends = python-cffi
+	makedepends = python-installer
+	makedepends = python-requests
+	makedepends = python-setuptools
+	makedepends = python-srt
+	makedepends = python-tqdm
+	makedepends = python-websockets
+	makedepends = python-wheel
+	noextract = vosk-model-small-en-us-0.15.zip
+	source = https://github.com/alphacep/vosk-api/archive/v0.3.50/vosk-api-0.3.50.tar.gz
+	source = https://github.com/xianyi/OpenBLAS/archive/v0.3.20/openblas-0.3.20.tar.gz
+	source = git+https://github.com/alphacep/clapack.git#commit=f4e1647de96343fb20eea08a9d4f0e0d04c31c51
+	source = git+https://github.com/alphacep/openfst.git#commit=18e94e63870ebcf79ebb42b7035cd3cb626ec090
+	source = kaldi-vosk-gbc5baf1.tar.gz::https://github.com/alphacep/kaldi/archive/bc5baf14231660bd50b7d05788865b4ac6c34481.tar.gz
+	source = https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
+	source = https://alphacephei.com/vosk/models/vosk-model-spk-0.4.zip
+	source = 010-vosk-api-gradle9.2-fix.patch
+	sha256sums = cc1067bcc599c9a2f5f38d4257caf2ac636ba244f7c965cee20293a41024f70f
+	sha256sums = 8495c9affc536253648e942908e88e097f2ec7753ede55aca52e5dead3029e3c
+	sha256sums = b5653996fc4487fc17d5976e598923abe8ee46973ed581b06312a81c1d56b7a4
+	sha256sums = cab85e0a4057f1c0dd85bc6f92b0e8437a7ca4859cca4a29482d2fd1d5bd7c4a
+	sha256sums = be5ee5e9bd2902f43beef8ab1a117525e0813010d660dfe4d22eb7ddee14aede
+	sha256sums = 30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498
+	sha256sums = a74d8f51144484813e16af689bb0f916b7a111e2347f467c4933c1166097b5a7
+	sha256sums = 546cde8eaf5e38de498cf522be7b3990dcf5451c05e1632889441b9c60b28733
+
+pkgname = vosk-api
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	optdepends = java-runtime: for java bindings
+
+pkgname = python-vosk
+	pkgdesc = Python module for vosk-api
+	depends = python
+	depends = python-cffi
+	depends = python-requests
+	depends = python-srt
+	depends = python-tqdm
+	depends = python-websockets
+	depends = vosk-api=0.3.50

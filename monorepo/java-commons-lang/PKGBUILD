@@ -1,0 +1,43 @@
+# Maintainer:
+# Contributor: Jonas Witschel <diabonas@archlinux.org>
+
+pkgname=java-commons-lang
+pkgver=3.21.0
+pkgrel=1
+pkgdesc='A host of helper utilities for the java.lang API'
+arch=('any')
+url='https://commons.apache.org/proper/commons-lang/'
+license=('APACHE')
+depends=('java-runtime-headless')
+makedepends=('java-environment' 'maven')
+source=("https://archive.apache.org/dist/commons/lang/source/commons-lang3-$pkgver-src.tar.gz"{,.asc})
+sha512sums=('38b6615e2c9aee7dcc9e259db4edcc003a10b84baea4ae547af9695938a87b8efc91fbb51f194b0fc37e7f18aef47604c17f9fe2ca49df20aeb1d5cc879275e2'
+            'SKIP')
+validpgpkeys=('B6E73D84EA4FCC47166087253FAAD2CD5ECBB314'  # Rob Tompkins <chtompki@apache.org>
+              'F4DD59C90148BDC52BEB90A4530AA5F25C25011F') # Gary David Gregory (Code signing key) <ggregory@apache.org>
+
+build() {
+	cd "commons-lang3-$pkgver-src"
+
+	# Building with JDK 17 currently leads to a test failure of
+	# "ToStringBuilderTest"
+	export PATH="/usr/lib/jvm/java-${_java}-openjdk/bin:$PATH"
+
+	mvn -am \
+		-Dproject.build.outputTimestamp="$SOURCE_DATE_EPOCH" \
+		-Dmaven.javadoc.skip=true \
+		-Dmaven.test.skip=true \
+		clean package
+}
+
+check() {
+	cd "commons-lang3-$pkgver-src"
+	export PATH="/usr/lib/jvm/java-${_java}-openjdk/bin:$PATH"
+	mvn test
+}
+
+package() {
+	cd "commons-lang3-$pkgver-src"
+	install -Dm644 "target/commons-lang3-$pkgver.jar" -t "$pkgdir/usr/share/java/commons-lang"
+	ln -s "commons-lang3-$pkgver.jar" "$pkgdir/usr/share/java/commons-lang/commons-lang.jar"
+}

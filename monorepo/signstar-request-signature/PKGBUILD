@@ -1,0 +1,55 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=signstar-request-signature
+_name=signstar
+pkgver=0.2.1
+pkgrel=1
+pkgdesc="A commandline tool for creating, reading and writing of signing requests for files"
+arch=(x86_64)
+url="https://signstar.archlinux.page/signstar-request-signature"
+_url="https://gitlab.archlinux.org/archlinux/signstar"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  rust
+  rust-script
+)
+checkdepends=(cargo-nextest)
+source=($_name::git+$_url.git?signed#tag=$pkgname/$pkgver)
+sha512sums=('93b8b1d9b0254fee517e87f8520389636cc489da8ab4746a6d51f99791e391293be7742541208ec633f2e3431f6f63cba44bef96c20750a7d2780f309c758255')
+b2sums=('a3b8a16b41e5e62db858f5a6029718ef29d81d27ec90e9003fcd61cf6e447fac78529f65eefe0bc35a67a1a79637d70a29a5621d3b89d7ba8831fe2f525f50b8')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release --package $pkgname
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_name
+  cargo nextest run --locked --package $pkgname
+}
+
+package() {
+  install -vDm 755 $_name/target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_name/$pkgname/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $_name/$pkgname/resources/docs/design.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $_name/LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name/output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 $_name/output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 $_name/output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+}

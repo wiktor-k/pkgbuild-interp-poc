@@ -1,0 +1,47 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-polkit
+pkgver=1.28.1
+pkgrel=4
+pkgdesc="PolicyKit integration for the MATE desktop"
+arch=(x86_64)
+url='https://github.com/mate-desktop/mate-polkit'
+license=(GPL-2.0-or-later)
+groups=(mate)
+depends=(
+  accountsservice
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  libappindicator
+  polkit
+)
+makedepends=(
+  git
+  mate-common
+)
+source=("git+https://github.com/mate-desktop/mate-polkit.git#tag=v$pkgver")
+b2sums=(0c1b5f170f4368570bfb41473394ce7fe00d5d0a9f100dbacb3f2324ebf73dcd27906db416bdb0992a942f55a4550332ad891de081cad2d3614821adfd522ecb)
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --libexecdir="/usr/lib/$pkgname" \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,52 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Ner0 <darkelfdarkelf666@yahoo.co.uk>
+
+pkgname=pantheon-code
+pkgver=8.4.0
+pkgrel=1
+pkgdesc='The Pantheon Text Editor'
+arch=(x86_64)
+url=https://github.com/elementary/code
+license=(GPL-3.0-or-later)
+groups=(pantheon)
+depends=(
+  editorconfig-core-c
+  dconf
+  fontconfig
+  glib2
+  gtk3
+  gtksourceview4
+  libgee
+  libgit2-glib
+  libgranite.so
+  libhandy-1.so
+  libpeas-2.so
+  pango
+  polkit
+  vala
+  vte3
+)
+makedepends=(
+  git
+  gobject-introspection
+  gtkspell3
+  libsoup3
+  meson
+)
+optdepends=(
+  'gtkspell3: Spell Check plugin'
+  'libsoup3: Pastebin plugin'
+)
+source=(pantheon-code::git+https://github.com/elementary/code.git#tag=${pkgver})
+b2sums=('3a0a45a5cc688334e22a7c3130b924e2b8d5be66597d1f7f7930696f95663a8268192778f4ea89501424c3a64f9806e70f75022e7e9ffc5389f4e3c449c9c5f7')
+
+build() {
+  arch-meson pantheon-code build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim:set ts=2 sw=2 et:

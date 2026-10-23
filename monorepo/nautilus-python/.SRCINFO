@@ -1,0 +1,24 @@
+pkgbase = nautilus-python
+	pkgdesc = Python bindings for the Nautilus Extension API
+	pkgver = 4.2.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/nautilus-python
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = gtk-doc
+	makedepends = meson
+	depends = glib2
+	depends = glibc
+	depends = libgcc
+	depends = libnautilus-extension
+	depends = nautilus
+	depends = python
+	depends = python-gobject
+	provides = python-nautilus=4.2.0
+	conflicts = python-nautilus
+	replaces = python-nautilus
+	source = git+https://gitlab.gnome.org/GNOME/nautilus-python.git#tag=4.2.0
+	b2sums = 4cb66a1c22b2429b562014f734ee2dadb111270bd824032026e223e95ee530664c42ed7c5f36e557d56e480c84c9ad8c8e1629a92fad68e2c58ed8f4cc4a723e
+
+pkgname = nautilus-python

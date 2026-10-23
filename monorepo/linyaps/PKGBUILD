@@ -1,0 +1,77 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: taotieren <admin@taotieren.com>
+
+pkgname=linyaps
+pkgver=1.14.3
+pkgrel=1
+pkgdesc='Next-Gen Universal Package Manager for Linux (linglong)'
+arch=(x86_64)
+url='https://github.com/OpenAtom-Linyaps/linyaps'
+license=('LGPL-3.0-or-later')
+provides=(
+  linglong
+)
+conflicts=(
+  linglong
+)
+depends=(
+  bash
+  curl
+  erofs-utils
+  erofsfuse
+  fmt
+  fuse-overlayfs
+  glib2
+  glibc
+  hicolor-icon-theme
+  libcap
+  libelf
+  libgcc
+  libseccomp
+  libstdc++
+  linyaps-box
+  qt6-base
+  systemd-libs
+  ostree
+  util-linux-libs
+  yaml-cpp
+)
+makedepends=(
+  cli11
+  cmake
+  git
+  gtest
+  qt6-tools
+  ninja
+  nlohmann-json
+  openssl
+  tl-expected
+  util-linux
+  vulkan-headers
+)
+source=(
+  git+https://github.com/OpenAtom-Linyaps/linyaps.git#tag=$pkgver
+)
+sha256sums=('65c79be0d74fab961e521e22d5843f4477eb5b336ed4382d717f2fd60d7746f7')
+
+build() {
+  cd linyaps
+  cmake \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
+    -DENABLE_CPM=OFF \
+    -DLINGLONG_VERSION="$pkgver" \
+    -Wno-dev \
+    -B build \
+    -G Ninja
+
+  ninja -C build
+}
+
+check() {
+  ninja -C linyaps/build test
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C linyaps/build install
+}

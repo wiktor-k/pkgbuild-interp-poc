@@ -1,0 +1,81 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=nerdctl
+pkgver=2.4.1
+pkgrel=1
+pkgdesc='Docker-compatible CLI for containerd'
+arch=(x86_64)
+url='https://github.com/containerd/nerdctl'
+license=(Apache-2.0)
+depends=(glibc containerd)
+makedepends=(git go)
+optdepends=(
+  'buildkit: to build OCI images'
+  'cni-plugins: to run OCI images'
+  'rootlesskit: for rootless mode'
+  'slirp4netns: for rootless mode'
+  'sh: for rootless setup scripts'
+)
+options=(!lto)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('f07e3827515dfc4c5ab3d376ee5943bc3ffd731804676ac0d7547ab06831ad51158c8f7b93325819f66215449f02388c498db5eedab31e02897ec7153bce8dd8')
+b2sums=('2d4deb9b2133b9f0f0f11d62c3498d57e63fd7be60332cbeaf0680913438ffa714ab06e0ef6a4b7649e15fcaaa6ae58922baf924689e5252e29c61363149b638')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  local _commit="$(git rev-parse HEAD)"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags \"${LDFLAGS}\" \
+    -X github.com/containerd/nerdctl/v2/pkg/version.Version=$pkgver \
+    -X github.com/containerd/nerdctl/v2/pkg/version.Revision=$_commit" \
+    -o build \
+    ./cmd/...
+
+  # generate shell auto-completions
+  for completion in bash fish zsh; do
+    ./build/nerdctl completion "$completion" > "build/$completion-completions"
+  done
+}
+
+#check() {
+#  cd "$pkgname"
+#
+#  go test -v ./pkg/...
+#}
+
+package() {
+  cd "$pkgname"
+
+  # binary & rootless scripts
+  install -vDm755 -t "$pkgdir/usr/bin" build/nerdctl extras/rootless/*.sh
+
+  # shell completions
+  install -vDm644 build/bash-completions "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm644 build/fish-completions "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+  install -vDm644 build/zsh-completions "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}

@@ -1,0 +1,65 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=audio-sharing
+pkgver=0.2.4
+pkgrel=4
+pkgdesc='Share current computer audio playback in the form of an RTSP stream'
+arch=(x86_64)
+url='https://apps.gnome.org/AudioSharing/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  glib2
+  glibc
+  graphene
+  gst-plugins-base
+  gst-plugins-good
+  gst-rtsp-server
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.gnome.org/World/AudioSharing.git#tag=$pkgver"
+  audio-sharing-pipewire.patch
+)
+b2sums=(
+  83f95756eeebc4d1574959a934b57dc217a981ffd37268c44698a4c2652854636559ce0494c0403aa791db9d49d376bb19e12479ae7b33ffadd4bc0f6ee7ffa8
+  a3a4fced87117166438cea6019dc63f2cc5a5d0619fd190c6b4fd4a1bba1e8a896ace1ddad3d4658457aa5ff21464bcbae2439aea014fc37b154daf76167c244
+)
+
+prepare() {
+  cd AudioSharing
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.gnome.org/World/AudioSharing/-/merge_requests/18
+  git apply -3 ../audio-sharing-pipewire.patch
+}
+
+build() {
+  arch-meson AudioSharing build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

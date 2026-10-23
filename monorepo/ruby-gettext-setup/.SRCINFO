@@ -1,0 +1,22 @@
+pkgbase = ruby-gettext-setup
+	pkgdesc = A gem that configures gettext for internationalization
+	pkgver = 1.1.0
+	pkgrel = 5
+	url = https://github.com/puppetlabs/gettext-setup-gem
+	arch = any
+	license = Apache-2.0
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	checkdepends = git
+	makedepends = ruby-rdoc
+	makedepends = ruby-bundler
+	depends = ruby
+	depends = ruby-fast_gettext
+	depends = ruby-gettext
+	options = !emptydirs
+	source = https://github.com/puppetlabs/gettext-setup-gem/archive/1.1.0/gettext-setup-gem-1.1.0.tar.gz
+	source = disable-simplecov.patch
+	sha512sums = 1ef7987ac24ca8cc95eb631d81552f35d153fd60132283dc4979473c149df8c09c8ce7a10caf53ff61f59c7c25a3921d3a367264c5a827ed491844b48def2307
+	sha512sums = 2c57b3984cc89f039da6dd537cd75c596ba8da31f9864be3e7e170c6d9bedf9aae70f5a0e660bb3ce5fddb66c223f05aae096b60bbe03646211f572d368e6136
+
+pkgname = ruby-gettext-setup

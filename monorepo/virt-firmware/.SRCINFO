@@ -1,0 +1,26 @@
+pkgbase = virt-firmware
+	pkgdesc = Collection of tools for edk2 firmware images
+	pkgver = 26.10
+	pkgrel = 2
+	url = https://gitlab.com/kraxel/virt-firmware
+	arch = any
+	license = GPL-2.0-or-later
+	checkdepends = python-pytest
+	checkdepends = systemd
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-crypt_r
+	depends = python-cryptography
+	depends = python-pefile
+	depends = python-pyyaml
+	depends = qemu-img
+	optdepends = python-crc32c: for faster CRC checks
+	optdepends = python-requests: for QEMU test integration
+	source = https://gitlab.com/kraxel/virt-firmware/-/archive/v26.10/virt-firmware-v26.10.tar.gz
+	sha512sums = 518773e7d95292949034882a7dd881e674ce9af2a751ace7d66d59c7051f8d53b4b48222f165183dec85b39fc1b8cd6a073d09808bd5a2db9d64e787a734b81d
+	b2sums = 5d4116a4d0e5bb79c52ca859d41cb50dd7c69391ea08b47043267c439f9da7688e7b4b6afd4d03365164103316e2f55c6c3530968953b49085efde5ef5ed364f
+
+pkgname = virt-firmware

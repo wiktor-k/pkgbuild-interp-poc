@@ -1,0 +1,47 @@
+pkgbase = gwenhywfar
+	pkgdesc = OS abstraction functions for various projects
+	pkgver = 5.14.1
+	pkgrel = 3
+	url = https://www.aquamaniac.de/rdm
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = glibc
+	makedepends = gnutls
+	makedepends = gtk3
+	makedepends = libgcc
+	makedepends = libgcrypt
+	makedepends = libgpg-error
+	makedepends = libstdc++
+	makedepends = openssl
+	makedepends = qt6-base
+	source = https://www.aquamaniac.de/rdm/attachments/download/630/gwenhywfar-5.14.1.tar.gz
+	source = https://www.aquamaniac.de/rdm/attachments/download/629/gwenhywfar-5.14.1.tar.gz.asc
+	validpgpkeys = 42400AF5EB2A17F0A69BB551E9899D784A977416
+	b2sums = 9bea5f80099f0a3ad964e81a48f5d56ea535dbefdb57355965337251c539466704d0f0b7af1f57a691142ba79e72e6301dbdde4242d30803b4af72323d7207c8
+	b2sums = SKIP
+
+pkgname = gwenhywfar
+	depends = glibc
+	depends = gnutls
+	depends = libgcrypt
+	depends = libgpg-error
+	depends = openssl
+	provides = libgwenhywfar.so
+
+pkgname = gwenhywfar-gtk
+	pkgdesc = OS abstraction functions for various projects (GTK3 GUI library)
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = gwenhywfar
+	provides = libgwengui-gtk3.so
+
+pkgname = gwenhywfar-qt
+	pkgdesc = OS abstraction functions for various projects (Qt6 GUI library)
+	depends = glibc
+	depends = gwenhywfar
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	provides = libgwengui-cpp.so
+	provides = libgwengui-qt6.so

@@ -1,0 +1,24 @@
+pkgbase = openntpd
+	pkgdesc = Free, easy to use implementation of the Network Time Protocol
+	pkgver = 7.9p1
+	pkgrel = 1
+	url = https://www.openntpd.org/
+	arch = x86_64
+	license = BSD
+	makedepends = git
+	depends = glibc
+	depends = libretls
+	conflicts = ntp
+	options = emptydirs
+	backup = etc/ntpd.conf
+	source = openntpd::git+https://github.com/openntpd-portable/openntpd-portable.git#tag=7.9p1
+	source = openbsd::git+https://github.com/openntpd-portable/openntpd-openbsd.git
+	source = openntpd.sysusers
+	source = openntpd.service
+	validpgpkeys = A1EB079B8D3EB92B4EBD3139663AF51BD5E4D8D5
+	sha512sums = 7ed34146ac3f56b86adeb2d75b180a4cb1626197f63eb7d63d32f70916450f96ebd684943a20823b83c404dae2d14c77a2a6ab482c83e08850219d89bdc2e9c2
+	sha512sums = SKIP
+	sha512sums = 2d709ce7ce83a799125158dc55b4ebb319e04d5ab6c133f0d8f7dd93503d670ff50e492059ad208e0272fdde5de407c685e18c6d7a328a2ce5901ec4e72108ed
+	sha512sums = 15c1a510fa8f43217b6a3fc3ba287176d04fbe0c4bbea616ab08d1c679ed9da6734233b70b4858093992a3fbf4346642353eb2626fd8e5668cda3712d5ea43b7
+
+pkgname = openntpd

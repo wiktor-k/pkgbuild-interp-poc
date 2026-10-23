@@ -1,0 +1,42 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Antoine Damhet
+
+pkgname=kanshi
+pkgver=1.9.0
+pkgrel=1
+pkgdesc='Dynamic output configuration for Wayland WMs'
+arch=(x86_64)
+url="https://gitlab.freedesktop.org/emersion/kanshi"
+license=('MIT')
+depends=(
+  'glibc'
+  'libscfg.so'
+  'vali'
+  'wayland'
+)
+makedepends=(
+  'meson'
+  'scdoc'
+)
+source=(
+  "https://gitlab.freedesktop.org/emersion/kanshi/-/releases/v$pkgver/downloads/kanshi-$pkgver.tar.gz"
+  "https://gitlab.freedesktop.org/emersion/kanshi/-/releases/v$pkgver/downloads/kanshi-$pkgver.tar.gz.sig"
+)
+b2sums=('62906587ba6557e473efe4e2712709b321a90f5655dd5dea0d67db3a13b24e2bbcda8cbc05c3ac4f772ff4356f319f1a6b905446c76824329805dc705818f661'
+        'SKIP')
+validpgpkeys=('34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48')  # Simon Ser (emersion)
+
+build() {
+  arch-meson "$pkgname-$pkgver" build \
+    -Dman-pages=enabled \
+    -Dipc=enabled
+  ninja -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  cd "$pkgname-$pkgver"
+  install -vDm0644 "LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm0644 "README.md" -t "$pkgdir/usr/share/doc/$pkgname/"
+}

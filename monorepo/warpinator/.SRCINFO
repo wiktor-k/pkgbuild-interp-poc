@@ -1,0 +1,35 @@
+pkgbase = warpinator
+	pkgdesc = LAN file sender, send and receive files across the network
+	pkgver = 2.0.5
+	pkgrel = 1
+	url = https://github.com/linuxmint/warpinator
+	arch = any
+	groups = x-apps
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = bash
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = polkit
+	depends = python
+	depends = python-cairo
+	depends = python-cryptography
+	depends = python-gobject
+	depends = python-grpcio
+	depends = python-netifaces
+	depends = python-protobuf
+	depends = python-pynacl
+	depends = python-qrcode
+	depends = python-setproctitle
+	depends = python-xapp
+	depends = python-zeroconf
+	depends = xapp
+	optdepends = ufw: Open a firewall port for Warpinator
+	source = git+https://github.com/linuxmint/warpinator.git#tag=2.0.5
+	b2sums = bcddfa452fa3a3d82bebe59a824f7b3ce98b98a22123783eb9fb5d6d38916c9fed4548e9505c3063745717f98af1973576aeeedd38dc4d6986f13979158e3996
+
+pkgname = warpinator

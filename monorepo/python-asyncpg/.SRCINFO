@@ -1,0 +1,26 @@
+pkgbase = python-asyncpg
+	pkgdesc = A fast PostgreSQL Database Client Library for Python/asyncio
+	pkgver = 0.31.0
+	pkgrel = 3
+	url = https://github.com/MagicStack/asyncpg
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = postgresql
+	checkdepends = python-distro
+	checkdepends = python-pytest
+	checkdepends = python-uvloop
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-packaging
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = python
+	source = git+https://github.com/MagicStack/asyncpg.git#tag=v0.31.0
+	source = git+https://github.com/MagicStack/py-pgproto
+	sha256sums = 964ee857c1656a4158faae028123d06c392903c73c544b5a5c765d7fa1c3c68a
+	sha256sums = SKIP
+
+pkgname = python-asyncpg

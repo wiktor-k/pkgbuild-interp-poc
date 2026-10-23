@@ -1,0 +1,31 @@
+pkgbase = mate-notification-daemon
+	pkgdesc = Notification daemon for MATE
+	pkgver = 1.29.0
+	pkgrel = 3
+	url = https://github.com/mate-desktop/mate-notification-daemon
+	arch = x86_64
+	groups = mate
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = mate-common
+	makedepends = mate-panel
+	depends = at-spi2-core
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk-layer-shell
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libcanberra
+	depends = libnotify
+	depends = libwnck3
+	depends = libx11
+	depends = libxml2
+	optdepends = mate-panel: Panel applet
+	source = git+https://github.com/mate-desktop/mate-notification-daemon.git#tag=v1.29.0
+	b2sums = 362719e89592ca256aeacd8a7a84597c98b85710a0cb6fd0f47282725dff3ae64796b215237f7074c61d0a68db1f2378248d12175c2aff8d742bf4b22d05c925
+
+pkgname = mate-notification-daemon

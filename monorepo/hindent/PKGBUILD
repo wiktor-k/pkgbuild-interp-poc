@@ -1,0 +1,53 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=hindent
+pkgver=6.2.1
+pkgrel=11
+pkgdesc="Extensible Haskell pretty printer"
+url="https://github.com/mihaimaruseac/hindent"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-async' 'haskell-ghc-lib-parser-ex' 'haskell-monad-loops'
+         'haskell-optparse-applicative' 'haskell-path' 'haskell-path-io' 'haskell-regex-tdfa'
+         'haskell-split' 'haskell-syb' 'haskell-unicode-show' 'haskell-utf8-string' 'haskell-yaml')
+makedepends=('ghc' 'uusi' 'haskell-diff' 'haskell-hspec')
+source=("https://hackage.haskell.org/packages/archive/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('c5e75f0b7638779041b3d3ee2639a0c9c21222063ab868e935697960de9f7c7dc89e09f534f1c6504b3c5934afed9b8bf2470f824362d3102923eaf43f724538')
+
+prepare() {
+    cd $pkgname-$pkgver
+    uusi -r ghc-lib-parser:ghc,ghc-boot
+    find src -type f \( -name '*.hs' -o -name '*.hs-boot' \) -exec \
+        sed -e 's/"ghc-lib-parser" //g' -e 's/ghc_lib_parser/ghc/g' -i {} +
+
+}
+
+build() {
+    cd $pkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests --datasubdir=$pkgname \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        --ghc-option='-pie'
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $pkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $pkgname-$pkgver
+
+    install -D -m744 register.sh   "${pkgdir}/usr/share/haskell/register/${pkgname}.sh"
+    install -D -m744 unregister.sh "${pkgdir}/usr/share/haskell/unregister/${pkgname}.sh"
+    runhaskell Setup copy --destdir="${pkgdir}"
+    install -D -m644 LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.md
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.md
+}

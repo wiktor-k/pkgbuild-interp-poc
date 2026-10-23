@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=path
+pkgname=haskell-path
+pkgver=0.9.6
+pkgrel=93
+pkgdesc="Path"
+url="https://hackage.haskell.org/package/${_hkgname}"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-hashable')
+makedepends=('ghc' 'haskell-genvalidity' 'haskell-genvalidity-hspec' 'haskell-hspec'
+             'haskell-quickcheck' 'haskell-validity-bytestring')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz"
+        $pkgname-test-fix.hs::https://github.com/commercialhaskell/path/raw/750e97e4fb482fbb797bc1a4d07b87c88b7f2a54/path/test-ospath/TH/Include.hs
+        $pkgname-test-fix-2.hs::https://github.com/commercialhaskell/path/raw/750e97e4fb482fbb797bc1a4d07b87c88b7f2a54/path/test/TH/Include.hs)
+sha512sums=('dab6268b429b6342b04560830f0c31ece1bb38a074e1176c006a5a5ad3252ebf492dcbfcc410a959015f165f7a2d3dcf982aa25139c253896df4ee9870574664'
+            '91f260532eeba0df611adb707a8d7962681a5d2cc5a2e7ae781bf641e3311955f9b49116317b03c78da9545bcd4e73891fad5f54c6634733a381b51b58a33800'
+            'd2a78f9fb9b4533e52d2d2f1d93104c632b8ba6de4f435865d4a79122a1d82ec1b86a268a5f7f118ab0215e4c0931d500b99a6c3b00a6abdd77d6a279fda3f00')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    cp ../$pkgname-test-fix.hs test-ospath/TH/Include.hs
+    cp ../$pkgname-test-fix-2.hs test/TH/Include.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

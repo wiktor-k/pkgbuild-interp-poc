@@ -1,0 +1,31 @@
+# Maintainer:
+
+pkgname=perl-hash-merge
+pkgver=0.302
+pkgrel=2
+pkgdesc="Merges arbitrarily deep hashes into a single hash"
+arch=(any)
+url="https://metacpan.org/pod/Hash::Merge"
+license=(Artistic-1.0-Perl)
+depends=(perl
+         perl-clone-choose)
+checkdepends=(perl-clone)
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/H/HE/HERMES/Hash-Merge-$pkgver.tar.gz")
+sha256sums=('ae0522f76539608b61dde14670e79677e0f391036832f70a21f31adde2538644')
+
+build() {
+  cd Hash-Merge-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Hash-Merge-$pkgver
+  make test
+}
+
+package() {
+  cd Hash-Merge-$pkgver
+  make DESTDIR="$pkgdir" install
+}

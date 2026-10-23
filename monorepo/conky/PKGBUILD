@@ -1,0 +1,120 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: James Rayner <james@archlinux.org>
+# Contributor: Partha Chowdhury <kira.laucas@gmail.com>
+
+pkgname=conky
+pkgver=1.25.2
+pkgrel=1
+pkgdesc='Light-weight system monitor for X, Wayland, and other things, too'
+arch=('x86_64')
+url='https://github.com/brndnmtthws/conky'
+license=(
+  'BSD-3-Clause'
+  'GPL-3.0-or-later'
+)
+depends=(
+  'cairo'
+  'curl' libcurl.so
+  'fontconfig'
+  'glib2'
+  'glibc'
+  'hicolor-icon-theme'
+  'imlib2'
+  'libgcc'
+  'libpulse' libpulse.so
+  'librsvg' librsvg-2.so
+  'libstdc++'
+  'libx11'
+  'libxdamage'
+  'libxext'
+  'libxfixes'
+  'libxft'
+  'libxi'
+  'libxinerama'
+  'libxml2'
+  'libxnvctrl' libXNVCtrl.so
+  'lua54'
+  'ncurses' libncursesw.so
+  'pango'
+  'systemd-libs' libsystemd.so
+  'wayland'
+  'wireless_tools'
+)
+makedepends=(
+  'catch2'
+  'cmake'
+  'docbook-xsl'
+  'docbook2x'
+  'git'
+  'gperf'
+  'man-db'
+  'pandoc'
+  'python-jinja'
+  'python-yaml'
+  'wayland-protocols'
+)
+source=(
+  "git+$url.git#tag=v${pkgver}?signed"
+  "$pkgname-use-system-cmake.patch"
+)
+sha512sums=('29444c33a32ef6922bd4a3a21d67a981359d9176d09a9d52100b578e98f65715280271ddedded60a9ee73c901b9418c9ef75307c29944774256231af107ec2b9'
+            'ae743df6ef9c94764195e39e89d0be735309d8a50773dedc49ddd5ea27ec089997e4d49f8d646da024796f5b744adefdeec31d4231d34a49c07bae159f6fa60c')
+b2sums=('fb86133f2d117d6e73bcef0bbe7afb2594a6e39052fd0e4211af6f8ed27350229cd521a978a77e113323406263a310e47729ed47e3f92d02b8a5b9d96f1b5ccb'
+        '4d729aad72586ec13e077e6a38ba7805797a1302bd53e4e3c5359d536dcdbf08d952bc9ddc58ff5434db1ffbd8f3e57a2aa33649a1c35c3980daa48bf0e64d25')
+validpgpkeys=(
+  'AF310802C8EFA20499CF3556137B7AC2BDFD8DF0' # Brenden Matthews <github@brenden.brndn.io>
+)
+
+prepare() {
+  cd ${pkgname}
+  patch -Np1 -i ../$pkgname-use-system-cmake.patch
+}
+
+build() {
+  cd ${pkgname}
+  cmake \
+    -S . \
+    -B build \
+    -D CMAKE_BUILD_TYPE=None \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -D CMAKE_INSTALL_DATAROOTDIR=/usr/share \
+    -D CMAKE_CXX_FLAGS="$CXXFLAGS -ffat-lto-objects" \
+    -D MAINTAINER_MODE=OFF \
+    -D BUILD_TESTS=ON \
+    -D BUILD_DOCS=ON \
+    -D BUILD_EXTRAS=ON \
+    -D BUILD_WLAN=ON \
+    -D BUILD_XDBE=ON \
+    -D BUILD_XSHAPE=ON \
+    -D BUILD_IMLIB2=ON \
+    -D BUILD_CURL=ON \
+    -D BUILD_RSS=ON \
+    -D BUILD_NVIDIA=ON \
+    -D BUILD_PULSEAUDIO=ON \
+    -D BUILD_JOURNAL=ON \
+    -D BUILD_WAYLAND=ON \
+    -D BUILD_LUA_CAIRO=ON \
+    -D BUILD_LUA_IMLIB2=ON \
+    -D BUILD_LUA_RSVG=ON \
+    -D DOC_PATH=share/doc/$pkgname
+  cmake --build build
+}
+
+check() {
+  cd ${pkgname}
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  cd ${pkgname}
+  DESTDIR="${pkgdir}" cmake --install build
+  install -vDm 644 COPYING -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -vDm 644 build/extras/vim/syntax/conkyrc.vim -t "${pkgdir}"/usr/share/vim/vimfiles/syntax
+  install -vDm 644 extras/vim/ftdetect/conkyrc.vim -t "${pkgdir}"/usr/share/vim/vimfiles/ftdetect
+}
+
+# vim: ts=2 sw=2 et:

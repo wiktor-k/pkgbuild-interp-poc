@@ -1,0 +1,17 @@
+pkgbase = ruby-minima
+	pkgdesc = A Jekyll plugin to generate an Atom feed of your Jekyll posts
+	pkgver = 2.5.2
+	pkgrel = 2
+	url = https://github.com/jekyll/minima
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = ruby
+	source = ruby-minima::git+https://github.com/jekyll/minima.git#tag=v2.5.2
+	sha256sums = 97e1ebe014aaf7635851eeed5ae74170aba686ff511bc2850e849cc5965c007e
+
+pkgname = ruby-minima
+	depends = ruby
+	depends = ruby-jekyll
+	depends = ruby-jekyll-feed
+	depends = ruby-jekyll-seo-tag

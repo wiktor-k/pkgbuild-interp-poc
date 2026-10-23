@@ -1,0 +1,26 @@
+pkgbase = pocl
+	pkgdesc = Portable OpenCL is an open-source implementation of OpenCL which can be easily adapted for new targets
+	pkgver = 7.2
+	pkgrel = 1
+	url = http://portablecl.org/
+	arch = x86_64
+	license = MIT
+	makedepends = llvm20
+	makedepends = cmake
+	makedepends = opencl-headers
+	makedepends = ocl-icd
+	makedepends = ninja
+	makedepends = python
+	makedepends = git
+	makedepends = nvidia-utils
+	makedepends = cuda
+	makedepends = cudnn
+	depends = clang20
+	depends = hwloc
+	depends = opencl-icd-loader
+	optdepends = cuda: CUDA driver
+	optdepends = cudnn: CUDA driver
+	source = git+https://github.com/pocl/pocl#tag=v7.2
+	sha512sums = fe121840d670b0ee92f43a8a96cf7637c825a3062d72d5349f94bb53005fe0b36b03d79c9db0e24b589e0e4a38759df9da3fff9f358f3e258cc94be32cfbe567
+
+pkgname = pocl

@@ -1,0 +1,36 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Carlo Abelli <carlo@abelli.me>
+# Contributor: Giancarlo Razzolini <grazzolini@archlinux.org>
+# Contributor: Federico Cinelli <cinelli@aur.archlinux.org>
+# Contributor: Thomas Dziedzic  < gostrc at gmail >
+# Contributor: Gabriel Martinez < reitaka at gmail dot com >
+
+pkgname=ifuse
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="A fuse filesystem to access the contents of an iPhone or iPod Touch"
+arch=(x86_64)
+url="https://libimobiledevice.org/"
+license=(LGPL-2.1-only)
+depends=(
+  fuse3
+  glibc
+  libimobiledevice
+  libplist
+  usbmuxd
+)
+makedepends=(git)
+source=("git+https://github.com/libimobiledevice/ifuse#tag=$pkgver")
+b2sums=('a39c3e51e370d81c96935dc348e141ff7f991866ebc37fcfdb6ede5161d27587efd2acb4cf58bbd0814225b9b59099596b894b761f71a550ca123b0220657285')
+
+build() {
+  cd $pkgname
+  ./autogen.sh --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=glim
+pkgver=0.2.1
+pkgrel=2
+pkgdesc="A TUI for monitoring GitLab CI/CD pipelines and projects"
+arch=('x86_64')
+url="https://github.com/junkdog/glim"
+license=('MIT')
+depends=('glibc' 'libgcc' 'openssl')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgname-v$pkgver.tar.gz")
+sha512sums=('234ba06ea4518afe2d4a44c2b9fb4e231395040c009f210cba40a0173431d8a1d6d1ac916250033531336d834ceac0e0382bd19996cd6c3c3df9d33bf6659ea2')
+
+prepare() {
+  mv "$pkgname-$pkgname-v$pkgver" "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver"
+  cargo fetch --target "$(rustc --print host-tuple)" # --locked
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

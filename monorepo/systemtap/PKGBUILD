@@ -1,0 +1,59 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Manuel Hüsers <aur@huesers.de>
+# Contributor: Christian Pellegrin (chripell) <chripell@fsfe.org>
+# Contributor: An Nguyen (stk) <an@linux.com>
+# Contributor: George Angelopoulos <george@usermod.net>
+# Contributor: Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Contributor: dront78 <dront78@gmail.com>
+
+pkgname=systemtap
+pkgver=5.6
+pkgrel=1
+pkgdesc="Infrastructure to simplify the gathering of information about the running Linux system"
+url="https://sourceware.org/systemtap/"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('elfutils' 'nss' 'python' 'cpio')
+makedepends=('python-pip' 'python-setuptools' 'xmlto' 'boost')
+optdepends=('sqlite3: for storing results in a database')
+options=('!emptydirs')
+source=("https://sourceware.org/ftp/systemtap/releases/${pkgname}-${pkgver}.tar.gz"{,.asc}
+        systemtap.sysusers)
+sha512sums=('24d8b6c0399050b1c86aebf3cf1acab3ec31c550e37bad454c3cbf3c183ddd278d013d2729a5d43949dd59f45630a5dd9bac403a4f2f14fb67c480702818a1e2'
+            'SKIP'
+            'c1ed109ee35081665fcf44138adf76255e1b802506375b3b6bce1f2fad11366e807ed4d9204379cc53a64ab18af4e411e5cedbac36f4fa659cab196d376c777c')
+validpgpkeys=('C60CFE9F27405101D06DE3B86D8D01ADE253B252')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --libexecdir=/usr/lib/"${pkgname}" \
+    --libdir=/usr/lib/"${pkgname}" \
+    --mandir=/usr/share/man/ \
+    --sbindir=/usr/bin \
+    --localstatedir=/var \
+    --enable-pie \
+    --disable-docs \
+    --enable-htmldocs \
+    --with-python3
+  make
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  make check
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+
+  chgrp 156 "${pkgdir}"/usr/bin/{stapbpf,staprun}
+  chmod 04110 "${pkgdir}"/usr/bin/{stapbpf,staprun}
+
+  install -Dm644 "${srcdir}"/systemtap.sysusers "${pkgdir}"/usr/lib/sysusers.d/systemtap.conf
+
+  rm -r "${pkgdir}/usr/include/sys"
+}

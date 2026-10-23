@@ -1,0 +1,59 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Daniel Isenmann <daniel@archlinux.org>
+# Contributor: Dominik Ryba <domryba@post.pl>
+
+# Upstream isn't tagging useful release points; they have a release branch with
+# ongoing patches. This commit is chosen from the tip of the maintenence branch
+# for the 4.2 series at whatever point we feel like bumping it.
+_commit=b66125418f7d
+
+pkgname=enblend-enfuse
+pkgver=4.2.r1546+hb66125418f7d
+pkgrel=5
+pkgdesc='Intelligent blend tool for overlapping picture'
+arch=(x86_64)
+url='http://enblend.sourceforge.net'
+license=(GPL-2.0-only)
+depends=(exiv2
+         gcc-libs # libgcc_s.so libgomp.so libstdc++.so
+         glibc # libc.so libm.so
+         gsl #libgsl.so
+         libtiff libtiff.so
+         lcms2 liblcms2.so
+         vigra) # libvigraimpex.so
+makedepends=(boost
+             help2man
+             libjpeg-turbo libjpeg.so
+             libpng
+             mercurial
+             openexr
+             zlib)
+source=("$pkgname::hg+http://hg.code.sf.net/p/enblend/code#revision=$_commit")
+sha256sums=('94f915f21b5434539d4acb3165e55e4c70878edcf56abdd1c6430164242f1913')
+
+pkgver() {
+  cd ${pkgname}
+  printf "4.2.r%s+h%s" "$(hg identify -n)" "$(hg identify -i)"
+}
+
+prepare() {
+  cd ${pkgname}
+  make --makefile=Makefile.scm
+}
+
+build() {
+  cd ${pkgname}
+  ./configure \
+    --prefix=/usr \
+    --enable-openmp=yes \
+    --enable-opencl=yes \
+    --with-exiv2 \
+    --with-openexr
+  make
+}
+
+package() {
+  cd ${pkgname}
+  make DESTDIR="${pkgdir}" install
+}

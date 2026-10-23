@@ -1,0 +1,44 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Fabio 'Lolix' Loli <fabio.loli@disroot.org>
+
+pkgname=castxml
+pkgdesc="C-family abstract syntax tree XML output tool"
+pkgver=0.8.0
+pkgrel=1
+arch=(x86_64)
+url="https://github.com/CastXML/CastXML"
+license=(Apache-2.0)
+depends=(
+  clang
+  glibc
+  libstdc++
+  llvm-libs
+)
+makedepends=(
+  cmake
+  git
+  llvm
+  python-sphinx
+)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+b2sums=('57722d58b78c69d519a239871b07efa659af536a1dbc2fac3e425fb9b2fbc3ee1df633ed58c51dcc57ed4c64511ff9db5398fba589916ed4f3e977caa7c9e6fc')
+
+build() {
+  cmake -S $pkgname -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None \
+    -Wno-dev \
+    -DCLANG_LINK_CLANG_DYLIB=ON \
+    -DSPHINX_HTML=ON \
+    -DSPHINX_MAN=ON \
+    -DCastXML_INSTALL_MAN_DIR=share/man
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package(){
+  DESTDIR="$pkgdir" cmake --install build
+}

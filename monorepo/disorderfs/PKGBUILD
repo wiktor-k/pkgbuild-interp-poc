@@ -1,0 +1,37 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Contributor: Mike Swanson <mikeonthecomputer@gmail.com>
+
+pkgname=disorderfs
+pkgver=0.6.2
+pkgrel=2
+pkgdesc="FUSE filesystem that introduces non-determinism"
+arch=('x86_64')
+url="https://reproducible-builds.org/"
+license=('GPL-3.0-or-later')
+depends=('fuse3' 'libstdc++' 'glibc' 'libgcc')
+checkdepends=('bc')
+makedepends=('asciidoc' 'git')
+source=(https://reproducible-builds.org/_lfs/releases/disorderfs/disorderfs-${pkgver}.tar.bz2{,.asc})
+sha512sums=('27ed9bbb1ebc7392a0cb42040892069c055397d7a2d0cd713dd28178a947e00e526b70bf13542f9d7c1234cde9b199578cde0c855f34310295ce2496452b31da'
+            'SKIP')
+# Holger Levsen, Chris Lamb
+validpgpkeys=('B8BF54137B09D35CF026FE9D091AB856069AAA1C' 'C2FE4BD271C139B86C533E461E953E27D4311E58')
+
+build() {
+  cd $pkgname-$pkgver
+  make
+}
+
+# make sure to run with /dev/fuse mounted.
+# in extra-*-build this will be with "-- -d /dev/fuse"
+check() {
+  cd $pkgname-$pkgver
+  test -e /dev/fuse && make test || echo "WARNING: Skipping tests due to missing /dev/fuse mount"
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  make DESTDIR="$pkgdir/" PREFIX=/usr install
+}

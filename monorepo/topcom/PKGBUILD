@@ -1,0 +1,48 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=topcom
+pkgver=1.1.2
+pkgrel=4
+pkgdesc='A package for computing Triangulations Of Point Configurations and Oriented Matroids'
+arch=(x86_64)
+url='https://www.wm.uni-bayreuth.de/de/team/rambau_joerg/TOPCOM/index.html'
+license=(GPL-2.0-or-later)
+depends=(cddlib
+         glibc
+         gmp
+         libgcc
+         libstdc++)
+makedepends=(qsopt-ex
+             soplex)
+source=(https://www.wm.uni-bayreuth.de/de/team/rambau_joerg/TOPCOM-Downloads/TOPCOM-${pkgver//./_}.tgz
+        system-libs.patch)
+sha256sums=('4fb10754ee5b76056441fea98f2c8dee5db6f2984d8c14283b49239ad4378ab6'
+            '206f779732d83b499627133bb2eea3e4a881b3f1a8b9be19d76efc11db8bce5c')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i ../system-libs.patch # Use system dependencies
+  rm -fr external
+  autoreconf -vif
+}
+
+build() {
+  cd $pkgname-$pkgver
+  CXXFLAGS+=' -ffat-lto-objects' \
+  ./configure \
+    --prefix=/usr \
+    --disable-static \
+    --enable-qsoptex \
+    --enable-soplex
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+# Rename binaries with common names
+  for _prog in binomial cross cube cyclic lattice; do
+    mv "$pkgdir"/usr/bin/{,topcom-}$_prog
+  done
+  rm "$pkgdir"/usr/bin/check
+}

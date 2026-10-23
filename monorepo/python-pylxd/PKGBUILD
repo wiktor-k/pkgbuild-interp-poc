@@ -1,0 +1,34 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Brokenpip3 <brokenpip3[at]gmail[dot]com>
+# Contributor: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Jens John <dev@2ion.de>
+
+pkgname=python-pylxd
+_pkgname=${pkgname#python-}
+pkgver=2.4.2
+pkgrel=1
+pkgdesc="A library for interacting with the LXD REST API"
+url="https://pylxd.readthedocs.io/en/latest"
+arch=('any')
+license=('Apache-2.0')
+depends=('python' 'python-cryptography' 'python-dateutil' 'python-requests' 'python-requests-toolbelt' 'python-ws4py')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest' 'python-pytest-cov' 'python-ddt' 'python-requests-mock')
+optdepends=('lxd: to use a local LXD server')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/canonical/pylxd/archive/refs/tags/${pkgver}.tar.gz")
+sha512sums=('df61fa775bca67a8c37b99f63a4b8a01b9b2f6059997c57b8b2f6e2f33e7eb3f5a2c2ce6d16f6630ff184feb6c874256595f2efa3957d0d413bf1a604ba885c5')
+
+build() {
+	cd "${_pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd "${_pkgname}-${pkgver}"
+	pytest --doctest-modules pylxd
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}"
+	python -m installer --destdir="$pkgdir" dist/*.whl
+}

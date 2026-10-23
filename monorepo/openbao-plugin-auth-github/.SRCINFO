@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-auth-github
+	pkgdesc = OpenBao Plugin - Authenticate using GitHub credentials
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-auth-github::git+https://github.com/openbao/openbao-plugins.git#tag=auth-github-v0.0.1
+	sha256sums = b72727a8ea9e5dd112796312e2569f0cbb1969742d8638f645c16c086fe73044
+
+pkgname = openbao-plugin-auth-github

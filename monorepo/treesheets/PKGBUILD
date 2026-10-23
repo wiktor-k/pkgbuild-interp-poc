@@ -1,0 +1,102 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=treesheets
+pkgver=2.19.2
+pkgrel=1
+pkgdesc='A free-form hierarchical data organizer'
+arch=(x86_64 aarch64)
+url='https://strlen.com/treesheets/'
+license=(Zlib)
+depends=(
+  at-spi2-core
+  glibc
+  libstdc++
+  libgcc
+  hicolor-icon-theme
+  libx11
+  libxkbcommon
+  libjpeg-turbo
+  libtiff
+  libpng
+  gspell
+  fontconfig
+  cairo
+  pango
+  wayland
+  libwebp
+  pcre2
+  glib2
+  expat
+  gtk3
+  zlib
+  gdk-pixbuf2
+)
+makedepends=(
+  git
+  cmake
+  ninja
+  libnotify
+  sdl2-compat
+)
+_wxwidgets_version=3.3.4 # CMakeLists.txt
+_lobster_version=2026.8 # cmake/Lobster.cmake
+_wxpdfdoc_version=1.4.0 # cmake/WxPdfDoc.cmake
+_monocypher_version=4.0.3 # cmake/Monocypher.cmake
+_unibreak_version=8.0 # cmake/Unibreak.cmake
+source=(
+  "$pkgname::git+https://github.com/aardappel/treesheets#tag=v$pkgver"
+  "wxwidgets-${_wxwidgets_version}.tar.bz2::https://github.com/wxWidgets/wxWidgets/releases/download/v${_wxwidgets_version}/wxWidgets-${_wxwidgets_version}.tar.bz2"
+  "wxpdfdoc-${_wxpdfdoc_version}.tar.gz::https://github.com/utelle/wxpdfdoc/archive/refs/tags/v${_wxpdfdoc_version}.tar.gz"
+  "lobster-${_lobster_version}.tar.gz::https://github.com/aardappel/lobster/archive/refs/tags/v${_lobster_version}.tar.gz"
+  "monocypher-${_monocypher_version}.tar.gz::https://github.com/LoupVaillant/Monocypher/archive/refs/tags/${_monocypher_version}.tar.gz"
+  "libunibreak-${_unibreak_version}.tar.gz::https://github.com/adah1972/libunibreak/releases/download/libunibreak_${_unibreak_version/./_}/libunibreak-${_unibreak_version}.tar.gz"
+)
+sha512sums=('f19c869eddbc22cfbff991855825b1a875b4362e83cee7e020375dcb2b01380e28909d6de8cae2e20bb3599057c0ddadd5cac6e09cd83aaaa2adee78868d15a1'
+            '95853ac408794e1583c0f51dbc88405aed67ac08001ecfbb47e81c758733839c440c4b5f80371862ee281947b28a1727525e02bac31cc115128ce0ed6aa89117'
+            '5a1c26f9c3010b99fd9cc102575241242ecd6cb0db92f1d44f974242d98d4c705457f0583240acb91154cffcf553a77b02786254b51c9d3850598cf4b67510d0'
+            'd24c02072f501033f62cdf092d9a8594148aff85626b707620c3f293ca879acad8353a0b064e492e58fde122c6ea820b9fca81a91d291beedd960e74703555f0'
+            '04b1ad29628131cac5051b254cdee7422f9d623e43ed847d75cc120eef4452bc5fe7e5764c558f0cd53295c0c33d30b9a85908aa03d011b1e4dc1f3f4669462c'
+            '9d9bb3b1d7260254988c74e64944d45ebe56dd25e4fac1cf155991dec1786d99a767105420b7a01c01705ee625ae19c66d0c4b18b88b8a4cc36882dcb73036c4')
+b2sums=('13c3c1e0a520ea43f8fc5b9540da9862c843cde10be20d804b9a1de931ceeca2164bb2643e8c383aadb8d49c9f455164db7405217eb255d3b73f5f59f9965f6b'
+        '6ddb9162865ee213d66a1132a4f4f3313e72039ecd3f8c713206f9b0f94b8a9e0dc8baf6f57879df0a79c645001d4dd3541fe84621894b7e7e14d8e1239f1746'
+        '9ddfba618fc0e69d0c70bc82900f38e03e343e3aa2f84daf75639dc5ce0590bcbfb86eaaf5b60fda8f0dd833afaec845b5cf7fb3e64761c7cef3a630f074d203'
+        'e39e52b37552fb21b1ad29b5742053f3ad2dadf7864ae94da9901b4a80267bf7a57ef9c613be25dd676fd48f0cdbd3c4c54d29202cf489c2b8d4d91487a017ff'
+        '96a5fd344f4f5397a47ba809ca96dd7aef1621cc656762f357362384abaec0514665c48f2a11624ead849a39102510979360ec29c76b80637eac0d5b77d28dc3'
+        'db304d19a2255e9ae0738d42dfd7c6f1ead88cd333e8afb71172309eb0e36f85879145c973eba6da9d082a1badae5a4ff9d6a95e5047e695e3dc173a380d9a2f')
+
+prepare() {
+  mkdir -p build/_deps
+
+  # placate cmake's fetchcontent
+  cd build/_deps
+  mv "$srcdir/wxWidgets-${_wxwidgets_version}" wxwidgets-src
+  mv "$srcdir/wxpdfdoc-${_wxpdfdoc_version}" wxpdfdoc-src
+  mv "$srcdir/lobster-${_lobster_version}" lobster-src
+  mv "$srcdir/Monocypher-${_monocypher_version}" monocypher-src
+  mv "$srcdir/libunibreak-${_unibreak_version}" libunibreak-src
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-author
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D TREESHEETS_BUNDLE_WXWIDGETS=ON
+    -D FETCHCONTENT_FULLY_DISCONNECTED=ON
+    -D TREESHEETS_VERSION="v${pkgver}"
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/ZLIB_LICENSE.txt"
+}

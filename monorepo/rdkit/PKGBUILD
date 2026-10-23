@@ -1,0 +1,92 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=rdkit
+pkgver=2026.09.1
+pkgrel=1
+pkgdesc="Open-source toolkit for cheminformatics"
+arch=(x86_64)
+url="https://github.com/rdkit/rdkit"
+license=(BSD-3-Clause)
+depends=(
+  boost-libs
+  cairo
+  coordgen
+  freetype2
+  glibc
+  inchi
+  libgcc
+  libstdc++
+  maeparser
+  python
+  python-numpy
+  python-pillow
+)
+makedepends=(
+  boost
+  catch2
+  cmake
+  eigen
+  git
+  ninja
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/Release_${pkgver//./_}.tar.gz
+)
+b2sums=('783c38524ce9c16d5e164149d4846fca698401b3ab12a4987739f74df5fd1a6a4d39b5063356e8a931dfbaa1697b7a24097cc3a17ffa7335cfd3e032316499e7')
+
+prepare() {
+  # Fix finding Eigen3 https://github.com/rdkit/rdkit/issues/8896
+  rm $pkgname-Release_${pkgver//./_}/Code/cmake/Modules/FindEigen3.cmake
+  sed -i 's|if(NOT EIGEN3_FOUND)|if(NOT TARGET Eigen3::Eigen)|' $pkgname-Release_${pkgver//./_}/CMakeLists.txt
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-Release_${pkgver//./_}
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DRDK_BUILD_CAIRO_SUPPORT=ON
+    -DRDK_BUILD_INCHI_SUPPORT=ON
+    -DRDK_INSTALL_INTREE=OFF
+    -DRDK_INSTALL_STATIC_LIBS=OFF
+    # TODO: the test suite has too many failures, even due to bad input files
+    -DRDK_BUILD_CPP_TESTS=OFF
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+#check() {
+#  local excluded_tests=""
+#  # skip tests that take too long
+#  excluded_tests+="cxsmilesTest"
+#  excluded_tests+="|testGrid"
+#  excluded_tests+="|testMultithreadedMolSupplier"
+#  excluded_tests+="|v2MolSuppliers"
+#
+#  local ctest_flags=(
+#    --test-dir build
+#    # show the stdout and stderr when the test fails
+#    --output-on-failure
+#    # execute tests in parallel
+#    --parallel $(nproc)
+#    # exclude problematic tests
+#    --exclude-regex "$excluded_tests"
+#  )
+#  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+#
+#  # rdkit must be installed "in-tree" before running the test suite
+#  # https://github.com/rdkit/rdkit/blob/master/Docs/Book/Install.md#linux-x86_64-python-3-environment
+#  DESTDIR=test-install cmake --install build
+#  local RDBASE=$pkgname-Release_${pkgver//./_}
+#  mv test-install/usr/lib $RDBASE
+#  RDBASE=$RDBASE LD_LIBRARY_PATH=$RDBASE/lib PYTHONPATH=test-install/"$site_packages" ctest "${ctest_flags[@]}"
+#}
+
+package_rdkit() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-Release_${pkgver//./_}/license.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

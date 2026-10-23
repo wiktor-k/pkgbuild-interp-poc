@@ -1,0 +1,55 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=nethsm-cli
+_name=signstar
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="A command line interface (CLI) for the Nitrokey NetHSM"
+arch=(x86_64)
+url="https://signstar.archlinux.page/nethsm-cli"
+_url="https://gitlab.archlinux.org/archlinux/signstar"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  rust
+  rust-script
+)
+source=($_name::git+$_url.git?signed#tag=$pkgname/$pkgver)
+sha512sums=('5fa44251db9a87e7ddfc287581aabbc1286db398dbb3970e3b50c72efd20199b6730f79a159f58eee3d07c41260a3f472e59f9862a07f384df64773753740df7')
+b2sums=('dc83b6ecf41314970045167acb4f7efcc8122021e1cff49716a2de10166bca3c9b5b59d78bb824f415d244f1ab27502e99985d2c1a24c1b4fd0bc3f7f1831eeb')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release --all-features --package $pkgname
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_name
+  cargo test --frozen --all-features --package $pkgname
+}
+
+package() {
+  local command=${pkgname/-cli/}
+
+  install -vDm 755 $_name/target/release/$command -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_name/$pkgname/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $_name/LICENSES/MIT.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name/output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 $_name/output/shell_completions/$command.bash "$pkgdir/usr/share/bash-completion/completions/$command"
+  install -vDm 644 $_name/output/shell_completions/_$command -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 $_name/output/shell_completions/$command.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+}

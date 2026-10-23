@@ -1,0 +1,20 @@
+pkgbase = atomix
+	pkgdesc = Puzzle game where you move atoms to build a molecule
+	pkgver = 44.0
+	pkgrel = 2
+	url = https://wiki.gnome.org/Apps/Atomix
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libgnome-games-support
+	source = git+https://gitlab.gnome.org/GNOME/atomix.git#tag=44.0
+	b2sums = c4e0fbc1bece6ce64ff2ab0eebd813a2fb59298744a7cb8f342375fd8dde192fcb5daad6fb47218cbb0d7a28b806e011d740c76d49954ab5af505e0f9f48dcbe
+
+pkgname = atomix

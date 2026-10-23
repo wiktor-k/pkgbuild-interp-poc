@@ -1,0 +1,52 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+
+pkgname=staticcheck
+pkgver=2026.2.2
+pkgrel=1
+pkgdesc="The advanced Go linter"
+arch=(x86_64)
+url="https://staticcheck.io"
+license=(MIT)
+depends=(glibc)
+makedepends=(go git)
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/dominikh/go-tools/archive/$pkgver.tar.gz")
+sha512sums=('5d1433b1bbfacba100d79bd769757ea856de524e2ae9baccaea377d621655db109b02de4b024c5483c06a58d60e1f4aec8af57383e40d80282c9f513e152e4a9')
+b2sums=('80a27677ced183784a1ebd6eed9d72fd65e6bafbff5209c01d20f9a3bc0aa187f9c86429e41f05647abed81756d4450ff93580871277426d07591f0ce25414f5')
+
+prepare(){
+  cd "go-tools-$pkgver"
+  mkdir -p bin
+}
+
+build(){
+  cd "go-tools-$pkgver"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags \"${LDFLAGS}\"" \
+    -o bin\
+    ./cmd/staticcheck
+}
+
+check(){
+  cd "go-tools-$pkgver"
+  GOROOT="/usr/lib/go" go test -v ./...
+}
+
+package(){
+  cd "go-tools-$pkgver"
+  install -p -Dm755 bin/staticcheck "${pkgdir}/usr/bin/staticcheck"
+  install -Dm644 "LICENSE"  "${pkgdir}/usr/share/licenses/${pkgname}/LICENCE"
+  install -Dm644 "LICENSE-THIRD-PARTY"  "${pkgdir}/usr/share/licenses/${pkgname}/LICENCE-THIRD-PARTY"
+}

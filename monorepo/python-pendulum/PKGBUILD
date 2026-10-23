@@ -1,0 +1,57 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=pendulum
+pkgname=python-pendulum
+pkgver=3.3.0
+pkgrel=1
+pkgdesc="Python datetimes made easy"
+arch=(x86_64)
+url="https://pendulum.eustace.io/"
+_url="https://github.com/python-pendulum/pendulum"
+license=(MIT)
+depends=(
+  libgcc
+  glibc
+  python
+  python-dateutil
+  python-time-machine
+)
+makedepends=(
+  python-build
+  python-installer
+  python-maturin
+  python-wheel
+)
+checkdepends=(
+  python-babel
+  python-freezegun
+  python-pytest
+  python-pytz
+  python-tzdata
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$_url/archive/$pkgver.tar.gz
+)
+sha512sums=('70f854c16bde435f5f4e476dc000c4210f5d9a1fd1c6bf9f464d37a3d4fb6206906df3e7d20be686c4901d81e652be1e19bdcbfd95480ffd3f4843dea4bd0474')
+b2sums=('cd92dc993bbef9638354bf8e6f331d9aadff0b1d4cb88cd76659a5fdf56b041ae241318c196d1a9175a80f3525b0322077c35f6c5a2fdb60243e85e048a67066')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+
+  cd $_name-$pkgver
+  PYTHONPATH="$PWD/src" pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {CHANGELOG.md,README.rst} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

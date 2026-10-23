@@ -1,0 +1,210 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Ali Molaei <ali dot molaei at protonmail dot com>
+# Contributor: Ben Westover <me at benthetechguy dot net>
+# Contributor: Lenovsky <lenovsky at pm dot me>
+# Contributor: aimileus <me at aimileus dot nl>
+
+pkgbase=protonmail-bridge
+_pkgbase=proton-bridge
+pkgname=(
+  protonmail-bridge-core
+  protonmail-bridge
+)
+pkgver=3.27.1
+pkgrel=1
+pkgdesc="Integrate ProtonMail paid account with any program that supports IMAP and SMTP"
+arch=(x86_64)
+url="https://github.com/ProtonMail/proton-bridge"
+license=(GPL-3.0-only)
+makedepends=(
+  abseil-cpp
+  cmake
+  git
+  glib2
+  glibc
+  go
+  grpc
+  libfido2
+  libgcc
+  libsecret
+  libstdc++
+  protobuf
+  qt6-base
+  qt6-declarative
+  qt6-svg
+  sentry-native
+  sqlite
+)
+options=(!lto)
+source=(
+  "git+$url#tag=v$pkgver"
+  "protonmail-bridge.service"
+  "remove-vcpkg-dependency.patch"
+  "fix-wayland-icon.patch"
+  "protonmail-bridge-core.sh"
+  "protonmail-bridge.sh"
+)
+sha256sums=('072fa1bca16cb3efc0cf3c6ef107242b7439276ecfa99d8e3890042b85b26aac'
+            '5d273f1245fec8549a3daa3fe76e22bb6c23957cf5bcb51c24f878e19c7a5692'
+            '2efdc9476f9f187a9c2d296cd3dce6717d5200eac672c5481a0039315cb333e7'
+            '869bcdb550e2899de1fffec8288fffea8c5ce1949322982d6c22f744814aed9c'
+            '054ecc70816ffe8d5d998ef7b7373c3c91dc8883383e41241255f23a25b6447a'
+            'caddf21da15386232607fec37370e8c7b5aea83507a34bf49211ac39327be06b')
+
+_archive="$_pkgbase"
+
+prepare() {
+  cd "$_archive"
+
+  # We want to dynamically link system libraries instead of building
+  # dependenceies from source using vcpkg and linkng them statically.
+  patch --forward --strip 1 --input "$srcdir/remove-vcpkg-dependency.patch"
+
+  # Set the desktop filename in initQtApplication() to fix icon display
+  # on Wayland.
+  # See https://github.com/ProtonMail/proton-bridge/issues/443
+  # and https://github.com/ProtonMail/proton-bridge/pull/497
+  patch --forward --strip 1 --input "$srcdir/fix-wayland-icon.patch"
+
+  # Use system Qt rather than bundling it.
+  cat /dev/null > internal/frontend/bridge-gui/bridge-gui/DeployLinux.cmake
+
+  # Avoid downloading Go dependencies in build() & check() by vendoring them
+  # here.
+  GOFLAGS="-mod=readonly" go mod vendor -v
+
+  # Fix build with Qt 6.10
+  sed -e 's|FILENAME_VARIABLE|OUTPUT_SCRIPT|' -i internal/frontend/bridge-gui/bridge-gui/CMakeLists.txt
+}
+
+build() {
+  cd "$_archive"
+
+  pushd utils/
+  ./credits.sh bridge
+  popd
+
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+
+  local tag="$(git describe --tag --abbrev=0)"
+  local commit="$(git rev-parse HEAD)"
+
+  local ld_flags=" \
+    -compressdwarf=false \
+    -linkmode=external \
+    -X 'github.com/ProtonMail/proton-bridge/v3/internal/constants.BuildEnv=Arch Linux' \
+    -X 'github.com/ProtonMail/proton-bridge/v3/internal/constants.FullAppName=Proton Mail Bridge' \
+    -X github.com/ProtonMail/proton-bridge/v3/internal/constants.BuildTime=NOTSET \
+    -X github.com/ProtonMail/proton-bridge/v3/internal/constants.Revision=$commit \
+    -X github.com/ProtonMail/proton-bridge/v3/internal/constants.Tag=$tag \
+    -X github.com/ProtonMail/proton-bridge/v3/internal/constants.Version=$pkgver \
+  "
+  go build -v \
+    -ldflags "$ld_flags" \
+    -tags libsqlite3 \
+    -o bridge \
+    ./cmd/Desktop-Bridge/
+
+  cmake \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_SKIP_RPATH=YES \
+    -Wno-dev \
+    -DBRIDGE_APP_FULL_NAME='Proton Mail Bridge' \
+    -DBRIDGE_VENDOR='Proton AG' \
+    -DBRIDGE_REVISION="$commit" \
+    -DBRIDGE_TAG="$tag" \
+    -DBRIDGE_DSN_SENTRY= \
+    -DBRIDGE_BUILD_ENV='Arch Linux' \
+    -DBRIDGE_APP_VERSION=$pkgver \
+    -S internal/frontend/bridge-gui/bridge-gui \
+    -B build
+  cmake --build build
+}
+
+check() {
+  cd "$_archive"
+
+  # The first two tests are expecting ports 1143 & 1144 (default and fallback ports for
+  # IMAP) and ports 1025 & 1026 (default and fallback ports for SMTP) to be
+  # free for some specific tests scenarios.
+  # If those ports are already in use by any other service(s) (e.g. there's
+  # already a running protonmail-bridge instance on those default ports in your
+  # build env/machine), tests will fail.
+  #
+  # The third test attempts to create a local user and execute some scenarios with it.
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/ProtonMail/proton-bridge/v3/internal/bridge \
+      | grep -v github.com/ProtonMail/proton-bridge/v3/internal/dialer \
+      | grep -v github.com/ProtonMail/proton-bridge/v3/tests/utils/gmail
+  )
+  # shellcheck disable=SC2086
+  go test $unit_tests -tags libsqlite3
+
+  cmake --build build --target bridgepp-test
+  ./build/bridgepp/bridgepp-test
+}
+
+package_protonmail-bridge-core() {
+  pkgdesc="$pkgdesc (core executable and daemon)"
+  depends=(
+    glib2
+    glibc
+    libfido2
+    libsecret
+    sqlite
+  )
+  optdepends=(
+    'gnome-keyring: gnome-keyring support'
+    'org.freedesktop.secrets: Applications that support Freedesktop secrets api'
+    'pass: pass support'
+  )
+
+  cd "$_archive"
+
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -Dm644 -t "$pkgdir/usr/lib/systemd/user" "$srcdir/protonmail-bridge.service"
+
+  # The "core" bin is expected to be called "bridge" but that's a too generic
+  # name to have under /usr/bin (it conflicts with iproute2 for instance).
+  install -Dm755 bridge "$pkgdir/usr/lib/protonmail/bridge/bridge"
+  install -dm755 "$pkgdir/usr/bin/"
+  install -Dm755 "$srcdir/protonmail-bridge-core.sh" "$pkgdir/usr/bin/protonmail-bridge-core"
+}
+
+package_protonmail-bridge() {
+  pkgdesc="$pkgdesc (Qt desktop application)"
+  depends=(
+    protonmail-bridge-core
+
+    abseil-cpp
+    glibc
+    grpc
+    libgcc
+    libstdc++
+    hicolor-icon-theme
+    protobuf
+    qt6-base
+    qt6-declarative
+    qt6-svg
+    sentry-native
+  )
+
+  cd "$_archive"
+
+  install -Dm644 -t "$pkgdir/usr/share/applications" dist/proton-bridge.desktop
+  install -Dm644 dist/bridge.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/protonmail-bridge.svg"
+
+  # The "gui" bin is expected to be called "bridge-gui" but that's a too
+  # generic name to have under /usr/bin.
+  install -Dm755 build/bridge-gui "$pkgdir/usr/lib/protonmail/bridge/bridge-gui"
+  install -dm755 "$pkgdir/usr/bin/"
+  install -Dm755 "$srcdir/protonmail-bridge.sh" "$pkgdir/usr/bin/protonmail-bridge"
+}

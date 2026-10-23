@@ -1,0 +1,16 @@
+pkgbase = shfmt
+	pkgdesc = Format shell programs
+	pkgver = 3.14.1
+	pkgrel = 1
+	url = https://github.com/mvdan/sh
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = go
+	makedepends = scdoc
+	depends = glibc
+	options = !lto
+	source = git+https://github.com/mvdan/sh.git#tag=v3.14.1
+	b2sums = 3997992424addca49f90f0f0be5858b233348f118f8b13f5f10da60f07de133fa1ce0bb8a6172348ff5a7d09b797bd623aa00b3c87898779151df76e1830ba57
+
+pkgname = shfmt

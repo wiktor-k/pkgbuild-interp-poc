@@ -1,0 +1,15 @@
+pkgbase = nethogs
+	pkgdesc = A net top tool which displays traffic used per process instead of per IP or interface
+	pkgver = 0.8.8
+	pkgrel = 2
+	url = https://github.com/raboof/nethogs
+	install = nethogs.install
+	arch = x86_64
+	license = GPL
+	depends = libpcap
+	depends = ncurses
+	depends = gcc-libs
+	source = nethogs-0.8.8.tgz::https://github.com/raboof/nethogs/archive/v0.8.8.tar.gz
+	sha256sums = 111ade20cc545e8dfd7ce4e293bd6b31cd1678a989b6a730bd2fa2acc6254818
+
+pkgname = nethogs

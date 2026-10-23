@@ -1,0 +1,58 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=dbus_next
+pkgname=python-dbus-next
+pkgver=0.2.3
+pkgrel=8
+pkgdesc="The next great DBus library for Python with asyncio support"
+arch=(any)
+url="https://github.com/altdesktop/python-dbus-next"
+license=(MIT)
+depends=(
+  dbus
+  python
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytest-asyncio
+  python-pytest-timeout
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('7836d855c755c8ac6cbbb251ca0cbd2f4df9b573f31b1ea1cab480e47896d36b4cb0d479b2469b0bf0b5c700068361a18874b4a087f73020cdcb4e04a2d7dbe7')
+b2sums=('6acc38a05511b3de7e13893d82dd1ecd55f9a6124b4d859574294602b921ff012776c12ddb02e1be437b258c7bd5120a3a9625fc5b06bbbe02915dcc4c14897b')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    # https://github.com/altdesktop/python-dbus-next/issues/135
+    --deselect test/test_tcp_address.py::test_tcp_connection_with_forwarding
+    # newer pytest-asyncio is incompatible with these tests
+    --deselect test/test_aio_low_level.py::test_sending_signals_between_buses
+    --deselect test/test_disconnect.py::test_bus_disconnect_before_reply
+    --deselect test/test_disconnect.py::test_unexpected_disconnect
+    --deselect test/test_fd_passing.py::test_high_level_service_fd_passing
+    --deselect test/test_fd_passing.py::test_sending_file_descriptor_with_proxy
+  )
+  cd $pkgname-$pkgver
+  export PYTHONPATH="build:${PYTHONPATH}"
+
+  # tests require a dbus session
+  dbus-run-session -- pytest -v "${pytest_options[@]}"
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

@@ -1,0 +1,20 @@
+pkgbase = ruby-listen
+	pkgdesc = The Listen gem listens to file modifications and notifies you about the changes.
+	pkgver = 3.10.1
+	pkgrel = 1
+	url = https://github.com/guard/listen
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	checkdepends = ruby-thor
+	makedepends = git
+	depends = ruby
+	depends = ruby-rb-fsevent
+	depends = ruby-rb-inotify
+	options = !emptydirs
+	source = git+https://github.com/guard/listen.git#tag=v3.10.1
+	sha256sums = 1c862bfd08b2cfb27c0ea80bdd2648ac056e74a7577dc707ad6e9f845ba7df6a
+
+pkgname = ruby-listen

@@ -1,0 +1,49 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=hawkeye
+pkgver=7.2.0
+pkgrel=1
+pkgdesc="Simple license header checker and formatter"
+arch=(x86_64)
+url="https://github.com/korandoru/hawkeye"
+license=(Apache-2.0)
+depends=(glibc # libc.so
+         libgcc)
+makedepends=(cargo)
+checkdepends=(git)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('d85bc32c3813040a83c72555998f74ca1e7218b6908faf1106d29af279e61e51')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --release --frozen
+}
+
+check() {
+	_srcenv
+	cargo test --frozen
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+}

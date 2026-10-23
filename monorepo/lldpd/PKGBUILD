@@ -1,0 +1,74 @@
+# Maintainer: Sébastien "Seblu" Luttringer
+# Contributor: Brian Bidulock <bidulock@openss7.org>
+
+pkgname=lldpd
+pkgver=1.0.22
+pkgrel=1
+pkgdesc='802.1ab implementation (LLDP) to help you locate neighbors'
+arch=('x86_64')
+url='https://vincentbernat.github.io/lldpd/'
+license=('custom:ISC' 'GPL')
+depends=('glibc' 'libevent' 'libbsd' 'zlib' 'openssl' 'pciutils' 'perl'
+         'libxml2' 'net-snmp' 'jansson')
+makedepends=('git' 'systemd')
+backup=('etc/lldpd.conf')
+validpgpkeys=('AEF2348766F371C689A7360095A42FE8353525F9') # Vincent Bernat <bernat@luffy.cx>
+source=("git+https://github.com/lldpd/lldpd.git#tag=${pkgver}"
+        '0001-create-a-fully-locked-system-account.patch'
+        'lldpd.tmpfiles')
+sha256sums=('b8203c9b4b74a6c069d3c402599be726cafdd3ca845d4be350a5088e417ff857'
+            '1347be34f137cac2838a834b9ec9a8e111f73dbc5c27a2c6556920f1787619bc'
+            'df64ebadacb832c4a9dcbdd531848ae70c21d67d309c7397163ba8db7e31248b')
+
+prepare() {
+  cd "${pkgname}/"
+
+  patch -Np1 < ../0001-create-a-fully-locked-system-account.patch
+
+  autoreconf -fi
+}
+
+build() {
+  cd "${pkgname}/"
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --with-lldpd-ctl-socket=/run/lldpd/socket \
+    --with-lldpd-pid-file=/run/lldpd/pid \
+    --with-privsep-chroot=/run/lldpd/chroot \
+    --with-privsep-group=lldpd \
+    --with-privsep-user=lldpd \
+    --with-readline \
+    --with-snmp \
+    --with-xml \
+    --without-seccomp
+  make
+}
+
+check() {
+  cd "${pkgname}/"
+
+  make check
+}
+
+package() {
+  cd "${pkgname}/"
+  
+  make DESTDIR="${pkgdir}" install
+
+  # re-introduce tmpfiles file untill resolved upstream...
+  # https://github.com/vincentbernat/lldpd/pull/311
+  install -D -m 0644 "${srcdir}/lldpd.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/lldpd.conf"
+
+  # config stuff
+  install -D -m 0644 /dev/null "${pkgdir}/etc/lldpd.conf"
+  install -d -m 0755 "${pkgdir}/etc/lldpd.d"
+
+  # license
+  install -D -m 0644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,17 @@
+pkgbase = fcitx5-chewing
+	pkgdesc = Chewing Wrapper for Fcitx5
+	pkgver = 5.1.13
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-chewing
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	depends = fcitx5
+	depends = libchewing
+	source = git+https://github.com/fcitx/fcitx5-chewing.git#tag=5.1.13?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = e01ee704d5000ebf5f6427753caee5bfb7457bcc0adf5afecc61b1a459f0c64207c2daa241b0c23bd96b2c09d2caa676dea427d7954e6c85a181f10ff614eb94
+
+pkgname = fcitx5-chewing

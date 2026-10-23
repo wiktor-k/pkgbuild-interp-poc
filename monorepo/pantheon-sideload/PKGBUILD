@@ -1,0 +1,41 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-sideload
+pkgver=6.3.1
+pkgrel=1
+pkgdesc='Sideload Flatpaks on elementary OS'
+arch=(x86_64)
+url=https://github.com/elementary/sideload
+license=(GPL3)
+depends=(
+  flatpak
+  gtk4
+  libgranite-7.so
+  libxml2
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+groups=(pantheon)
+_tag=0b9c20ba480a12b51fa5865969698cab6a959593
+source=(pantheon-sideload::git+https://github.com/elementary/sideload.git#tag=${_tag})
+sha256sums=('b5e01480a4a0cf021d1afbcecd4cd849917edbfdcf44b38304caecfe73f8d5f4')
+
+pkgver() {
+  cd pantheon-sideload
+  git describe --tags
+}
+
+build() {
+  arch-meson pantheon-sideload build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

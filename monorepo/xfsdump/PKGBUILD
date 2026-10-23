@@ -1,0 +1,55 @@
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: Jiachen YANG <farseerfc@gmail.com>
+# Contributor: Allen Wild <allenwild93@gmail.com>
+# Contributor: judd <jvinet@zeroflux.org>
+# Contributor: dkaylor <dpkaylor@gmail.com>
+# Contributor: Pablo Lezaeta <prflr88@gmail.com>
+
+pkgname=xfsdump
+pkgver=3.3.0
+pkgrel=1
+pkgdesc="Additional XFS filesystem utilities"
+arch=(x86_64)
+url="http://xfs.org"
+license=('GPL-2.0-only')
+depends=(
+  acl
+  attr
+  libgcc
+  glibc
+  ncurses
+  util-linux-libs
+  xfsprogs
+)
+makedepends=('git')
+source=("git+https://git.kernel.org/pub/scm/fs/xfs/xfsdump-dev.git?signed#tag=v${pkgver}")
+# Eric R. Sandeen <sandeen@sandeen.net>
+# Carlos Eduardo Maiolino <carlos@maiolino.me> <cem@kernel.org>
+# Andrey Albershteyn (kernel.org) <aalbersh@redhat.com> 
+validpgpkeys=(
+  2B8185919E8D248981869DED20AE1692E13DDEE0
+  4020459E58C1A52511F5399113F703E6C11CF6F0
+  AE1B2A9562721A6FC4307C1F46A7EA18AC33E108
+)
+b2sums=('a3dca6c2411521a73cf505863badeebfe678f7a1e71c9dba244562baf7c2d0352bf38699900d037cd853db620ebd8a4beead96414c8e4e4279fe9bb2462cf221')
+
+prepare() {
+  cd "${pkgname}-dev"
+  make configure
+}
+
+build() {
+  cd "${pkgname}-dev"
+  ./configure --prefix=/usr --sbindir=/usr/bin INSTALL_USER=root INSTALL_GROUP=root
+  make
+}
+
+package() {
+  cd "${pkgname}-dev"
+  make DESTDIR="${pkgdir}" install
+
+  # root /sbin directory can't be overridden properly with configure,
+  # so move files manually
+  mv -vf "${pkgdir}/sbin/"* "${pkgdir}/usr/bin/"
+  rm -r "${pkgdir}/sbin"
+}

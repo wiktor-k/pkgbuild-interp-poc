@@ -1,0 +1,35 @@
+pkgbase = vulkan-lunarg-tools
+	pkgdesc = LunarG's Vulkan tools and utilities
+	pkgver = 1.4.363.0
+	pkgrel = 1
+	url = https://www.lunarg.com/
+	arch = x86_64
+	groups = vulkan-devel
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = jsoncpp
+	makedepends = ninja
+	makedepends = python
+	makedepends = qt6-base
+	makedepends = valijson
+	makedepends = vulkan-headers
+	makedepends = vulkan-utility-libraries
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = vulkan-icd-loader
+	source = LunarG-VulkanTools::git+https://github.com/LunarG/VulkanTools#tag=vulkan-sdk-1.4.363.0
+	b2sums = 74879e302f306d12b83f649727f1d61c40710d0168ddaa34e4ba49bba9f098b655f70a9af94a6918032d5f82e9e00fc86447e5ab50a5d8c630fbcb857bf8320a
+
+pkgname = vulkan-extra-tools
+	pkgdesc = Vulkan Configurator and Installation Analyzer
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = vulkan-icd-loader
+	depends = jsoncpp
+	depends = qt6-base
+
+pkgname = vulkan-extra-layers
+	pkgdesc = Extra layers for Vulkan development

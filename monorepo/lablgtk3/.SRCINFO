@@ -1,0 +1,20 @@
+pkgbase = lablgtk3
+	pkgdesc = An Objective Caml interface to gtk3
+	pkgver = 3.1.5
+	pkgrel = 2
+	url = http://lablgtk.forge.ocamlcore.org/
+	arch = x86_64
+	license = LGPL
+	makedepends = ocaml-compiler-libs
+	makedepends = ocaml-findlib
+	makedepends = dune
+	makedepends = camlp-streams
+	depends = gtk3
+	depends = gtksourceview3
+	depends = gtkspell3
+	depends = ocaml-cairo
+	optdepends = ocaml: for using the tools
+	source = lablgtk3-3.1.5.tar.gz::https://github.com/garrigue/lablgtk/archive/refs/tags/3.1.5.tar.gz
+	b2sums = 5f677d2ac1a39f23e5c3b66f6239540e369ec6916eb87f980543a7ea6c723b5126882fd4f9673f8a76171d0e83de236b98ae9068956f86a0a37cb836c353b9e5
+
+pkgname = lablgtk3

@@ -1,0 +1,35 @@
+pkgbase = python-aotriton
+	pkgdesc = Ahead of Time Triton Math Library
+	pkgver = 0.13b
+	pkgrel = 2
+	url = https://github.com/ROCm/aotriton
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = pybind11
+	makedepends = python-filelock
+	makedepends = python-iniconfig
+	makedepends = python-msgpack
+	makedepends = python-numpy
+	makedepends = python-packaging
+	makedepends = python-pandas
+	makedepends = python-pluggy
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-yaml
+	makedepends = rocm-toolchain
+	makedepends = rocm-llvm
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = hip-runtime-amd
+	depends = hipsparselt
+	depends = python
+	depends = python-triton
+	depends = rocm-core
+	source = git+https://github.com/ROCm/aotriton#tag=0.13b
+	sha256sums = 1da23d4dc7d7bf43cb00ba8a74bdb988fd0bac1c5384209a32bb27fe060287b8
+
+pkgname = python-aotriton

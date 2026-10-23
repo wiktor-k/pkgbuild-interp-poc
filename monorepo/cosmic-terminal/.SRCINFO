@@ -1,0 +1,24 @@
+pkgbase = cosmic-terminal
+	pkgdesc = Cosmic Terminal Emulator
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-term
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	depends = libgcc
+	depends = glibc
+	depends = libxkbcommon
+	depends = wayland
+	depends = cosmic-icon-theme
+	source = git+https://github.com/pop-os/cosmic-term.git#tag=epoch-1.10.0
+	source = cosmic-terminal-lto.patch
+	b2sums = f0f5b91c9433650afb4af911eb5b06cfce9b10883631270b7498a8627a6b908dc6ee3534071d5fc434c68300a996d9e7753a5256e4f47e74c9532442c0dac39f
+	b2sums = 4e28ab726f474f064a99dbb4dc75faa7ddfe00d7f5e238f57ba80ac75e44a2f6ed00ae2f3499fac94d40ec4dd773fc9eeb93c4543f8e63699ba437ba45f8783b
+
+pkgname = cosmic-terminal

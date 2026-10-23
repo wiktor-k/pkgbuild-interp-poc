@@ -1,0 +1,86 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=topology-toolkit
+pkgver=1.4.0
+pkgrel=5
+pkgdesc="An open-source library and software collection for topological data analysis and visualization"
+arch=(x86_64)
+url="https://github.com/topology-tool-kit/ttk"
+license=(BSD-3-Clause-Attribution)
+depends=(
+  embree
+  glibc
+  graphviz
+  libgcc
+  libgomp
+  libstdc++
+  openmpi libmpi.so
+  paraview
+  python
+  python-numpy
+  python-scikit-learn
+  qhull
+  sqlite libsqlite3.so
+  vtk
+  zfp
+  zlib libz.so
+)
+makedepends=(
+  anari-sdk
+  boost
+  cli11
+  cmake
+  eigen
+  fast_float
+  libharu
+  ninja
+  nlohmann-json
+  openvr
+  openxr
+  qt6-declarative
+  utf8cpp
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz
+  $pkgname-fix-embree-include.patch::$url/commit/8418ed1da0064497ad01874466c5bbf684407acb.patch
+  $pkgname-embree4.patch::$url/commit/300a205a0394e037dbd59f861e43ebd646ec2800.patch
+)
+b2sums=('9668cc59f7807b8bd07677b2ba8fba4bba8ba8691f912698dd4bf65d855332dbd0d40e20329d82ee8f2919ece97fe742f0037efa4d3df6cb5cc9b1eca86a79ab'
+        'd0b7d0566467b43ee746ee49bb68aa01cac42af38c8f2eed19465902fbe05d794b4b7bdbd3f80420ec60defb466bd49228b0f977e15ad4ce759290a8ec1fb243'
+        '44834b9f1e9e73a74ee6b505340f7d067ca7b91d38edc33dea53193ec47620de3ae1f651ccfe7cea4bc45d62822f5707837b3bd7ce4c3ace0461594f57fd49a9')
+
+prepare() {
+  cd ttk-$pkgver
+  # support for embree 4 https://github.com/topology-tool-kit/ttk/pull/1141
+  patch -p1 < ../$pkgname-fix-embree-include.patch
+  patch -p1 < ../$pkgname-embree4.patch
+}
+
+build() {
+  # Directory where the ParaView plugin will be installed - this must be done with an environment variable
+  # https://github.com/topology-tool-kit/ttk/blob/531ccfb154f5057b9c0b95b9c6d4818028309bf7/CMakeLists.txt#L152C16-L158
+  export PV_PLUGIN_PATH=/usr/lib/paraview/plugins
+
+  local cmake_options=(
+    -B build
+    -S ttk-$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DTTK_SCRIPTS_PATH=/usr/share/ttk/scripts
+    -DTTK_ENABLE_CPU_OPTIMIZATION=OFF
+    -DTTK_ENABLE_64BIT_IDS=ON
+    -DTTK_ENABLE_MPI=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 ttk-$pkgver/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # remove duplicate install path
+  rm -frv "$pkgdir"/usr/bin/plugins/
+}

@@ -1,0 +1,79 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Zerial <fernando@zerial.org>
+
+pkgname=unrealircd
+pkgver=6.2.7
+pkgrel=1
+pkgdesc="Open Source IRC Server"
+arch=('x86_64')
+url="https://www.unrealircd.org"
+license=('GPL-2.0-only')
+depends=('openssl' 'curl' 'c-ares' 'tre' 'pcre2' 'libnsl' 'argon2' 'libsodium' 'jansson')
+makedepends=('chrpath')
+conflicts=('ircd')
+provides=('ircd')
+backup=('etc/unrealircd/unrealircd.conf')
+install=unrealircd.install
+validpgpkeys=('1D2D2B03A0B68ED11D68A24BA7A21B0A108FF4A9'
+	      '36E6F65706E36B0937280299101001DAF48BB56D')
+source=(https://www.unrealircd.org/unrealircd4/unrealircd-$pkgver.tar.gz{,.asc}
+	unrealircd.service
+	unrealircd.tmpfiles
+	unrealircd.sysusers)
+sha256sums=('e075375f469309bf1d54134bc914ec50a4ae3b09da6d2db2c11f9fa88d649370'
+            'SKIP'
+            '5bb6016c379e6f040d8c625e3339c096ff66c4450aa024ca5b13ad3dec47c38e'
+            '91b5e1d623b51ffd4734d73e35cead09be596460c41b9440406f92c9e2b4b9b1'
+            'c9a6ee91098f23d050c73f3d079ea5edf05e885bf148a154000d1768f551307b')
+
+prepare() {
+  cd unrealircd-$pkgver
+  sed -i \
+    -e 's|$(INSTALL) -m 0700|$(INSTALL) -m 0755|g' \
+    -e 's|$(INSTALL) -m 0600|$(INSTALL) -m 0644|g' \
+    Makefile.in
+  find -type d -exec chmod ugo+rx {} \;
+  find -type f -exec chmod ugo+r {} \;
+}
+
+build() {
+  cd unrealircd-$pkgver
+  ./configure \
+    --with-pidfile=/run/unrealircd/ircd.pid \
+    --enable-ssl=/usr \
+    --with-bindir=/usr/bin \
+    --with-datadir=/var/lib/unrealircd \
+    --with-controlfile=/run/unrealircd/unrealircd.ctl \
+    --with-confdir=/etc/unrealircd \
+    --with-modulesdir=/usr/lib/unrealircd \
+    --with-logdir=/var/log/unrealircd \
+    --with-cachedir=/var/cache/unrealircd \
+    --with-docdir=/usr/share/doc/unrealircd \
+    --with-tmpdir=/tmp \
+    --with-scriptdir=/usr \
+    --with-nick-history=2000 \
+    --with-permissions=0644 \
+    --enable-dynamic-linking \
+    --enable-hardening \
+    ac_cv_pic="-fPIC -DPIC -shared -Wl,-z,relro -Wl,-z,now"
+  make
+}
+
+package() {
+  cd unrealircd-$pkgver
+
+  sed -i 's|../../../src/ircd|/bin/true|g' src/modules/third/Makefile
+  make install DESTDIR="$pkgdir"
+  mv "$pkgdir"/usr/unrealircd "$pkgdir"/etc/unrealircd/unrealircd
+  cp "$pkgdir"/etc/unrealircd/examples/example.conf "$pkgdir"/etc/unrealircd/unrealircd.conf
+  rm -rf "$pkgdir"/tmp
+  rm "$pkgdir"/usr/source
+#  chmod go+rx "$pkgdir"/usr/bin "$pkgdir"/usr/share/doc/unrealircd
+#  chmod -R go+r "$pkgdir"/usr/share/doc/unrealircd
+
+  chrpath -d "$pkgdir"/usr/bin/{unrealircd,unrealircdctl}
+
+  install -Dm0644 "$srcdir"/unrealircd.service "$pkgdir"/usr/lib/systemd/system/unrealircd.service
+  install -Dm0644 "$srcdir"/unrealircd.tmpfiles "$pkgdir"/usr/lib/tmpfiles.d/unrealircd.conf
+  install -Dm0644 "$srcdir"/unrealircd.sysusers "$pkgdir"/usr/lib/sysusers.d/unrealircd.conf
+}

@@ -1,0 +1,33 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Maximilian Stahlberg <maximilian.stahlberg tu-berlin de>
+
+pkgname=python-pyscipopt
+pkgver=6.3.0
+pkgrel=1
+pkgdesc='A Python interface to the SCIP Optimization Suite'
+arch=(x86_64)
+url='https://www.scipopt.org/'
+license=(MIT)
+depends=(glibc
+         python
+         python-numpy
+         scip)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/SCIP-Interfaces/PySCIPOpt#tag=v$pkgver)
+sha256sums=('70e6afd00ff22aabc5c3d848f11137b96eab6060bd36734b5dcf243d99115781')
+
+build() {
+  cd PySCIPOpt
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd PySCIPOpt
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

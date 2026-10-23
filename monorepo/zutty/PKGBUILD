@@ -1,0 +1,39 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Kevin Sopp
+
+pkgname=zutty
+pkgver=0.17
+pkgrel=1
+pkgdesc='Terminal emulator'
+arch=(x86_64)
+url='https://tomscii.sig7.se/zutty'
+license=(GPL-3.0-or-later)
+depends=(freetype2 hicolor-icon-theme libglvnd libxmu xorg-fonts-misc)
+makedepends=(git python waf)
+source=("git+https://git.hq.sig7.se/zutty.git#tag=$pkgver")
+b2sums=('f1050d3ab0e4881223812e356fcafffba81cb901afbb9d0e225b66307f9e15a9e594e07d5ea8123de83e359c174a25e1408dc0e6b9e70e41460e719cae087031')
+
+prepare() {
+  cd $pkgname
+  rm -rv waf
+}
+
+build() {
+  cd $pkgname
+  CXXFLAGS+=' -w'
+  waf configure --prefix=/usr
+  waf -v build
+}
+
+package() {
+  cd $pkgname
+  waf --destdir="$pkgdir" install
+  install -d "$pkgdir/usr/share/doc/$pkgname"
+  cp -v doc/* "$pkgdir/usr/share/doc/$pkgname"
+  cd icons
+  install -Dm644 zutty.desktop "$pkgdir/usr/share/applications/zutty.desktop"
+  install -Dm644 zutty.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/zutty.svg"
+  for res in 16 32 48 64 96 128; do
+    install -Dm644 zutty_${res}x$res.png "$pkgdir/usr/share/icons/hicolor/${res}x$res/apps/zutty.png"
+  done
+}

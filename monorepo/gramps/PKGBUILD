@@ -1,0 +1,75 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: William Rea <sillywilly@gmail.com>
+# Contributor: Cory Farmer <rbgkofi@ameritech.net>
+
+pkgname=gramps
+pkgver=6.0.8
+pkgrel=2
+epoch=2
+pkgdesc='Genealogy program, which helps you track your family tree'
+arch=(any)
+url='https://gramps-project.org/'
+license=(GPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  pango
+  python
+  python-cairo
+  python-gobject
+  python-orjson
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=(
+  'geocode-glib: associate a geographical position to a place name'
+  'graphviz: enable creation of graphs - required for tree reports'
+  'gspell: enable spell checking in the notes'
+  'libgexiv2: manage Exif metadata embedded in your media'
+  'osm-gps-map: show maps in the geography view'
+  'python-imagesize: improve image processing performance'
+  'python-pillow: crop and convert images to JPG'
+  'python-pycountry: validate ISO language codes'
+  'python-pyicu: improves localised sorting'
+  'rcs: manage multiple revisions of your family trees'
+)
+source=(
+  "git+https://github.com/gramps-project/gramps.git#tag=v$pkgver"
+  0001-Use-geocode-glib-2.0.patch
+  0001-Set-prgname-to-application-ID.patch
+)
+b2sums=(
+  4e7914e3692c434562f632044926a2b1f0428329a3f112f690e42dc1a8640c5220b506185da31b57233aae4fdef3f740ccff871368569875cf609e997379f49e
+  f218d557908b7d98f034429261c51f9f0f464f685d8f62411505c0a03a2bb05f5020073fed60caecd02ec52f490ebcceb960710b754d8f9b21beb66f8e4ba12a
+  744a55a86b201e896fe32aaacc8b61cde59682e8e480752f1fc87ef223431e6445e91fc9525c9d6f5d5418ca9e4ddca8b0773fc3d8065fb89440cd3fc6438cec
+)
+
+prepare() {
+  cd $pkgname
+
+  # Use geocode-glib-2.0
+  # https://github.com/gramps-project/gramps/pull/2490
+  git apply -3 ../0001-Use-geocode-glib-2.0.patch
+
+  # Set prgname to application ID
+  # https://github.com/gramps-project/gramps/pull/2479
+  git apply -3 ../0001-Set-prgname-to-application-ID.patch
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

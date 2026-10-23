@@ -1,0 +1,34 @@
+# Maintainer: Campbell Jones <serebit at archlinux dot org>
+# Contributor: Sandy Carter <aur at sandy dot mozmail dot com>
+# Contributor: JstKddng <jk at vin dot ovh>
+
+pkgname=argparse
+pkgver=3.2
+pkgrel=1
+pkgdesc="Argument Parser for Modern C++"
+arch=(any)
+url="https://github.com/p-ranav/argparse"
+license=("MIT")
+makedepends=("cmake" "ninja")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/p-ranav/$pkgname/archive/v${pkgver}.tar.gz")
+sha512sums=('83bebae6fd022c729bc589942a2aba7d601948a93eff3c170352885ab95a30fc7d0ff15a2f42fc935ee6c2db18f4a70ecd855a45af5f37383f77745271f01d78')
+
+build() {
+    cmake -B build \
+        -G Ninja \
+        -H"$pkgname-$pkgver" \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -Wno-dev
+
+    cmake --build build
+}
+
+check() {
+    ./build/test/tests
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm 0644 "$pkgname-$pkgver/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

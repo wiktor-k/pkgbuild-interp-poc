@@ -1,0 +1,106 @@
+# Maintainer: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Giovanni Scafora <linuxmania@gmail.com>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=qcad
+pkgver=3.33.1.0
+pkgrel=2
+pkgdesc='A 2D CAD package based upon Qt'
+arch=('x86_64')
+url="https://www.qcad.org"
+license=('GPL-3.0-or-later')
+options=('!staticlibs')
+depends=(
+  'qt6-svg'
+  'libgcc'
+  'libstdc++'
+  'qt6-tools'
+  'qt6-shadertools'
+  'qt6-5compat'
+  'qt6-declarative'
+)
+makedepends=('glu' 'cmake' 'ninja' 'vulkan-headers')
+source=(
+    "$pkgname-$pkgver.tar.gz::https://github.com/qcad/qcad/archive/refs/tags/v$pkgver.tar.gz"
+    "qtjsapi-$pkgver.tar.gz::https://github.com/qcad/qtjsapi/archive/refs/tags/v$pkgver.tar.gz"
+    "qcadjsapi-$pkgver.tar.gz::https://github.com/qcad/qcadjsapi/archive/refs/tags/v$pkgver.tar.gz"
+    "qcad-launcher"
+)
+sha512sums=('9ae356ffa3ae4d0f0ffc8397ae49fe12f4afb4a8a1ea82d0c3a65e6d5a389fe47022f0aae26eba3ff4db6edb9237cf7c8be38b2bda412e8e6b41d27ebad57689'
+            '6e5492e36ee46ce2b29d7412beadbc29e539ecce49a35df6ddd37073cd41f45630f3c01e4d84b4d7cac90cc72955ccf21431921dc8c639f5a46c4f687f93c7e6'
+            'b21c97ff93724cfad5e9cb53ee79cfb6bf3f856b708dd2a5a401a4a53951f1d9363d460c054f19cde3045103b996f8300395025dfdab7999c7f65d91fc300095'
+            'de4002ea72e17f89911fdf32f1c36c3c3d5bff040ca79be74530bfbdb4b65e7da2345923d1cfc7da245f9bc8308d24027e984c0ffbbb7a8cf85c1e1a163aca6f')
+
+prepare() {
+  ln -s qcad-$pkgver qcad
+  ln -s qtjsapi-$pkgver qtjsapi
+  ln -s qcadjsapi-$pkgver qcadjsapi
+}
+
+build() {
+  cd "$srcdir/qtjsapi-$pkgver"
+  cmake \
+      -DCMAKE_INSTALL_RPATH=/usr/lib/qcad \
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -G Ninja \
+      .
+  ninja -v $MAKEFLAGS
+
+  cd "$srcdir/qcad-$pkgver"
+  cmake \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DCMAKE_INSTALL_RPATH=/usr/lib/qcad \
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+      -DBUILD_QT6=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -G Ninja \
+      .
+  ninja -v $MAKEFLAGS
+
+  cd "$srcdir/qcadjsapi-$pkgver"
+  cmake \
+      -DCMAKE_INSTALL_RPATH=/usr/lib/qcad \
+      -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON \
+      -DCMAKE_BUILD_TYPE=Release \
+      -G Ninja \
+      .
+  ninja -v $MAKEFLAGS
+
+  cd "$srcdir/qcad-$pkgver"
+  # prepare the rest of the release items
+  cp -a \
+      examples \
+      fonts \
+      libraries \
+      linetypes \
+      patterns \
+      scripts \
+      themes \
+      ts \
+      plugins \
+      release/
+  cp readme.txt release/
+
+}
+
+package() {
+  cd qcad-$pkgver
+
+  install -dm755 "$pkgdir"/usr/lib/qcad
+  cp -a release/* "$pkgdir"/usr/lib/qcad
+
+  # install man
+  install -Dm644 qcad.1 "$pkgdir"/usr/share/man/man1/qcad.1
+
+  # desktop
+  install -Dm644 scripts/qcad_icon.png "$pkgdir"/usr/share/pixmaps/org.qcad.QCAD.png
+  install -Dm644 scripts/qcad_icon.svg "$pkgdir"/usr/share/icons/hicolor/scalable/apps/org.qcad.QCAD.svg
+  install -Dm644 qcad.desktop "$pkgdir"/usr/share/applications/qcad.desktop
+
+  # qcad launcher
+  install -dm755 "$pkgdir/usr/bin"
+  install -Dm755 "$srcdir/qcad-launcher" "$pkgdir/usr/bin/qcad"
+}

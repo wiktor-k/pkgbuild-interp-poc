@@ -1,0 +1,22 @@
+pkgbase = openipmi
+	pkgdesc = Full-function IPMI (Intelligent Platform Management Interface) system
+	pkgver = 2.0.37
+	pkgrel = 4
+	url = http://openipmi.sourceforge.net/
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = python
+	makedepends = swig
+	depends = popt
+	depends = ncurses
+	depends = net-snmp
+	depends = glib2
+	depends = gdbm
+	depends = libedit
+	optdepends = python: bindings
+	source = https://downloads.sourceforge.net/project/openipmi/OpenIPMI%202.0%20Library/OpenIPMI-2.0.37.tar.gz
+	source = swig-4.5.patch
+	sha512sums = ef959ece52f073c108a84911f0aeff421c9408f70b7dacf286ec5fdb023e281d3e97b425ac2c3c70bdfebfafda61ba923c8c052da52448d26d5fcf5e4d1c764a
+	sha512sums = a2df73f76a26edbe2c5ef6a414154de3dd74b0623e84190c23b4cfae6ef0e104af47491774b4276e22cf673a2d225dfda4834eefa582a97b92bff9b68b99c9df
+
+pkgname = openipmi

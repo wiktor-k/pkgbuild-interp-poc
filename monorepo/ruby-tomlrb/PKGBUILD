@@ -1,0 +1,44 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Eric Berquist <eric dot berquist at gmail dot com>
+# Contributor: Hyacinthe Cartiaux <hyacinthe.cartiaux (a) free.fr>
+
+pkgname=ruby-tomlrb
+_pkgname="${pkgname#ruby-}"
+pkgver=2.0.4
+pkgrel=1
+pkgdesc='A racc based toml parser'
+arch=(any)
+url='https://github.com/fbernier/tomlrb'
+license=(MIT)
+depends=(ruby)
+makedepends=(git ruby-rdoc ruby-rake ruby-bundler)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('93aa8cab285b834d80686f599ead688d39e1d202a8be5bfaf266a59e717e49ec235e8db2b443ee08633de0923504900e28edeab3ea07206c133b7bd80818d204')
+b2sums=('97cb029404347ee61b27340d757f6ede4be52581fc158c9a1b6f93199cd185c0bf50cade08936d63ea22976e8d39c86738cd69c18b0635e11363b078d08866e6')
+
+build() {
+  cd "$pkgname"
+
+  rake build
+}
+
+package() {
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$pkgname/pkg/$_pkgname-$pkgver.gem"
+
+  # delete cache
+  rm -vrf "$pkgdir/$_gemdir/cache"
+
+  # license
+  install -vd "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "$_gemdir/gems/$_pkgname-$pkgver/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname"
+}

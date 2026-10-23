@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=elm-compiler
+pkgver=0.19.1
+pkgrel=43
+pkgdesc='Compiler for Elm, a functional language for reliable web applications'
+arch=('x86_64')
+url='https://elm-lang.org'
+license=('BSD-3-Clause')
+depends=('ghc-libs' 'haskell-edit-distance' 'haskell-file-embed' 'haskell-filelock'
+         'haskell-http' 'haskell-http-client' 'haskell-http-client-tls' 'haskell-http-types'
+         'haskell-language-glsl' 'haskell-network' 'haskell-prettyprinter'
+         'haskell-prettyprinter-ansi-terminal' 'haskell-prettyprinter-compat-ansi-wl-pprint'
+         'haskell-raw-strings-qq' 'haskell-scientific' 'haskell-sha' 'haskell-snap-core'
+         'haskell-snap-server' 'haskell-unordered-containers' 'haskell-utf8-string'
+         'haskell-vector' 'haskell-zip-archive')
+makedepends=('ghc' 'git' 'uusi')
+source=("git+https://github.com/elm/compiler.git#tag=$pkgver"
+        prettyprinter-compat.patch)
+sha256sums=('487f7369c0dc5b255ffe670ab839dc38de9d5913b8489d238d69aad302dbcb41'
+            '8a0a80f76e3ad948c9c6eaf2d3ab6a08490d1e05cdb06c93c646ba1c2d9fee6f')
+
+prepare() {
+  cd compiler
+
+  # Fix Word8# primop compatibility with GHC 9.4 and newer.
+  # https://github.com/elm/compiler/commit/0421dfbe48e53d880a401e201890eac0b3de5f06
+  git cherry-pick -n 0421dfbe48e53d880a401e201890eac0b3de5f06
+  patch -p1 -i ../prettyprinter-compat.patch
+  gen-setup
+}
+
+build() {
+  cd compiler
+
+  # Compiling the reactor frontend downloads its Elm dependencies here.
+  export ELM_HOME="$srcdir/elm-home"
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+  runhaskell Setup build $MAKEFLAGS
+}
+
+check() {
+  cd compiler
+  dist/build/elm/elm --help
+}
+
+package() {
+  cd compiler
+
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

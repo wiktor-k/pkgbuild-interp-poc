@@ -1,0 +1,16 @@
+pkgbase = pimsync
+	pkgdesc = Synchronize calendars and contacts
+	pkgver = 0.5.7
+	pkgrel = 1
+	url = https://pimsync.whynothugo.nl/
+	arch = x86_64
+	license = EUPL-1.2
+	makedepends = git
+	makedepends = rust
+	depends = gcc-libs
+	depends = sqlite
+	options = !lto
+	source = git+https://git.sr.ht/~whynothugo/pimsync#tag=v0.5.7
+	b2sums = 4d30f5b77c5ec3dc4c5d452e67120ff834d5b8bf162d1409cbf7d80a142d4584955485cf2aced9cb13ee0046a70e23378b66e5adfc1a5119a06de8fefee9e016
+
+pkgname = pimsync

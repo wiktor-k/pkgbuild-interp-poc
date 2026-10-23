@@ -1,0 +1,97 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Christian Muehlhaeuser <muesli at gmail dot com>
+
+pkgname=soft-serve
+pkgver=0.12.3
+pkgrel=1
+pkgdesc='A self-hosted Git server for the command line'
+arch=(x86_64)
+url='https://github.com/charmbracelet/soft-serve'
+license=(MIT)
+depends=(glibc git)
+makedepends=(go)
+backup=(etc/soft-serve.env)
+options=(!lto)
+source=(
+  "git+$url.git#tag=v$pkgver"
+  tweak-systemd-config.patch
+)
+sha512sums=('4a9bec3a774ebf6eca19ae79c87b17d5c7255136edbbb638042d18aed1b8a0d3c7d8ded44a9d3db092cc636d7a983a79adc6b153c89a96e9c9a805c714e08349'
+            'a4c68041c06c5d5a028aca7bbbaf393a003cfe9a551dd0fab86eb3909b8392926a04961af93580a2eb9b61ce190663e774af4953d0544b62be6b2d06a41f7978')
+b2sums=('4fb913fe2a6d880caa13c4e109c6855fa35554bc183fcf19f0ea6d92de87646849a6bd3cca417898d2842f7862a431b0a2782750fea28692766e00b052051836'
+        '3ed99196467f1ef781a109fbdf9aef88f0b5c15a8eea5b5ad707af340bad7dcb59f4b876d623751b16544844fa7227464f955ab068c5e98de6eaf9830969e1f7')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+
+  # tweak systemd configuration
+  patch -p1 -i "$srcdir/tweak-systemd-config.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.Version=$pkgver \
+    -X main.CommitSHA=$(git rev-parse HEAD)" \
+    -o build \
+    ./cmd/...
+
+  # generate man page
+  ./build/soft man > build/soft.1
+
+  # generate shell completion
+  for shell in bash fish zsh; do
+    ./build/soft completion "$shell" > "build/$shell.completion"
+  done
+}
+
+package() {
+  # systemd integration
+
+  cd "$pkgname"
+
+  # systemd integration
+  pushd .nfpm
+  install -vDm644 soft-serve.service -t "$pkgdir/usr/lib/systemd/system"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  install -vDm644 soft-serve.conf "$pkgdir/etc/soft-serve.env"
+  popd
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/soft
+
+  # shell completion
+  install -vDm644 build/bash.completion "$pkgdir/usr/share/bash-completion/completions/soft"
+  install -vDm644 build/fish.completion "$pkgdir/usr/share/fish/vendor_completions.d/soft.fish"
+  install -vDm644 build/zsh.completion "$pkgdir/usr/share/zsh/site-functions/_soft"
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" build/soft.1
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

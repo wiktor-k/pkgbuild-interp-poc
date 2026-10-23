@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: NicoHood <archlinux {cat} nicohood {dog} de>
+
+pkgname=python-snowboy
+pkgver=1.3.0
+pkgrel=9
+pkgdesc="DNN based hotword and wake word detection toolkit"
+url="https://github.com/Kitt-AI/snowboy"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('python-pyaudio' 'cblas')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools' 'swig')
+source=("git+https://github.com/Kitt-AI/snowboy.git#tag=v$pkgver")
+sha512sums=('589bec7d1c7c51493a060b9f7ad83aec36c267d43e2762e4c50a5e79cb46ee889fcc984f2db6bf8593d405206f738537dd8c4e941a636361ad60e6b6c3fbc449')
+
+prepare() {
+  # TODO https://github.com/Kitt-AI/snowboy/issues/377
+  # TODO https://github.com/Kitt-AI/snowboy/pull/376
+  sed -i -e "s|-lf77blas -lcblas -llapack -latlas|-lcblas|g" \
+         -e 's/ -shared/ -Wl,-O1,--as-needed\0/g' \
+         snowboy/swig/Python3/Makefile
+}
+
+build() {
+  cd snowboy
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd snowboy
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,52 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Hector Mtz-Seara <hseara.#at#.gmail*.*com>
+
+pkgname=pyzo
+pkgver=4.22.0
+pkgrel=1
+pkgdesc="Cross-platform Python IDE focused on interactivity and introspection, very suitable for scientific computing."
+arch=(any)
+url="https://pyzo.org"
+license=(BSD-2-Clause)
+depends=(python-packaging)
+makedepends=(python-build python-installer python-flit-core)
+optdepends=(
+    'pyside6: Qt6 backend'
+    'python-pyqt6: alternative Qt6 backend'
+)
+checkdepends=(python-pytest pyside6 python-pyqt6 xorg-server-xvfb)
+source=(https://github.com/pyzo/pyzo/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('980129cc1fbf5a371c59db2ea9d05017598d40a9d83345a4f8e59586e13431d9')
+
+prepare() {
+    cd $pkgname-$pkgver
+    sed -e 's|,<4||' -i pyproject.toml # Drop flit_core version constraint
+}
+
+build() {
+    cd ${pkgname}-${pkgver}
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd ${pkgname}-${pkgver}
+    python -m venv --system-site-packages test-env
+    test-env/bin/python -m installer dist/*.whl
+    test-env/bin/python -m pytest -v --color=yes tests
+    xvfb-run --auto-servernum test-env/bin/python pyzolauncher.py --test
+    test-env/bin/python tests/check_log.py
+}
+
+package() {
+    cd ${pkgname}-${pkgver}
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    install -Dm644 LICENSE.md -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+    install -Dm644 pyzo.appdata.xml -t "${pkgdir}"/usr/share/metainfo/
+    install pyzolauncher.py "${pkgdir}"/usr/bin/pyzo
+
+    install -Dm644 pyzo/resources/org.pyzo.Pyzo.desktop -t "${pkgdir}"/usr/share/applications/
+    for i in 16 32 48 64 128 256 ; do
+        install -Dm644 pyzo/resources/appicons/pyzologo${i}.png "${pkgdir}"/usr/share/icons/hicolor/${i}x${i}/apps/pyzologo.png
+    done
+}

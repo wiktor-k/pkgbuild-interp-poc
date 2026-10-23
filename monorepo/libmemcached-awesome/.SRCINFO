@@ -1,0 +1,27 @@
+pkgbase = libmemcached-awesome
+	pkgdesc = C/C++ client library and tools for the memcached server
+	pkgver = 1.1.4
+	pkgrel = 4
+	url = https://awesomized.github.io/libmemcached/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cmake
+	makedepends = memcached
+	makedepends = python-sphinx
+	makedepends = python-sphinx_rtd_theme
+	depends = glibc
+	depends = libevent
+	depends = libgcc
+	depends = libsasl
+	depends = libstdc++
+	depends = openssl
+	provides = libmemcached
+	conflicts = libmemcached
+	replaces = libmemcached
+	options = !debug
+	source = https://github.com/awesomized/libmemcached/archive/1.1.4/libmemcached-awesome-1.1.4.tar.gz
+	source = libmemcached-awesome-1.1.4-memcapable-test.patch::https://github.com/awesomized/libmemcached/commit/664fada99d0260fc07c77b8514979fda2175e20c.patch
+	sha256sums = c477e1f6510e1dc698e84f3717ce690a8f65b94c616ecaa62306cce0f5e3116a
+	sha256sums = 0cb231caf77e3a94c357643317fcb0ebe98582632ed19a61a8aa72c98bcdec02
+
+pkgname = libmemcached-awesome

@@ -1,0 +1,16 @@
+pkgbase = meek
+	pkgdesc = A pluggable transport proxy written in Go
+	pkgver = 0.38.0
+	pkgrel = 3
+	url = https://trac.torproject.org/projects/tor/wiki/doc/meek
+	arch = x86_64
+	license = CC0-1.0
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	optdepends = tor
+	options = !lto
+	source = git+https://git.torproject.org/pluggable-transports/meek.git#tag=v0.38.0
+	sha512sums = 4e0db9ab3f93a2eb39049ee56e25597d6cc513c6a3cf586e3bd5e1ce4c425df1e9044824c766c2afb4b2698aab060f040db5c6ef8c4078afb47a2057f90dccb9
+
+pkgname = meek

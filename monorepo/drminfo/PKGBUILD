@@ -1,0 +1,46 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: Eric Engestrom <aur [at] engestrom [dot] ch>
+
+pkgname=drminfo
+pkgver=8.1
+_tag="${pkgname}-${pkgver/./-}"
+pkgrel=2
+pkgdesc='Print information and test tools for Linux drm drivers (also fbdev)'
+url='https://github.com/kraxel/drminfo'
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=(
+  'cairo' 'libcairo.so'
+  'glibc'
+  'gtk3'
+  'libdrm'
+  'libepoxy'
+  'libinput'
+  'libjpeg-turbo' 'libjpeg.so'
+  'libxcb'
+  'mesa'
+  'pixman' 'libpixman-1.so'
+  'systemd-libs' 'libsystemd.so' 'libudev.so'
+)
+makedepends=(
+  'meson'
+)
+source=(https://github.com/kraxel/${pkgname}/archive/${_tag}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('09122337f0debef933307eac2435cae89ea7c617a129af70d80efe84df8911fd')
+
+prepare() {
+  cd "${pkgname}-${_tag}"
+  meson build --prefix=/usr
+}
+
+build() {
+  cd "${pkgname}-${_tag}"
+  ninja -C build
+}
+
+package() {
+  cd "${pkgname}-${_tag}"
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

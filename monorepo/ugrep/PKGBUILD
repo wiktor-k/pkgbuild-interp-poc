@@ -1,0 +1,38 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Adria Arrufat <swiftscythe at gmail dot com>
+
+pkgname=ugrep
+pkgver=7.8.5
+pkgrel=1
+pkgdesc='ultra fast grep with interactive TUI, fuzzy search, boolean queries, hexdumps and more'
+arch=(x86_64)
+license=(BSD-3-Clause)
+url="https://github.com/Genivia/$pkgname"
+depends=(bzip2
+         lz4
+         pcre2
+         xz
+         zlib
+         zstd)
+optdepends=('python-pdftotext: to search pdf'
+            'antiword: to search doc'
+            'pandoc-cli: to search .docx, .epub, and other document formats'
+            'perl-image-exiftool: to search meta information embedded in image and video media formats'
+            'libreoffice: to search office documents'
+            'csvkit: to search spreadsheets'
+            'openssl: to search certificates and key files')
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('f080ab6cd9d96a5357570cb60a99e09ebe5eef11cf322c35373dbe815378a1f2')
+
+build() {
+	cd "$_archive"
+	./configure --prefix /usr
+	make
+}
+
+package() {
+	cd "$_archive"
+	make DESTDIR="$pkgdir" install
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.txt
+}

@@ -1,0 +1,24 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: katt <magunasu.b97@gmail.com>
+
+pkgname=libjodycode
+pkgver=4.2
+pkgrel=1
+pkgdesc='Shared code used by several utilities written by Jody Bruchon'
+arch=('x86_64')
+url="https://codeberg.org/jbruchon/${pkgname}"
+license=('MIT')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('eeb54fc50b9ebec4e43c954704e69f56c104fede67aaee9f375fbecbb87933b0')
+
+build() {
+    cd "${pkgname}"
+    make
+}
+
+package() {
+    cd "${pkgname}"
+    make PREFIX="/usr" DESTDIR="${pkgdir}" install
+    install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE.txt
+}

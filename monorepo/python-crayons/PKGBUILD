@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-crayons
+pkgver=0.4.0
+pkgrel=8
+pkgdesc='TextUI colors for Python'
+arch=('any')
+license=('MIT')
+url='https://github.com/kennethreitz/crayons'
+depends=('python-colorama')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/kennethreitz/crayons.git#tag=v$pkgver")
+sha512sums=('7feea0cf01aef4121b24d1eea0fd73ffff6f642cb18851def4558ab8203bbd4fceabab93858425c809335d256e3736bf858a8f957191399e593e6b7866ef29e5')
+
+build() {
+  cd crayons
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd crayons
+  python test_crayons.py
+}
+
+package() {
+  cd crayons
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

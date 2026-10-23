@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Tom Richards <tom@tomrichards.net>
+# Contributor: TingPing <tingping@tingping.se>
+# Contributor: Omar Pakker <omar.pakker@oracle.com>
+
+pkgname=retro-gtk
+pkgver=1.0.2
+pkgrel=6
+pkgdesc='Toolkit to write GTK based Libretro frontends'
+arch=(x86_64)
+url='https://gitlab.gnome.org/Archive/retro-gtk'
+license=(GPL-3.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  libepoxy
+  libgcc
+  libpulse
+  libsamplerate
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+  vala
+)
+source=("git+https://gitlab.gnome.org/Archive/$pkgname.git#tag=$pkgver")
+b2sums=(a699e01edd159dfcebae12569350348caed57efe99ea2e0972a09125f869e7f0a07b5ddf025e3d2d2ce2a02c654fb622265766c553ab167b147a7a852bfb8a17)
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/GNOME/retro-gtk/-/merge_requests/167
+  git cherry-pick -n 8016c10e7216394bc66281f2d9be740140b6fad6
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D build-doc=true \
+    -D install-doc=true
+  meson compile -C build
+}
+
+check() {
+  # Tests try to run the installed /usr/lib/retro-runner
+  # https://gitlab.gnome.org/GNOME/retro-gtk/-/issues/56
+
+  #dbus-run-session xvfb-run \
+  #  -s '-screen 0 1920x1080x24 -nolisten local' \
+  #  meson test -C build --print-errorlogs
+  :
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

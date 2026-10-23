@@ -1,0 +1,171 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Edward Tjörnhammar <xhemi@cube2.se>
+# Contributor: Edward Tjörnhammar <xhemi@cube2.se>
+
+pkgname=inn
+pkgver=2.7.4
+pkgrel=4
+pkgdesc="Complete open source Usenet system. De facto standard for handling news routing, news spool and serving the spool to customers."
+url="https://www.isc.org/othersoftware/"
+arch=('x86_64')
+license=(ISC)
+depends=(
+  bash
+  db5.3
+  glibc
+  krb5
+  libsasl
+  libxcrypt
+  msmtp
+  openssl
+  perl
+  perl-mime-tools
+  perl-gd
+  python
+  pam
+  sqlite
+  systemd-libs
+  zlib
+)
+backup=(
+  etc/inn/actsync.cfg
+  etc/inn/actsync.ign
+  etc/inn/buffindexed.conf
+  etc/inn/control.ctl
+  etc/inn/control.ctl.local
+  etc/inn/cycbuff.conf
+  etc/inn/distrib.pats
+  etc/inn/distributions
+  etc/inn/expire.ctl
+  etc/inn/incoming.conf
+  etc/inn/inn-radius.conf
+  etc/inn/inn-secrets.conf
+  etc/inn/inn.conf
+  etc/inn/innfeed.conf
+  etc/inn/innreport.conf
+  etc/inn/innshellvars.local
+  etc/inn/innshellvars.pl.local
+  etc/inn/innshellvars.tcl.local
+  etc/inn/innwatch.ctl
+  etc/inn/localgroups
+  etc/inn/moderators
+  etc/inn/motd.innd.sample
+  etc/inn/motd.nnrpd.sample
+  etc/inn/news2mail.cf
+  etc/inn/newsfeeds
+  etc/inn/nnrpd.track
+  etc/inn/nntpsend.ctl
+  etc/inn/nocem.ctl
+  etc/inn/ovdb.conf
+  etc/inn/ovsqlite.conf
+  etc/inn/passwd.nntp
+  etc/inn/readers.conf
+  etc/inn/send-uucp.cf
+  etc/inn/storage.conf
+  etc/inn/subscriptions
+)
+validpgpkeys=('E784364E8DDE7BB370FBD9EAD15D313882004173')
+source=(
+  https://ftp.isc.org/isc/inn/inn-$pkgver.tar.gz{,.asc}
+  inn-2.7.4-disable-installing-files-using-the-owner-and-group-we-also-run-as.patch
+  inn-first-run
+  inn-create-database.hook
+  innd.service
+  inn.tmpfiles
+  inn.sysusers
+)
+sha256sums=('80fc7e801e1996cb17bb430d104dd9c5b29aa571fd4b29a9c821b4fadb051d3b'
+            'SKIP'
+            'bf909539d2310aafe5d184143fe93243122bf40d859dbec14d58d84f10cdb3a4'
+            'f261f16a3e7d9e44bff8dafc622f6e58a0cada4f8f8661470b1cdcfbf64ba061'
+            'd85235fc9c20e5db0cdb78b14c2549822cf3438b57bfba7b5941340e0e3e0eb7'
+            '14011ec79a8fa9874192eed8f69752b89660b2ea1136d2de7f59c79b60879318'
+            'ad19ff6feea9d83e81952be2581dcb13fabbfe2683c400a35fc32e2f40e14347'
+            '74cbc76f459c057838eb99bc21ef1f9ec62d0543cc6b85e10153870a1b6fffde')
+
+prepare() {
+  # Do not install the package files as the user and group we also run as.
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-2.7.4-disable-installing-files-using-the-owner-and-group-we-also-run-as.patch
+
+
+  sed --quiet '5,23p' $pkgname-$pkgver/LICENSE > ISC.txt
+
+  cd "$srcdir"/inn-$pkgver
+
+  ./autogen
+
+  # Override unreproducible hostname
+  sed -i 's/HOSTNAME=`hostname 2> \/dev\/null || uname -n`/HOSTNAME=archlinux/' configure
+  sed -i 's/-ldb/-ldb-5.3/g' configure
+}
+
+build() {
+  cd "$srcdir"/inn-$pkgver
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+  PYTHON=/usr/bin/python ./configure --prefix=/usr \
+  --bindir=/usr/bin \
+  --exec-prefix=/usr \
+  --includedir=/usr/include \
+  --sbindir=/usr/bin \
+  --with-libtool \
+  --with-gnu-id \
+  --with-bdb-include=/usr/include/db5.3 \
+  --with-db-dir=/var/db/inn \
+  --sysconfdir=/etc/inn \
+  --with-spool-dir=/var/spool/inn \
+  --with-log-dir=/var/log/inn \
+  --with-run-dir=/var/run/inn \
+  --with-tmp-dir=/var/spool/inn/tmp \
+  --enable-largefiles \
+  --with-openssl=/usr \
+  --with-perl \
+  --with-python \
+  --with-sendmail=/usr/bin/msmtp \
+  --with-sasl=/usr \
+  --with-news-user=news \
+  --with-news-group=news \
+  --with-news-master=news
+
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd "$srcdir"/inn-$pkgver
+  make DESTDIR="$pkgdir" install
+
+  # Change the mode of all executables, so that they are automatically stripped.
+  find "$pkgdir/usr/bin" -type f -exec chmod 0755 {} \;
+
+  # Change the mode of all shared objects, so that they are automatically stripped.
+  find "$pkgdir/usr/lib" -type f -iname "lib*.so*" -exec chmod 0755 {} \;
+
+  # Move `archive` executable to `archive.inn`, as it otherwise conflicts with archivetools.
+  mv --verbose "$pkgdir/usr/bin/archive" "$pkgdir/usr/bin/archive.inn"
+  mv --verbose "$pkgdir/usr/share/man/man8/archive.8" "$pkgdir/usr/share/man/man8/archive.inn.8"
+
+  # Remove /var/run (we are using /run).
+  rm --force --recursive --verbose "$pkgdir/var/run/"
+
+  # Remove auto-created contents of /var/.
+  # We are creating them on first installation and manage their mode/ownership with tmpfiles.d.
+  # They should not be part of the package, as they reside in the variable data dir.
+  rm --force --recursive --verbose "$pkgdir/var/"
+
+  # Move http dir to data dir.
+  install -vdm 755 "$pkgdir/usr/share/$pkgname/"
+  mv --verbose "$pkgdir/usr/http" "$pkgdir/usr/share/$pkgname/"
+
+  # Move documentation to correct location.
+  install -vdm 755 "$pkgdir/usr/share/doc"
+  mv --verbose "$pkgdir/usr/doc" "$pkgdir/usr/share/doc/$pkgname"
+
+  install -vDm 644 ../ISC.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+
+  install -vDm 755 ../inn-first-run -t "$pkgdir/usr/share/libalpm/scripts/"
+  install -vDm 644 ../inn-create-database.hook -t "$pkgdir/usr/share/libalpm/hooks/"
+  install -vDm 644 ../innd.service -t "$pkgdir"/usr/lib/systemd/system/
+  install -vDm 644 ../inn.sysusers "$pkgdir"/usr/lib/sysusers.d/inn.conf
+  install -vDm 644 ../inn.tmpfiles "$pkgdir"/usr/lib/tmpfiles.d/inn.conf
+}

@@ -1,0 +1,45 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgbase=fpylll
+pkgname=python-fpylll
+pkgver=0.6.4
+pkgrel=3
+pkgdesc='A Python interface for fplll'
+arch=(x86_64)
+url='https://github.com/fplll/fpylll'
+license=(GPL-2.0-only)
+depends=(fplll
+         glibc
+         gmp
+         libgcc
+         libstdc++
+         mpfr
+         python
+         python-cysignals
+         python-numpy
+         qd)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+checkdepends=(python-pytest)
+source=(git+https://github.com/fplll/fpylll#tag=$pkgver)
+sha256sums=('e5e43519b9ef3d37d057c212b4228fc7b96fea9ca85aa0a57f88a2ad2c9b0d77')
+
+build() {
+  cd $pkgbase
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgbase
+  PYTHONPATH="$PWD"/$(ls -d build/lib.*) \
+  pytest -v tests
+}
+
+package_python-fpylll() {
+  cd $pkgbase
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

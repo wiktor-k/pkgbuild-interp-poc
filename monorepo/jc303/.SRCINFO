@@ -1,0 +1,67 @@
+pkgbase = jc303
+	pkgdesc = TB-303 clone
+	pkgver = 0.13.0
+	pkgrel = 1
+	url = https://midilab.co/jc303/
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-3.0-only
+	makedepends = fontconfig
+	makedepends = freetype2
+	makedepends = glibc
+	makedepends = libgcc
+	makedepends = libstdc++
+	makedepends = git
+	makedepends = cmake
+	makedepends = libx11
+	makedepends = libxrandr
+	makedepends = libxinerama
+	makedepends = libxcursor
+	makedepends = alsa-lib
+	makedepends = gtk3
+	options = !lto
+	source = jc303::git+https://github.com/midilab/jc303#tag=v0.13.0
+	source = disable-vst2.patch
+	sha512sums = 989aae41663cc0cab7845fe06d9945d17c8baff502340086275056d068a18e805b9701d3dfc8b5dc3c4e08e962af50c67d49287fdf721ab615cbe0a4becffe02
+	sha512sums = ed932be7181f8646a6b68d5832308f6a863627af8d9056c9b8836f9233af2b64c1ceb03c3ce4bebb924bbb910f33ec67bcabd4ccdd70bc8e8bb7a483ee459f76
+	b2sums = 1e190e543a652decdbb941054ebf13fc4f6f7b3d5e74c022e83f21c226320453f7613694e88bfdcbd7933c295bb0cf6a7a9836a5468d06cee89145add4617b24
+	b2sums = ef95de0c87e9b116ef476cd04c6da20927626643cb627f689365cb7fdd56396290037947b737e59e5cd150f16d2c6f8a36620e6462568c270b6780f8bd17b890
+
+pkgname = jc303-common
+	pkgdesc = Common files for JC303
+
+pkgname = jc303-lv2
+	pkgdesc = TB-303 clone - LV2 plugin
+	groups = pro-audio
+	groups = lv2-plugins
+	depends = fontconfig
+	depends = freetype2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = jc303-common=0.13.0
+	depends = lv2-host
+
+pkgname = jc303-vst3
+	pkgdesc = TB-303 clone - VST3 plugin
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = fontconfig
+	depends = freetype2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = jc303-common=0.13.0
+	depends = vst3-host
+
+pkgname = jc303-clap
+	pkgdesc = TB-303 clone - CLAP plugin
+	groups = pro-audio
+	groups = clap-plugins
+	depends = fontconfig
+	depends = freetype2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = jc303-common=0.13.0
+	depends = clap-host

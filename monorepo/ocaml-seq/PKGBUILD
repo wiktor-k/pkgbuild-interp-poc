@@ -1,0 +1,24 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=ocaml-seq
+pkgver=0.3.1
+pkgrel=5
+pkgdesc='Compatibility package for the standard OCaml iterator type'
+arch=(x86_64)
+url='https://github.com/c-cube/seq'
+license=(LGPL-2.1-only)
+depends=(ocaml)
+makedepends=(dune)
+options=(!strip !makeflags !debug)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('997550614086e54394710168af388cb0d393a85584bfbe2327a16abee58e59a6ca161152f6874657896bb30a77049397e72b1d93d721a1a0cdd99614140c640d')
+
+build() {
+  cd seq-$pkgver
+  dune build
+}
+
+package() {
+  cd seq-$pkgver
+  dune install --prefix="$pkgdir/usr" --libdir="$pkgdir/usr/lib/ocaml"
+}

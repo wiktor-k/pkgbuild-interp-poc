@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=findpython
+pkgname=python-findpython
+pkgver=0.8.0
+pkgrel=1
+pkgdesc="A utility to find python versions on your system"
+arch=(any)
+url="https://github.com/frostming/findpython"
+license=(MIT)
+depends=(
+  python
+  python-packaging
+  python-platformdirs
+)
+makedepends=(
+  python-build
+  python-installer
+  python-pdm-backend
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+sha512sums=('caabc85d8a1c51fd29d3dac548d68f15e412f5954958bf86a880c3a4d7bdc6aec961b6e1142254a6ba02a0e44591ac590f3e3a6da01cbe86b4beaf4e15623483')
+b2sums=('68789c57da8a86bec5de18fcee53cce6bc507f517d4c5db1c4584690aa5a36c2df9bb0941956733f0af5ce1409c29b519be88a5b17536fd5f957d8baa948ad0d')
+
+build() {
+  cd $_name-$pkgver
+  PDM_BUILD_SCM_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  python -m installer --destdir="test_dir" dist/*.whl
+  export PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH"
+  pytest -vv
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

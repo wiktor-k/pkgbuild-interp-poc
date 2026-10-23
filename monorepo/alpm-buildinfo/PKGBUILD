@@ -1,0 +1,64 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=alpm-buildinfo
+_upstream=alpm
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="A CLI for writing and parsing of ALPM BUILDINFO files"
+arch=(x86_64)
+url="https://alpm.archlinux.page/alpm-buildinfo/index.html"
+_url="https://gitlab.archlinux.org/archlinux/alpm/alpm.git"
+license=(
+  'Apache-2.0 OR MIT'
+  CC-BY-SA-4.0
+)
+groups=(alpm)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  lowdown
+  rust
+  rust-script
+)
+optdepends=(
+  'alpm-docs: for additional specifications'
+)
+source=($_upstream::git+$_url?signed#tag=$pkgname/$pkgver)
+sha512sums=('80605b20846f33cbc0688a0d2176a53edd4c1ff316232e58dd5fc61ba0206a9f83a7185d27e390d208293d986695af57da9d3c425d4c2c6310981c3bc9518acd')
+b2sums=('a05cf40150fba6fd6e5df5fb854f8f98cdc226cee84c170a1d0c5fc3a479ff00a4033894ee53df8023d6e8281c2b4601f1f2c58a3c0b37b8e58693949039936e')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_upstream
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream
+  cargo build --frozen --release --features cli --package $pkgname
+
+  just generate shell_completions $pkgname
+  just generate specifications $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_upstream
+  cargo test --frozen --package $pkgname
+}
+
+package() {
+  cd $_upstream
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  # NOTE: for now only install the versioned manpages, because pacman also still provides a BUILDINFO.5
+  install -vDm 644 output/manpages/*v{1,2}.5 -t "$pkgdir/usr/share/man/man5/"
+  install -vDm 644 output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,76 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: andre.menrath@posteo.de
+
+pkgname=sws
+pkgver=2.14.0.7
+pkgrel=2
+pkgdesc='A collection of features that seamlessly integrate into REAPER'
+arch=(x86_64)
+url='https://www.sws-extension.org/'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  reaper
+  taglib
+)
+makedepends=(
+  git
+  cmake
+  php
+  perl
+  gtk3
+  ninja
+)
+install=sws.install
+source=(
+  "git+https://github.com/reaper-oss/sws.git#tag=v$pkgver"
+  'github.com-justinfrankel-wdl::git+https://github.com/justinfrankel/WDL'
+  'github.com-justinfrankel-reaper-sdk::git+https://github.com/justinfrankel/reaper-sdk'
+)
+sha512sums=('bbbb655565958f19adb2093e2ddca3c9f73b4021f1d5699d9787befb10894d6c11d0ad1ecef8b32560bef3a29ae4b30db246eb6782ddb57e8ceef1c2ce5df1f1'
+            'SKIP'
+            'SKIP')
+b2sums=('18272872585ec7b736f0b42ed7c14a50e2c28c55dd293f921bac351997d0d3c2b61f1f8e27a0ebc09090c081417c3fbce6aaf36e59450a0445aa3a4468104a1c'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodule(s)
+  # note: vendor/taglib submodule is skipped because we use system taglib
+  git submodule init vendor/WDL vendor/reaper-sdk
+  git config submodule.vendor/WDL.url "$srcdir/github.com-justinfrankel-wdl"
+  git config submodule.vendor/reaper-sdk.url "$srcdir/github.com-justinfrankel-reaper-sdk"
+  git -c protocol.file.allow=always submodule update vendor/WDL vendor/reaper-sdk
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D USE_SYSTEM_TAGLIB=ON
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  # plugin
+  install -vDm755 -t "$pkgdir/usr/lib/sws" "build/reaper_sws-$CARCH.so"
+  install -vDm644 -t "$pkgdir/usr/lib/sws" build/sws_python64.py
+
+  cd "$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md whatsnew.txt
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

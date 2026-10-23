@@ -1,0 +1,45 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+
+pkgname=intel-metrics-library
+pkgver=1.0.231
+pkgrel=1
+pkgdesc="User mode library providing access to Intel GPU performance data (MDAPI)"
+arch=('x86_64')
+url="https://github.com/intel/metrics-library"
+license=('MIT')
+depends=(
+	glibc
+	libgcc
+	libstdc++
+	libdrm
+)
+makedepends=(
+	cmake
+	ninja
+)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('725fa7eef91aea8fb65d499213dec26ded73f12e54c31043c2b4110c8d39ba24')
+
+prepare() {
+	cd metrics-library-${pkgver}
+	# Remove constraint on CMAKE_BUILD_TYPE
+	sed -i '/Release|Release-Internal|ReleaseInternal|Debug/d' ml_cmake_adapter.cmake
+}
+
+build() {
+	local cmake_args=(
+		-Wno-dev
+		-G Ninja
+		-B build
+		-S metrics-library-${pkgver}
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D CMAKE_BUILD_TYPE=None
+	)
+	cmake "${cmake_args[@]}"
+    cmake --build build
+}
+
+package() {
+    DESTDIR="${pkgdir}" cmake --install build
+    install -Dm644 metrics-library-${pkgver}/LICENSE.md -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

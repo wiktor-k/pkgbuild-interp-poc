@@ -1,0 +1,36 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=communicator
+pkgver=4.0.2
+pkgrel=2
+pkgdesc='Contacts and dialer application'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         hicolor-icon-theme
+         kcontacts
+         kcoreaddons
+         ki18n
+         kio
+         kpeople
+         libstdc++
+         mauikit
+         mauikit-filebrowsing
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+groups=(maui)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/maui-$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('60bc8b5b5f56d81229fccfe1fa52f256ff0b1326b6dc6eb62544939aa64d31fb'
+            'SKIP')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>                                    
+
+build() {
+  cmake -B build -S maui-$pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

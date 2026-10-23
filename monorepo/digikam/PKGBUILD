@@ -1,0 +1,101 @@
+# Maintainer: Ronald van Haren <ronald@archlinux.org>
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Tobias Powalowski <tpowa@archlinux.org>
+
+pkgname=digikam
+pkgver=9.1.0
+pkgrel=7
+pkgdesc='An advanced digital photo management application'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+url='https://www.digikam.org/'
+depends=(akonadi-contacts
+         exiv2
+         expat
+         ffmpeg
+         glib2
+         glibc
+         imagemagick
+         jasper
+         kcalendarcore
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcontacts
+         kcoreaddons
+         kfilemetadata
+         ki18n
+         kiconthemes
+         kio
+         knotifications
+         knotifyconfig
+         kservice
+         kwidgetsaddons
+         kxmlgui
+         lcms2
+         lensfun
+         libgcc
+         libglvnd
+         libgomp
+         libgphoto2
+         libheif
+         libjpeg-turbo
+         libjxl
+         libksane
+         libpng
+         libstdc++
+         libtiff
+         libx11
+         libxml2
+         libxslt
+         opencv
+         perl
+         perl-image-exiftool
+         qt6-base
+         qt6-multimedia
+         qt6-networkauth
+         qt6-scxml
+         qt6-svg
+         qt6-webengine
+         sh
+         solid
+         sonnet
+         threadweaver
+         x265
+         zlib)
+makedepends=(boost
+             doxygen
+             eigen
+             extra-cmake-modules
+             kdoctools)
+optdepends=('darktable: RAW import'
+            'hugin: panorama tool'
+            'qt6-imageformats: support for additional image formats (WEBP, TIFF)'
+            'rawtherapee: RAW import')
+source=(https://download.kde.org/stable/$pkgname/${pkgver%-*}/digiKam-$pkgver.tar.xz{,.sig}
+        opencv-5.patch)
+sha256sums=('a7309191e9a4787853cb3ac4136e4f8d7c044b40338dc42c7e422c37625b72e1'
+            'SKIP'
+            'bdf108388e667f26877aeb48a1e021fdb55472cb37d077787e227e45c1cebb9a')
+validpgpkeys=(D1CF2444A7858C5F2FB095B74A77747BC2386E50) # digiKam.org (digiKam project) <digikamdeveloper@gmail.com>
+
+prepare() {
+  patch -d $pkgname-$pkgver -p1 < opencv-5.patch
+}
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_WITH_QT6=ON \
+    -DENABLE_KFILEMETADATASUPPORT=ON \
+    -DENABLE_MEDIAPLAYER=ON \
+    -DENABLE_AKONADICONTACTSUPPORT=ON \
+    -DENABLE_MYSQLSUPPORT=ON \
+    -DENABLE_APPSTYLES=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

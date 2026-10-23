@@ -1,0 +1,22 @@
+pkgbase = tflint
+	pkgdesc = A linter for Terraform code
+	pkgver = 0.64.0
+	pkgrel = 1
+	url = https://github.com/terraform-linters/tflint
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = tflint-0.64.0::git+https://github.com/terraform-linters/tflint#tag=v0.64.0
+	source = git+https://github.com/hashicorp/terraform-aws-consul.git
+	source = git+https://github.com/terraform-aws-modules/terraform-aws-ec2-instance.git
+	sha512sums = 9db87714d983c929197cc411c137d2bd076df7c3d8f6a18d10e0ad833e3eb3ae9905992607210523d77533f472bdf5c77022546d8583d5c115ce9f30784a7368
+	sha512sums = SKIP
+	sha512sums = SKIP
+	b2sums = 78128420b49180e77853333bcaa798172ff838b5a86f6fe21b449f34cbc7c61df14ce47f46704baa17dda9fa343e79a25613062e5ec5be62703b3fd581aaabb5
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = tflint

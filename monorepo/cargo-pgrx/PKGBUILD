@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=cargo-pgrx
+pkgver=0.19.3
+pkgrel=1
+pkgdesc='Build PostgreSQL extensions with Rust'
+arch=(x86_64)
+url='https://github.com/pgcentralfoundation/pgrx'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  openssl
+  clang
+  llvm
+  bzip2
+  xz
+)
+makedepends=(
+  git
+  rust
+)
+optdepends=('postgresql: to compile with system postgresql')
+replaces=(cargo-pgx)
+options=(!lto)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('9bbeb5b82b3c17aad1c2fe60e17087228d33ee59d6fd1030ab34f69e7d67673029d05fe3c68579efb6a763fd9cd771e93d4487f501653ea96447ab96b986bee1')
+b2sums=('43579734d73bff1c4195e45ecf0cbb89e4390d25f4813918d7380e682e05c058e9df5e8b7628df6786c326310e2eb42b17a52d3bb0ba48b93a11d3a72b3a5f27')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --release --frozen --package "$pkgname"
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

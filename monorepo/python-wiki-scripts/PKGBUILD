@@ -1,0 +1,63 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=wiki-scripts
+pkgname=python-$_name
+pkgver=1.5.1
+pkgrel=2
+pkgdesc="Framework for writing bots, maintenance scripts or performing data analysis on wikis powered by MediaWiki"
+arch=(any)
+url="https://github.com/lahwaacz/wiki-scripts"
+license=(GPL-3.0-or-later)
+depends=(
+  python
+  python-httpx
+  python-httpx-retries
+  python-truststore
+  python-jinja
+  python-mwparserfromhell
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+)
+optdepends=(
+  'python-colorlog: colors in logging output'
+  'python-sqlalchemy: for the ws.db module'
+  'python-alembic: for the ws.db module'
+  'python-psycopg: for the ws.db module'
+  'python-asyncpg: for the ws.db module'
+)
+checkdepends=(
+  python-alembic
+  python-dotenv
+  python-pytest
+  python-pytest-bdd
+  python-pytest-mock
+  python-pytest-httpx
+  python-sqlalchemy
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+b2sums=('11d223682ebc2c1e769ba75e9682e130b25ea973cd5af2215e7b6ff74a94f35ef2a8db05df0f373143eaffcf8a487fc4d81099400257574def855a91fe7a4c59')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    -m "not containers"
+    # TODO: ws.checkers module requires python-hstspreload which is not packaged
+    --ignore tests/checkers
+  )
+  python -m pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,34 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-pfzy
+pkgver=0.3.4
+pkgrel=2
+pkgdesc='Python port of the fzy fuzzy string matching algorithm'
+arch=(any)
+url='https://pfzy.readthedocs.io/en/latest/'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-poetry-core
+)
+source=("$pkgname::git+https://github.com/kazhala/pfzy#tag=$pkgver")
+sha512sums=('fc6e379893b4d18948cf9f717e423faa01df866ee49be594b9fe6aa0db2aa7dfcec7d52405a7891ce14a8c3396e3bd2008ab2769f4fdfc33d2700c21ce5e75c5')
+b2sums=('5f8633f0bbd3b61859d64ecdb11deb27556b39dcf96c9bbe820da6df75295e7b7e4a20ef08187d4810d29631b66e0149d94034bc8202ab0237fbe87b32c62880')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

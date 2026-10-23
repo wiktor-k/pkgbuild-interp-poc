@@ -1,0 +1,40 @@
+# Maintainer: Jonas Witschel <diabonas@archlinux.org>
+pkgname=pdftk
+pkgver=3.3.3
+pkgrel=4
+pkgdesc='Command-line tool for working with PDFs'
+arch=('any')
+url='https://gitlab.com/pdftk-java/pdftk'
+license=('GPL')
+_jrever=8
+_jdkver=17
+depends=('bcprov' 'java-commons-lang' "java-runtime-headless>=${_jrever}" 'sh')
+makedepends=("jdk${_jdkver}-openjdk" 'gradle' 'strip-nondeterminism')
+source=("$url/-/archive/v$pkgver/$pkgname-v$pkgver.tar.bz2" 'pdftk.sh')
+sha512sums=('48173d0c4698bc984221b56dff3e6434df7cf144dddfdbf684f8fa28b9eacfd0ebf9ebca0b87df3f9534a1ed13caa4c0866bd3e7a8cd06a21b46dfaedda9ea21'
+            'd9b83165027de5cfe7b452cd9080384f5bd36e58ed0fd041a737d37f1a843fc75588fbac0f93fc77fb6ae1826c7df335a8b68db8265b707c4e909eed1c7bed82')
+
+build() {
+	cd "$pkgname-v$pkgver"
+	export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+	export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+	gradle -Dorg.gradle.daemon=false build
+
+	# Strip non-deterministic information from the jar file (e.g. timestamps)
+	# This is required for reproducible builds
+	find . -name "$pkgname.jar" -exec strip-nondeterminism {} +
+}
+
+check() {
+	cd "$pkgname-v$pkgver"
+	export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+	export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+	gradle -Dorg.gradle.daemon=false test
+}
+
+package() {
+	cd "$pkgname-v$pkgver"
+	install -Dm644 build/libs/pdftk.jar -t "$pkgdir/usr/share/java/$pkgname"
+	install -Dm644 pdftk.1 -t "$pkgdir/usr/share/man/man1"
+	install -Dm755 "$srcdir/pdftk.sh" "$pkgdir/usr/bin/pdftk"
+}

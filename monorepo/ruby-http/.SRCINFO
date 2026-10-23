@@ -1,0 +1,28 @@
+pkgbase = ruby-http
+	pkgdesc = A fast Ruby HTTP client with a chainable API, streaming support, and timeouts
+	pkgver = 5.2.0
+	pkgrel = 4
+	url = https://github.com/httprb/http
+	arch = any
+	license = MIT
+	checkdepends = ruby-certificate_authority
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	checkdepends = ruby-rspec-its
+	checkdepends = ruby-simplecov
+	checkdepends = ruby-webrick
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-addressable
+	depends = ruby-base64
+	depends = ruby-http-cookie
+	depends = ruby-http-form_data
+	depends = ruby-llhttp-ffi
+	options = !emptydirs
+	source = git+https://github.com/httprb/http.git#tag=v5.2.0
+	source = ruby-http_fix_tests.patch
+	sha256sums = e76b8462e6d5e4779d5775e0593f6b16f3b24bd29192bca3193e98444cc413c3
+	sha256sums = 616c7c4c361b44072aaf518cba82c3d7669634a1c890043a7bc5fb85ab734fcc
+
+pkgname = ruby-http

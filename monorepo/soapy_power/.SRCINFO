@@ -1,0 +1,25 @@
+pkgbase = soapy_power
+	pkgdesc = Obtain power spectrum from SoapySDR devices
+	pkgver = 1.6.1
+	pkgrel = 14
+	url = https://github.com/xmikos/soapy_power
+	arch = any
+	license = MIT
+	makedepends = python-setuptools
+	depends = python
+	depends = python-numpy
+	depends = python-simplesoapy
+	depends = python-simplespectral
+	optdepends = soapyrtlsdr: Support for RTL-SDR dongles
+	optdepends = soapyairspy: Support for Airspy R2 and Airspy Mini
+	optdepends = soapyhackrf: Support for HackRF
+	optdepends = soapybladerf: Support for Nuand bladeRF
+	optdepends = soapyuhd: Support for Ettus USRP
+	optdepends = soapylms7: Support for LimeSDR and other LMS7002M based Myriad RF boards
+	optdepends = soapyosmo: Support for MiriSDR and RFSpace
+	optdepends = soapyremote: Use any SoapySDR device remotely over network
+	optdepends = python-scipy: Faster FFT calculations with scipy.fftpack library
+	source = soapy_power-1.6.1.tar.gz::https://github.com/xmikos/soapy_power/archive/v1.6.1.tar.gz
+	sha256sums = fcf80fb3eca178ff8ea2ce87bc5cc390fa2b17f8dc72fa9e1213ca4022f469e4
+
+pkgname = soapy_power

@@ -1,0 +1,36 @@
+pkgbase = libiio
+	pkgdesc = Interface to the Linux Industrial Input/Output (IIO) Subsystem
+	pkgver = 0.26
+	pkgrel = 5
+	url = https://github.com/analogdevicesinc/libiio
+	arch = x86_64
+	license = GPL-2.0-or-later
+	license = LGPL-2.1-or-later
+	makedepends = avahi
+	makedepends = cmake
+	makedepends = libaio
+	makedepends = libserialport
+	makedepends = libusb
+	makedepends = libxml2
+	makedepends = python-setuptools
+	source = https://github.com/analogdevicesinc/libiio/archive/v0.26/libiio-v0.26.tar.gz
+	sha512sums = f2febe8223149602e9d34957fb04892ff1d7449abf2923d0428d0db43148445a0b5595eb6d00013687c73001685b6aaaa5aa098ff67f51ec1950200330481bba
+	b2sums = d420963a4044330cd5bcc99bf7add3b11579aee7bdada7bdd92c1c1731635ec0460ba7d9fea1364876dc7dc95a600a22826b4866e651e24292b04902d8dd9e6e
+
+pkgname = libiio
+	depends = avahi
+	depends = libavahi-client.so
+	depends = libavahi-common.so
+	depends = glibc
+	depends = libaio
+	depends = libserialport
+	depends = libxml2
+	depends = libusb
+	depends = libusb-1.0.so
+	optdepends = python-pylibiio: for Python bindings
+	provides = libiio.so
+
+pkgname = python-pylibiio
+	pkgdesc = Interface to the Linux Industrial Input/Output (IIO) Subsystem - Python bindings
+	depends = libiio=0.26
+	depends = python

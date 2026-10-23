@@ -1,0 +1,20 @@
+pkgbase = kcov
+	pkgdesc = Code coverage tester for compiled programs, Python scripts and shell scripts
+	pkgver = 43
+	pkgrel = 1
+	url = https://simonkagstrom.github.io/kcov
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = python
+	makedepends = ninja
+	depends = elfutils
+	depends = curl
+	depends = zstd
+	depends = zlib
+	depends = binutils
+	depends = libsframe.so
+	source = https://github.com/SimonKagstrom/kcov/archive/v43.tar.gz
+	sha512sums = 11158c63a4eb5fdb34b4787c135e3c8db60e6d3292fc109fcfb43e6dab30c6c4310b09c6d94614556eb005792bab235c6cd839c585c3a98f5700c4ee4d317aca
+
+pkgname = kcov

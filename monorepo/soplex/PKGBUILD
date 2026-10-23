@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=soplex
+pkgver=8.1.0
+pkgrel=2
+pkgdesc='Sequential object-oriented simPlex'
+arch=(x86_64)
+url='https://www.scipopt.org/'
+license=(Apache-2.0)
+depends=(glibc
+         gmp
+         libgcc
+         libstdc++
+         mpfr
+         onetbb
+         papilo
+         zlib)
+makedepends=(boost
+             cmake
+             git)
+source=(git+https://github.com/scipopt/soplex#tag=v$pkgver)
+sha256sums=('a8f1bc444a9862f101e1daa2c54953f7701364230b0361938e0eaa6f47725a3b')
+
+build() {
+  cmake -B build -S soplex \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DMPFR=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+# Replace static libraries with symlinks to shared library
+  ln -s libsoplexshared.so "$pkgdir"/usr/lib/libsoplex.so
+  ln -s libsoplexshared.so "$pkgdir"/usr/lib/libsoplex-pic.so
+  sed -e 's|libsoplex.a|libsoplex.so|g' -e 's|libsoplex-pic.a|libsoplex-pic.so|g' -i "$pkgdir"/usr/lib/cmake/soplex/*.cmake
+}

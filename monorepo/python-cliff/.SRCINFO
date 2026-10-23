@@ -1,0 +1,26 @@
+pkgbase = python-cliff
+	pkgdesc = Command Line Interface Formulation Framework
+	pkgver = 4.17.0
+	pkgrel = 1
+	url = https://docs.openstack.org/cliff/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-fixtures
+	checkdepends = python-stestr
+	checkdepends = python-sphinx
+	checkdepends = python-testtools
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-pbr
+	depends = python-autopage
+	depends = python-cmd2
+	depends = python-prettytable
+	depends = python-stevedore
+	depends = python-yaml
+	options = !emptydirs
+	source = git+https://github.com/openstack/cliff.git#tag=4.17.0
+	sha512sums = d1235296f1c8d29e16164e50b5030131d69f96c2679bcba0c24906c0d5587d1a7e18fecedea7492cf7b2a5e6608ac33ffb4a00a2a1cde550cfc4073edf114cf8
+
+pkgname = python-cliff

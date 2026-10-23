@@ -1,0 +1,72 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: T.J. Townsend <blakkheim@archlinux.org>
+# Contributor: Sébastien Luttringer
+# Contributor: parchd <parchd@archlinux.info>
+
+pkgname=opensmtpd
+pkgver=7.9.0p0
+pkgrel=1
+pkgdesc="Free implementation of the server-side SMTP protocol"
+arch=(x86_64)
+url="https://www.opensmtpd.org"
+license=(custom)
+depends=(libevent libxcrypt openssl pam systemd zlib)
+optdepends=('opensmtpd-filter-rspamd: rspamd integration')
+makedepends=(git)
+provides=(smtp-server smtp-forwarder)
+conflicts=(smtp-server smtp-forwarder)
+backup=(etc/smtpd/smtpd.conf etc/smtpd/aliases)
+options=(emptydirs)
+source=("git+https://github.com/OpenSMTPD/OpenSMTPD.git#tag=${pkgver}"
+        opensmtpd.sysusers
+        smtpd.service)
+sha256sums=('795e32516ebb590954873231b5b0432b61568d6f971aa7b399362339d1288da4'
+            '955e25043dbbc266a496db10c5d5f25f70d5342bba0550915932c04068a4ca01'
+            'abf5baeb2a87c60d668ad18ea41cc08cab7a4f76339dd6df05de15cdaadaf922')
+install="${pkgname}.install"
+
+prepare() {
+  cd OpenSMTPD
+  sed -ri 's,/etc/mail,/etc/smtpd,g' usr.sbin/smtpd/smtpd.conf
+  autoreconf -vfi
+}
+
+build() {
+  cd OpenSMTPD
+
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc/smtpd \
+    --sbindir=/usr/bin \
+    --libexecdir=/usr/lib/smtpd \
+    --without-libbsd \
+    --with-path-mbox=/var/spool/mail \
+    --with-path-empty=/var/empty \
+    --with-path-socket=/run \
+    --with-path-CAfile=/etc/ssl/certs/ca-certificates.crt \
+    --with-user-smtpd=smtpd \
+    --with-user-queue=smtpq \
+    --with-group-queue=smtpq \
+    --with-auth-pam
+
+  make
+}
+
+package() {
+  cd OpenSMTPD
+
+  make DESTDIR="${pkgdir}" install SMTPD_QUEUE_USER=92
+
+  ln -s /usr/bin/smtpctl "${pkgdir}"/usr/bin/sendmail
+  ln -s /usr/bin/smtpctl "${pkgdir}"/usr/bin/mailq
+  ln -s /usr/bin/smtpctl "${pkgdir}"/usr/bin/newaliases
+  ln -s /usr/bin/smtpctl "${pkgdir}"/usr/bin/makemap
+
+  install -Dm644 etc/aliases -t "${pkgdir}"/etc/smtpd/
+
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+
+  install -Dm644 ../smtpd.service -t "${pkgdir}"/usr/lib/systemd/system/
+  install -Dm644 ../opensmtpd.sysusers "${pkgdir}"/usr/lib/sysusers.d/opensmtpd.conf
+}

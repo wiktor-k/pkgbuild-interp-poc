@@ -1,0 +1,64 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: SandaruKasa <sandarukasa plus aur at ya dot ru>
+
+pkgname=kani
+pkgver=0.64.0
+pkgrel=1
+_gitcommit=12386811f934e7eb76e794bea787a1030f934735
+pkgdesc='Bit-precise model checker for Rust'
+arch=('x86_64')
+url="https://github.com/model-checking/kani"
+license=('Apache-2.0' 'MIT')
+depends=('cargo-nightly' 'gcc-libs') # kani-compiler only supports nightly
+makedepends=('git')
+provides=('cargo-kani' 'kani-verifier')
+source=(
+  "${pkgname}-${pkgver}::git+$url#commit=$_gitcommit"
+  "${pkgname}-charon::git+https://github.com/AeneasVerif/charon"
+  "${pkgname}-firecracker::git+https://github.com/firecracker-microvm/firecracker.git"
+  "${pkgname}-s2n-quic::git+https://github.com/aws/s2n-quic"
+)
+sha256sums=('125ed138413c0745d94fe6166d3b9d9b5ff8b209cd098917b8e757d2c582093e'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+_src="${pkgname}-${pkgver}"
+
+prepare() {
+  cd "${_src}"
+  git submodule init
+
+  git config submodule."charon".url "${srcdir}/${pkgname}"-charon
+  git config submodule."firecracker".url "${srcdir}/${pkgname}"-firecracker
+  git config submodule."tests/perf/s2n-quic".url "${srcdir}/${pkgname}"-s2n-quic
+
+  git -c protocol.file.allow=always submodule update --init --recursive
+
+  rustup component add rust-src rustc-dev llvm-tools-preview
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "${_src}"
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "${_src}"
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "${_src}"
+
+  find target/release \
+    -maxdepth 1 \
+    -executable \
+    -type f \
+    -exec install -Dm0755 -t "$pkgdir/usr/bin/" {} +
+
+  install -Dm644 LICENSE-MIT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE-MIT"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,36 @@
+pkgbase = waylock
+	pkgdesc = A simple screenlocker for wayland compositors
+	pkgver = 1.6.0
+	pkgrel = 1
+	url = https://codeberg.org/ifreund/waylock
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = scdoc
+	makedepends = wayland-protocols
+	makedepends = zig
+	depends = glibc
+	depends = libxkbcommon
+	depends = pam
+	depends = wayland
+	noextract = zig-wayland-v0.6.0.tar.gz::https://codeberg.org/ifreund/zig-wayland/archive/v0.6.0.tar.gz
+	noextract = zig-xkbcommon-v0.3.0.tar.gz::https://codeberg.org/ifreund/zig-xkbcommon/archive/v0.3.0.tar.gz
+	source = git+https://codeberg.org/ifreund/waylock?signed#tag=v1.6.0
+	source = zig-wayland-v0.6.0.tar.gz::https://codeberg.org/ifreund/zig-wayland/archive/v0.6.0.tar.gz
+	source = zig-xkbcommon-v0.3.0.tar.gz::https://codeberg.org/ifreund/zig-xkbcommon/archive/v0.3.0.tar.gz
+	validpgpkeys = 5FBDF84DD2278DB2B8AD8A5286DED400DDFD7A11
+	sha512sums = 6a372ae283e0bb0c4624452fe093eaa882de07f7efe5bbc33a441478e63a0afd4ed8d0c3045d8cf10dcfd27cb3e861bf7546cf7b06204889b7365e61b0ffa240
+	sha512sums = b2328222e60676b50a5a3445e3e6e74655139c5e6e4f263108846fe0ec79a48b99590f823353e9721d9ce2c6d783681fd75cf6b672de19217db50582df444372
+	sha512sums = fe0dc46a8556f19c2ce1badbeee7576065cb56495b94b6d468ee6ed8667f9fef5377e26864b0c8e81c3a2718cfcaf8a4f5e13aab23a615f3a58ec639372fb758
+	b2sums = fd00b1abcf33a67fc2e8a1ac2367853aacf1841ad4af8d586beb79a2c05f530584a112f85a1ae3bf1a34aaccad868d60ab76bc187e3b3a7edfd92da1c4ed829f
+	b2sums = 5722bd1cdb8734e20dc998b64e3598f5d3bce1cf22388a093216e4a7c795a13d65f8b041b8ec27e2975e3081b3c676b77f281a85b7cd964af9b3c93c48d83579
+	b2sums = 6870fc2465e2b1ef4faa6330183a1dade4a4bcf36130113444e5221ff9c764db488304f2f25a603f2511c2562d55bf1011a5f8fe41a068e7e5b707e1d06c0792
+
+pkgname = waylock
+	depends = glibc
+	depends = libxkbcommon
+	depends = pam
+	depends = wayland
+	depends = libxkbcommon.so
+	depends = libpam.so
+	depends = libwayland-client.so

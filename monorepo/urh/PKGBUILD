@@ -1,0 +1,91 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinuc.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Johannes Pohl <johannes.pohl90@gmail.com>
+
+pkgname=urh
+pkgver=2.10.0
+pkgrel=2
+pkgdesc='Universal Radio Hacker: investigate wireless protocols like a boss'
+arch=('x86_64')
+url='https://github.com/jopohl/urh'
+license=('GPL-3.0-only')
+depends=(
+  'glibc'
+  'libgcc'
+  'libgomp'
+  'libstdc++'
+  'python'
+  'python-numpy'
+  'python-psutil'
+  'python-pyqt6'
+  'python-setuptools'
+)
+makedepends=(
+  'airspy'
+  'bladerf'
+  'cython'
+  'gcc'
+  'hackrf'
+  'libiio'
+  'libuhd'
+  'limesuite'
+  'python-build'
+  'python-installer'
+  'python-wheel'
+  'rtl-sdr'
+)
+checkdepends=(
+  'python-pytest-xdist'
+  'xorg-server-xvfb'
+)
+optdepends=(
+  'airspy: Airspy backend'
+  'bladerf: BladeRF backend'
+  'cython: compiling native modules inside URH'
+  'gnuradio-osmosdr: OsmoSDR backend, via GNURadio'
+  'gnuradio: GNURadio backend'
+  'hackrf: HackRF backend'
+  'libiio: IIO backend (PlutoSDR)'
+  'libuhd: USRP backend'
+  'limesuite: LimeSDR backend'
+  'python-pyaudio: Soundcard backend'
+  'python-pylibiio: IIO backend (PlutoSDR)'
+  'rtl-sdr: RTL-SDR backend'
+)
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+)
+b2sums=('4d68080279dea9763180a586169b07279fecd9b2df98a509db5e578432f1082a20b94e04fae3f2ed1f32621b4c683bde546e158d9ca369e2bc68c061e473b9ea')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # No need to package this build script.
+  rm -v src/urh/cythonext/build.py
+
+  # These init-files mess with the PATH and break the tests.
+  rm -v tests/__init__.py
+  rm -v tests/auto_interpretation/__init__.py
+}
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd $pkgname-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  export QT_QPA_PLATFORM=xcb
+  xvfb-run test-env/bin/python -m pytest \
+    --deselect tests/awre/test_generated_protocols.py::TestGeneratedProtocols::test_without_preamble
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 data/urh.desktop "$pkgdir/usr/share/applications/urh.desktop"
+  install -vDm644 data/icons/appicon.png "$pkgdir/usr/share/pixmaps/urh.png"
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

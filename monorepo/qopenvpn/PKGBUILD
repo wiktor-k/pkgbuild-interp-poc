@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Michal Krenek (Mikos) <m.krenek@gmail.com>
+
+pkgname=qopenvpn
+pkgver=2.0.0
+pkgrel=11
+pkgdesc="Simple OpenVPN GUI written in PyQt for systemd based distributions"
+arch=('any')
+url="https://github.com/xmikos/qopenvpn"
+license=('GPL-3.0-or-later')
+depends=('python-pyqt5' 'openvpn' 'systemd')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/xmikos/qopenvpn.git#tag=v$pkgver")
+sha512sums=('4f0f9880c10a5dd7e67a125c3ada1239c7bb293a1c5b1f8c5e39079d227f1790fa43ab73d494401b428c08fe54c1dac5e57d464b8af184a66b30ad3ce588e998')
+
+build() {
+  cd qopenvpn
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd qopenvpn
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

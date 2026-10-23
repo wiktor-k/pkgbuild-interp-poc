@@ -1,0 +1,39 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-dominate
+pkgver=2.9.1
+pkgrel=4
+pkgdesc="A Python library for creating and manipulating HTML documents using an elegant DOM API"
+url="https://github.com/Knio/dominate"
+license=('LGPL-2.1-or-later')
+arch=('any')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz"
+  # https://github.com/Knio/dominate/pull/202
+  "python-3.13-compat.patch::$url/commit/58f7d7fdb171f80ed6ce97e6ca4409723975c47f.patch"
+)
+sha512sums=('d13b3fcc22176b2ad0c393887b6b3fa896252f9c4126a017eb696a973c05090cbbf0b0437495761987e1f08b76d0e2901d06c61b02b6b20a4aac652ec2867297'
+            '233530f471a00b637a0d866bd415994f88d5e5a90d76bf780f4da48995d96527e9255fce9daf91eb44d6da1e7f0d6ece67e1cfb5f649e635d83f9fc14c451476')
+
+prepare() {
+  cd dominate-$pkgver
+  patch -Np1 -i ../python-3.13-compat.patch
+}
+
+build() {
+  cd dominate-$pkgver
+  python -m build -nw
+}
+
+check() {
+  cd dominate-$pkgver
+  pytest
+}
+
+package() {
+  cd dominate-$pkgver
+  python -m installer -d "$pkgdir" dist/*.whl
+}

@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: allencch at hotmail dot com
+
+pkgname=chinese-calendar
+pkgver=1.0.3.r58
+pkgrel=4
+pkgdesc="Chinese traditional calendar for Ubuntu Kylin"
+arch=('x86_64')
+url="https://launchpad.net/chinese-calendar"
+license=('GPL-3.0-only')
+depends=('glibc' 'libstdc++' 'libgcc' 'qt5-base' 'qt5-svg')
+makedepends=('breezy')
+# unreleased version has qt5 support and references to 1.0.4 in debian/changelog
+#source=("https://launchpad.net/ubuntu/+archive/primary/+files/chinese-calendar_$pkgver.orig.tar.xz")
+source=("$pkgname::bzr+$url/trunk#revision=58")
+sha512sums=('SKIP')
+
+build() {
+  cd chinese-calendar
+  qmake PREFIX=/usr
+  make
+}
+
+package() {
+  cd chinese-calendar
+  make install INSTALL_ROOT="$pkgdir"
+}

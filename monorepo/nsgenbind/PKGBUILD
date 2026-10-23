@@ -1,0 +1,24 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Marian Buschsieweke <mari.hahn@uni-muenster.de>
+
+pkgname=nsgenbind
+pkgver=0.9
+pkgrel=2
+pkgdesc='NetSurf JavaScript binding generator'
+arch=(x86_64)
+url='https://git.netsurf-browser.org/nsgenbind.git'
+license=(MIT)
+depends=(glibc)
+makedepends=(netsurf-buildsystem)
+source=("https://download.netsurf-browser.org/libs/releases/nsgenbind-$pkgver-src.tar.gz")
+b2sums=('ad725a4ba2a2b91935d974f6c4c449b3f5bc5a1f4204b473ab4ae59b14b9f5c995b4085e1c537624878e913b154c69a19e63f043b58cea7b67bf44e91839e6f5')
+
+build() {
+  make -C $pkgname-$pkgver PREFIX=/usr
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make install PREFIX=/usr DESTDIR="$pkgdir"
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

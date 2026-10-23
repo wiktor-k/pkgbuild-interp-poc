@@ -1,0 +1,23 @@
+pkgbase = pwninit
+	pkgdesc = Automate starting binary exploit challenges
+	pkgver = 3.3.2
+	pkgrel = 1
+	url = https://github.com/io12/pwninit
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = cargo
+	depends = elfutils
+	depends = gcc-libs
+	depends = glibc
+	depends = openssl
+	depends = patchelf
+	depends = xz
+	depends = zstd
+	options = !lto
+	source = git+https://github.com/io12/pwninit.git?signed#commit=3.3.2
+	validpgpkeys = 05A4711013D373A1F2FEE261AAB1132642EF3045
+	sha256sums = 89944db7d36a4e9f9ea68f56a13500a219f666c89052e45b5bcc362ca060d70b
+	b2sums = 6e9e43595aadf854dece5664abc3b718d6f71f2977891040460315c1b9c96562ad0efb29bafe1681845dd560f8e2449e50553cac724e19905b189eac3f4ad4d1
+
+pkgname = pwninit

@@ -1,0 +1,28 @@
+# Maintainer: Giancarlo Razzolini <grazzolini@archlinux.org>
+pkgname=uwsgitop
+pkgver=0.12
+pkgrel=4
+pkgdesc="uWSGI top-like app"
+arch=('any')
+url="https://github.com/xrmx/uwsgitop"
+license=('MIT')
+depends=('python-simplejson')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+options=(!emptydirs)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xrmx/$pkgname/archive/v$pkgver.tar.gz")
+sha512sums=('75d2777f3ae67fa732afc023327d61d40108b09ab5d2d5b714394f7a0a819e4262c4804b95ab213ecc6d7b756eb210ebcba02d2caea5a12b0131f4dd6d6bdc5f')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 README.rst -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,50 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+pkgname=msedit
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="A simple editor for simple needs (Microsoft Edit)"
+arch=(x86_64)
+url="https://github.com/microsoft/edit"
+license=('MIT')
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+)
+optdepends=(
+  'icu: for search and replace'
+)
+replaces=(ms-edit)
+provides=(ms-edit)
+makedepends=(
+  rust
+  git
+)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha256sums=('cab8aebba0c96dfc2362148d4c7ca1f1de72057614ac33b4d397bbe9d338547b')
+
+prepare() {
+  cd "$pkgname"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # patch the desktop file so it matches the alternative binary name
+  sed --in-place 's/=edit/=msedit/' assets/com.microsoft.edit.desktop
+}
+
+build() {
+  cd "$pkgname"
+  cargo build --locked --frozen --release
+}
+
+check() {
+  cd "$pkgname"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm0755 "target/release/edit" "$pkgdir/usr/bin/$pkgname"
+  install -Dm0644 "assets/edit.svg" "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
+  install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" "LICENSE"
+  install -Dm0644 -t "$pkgdir/usr/share/applications" "assets/com.microsoft.edit.desktop"
+}

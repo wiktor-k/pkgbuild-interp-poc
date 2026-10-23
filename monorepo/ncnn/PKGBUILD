@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: PumpkinCheshire <me at pumpkincheshire dot com>
+# Contributor: Cobalt Space <cobaltspace at protonmail dot com>
+# Contributor: Mitch Bigelow <ipha00 at gmail dot com>
+
+pkgname=ncnn
+pkgver=20261020
+pkgrel=1
+pkgdesc='High-performance neural network inference framework optimized for the mobile platform'
+url='https://github.com/Tencent/ncnn'
+arch=('x86_64')
+license=('BSD-3-Clause')
+depends=('glibc' 'glslang' 'libgcc' 'libgomp' 'libstdc++' 'vulkan-icd-loader')
+makedepends=('git' 'cmake' 'ninja' 'protobuf' 'vulkan-headers')
+optdepends=('protobuf: for caffe2ncnn')
+source=("git+https://github.com/Tencent/ncnn.git#tag=$pkgver")
+b2sums=('828b0f5afa8fa8ddf4d9235596d58a953406edf3839e50ffddbc889a9599cc992bd29b339fb493871215ca10a91c1f0d3265982b90ceeaf94363533f5058187e')
+
+build() {
+    cmake -B build -S $pkgname \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE='None' \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DNCNN_SHARED_LIB=ON \
+        -DNCNN_ENABLE_LTO=ON \
+        -DNCNN_VULKAN=ON \
+        -DNCNN_SYSTEM_GLSLANG=ON \
+        -DNCNN_BUILD_EXAMPLES=OFF \
+        -DGLSLANG_TARGET_DIR=/usr/lib/cmake \
+        -Wno-dev
+    ninja -C build
+}
+
+package() {
+    DESTDIR="$pkgdir" ninja -C build install
+    install -Dm644 "$srcdir"/ncnn/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

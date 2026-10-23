@@ -1,0 +1,21 @@
+pkgbase = radvd
+	pkgdesc = IPv6 Router Advertisement Daemon
+	pkgver = 2.21
+	pkgrel = 1
+	url = https://www.litech.org/radvd/
+	arch = x86_64
+	license = LicenseRef-BSD-Clause-Modified
+	makedepends = check
+	makedepends = libbsd
+	makedepends = git
+	makedepends = autoconf
+	depends = glibc
+	backup = etc/radvd.conf
+	source = git+https://github.com/radvd-project/radvd.git#tag=v2.21?signed
+	source = radvd.service
+	validpgpkeys = 10E2511038172B516DCA5BD36FE19F21451C9A2B
+	validpgpkeys = 7D0B3CEBE9B85B1F825BCECFEE05E6F6A48F6136
+	sha512sums = bbbfed42c5ecbed3b4c09799313d21c1a41b124dc639419c949a9775b0af4dac10d3edfadeb0ff8011290d17dac662040c111ff22205930a7214d1173db8552f
+	sha512sums = f8abe3e0233c33313e768c45b2873bfc70b6461337c57ae6e07196d3e9d23338fdec56b1c92d3fa1a2a691f83fd850588095352570ce3d2c0cc32ac07862f426
+
+pkgname = radvd

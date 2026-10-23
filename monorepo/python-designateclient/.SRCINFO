@@ -1,0 +1,30 @@
+pkgbase = python-designateclient
+	pkgdesc = OpenStack DNS-as-a-Service - Client
+	pkgver = 7.0.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-designateclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-oslo-config
+	checkdepends = python-oslotest
+	checkdepends = python-requests-mock
+	checkdepends = python-stestr
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-cliff
+	depends = python-jsonschema
+	depends = python-osc-lib
+	depends = python-oslo-serialization
+	depends = python-oslo-utils
+	depends = python-pbr
+	depends = python-keystoneauth1
+	depends = python-requests
+	depends = python-stevedore
+	depends = python-debtcollector
+	source = git+https://github.com/openstack/python-designateclient.git#tag=7.0.0
+	sha512sums = 720d54fa9272a808fed9c34bc0cc464c43d68eeec81d9ef2748abcea72f23bee431e7d59213fece6824cee966a4498130de9b62d6109789d7170a42a258b31c4
+
+pkgname = python-designateclient

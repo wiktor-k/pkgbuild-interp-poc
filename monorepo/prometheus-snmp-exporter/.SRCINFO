@@ -1,0 +1,28 @@
+pkgbase = prometheus-snmp-exporter
+	pkgdesc = Prometheus exporter for SNMP metrics
+	pkgver = 0.30.1
+	pkgrel = 2
+	url = https://github.com/prometheus/snmp_exporter
+	install = package.install
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = net-snmp
+	options = !lto
+	backup = etc/conf.d/prometheus-snmp-exporter
+	source = prometheus-snmp-exporter::git+https://github.com/prometheus/snmp_exporter#tag=v0.30.1
+	source = systemd.service
+	source = sysusers.conf
+	source = config.env
+	sha512sums = 7201f23ee2b88d3aa9b888b077e635d9a7eccb315bbde97f5ef697866e79ac5362e22174c789a6601e794f3dbbb71b2cf5c0c9da50f0246290625f0ae308eb0a
+	sha512sums = 9ca53c18fe84d49cf283a402dc3162d0e6a2045f7030a7c05b9d31a39cc16e86557d49361d985e4993993cf59acbe65d12ebedeebdff87c87b647f49499ec321
+	sha512sums = 845bd76b3284b13673d35dde5a2068f48e391baf99baf2287ad1eb65f35c34d3619962992538dd4d01e84e0d78deb7e7ed029b6e89f3db4772e6c232959e4050
+	sha512sums = 3cac11e6c0935b2c123a4ed85791fbab4585d35820e89baa927883619a03c3925876bdc5e385ac7df48f7adec8ee1082aaa347bce2ad6c237f7401eba58e2905
+	b2sums = 639ac78334a52238fbf3a04079ea406fc612ef8781917b729da67832585f6cf5a736a5036a09accc1db892a6f166140198d17e3caa1740864beaf057d1b299ab
+	b2sums = ac862a1fecc719c04684836b0c0e0aaff93912ad09f676555fc3212dcb8fa93bd4569550247fb0aaca9e7083e6d4707ebd7f6332d28ab14ba0774625fc176737
+	b2sums = e3ee4223014a9db6ba74b45d3e2a5e7fe32bf2628289245a7864d2a5118647de851314c877a4148f9693eca9722a025ed92b23f8389694b196e0af671f618467
+	b2sums = 88d48f0485a485a7840f9cc9aa6c5c3a0de2c28542bd77f16fa181772532287375e214f214bf925c30705a60ee48ebf15ac6ca707f58a7b3ed74984afb22aded
+
+pkgname = prometheus-snmp-exporter

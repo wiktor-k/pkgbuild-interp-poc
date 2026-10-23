@@ -1,0 +1,75 @@
+# Maintainer: Muflone http://www.muflone.com/contacts/english/
+# Contributor: Bjoern Franke <bjo+aur@schafweide.org>
+
+pkgname=vorta
+pkgver=0.11.6
+pkgrel=1
+pkgdesc="Desktop Client for Borg Backup"
+arch=('any')
+url="https://vorta.borgbase.com"
+license=('GPL-3.0-only')
+depends=(
+  'borg'
+  'hicolor-icon-theme'
+  'python'
+  'python-peewee'
+  'python-platformdirs'
+  'python-psutil'
+  'python-pyfuse3'
+  'python-pyqt6'
+  'python-secretstorage'
+  'qt6-svg'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+  'qt6-tools'
+)
+checkdepends=(
+  'dbus'
+  'openssh'
+  'python-pytest'
+  'python-pytest-mock'
+  'python-pytest-qt'
+  'xorg-server-xvfb'
+)
+source=(
+  "git+https://github.com/borgbase/vorta.git#tag=v${pkgver}"
+  "${pkgname}-mock-borg-alert-in-tests.patch"
+)
+b2sums=('30125cae3f5e3ccb4993da5057e600afd2d1e47a635dc2e9b03305e31a5a7e5a9191d0721ff0793b03bbe95a78d090c4a7fdaa210e1b47a4ec37407947f52b44'
+        'e97dc6270215dd7fc4984754981dff468b6bebad3a04cc173c7e45f48d599d605c9dd10cf02909edbccf150ea3c0def972457eb734a56a8135d6edc284a5cb5b')
+
+prepare() {
+  cd "${pkgname}"
+  patch -Np1 < ../${pkgname}-mock-borg-alert-in-tests.patch
+}
+
+build() {
+  cd "${pkgname}"
+  # make translations-to-qm
+  python -m build --no-isolation --wheel --skip-dependency-check
+}
+
+check() {
+  cd "${pkgname}"
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  xvfb-run --server-args="-screen 0 1024x768x24+32" -a dbus-run-session -- \
+    test-env/bin/python -m pytest tests/unit
+}
+
+package() {
+  cd "${pkgname}"
+  # Install wheel
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  # Install extra data
+  local _package="com.borgbase.Vorta"
+  install -m 644 -D "package/icon-symbolic.svg" "${pkgdir}/usr/share/icons/hicolor/symbolic/apps/${_package}-symbolic.svg"
+  install -m 644 -D "src/vorta/assets/icons/icon.svg" "${pkgdir}/usr/share/icons/hicolor/scalable/apps/${_package}.svg"
+  install -m 644 -D "src/vorta/assets/metadata/${_package}.appdata.xml" -t "${pkgdir}/usr/share/metainfo"
+  install -m 644 -D "src/vorta/assets/metadata/${_package}.desktop" -t "${pkgdir}/usr/share/applications"
+}

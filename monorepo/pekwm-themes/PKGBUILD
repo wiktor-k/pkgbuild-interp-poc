@@ -1,0 +1,17 @@
+# Maintainer: Alexander F Rødseth <xyproto@archlinux.org>
+
+pkgname=pekwm-themes
+pkgver=1.0.5
+pkgrel=7
+pkgdesc='PekWM theme collection'
+arch=(any)
+url="https://github.com/aur-archive/pekwm-themes" # original upstream is gone
+license=(GPL-2.0-only)
+depends=(pekwm)
+source=("https://github.com/aur-archive/$pkgname/raw/master/$pkgname-$pkgver.tar.gz")
+b2sums=('f0cb15b7b99d6b89e07026f9e041622a28c2e41362c583d11abb6fcf9a5e2d1d60dd4f42e0d54b9f37308e714b75e18f21cec4d100929afbec4e9c7f82a06ce4')
+
+package() {
+  install -d "$pkgdir/usr/share/pekwm/themes"
+  cp -R $pkgname/* "$pkgdir/usr/share/pekwm/themes/"
+}

@@ -1,0 +1,39 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=xviewer-plugins
+pkgver=3.4.4
+pkgrel=1
+pkgdesc='Plugins for Xviewer'
+arch=(x86_64)
+url='https://github.com/linuxmint/xviewer-plugins'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  libexif
+  libpeas
+  osm-gps-map
+  pango
+  python
+  python-gobject
+  xviewer
+)
+makedepends=(
+  git
+  meson
+)
+source=("git+https://github.com/linuxmint/xviewer-plugins.git#tag=$pkgver")
+b2sums=(acec66128db68442fdeb326ec667b89f4b2df56cab65d3d296f4e5a6f907fc23fcd6bd9e205c30fea08bc64ae4f77695ae98585d53a254288513fc5ffac4e6ae)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

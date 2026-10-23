@@ -1,0 +1,35 @@
+pkgbase = tali
+	pkgdesc = Beat the odds in a poker-style dice game
+	pkgver = 40.9
+	pkgrel = 6
+	url = https://wiki.gnome.org/Apps/Tali
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = at-spi2-core
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libgnome-games-support
+	depends = pango
+	source = git+https://gitlab.gnome.org/GNOME/tali.git?signed#tag=40.9
+	source = 0001-Set-prgname-to-application-ID.patch
+	source = 0002-Fix-crash-on-second-activation.patch
+	source = 0003-Don-t-create-window-in-startup-phase.patch
+	source = 0004-Use-GApplication-to-parse-command-line-options.patch
+	source = 0005-Add-D-Bus-service-file.patch
+	validpgpkeys = 93A56F193C261368CD7F056904DA8079BE94C646
+	b2sums = bca079d586d79bcdc905660b2a721f711b51d568b19a369b1834c6c9fac615774915aaa7765e5b26609dc86c38c1439941b9f0260727a78c2b56ac3637c0722c
+	b2sums = 71c70b4f3efe9130d0f4660e164c3bc4a1397b369fd030460d672f2297e710b7994884ce9c917e740c53c231b0a7f4fd10d3331add9936428c0f294a4bcc14e2
+	b2sums = 16013cb22385c4e548a0aa654f8c32b2fd58b277352e4679d04526174e95c7aaa723c4b632e127d5b3ce6fe4880bc935c3f515348dd928f16f9a22e4a9efa284
+	b2sums = 3408ab6fa5fcb8ed9ca18294d312c4c170a9f92de2364dd41920b27d588dfc7f7eca3f4ba1d1f3a151af18e8f6e06216f442170eca7a9dcc80ad580e0dd46309
+	b2sums = a8ab8e5ba9c213ce65eee921a91d84d0956349bedf33837992acca85ae4e256def062760091be1f00c566e3bf1e18b8d0c33eb261e422d621113e7bc87d912d7
+	b2sums = 2620f849655d2d48cd9cbe434a359bae6f378da4ec78889fdd194ca948e9874fc6c414423a3f94d2e190252eaf633ae8de44f2e4fc1143a23fc32bc03b1e3613
+
+pkgname = tali

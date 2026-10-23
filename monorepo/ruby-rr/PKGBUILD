@@ -1,0 +1,42 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+
+_gemname='rr'
+pkgname="ruby-${_gemname}"
+pkgver=3.1.2
+pkgrel=1
+pkgdesc='RR is a test double framework that features a rich selection of double techniques and a terse syntax'
+arch=('any')
+url='https://github.com/rr/rr'
+license=('MIT')
+# ruby-rr requires ruby-test-unit-rr to run it's tests.
+# ruby-test-unit-rr already has ruby-rr as a runtime dependency
+makedepends=('ruby-rdoc' 'ruby-rake' 'ruby-bundler' 'ruby-rspec')
+checkdepends=('ruby-test-unit-rr' 'ruby-test-unit')
+depends=('ruby')
+options=(!emptydirs)
+source=("${url}/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.gz")
+sha512sums=('2bbd885edde4ed7ba3289af5573786af07f49abde8eca42e422a4ac309c5a4eba94a9b131dc0d13818295274cb75d1f9869260bdbb5b656c1e2a7a96a26aaca7')
+
+build() {
+  cd "${_gemname}-${pkgver}"
+  rake build
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+  rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "pkg/${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+  install -Dm 644 README.md CHANGES.md CREDITS.md FOR_DEVELOPERS.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  mv doc "${pkgdir}/usr/share/licenses/${pkgname}/"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,103 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=networkmanager-pptp
+pkgname=(
+  networkmanager-pptp
+  networkmanager-vpn-plugin-pptp
+)
+pkgver=1.2.12
+pkgrel=9
+pkgdesc="NetworkManager VPN plugin for PPTP"
+url="https://networkmanager.dev/docs/vpn/"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  libgcc
+  glib2
+  glibc
+  gtk3
+  libnm
+  libnma
+  libsecret
+)
+makedepends=(
+  git
+  glib2-devel
+  libnma-gtk4
+  ppp
+  pptpclient
+  python
+)
+source=("git+https://gitlab.gnome.org/GNOME/NetworkManager-pptp.git?signed#tag=$pkgver")
+b2sums=('1dbd40c92f0f93ffe050822ce4187f71b4f808bf9cb3f05f2549957315771c7bb70b5b2b44e261a7481edfb85c9a33c61a5e94a4df735f80c2eb1a56efb897e0')
+validpgpkeys=(
+  4B8EF9745A973724E965939189A2DA5AF73D5E3D # Lubomir Rintel <lkundrak@v3.sk>
+)
+
+prepare() {
+  cd NetworkManager-pptp
+  autoreconf -fvi
+}
+
+build() {
+  local configure_options=(
+    --prefix=/usr
+    --sysconfdir=/etc
+    --localstatedir=/var
+    --libexecdir=/usr/lib
+    --disable-static
+    --with-gtk4
+  )
+
+  cd NetworkManager-pptp
+  ./configure "${configure_options[@]}"
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+package_networkmanager-pptp() {
+  pkgdesc+=" (with GUI)"
+  depends+=(
+    "networkmanager-vpn-plugin-pptp=$pkgver-$pkgrel"
+  )
+  optdepends=(
+    'libnma-gtk4: GUI support (GTK 4)'
+  )
+
+  cd NetworkManager-pptp
+  make DESTDIR="$pkgdir" install dbusservicedir=/usr/share/dbus-1/system.d
+
+  cd "$pkgdir"
+  _pick plugin usr/lib/NetworkManager/VPN
+  _pick plugin usr/lib/NetworkManager/libnm-vpn-plugin-pptp.so
+  _pick plugin usr/lib/nm-pptp-service
+  _pick plugin usr/lib/pppd
+  _pick plugin usr/share/dbus-1
+}
+
+package_networkmanager-vpn-plugin-pptp() {
+  pkgdesc+=" (VPN plugin only)"
+  depends=(
+    libgcc
+    glib2
+    glibc
+    libnm
+    ppp
+    pptpclient
+  )
+
+  mv plugin/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

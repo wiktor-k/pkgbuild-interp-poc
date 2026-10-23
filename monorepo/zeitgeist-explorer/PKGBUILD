@@ -1,0 +1,72 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=zeitgeist-explorer
+pkgver=0.2
+pkgrel=16
+pkgdesc="Graphical interface to monitor and inspect Zeitgeist's log at a low level"
+arch=(any)
+url='https://launchpad.net/zeitgeist-explorer'
+license=(LGPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  pango
+  python
+  python-dbus
+  python-gobject
+  zeitgeist
+)
+makedepends=(
+  python-build
+  python-distutils-extra
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  "https://launchpad.net/$pkgname/0.x/$pkgver/+download/$pkgname-$pkgver.tar.gz"{,.asc}
+  zeitgeist-explorer-python3.patch
+  zeitgeist-explorer-gtk-version.patch
+  zeitgeist-logo.svg
+  zeitgeist-explorer.appdata.xml
+)
+b2sums=(
+  014aaafccfa97c39288454d8051efe564553f4b9df8edc71de51b55081e8c16ec60772ec41c78d9249010d15e4d672a93e8526e23a41c57d33ae22bef2231224
+  SKIP
+  527467e67ddac4f818a0bfb746a4bbd4c600d026e0c9a5cc08c3e5b4eaf0171648201a4eedc222b1c23dcd4a0b1f70633c2e38e52140542918aeeff0cfe0aa1d
+  2f54bd8f17da24cf5172304a27b1c523787ab732da4139ddb760c74856e20ceb8a31dc9d3cdabb913c7bfaaa1845ff3db5b014281df9fb136d2131e1d4afbf8d
+  257646a7e2441059d89f5606f38554fe89514bb67a1585fd132fc3f5e94c80f14405b76b1627aa7105539d60d8a37e5d538f3b033a7479da99773cf9451f4a17
+  ac35b71bd6cb9c7aef64ec40d324872e7251c49784293f48157a7ceb4f5640305b046a5af3ce316ec737c5441746f53994a227ad46dbd2a5b8047ae623456cf3
+)
+validpgpkeys=(EEE420E481E68B71594F192D361CC5EBA0BA909F) # Manish Sinha
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Python 3 port
+  patch -Np1 -i ../zeitgeist-explorer-python3.patch
+
+  # Specify GTK version
+  patch -Np1 -i ../zeitgeist-explorer-gtk-version.patch
+
+  # Fix icon size on app list
+  sed -i 's/Gtk.IconLookupFlags.FORCE_SVG/Gtk.IconLookupFlags.FORCE_SIZE/' zgexplorer/applicationsviewer.py
+
+  # Set window icon
+  sed -i '/set_title/a\        self.set_icon_name("zeitgeist-explorer")' zgexplorer/window.py
+}
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 ../zeitgeist-logo.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/zeitgeist-explorer.svg"
+  install -Dm644 ../$pkgname.appdata.xml "$pkgdir/usr/share/metainfo/$pkgname.appdata.xml"
+  rm -r "$pkgdir/usr/data"
+}

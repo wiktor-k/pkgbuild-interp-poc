@@ -1,0 +1,22 @@
+pkgbase = python-xz
+	pkgdesc = Python implementation of the XZ file format with random access support
+	pkgver = 0.7.0
+	pkgrel = 1
+	url = https://github.com/Rogdham/python-xz
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-hatch-vcs
+	depends = python
+	source = python-xz::git+https://github.com/Rogdham/python-xz#tag=v0.7.0
+	source = skip-pytest-cov.patch
+	sha512sums = 2c5dc1166e153b7599881d5122918cb2eee5d6e82aa12f5a1fd32a34494c6fed3d351816faa736fccddeb837806b5c2685936e14385c475ebf7d827631372cf0
+	sha512sums = 404738dcf5c59be38c0c82e93c79b51b5ffc5a1b77730b012674b0564b71289cd06d6f15a838b762ee687c82b0b7d24506d54311ad9cfd81c6a25be38a8b5336
+	b2sums = 0710eac511f7c18c13cae753f0e42c23aaab35693e9cc37b8301498cc6272ec109ac744a334f41e7aa3e252d3229061ed11caab080ccd76e94dddd089822f455
+	b2sums = db66d3df9e834cb2c5b94ceb6d096bb58c055d16bdba6d466e3a1600d16b37a0416d5303ca818360d199ed1c319fc3d3346951f09c8ad8fef9fbd5781f1532da
+
+pkgname = python-xz

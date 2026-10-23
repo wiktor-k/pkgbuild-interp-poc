@@ -1,0 +1,30 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Dominic Meiser [git at msrd0 dot de]
+
+pkgname=cargo-clean-all
+pkgver=0.6.5
+pkgrel=1
+pkgdesc="Recursively clean cargo target folders"
+arch=('x86_64')
+url="https://github.com/dnlmlr/cargo-clean-all"
+license=('MIT')
+depends=('libgcc' 'glibc')
+makedepends=('cargo' 'git')
+source=("git+$url#tag=v$pkgver")
+sha512sums=('53019401c3bbc708aa2f440feaa879b497865a5fa8d4927578d8cfa470c216aa4d9b121d0b1ba2b662bd5c921ea1e84edc0521d840758ca702af323dd657bdcc')
+
+prepare() {
+	cd $pkgname
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd $pkgname
+	cargo build --frozen --release
+}
+
+package() {
+	cd $pkgname
+	install -Dm755 target/release/cargo-clean-all -t "$pkgdir/usr/bin/"
+	install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

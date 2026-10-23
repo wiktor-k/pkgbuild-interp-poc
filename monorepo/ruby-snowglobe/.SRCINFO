@@ -1,0 +1,20 @@
+pkgbase = ruby-snowglobe
+	pkgdesc = Snowglobe is a gem that helps erect and destroy Rails applications for use in tests
+	pkgver = 0.3.0.20200907
+	pkgrel = 6
+	url = https://github.com/mcmire/snowglobe
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-minitest
+	checkdepends = ruby-pry-byebug
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	depends = ruby
+	options = !emptydirs
+	source = https://github.com/mcmire/snowglobe/archive/408ee4c08f823a4d9f89902fa0fa29aff7cafe6d/ruby-snowglobe-408ee4c08f823a4d9f89902fa0fa29aff7cafe6d.tar.gz
+	source = ruby-snowglobe-missing-requires.patch::https://github.com/mcmire/snowglobe/pull/5.patch
+	sha256sums = 4683fed34e5915a5ee155c3fbd840a21e7fc50c00963e60afe35fbb50706f719
+	sha256sums = 8472428e53a6863f1f13f43d0a670b4e32824b5f16b989b174a68462c889fe8d
+
+pkgname = ruby-snowglobe

@@ -1,0 +1,36 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=vivid
+pkgver=0.11.1
+pkgrel=1
+pkgdesc='LS_COLORS manager with multiple themes'
+arch=(x86_64)
+url=https://github.com/sharkdp/vivid
+license=(
+  Apache-2.0
+  MIT
+)
+depends=(gcc-libs)
+makedepends=(
+  git
+  rust
+)
+options=(!debug)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('f3fa10f389fa69bc4c91fa2c800425549a2c4dc63dc5208077f176ba39828f3378623137371a3ce7990ad9149bbcc5d3d13b5748b59cb5555f908c862721407c')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --locked --offline
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE-MIT
+}

@@ -1,0 +1,31 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=restinio
+pkgver=0.7.10
+pkgrel=1
+pkgdesc="Header-only C++14 library that gives you an embedded HTTP/Websocket server"
+arch=(any)
+url="https://stiffstream.com/en/products/restinio.html"
+license=(BSD)
+depends=(asio llhttp fmt expected-lite)
+makedepends=(cmake gcc openssl zlib pcre pcre2 boost)
+source=(https://github.com/Stiffstream/restinio/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.bz2)
+sha256sums=('15d60b0c96012a911e67226c4ffb50db4eea90a51e503315c17cb978f9a73d20')
+
+build() {
+  cmake -B build -S ${pkgname}-${pkgver}/dev/ \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DRESTINIO_TEST=OFF \
+      -DRESTINIO_SAMPLE=OFF \
+      -DRESTINIO_WITH_SOBJECTIZER=OFF \
+      -DRESTINIO_DEP_LLHTTP=system \
+      -DRESTINIO_DEP_FMT=system \
+      -DRESTINIO_DEP_EXPECTED_LITE=system \
+      -DRESTINIO_DEP_STANDALONE_ASIO=system
+  make -C build
+}
+
+package() {
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm644 ${pkgname}-${pkgver}/LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+}

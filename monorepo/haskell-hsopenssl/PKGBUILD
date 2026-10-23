@@ -1,0 +1,49 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=HsOpenSSL
+pkgname=haskell-hsopenssl
+pkgver=0.11.7.11
+pkgrel=15
+pkgdesc="Partial OpenSSL binding for Haskell"
+url="https://github.com/haskell-cryptography/HsOpenSSL"
+license=('LicenseRef-PublicDomain')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-network' 'openssl')
+makedepends=('ghc' 'uusi')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('1336a69af7e3f2e9acf8816795a755581e58e1dc70b0477eb0b0caff4364f12bb4fd2e026635b9c951aa5b0ef6912616ba4426bd4da1d7f3545f40852b096546')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        --ghc-option="-optc=-Wno-incompatible-pointer-types" \
+        -fuse-pkg-config
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 "COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+    rm -f "${pkgdir}/usr/share/doc/${pkgname}/COPYING"
+}

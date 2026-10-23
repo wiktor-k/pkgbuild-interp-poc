@@ -1,0 +1,25 @@
+pkgbase = icon-library
+	pkgdesc = Find the right icon to use on your GNOME application
+	pkgver = 0.0.23
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/design/icon-library
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/World/design/icon-library.git#tag=0.0.23
+	source = icon-library-fix-tests.patch
+	b2sums = 9f9c151e5e9d384c0c024c2152165a18ee0f8781d6fe31fddcd7227d2f0de17db9c2ba889111d0d62dd2dccf403d14afa399d781213156a5420a6a6495dbb86c
+	b2sums = 6ee23e4acafa1572672aee30eff9f5aa5422ca88b50eda31de9afd8640f6344b06e3deac562783b1f31902e5182bc88ce3211d85c484f17ddf8a9678403a2767
+
+pkgname = icon-library

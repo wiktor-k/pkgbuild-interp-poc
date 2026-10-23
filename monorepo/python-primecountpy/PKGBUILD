@@ -1,0 +1,31 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=primecountpy
+pkgname=python-$_pyname
+pkgver=0.2.1
+pkgrel=3
+pkgdesc='Cython interface to the C++ library primecount'
+arch=(x86_64)
+url='https://github.com/dimpase/primecountpy'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         primecount
+         python
+         python-cysignals)
+makedepends=(cython
+             git
+             meson-python
+             python-build
+             python-installer)
+source=(git+https://github.com/dimpase/primecountpy#tag=v$pkgver)
+sha256sums=('aed1b7ed62cd981d43a32aec84c566676b05b5a20b092691a7b312b069706180')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pyname 
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

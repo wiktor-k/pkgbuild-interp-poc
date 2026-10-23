@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jameson Pugh <imntreal@gmail.com>
+
+pkgname=systemd-ui
+pkgver=3
+pkgrel=6
+pkgdesc='Graphical front-end for systemd'
+arch=(x86_64)
+url='https://github.com/systemd/systemd-ui'
+license=(GPL-2.0-or-later)
+depends=(
+  glib2
+  glibc
+  gtk3
+  libgee
+  libnotify
+)
+makedepends=(
+  docbook-xsl
+  git
+  libxslt
+  vala
+)
+source=("git+https://github.com/systemd/systemd-ui.git#tag=v$pkgver")
+b2sums=(8940643efb9de7c20e3866e91eab93296ba19450555659ccaeb516a2b34e99f4b6cccd3f5a28172a57e17f876aa62cb894238029d981213122848948a1850cb4)
+
+prepare() {
+  cd $pkgname
+
+  # Fix build
+  git cherry-pick -n 282a352dff49c13e185d826af2a248b55988bc32
+  git cherry-pick -n 86531eb5ce3d5b463b3590d61dc179018c5f3174
+  git cherry-pick -n f99f0612bf4cc16d06215f9abfddcaa576f09fd8
+  git cherry-pick -n 10acb3a556c33f332a1066b78f542b20cd7c2786
+
+  # Add metainfo file
+  git cherry-pick -n 4e6ab2e4295ea6ba86a6ca85ae0af363973e9210
+  sed -i 's|$(datadir)/appdata|$(datadir)/metainfo|' Makefile.am
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

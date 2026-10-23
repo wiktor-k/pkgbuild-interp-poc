@@ -1,0 +1,19 @@
+pkgbase = treedec
+	pkgdesc = Algorithms for computing tree decompositions of graphs
+	pkgver = 0.9.3
+	pkgrel = 1
+	url = https://github.com/freetdi/treedec/
+	arch = any
+	license = GPL-2.0-only
+	license = GPL-3.0-only
+	makedepends = boost
+	makedepends = git
+	provides = tdlib
+	conflicts = tdlib
+	replaces = tdlib
+	source = git+https://gitlab.com/freetdi/treedec#tag=0.9.3
+	source = no-stderr.patch
+	sha256sums = 3e7d781d4922d7b15d34e5c0f8e108fe68f085e476d521260191a98d979c16ba
+	sha256sums = 361471a81d187978a8a1a86c2893f3db3706c17ca9fb50eac8e6f22296626737
+
+pkgname = treedec

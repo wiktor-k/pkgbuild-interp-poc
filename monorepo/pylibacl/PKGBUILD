@@ -1,0 +1,28 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+
+pkgname=python-pylibacl
+pkgbase=pylibacl
+pkgver=0.7.0
+pkgrel=2
+pkgdesc='A python extension module that allows you to manipulate the POSIX.1e ACLs.'
+arch=('x86_64')
+url='https://pylibacl.k1024.org/'
+license=('LGPL')
+depends=('python')
+makedepends=('python-setuptools')
+source=("${url}/downloads/${pkgbase}-${pkgver}.tar.gz"{,.asc})
+md5sums=('01581ef47c033146a7d06b3014896c59'
+         'SKIP')
+sha256sums=('ed496e74ca5452d5d4cebe23df229ea462735a96528b9fa28e3ce1f7a2bed31a'
+            'SKIP')
+validpgpkeys=('CB94E3AA3B1755D61EBB19A5F66E3E419F84F4DE') # Iustin Pop <iustin@k1024.org>
+
+build() {
+	cd "${srcdir}/${pkgbase}-${pkgver}"
+	python setup.py build
+}
+
+package() {
+	cd "${srcdir}/${pkgbase}-${pkgver}"
+	python setup.py install --root="${pkgdir}" --optimize=1 --skip-build
+}

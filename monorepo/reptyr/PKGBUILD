@@ -1,0 +1,32 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=reptyr
+pkgver=0.10.0
+pkgrel=2
+pkgdesc='Utility for taking an existing running program and attaching it to a new terminal'
+arch=('x86_64')
+license=('BSD')
+url="https://github.com/nelhage/reptyr"
+depends=('glibc')
+source=($pkgname-$pkgver.tar.gz::https://github.com/nelhage/$pkgname/tarball/$pkgname-$pkgver)
+sha256sums=('140051ca273d806279598c087ebdbf426ca90af3ab80279082db3a25d1d5120b')
+
+prepare() {
+  cd "${srcdir}"/nelhage-$pkgname-*
+
+  sed -i 's|etc/bash_completion.d|usr/share/bash-completion/completions|' Makefile
+}
+
+build() {
+  cd "${srcdir}"/nelhage-$pkgname-*
+
+  make
+}
+
+package() {
+  cd "${srcdir}"/nelhage-$pkgname-*
+
+  make DESTDIR="${pkgdir}" PREFIX=/usr install
+  install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/reptyr/LICENSE
+}

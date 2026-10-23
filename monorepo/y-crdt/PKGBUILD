@@ -1,0 +1,37 @@
+# Maintainer:
+
+pkgname=y-crdt
+epoch=1
+pkgver=0.27.4
+pkgrel=1
+pkgdesc='Rust port of Yjs'
+arch=(x86_64)
+url='https://docs.rs/yrs/'
+license=(MIT)
+depends=(glibc
+         libgcc)
+makedepends=(cargo
+             git)
+source=(git+https://github.com/y-crdt/y-crdt#tag=v$pkgver
+        yrs.pc.in)
+b2sums=('63c62b393eba330eeffca66d2359637ca01eb3dc87413457299688d2ba5c8ce1875ddc8040beb9ebdc23fa8ce2256b65cb642e786da5ff5f894182645096c79e'
+        '8e4075b0547e0399053d62de07ba7895f4ca4fdd55912729ed530da88b260536fc587ce580b40f698e489eddbc71494fb03823a9186914ecebba3b43c16cfd7f')
+
+prepare() {
+  cd y-crdt
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd y-crdt
+  cargo build --release --locked
+}
+
+package() {
+  cd y-crdt
+  install -Dm644 target/release/*.so -t "$pkgdir"/usr/lib
+  install -Dm644 tests-ffi/include/libyrs.h -t "$pkgdir"/usr/include
+  install -d "$pkgdir"/usr/lib/pkgconfig
+  sed -e "s|@VERSION@|$pkgver|" "$srcdir"/yrs.pc.in > "$pkgdir"/usr/lib/pkgconfig/yrs.pc
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

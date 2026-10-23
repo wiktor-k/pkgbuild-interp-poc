@@ -1,0 +1,50 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+
+_hkgname=dbus-menu
+pkgname=haskell-dbus-menu
+pkgver=0.1.4.0
+pkgrel=25
+pkgdesc='A Haskell implementation of the DBusMenu protocol'
+url='https://github.com/taffybar/dbus-menu#readme'
+license=("BSD-3-Clause")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-dbus' 'haskell-enclosed-exceptions' 'haskell-gi' 'haskell-gi-base' 'haskell-gi-glib' 'haskell-gi-gobject' 'haskell-gi-gtk3' 'haskell-hslogger' 'gtk3')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha256sums=('d37cf972f35571f9c34c4c8fe5dc6abc977cd085a78bb2df3e5a2d7f9b3cbd62')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  printf 'import Distribution.Simple\nmain = defaultMain\n' > Setup.hs
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' 
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

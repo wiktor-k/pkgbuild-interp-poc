@@ -1,0 +1,39 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=rainfrog
+pkgver=0.4.6
+pkgrel=1
+pkgdesc="A database management TUI for Postgres"
+arch=('x86_64')
+url="https://github.com/achristmascarl/rainfrog"
+license=('MIT')
+depends=('duckdb' 'libgcc' 'sqlite')
+makedepends=('cargo' 'clang')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('92563a6cd5b1084c5d040c209f7a80bae824c1a65e3da7e011158848e809cf5afe8e638fa4099d3923ede5573b700e5c44c248f04e2dbe179750c690387d7f57')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  sed -i '/^duckdb =/s/"bundled"/"buildtime_bindgen"/' Cargo.toml
+  cargo fetch --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

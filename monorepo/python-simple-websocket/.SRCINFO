@@ -1,0 +1,20 @@
+pkgbase = python-simple-websocket
+	pkgdesc = Simple WebSocket server and client for Python
+	pkgver = 1.1.0
+	pkgrel = 2
+	url = https://github.com/miguelgrinberg/simple-websocket
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-wsproto
+	source = https://github.com/miguelgrinberg/simple-websocket/archive/v1.1.0/python-simple-websocket-1.1.0.tar.gz
+	source = fix-asyncio-pytest.patch
+	sha512sums = 89c2c580902af77e8708bf2ae5c40358f3f9fe3052ee58d42bc518a68042c8b0bda1ad0cf3e304b67189590e75ee1bfe085d12f9d18755c443731c0884b1cb92
+	sha512sums = f8bc1cc2b0bce4aadd4532513b0a9bf8e629c10b9fad0786eb4ea1947fe771b6e058f51f15e7916ddbbaf93c147371449f6f5cdc76673ca4a0b73fa0f3a6c0fd
+
+pkgname = python-simple-websocket

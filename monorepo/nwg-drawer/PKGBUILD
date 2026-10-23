@@ -1,0 +1,34 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-drawer
+pkgver=0.7.5
+pkgrel=1
+pkgdesc="Application drawer for sway and other wlroots-based compositors"
+url="https://github.com/nwg-piotr/nwg-drawer"
+arch=('x86_64')
+license=('MIT')
+depends=('gtk3' 'gtk-layer-shell' 'xdg-utils')
+makedepends=('go' 'gobject-introspection')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('af6bfbee17ab4dec300545c83c89a25e09b5f63e7ce06fa8627e0a04cf11d6e8')
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        export CGO_CPPFLAGS="${CPPFLAGS}"
+        export CGO_CFLAGS="${CFLAGS}"
+        export CGO_CXXFLAGS="${CXXFLAGS}"
+        export CGO_LDFLAGS="${LDFLAGS}"
+        export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+        go build -ldflags="-s -w -linkmode=external -buildid=''" -o "build/${pkgname}" *.go
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+	install -Dm 755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 drawer.css "${pkgdir}/usr/share/${pkgname}/drawer.css"
+	install -Dm 644 img/* -t "${pkgdir}/usr/share/${pkgname}/img/"
+	install -Dm 644 desktop-directories/* -t "${pkgdir}/usr/share/${pkgname}/desktop-directories/"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

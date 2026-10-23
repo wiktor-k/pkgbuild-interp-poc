@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgbase=libpoly
+pkgname=('libpoly' 'python-polypy')
+pkgver=0.2.1
+pkgrel=4
+pkgdesc='C library for manipulating polynomials'
+arch=('x86_64')
+url="https://github.com/SRI-CSL/libpoly"
+license=('LGPL-3.0-or-later')
+makedepends=('cmake' 'ninja' 'python-build' 'python-installer' 'python-setuptools')
+source=("https://github.com/SRI-CSL/libpoly/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('f12a7eab7ece2b2cb123ac232e815eaaad6ff97d9219e0ef3a4785c036ef4fc887a854e4a405e3802b6b337f6616cb0177f715880dcba5473372d91754384d8b')
+
+build() {
+  cd libpoly-$pkgver
+  export CFLAGS+=" -ffat-lto-objects"
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr .
+  ninja
+
+  cd python
+  LDFLAGS+=" -L../src" python -m build --wheel --no-isolation
+}
+
+check() {
+  ninja -C libpoly-$pkgver test check
+}
+
+package_libpoly() {
+  depends=('glibc' 'gmp' 'libgcc' 'libstdc++')
+  optdepends=('python-polypy: Python bindings')
+
+  cd libpoly-$pkgver
+  DESTDIR="$pkgdir" ninja install
+}
+
+package_python-polypy() {
+  depends=('glibc' 'libpoly')
+  pkgdesc='Python bindings for libpoly'
+
+  cd libpoly-$pkgver/python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

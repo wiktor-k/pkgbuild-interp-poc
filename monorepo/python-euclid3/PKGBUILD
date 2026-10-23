@@ -1,0 +1,44 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=python-euclid3
+_pkgname=${pkgname#python-}
+pkgver=0.01
+pkgrel=11
+pkgdesc='2D and 3D vector, matrix, quaternion and geometry module'
+arch=(any)
+url='https://pypi.org/project/euclid3/'
+license=(LGPL-2.1-or-later)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("$pkgname-$pkgver.tar.gz::https://pypi.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz")
+sha512sums=('c4e5e2770ab4ede08904fc3b76e50d6812944ed226c9db52f2da8d100370e20ea6031ca554ae44d72d53e96727d163bd3cc8da7bf175539de10749da77877b0b')
+b2sums=('ffa8d368f58cae91969230eaf4fa5324cda2c45ff69c98d73b1fdfbdb67e38846090fac4cdd128439583a7f36190c2d474c7f647823ac79440218bf02a73070f')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+
+  # extract license
+  sed -n '/Copyright/,/USA/p' \
+    README > LICENSE
+}
+build() {
+  cd "$_pkgname-$pkgver"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

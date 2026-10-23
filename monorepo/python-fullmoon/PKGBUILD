@@ -1,0 +1,23 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-fullmoon
+pkgver=1.0.2
+pkgrel=1
+pkgdesc="Determine next full moon occurrences and whether a given date is a full moon"
+arch=('any')
+url="https://github.com/jr-k/python-fullmoon"
+license=('MIT')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("https://files.pythonhosted.org/packages/source/f/fullmoon/fullmoon-$pkgver.tar.gz")
+b2sums=('b0ce5f45608a37c703a60ddb037932d21da60684de75c3b071c7c4031c1e83bc83f1542fbbfbcfc1011aabddba80c30195daa7d3d6f93d5f0ab053cb78dc1f78')
+
+build() {
+  cd fullmoon-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd fullmoon-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

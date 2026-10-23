@@ -1,0 +1,32 @@
+# Maintainer: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+
+pkgname=kodi-addon-imagedecoder-raw
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="Kodi raw imagedecoder addon"
+arch=('x86_64')
+url="https://github.com/xbmc/imagedecoder.raw"
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-imagedecoder')
+makedepends=('cmake' 'kodi-dev' 'libraw')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/imagedecoder.raw/archive/refs/tags/$pkgver-$_codename.tar.gz")
+sha512sums=('17cb59ad5fe4141897e1991bf36e11f3ac797335f6757cbb2d05ef7b86ae9b65906af9d0b6a062c31cd66b25059e9502303906abdc5506594e0451b9a0f41659')
+
+build() {
+    cd "imagedecoder.raw-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi' 'libraw')
+    cd "imagedecoder.raw-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}

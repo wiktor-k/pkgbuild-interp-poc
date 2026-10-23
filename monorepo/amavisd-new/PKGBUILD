@@ -1,0 +1,94 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Contributor: Yardena Cohen <yardenack at gmail dot com>
+
+pkgname=amavisd-new
+_pkgname=amavis
+pkgver=2.12.3
+pkgrel=1
+pkgdesc="High-performance interface between mailer (MTA) and content checkers"
+arch=('any')
+url="https://gitlab.com/amavis/amavis"
+license=('GPL')
+depends=(
+    'perl>=5.8.2'
+    'perl-archive-zip>=1.14'
+    'perl-convert-tnef'
+    'perl-convert-uulib>=1.4-5'
+    'perl-mime-tools'
+    'perl-mailtools>=1.58'
+    'perl-net-libidn'
+    'perl-net-server>=0.88'
+    'perl-io-socket-inet6'
+    'perl-io-stringy'
+    'perl-unix-syslog>=1.1-4'
+    'perl-mail-dkim>=0.31'
+    'perl-berkeleydb>=0.42'
+    'perl-json'
+    'perl-http-message'
+    'perl-libwww'
+    'perl-lwp-protocol-https'
+    'perl-net-ssleay'
+    'bzip2'
+    'gzip'
+)
+optdepends=(
+    'arj:        Decoder for: .arj .exe'
+    'lrzip:      Decoder for: .lrz'
+    'lz4:        Decoder for: .lz4'
+    'lzo:        Decoder for: .lzo'
+    'p7zip:      Decoder for: .7z'
+    'unrar:      Decoder for: .rar'
+    'rpmextract: Decoder for: .rpm'
+)
+backup=('etc/amavisd/amavisd.conf' 'etc/amavisd/amavisd-custom.conf')
+source=("${url}/-/archive/v${pkgver}/amavis-v${pkgver}.tar.bz2"
+        "amavisd.service"
+        "amavisd.sysusers"
+        "amavisd.tmpfiles"
+        "perl-crypt-v0.34-fix.patch")
+sha512sums=('edb0de71f3c058e47d1ea9b261b1f8d2525c3718b53b8f19130d36b676c2f50eb5a50d878c06f36080f49984f0ba4e5c8b166aab5f4980c61ea7024e801d5369'
+            '5028913479808c02a74682987ed5289d094c1ae2e37874b8c45a6abcc825f2e9d9a46acf9ee010897a5a41e5f9256507cc4d7b9e535c46b03cc06b560dddd908'
+            'e1709c05889e9141d37a36e38f7e242b49b5048ab428a30e4319c3fc2b8e9d48ea806fde27b596a7a709f88157ae5264e34cb1d3e7e242fc4a2ebc616cf9fb8a'
+            'bedbd1b270ccbfbbc9ef5682cc9491d6e7895b8b6cb7634a84175c0f469373f325fd694296a9a7aa8c1f09b6571162066e3fc98c555a4d971216fc6721842c9d'
+            'e8c6231763b04adb61ef8a9ad6e1e1610a6282b25486d2dd8620bbb3fe390c251f508ffe076a10ab35e9f7ff271fe370677c9aad8bddd75c3454d20fd61a56f1')
+
+prepare() {
+    cd "${srcdir}/${_pkgname}-v${pkgver}"
+    patch -Np1 -i "${srcdir}/perl-crypt-v0.34-fix.patch"
+
+    sed -i \
+        -e "s/# @bypass_virus_checks_maps = (1)/@bypass_virus_checks_maps = (1)/g" \
+        -e "s/# @bypass_spam_checks_maps  = (1)/@bypass_spam_checks_maps = (1)/g" \
+        -e "s/\\\$daemon_user  = 'vscan'/\\\$daemon_user  = 'amavis'/g" \
+        -e "s/\\\$daemon_group = 'vscan'/\\\$daemon_group = 'amavis'/g" \
+        -e "sX# \\\$MYHOME = '/var/amavis'X\\\$MYHOME = '/var/spool/amavis'Xg" \
+        -e "sX\\\$QUARANTINEDIR = '/var/virusmails'X\\\$QUARANTINEDIR = \"\\\$MYHOME/virus\"Xg" \
+        -e "sX# \\\$pid_file  = \"\\\$MYHOME/var/amavisd.pid\"X\\\$pid_file = \"/run/amavis/pid\"Xg" \
+        -e "sX# \\\$lock_file = \"\\\$MYHOME/var/amavisd.lock\"X\\\$lock_file = \"/run/amavis/lock\"Xg" \
+        -e "sX\\\$unix_socketname = \"\\\$MYHOME/amavisd.sock\"X\\\$unix_socketname = \"/run/amavis/sock\"Xg" \
+        "${srcdir}/${_pkgname}-v${pkgver}/amavisd.conf"
+
+    sed -i \
+        -e "sX\\\$socketname = '/var/amavis/amavisd.sock'X\\\$socketname = '/var/spool/amavis/amavisd.sock'Xg" \
+        "${srcdir}/${_pkgname}-v${pkgver}/amavisd-release"
+}
+
+package() {
+    cd "${srcdir}/${_pkgname}-v${pkgver}"
+    install -D -m755 JpegTester.pm               "${pkgdir}/usr/share/perl5/vendor_perl/JpegTester.pm"
+    install -D -m644 LDAP.ldif                   "${pkgdir}/etc/openldap/schema/amavisd-new.ldif"
+    install -D -m644 LDAP.schema                 "${pkgdir}/etc/openldap/schema/amavisd-new.schema"
+    install -D -m750 -o 333 -g 333 -d            "${pkgdir}/var/spool/amavis/"
+    install -D -m750 -o 333 -g 333 -d            "${pkgdir}/var/spool/amavis/db"
+    install -D -m750 -o 333 -g 333 -d            "${pkgdir}/var/spool/amavis/tmp"
+    install -D -m750 -o 333 -g 333 -d            "${pkgdir}/var/spool/amavis/var"
+    install -D -m750 -o 333 -g 333 -d            "${pkgdir}/var/spool/amavis/virus"
+
+    install -D -m644 -t "${pkgdir}/etc/amavisd"             amavisd{.conf,-custom.conf,.conf-default}
+    install -D -m644 -t "${pkgdir}/usr/share/doc/amavis"    amavisd-new-{qmqpqq,courier}.patch
+    install -D -m755 -t "${pkgdir}/usr/bin"                 p0f-analyzer.pl amavisd{,-{agent,nanny,release,signer,snmp-subagent{,-zmq}}}
+
+    install -D -m644 "${srcdir}/amavisd.service"  "${pkgdir}/usr/lib/systemd/system/amavisd.service"
+    install -D -m644 "${srcdir}/amavisd.sysusers" "${pkgdir}/usr/lib/sysusers.d/amavisd.conf"
+    install -D -m644 "${srcdir}/amavisd.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/amavisd.conf"
+}

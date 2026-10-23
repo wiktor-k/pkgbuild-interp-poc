@@ -1,0 +1,17 @@
+pkgbase = rainfrog
+	pkgdesc = A database management TUI for Postgres
+	pkgver = 0.4.6
+	pkgrel = 1
+	url = https://github.com/achristmascarl/rainfrog
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = clang
+	depends = duckdb
+	depends = libgcc
+	depends = sqlite
+	options = !lto
+	source = rainfrog-0.4.6.tar.gz::https://github.com/achristmascarl/rainfrog/archive/v0.4.6.tar.gz
+	sha512sums = 92563a6cd5b1084c5d040c209f7a80bae824c1a65e3da7e011158848e809cf5afe8e638fa4099d3923ede5573b700e5c44c248f04e2dbe179750c690387d7f57
+
+pkgname = rainfrog

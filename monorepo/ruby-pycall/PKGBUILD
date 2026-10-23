@@ -1,0 +1,98 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+pkgname=ruby-pycall
+pkgver=1.5.4
+pkgrel=1
+pkgdesc='Calling Python functions from the Ruby language'
+arch=(x86_64)
+url='https://github.com/mrkn/pycall.rb'
+license=(MIT)
+depends=(
+  ruby
+  python
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  python-numpy
+  ruby-bundler
+  ruby-rake
+  ruby-rake-compiler
+  ruby-rspec
+  ruby-test-unit
+)
+options=(!emptydirs)
+source=(
+  "git+${url}#tag=v${pkgver}"
+)
+sha512sums=('bcc1de03542e1413fe4e0c40a10531b58912fbff1bbcc0af7af1af50652de030dcbd1f8ae469289959a6bf35e8c85e2286d7722584c441ae173c851eacd26484')
+b2sums=('996bcef12334a4189e3d6a307ff99769eb8be5f0b2d028524b3258ba2dd681006179d19ce21438042441124d46187e27c1804835b343a3f172648c9f9b5cd4f1')
+
+prepare() {
+  cd pycall.rb
+
+  # Read the initialization result after Bundler's platform diagnostics.
+  # https://github.com/red-data-tools/pycall.rb/pull/193
+  git cherry-pick -n c660dabd166263d4c041d21ce444cb669aa80dff
+
+  # Apply the same output handling when Python is already initialized.
+  sed -i "s/expect(out.chomp).to eq('false')/expect(out.lines.last.chomp).to eq('false')/" spec/pycall_spec.rb
+
+  # Container builds and browser launching are unused by the packaged test suite.
+  sed -r -e '/rake-compiler-dock/d' -e '/launchy/d' -i pycall.gemspec
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd pycall.rb
+  gem build --verbose pycall.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    pycall-$pkgver.gem
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd pycall.rb
+  RSPEC_SEED=6894 GEM_HOME="tmp_install/$_gemdir" rake spec
+}
+
+package() {
+  cd pycall.rb
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

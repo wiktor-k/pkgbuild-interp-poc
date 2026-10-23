@@ -1,0 +1,57 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=numba-cuda
+pkgname=python-$_name
+pkgver=0.30.4
+pkgrel=2
+pkgdesc="The CUDA target for Numba"
+url="https://github.com/NVIDIA/numba-cuda"
+arch=(x86_64)
+license=(BSD-2-Clause)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  python
+  python-cuda-bindings
+  python-cuda-core
+  python-cuda-pathfinder
+  python-llvmlite
+  python-numba
+  python-numpy
+  python-packaging
+  python-yaml
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=(
+  'python-colorama: colors in error messages'
+  'python-pygments: syntax highlighting in code dumps'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+        numpy-2.5.patch)
+b2sums=('ded684c78233d7e2ab33f64601f25ddc37527896034eec0b6429e89afecc13ea2d2b05ffa6abbad343ccaa34406ee3b2672b72ad2793b894d3704e6277a2eafc'
+        'cf7cd4d1a36c12fb0ae845438b455353723fc1caf0e9f449463e938d1cfeeda851a66510fec5f03e4d36b888b9f427f92f8038a3843553b0c2a0e59805ba2fca')
+
+prepare() {
+  cd $_name-$pkgver
+  # Fix compatibility with numpy 2.5
+  patch -p1 < ../numpy-2.5.patch
+}
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE LICENSE.numba -t "$pkgdir"/usr/share/licenses/$pkgname/
+  # Remove tests
+  rm -rv "$pkgdir"$(python -c "import site; print(site.getsitepackages()[0])")/numba_cuda/numba/cuda/{tests/,testing.py}
+}

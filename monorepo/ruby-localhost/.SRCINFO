@@ -1,0 +1,26 @@
+pkgbase = ruby-localhost
+	pkgdesc = Manage a local certificate authority for self-signed localhost development servers
+	pkgver = 1.8.0
+	pkgrel = 1
+	url = https://github.com/socketry/localhost
+	arch = any
+	license = MIT
+	checkdepends = ruby-bake-test
+	checkdepends = ruby-bake-test-external
+	checkdepends = ruby-bundler
+	checkdepends = ruby-covered
+	checkdepends = ruby-decode
+	checkdepends = ruby-io-endpoint
+	checkdepends = ruby-sus
+	checkdepends = ruby-sus-fixtures-async
+	checkdepends = ruby-sus-fixtures-async-http
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-bake
+	options = !emptydirs
+	source = git+https://github.com/socketry/localhost.git#tag=v1.8.0
+	sha512sums = f86bd21479282faa437bebe150ead934d3dbb053ba5c80f664d7b222435570f304900f7009e862d9b35154789a2faccff0f1ca0ae8d7de0183d6e72a4e67c7d5
+	b2sums = b033eb236d7c9daed87165900042694d2289fdef84a8af26fc8dce6d30447061e3b57fa038bcd0bfb83e9f9afa0c60496242a223978a53bad03dd2675ef7d3c7
+
+pkgname = ruby-localhost

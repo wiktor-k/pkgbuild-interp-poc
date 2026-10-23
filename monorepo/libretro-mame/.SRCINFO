@@ -1,0 +1,20 @@
+pkgbase = libretro-mame
+	pkgdesc = MAME Arcade core
+	pkgver = 20260924.184211.g9069f39340f2
+	pkgrel = 1
+	url = https://github.com/libretro/mame
+	arch = x86_64
+	groups = libretro
+	license = custom
+	makedepends = git
+	makedepends = libglvnd
+	makedepends = python
+	depends = alsa-lib
+	depends = glibc
+	depends = libretro-core-info
+	depends = libgl
+	depends = zlib
+	source = libretro-mame::git+https://github.com/libretro/mame.git#commit=9069f39340f2
+	b2sums = e0032a7e7cd06f1b8358b8d50354268a618955b078bb905b2118305715228420769b1c20dea46d5a9defe01ed703210af1feda9e38eafe7b69e283c711ab64fa
+
+pkgname = libretro-mame

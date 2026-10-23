@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=agda-stdlib
+pkgver=2.4
+_agdaver=2.8.0.2
+pkgrel=2
+pkgdesc="Agda standard libraries"
+url="https://github.com/agda/agda-stdlib"
+license=("MIT")
+arch=('x86_64')
+depends=("agda=$_agdaver")
+makedepends=('git' 'ghc' 'haskell-filemanip')
+options=('staticlibs')
+source=("git+https://github.com/agda/agda-stdlib.git#tag=v$pkgver"
+        standard-library.agda-lib.in)
+sha512sums=('597313c84a7bfdf9fa3f868e88bf07cda964ef4bb8ebb4d271bd60f03b9dd0146aa5bc1a362058487ddf9c3309bd2b4da5b4457531edcf82ff0ec0d323f614da'
+            '9b666bd3b6122b196353b68a4a6bdf15318f276a644f04ffa001793de1c78ba7c9bd875c3011c1c0363d81c9f94f4901b9aa4766aa5f1825057a109b03021701')
+
+prepare() {
+    cd $pkgname
+    rm standard-library.agda-lib
+}
+
+build() {
+    cd $pkgname
+
+    export Agda_datadir="$srcdir/agda-datadir"
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla
+    runhaskell Setup build $MAKEFLAGS
+
+    dist/build/GenerateEverything/GenerateEverything
+
+    agda -i. -isrc Everything.agda --warning=noUnsupportedIndexedMatch
+}
+
+package() {
+    install -Dm644 standard-library.agda-lib.in "$pkgdir"/usr/share/agda/lib/standard-library.agda-lib
+
+    cd $pkgname
+    install -dm755 "$pkgdir"/usr/share/agda/lib/stdlib
+    cp -pr src/* "$pkgdir"/usr/share/agda/lib/stdlib/
+
+    # Symlink to avoid writing to this place when agda-lib is present
+    install -dm755 "$pkgdir"/usr/share/agda/lib/_build/$_agdaver/agda
+    ln -s ../../../stdlib "$pkgdir"/usr/share/agda/lib/_build/$_agdaver/agda/
+
+    install -D -m644 LICENCE "$pkgdir"/usr/share/licenses/$pkgname/LICENCE
+}

@@ -1,0 +1,42 @@
+# Maintainer: Bert Peters <bertpts@archlinux.org>
+# Contributor: Bradford Smith <aur@bradfords.me>
+
+pkgname=informant
+pkgver=0.6.0
+pkgrel=2
+pkgdesc="An Arch Linux News reader and pacman hook"
+arch=('any')
+url="https://github.com/bradford-smith94/$pkgname"
+license=('MIT')
+makedepends=('python-build' 'python-installer' 'python-setuptools')
+depends=('python' 'python-docopt' 'python-dateutil' 'python-feedparser' 'python-html2text' 'python-cachecontrol' 'python-lockfile' 'python-psutil')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/bradford-smith94/$pkgname/archive/v$pkgver.tar.gz"
+        "sysusers.conf"
+        "tmpfiles.conf")
+sha256sums=('aa1acb6677c70f389aee64efa706ae0c87c6339ae18d501f83fefa1c8bb750b4'
+            '1575fdaed7f209f7400881ac625484e2357d5ea1b167fd94c60a67f4cdcc9dbe'
+            '23c63003db10244ff5f6364811c63876e348085af57f9df0f5125019c8621d14')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  # Running the hook on install causes various issues in the build infra and
+  # doesn't meaningfully matter for security since you'd be most interested in
+  # the news when installing updates,
+  sed -i '/Operation = Install/d' informant.hook
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 0644 $pkgname.hook -T "$pkgdir/usr/share/libalpm/hooks/00-$pkgname.hook"
+  install -Dm 0644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -Dm 0644 man/$pkgname.1 -t "$pkgdir/usr/share/man/man1/"
+  install -Dm 0644 "$srcdir/sysusers.conf" -T "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -Dm 0644 "$srcdir/tmpfiles.conf" -T "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}

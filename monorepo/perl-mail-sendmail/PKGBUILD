@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Charles Mauch <cmauch@gmail.com>
+
+pkgname=perl-mail-sendmail
+pkgver=0.83
+pkgrel=1
+pkgdesc="Perl/CPAN Module Mail::Sendmail : Simple platform independent mailer"
+arch=("any")
+url="https://search.cpan.org/~mivkovic/Mail-Sendmail/"
+license=("GPL" "PerlArtistic")
+depends=('perl-sys-hostname-long')
+source=("https://www.cpan.org/authors/id/N/NE/NEILB/Mail-Sendmail-$pkgver.tar.gz")
+sha256sums=('bbe96fc50f6e1cc6bea1e35e9c04fd4b0ec0501b6cf86bbadabd9e144b0a8bd7')
+options=(!emptydirs)
+
+build() {
+  cd "$srcdir"/Mail-Sendmail-$pkgver
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd "$srcdir"/Mail-Sendmail-$pkgver
+  make install DESTDIR="$pkgdir"
+}

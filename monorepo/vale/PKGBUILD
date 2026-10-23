@@ -1,0 +1,49 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Rafael Fontenelle <rafaelff@gnome.org>
+# Contributor: Konstantin Gizdov <arch at kge dot pw>
+# Contributor: Achilleas Pipinellis <axilleas at archlinux dot gr>
+
+pkgname=vale
+pkgver=3.24.0
+pkgrel=1
+pkgdesc="A markup-aware linter for prose built with speed and extensibility in mind"
+url="https://vale.sh"
+arch=('x86_64')
+license=('MIT')
+depends=('glibc' 'libgcc' 'libstdc++')
+makedepends=('go')
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/errata-ai/vale/archive/v${pkgver}.tar.gz")
+sha256sums=('11273308a525c63c5e2adb0b12b85db0df33ce7507bf3248e2c4131d1d23fcd2')
+
+prepare(){
+	cd "${pkgname}-${pkgver}"
+	mkdir -p build/
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+	go build -ldflags="-compressdwarf=false -linkmode external -s -w -X main.version=${pkgver}" -o build ./cmd/...
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	# This test expects Windows specific paths
+	rm -f internal/system/path_test.go
+	# The "TestSymlinkFixture" test needs to run `vale`
+	export PATH="${PWD}/build:${PATH}"
+	go test ./...
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm 755 "build/${pkgname}"  "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 LICENSE   "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

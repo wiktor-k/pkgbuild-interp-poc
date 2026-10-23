@@ -1,0 +1,44 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Andri Yngvason <andri@yngvason.is>
+
+pkgname=wayvnc
+pkgver=0.10.2
+pkgrel=1
+pkgdesc='VNC server for wlroots-based Wayland compositors'
+arch=(x86_64)
+url=https://github.com/any1/wayvnc
+license=(ISC)
+depends=(
+  glibc
+  jansson
+  libaml.so
+  libdrm
+  libneatvnc.so
+  libpixman-1.so
+  libxkbcommon.so
+  mesa
+  wayland
+)
+makedepends=(
+  git
+  meson
+  ninja
+  pam
+  scdoc
+)
+optdepends=('pam: PAM authentication')
+source=(git+https://github.com/any1/wayvnc.git#tag=v${pkgver})
+b2sums=('3b9ce6e8a8efd90edc983910c663b0898b9a467a3481a4fa71337c4dd1c15f3dba90066db359b4af7cae78824c769a7115a8cf3125c80aee4683fe24fe77a6bf')
+
+build() {
+  arch-meson wayvnc build \
+    -Dman-pages=enabled \
+    -Dpam=enabled
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  install -Dm 644 wayvnc/wayvnc.pam "${pkgdir}"/etc/pam.d/wayvnc
+  install -Dm 644 wayvnc/COPYING -t "${pkgdir}"/usr/share/licenses/wayvnc
+}

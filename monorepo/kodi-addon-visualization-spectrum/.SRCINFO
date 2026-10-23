@@ -1,0 +1,20 @@
+pkgbase = kodi-addon-visualization-spectrum
+	pkgdesc = Spectrum visualizer for Kodi
+	pkgver = 21.0.2
+	pkgrel = 7
+	epoch = 1
+	url = https://github.com/xbmc/visualization.spectrum
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-visualization
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = glm
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-visualization-spectrum-21.0.2.tar.gz::https://github.com/xbmc/visualization.spectrum/archive/21.0.2-Omega.tar.gz
+	sha512sums = 280c3512f099d13f0cdc1fbab98c8cec4c7b944130f2dfd65619f647671847c0239b5e024f92933d90c1adc30dbbf5f515daf7d813244df29ab2723647d157f6
+
+pkgname = kodi-addon-visualization-spectrum
+	depends = kodi
+	depends = glm

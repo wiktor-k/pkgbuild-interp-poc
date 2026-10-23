@@ -1,0 +1,23 @@
+pkgbase = rustnet
+	pkgdesc = Real-time network monitoring TUI with process identification via eBPF and deep packet inspection
+	pkgver = 1.7.0
+	pkgrel = 1
+	url = https://github.com/domcyrus/rustnet
+	install = rustnet.install
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cargo
+	makedepends = clang
+	makedepends = libbpf
+	depends = glibc
+	depends = libelf
+	depends = libgcc
+	depends = libpcap
+	depends = zlib
+	options = !lto
+	source = rustnet-1.7.0.tar.gz::https://github.com/domcyrus/rustnet/archive/v1.7.0.tar.gz
+	source = rustnet-setcap.hook
+	sha256sums = 9d3f6509da06f832c04c5accc7b777c18f3de8b32c885137c9a1346990694dda
+	sha256sums = 40363ced28dca33d3e7425c7a3c3ee793bafa8e90e7697768149e5fe53b337eb
+
+pkgname = rustnet

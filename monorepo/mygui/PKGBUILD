@@ -1,0 +1,54 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Andrew Belitsky <belitsky.a@gmail.com>
+pkgname=mygui
+replaces=('mygui-docs')
+pkgver=3.4.3
+pkgrel=2
+pkgdesc="A multilayer and overlappable GUI System"
+arch=('x86_64')
+url="http://mygui.info/"
+license=('MIT')
+depends=('sdl2' 'sdl2_image' 'gcc-libs' 'glibc' 'freetype2')
+makedepends=('cmake' 'doxygen' 'graphviz' 'ttf-dejavu' 'ninja' 'glu')
+install=mygui.install
+source=("https://github.com/MyGUI/mygui/archive/MyGUI${pkgver}.tar.gz")
+sha512sums=('88c69ca2e706af364b72d425f95013eb285501881d8094f8d67e31a54c45ca11b0eb5b62c382af0d4c43f69aa8197648259ac306b72efa7ef3e25eecb9b039cb')
+
+build() {
+  cd mygui-MyGUI${pkgver}
+
+  # change CMake config so demos install to /opt
+  # sed -i 's:"bin:"../opt/MYGUI:' CMake/Utils/MyGUIConfigTargets.cmake
+  sed -i -e 's:../share:/usr/share:' -e 's:"bin":"../opt/MYGUI":' CMake/InstallResources.cmake
+
+  # generate CMake Makefile
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=TRUE \
+    -DMYGUI_INSTALL_TOOLS=TRUE \
+    -DMYGUI_INSTALL_DOCS=TRUE \
+    -DMYGUI_BUILD_DEMOS=TRUE \
+    -DMYGUI_BUILD_TOOLS=TRUE \
+    -DMYGUI_RENDERSYSTEM=7 \
+    -DMYGUI_DONT_USE_OBSOLETE=TRUE
+
+  ninja -C build
+  ninja -C build api-docs
+}
+
+package() {
+  cd mygui-MyGUI${pkgver}
+
+  DESTDIR="$pkgdir" ninja -C build install
+
+  # install docs
+  install -d "${pkgdir}"/usr/share/doc/
+  cp -r build/Docs/html "${pkgdir}"/usr/share/doc/MYGUI
+
+  install -Dm644 COPYING.MIT "${pkgdir}"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,30 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Douglas Soares de Andrade <dsa@aur.archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+
+pkgname=tilda
+pkgver=2.0.0
+pkgrel=2
+pkgdesc="A Gtk based drop down terminal for Linux and Unix"
+arch=('x86_64')
+url="https://github.com/lanoxx/tilda"
+license=('GPL')
+depends=('vte3' 'confuse')
+makedepends=('python' 'glib2-devel')
+changelog=$pkgname.changelog
+source=(https://github.com/lanoxx/$pkgname/archive/$pkgname-$pkgver.tar.gz)
+sha256sums=('ff9364244c58507cd4073ac22e580a4cded048d416c682496c1b1788ee8a30df')
+
+build() {
+  cd $pkgname-$pkgname-$pkgver
+
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgname-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+}

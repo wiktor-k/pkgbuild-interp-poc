@@ -1,0 +1,115 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Steef Hegeman <mail@steefhegeman.com>
+# Contributor: Luca Weiss <luca (at) z3ntu (dot) xyz>
+# Contributor: Julian Schacher <jspp@posteo.net>
+
+_electron=electron43
+pkgbase=element.io
+pkgname=(element-web element-desktop)
+pkgver=1.12.25
+pkgrel=1
+pkgdesc="Glossy Matrix collaboration client — "
+arch=(x86_64)
+url="https://element.io"
+license=(Apache)
+makedepends=(
+  ${_electron}
+  git
+  jq
+  libxcrypt-compat
+  nodejs
+  npm
+  python
+  python-setuptools
+  rust
+  tcl
+  pnpm
+  yarn
+)
+_url="https://github.com/element-hq/element"
+source=(git+https://github.com/element-hq/element-web.git#tag=v${pkgver}?signed
+        io.element.Element.desktop
+        element-desktop.sh
+        autolaunch.patch)
+sha256sums=('8e6f950633ac83e2141601545c5f9d14d0acecf6c7956e442507540cf499277b'
+            '16a21cd4ad144641e0f4cbe18ed1b665565ed6f3f3e67d5bccba2806491674a9'
+            '324c80ee48cb6bcf048874c833e5cd8f36ee2a0e848d4eb70dcf751352452bee'
+            '978a6bd3becc6dbd0886a8d1b2a3b6b247c1f5867465bfebfcb7374dca79ed79')
+validpgpkeys=(712BFBEE92DCA45252DB17D7C7BE97EFA179B100) # Element Releases <releases@riot.im>
+
+prepare() {
+  # Find out which major release of electron this version of element-desktop requires
+  _electron_major=$(jq --raw-output '.devDependencies.electron' < "${srcdir}/element-web/apps/desktop/package.json" | sed 's/^[~^]\?\([0-9]\+\)\(\.[0-9]\+\)*$/\1/')
+
+  # Check if we depend on the correct electron version
+  if [ "${_electron}" != "electron${_electron_major}" ] ; then
+    echo "Error: Incorrect electron version detected. Please change the value of \"_electron\" from \"${_electron}\" to \"electron${_electron_major}\"."
+    return 1
+  fi
+
+  # Specify electron version in launcher
+  sed -i "s|@ELECTRON@|${_electron}|" element-desktop.sh
+
+  cd element-web
+  patch -p1 < "${srcdir}/autolaunch.patch"
+  sed -e 's|"error"|"warn"|' -i package.json
+  pnpm install
+
+  cd apps/desktop
+  sed -i 's/target: \["tar.gz", "deb"\]/target: ["dir"]/' electron-builder.ts
+  sed -i 's|"https://packages.element.io/desktop/update/"|null|' element.io/release/config.json
+  pnpm install
+}
+
+build() {
+  export NODE_OPTIONS=--openssl-legacy-provider
+  cd element-web/apps/web
+  VERSION=${pkgver} pnpm run build
+
+  cd ../desktop
+  export SQLCIPHER_BUNDLED=1
+  export CFLAGS+=" -ffat-lto-objects"
+  pnpm run build:native
+  pnpm run build --publish never
+}
+
+package_element-web() {
+  pkgdesc+="web version."
+  replaces=(riot-web vector-web)
+
+  cd element-web/apps/web
+
+  install -d "${pkgdir}"/{usr/share/webapps,etc/webapps}/element
+
+  cp -r webapp/* "${pkgdir}"/usr/share/webapps/element/
+  install -Dm644 config.sample.json -t "${pkgdir}"/etc/webapps/element/
+  ln -s /etc/webapps/element/config.json "${pkgdir}"/usr/share/webapps/element/
+  echo "${pkgver}" > "${pkgdir}"/usr/share/webapps/element/version
+}
+
+package_element-desktop() {
+  pkgdesc+="desktop version."
+  replaces=(riot-desktop)
+  depends=("element-web=${pkgver}" ${_electron} libsecret)
+  backup=('etc/element/config.json')
+
+  cd element-web/apps/desktop
+
+  install -d "${pkgdir}"{/usr/lib/element/,/etc/webapps/element}
+
+  # Install the app content, replace the webapp with a symlink to the system package
+  cp -r dist/linux-*/resources/* "${pkgdir}"/usr/lib/element/
+  ln -s /usr/share/webapps/element "${pkgdir}"/usr/lib/element/webapp
+
+  # Config file
+  ln -s /etc/element/config.json "${pkgdir}"/etc/webapps/element/config.json
+  install -Dm644 element.io/release/config.json -t "${pkgdir}"/etc/element
+
+  # Required extras
+  install -Dm644 "${srcdir}"/io.element.Element.desktop -t "${pkgdir}"/usr/share/applications/
+  install -Dm755 "${srcdir}"/${pkgname}.sh "${pkgdir}"/usr/bin/${pkgname}
+
+  # Icons
+  install -Dm644 ../web/res/themes/element/img/logos/element-logo.svg "${pkgdir}"/usr/share/icons/hicolor/scalable/apps/io.element.Element.svg
+  install -Dm644 build/icon.png "${pkgdir}"/usr/share/icons/hicolor/512x512/apps/io.element.Element.png
+}

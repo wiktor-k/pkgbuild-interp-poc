@@ -1,0 +1,89 @@
+# Maintainer: David Runge <dave@sleepmap.de>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: svoufff <svoufff at gmail dot com>
+
+pkgname=jsampler
+_name=JSampler
+pkgver=0.9
+pkgrel=11
+pkgdesc="LinuxSampler Java GUI"
+arch=(any)
+url="http://jsampler.sourceforge.net/"
+license=(
+  0BSD
+  GPL-2.0-or-later
+  LGPL-2.1-or-later
+)
+groups=(pro-audio)
+depends=(
+  bash
+  java-runtime=8
+  linuxsampler
+)
+makedepends=(
+  gendesk
+  java-environment=8
+  apache-ant
+  strip-nondeterminism
+)
+source=(
+  https://downloads.sourceforge.net/$pkgname/$_name-$pkgver.tar.bz2
+  $pkgname.sh
+  LICENSE
+)
+sha512sums=('cbb1d476b1f3882592cc0fb7a61348802c0c399dfc3fcc35f4a8ec3396e8417754cafc3e1a14a90b0014bebd29d28b9d3771dcbb772df40d241eaadedad5299f'
+            '2f0799de020eb81620e9e4b55ee7a9c752a599627798b874f081e2ee4dd692059883174f401e03475f7583bc07bba8ad038e7b49684af4e2face64e9d527cb55'
+            'a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930')
+
+prepare() {
+  cd $_name-$pkgver
+  declare -A comments=(
+    ["$pkgname"]="Fantasia Java GUI"
+    ["$pkgname-classic"]="Classic Java GUI"
+  )
+  declare -A exec_settings=(
+    ["$pkgname"]="/usr/bin/$pkgname fantasia"
+    ["$pkgname-classic"]="/usr/bin/$pkgname classic"
+  )
+  declare -A names=(
+    ["$pkgname"]="Fantasia"
+    ["$pkgname-classic"]="Classic"
+  )
+  local gendesk_options=(
+    -n
+    --genericname "Audio Sampler"
+    --categories "AudioVideo;Audio"
+  )
+
+  for _app in "$pkgname" "$pkgname-classic"; do
+    gendesk "${gendesk_options[@]}" --pkgname $_app --name $_name "${names[${_app}]}" --exec "${exec_settings[${_app}]}" --pkgdesc "${comments[${_app}]} for LinuxSampler"
+  done
+}
+
+build() {
+  cd $_name-$pkgver
+  ant build-fantasia
+  ant build-jsclassic
+
+  # Strip non-deterministic information from jar files (e.g. timestamps)
+  # This is required for reproducible builds
+  find . -name "*.jar" -exec strip-nondeterminism {} +
+
+}
+
+package() {
+  cd $_name-$pkgver
+  # java files
+  install -vDm 644 dist/Fantasia-$pkgver.jar "$pkgdir/usr/share/java/$pkgname/fantasia.jar"
+  install -vDm 644 dist/JS_Classic-$pkgver.jar "$pkgdir/usr/share/java/$pkgname/classic.jar"
+  # start script
+  install -vDm 755 "../$pkgname.sh" "$pkgdir/usr/bin/$pkgname"
+  # freedesktop.org compatibility
+  install -vDm 644 res/fantasia/icons/app_icon.png "$pkgdir/usr/share/pixmaps/$pkgname.png"
+  install -vDm 644 res/js-classic/icons/app-icon.png "$pkgdir/usr/share/pixmaps/$pkgname-classic.png"
+  install -vDm 644 ./*.desktop -t "$pkgdir/usr/share/applications/"
+  # docs
+  install -vDm 644 {AUTHORS,ChangeLog,README} -t "$pkgdir/usr/share/doc/$pkgname"
+  install -vDm 644 ../LICENSE "$pkgdir/usr/share/licenses/$pkgname/0BSD.txt"
+}
+# vim:set ts=2 sw=2 et:

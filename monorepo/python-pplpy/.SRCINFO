@@ -1,0 +1,24 @@
+pkgbase = python-pplpy
+	pkgdesc = Python wrapper to the C++ Parma Polyhedra Library (PPL)
+	pkgver = 0.9.0
+	pkgrel = 1
+	url = https://gitlab.com/videlec/pplpy/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cython
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-sphinx
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	depends = ppl
+	depends = python
+	depends = python-cysignals
+	depends = python-gmpy2
+	source = https://github.com/sagemath/pplpy/archive/0.9.0/pplpy-0.9.0.tar.gz
+	sha256sums = bae4d5e3fa8c126ca17d319bdd45c9acef7193eb39f8f56c273b8dc37bfb0b03
+
+pkgname = python-pplpy

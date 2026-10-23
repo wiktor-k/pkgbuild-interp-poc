@@ -1,0 +1,102 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Konstantin Shalygin <k0ste@k0ste.ru>
+
+pkgname=prometheus-ipmi-exporter
+pkgver=1.10.1
+pkgrel=3
+pkgdesc='Prometheus exporter for IPMI metrics'
+arch=(x86_64)
+url='https://github.com/prometheus-community/ipmi_exporter'
+license=(MIT)
+depends=(freeipmi)
+makedepends=(git go)
+backup=(
+  etc/prometheus/ipmi-exporter.yml
+  etc/prometheus/ipmi-exporter.env
+)
+source=(
+  "$pkgname::git+$url.git#tag=v$pkgver"
+  systemd.service
+  sysusers.conf
+  sudoers.conf
+  config.yml
+  config.env
+)
+sha512sums=('b7713c329d4488e1d615e8a941132d6d8ded6be595ea3bad11a1bea26538ba5bf8ec3ed17c90f6a61552be93e6dafedaa7134c5e3063c024b4b0da20dce79463'
+            '3d871b409d8df78d8bc90efe5a0c753c4f742df700404480f9fcf27c8efe0615bf1f3b0a99f70d8deaddb50131eab9ac7ac6cb1a53820cc2afd45e35ba9c17fe'
+            'bf654d4dad35349c23f4ef91f53b585f899c44f4806b7d9c8de62945711ebf8c751918c3cda0fff106c39b2873a11d2520b829977e4b632070d60e584aed56fd'
+            '7be2811049c75f572956ceeba3fc68a5ae52643a09e0275c33e1d8d12acf47e61595db1738cee98dd0437a71927ed254ad99ba5d1fc09a5178bcb18473f43b4a'
+            'a26a7d379d8577e0f9237218b7d63df25643ae37c9f1a504b4a4ac5421e01cd9ac1a72435bacf16cce25e08a2394367e0d629ac1e877c1831f3c570ffbfafcff'
+            '3dc382511dadf808e7a9d412bc4efb31e1c7952646f6d3bf5b16efe603d7136000770a804c55498969839abc26dee51d3ad4dbc22864e61547c2f2b5d7f321b6')
+b2sums=('19ea1be82f92e6d4bc1ac8473221bdfbd300250f4bb8c439a3c8ee1dbee7dfff5054d95ad5da1a9167c2f32e5b2069ecbd88d3431352f6857352e9f9932742b6'
+        'c528c16a774e25b1462780d654268ad0782229562ceab938d27988ad5b1a4a940be7a05542b33ef59fa01dc86b1112d25976d11c4461a18d61a3619eb510f60b'
+        '5a207a39efa97117e28f356793d1001957309d2912c3be2c6ebe242789a7ce4cd45114526ee7b796704bf3209a35961bc83cc1b29ecf1b2635ebf1c0414c3ec1'
+        '7289646126dbdd22c9183fa9831d11b5492116daa0bd175ab2b20180cebdfb601edc086e9d7e689ca496f8992926f807d1c45b06d1ead6b85d8ce15c710caaba'
+        'b4390aa6796cfbd2a4595e1aa5ffd250c997def77887cfb48e4e7bba9e044acb51533b5e9c2375aa274eeff27aba31c5df81abdce13228173b9c6da66db4e622'
+        'f041282cf2dcceecadcb4db6b52b626e60a95511438c24ebfcea5de493c61e4cd4d8d7ec3098db7e0d04469cb13bb4b60be46f8c889599f81b741628e44d9a4b')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  # reproducible: use commit date for build date
+  local _commit_date=$(git show --no-patch --format=%cd --date=format:%Y-%m-%d-%H:%M:%S)
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X github.com/prometheus/common/version.Version=$pkgver \
+    -X github.com/prometheus/common/version.Revision=$(git rev-parse HEAD) \
+    -X github.com/prometheus/common/version.Branch=main \
+    -X github.com/prometheus/common/version.BuildUser=archlinux \
+    -X github.com/prometheus/common/version.BuildDate=$_commit_date" \
+    -o build \
+    .
+}
+
+package() {
+  depends+=(glibc)
+
+  # systemd integration
+  # taken from upstream's contrib/rpm directory
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm640 config.yml "$pkgdir/etc/prometheus/${pkgname#prometheus-}.yml"
+  install -vDm640 config.env "${pkgdir}/etc/prometheus/${pkgname#prometheus-}.env"
+
+  # sudoers configuration
+  install -vdm750 "$pkgdir/etc/sudoers.d"
+  install -vDm440 sudoers.conf "$pkgdir/etc/sudoers.d/$pkgname"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 build/ipmi_exporter "$pkgdir/usr/bin/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" \
+    ipmi*.yml docs/*.md README.md
+}

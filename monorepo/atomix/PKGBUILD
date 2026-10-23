@@ -1,0 +1,47 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=atomix
+pkgver=44.0
+pkgrel=2
+pkgdesc="Puzzle game where you move atoms to build a molecule"
+url="https://wiki.gnome.org/Apps/Atomix"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgnome-games-support
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=("git+https://gitlab.gnome.org/GNOME/atomix.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('c4e0fbc1bece6ce64ff2ab0eebd813a2fb59298744a7cb8f342375fd8dde192fcb5daad6fb47218cbb0d7a28b806e011d740c76d49954ab5af505e0f9f48dcbe')
+
+prepare() {
+  cd atomix
+
+  # Don't override default decoration layout
+  # https://gitlab.gnome.org/GNOME/atomix/-/merge_requests/10
+  git cherry-pick -n de4fd5d9e0981dc4d6463a928f5e3e6a6e2c9cfb
+}
+
+build() {
+  arch-meson atomix build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

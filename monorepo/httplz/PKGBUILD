@@ -1,0 +1,52 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: cyqsimon <28627918+cyqsimon@users.noreply.github.com>
+
+pkgname=httplz
+_pkgname=http
+pkgver=2.6.0
+pkgrel=1
+pkgdesc="Host These Things Please - a basic http server for hosting a folder fast and simply"
+arch=('x86_64')
+url="https://github.com/thecoshman/http"
+license=('MIT')
+depends=('openssl' 'bzip2')
+makedepends=('cargo' 'clang' 'ruby-ronn-ng')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        "Cargo.lock")
+sha512sums=('89e2b9bef74a1a05e1a8aab51a877cdbce04573c70143227c4000333ac774f4e80a898db578b598c115740a621a52a7f88a3a549a7bf7a593eab482445a17881'
+            'caf7468f1f94a4f2dd62a9f62c47fa9e56c4b57182ec77e4a2fb2984e0f3c99bfd1c48c83d01552de11f8434b8689e35a1988318056269d06736c594b0d51d77')
+
+prepare() {
+  # https://github.com/thecoshman/http/issues/84
+  cp Cargo.lock "${_pkgname}-${pkgver}"
+  # fetch dependencies
+  cd "${_pkgname}-${pkgver}"
+  cargo fetch --locked --target="${CARCH}-unknown-linux-gnu"
+  # rename man page
+  mv "${_pkgname}.md" "${pkgname}.md"
+  mkdir man
+}
+
+build() {
+  cd "${_pkgname}-${pkgver}"
+  # only build and install the `httplz` binary and exclude `http`
+  # they are identical and `httplz` is significantly less likely to cause conflicts
+  CC=clang cargo build --release --frozen --bin="$pkgname"
+  # generate man page
+  ronn --organization="http developers" "${pkgname}.md" -o man
+}
+
+check() {
+  cd "${_pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${_pkgname}-${pkgver}"
+  install -Dm755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+  install -Dm644 "man/${pkgname}.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

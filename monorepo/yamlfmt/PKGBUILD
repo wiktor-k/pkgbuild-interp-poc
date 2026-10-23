@@ -1,0 +1,47 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=yamlfmt
+pkgver=0.21.0
+pkgrel=1
+pkgdesc='An extensible command line tool or library to format yaml files.'
+arch=('x86_64')
+url='https://github.com/google/yamlfmt'
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+b2sums=('878c35b6e2e6538aafb8d2f385c9872e8188fa0b59304b597ea18ba5782f29d3749167f0ea8321dfa0f63dd6d19ced9dbaa2fc06f9451d4c7885972e668057c5')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="${srcdir}"
+  local ld_flags=" \
+    -compressdwarf=false \
+    -linkmode=external \
+  "
+
+  cd ${pkgname}-${pkgver}
+  go build -v -ldflags="$ld_flags" -o yamlfmt ./cmd/yamlfmt
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  go test -v ./...
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -vDm755 -t "${pkgdir}/usr/bin" yamlfmt
+  install -vDm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
+}

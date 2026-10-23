@@ -1,0 +1,16 @@
+pkgbase = miller
+	pkgdesc = Name-indexed data processing tool
+	pkgver = 6.22.0
+	pkgrel = 1
+	url = https://github.com/johnkerl/miller
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = go
+	makedepends = git
+	options = !lto
+	source = miller::git+https://github.com/johnkerl/miller#tag=v6.22.0
+	sha512sums = 9c28e5a32dd204d6ca9edb3b5ebec54a679404486dc774186576c4dacb1a7df4c9a8cd6820568db3bad96d0ce05343ccd2bd39171969afcfbfaabd8c0712e4e2
+	b2sums = d0867f0c7b1231026f51017cca58dd8f7cce5bb8902608f984d4fc85bf22d508547827e7b4c3a423d2bda990bbe010436a85a83fae7f6db2562fe911e5ee03ad
+
+pkgname = miller
+	depends = glibc

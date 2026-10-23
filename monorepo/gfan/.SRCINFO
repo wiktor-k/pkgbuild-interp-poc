@@ -1,0 +1,22 @@
+pkgbase = gfan
+	pkgdesc = A software package for computing Gröbner fans and tropical varieties
+	pkgver = 0.7
+	pkgrel = 2
+	url = https://users-math.au.dk/jensen/software/gfan/gfan.html
+	arch = x86_64
+	license = GPL-2.0-or-later
+	depends = cddlib
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	source = https://users-math.au.dk/jensen/software/gfan/gfan0.7.tar.gz
+	source = gfan-cflags.patch
+	source = gcc-14.patch
+	source = fix-build.patch
+	sha256sums = ab833757e1e4d4a98662f4aa691394013ea9a226f6416b8f8565356d6fcc989e
+	sha256sums = d1282d078e68fe888f63b74baa4873081efd0566511f8b6c0990fd3740be2921
+	sha256sums = 0e61c5e84af96c9c911301e1597afe76f22e6a899891c565c5ae71630d5e563b
+	sha256sums = 70dab048aa4c83537377f3ab82275d79905fd452eba6e74c2a4cb655bc7f7f41
+
+pkgname = gfan

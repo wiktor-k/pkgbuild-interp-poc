@@ -1,0 +1,62 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Mark Wagie <mark dot wagie at tutanota dot com>
+
+pkgname=blanket
+pkgver=0.8.0
+pkgrel=3
+pkgdesc='Improve focus and increase your productivity by listening to different sounds'
+arch=(any)
+url='https://apps.gnome.org/Blanket/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  python
+  python-gobject
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://github.com/rafaelmardojai/blanket.git#tag=$pkgver"
+  blanket-dbus-activatable.patch
+)
+b2sums=(
+  f1aeab8d64b23098b57309f42d1822a31a0fef56c4ca43e515a99ab6cf65fe668af27e8d1c71b5f2646f164b94fb67756fad2b21d3695242dc50964227370843
+  8455f6a57d62ddba9cf9986e7bf30fc8bc24be2837fd2926c2a84de31f61f0d9c5b48d760dd3cea882e229dc98f8c0efe367e4c8303a735c62ecad34782af69c
+)
+
+prepare() {
+  cd $pkgname
+
+  # https://github.com/rafaelmardojai/blanket/pull/378
+  git apply -3 ../blanket-dbus-activatable.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

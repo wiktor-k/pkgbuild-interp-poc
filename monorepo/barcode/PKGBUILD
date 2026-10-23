@@ -1,0 +1,42 @@
+# Maintainer: Giovanni Scafora <giovanni@archlinux.org>
+
+pkgname=barcode
+pkgver=0.99
+pkgrel=6
+pkgdesc="A tool to convert text strings to printed bars"
+arch=('x86_64')
+url="https://www.gnu.org/software/barcode/"
+license=('GPL-3.0-or-later')
+depends=('glibc')
+source=(
+  "https://ftp.gnu.org/gnu/${pkgname}/${pkgname}-${pkgver}.tar.xz"
+  $pkgname-0.99-format-security.patch
+)
+sha256sums=('e87ecf6421573e17ce35879db8328617795258650831affd025fba42f155cdc6'
+            'bdfd711f0430127943ab48cf2d834c8e5ef5877902dad70676f9318c8ddbe880')
+b2sums=('a6ef5a4f0061bd0f0cb65a791516383259f317801e9f5ea02c626735cd3ed5f00e0a92502b9b5e3dcb8ea95c313e10f5abf9c172e1094111dea7f3cfb45ec032'
+        '08911f2c538f4915ea02352273596011431b34f4b63cccb0a9b603ee83cf19301cb59b289d06831b762c2da43cfbc340b07bce458c82e6aaf75a8c6732646c38')
+
+prepare() {
+  # Fix sprintf format
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-0.99-format-security.patch
+
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  make prefix="${pkgdir}/usr" install
+}

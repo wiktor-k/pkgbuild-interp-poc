@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-qt-dbus-factory
+pkgver=6.0.1
+pkgrel=5
+pkgdesc='A repository stores auto-generated Qt5 dbus code (libdframeworkdbus)'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-qt-dbus-factory"
+license=('GPL3')
+depends=('qt5-base')
+makedepends=('git' 'dtkcore' 'python')
+source=("git+https://github.com/linuxdeepin/dde-qt-dbus-factory.git#tag=$pkgver")
+sha512sums=('e4c4a8533aa152a3e634c40ef3e7cccb586782eb729aaae3035721a827d783c31b090f774f26909c8d3b65bd09e26200139a87230f9d4916faa43f84e7b2ac8f')
+
+build() {
+  cd dde-qt-dbus-factory
+  qmake-qt5 PREFIX=/usr
+  make
+}
+
+package() {
+  cd dde-qt-dbus-factory
+  make INSTALL_ROOT="$pkgdir" install
+}

@@ -1,0 +1,25 @@
+pkgbase = zmap
+	pkgdesc = Fast network scanner designed for Internet-wide network surveys
+	pkgver = 4.4.0
+	pkgrel = 1
+	url = https://zmap.io/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = byacc
+	makedepends = cmake
+	makedepends = gengetopt
+	makedepends = ninja
+	makedepends = pkg-config
+	depends = glibc
+	depends = gmp
+	depends = json-c
+	depends = judy
+	depends = libpcap
+	depends = libunistring
+	backup = etc/zmap/blocklist.conf
+	backup = etc/zmap/zmap.conf
+	source = https://github.com/zmap/zmap/archive/v4.4.0/zmap-4.4.0.tar.gz
+	sha512sums = daff8819cd64ee591d8301c8945083a072f4f781ac4f692c44c870860b60cacd2b47360ad536ca80afb5ac5053a72f19f84084aaa8e3fbee9d6d1110a45236b3
+	b2sums = 340d50f24d85bcb41711bcd9f538c8ae101157896dad6e8930c8025fed5b8d9b092e83a4dc0f5f121e4e1cf1ac9741959180a54257520aefc2cd1ae7e349fb0d
+
+pkgname = zmap

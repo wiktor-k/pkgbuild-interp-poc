@@ -1,0 +1,57 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=gnome-tweaks
+pkgver=49.0
+pkgrel=2
+pkgdesc="Graphical interface for advanced GNOME 3 settings (Tweak Tool)"
+url="https://wiki.gnome.org/Apps/Tweaks"
+arch=(any)
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  gnome-desktop-4
+  gsettings-desktop-schemas
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgudev
+  libnotify
+  pango
+  python
+  python-gobject
+)
+makedepends=(
+  git
+  meson
+)
+groups=(gnome-extra)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-tweaks.git?signed#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('ba025e970902e577d1303fc1df7c5f772472921f0584163c4c50193cf4d2ce62a79fe45228245eb4e009a327d13ab08abcb1a0c59d13c819069618bf1921b873')
+validpgpkeys=(
+  A3C5EBBF43FBA5F829F1A2548D66762250C07E85 # Evan Welsh <contact@evanwelsh.com>
+  3475CBA8D3483594C889B470D64A8D747F6FE706 # Maximiliano Sandoval <msandova@gnome.org>
+)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

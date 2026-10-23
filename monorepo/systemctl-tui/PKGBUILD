@@ -1,0 +1,50 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=systemctl-tui
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='A fast, simple TUI for interacting with systemd services and their logs'
+arch=(x86_64)
+url="https://github.com/rgwood/$pkgname"
+license=(MIT)
+depends=(glibc # libc.so libm.so
+         gtk4
+         libgcc libgcc_s.so)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('004e160f4f59f824ac35baf23fbc615b9f12bdb4f5eee122017bfe24a6ec02d9')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --release --frozen
+	cargo build --release --frozen --package systemctl-gui
+}
+
+check() {
+	_srcenv
+	cargo test --frozen
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname" target/release/systemctl-gui
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

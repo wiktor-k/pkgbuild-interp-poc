@@ -1,0 +1,30 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Maxim Baz <$pkgname at maximbaz dot com>
+# Contributor: jtheoof <contact@jtheoof.me>
+
+pkgname=swappy
+pkgver=1.8.0
+pkgrel=1
+pkgdesc="A Wayland native snapshot editing tool"
+url="https://github.com/jtheoof/swappy"
+arch=('x86_64')
+license=('MIT')
+depends=('cairo' 'gtk3' 'pango')
+optdepends=('wl-clipboard: copy to clipboard support'
+            'otf-font-awesome: to draw the paint icons properly')
+makedepends=('meson' 'scdoc' 'git')
+source=("git+${url}.git#tag=v${pkgver}?signed")
+b2sums=('25534144ba1ab6c74e9dc9d349aa8ea9405958911ff4cadc24a81d67c2ff848c8e2673ad9f64cba31022b92270fa823616f4f5dbee1a9ecbb829b69be7efd573')
+validpgpkeys=('F44D05A50F6C9EB5C81BCF966A6B35DBE9442683')
+
+build() {
+	cd "${pkgname}"
+	arch-meson build
+	ninja -C build
+}
+
+package() {
+	cd "${pkgname}"
+	DESTDIR="${pkgdir}" ninja -C build install
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

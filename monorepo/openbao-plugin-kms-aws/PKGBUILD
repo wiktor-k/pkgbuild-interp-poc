@@ -1,0 +1,48 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+_plugin_type=kms
+_plugin_name=aws
+
+pkgname="openbao-plugin-${_plugin_type}-${_plugin_name}"
+pkgdesc="OpenBao Plugin - Auto Unseal KMS using AWS"
+pkgver=0.1.0
+pkgrel=1
+arch=("x86_64")
+url="https://openbao.org/docs/next/configuration/seal/awskms/"
+license=('MPL-2.0')
+depends=(openbao)
+makedepends=(go go-tools git)
+install=openbao-plugin.install
+source=(
+    "openbao-plugin-${_plugin_type}-${_plugin_name}::git+https://github.com/openbao/openbao-plugins.git#tag=${_plugin_type}-${_plugin_name}-v${pkgver}"
+)
+sha256sums=('af5bc40b0c9b4af955a8a3bfee101c77a05692609af83cffa4d754b385c40c7e')
+
+prepare() {
+  cd "${pkgname}"
+
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw
+}
+
+build() {
+  cd "${pkgname}"
+
+  export CGO_ENABLED=0
+  export GOPATH="${srcdir}"
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-X github.com/openbao/openbao-plugins/${_plugin_type}/${_plugin_name}.pluginVersion=v${pkgver}" \
+    -o "dist/${_plugin_type}-${_plugin_name}" \
+    "./${_plugin_type}/${_plugin_name}/cmd"
+}
+
+package() {
+  cd "${pkgname}"
+
+  install -Dm755 "dist/${_plugin_type}-${_plugin_name}" "${pkgdir}/usr/lib/openbao/plugins/${_plugin_type}-${_plugin_name}"
+}

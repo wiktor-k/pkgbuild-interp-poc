@@ -1,0 +1,25 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+
+pkgname=gigolo
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="Remote filesystem management frontend"
+arch=('x86_64')
+url="https://docs.xfce.org/apps/gigolo/start"
+license=('GPL-2.0-or-later')
+depends=('gtk3' 'gvfs')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/apps/gigolo.git#tag=$pkgname-$pkgver")
+sha256sums=('47e7aa9e55f6d6825e6300b6fe01387ae61793f1217926cd93dcee683db620b8')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

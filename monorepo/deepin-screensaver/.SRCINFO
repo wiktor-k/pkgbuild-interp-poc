@@ -1,0 +1,30 @@
+pkgbase = deepin-screensaver
+	pkgdesc = Deepin screensaver viewer and tools
+	pkgver = 6.5.11
+	pkgrel = 2
+	url = https://github.com/linuxdeepin/deepin-screensaver
+	arch = x86_64
+	groups = deepin
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = qt6-tools
+	depends = dtk6core
+	depends = dtk6gui
+	depends = dtk6widget
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-5compat
+	depends = libx11
+	depends = libxcb
+	depends = libxss
+	depends = libxext
+	depends = xscreensaver
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/linuxdeepin/deepin-screensaver.git#tag=6.5.11
+	sha512sums = 993626e78f5570c82dc26e9845c340c07bbbf0730cd479d5b5fea836c3cb6101b7eec0630aa76fe11d3460cb765dfee25143ec9e811df4626eeddfc163722640
+
+pkgname = deepin-screensaver

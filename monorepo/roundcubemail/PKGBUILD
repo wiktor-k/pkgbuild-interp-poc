@@ -1,0 +1,56 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=roundcubemail
+pkgver=1.7.5
+pkgrel=1
+pkgdesc="A PHP web-based mail client"
+arch=('any')
+url="https://roundcube.net/"
+license=('GPL')
+depends=('php-interpreter')
+options=('emptydirs')
+makedepends=('git')
+optdepends=('python: password change script'
+            'perl: for change_ldap_pass.pl helper'
+	    'php-gd')
+backup=('etc/webapps/roundcubemail/.htaccess'
+        'etc/webapps/roundcubemail/apache.conf')
+install=roundcube.install
+validpgpkeys=('F3E4C04BB3DB5D4215C45F7F5AB2BAA141C4F7D5')
+source=("https://github.com/roundcube/roundcubemail/releases/download/$pkgver/roundcubemail-$pkgver-complete.tar.gz"{,.asc}
+        "apache.conf")
+sha512sums=('a53d1e86faac5abb04301a884f1520aed090c5ac3acb8bce1311509cefcc46b6e3537d04163010707daa77e1b7482a641b72f43fdfac27ced68058b18483ca38'
+            'SKIP'
+            '74dfe29b0600ee1ee74a729a5ba6772f2658599dcb5ad4323689d0394ac1df43c2d569cce11291f49e238633d1a6729e742df3ee23547538196c4dd97e3a7406')
+
+prepare() {
+  cd "$srcdir"/roundcubemail-${pkgver}
+  sed -i \
+    -e "s|RCUBE_INSTALL_PATH . 'temp.*|'/var/cache/roundcubemail';|" \
+    -e "s|RCUBE_INSTALL_PATH . 'logs.*|'/var/log/roundcubemail';|" \
+    config/defaults.inc.php \
+    program/lib/Roundcube/rcube_config.php
+}
+
+package() {
+  mkdir -p "$pkgdir"/etc/webapps/roundcubemail
+  mkdir -p "$pkgdir"/usr/share/webapps
+  cd "$pkgdir"/usr/share/webapps
+  cp -ra "$srcdir"/roundcubemail-${pkgver} roundcubemail
+  cd roundcubemail
+
+  mv public_html/.htaccess "$pkgdir"/etc/webapps/roundcubemail/
+  ln -s /etc/webapps/roundcubemail/.htaccess public_html/.htaccess
+
+  mv config "$pkgdir"/etc/webapps/roundcubemail/
+  ln -s /etc/webapps/roundcubemail/config config
+
+  install -Dm0644 "$srcdir"/apache.conf "$pkgdir"/etc/webapps/roundcubemail/apache.conf
+  chown 33:33 "$pkgdir"/etc/webapps/roundcubemail/config/config.inc.php.sample
+  chmod 0640 "$pkgdir"/etc/webapps/roundcubemail/config/config.inc.php.sample
+
+  install -dm0750 -o 33 -g 33 "$pkgdir"/var/cache/roundcubemail
+  install -dm0750 -o 33 -g 33 "$pkgdir"/var/log/roundcubemail
+
+  rm -rf temp logs
+}

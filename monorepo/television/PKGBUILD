@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=television
+_pkgname=tv
+pkgver=0.15.9
+pkgrel=1
+pkgdesc="A general purpose fuzzy finder for your terminal"
+arch=('x86_64')
+url="https://github.com/alexpasmantier/television"
+license=('MIT')
+depends=('gcc-libs')
+makedepends=('cargo' 'git' 'zig')
+checkdepends=('fd' 'bat')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('a5503a694ab65c46ac6d5bc41c81a447d8e507ee8c16f1d3c052fff1b9f8919384160291d9bbdf5912ae456b52ec97cd5ddca37e3f772786f799862682ef8c55')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+#https://github.com/alexpasmantier/television/issues/1047
+#check() {
+#  cd "$pkgname-$pkgver"
+#  # https://github.com/alexpasmantier/television/issues/753
+#  cargo test --frozen -- --skip "cli::monitoring::test_watch_reloads_source_command"
+#}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 "man/$_pkgname.1" -t "$pkgdir/usr/share/man/man1/"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

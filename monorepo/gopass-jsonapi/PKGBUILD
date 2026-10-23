@@ -1,0 +1,37 @@
+# Maintainer: christian rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=gopass-jsonapi
+pkgver=1.17.4
+pkgrel=1
+pkgdesc="jsonapi for gopass used for bridging to browsers"
+arch=('x86_64')
+url="https://github.com/gopasspw/gopass-jsonapi"
+license=('MIT')
+depends=('glibc')
+makedepends=('go')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/gopasspw/gopass-jsonapi/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('866db27c39e1d246942c62205a1a896b8bf62319514030a2a0c5214992cf9ad0a49cb8ef5886a1146b86ce7f18627ca91a2e04778223301f52fff9647508933e')
+
+prepare(){
+  cd ${pkgname}-${pkgver}
+  sed -i 's|-gcflags="-trimpath=$(GOPATH)" -asmflags="-trimpath=$(GOPATH)"||' Makefile
+  sed -i 's/install-completion//g' Makefile
+}
+
+build(){
+  cd ${pkgname}-${pkgver}
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" PREFIX="/usr" install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

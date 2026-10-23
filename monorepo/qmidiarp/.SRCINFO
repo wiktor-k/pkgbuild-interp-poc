@@ -1,0 +1,47 @@
+pkgbase = qmidiarp
+	pkgdesc = A MIDI arpeggiator, phrase generator and controller LFO for the ALSA sequencer.
+	pkgver = 0.7.5
+	pkgrel = 1
+	url = https://sourceforge.net/projects/qmidiarp/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = lv2lint
+	makedepends = alsa-lib
+	makedepends = glibc
+	makedepends = jack
+	makedepends = libgcc
+	makedepends = liblo
+	makedepends = libstdc++
+	makedepends = lv2
+	makedepends = qt5-base
+	makedepends = qt5-tools
+	source = https://downloads.sourceforge.net/project/qmidiarp/qmidiarp/0.7.5/qmidiarp-0.7.5.tar.bz2
+	sha512sums = fe01263e41ee151045abe9e92f62056db557031f54ecb94dbb359ebdfe982e6efe3d50e3c179262609fb796daf57eb1ee51ea40c308039fd455736948e43cb8c
+	b2sums = 2a85a1fd3e89c3d7faa26a59a0d3b3a0dd197263751456e7f92e24bc0321095d7c023542aa08c8a13420d5e6ef31aebdac5ebb35b37683b597dc8a3c7d88a21a
+
+pkgname = qmidiarp
+	depends = qmidiarp-lv2=0.7.5
+	depends = qmidiarp-standalone=0.7.5
+
+pkgname = qmidiarp-lv2
+	pkgdesc = A MIDI arpeggiator, phrase generator and controller LFO for the ALSA sequencer. - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = lv2-host
+	depends = qt5-base
+
+pkgname = qmidiarp-standalone
+	pkgdesc = A MIDI arpeggiator, phrase generator and controller LFO for the ALSA sequencer. - standalone
+	groups = pro-audio
+	depends = alsa-lib
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = jack
+	depends = libgcc
+	depends = liblo
+	depends = libstdc++
+	depends = qt5-base
+	optdepends = new-session-manager: for session management

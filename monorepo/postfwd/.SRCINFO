@@ -1,0 +1,23 @@
+pkgbase = postfwd
+	pkgdesc = Combines complex postfix restrictions in a ruleset similar to those of the most firewalls
+	pkgver = 2.03
+	pkgrel = 3
+	url = https://postfwd.org/
+	arch = any
+	license = bsd
+	depends = perl
+	depends = perl-io-multiplex
+	depends = perl-net-server
+	depends = perl-net-dns
+	backup = etc/postfwd/postfwd.cf
+	source = https://postfwd.org/postfwd-2.03.tar.gz
+	source = postfwd.sysusers
+	source = postfwd.service
+	md5sums = ab4da91fafdc5054b29202e87928cc1a
+	md5sums = ba678d7f20ab5df0ebc711863f4d62d7
+	md5sums = ebccbaa8fd20b89da8d7f1ef0e922be3
+	sha256sums = ec1f9e6f7290913fa045132231f897828bc75871f26cc810c15c0031b86e48ce
+	sha256sums = 7bd3d66d7b9969e32a1cf38975cafda185a0fc68641150f2ee226a5aed8b6f9f
+	sha256sums = dafc97b6a4a26a2a4fc26622003453bd6457b0ae31f02c1394d80b0a411fa9b8
+
+pkgname = postfwd

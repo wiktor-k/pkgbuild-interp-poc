@@ -1,0 +1,92 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-patron
+pkgver=0.13.4
+pkgrel=1
+pkgdesc='Ruby HTTP client library based on libcurl'
+arch=(x86_64)
+url='https://github.com/toland/patron'
+license=(MIT)
+depends=(
+  curl
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-base64
+  ruby-bundler
+  ruby-rake-compiler
+  ruby-rack
+  ruby-rspec
+  ruby-puma
+  ruby-yard
+)
+options=(!emptydirs)
+source=(git+https://github.com/toland/patron#tag=v$pkgver
+        $pkgname-puma-5.patch)
+sha256sums=('e9b86510d82b0aed8d57077fdb18fc7557150db24c76f958e510d9fd28562adc'
+            '85977d0082234adb7b31308c4338f870a6ae30c3f2182c81d7c1736c33c0dc25')
+
+prepare() {
+  cd patron
+  patch -p1 -i ../$pkgname-puma-5.patch
+  # we don't do version pinning
+  sed -r -e 's|~>|>=|g' -i patron.gemspec
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd patron
+  rake build
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    pkg/patron-$pkgver.gem
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd patron
+  # https://github.com/toland/patron/pull/193
+  GEM_HOME="tmp_install/$_gemdir" rake spec || echo "Tests failed"
+}
+
+package() {
+  cd patron
+  cp -a tmp_install/* "$pkgdir"/
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

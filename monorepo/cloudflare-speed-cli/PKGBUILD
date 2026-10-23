@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cloudflare-speed-cli
+pkgver=1.0.10
+pkgrel=1
+pkgdesc="CLI for internet speed test via Cloudflare "
+url="https://github.com/kavehtehrani/cloudflare-speed-cli"
+depends=('glibc' 'libgcc')
+makedepends=('cargo')
+arch=('x86_64')
+license=('GPL-3.0-only')
+source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('79e75a2bd935799cd94e369b32f77f4880290d36b38ff2a760533ef635167211eaa0189adcfccc00d48f00588d54a52d1161c50673c215281889cf5b3fc4d4a3')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 "target/release/$pkgname" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

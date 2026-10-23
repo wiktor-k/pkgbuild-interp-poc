@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Jonathan Liu <net147@gmail.com>
+
+pkgname=python-suds
+pkgver=1.4.5.0
+pkgrel=1
+pkgdesc="A lightweight SOAP python client"
+arch=('any')
+url="https://github.com/cackharot/suds-py3"
+license=('LGPL-3.0-or-later')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/cackharot/suds-py3.git#tag=v$pkgver")
+sha512sums=('b7c6b8396d39f647c459f35b3ddef10f870db95db1df3e3fccdcff5784cc1494e4a7ccaad416ab63923d4f4bf74c50c0044b0492588ba52356b25b5a8ea50927')
+
+build() {
+  cd suds-py3
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd suds-py3
+  ./run_tests.sh
+}
+
+package() {
+  cd suds-py3
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

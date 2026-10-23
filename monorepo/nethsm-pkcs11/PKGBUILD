@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=nethsm-pkcs11
+pkgver=3.0.1
+pkgrel=1
+pkgdesc="PKCS#11 driver for NetHSM"
+arch=(x86_64)
+url="https://github.com/Nitrokey/nethsm-pkcs11"
+license=(Apache-2.0)
+depends=(glibc)
+makedepends=(rust)
+options=(!lto)  # NOTE: as ring is used we can not use LTO
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+)
+sha512sums=('9b11153dcc61a0ad7f7f32c6d76aa4b3b1f35692f410560b09278652a841dac2c1809a1e20d186016985e739b7d2e965127cd2d963340a57218461ec4af38ed3')
+b2sums=('12e589ad3a07036f71eca3e33834863a25dc808a4114fa4265aa766f1fb55452b5c61052d612efd20ad3ddee8b9601fbdce7c91cf3cdaa00bd01d2c97e29dda3')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $pkgname-$pkgver
+  # using all features pulls in pkcs11-full-tests which are integration tests
+  cargo test --frozen --features=default
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 target/release/lib${pkgname/-/_}.so -t "$pkgdir/usr/lib/pkcs11/"
+  install -vDm 644 {{README,features}.md,p11nethsm*.conf} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vdm 700 "$pkgdir/etc/nitrokey/"
+}

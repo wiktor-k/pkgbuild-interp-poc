@@ -1,0 +1,45 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=jose
+pkgname=haskell-jose
+pkgver=0.12
+pkgrel=19
+pkgdesc="JSON Object Signing and Encryption (JOSE) and JSON Web Token (JWT) library"
+url="https://github.com/frasertweedale/hs-jose"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-base64-bytestring' 'haskell-concise' 'haskell-crypton'
+         'haskell-crypton-x509' 'haskell-lens' 'haskell-memory' 'haskell-monad-time'
+         'haskell-network-uri')
+makedepends=('ghc' 'haskell-hedgehog' 'haskell-hspec' 'haskell-pem' 'haskell-tasty'
+             'haskell-tasty-hspec' 'haskell-tasty-hedgehog')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('7f0675dff6a28606305323f075394583a742035ceff6e5d5e370ddcf6e109c44b8139aaffc5de7f0c916696e270cc12a865882ecb58164debb0b9752c8e37e7b')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

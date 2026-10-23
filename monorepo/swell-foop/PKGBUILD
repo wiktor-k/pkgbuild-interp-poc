@@ -1,0 +1,52 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=swell-foop
+pkgver=50.0
+pkgrel=1
+pkgdesc="Clear the screen by removing groups of colored and shaped tiles"
+url="https://gitlab.gnome.org/GNOME/swell-foop"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgee
+  librsvg
+  pango
+)
+makedepends=(
+  appstream
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+source=("git+$url.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('f20cc9fa5ed658eb52810d098f61a0e2f4c9c15317bc1fc0b17500f21c3e2878f04646ef3d66a2d7ba24dd80fa16204fa2af5bc51b9885c1fd424c398d64716b')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

@@ -1,0 +1,24 @@
+pkgbase = roboden
+	pkgdesc = Real-time strategy game about robot colonies
+	pkgver = 20240426.210725
+	pkgrel = 1
+	url = https://github.com/quasilyte/roboden-game
+	arch = x86_64
+	license = MIT
+	makedepends = gendesk
+	makedepends = git
+	makedepends = go
+	makedepends = setconf
+	depends = alsa-lib
+	depends = glibc
+	depends = libgl
+	depends = libx11
+	depends = libxcursor
+	depends = libxi
+	depends = libxinerama
+	depends = libxrandr
+	depends = libxxf86vm
+	source = roboden::git+https://github.com/quasilyte/roboden-game#commit=9a5d355f3ddcd0767c9083233bc814f0b54246cf
+	b2sums = 73eb17d2393f5f8e536ceb162a0b40b8e7dcc4b362927f491737b1ce80c5335d02ae6bf0d03511db59ed273fff736a179a1e73a63ad87cb1aeb644c585b07c85
+
+pkgname = roboden

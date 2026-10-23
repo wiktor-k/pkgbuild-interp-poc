@@ -1,0 +1,24 @@
+name: Build'n'run
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      # You can test your matrix by printing the current Go version
+      - name: Display Go version
+        run: go version
+      - name: Install dependencies
+        run: go get .
+      - name: Build the interpreter
+        run: go build -o minieval pkgbuild_minieval.go
+      - name: Run the test suite
+        run: ./minieval-stats.sh monorepo/

@@ -1,0 +1,33 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: yugrotavele <yugrotavele at archlinux dot us>
+# Contributor: Arkham <arkham at archlinux dot us>
+# Contributor: Christoph Zeiler <archNOSPAM_at_moonblade.dot.org>
+# Contributor: Arnaud Durand <biginozNOSPAM_at_free.dot.fr>
+# Contributor: Nuno Araujo <nuno.araujo at russo79.com>
+
+pkgname=bleachbit
+pkgver=6.0.6
+pkgrel=1
+pkgdesc='Deletes unneeded files to free disk space and maintain privacy'
+arch=(any)
+url='https://www.bleachbit.org/'
+license=(GPL-3.0-or-later)
+depends=(glib2
+         gtk3
+         pango
+         python
+         python-chardet
+         python-gobject
+         python-psutil
+         python-requests
+         python-urllib3)
+makedepends=(git)
+source=(git+https://github.com/bleachbit/bleachbit.git#tag=v${pkgver}?signed)
+validpgpkeys=(A9E582E4054A159315EDC943D6D447B02B4D4C9D) # Andrew Ziem <ahz001@gmail.com>
+sha256sums=('07739d7035ad89ff83231faa313a726bf592ae33b1f57fb49a193ad0d27cbd7d')
+
+package() {
+  cd $pkgname
+  make prefix=/usr DESTDIR="$pkgdir" install
+}

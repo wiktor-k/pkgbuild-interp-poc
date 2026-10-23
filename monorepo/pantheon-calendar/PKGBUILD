@@ -1,0 +1,63 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-calendar
+pkgver=8.0.2
+pkgrel=2
+pkgdesc='The Pantheon Calendar'
+arch=(x86_64)
+url=https://github.com/elementary/calendar
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  evolution-data-server
+  folks
+  geocode-glib-2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libfolks.so
+  libgee
+  libgranite.so
+  libhandy-1.so
+  libical
+  libportal
+  libportal-gtk3
+)
+makedepends=(
+  cmake
+  git
+  intltool
+  meson
+  vala
+)
+source=(pantheon-calendar::git+https://github.com/elementary/calendar.git#tag=${pkgver}
+        libical-4.patch)
+sha256sums=('fe6988a6b3b21ceb5bce6975ed7b2d204889306323d30cf6bb14c48f6d0b8790'
+            '306a1eea5716bcc09e677821350c420b576ee688596ec4b2232fa670b48127e6')
+
+prepare() {
+  cd pantheon-calendar
+
+  # Disable location panel (removes deprecated clutter dependency)
+  sed -i '/champlain_dep/,+9d' meson.build
+  sed -i '/champlain_dep/,+3d' src/meson.build
+  sed -i '/gclue_dep/d' meson.build src/meson.build
+  sed -i '/GtkClutter/d' src/Application.vala
+  sed -i -e '/LocationPanel/d' -e '/location_panel/d' src/meson.build src/EventEdition/EventDialog.vala
+
+  # Fix build with libical 4
+  patch -p1 -i ../libical-4.patch
+}
+
+build() {
+  arch-meson pantheon-calendar build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,30 @@
+pkgbase = pika-backup
+	pkgdesc = Easy to use backup tool to keep your data safe
+	pkgver = 0.8.4
+	pkgrel = 1
+	url = https://apps.gnome.org/PikaBackup/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-only
+	checkdepends = xorg-server-xvfb
+	makedepends = appstream
+	makedepends = git
+	makedepends = itstool
+	makedepends = meson
+	makedepends = rust
+	depends = borg
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gvfs
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = openssh
+	depends = openssl
+	depends = pango
+	depends = python-pyfuse3
+	source = git+https://gitlab.gnome.org/World/pika-backup.git#tag=0.8.4
+	b2sums = 0ee23c30844c7ef9ca2f23f271b8e12938f278d875b14991505dffd7ca35374fdbfe568ca5d58eed8cf7fe79a29777db7593ff032cbd1c9c763e0bdac7aaa687
+
+pkgname = pika-backup

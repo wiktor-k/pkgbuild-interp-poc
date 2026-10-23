@@ -1,0 +1,65 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=tlsrpt-reporter
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="An application suite to receive TLSRPT datagrams and to generate and deliver TLSRPT reports"
+url="https://github.com/sys4/tlsrpt-reporter"
+arch=('any')
+license=('GPL-3.0-or-later')
+depends=('python' 'curl' 'sqlite' 'libtlsrpt' 'postfix')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-hatchling' 'asciidoctor')
+checkdepends=('python-pytest')
+backup=('etc/tlsrpt/reportd.cfg'
+        'etc/tlsrpt/collectd.cfg'
+        'etc/tlsrpt/fetcher.cfg')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz"
+        'reportd.cfg'
+        'collectd.cfg'
+        'fetcher.cfg'
+        'tlsrpt.sysusers'
+        'tlsrpt.tmpfiles'
+        'tlsrpt-reportd.service'
+        'tlsrpt-collectd.service')
+sha256sums=('a41093759f2d77b154b0fe4a78cb855e8e7fc5c5d7c31d3e101865af0a466022'
+            '4520c616b7d10f2a64042b240166e24ca7e2950fb56b50089dfbebcafc78378d'
+            '38198b0caa10ca5fa993c21f4fb74d50598896cb4e42abfbb893835ce969f214'
+            '05892c32df75e2d50f715b4556dda2701eaa0ebbeceb06ca7632fad4e4e165ad'
+            'da4021698e0c31f35c3efae694f0f4475c1bfe023380df8db5dd45fc8e0b4cb0'
+            'c871444b003c4c210028cfdd41479528e34b25260754e7e45b5b1badd9addebe'
+            '566337f42aa025b07d352a60e7daa6a3a11091a5e1954e800de773de0896a06e'
+            '0c40dc166f44c0e32cf514af479a6fc714e72e3fd3f3d1f5eecb7eedf410a09f')
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        python -m build --wheel --no-isolation
+
+	make -C doc
+}
+
+check() {
+        cd "${pkgname}-${pkgver}"
+        pytest --deselect tests/test_entrypoints.py::MyTestCase::test_plugin_entrypoints # Expects an sqlite database 
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+        python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 644 "${srcdir}/reportd.cfg" "${pkgdir}/etc/tlsrpt/reportd.cfg"
+	install -Dm 644 "${srcdir}/collectd.cfg" "${pkgdir}/etc/tlsrpt/collectd.cfg"
+	install -Dm 644 "${srcdir}/fetcher.cfg" "${pkgdir}/etc/tlsrpt/fetcher.cfg"
+
+	install -Dm 644 "${srcdir}/tlsrpt.sysusers" "${pkgdir}/usr/lib/sysusers.d/tlsrpt.conf"
+	install -Dm 644 "${srcdir}/tlsrpt.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/tlsrpt.conf"
+
+	install -Dm 644 "${srcdir}/tlsrpt-reportd.service" "${pkgdir}/usr/lib/systemd/system/tlsrpt-reportd.service"
+	install -Dm 644 "${srcdir}/tlsrpt-collectd.service" "${pkgdir}/usr/lib/systemd/system/tlsrpt-collectd.service"
+
+	install -Dm 644 doc/tlsrpt-reportd.1 "${pkgdir}/usr/share/man/man1/tlsrpt-reportd.1"
+	install -Dm 644 doc/tlsrpt-collectd.1 "${pkgdir}/usr/share/man/man1/tlsrpt-collectd.1"
+	install -Dm 644 doc/tlsrpt-fetcher.1 "${pkgdir}/usr/share/man/man1/tlsrpt-fetcher.1"
+
+	install -Dm 644 tlsrpt_reporter/example.cfg "${pkgdir}/usr/share/doc/${pkgname}/example.cfg"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

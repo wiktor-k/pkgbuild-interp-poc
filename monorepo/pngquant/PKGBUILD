@@ -1,0 +1,45 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Hannes Graeuler <hgraeule @ uos dot de>
+
+pkgname=pngquant
+pkgver=3.0.3
+pkgrel=3
+pkgdesc="Command-line utility to quantize PNGs down to 8-bit paletted PNGs"
+arch=('x86_64')
+url="https://pngquant.org/"
+license=('GPL-3.0-or-later' 'ISC' 'BSD-2-Clause')
+depends=('libpng' 'lcms2')
+makedepends=('cargo')
+options=('!lto')
+source=("https://github.com/kornelski/$pkgname/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+        "pngquant-build.patch::https://github.com/kornelski/pngquant/commit/ed62a8b7720fb784b821766bf8d4a3c2a5f6d568.patch")
+sha256sums=('ddd8889a9c269ba454d0c5e4f7167948d55d77c4570b23f671809fd3a68b6822'
+            'f8ff9531fc41c220569d4403c097f516c16f45897efbc3fe91ff3733feb26228')
+
+prepare() {
+    cd "$srcdir/$pkgname-$pkgver"
+    patch -p1 -i ../pngquant-build.patch
+    sed -i 's|, path = "lib/imagequant-sys"||' Cargo.toml
+    export RUSTUP_TOOLCHAIN=stable
+    cargo update
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo build --frozen --release
+}
+
+check() {
+    cd "$srcdir/$pkgname-$pkgver"
+    cargo test --frozen
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    install -Dm755 target/release/pngquant "$pkgdir/usr/bin/pngquant"
+    install -Dm644 pngquant.1 "$pkgdir/usr/share/man/man1/pngquant.1"
+    install -Dm644 COPYRIGHT "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

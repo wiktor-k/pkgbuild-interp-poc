@@ -1,0 +1,28 @@
+pkgbase = jython
+	pkgdesc = An implementation of the Python language written in Java
+	pkgver = 2.7.4
+	pkgrel = 3
+	url = https://www.jython.org/
+	install = jython.install
+	arch = any
+	license = PSF
+	license = APACHE
+	license = custom
+	depends = java-environment=8
+	depends = bash
+	depends = python
+	noextract = jython_installer-2.7.4.jar
+	options = !emptydirs
+	backup = opt/jython/registry
+	source = https://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.4/jython-installer-2.7.4.jar
+	source = https://search.maven.org/remotecontent?filepath=org/python/jython-installer/2.7.4/jython-installer-2.7.4.jar.asc
+	source = README.ArchLinux
+	source = jython.sh
+	validpgpkeys = 1AC6FA76887C81B0A870FFA03979A71621665974
+	validpgpkeys = C8C4B9DC1E031F788B12882B875C3EF9DC4638E3
+	sha512sums = 8f6180bc3c09a8310318f3784f4954f69740ebd4c8b38dabae29f68203a6b0e52a026620e6640032122821bbb42c1ac27148fce35e25c74adaf3d3ea1193617a
+	sha512sums = SKIP
+	sha512sums = 0ab0237d456f859b2cbb0739264bb978ad98b2c52153e89fc131aa60edf7837f41617c0e53cbde05688dfc0d6fb08f1d02ebbd41da99b07af72e34a11a83f0b9
+	sha512sums = c1aaf79f1cfba165fd4a03be016ac8afcc5024972a9626060f57ced0bf4dad93ccdd9ac303bdc8a5ed6b9bcb3307d152dfff2682308c740b6d2db44c2cbaf1b4
+
+pkgname = jython

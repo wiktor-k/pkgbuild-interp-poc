@@ -1,0 +1,36 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-paint
+_pkgname=paint-activity
+pkgver=72
+pkgrel=1
+pkgdesc='Sugar activity to create paintings or drawings'
+arch=(any)
+url='https://github.com/sugarlabs/paint-activity'
+license=(GPL-2.0-only)
+groups=(sugar-fructose)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gst-python
+  gstreamer
+  gtk3
+  pango
+  python
+  python-cairo
+  python-gobject
+  sugar-toolkit-gtk3
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(14511fd56404add3238b16451e6d0a89576d577674223f66204649591d4569f736b82acd8ca57332bd86c851ebcaab8c36272d2049150e50afc50dde67d2121f)
+
+prepare() {
+  cd $_pkgname
+  git rm -r fill
+}
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

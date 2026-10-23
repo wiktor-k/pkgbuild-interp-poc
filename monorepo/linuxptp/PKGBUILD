@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=linuxptp
+pkgver=4.4
+pkgrel=2
+pkgdesc="An implementation of the Precision Time Protocol (PTP) according to IEEE standard 1588 for Linux"
+arch=(x86_64)
+url="https://linuxptp.sourceforge.net/"
+_url="https://git.code.sf.net/p/linuxptp/code"
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  nettle
+)
+makedepends=(git)
+source=("$pkgname::git+$_url#tag=v$pkgver")
+sha512sums=('7f60b8d5c70c116fbfa80a7c506613aa3920d2f1d36811b9992e226bef49271005c0cc7d5bbd7a9a0f8313145bff3ca538425989eb56e612b97b15965940a9df')
+b2sums=('8e01b1c80fee454dc55d20e89d229a65fd976f740940f9d9de6336e912e14ccf5585a6ef6d01ac8893181c3e59ba4420aa9a487b1d13db6892960476e515c1aa')
+
+prepare() {
+  cd "$pkgname"
+  # support nettle >= 4.0
+  git cherry-pick -n e4d271d8f5216b8a5afaccaa9cc42230ab6b8761
+}
+
+build() {
+  local make_options=(
+    EXTRA_CFLAGS="$CFLAGS"
+    EXTRA_LDFLAGS="$LDFLAGS"
+    -C "$pkgname"
+  )
+
+  make "${make_options[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" make prefix='/usr' sbindir='$(prefix)/bin' mandir='$(prefix)/share/man' man8dir='$(mandir)/man8' install -C "$pkgname"
+  install -vDm 644 "$pkgname/COPYING" -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 "$pkgname/README.org" -t "$pkgdir/usr/share/doc/$pkgname/"
+}

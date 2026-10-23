@@ -1,0 +1,49 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-locale
+pkgver=8.0.3
+pkgrel=1
+pkgdesc='Switchboard Locale Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-locale
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  accountsservice
+  dconf
+  glib2
+  glibc
+  gnome-desktop-4
+  gtk4
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+  libibus
+  libswitchboard-3.so
+  polkit
+)
+makedepends=(
+  cmake
+  git
+  meson
+  vala
+)
+_tag=2e53c289a6e6d0c0a433e40b01c5c747a9c6c267
+source=(git+https://github.com/elementary/switchboard-plug-locale.git#tag=${_tag})
+b2sums=('65e01a6baed20474a51c0f2e7a3380f4b973e4cfe54789e8b0463404a9a8810a2215c6d83dd86744df2d27a801adf0734e87f288595e7468acc25fb484367f23')
+
+pkgver() {
+  cd switchboard-plug-locale
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-locale build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

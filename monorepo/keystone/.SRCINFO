@@ -1,0 +1,33 @@
+pkgbase = keystone
+	pkgdesc = Lightweight multi-platform, multi-architecture assembler framework
+	pkgver = 0.9.2
+	pkgrel = 9
+	url = https://www.keystone-engine.org/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = libgcc
+	makedepends = libstdc++
+	makedepends = python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	options = staticlibs
+	options = !emptydirs
+	source = https://github.com/keystone-engine/keystone/archive/0.9.2/keystone-0.9.2.tar.gz
+	source = gcc-15.patch
+	sha512sums = 5d4dd30410410bc7848e75a2e31e8ecef6241ad25e21963aa7a07bbea21d95b75e235c80573129014102684c9647710ace3c0776a8401844d7e4b45cab7bd04b
+	sha512sums = f0cc08a981a1070fad5c62e4aaaf277f1d6443308205be3365a2e7eff7bc690717dea8ee19bd41f9049b44a989c58e6fd1c1ef02897bd673d3960ba76fb19b59
+	b2sums = 5654ae6a66ccf6832fbdbb8c1083a2318e413bb833a0fadc4e1374f0de601e3dad9f354b1dec92d9a944621923458e432510299c1b55579ac9bb6b6e90a818de
+	b2sums = 8a7948296c38f2f6c09758d714c2c5c705035ec94612a636361f11ecd45a069c80576147fee69dc9f30fe4d8f516c36587bf37e987286d97ae7281c563a39aa5
+
+pkgname = keystone
+	depends = libgcc
+	depends = libstdc++
+	provides = libkeystone.so
+
+pkgname = python-keystone
+	license = BSD-3-Clause
+	depends = python
+	depends = keystone

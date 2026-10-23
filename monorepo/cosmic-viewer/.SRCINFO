@@ -1,0 +1,26 @@
+pkgbase = cosmic-viewer
+	pkgdesc = Image viewer for the COSMIC desktop environment
+	pkgver = 1.10.0
+	pkgrel = 1
+	url = https://github.com/pop-os/cosmic-viewer
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = cmake
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	depends = dav1d
+	depends = libgcc
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libde265
+	depends = libjpeg-turbo
+	depends = libstdc++
+	depends = libxkbcommon
+	source = git+https://github.com/pop-os/cosmic-viewer.git#tag=epoch-1.10.0
+	b2sums = c0bb78f21520b1656645ac91be81a19d33639830b1a39cee5888fd2176c044b3d398a4f5afa46fd6ff001a1194b7a1974d4ab03d86000699607efc7ae80809f9
+
+pkgname = cosmic-viewer

@@ -1,0 +1,79 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Kenneth Endfinger <kaendfinger@gmail.com>
+
+pkgname=buildkit
+pkgver=0.34.1
+pkgrel=1
+pkgdesc='A toolkit for converting source code to build artifacts in a repeatable manner'
+arch=(x86_64)
+url='https://github.com/moby/buildkit'
+license=(Apache-2.0)
+depends=(
+  glibc
+  runc
+)
+makedepends=(
+  git
+  go
+)
+optdepends=('containerd: containerd worker')
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('c272b16657b6e91cde81d98a88cdcc3a9ad8642d1eced7c9d511fb59c763a34aaf24e20f22d70388ee8ea3f0034d6a1e5b1e75e0849320dcf6bc75a6305f2738')
+b2sums=('46889a024685c32f5b0e9975787552cca741580ce28f44753cfb0acb1ab954cdad7549a73d86078277b0d3cde5a2b17fbd382865e3a19110a67cd67c74395863')
+
+prepare() {
+  cd "$pkgname"
+
+  # fix paths in systemd unit files
+  sed -i 's:/usr/local:/usr:' \
+    examples/systemd/{system,user}/*.service
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  local package="${url#https://}"
+
+  local _commit="$(git rev-list -1 HEAD)"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags \"${LDFLAGS}\" \
+    -X ${package}/version.Version=$pkgver \
+    -X ${package}/version.Revision=$_commit" \
+    -o build \
+    ./cmd/...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binaries
+  install -vDm755 -t "$pkgdir/usr/bin" build/*
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vrt "$pkgdir/usr/share/doc/$pkgname" docs
+
+  # systemd integration
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" examples/systemd/system/*
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/user" examples/systemd/user/*
+}

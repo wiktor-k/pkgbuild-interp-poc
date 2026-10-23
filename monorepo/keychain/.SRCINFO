@@ -1,0 +1,16 @@
+pkgbase = keychain
+	pkgdesc = A front-end to ssh-agent, allowing one long-running ssh-agent process per system, rather than per login
+	pkgver = 3.0.8
+	pkgrel = 2
+	url = https://www.funtoo.org/Keychain
+	arch = any
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = python
+	source = git+https://github.com/danielrobbins/keychain#tag=3.0.8
+	sha256sums = 533c1e540a1ecbd5498972abbb336de332add3cfcf0f3decbf9a000137c1816c
+
+pkgname = keychain

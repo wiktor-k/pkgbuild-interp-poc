@@ -1,0 +1,67 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=qsv
+pkgver=26.0.0
+pkgrel=1
+pkgdesc='quicksilver data-wrangling toolkit (fork of xsv) for tabular data such as CSV'
+arch=(x86_64)
+url="https://github.com/dathere/$pkgname"
+license=(MIT Unlicense)
+depends=(bzip2 libbz2.so
+         glibc # libc.so libm.so
+         jemalloc
+         libgcc
+         libstdc++
+         python # libpython3.13.so
+         python-xlsxwriter
+         wayland libwayland-client.so)
+makedepends=(cargo
+             chromium
+             clang
+             cmake
+             luau)
+replaces=(qsv-bin)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/$pkgver/$_archive.tar.gz")
+sha256sums=('166d3e9c9133098ba4705671e0dd68644c6daa343dc454f33718a6ba18963eec')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects -O0'
+	CXXFLAGS+=' -ffat-lto-objects -O0'
+	export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+	export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+	export WEBDRIVER_PATH=/usr/bin/chromedriver
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --features distrib_features
+}
+
+check() {
+	cd "$_archive"
+	# cargo test --frozen --features distrib_features
+}
+
+package() {
+	depends+=(libjemalloc.so)
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	pushd contrib/completions/examples
+	install -Dm0644 -t "$pkgdir/usr/share/elvish/lib/" qsv.elv
+	install -Dm0644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" qsv.fish
+	install -Dm0644 qsv.bash "$pkgdir/usr/share/bash-completion/completions/qsv"
+	install -Dm0644 qsv.zsh "$pkgdir/usr/share/zsh/site-functions/_qsv"
+}

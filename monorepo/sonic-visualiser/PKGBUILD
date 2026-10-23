@@ -1,0 +1,94 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Orivej Desh <masecretaire@gmx.fr>
+
+pkgname=sonic-visualiser
+pkgver=5.2.1
+pkgrel=5
+pkgdesc="A viewer and analyser of music audio files."
+arch=(x86_64)
+url="https://www.sonicvisualiser.org/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libmad
+  libstdc++
+  opusfile
+  qt6-base
+  qt6-svg
+  vamp-plugin-sdk
+)
+makedepends=(
+  alsa-lib
+  bzip2
+  capnproto
+  fftw
+  libfishsound
+  libid3tag
+  liblo
+  liblrdf
+  liboggz
+  libpulse
+  libsamplerate
+  libsndfile
+  meson
+  portaudio
+  rubberband
+  serd
+  sord
+)
+provides=(vamp-host)
+source=(
+  https://github.com/$pkgname/$pkgname/releases/download/sv_v$pkgver/$pkgname-$pkgver.tar.gz
+  sonic-visualiser-5.2.1-fix-build-with-qt69.patch
+  sonic-visualiser-5.2.1-fix-build-with-qt611.patch
+)
+sha512sums=('27bd8528a9b75b0bc11ead82447b2ce48c6ea8cfc527df6b3d057792a40b78e7bd29d895e30782016385a98bec5c2d976d08d24bb79898ba6732248c2c49601c'
+            'dc3b5da4107f164f7413e2299be75a2349414cea43f38bda9b98a08b49d5e45d01fbb76e6b1a993fcaafda194178904245332272d48ea44d6db69509fe7cecb8'
+            '7e1623c38dfe476d171f814acac718bf89f25aeb8b57c9769b03436e6652b57795680b5e73f8af96a2825a1d52364f305aed263d1b36d5daf15184577c34d177')
+b2sums=('3176d336d7aeaab98c7bae4783e8b8ade6bcbf4a13242843a8b271a7b285bc2a961806dff448fe0de301bd1a1b5bef4c0aa8cade1dc01dc1761bf3c56f0e3623'
+        'e07549a4ad76e083f5be12ec3cd106cde8deea02e44b5599c9606f6bee4ca8d63a71f0fb13345d86efad7f2c95a7fbd9546599db986278cb23baad3858605f3f'
+        'cef7013a536bf7d1a292e04a928dd9c01b70af5db0164038d91ee7761914e7a069aa8835da999b034a3347e4c4e4579c3c28872019b411616733c35586d95694')
+
+prepare() {
+  patch -d $pkgname-$pkgver/svcore -Np1 < "${srcdir}/sonic-visualiser-5.2.1-fix-build-with-qt69.patch"
+  patch -d $pkgname-$pkgver -Np1 < "${srcdir}/sonic-visualiser-5.2.1-fix-build-with-qt611.patch"
+}
+
+build() {
+  arch-meson build $pkgname-$pkgver
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    bzip2 libbz2.so
+    capnproto libcapnp.so libkj.so
+    fftw libfftw3.so
+    libfishsound libfishsound.so
+    libid3tag libid3tag.so
+    liblo liblo.so
+    liblrdf liblrdf.so
+    liboggz liboggz.so
+    libpulse libpulse.so
+    libsamplerate libsamplerate.so
+    libsndfile libsndfile.so
+    portaudio libportaudio.so
+    rubberband librubberband.so
+    serd libserd-0.so
+    sord libsord-0.so
+  )
+
+  DESTDIR="$pkgdir" meson install -C build
+  install -vDm 644 $pkgname-$pkgver/samples/* -t "$pkgdir/usr/share/$pkgname/samples"
+  install -vDm 644 $pkgname-$pkgver/templates/* -t "$pkgdir/usr/share/$pkgname/templates"
+  install -vDm 644 $pkgname-$pkgver/{CHANGELOG,CITATION,README{,_OSC}.md} -t "$pkgdir/usr/share/doc/$pkgname"
+}

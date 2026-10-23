@@ -1,0 +1,16 @@
+pkgbase = fcitx5-unikey
+	pkgdesc = Unikey engine support for Fcitx5
+	pkgver = 5.1.12
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-unikey
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	depends = fcitx5-qt
+	source = git+https://github.com/fcitx/fcitx5-unikey.git#tag=5.1.12?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 5b4e08e29120a60359fee25e1a1a75b91da5fe0dc0a6f033ecc861df417ab9405edc95d28c7922b39b98188329f79a0d65e0d712f15bc56bdc6ecdea2f805f68
+
+pkgname = fcitx5-unikey

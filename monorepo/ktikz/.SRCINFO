@@ -1,0 +1,29 @@
+pkgbase = ktikz
+	pkgdesc = Small application helping you to create TikZ diagrams (from the LaTeX pgf package)
+	pkgver = 0.13.2
+	pkgrel = 3
+	url = https://github.com/fhackenberger/ktikz
+	arch = x86_64
+	license = GPL
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = qt5-base
+	makedepends = qt5-tools
+	makedepends = kxmlgui5
+	makedepends = ktexteditor5
+	makedepends = kparts5
+	makedepends = kiconthemes5
+	makedepends = poppler
+	makedepends = poppler-qt5
+	depends = poppler-qt5
+	source = https://github.com/fhackenberger/ktikz/archive/0.13.2/ktikz-0.13.2.tar.gz
+	sha256sums = 1b7f5b7a8daacea68b5a93c1e5a946c9ba9f776b8708f11ca047e591a446f300
+
+pkgname = ktikz
+	pkgdesc = Small application helping you to create TikZ diagrams (from the LaTeX pgf package) – KDE version
+	depends = poppler-qt5
+	depends = kparts5
+	depends = ktexteditor5
+
+pkgname = qtikz
+	pkgdesc = Small application helping you to create TikZ diagrams (from the LaTeX pgf package) – Qt version

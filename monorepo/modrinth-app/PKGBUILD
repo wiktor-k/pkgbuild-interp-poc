@@ -1,0 +1,72 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Antti <antti@antti.codes>
+
+pkgname=modrinth-app
+pkgver=0.21.10
+pkgrel=1
+pkgdesc='Minecraft launcher to play your favorite mods and keep them up to date.'
+url='https://modrinth.com/app'
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=(
+	'libgcc' 'glibc' 'sh'
+	'libvips' # link to system libvips. If not installed, sharp will vendor it.
+	# tauri deps
+	'cairo' 'desktop-file-utils' 'gdk-pixbuf2' 'glib2' 'gtk3'
+	'hicolor-icon-theme' 'libsoup3' 'pango' 'webkit2gtk-4.1'
+	# minecraft deps
+	'libgl' 'libpulse' 'libx11' 'libxcursor' 'libxext' 'libxxf86vm'
+)
+makedepends=('cargo' 'pnpm' 'java-environment=21' 'git' 'npm' 'node-gyp')
+optdepends=(
+	'xorg-xrandr: for older minecraft versions'
+	'java-environment: system java'
+)
+source=(
+	"$pkgname::git+https://github.com/modrinth/code#tag=v$pkgver"
+	"modrinth-app.desktop"
+	"modrinth-app.sh"
+	"modrinth-file-extensions.xml"
+)
+sha256sums=('b9b46319192d05d155ec9c1897dfe783adb31726b50b7d64ce8638bf465b6839'
+            'd83aecff95d7cbd1d3270608c659d184e5035ccf244d57b00ce10cebe4970ec1'
+            '10665019b386d88974f123017c12bb464e4897769819b7ae6468e5264892b472'
+            'e0b3eab49465709ed5053dc1fa4206071ab32657d25bd1f9c01850d696715cff')
+options=('!lto')
+
+prepare() {
+	cd $pkgname
+	sed -i "s/1.0.0-local/$pkgver/" "apps/app/Cargo.toml"
+	sed -i "s/1.0.0-local/$pkgver/" "packages/app-lib/Cargo.toml"
+	sed -i "s/1.0.0-local/$pkgver/" "apps/app-frontend/package.json"
+	sed -i "s/1.0.0-local/$pkgver/" "Cargo.lock"
+
+	# needed to find node-gyp
+	export NODE_PATH='/usr/lib/node_modules'
+	export TURBO_TELEMETRY_DISABLED=1
+	pnpm install --frozen-lockfile
+
+	cp -f "packages/app-lib/.env.prod" "packages/app-lib/.env"
+
+	cd apps/app
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd $pkgname/apps/app
+
+	export NODE_PATH='/usr/lib/node_modules'
+	export TURBO_TELEMETRY_DISABLED=1
+	pnpm --filter=@modrinth/app run tauri build --config tauri-release.conf.json --no-bundle
+}
+
+package() {
+	install -Dm755 modrinth-app.sh "$pkgdir/usr/bin/modrinth-app"
+	install -Dm644 modrinth-app.desktop -t "$pkgdir/usr/share/applications/"
+	install -Dm644 modrinth-file-extensions.xml -t "$pkgdir/usr/share/mime/packages/"
+
+	cd $pkgname
+	install -Dm755 target/release/ModrinthApp "$pkgdir/usr/lib/modrinth-app"
+	install -Dm644 apps/app/icons/128x128.png "$pkgdir/usr/share/icons/hicolor/128x128/apps/modrinth-app.png"
+	install -Dm644 apps/app/icons/icon.png "$pkgdir/usr/share/icons/hicolor/256x256@2/apps/modrinth-app.png"
+}

@@ -1,0 +1,115 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Contributor: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Matthias Bauch <matthias.bauch@gmail.com>
+# Contributor: Laszlo Papp <djszapi2 at gmail com>
+# Contributor: Samuel Tardieu <sam@rfc1149.net>
+
+
+pkgname=openocd
+epoch=1
+pkgver=0.12.0
+pkgrel=6
+pkgdesc='Debugging, in-system programming and boundary-scan testing for embedded target devices'
+arch=(x86_64)
+url='https://openocd.org'
+license=(GPL-2.0-or-later)
+depends=(
+  capstone
+  glibc
+  hidapi
+  jimtcl
+  libftdi-compat
+  libjaylink
+  libusb
+)
+makedepends=(
+  git
+)
+source=(
+  "$pkgname::git+https://github.com/openocd-org/openocd#tag=v$pkgver"
+  no-duplicate-udev-rules.patch
+)
+sha512sums=('77585a809c9eaf055b5b096c75f6d6e14461c0b4cbf0d2285dd3e878b7e31299bbbd5535f402da57599f4afe614e232a6a561ad98e467bfcca33dddfedf9b2b7'
+            '63e5126fa1a104a84e5f72419bccb6ba6508cbb8399bd935e73052d9e83970968d39ec38d0cbfd8d5bdddb9267aefbf5102be3f0ade91fdf988b995f15ea4048')
+b2sums=('c9f00dc50a3b20eca4f10c8dd1e1a4c28963afe5942e7f8d8fa7c43f0baf037241f1d7886557536df1a741065e046b81cdfbcb8701665df0651d7952de40547b'
+        '54d52924d1a638cd98c16c2c4109e71af514b9c1c56a6e8116e3554686f6b5e22dbac40a0bf630ec73798cf62366a68111762847fac75284766a420be9aed1f4')
+
+prepare() {
+  cd "$pkgname"
+
+  # modify udev rules
+  sed -i 's|GROUP="plugdev", ||g' contrib/60-openocd.rules
+
+  # ensure udev rules are not duplicated
+  patch -p1 -i "$srcdir/no-duplicate-udev-rules.patch"
+
+  # revert workarounds for jimtcl expr syntax changes
+  git cherry-pick --no-commit 95603fae18f81eebdafc5b318e70f9e2cdefab9e
+
+  # add missing includes (stdio.h)
+  git cherry-pick --no-commit 73390332d203f02aa5b9798a7550191d55650d97
+
+  # https://review.openocd.org/c/openocd/+/8619
+  git cherry-pick --no-commit 6834f022b96fb1c7f5829166578e01a0ac223cb0
+
+  # run autotools configuration
+  # all submodules are unnecessary, so skip setup
+  ./bootstrap nosubmodule
+}
+
+build() {
+  cd "$pkgname"
+
+  local _features=(
+    aice
+    amtjtagaccel
+    armjtagew
+    at91rm9200
+    buspirate
+    capstone
+    cmsis-dap
+    dummy
+    ep93xx
+    ftdi
+    gw16012
+    ioutil
+    jlink
+    jtag_vpi
+    legacy-ft2232_libftdi
+    oocd_trace
+    opendous
+    openjtag_ftdi
+    osbdm
+    parport
+    presto_libftdi
+    remote-bitbang
+    rlink
+    stlink
+    sysfsgpio
+    ti-icdi
+    ulink
+    usb-blaster-2
+    usb_blaster_libftdi
+    usbprog
+    vsllink
+    xlnx_pcie_xvc
+  )
+
+  ./configure \
+    --prefix=/usr \
+    --disable-werror \
+    --disable-internal-jimtcl \
+    --disable-internal-libjaylink \
+    ${_features[@]/#/--enable-}
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  install -vDm644 -t "$pkgdir/usr/lib/udev/rules.d" contrib/60-openocd.rules
+}

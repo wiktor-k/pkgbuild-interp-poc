@@ -1,0 +1,27 @@
+pkgbase = ipvsadm
+	pkgdesc = The IP Virtual Server administration utility
+	pkgver = 1.31
+	pkgrel = 3
+	url = http://www.linuxvirtualserver.org/software/ipvs.html
+	install = ipvsadm.install
+	arch = x86_64
+	license = GPL2
+	depends = glibc
+	depends = libnl
+	depends = popt
+	depends = bash
+	options = !makeflags
+	backup = etc/ipvsadm.conf
+	source = https://kernel.org/pub/linux/utils/kernel/ipvsadm/ipvsadm-1.31.tar.xz
+	source = https://kernel.org/pub/linux/utils/kernel/ipvsadm/ipvsadm-1.31.tar.sign
+	source = ipvsadm.systemd
+	source = ipvsadm.service
+	source = 01-use-CFLAGS-and-LDFLAGS-environment.patch
+	validpgpkeys = D893F72888349DB4F170F9A23A554D033B37BCED
+	sha256sums = 1a0a5e25b5a1226435d2fb76341656f83a710183aebb0d204db39c0ec3bedfdb
+	sha256sums = SKIP
+	sha256sums = 4960ea254128347b03665d51817f29cb643cf2ebca13f5f46649257552ad3ceb
+	sha256sums = 25506d07f412cccab6f2f3a2a1900d5eeda27bc58602d14f44910c4e036b5341
+	sha256sums = 3016d22a0b5d8e735676ea2ab8c9d718fe6254e22fca5cec0a753fe57f34c4f9
+
+pkgname = ipvsadm

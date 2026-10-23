@@ -1,0 +1,23 @@
+pkgbase = python-tiny-proxy
+	pkgdesc = Simple proxy (SOCKS4(a), SOCKS5(h), HTTP tunnel) server built with anyio
+	pkgver = 0.3.0
+	pkgrel = 1
+	url = https://github.com/romis2012/tiny-proxy
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-pytest
+	checkdepends = python-trustme
+	checkdepends = python-aiohttp
+	checkdepends = python-httpx
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-anyio
+	source = python-tiny-proxy::git+https://github.com/romis2012/tiny-proxy#tag=v0.3.0
+	sha512sums = 327532687ec663fd98b866be74b2758cae01f087dc9aae1fc28b53971c2145cc1a7cc82b4a71097df6f12f814fa28659dde21d41aea760bc33fe613f2357ca23
+	b2sums = 3d1f9e85a149429267eaed96abe2376597edd1e4d07351d42b9e34128520362397453cde380eb799574d78cb3fb0cc6086382b0bfccaded38247a34506d60f5c
+
+pkgname = python-tiny-proxy

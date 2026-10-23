@@ -1,0 +1,59 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=nomad-driver-podman
+pkgver=0.6.5
+pkgrel=1
+pkgdesc='A nomad taskdriver for podman containers'
+arch=('x86_64')
+url='https://github.com/hashicorp/nomad-driver-podman'
+license=('MPL-2.0')
+depends=('nomad' 'podman')
+makedepends=('git' 'go')
+options=('!lto')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('7d70c9879f92482eead364670335015e147b1bcf84b3313f48272b141b2fcae5033de4a6f3d8c207f81441792d13c84ff7fe8fc97bce530f0d1f1290a887265b')
+b2sums=('22b04296653e1cdb0b666a597e19501fa3a180730747cc8091473192d0b37221dee7e079e35d01abae12fb49c424ed842a5138e7684fad2fb1faa0965d6c7d3b')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags \"${LDFLAGS}\"" \
+    -o build \
+    .
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/lib/nomad/plugins" "build/$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr examples "$pkgdir/usr/share/doc/$pkgname"
+  # note: examples/plugins is an empty folder
+  rm -rf "$pkgdir/usr/share/doc/$pkgname/examples/plugins"
+}

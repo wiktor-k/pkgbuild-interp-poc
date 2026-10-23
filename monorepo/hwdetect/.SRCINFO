@@ -1,0 +1,20 @@
+pkgbase = hwdetect
+	pkgdesc = Hardware detection script with loading modules and mkinitcpio.conf
+	pkgver = 2026.10.01.1149
+	pkgrel = 1
+	url = https://archlinux.org/packages/extra/any/hwdetect/
+	arch = any
+	license = GPL-3.0-or-later
+	depends = bash
+	depends = coreutils
+	depends = fd
+	depends = gzip
+	depends = ripgrep
+	depends = sd
+	optdepends = cryptsetup: for encrypt mkinitcpio config support
+	optdepends = lvm2: for lvm2 mkinitcpio config support
+	optdepends = mdadm: for raid mkinitcpio config support
+	source = hwdetect
+	b2sums = 61428e5a5f19fc0e48afc7d845f73286508c5498c46e6478fee355c3e8cbf4b5035011010bbf96a4cd058d77637e6d40d1270a4373b7490fc94468ac902cfeda
+
+pkgname = hwdetect

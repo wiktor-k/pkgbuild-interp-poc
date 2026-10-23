@@ -1,0 +1,48 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Bert Peters <bertptrs@archlinux.org<
+
+pkgname=cargo-flamegraph
+pkgver=0.6.14
+pkgrel=1
+pkgdesc='Easy flamegraphs for Rust projects and everything else'
+url="https://github.com/flamegraph-rs/flamegraph"
+depends=(
+  'cargo'
+  'glibc'
+  'libgcc'
+  'perf'
+)
+arch=('x86_64')
+license=('MIT' 'Apache-2.0')
+source=(https://github.com/flamegraph-rs/flamegraph/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('c379e26dfacd4c7439456e488457b7f1cb651687c0eb596f4acd1964c6ffbd82')
+b2sums=('d7225ad9d001dd7ec89cfa40d8b9c44aa5af4fc873735439c849e5f45fb7021c5708f1bbb59411fc0793d868024a8f096acdf8ce3bffd6855d56bf14e3a61409')
+
+build() {
+  cd "flamegraph-${pkgver}"
+  cargo build --release --locked
+
+  # Generate completion scripts
+  target/release/flamegraph --completions bash > flamegraph
+  target/release/flamegraph --completions zsh > _flamegraph
+  target/release/flamegraph --completions fish > flamegraph.fish
+}
+
+check() {
+  cd "flamegraph-${pkgver}"
+  cargo test --release --locked
+}
+
+package() {
+  cd "flamegraph-${pkgver}"
+  install -Dm755 -t "${pkgdir}/usr/bin" \
+    target/release/cargo-flamegraph \
+    target/release/flamegraph
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm644 LICENSE-MIT -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 flamegraph -t "${pkgdir}/usr/share/bash-completion/completions"
+  install -Dm644 _flamegraph -t "${pkgdir}/usr/share/zsh/site-functions"
+  install -Dm644 flamegraph.fish -t "${pkgdir}/usr/share/fish/vendor_completions.d"
+}
+
+# vim:set ts=2 sw=2 et:

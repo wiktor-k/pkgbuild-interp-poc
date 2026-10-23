@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=swagger2
+pkgname=haskell-swagger2
+pkgver=2.9.1
+pkgrel=34
+pkgdesc="Swagger 2.0 data model"
+url="https://github.com/GetShopTV/swagger2"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-pretty' 'haskell-base-compat-batteries'
+         'haskell-cookie' 'haskell-hashable' 'haskell-generics-sop' 'haskell-http-media'
+         'haskell-insert-ordered-containers' 'haskell-lens' 'haskell-network' 'haskell-optics-core'
+         'haskell-optics-th' 'haskell-quickcheck' 'haskell-scientific'
+         'haskell-unordered-containers' 'haskell-vector' 'haskell-uuid-types')
+makedepends=('ghc' 'haskell-glob' 'haskell-hunit' 'haskell-cabal-doctest'
+             'haskell-doctest' 'haskell-hspec' 'haskell-hspec-discover'
+             'haskell-quickcheck-instances' 'haskell-utf8-string')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('36c3c69652d40bcbef44ed8c9d1d18d172af2364f368c2d29bb04dec133707b6c88855cbc6aec0635e8177dd87f656db0b9f0bed8428e9a1d493f49d78cf5d62')
+
+prepare() {
+    cd $_hkgname-$pkgver
+
+    # Fix build with insert-ordered-containers < 0.3.
+    # https://github.com/GetShopTV/swagger2/issues/265
+    sed -i \
+        "/^import Data.HashMap.Strict.InsOrd$/i import Prelude hiding (filter, foldl', foldr, lookup, map, null)" \
+        src/Data/HashMap/Strict/InsOrd/Compat.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

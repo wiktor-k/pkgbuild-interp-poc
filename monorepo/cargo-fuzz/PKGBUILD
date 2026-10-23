@@ -1,0 +1,43 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+pkgname=cargo-fuzz
+pkgver=0.13.2
+pkgrel=1
+pkgdesc="Command line helpers for fuzzing rust"
+url="https://github.com/rust-fuzz/cargo-fuzz"
+depends=(
+  'cargo'
+  'glibc'
+  'libgcc'
+)
+arch=('x86_64')
+license=('MIT' 'Apache-2.0')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/rust-fuzz/${pkgname}/archive/${pkgver}.tar.gz")
+sha256sums=('88e179805e4fe4c9903720a004ef6903b0f28b27a22e74660cd72f58612f6b46')
+b2sums=('25f8ee6c56ad4afd5b4c0a569236701e42b0ec0aad9643f1a7e870bd26eba301109253bc347c61857720f86bcdfd061918e66f363dcb5c1187b2a5ff3f01d66e')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  # this is broken on linux-hardened
+  #RUSTC_BOOTSTRAP=1 cargo test --release --locked
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm644 LICENSE-MIT -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

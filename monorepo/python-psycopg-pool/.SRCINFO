@@ -1,0 +1,19 @@
+pkgbase = python-psycopg-pool
+	pkgdesc = Connection pool for psycopg
+	pkgver = 3.3.3
+	pkgrel = 1
+	url = https://www.psycopg.org/psycopg3/
+	arch = any
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-psycopg
+	source = python-psycopg::git+https://github.com/psycopg/psycopg.git#tag=pool-3.3.3
+	sha512sums = 11af941cf43e3ca0f1310ee026fbf33a71d3757c0bf97b33af406597f3119f080822640a354af6f7b63dd98efe346e220d1ae98c23846fbbe1277cdf28838493
+	b2sums = 64ae3ced21d75049358ee3d579da111ca379c35948252c244c4f0626d71d25f435c27ce29dd01553be1017289a00884c6fe02c04b0ab80eefc53b77972b0b065
+
+pkgname = python-psycopg-pool

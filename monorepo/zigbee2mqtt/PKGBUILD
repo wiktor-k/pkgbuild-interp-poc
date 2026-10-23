@@ -1,0 +1,92 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+# Contributor: Sebastian Zwierzchowski <seba@angrysoft.ovh>
+
+pkgname=zigbee2mqtt
+pkgver=2.14.2
+pkgrel=1
+pkgdesc='A Zigbee to MQTT bridge'
+arch=(x86_64)
+url='https://www.zigbee2mqtt.io'
+license=(GPL-3.0-only)
+depends=(nodejs)
+makedepends=(git typescript pnpm)
+backup=(etc/zigbee2mqtt/configuration.yaml)
+optdepends=('mosquitto: MQTT broker')
+options=(!emptydirs)
+source=(
+  "${pkgname}::git+https://github.com/Koenkk/zigbee2mqtt#tag=${pkgver}"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+)
+sha512sums=('3816487805e88848c4706895324ca7e6dac790c62ee6c264c8567a3e406834a44d50decb025985b7b4ed39909380cd4c2a9f9f58f37018e7e06076c2a85a2cf6'
+            'd573c1be013a05274cca25975bca86d37cfb64836ee449d246547f5a64866914e31826a2d1b61e174b870c3a8e512903a3774f7d3ad048cf9b4d81b99cb07ffc'
+            '4618b4e3a0792b386ea816aebdd5ec6a24541fc8f86c9ece60cfee6929260e285f7d57231744d4d756d0f0a216221f95bbf2427680579acb8cfaa97ed25dca5f'
+            '0ca8af5bcc870c475f004b4d5a8b747daf80915e54c0c123c0464aaf568f81afdddbdce13828e8d6c631c8d50f05a86be8abb615a0e26b27f004ea92eb9507bf')
+b2sums=('33a95dfd98f234a4293d714b29fb6d2e23d89b1e179f92fa925c3680852e58ed85417d9fde1104f6404c1d82c4e3f8392d5b7d8d3743876079d13ac5afe313ab'
+        '039afafe704b379738b026df2a619fe044f19e1389ff49a2efe79779214676f69f6d9cdcb9964c85296c839d624df5b46a3c9af887942b11152df8584da77572'
+        '432f7e8757339d4630840c92b302b35ff04d3db6061c154a2e62281531c57562e84f3bb2d5dd1acb3e449a9a7ebfe0bc33da275db21be102a2a6dd3a1f7a8447'
+        '7320d598f4b2ed42391fcfa64981fe76027326bb268962061467a1f6212944f2c0e9f4a626254b600af788d8fe25142bd2eb85836af99ec8a783ae8a79fa512f')
+
+prepare() {
+  cd "${pkgname}"
+
+  pnpm i --frozen-lockfile
+}
+
+build() {
+  cd "${pkgname}"
+
+  pnpm run build
+}
+
+package() {
+  cd "${pkgname}"
+
+  install -m0755 -d "${pkgdir}/usr/share/webapps/${pkgname}"
+  cp -a node_modules dist "${pkgdir}/usr/share/webapps/${pkgname}"
+
+  # FS#80123
+  # https://github.com/Koenkk/zigbee2mqtt/blob/51f15bd306db1249e02b0d4fd433d06173ac0e04/docker/Dockerfile#L31
+  echo "${_commit}" > "${pkgdir}/usr/share/webapps/${pkgname}/dist/.hash"
+
+  install -m0644 cli.js -t "${pkgdir}/usr/share/webapps/${pkgname}"
+  install -m0644 index.js -t "${pkgdir}/usr/share/webapps/${pkgname}"
+  install -m0644 package.json -t "${pkgdir}/usr/share/webapps/${pkgname}"
+
+  # sanitize permissions
+  find "${pkgdir}/usr" -type d -exec chmod 755 {} +
+  chown -R root:root "${pkgdir}"
+
+  install -Dm644 data/configuration.example.yaml "${pkgdir}/etc/${pkgname}/configuration.yaml"
+
+  install -Dm644 "${srcdir}/systemd.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+  install -Dm644 "${srcdir}/sysusers.conf" "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+  install -Dm644 "${srcdir}/tmpfiles.conf" "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+
+  # Cleanups x86_64 specific
+  if [ "${CARCH}" = "x86_64" ]; then
+    local find_dirs=(
+    -iwholename '*.github' -o
+    -iwholename '*.idea' -o
+    -iwholename '*.tscache' -o
+    -iwholename '*/man' -o
+    -iwholename '*/test' -o
+    -iwholename '*/scripts' -o
+    -iwholename '*/git-hooks' -o
+    -iwholename '*/android-arm' -o
+    -iwholename '*/android-arm64' -o
+    -iwholename '*/linux-arm64' -o
+    -iwholename '*/linux-armvy' -o
+    -iwholename '*/linux-armv7' -o
+    -iwholename '*/linux-arm' -o
+    -iwholename '*/win32-ia32' -o
+    -iwholename '*/win32-x64' -o
+    -iwholename '*/darwin-x64'
+    )
+
+    find ${pkgdir}/usr/share/webapps/${pkgname}/node_modules -type d \( "${find_dirs[@]}" \) -exec rm -rvf {} +
+  fi
+
+}

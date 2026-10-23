@@ -1,0 +1,23 @@
+pkgbase = raider
+	pkgdesc = File deletion program designed to permanently remove sensitive files from your computer, enhancing data privacy
+	pkgver = 3.1.0
+	pkgrel = 3
+	url = https://apps.gnome.org/Raider/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://github.com/ADBeveridge/raider.git#tag=v3.1.0
+	b2sums = 1df92e8ff38541b725ff90e27d82152fdb913e4fd243d6d2a582f7b7456355813c1ad993fba970040ab97f16a736b840a38186667ac85bd3837f874023dfc957
+
+pkgname = raider

@@ -1,0 +1,30 @@
+pkgbase = openbve
+	pkgdesc = 3D cab based train simulator
+	pkgver = 1.14.1.2
+	pkgrel = 1
+	url = https://openbve-project.net/
+	arch = any
+	license = BSD-2-Clause
+	makedepends = git
+	makedepends = mono-msbuild
+	makedepends = nuget
+	depends = sh
+	depends = hicolor-icon-theme
+	depends = libglvnd
+	depends = mono
+	depends = openal
+	depends = ttf-font
+	source = openbve::git+https://github.com/leezer3/OpenBVE.git#tag=1.14.1.2
+	source = simplify-wrapper-scripts.patch
+	source = update-restart-cfg.patch
+	source = use-uaccess-for-udev.patch
+	sha512sums = c0153853a22d62657bee0ec2907548094074bc501a3edce246cfbac625e9034ef2f51bbf342d32e3861c17e6f2a01cc9544555b23b24dcf557a56c1aca190838
+	sha512sums = f31fa1a96e842fb0575baaa3c4e5e04a43b401911fa34265c75748f64f402f86cabae412ae41e9a2439413a5cbe0bcfef0361d9356c25f06beae5e8663d43439
+	sha512sums = 0829176b993db01fc40033eeb8c7300a45a67e693ef6dd61cfef8090ab6485c93be49394e78071f8630dc005a93d853b3bf36b82c4d0c8c977a5e5d1f4857841
+	sha512sums = 2c75f959a8b9098b5b8ad2180e756eb44bb16ec3c6ee4011f23a86ab213d88f1d25c1584356069c19cfcff3999433b670386a54c634dc7533b62ee75b699933f
+	b2sums = 45f2262cc680a4cb26a5617aa63435ccf214360ab2769071fc3c979a017764b5153f22df890a8e42023ab26472b103b88f2930f3c8a637347934fa8eb76c9c17
+	b2sums = 50fb16cd4fd58e4c2e658478d66551b35d1d1b20e0ea7849cd625dd43de4c89b4b93f6e136bfd144c6b1bb78682e67edc55a83cead1aa36b1c452d677cef7ca0
+	b2sums = 6ec1b611563efd731f8aaa0d8b4cae4df188b8f589f044f677363dccddf2283e1bd267b8ae96ea96de39d23178cf340180385be9a1ec4c7c391f3ce6744face2
+	b2sums = 3e0587752504cb6bbdfd58eb5886a700db8ee86ebe459aea3bd15ec4c498e56bc3621ab9b138db57d9055084844c60fdc5348bdb851dd84983ac0d65c13fa483
+
+pkgname = openbve

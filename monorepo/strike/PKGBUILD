@@ -1,0 +1,35 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=strike
+pkgver=2.0.0
+pkgrel=2
+pkgdesc='A simple minimal IDE for the Linux phones'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         kcoreaddons
+         ki18n
+         kirigami
+         libstdc++
+         mauikit
+         mauikit-filebrowsing
+         mauikit-texteditor
+         mauikit-terminal
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+groups=(maui)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/maui-$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('b8152e0b776221820dfe6551e30b7de8454614ea8caddf5cee45f7d1980c3d1c'
+            'SKIP')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>                                    
+
+build() {
+  cmake -B build -S maui-$pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

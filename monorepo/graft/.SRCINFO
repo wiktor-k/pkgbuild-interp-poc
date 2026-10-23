@@ -1,0 +1,22 @@
+pkgbase = graft
+	pkgdesc = Turbocharge Claude Code, Cursor, Codex, Gemini & every coding agent: faster, cheaper, with contextual understanding specific to your codebase
+	pkgver = 0.21.1
+	pkgrel = 1
+	url = https://github.com/trailhq/Graft
+	arch = x86_64
+	license = MIT
+	makedepends = gcc
+	makedepends = git
+	makedepends = node-gyp
+	makedepends = npm
+	makedepends = python
+	depends = bash
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = nodejs
+	options = !debug
+	source = git+https://github.com/trailhq/Graft.git#tag=v0.21.1
+	b2sums = a1b8aa7c62dda14e9232faa6cb54a562b1c870fcdde33592d314c2ff93dd3f6b1f4c0474e28718eda5e6c62c1bdb0df2f615f839fee35d35b95fe416fda157c8
+
+pkgname = graft

@@ -1,0 +1,29 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgbase=rz-pipe
+pkgname=(python-rzpipe)
+pkgver=0.6.2
+pkgrel=3
+pkgdesc='Access rizin via pipe from any programming language'
+url='https://github.com/rizinorg/rz-pipe'
+arch=('any')
+license=('MIT')
+makedepends=('python' 'python-build' 'python-installer' 'python-setuptools' 'rizin')
+source=(${url}/archive/python-v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('af17e81012d4fd62cf51664bf31530cb364356c8817e624c0ead562455d83c1dd525557c59e3f028b831ee55f63799ee7ae9da5bf5f91ef781037f312fd0a725')
+b2sums=('b3f7c8ab227fe340da89a9560e0f093c679924790415c28cd999fc263e944cae130df0e8606ef88c5d80a85e32d426bf88dfc14a4d85202d40972335fa0615e9')
+
+build() {
+  cd rz-pipe-python-v${pkgver}/python
+  python -m build --wheel --no-isolation
+}
+
+package_python-rzpipe() {
+  depends=('python' 'rizin')
+  cd rz-pipe-python-v${pkgver}/python
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

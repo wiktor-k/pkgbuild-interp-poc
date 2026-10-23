@@ -1,0 +1,65 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Alex Henrie <alexhenrie24@gmail.com>
+
+pkgname=git-cinnabar
+pkgver=0.7.5
+pkgrel=1
+pkgdesc="Git remote helper to interact with Mercurial repositories"
+url="https://github.com/glandium/git-cinnabar"
+arch=(x86_64)
+license=("GPL-2.0-only AND MPL-2.0")
+depends=(
+  bzip2
+  curl
+  glibc
+  libgcc
+  zlib
+)
+makedepends=(
+  cargo
+  git
+)
+options=(!lto)
+source=(
+  "git+$url#tag=$pkgver"
+  "glandium-git::git+https://github.com/glandium/git"
+)
+b2sums=('0d69770c49d90ecd55025b8723497b86e3b11f9e76eb3bf86bbb8d2d8bf64ae58074ae6907e1937cda4dbe3f4fd9ed8a9aaf7a06bcddd73c8fde2cc01a9e421e'
+        'SKIP')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd git-cinnabar
+
+  git submodule init
+  git submodule set-url git-core "$srcdir/glandium-git"
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update
+
+  cargo fetch --locked --target host-tuple
+}
+
+build() (
+  cd git-cinnabar
+  cargo build --release --frozen --no-default-features
+)
+
+check() (
+  cd git-cinnabar
+  cargo test --frozen --no-default-features
+)
+
+package() {
+  cd git-cinnabar
+
+  install -Dt "$pkgdir/usr/bin" target/release/git-cinnabar
+  ln -s git-cinnabar "$pkgdir/usr/bin/git-remote-hg"
+
+  install -Dt "$pkgdir/usr/share/doc/$pkgname" -m644 README.md
+}
+
+# vim:set sw=2 sts=-1 et:

@@ -1,0 +1,27 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: twa022 <twa022 at gmail dot com>
+# Contributor: Somasis <somasis@cryptolab.net>
+
+pkgname=mugshot
+pkgver=0.4.3
+pkgrel=7
+pkgdesc="User Management Utility for Linux"
+url="https://github.com/bluesabre/mugshot"
+arch=('any')
+license=('GPL-3.0-only')
+depends=('gtk3' 'python' 'python-pexpect' 'python-cairo' 'python-gobject' 'accountsservice' 'hicolor-icon-theme' 'which')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-distutils-extra' 'intltool')
+optdepends=('gnome-control-center: collection of stock face icons')
+source=("git+${url}.git#tag=${pkgname}-${pkgver}?signed")
+sha256sums=('18162cb0bbd5f852612e233cb53975a132635c03533f019a95e9017b473287a2')
+validpgpkeys=(21D00B5001E804E5DE6E4BF876E6FEEC95FC5E22) # Sean Davis <sean@bluesabre.org>, retrieved from https://github.com/bluesabre.gpg
+
+build() {
+	cd "${pkgname}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+}

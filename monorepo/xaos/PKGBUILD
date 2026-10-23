@@ -1,0 +1,60 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgname=xaos
+pkgver=4.3.5
+pkgrel=1
+pkgdesc='Interactive fractal zoomer'
+arch=(x86_64)
+url='https://xaos-project.github.io/'
+license=(GPL-2.0-only)
+makedepends=(gendesk git qt6-tools)
+depends=(qt6-base)
+source=("git+https://github.com/xaos-project/XaoS#tag=release-$pkgver")
+b2sums=('f8aa34b9175633003bfbe3fdf833e753b104c45d5943f8ca88e2abdd0be9d6f8c4233d00e33567778ff1d48d791d0aad9698ab8a6de9904746947bbd50ef7817')
+
+prepare() {
+  # Desktop shortcut
+  gendesk -f -n \
+    --categories='Application;Graphics' \
+    --exec='bash -c "xaos -threads $(nproc)"' \
+    --icon=xaos \
+    --pkgdesc="$pkgdesc" \
+    --pkgname=XaoS
+
+  cd XaoS
+
+  # Add missing include
+  sed -i '30i#include <cstdlib>' src/util/timers.cpp
+
+  # Look for resources in /usr instead of in /usr/local
+  sed -i 's,usr/local,usr,g' XaoS.pro
+}
+
+build() {
+  cd XaoS
+  export DEFINES='USE_OPENGL USE_FLOAT128'
+  /usr/lib/qt6/bin/qmake && make
+}
+
+package() {
+  cd XaoS
+
+  # Executable
+  install -Dm755 bin/xaos "$pkgdir/usr/bin/xaos"
+
+  # Additional resources
+  install -d "$pkgdir/usr/share/XaoS/"
+  cp -r catalogs tutorial i18n "$pkgdir/usr/share/XaoS"
+
+  # Examples
+  install -d "$pkgdir/usr/share/XaoS/examples"
+  find examples -name "*.xpf" -exec install -Dm644 -t "$pkgdir"/usr/share/XaoS/examples/ {} \;
+
+  # Desktop shortcut and icon
+  install -Dm644 ../XaoS.desktop "$pkgdir/usr/share/applications/$pkgname.desktop"
+  install -Dm644 "src/ui/images/xaosbig.png" "$pkgdir/usr/share/pixmaps/$pkgname.png"
+
+  # Man page
+  install -Dm644 doc/xaos.6 "$pkgdir/usr/share/man/man6/xaos.6"
+}

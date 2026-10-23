@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_hkgname=haskell-ci
+pkgname=haskell-ci
+pkgver=0.18.1
+pkgrel=13
+pkgdesc="Cabal package script generator for Travis-CI"
+url="https://haskell-ci.rtfd.org/"
+license=('GPL-3.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-attoparsec' 'haskell-base-compat'
+         'haskell-base16-bytestring' 'haskell-cabal-install-parsers' 'haskell-cryptohash-sha256'
+         'haskell-generic-lens-lite' 'haskell-hsyaml' 'haskell-indexed-traversable'
+         'haskell-indexed-traversable-instances' 'haskell-ini' 'haskell-lattices'
+         'haskell-network-uri' 'haskell-optparse-applicative' 'shellcheck' 'haskell-temporary'
+         'haskell-unordered-containers' 'haskell-zinza')
+makedepends=('ghc' 'uusi' 'haskell-diff' 'haskell-ansi-terminal' 'haskell-tasty' 'haskell-tasty-golden')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('a02de9511acdcd42b43176b901cb082be466b95a7d93aa0015da07dd2e2ef13a871ff4f769b27dd5198d8f24a071795927cc28ef70203230467cf3982087bb3c')
+
+prepare(){
+  cd $_hkgname-$pkgver
+  uusi -u Diff -u ansi-terminal -u base-compat -u ShellCheck
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

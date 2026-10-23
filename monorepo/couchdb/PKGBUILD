@@ -1,0 +1,105 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Vitaliy Berdinskikh ur6lad[at]i.ua
+# Contributor: Michael Fellinger <m.fellinger@gmail.com>
+
+pkgname=couchdb
+pkgver=3.5.2
+pkgrel=1
+pkgdesc="Document-oriented database that can be queried and indexed in a MapReduce fashion using JSON"
+arch=(x86_64)
+url="https://couchdb.apache.org"
+license=(Apache-2.0)
+depends=(
+  glibc
+  icu
+  libgcc
+  libstdc++
+  ncurses
+  zlib
+)
+makedepends=(
+  erlang-asn1
+  erlang-erts
+  erlang-eunit
+  erlang-os_mon
+  erlang-reltool
+  erlang-xmerl
+  rebar3
+)
+checkdepends=(
+  elixir
+  procps-ng
+  python
+)
+optdepends=('erlang-erts: for weatherreport')
+options=(!makeflags)
+backup=(
+  etc/couchdb/local.ini
+  etc/couchdb/vm.args
+  etc/default/couchdb
+)
+source=(
+  "https://archive.apache.org/dist/${pkgname}/source/${pkgver}/apache-${pkgname}-${pkgver}.tar.gz"{,.asc}
+  couchdb.default
+  couchdb.service
+  couchdb.sysusers
+  couchdb.tmpfiles
+  "${pkgname}-otp29-compat.patch::https://github.com/apache/couchdb/commit/6ffcfbd8768257186f48890da747ad5c5751f8f0.patch"
+)
+b2sums=('9d1312d75c4b6d1aad78e681a85ab43a742ce2cd9586aa0fcc0495e0d34a3b0f514cc3f95099fbcd8885ba734978de672cb1c9e965e92b8ade6777af4f6c47cf'
+        'SKIP'
+        'e2a3e03e8e713c69c42b1a64820f5587b80adef7afbde58be598db8aecaeff7c0f1d9088cfc84b231abb6f3959b2fb08a3a8f79c66501ec49db1970458d41b9a'
+        '4ee85dd68fd059af7be93a08cd1e819e1238dcf98f4337d3f626276f208805308921db847a7cd7e76c938e026ac5bb76ce3ec8890a26d30181141ed7e400ab5c'
+        '945a5a10fd184d60692482c98b0ae9bd19c4a18d8417367e3975b44f364feee0fed938ec62b900af7c56fa27f6125b08ac171c54c4f76766223b5d1fe3feb1bb'
+        'c48f7cf4d6278a3ba1e36ba46382c129ce0c63ec80e7bfd7c691966c5e0e20014c44f934f7c00f65099ebaa50dca3708ca0574bb88fcd7b8b1920bbf4dfc98c6'
+        '6e935cf9c6a826e295a42f1be699641e5370ca9f47e6b8f95e915d30d9097e392f199a20276c17e0a20d1272614686501ca2030b9f4d2ddcdabeb17bf87c6c87')
+# https://downloads.apache.org/couchdb/KEYS
+validpgpkeys=(
+  2EC788AE3F239FA13E82D215CDE711289384AE37 # Joan Touzet (CODE SIGNING KEY) <wohali@apache.org>
+  D2B17F9DA23C0A10991AF2E3D9EE01E47852AEE4 # Jan Lehnardt <jan@apache.org>
+  0BD7A98499C4AB41C910EE65FC04DFBC9657A78E # Nick Vatamaniuc <vatamane@gmail.com>
+)
+
+prepare() {
+  cd apache-couchdb-${pkgver}
+  sed -i 's|./data|/var/lib/couchdb|' configure
+  patch -Np1 < ../${pkgname}-otp29-compat.patch
+  # Vendored ibrowse fails OTP-29 build due to deprecated `catch ...` and
+  # warnings_as_errors. Upstream fix still open:
+  # https://github.com/cmullaparthi/ibrowse/pull/187
+  sed -i '/warnings_as_errors,/d' src/ibrowse/rebar.config
+}
+
+build() {
+  cd apache-couchdb-${pkgver}
+  ./configure \
+    --js-engine=quickjs \
+    --disable-spidermonkey
+  make release
+}
+
+check() {
+  cd apache-couchdb-${pkgver}
+  make check
+}
+
+package() {
+  cd apache-couchdb-${pkgver}
+  install -vdm755 "${pkgdir}"/usr/lib
+  install -vdm755 "${pkgdir}"/etc/couchdb
+
+  cp -vr rel/couchdb "${pkgdir}"/usr/lib/couchdb
+  mv -v "${pkgdir}"/usr/lib/couchdb/etc/{default.ini,local.ini,vm.args} "${pkgdir}"/etc/couchdb/
+
+  cd "${srcdir}"
+  install -vDm644 ${pkgname}.default "${pkgdir}"/etc/default/${pkgname}
+  install -vDm644 ${pkgname}.service -t "${pkgdir}"/usr/lib/systemd/system/
+  install -vDm644 ${pkgname}.tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/${pkgname}.conf
+  install -vDm644 ${pkgname}.sysusers "${pkgdir}"/usr/lib/sysusers.d/${pkgname}.conf
+
+  # Remove some cruft
+  rm -vr "${pkgdir}"/usr/lib/couchdb/erts-*/{doc,include,lib,man,src}
+  rm -vr "${pkgdir}"/usr/lib/couchdb/etc/
+  rm -vr "${pkgdir}"/usr/lib/couchdb/lib/couch-${pkgver}/priv/couch_{ejson_compare,js}
+}

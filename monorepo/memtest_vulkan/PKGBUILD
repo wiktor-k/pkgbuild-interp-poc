@@ -1,0 +1,36 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=memtest_vulkan
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Vulkan compute tool for testing video memory stability"
+arch=('x86_64')
+url="https://github.com/GpuZelenograd/memtest_vulkan"
+license=('Zlib')
+depends=('glibc' 'gcc-libs' 'vulkan-driver')
+makedepends=('git' 'rust')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/GpuZelenograd/memtest_vulkan/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('ec7100c94d92e0d5f5357386f144dc33ec428890f5dc0d7925e9b1f09cb58e5e')
+
+prepare() {
+    cd memtest_vulkan-$pkgver
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    cd memtest_vulkan-$pkgver
+    export CARGO_TARGET_DIR=target
+    cargo build --frozen --release
+}
+
+check() {
+    cd memtest_vulkan-$pkgver
+    cargo test --frozen --all-features --workspace
+}
+
+package() {
+    cd memtest_vulkan-$pkgver
+    install -Dm755 "target/release/memtest_vulkan" "$pkgdir/usr/bin/memtest_vulkan"
+    # memtest_vulkan will run in verbose mode if "verbose" is in the binary name
+    ln -s "/usr/bin/memtest_vulkan" "$pkgdir/usr/bin/memtest_vulkan_verbose"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/memtest_vulkan/LICENSE"
+}

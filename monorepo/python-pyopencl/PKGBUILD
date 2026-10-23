@@ -1,0 +1,112 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+
+pkgbase=python-pyopencl
+_name="${pkgbase#python-}"
+pkgname=('python-pyopencl' 'pyopencl-headers')
+pkgver=2025.2.7
+pkgrel=2
+epoch=1
+pkgdesc="A complete, object-oriented language binding of OpenCL to Python"
+arch=('x86_64')
+url="https://documen.tician.de/pyopencl/"
+license=(
+    'Apache-2.0'
+    'BSD-3-Clause'
+    'MIT'
+    'MIT'
+)
+makedepends=(
+    'ctags'
+    'git'
+    'nanobind'
+    'ocl-icd'
+    'opencl-headers'
+    'pybind11'
+    'python-appdirs'
+    'python-build'
+    'python-installer'
+    'python-mako'
+    'python-numpy'
+    'python-platformdirs'
+    'python-pytools'
+    'python-scikit-build-core'
+)
+# NOTE: we install all available OpenCL drivers so that tests don't fail on PLATFORM_NOT_FOUND_KHR
+checkdepends=(
+    'intel-compute-runtime'
+    'opencl-mesa'
+    'opencl-nvidia'
+    'python-pytest'
+    'python-six'
+    'rocm-opencl-runtime'
+)
+source=(
+    "git+https://github.com/inducer/pyopencl.git?signed#tag=v${pkgver}"
+    git+https://github.com/inducer/compyte
+)
+validpgpkeys=("900A958D9A0ACA58B1468F2471AA298BCA171145") # Andreas Ratchke
+sha256sums=('43b3cdd3d5c141cecf2f5dd62f05ab3b3703f3c57f501bb9e5f44ae11f51599d'
+            'SKIP')
+
+prepare() {
+    cd $_name
+    git submodule init
+    git config submodule.pyopencl/compyte.url ../compyte
+    git -c protocol.file.allow=always submodule update
+
+    # extract separate license files
+    sed -n '1,24p' LICENSE > ../MIT.PyOpenCL.txt
+    sed -n '26,48p' LICENSE > ../Apache-2.0.txt
+    sed -n '52,80p' LICENSE > ../BSD-3-Clause.txt
+    sed -n '82,101p' LICENSE > ../MIT.RANLUXCL.txt
+
+    # we do not not ship placeholder build dependencies
+    sed -i '/oldest-supported-numpy/d' pyproject.toml
+}
+
+build() {
+    cd $_name
+    python -m build --wheel --no-isolation
+}
+
+check(){
+    local pytest_options=(
+        -vv
+    )
+    local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+    cd $_name
+    python -m installer --destdir=test_dir dist/*.whl
+    export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+    pytest "${pytest_options[@]}" test
+}
+
+package_python-pyopencl() {
+    depends+=(
+        'gcc-libs'
+        'glibc'
+        'ocl-icd'
+        'python'
+        'python-appdirs'
+        'python-mako'
+        'python-numpy'
+        'python-platformdirs'
+        'python-pytools'
+        'python-setuptools'
+    )
+
+    cd $_name
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    rm -fr "${pkgdir}"/usr/include
+
+    install -vDm644 ../*.txt -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+package_pyopencl-headers() {
+    cd $_name
+ 
+    install -Dm644 $_name/cl/*.cl -t "${pkgdir}"/usr/include/$_name
+    install -vDm644 ../*.txt -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

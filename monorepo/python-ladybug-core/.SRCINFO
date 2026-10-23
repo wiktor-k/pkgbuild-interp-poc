@@ -1,0 +1,22 @@
+pkgbase = python-ladybug-core
+	pkgdesc = Python library to load, analyze and modify EnergyPlus Weather files (epw)
+	pkgver = 0.44.62
+	pkgrel = 1
+	url = https://github.com/ladybug-tools/ladybug
+	arch = any
+	license = AGPL-3.0-only
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-ladybug-geometry
+	depends = python-click
+	source = python-ladybug-core::git+https://github.com/ladybug-tools/ladybug#tag=v0.44.62
+	sha512sums = 65b0a27811dbc8baaaf730b2459afb4ddfa7fbf5c6d808d700fb0cacbca42dc21d682b2f48bc7fa9c5f6a1b04500993e299ef2b24fa8302bea9ec529d41c0978
+	b2sums = 563ea63451da74939384e3debca8bb2dcfa3e27fc585c4fbedeb5ccf0bb5548e64fd6791443f59518c5b01f54016b56a2010ac37ab0091beb54c1069cbdbc744
+
+pkgname = python-ladybug-core

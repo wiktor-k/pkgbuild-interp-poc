@@ -1,0 +1,32 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: Mateusz Herych <heniekk@gmail.com>
+# Contributor: Charles Lindsay <charles@chaoslizard.org>
+
+pkgname=vhba-module-dkms
+pkgver=20260313
+pkgrel=1
+pkgdesc="Virtual SCSI adapter - module sources"
+url="https://cdemu.sourceforge.io/"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(dkms)
+makedepends=(git)
+provides=(VHBA-MODULE)
+source=(
+  "cdemu-code::git+https://git.code.sf.net/p/cdemu/code#tag=vhba-module-$pkgver"
+  dkms.conf.in
+)
+b2sums=('2b82d55ab3011a71dbfb81f540f615a3b0fe77b5b6a1c2d19ff0855723da72be67adbab6f7e331e3a5c13d27e28a8b31675a729fde4b4d0fd6004080e44e2787'
+        'fe3017a1e085a6da936b217b9efcebcb7f958fc036fed4b5c84200e105edad40499aad8ea3f4e8c9e33c535f1afc2f18d7b9cc1c2178981210755ef28db2327b')
+
+prepare() {
+  sed "s/@VERSION@/$pkgver/g" dkms.conf.in > dkms.conf
+}
+
+package() {
+  install -Dm644 dkms.conf cdemu-code/vhba-module/{Makefile,vhba.c} \
+    -t "$pkgdir/usr/src/vhba-module-$pkgver"
+}
+
+# vim:set sw=2 sts=-1 et:

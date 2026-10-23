@@ -1,0 +1,33 @@
+pkgbase = klevernotes
+	pkgdesc = Note-taking and management application using markdown
+	pkgver = 1.3.1
+	pkgrel = 1
+	url = https://apps.kde.org/klevernotes/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = kcolorscheme
+	depends = kconfig
+	depends = kcoreaddons
+	depends = ki18n
+	depends = kiconthemes
+	depends = kio
+	depends = kirigami
+	depends = kirigami-addons
+	depends = kitemmodels
+	depends = libstdc++
+	depends = qqc2-desktop-style
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-webchannel
+	depends = qt6-webengine
+	source = git+https://invent.kde.org/office/klevernotes.git?signed#tag=v1.3.1
+	validpgpkeys = 311DA4D94B93A7AEA0496DAF5F812C367AC0A802
+	b2sums = 504b357ad6e126752e8894899c1571c486226e5575fb6c85ec15d50fd7e934125881d20a8f0ebf3cf94f3ab2fb0854e0d0dd4bb585f962e1de9e942f97e56a7e
+
+pkgname = klevernotes

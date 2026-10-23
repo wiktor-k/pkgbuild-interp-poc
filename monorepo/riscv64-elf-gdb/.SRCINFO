@@ -1,0 +1,25 @@
+pkgbase = riscv64-elf-gdb
+	pkgdesc = The GNU Debugger for the RISCV64 (bare-metal) target
+	pkgver = 18.1
+	pkgrel = 1
+	url = https://www.gnu.org/software/gdb/
+	arch = x86_64
+	license = GPL3
+	makedepends = boost
+	depends = xz
+	depends = ncurses
+	depends = expat
+	depends = python
+	depends = guile
+	depends = gdb-common
+	depends = mpfr
+	depends = libelf
+	depends = source-highlight
+	options = !emptydirs
+	source = https://ftp.gnu.org/gnu/gdb/gdb-18.1.tar.xz
+	source = https://ftp.gnu.org/gnu/gdb/gdb-18.1.tar.xz.sig
+	validpgpkeys = F40ADB902B24264AA42E50BF92EDB04BFF325CF3
+	sha512sums = e7079ad31e6176391a4d278c85a668cc92c13c8dc1f4937f3d4438f9dc7afdbb12083af7f86e17e854b3d23c3ceff80c63bdbbc8e18b0cf9962656f75ab8b5a0
+	sha512sums = SKIP
+
+pkgname = riscv64-elf-gdb

@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Gabriel Rauter <rauter.gabriel@gmail.com>
+
+pkgname=python-fnvhash
+pkgver=0.2.1
+pkgrel=2
+pkgdesc='Pure Python FNV hash implementation'
+url=https://github.com/znerol/py-fnvhash
+arch=(any)
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+_tag=59bf91812dc580de70aa71e1deecf2cfe22fac76
+source=(git+https://github.com/znerol/py-fnvhash.git#tag=${_tag})
+b2sums=('cb266b442ca7b01ae74a1ee687aa8f3993735cde09fbc42986f3314d70bb194fdf77e5555398b244409a3ba49a364b433af493fb6f77c2c2440289131423426d')
+
+pkgver() {
+  cd py-fnvhash
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  cd py-fnvhash
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd py-fnvhash
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm 644 LICENSE -t "${pkgdir}"/usr/share/licenses/python-fnvhash
+}
+
+# vim: ts=2 sw=2 et:

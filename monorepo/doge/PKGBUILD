@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: kreed <kreed@kreed.org>
+
+pkgname=doge
+pkgver=3.9.0
+pkgrel=1
+pkgdesc="doge meme motd script"
+url="https://github.com/Olivia5k/doge"
+arch=('any')
+license=('MIT')
+depends=('python' 'python-dateutil' 'python-fullmoon')
+makedepends=('git' 'python-build' 'python-hatchling' 'python-installer')
+source=("git+https://github.com/Olivia5k/doge.git#tag=$pkgver")
+sha256sums=('21a2b8d9ba52f506de9344b6f025fe2a51c40ef0e868aeafe062fcea649fc736')
+
+build() {
+  cd doge
+  python -m build -nw
+}
+
+package() {
+  cd doge
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

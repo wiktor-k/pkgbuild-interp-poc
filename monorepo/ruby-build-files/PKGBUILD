@@ -1,0 +1,76 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-build-files
+pkgver=1.10.2
+pkgrel=1
+pkgdesc='Abstractions for handling and mapping paths'
+arch=(any)
+url='https://github.com/ioquatix/build-files'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-decode
+  ruby-sus
+)
+options=(!emptydirs)
+source=(git+https://github.com/ioquatix/build-files.git#tag=v$pkgver)
+sha512sums=('ee7bd2cf8427ee15d45b9c3e3688d51fd0a728779c905d2726370eaf8ae81f7cd1c6fe0944572d4f73e6fe8395e123a9da7981c48053723db6a51e30b634f687')
+b2sums=('1ccfcaeef88abbf7bee7de9d3bfe06b2e1ce72240804714ff46573f9b0c91d79a2bc2e348e7e9479a72886fe5bcbb1ee700702c10487f3d018ec7211b1bdc3fe')
+
+prepare() {
+  cd build-files
+  sed -e 's|~>|>=|' -e '/signing_key/d' -i build-files.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd build-files
+  gem build build-files.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    build-files-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd build-files
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd build-files
+  cp -a tmp_install/* "$pkgdir"/
+}

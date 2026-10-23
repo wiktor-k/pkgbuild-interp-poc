@@ -1,0 +1,15 @@
+pkgbase = mpd-mpris
+	pkgdesc = An implementation of the MPRIS protocol for MPD
+	pkgver = 0.4.4
+	pkgrel = 1
+	url = https://github.com/natsukagami/mpd-mpris
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	depends = glibc
+	optdepends = mpd: for connecting to MPD on localhost
+	options = !lto
+	source = mpd-mpris-0.4.4.tar.gz::https://github.com/natsukagami/mpd-mpris/archive/v0.4.4.tar.gz
+	b2sums = 6a2e317bf74eff57ad96c7d78be38a8e1659eb87c0aca043da03c392b89b766e1e34ef450248ad13c10cd8798d5a51a4511527fbb34c11e45823c56828539a05
+
+pkgname = mpd-mpris

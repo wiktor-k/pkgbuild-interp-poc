@@ -1,0 +1,23 @@
+pkgbase = python-smbprotocol
+	pkgdesc = SMBv2 and v3 client
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://github.com/jborean93/smbprotocol
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	checkdepends = python-gssapi
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-cryptography
+	depends = python-pyspnego
+	optdepends = python-gssapi: Kerberos support
+	source = git+https://github.com/jborean93/smbprotocol.git#commit=190667f41c5c8856db741efc133c27a624a7a2bf
+	validpgpkeys = A03A0E13C2EFFD384B1EC39A2AAC89085FBBDAB5
+	sha256sums = f675c3d7da954954cb1e51e35e638cb2c4734fa3df16e17586c2f0e7cd4a8fb1
+
+pkgname = python-smbprotocol

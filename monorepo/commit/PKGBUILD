@@ -1,0 +1,61 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=commit
+pkgver=4.6
+pkgrel=1
+pkgdesc='Editor that helps you write better Git and Mercurial commit messages'
+arch=(any)
+url='https://apps.gnome.org/Commit/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gjs
+  glib2
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libportal
+  libspelling
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+optdepends=(
+  'git: Git support'
+  'mercurial: Mercurial support'
+)
+source=(
+  "git+https://github.com/sonnyp/Commit.git#tag=v$pkgver"
+  git+https://github.com/sonnyp/troll.git
+)
+b2sums=(
+  3e1a19c5808fc7e0d0dc566cd02923f8084c716ee63a307bf3c89588f2def50de5d1974d096823433d86b3fc5ad1e28fb0816a5ac98a2a832d2d379dfc33f95b
+  SKIP
+)
+
+prepare() {
+  cd Commit
+
+  git submodule init
+  git submodule set-url troll "$srcdir/troll"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson Commit build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  ln -s re.sonny.Commit "$pkgdir/usr/bin/commit"
+}

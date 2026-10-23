@@ -1,0 +1,66 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Tinxy <arch at tinx dot eu>
+
+pkgname=hedgewars
+pkgver=1.0.3
+pkgrel=107
+pkgdesc="Turn-based strategy artillery game similiar to Worms"
+arch=('x86_64')
+url="https://hedgewars.org"
+license=('GPL-2.0-only')
+depends=('qt5-base' 'sdl2' 'sdl2_mixer' 'sdl2_image' 'sdl2_net' 'sdl2_ttf' 'lua51' 'ffmpeg'
+         'physfs' 'ghc-libs' 'haskell-entropy' 'haskell-sha' 'haskell-random' 'haskell-regex-tdfa'
+         'haskell-sandi' 'haskell-hslogger' 'haskell-network' 'haskell-network-bsd'
+         'haskell-utf8-string' 'haskell-vector')
+makedepends=('fpc' 'cmake' 'qt5-tools' 'ghc' 'haskell-zlib' 'haskell-base-prelude' 'imagemagick'
+             'mesa')
+source=("https://www.hedgewars.org/download/releases/hedgewars-src-$pkgver.tar.bz2"
+        "mtl-2.3.patch"
+         ffmpeg-9.patch)
+sha512sums=('b170a6fa29b51c0fed94f7dd34325f0eea8b48ea256b13b5289df9a28745f36fd2479038e79f09cd60158e002b8805cd0a3ff3ac9d359897bd3113ef7db004e8'
+            'd2a67864c75756a4829346f71ea45f5f292131113f77af3b30bafeb7d91487c3bf465b957887e4142c81d9a4ace4230ea40beceea69aafbaa9aeaa2543254c50'
+            '40f2d816f15b4d0562a4806f013ebef2b3579a03cb42977dd65d0517ab38235ab4475b8081ec1b0013dadd9f9f1d60ca53d775b824af9559024ac8234bb11fc3')
+
+prepare() {
+  cd hedgewars-src-$pkgver
+  sed -e 's|cmake_minimum_required(VERSION 2.6.4)|cmake_minimum_required(VERSION 3.12.0)|' \
+      -e 's/CMP0026//' \
+      -i CMakeLists.txt
+  sed -i '/physlayer_fullpath/d' misc/libphyslayer/CMakeLists.txt
+  patch -Np1 -i ../mtl-2.3.patch
+  patch -p1 -i ../ffmpeg-9.patch
+  sed -i 's|set(ghc_flags|set(ghc_flags -dynamic|' gameServer/CMakeLists.txt
+}
+
+build() {
+  cd hedgewars-src-$pkgver
+  cmake \
+    -Bbuild \
+    -DCMAKE_BUILD_TYPE="Release" \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DDATA_INSTALL_DIR=/usr/share/hedgewars \
+    -DNOSERVER=0
+  make -C build
+
+  # resize icon
+  for _size in 16 32 48 64 128 256; do
+    convert +set date:create +set date:modify misc/hedgewars.png -resize ${_size}x${_size} hedgewars_${_size}.png
+  done
+}
+
+package() {
+  cd hedgewars-src-$pkgver
+  DESTDIR="$pkgdir" make -C build install
+  install -D -m644 Fonts_LICENSE.txt "$pkgdir"/usr/share/licenses/${pkgname}/Fonts_LICENSE.txt
+
+  # install icons
+  install -D -m644 misc/hedgewars.png "$pkgdir"/usr/share/icons/hicolor/512x512/apps/hedgewars.png
+  for _size in 16 32 48 64 128 256; do
+    install -D -m644 hedgewars_${_size}.png "$pkgdir"/usr/share/icons/hicolor/${_size}x${_size}/apps/hedgewars.png
+  done
+  rm -rf "$pkgdir"/usr/share/pixmaps
+
+  install -D -m644 share/hedgewars/Data/misc/hedgewars.desktop "$pkgdir"/usr/share/applications/hedgewars.desktop
+  mv "$pkgdir"/usr/share/{appdata,metainfo}
+}

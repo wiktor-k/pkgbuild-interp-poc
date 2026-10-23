@@ -1,0 +1,48 @@
+# Maintainer: Leonidas Spyropoulos (artafinde@archlinux.org)
+# Contributor: Michael William Le Nguyen <michael at mail dot ttp dot codes>
+# Contributor: Buildpacks Maintainers <cncf-buildpacks-maintainers at lists dot cncf dot io>
+
+_base=pack
+pkgname=pack-cli
+pkgver=0.40.10
+pkgrel=1
+pkgdesc="CLI for building apps using Cloud Native Buildpacks"
+depends=('glibc')
+makedepends=('go' 'git')
+arch=('x86_64')
+url="https://buildpacks.io/"
+license=('Apache-2.0')
+source=("git+https://github.com/buildpacks/${_base}.git#tag=v${pkgver}")
+sha512sums=('5c9bb1258cb16c1f9bc3887ab8dffa83600dfe8d29bd1eada22bc4061b632fa7840e80b807f0f4d641aaddabcafd31f5b189e7ad2d916b83dc9dee4bdbc515c0')
+
+prepare() {
+  cd ${_base}
+  mkdir -p dist/
+}
+
+build() {
+  cd ${_base}
+  local _BUILDINFO="-X 'github.com/buildpacks/pack.Version=v${pkgver}'"
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" ${_BUILDINFO}" \
+    -o "dist/${_base}"
+}
+
+# Seems like it needs docker
+# check() {
+#   cd ${_base}
+#   local GOTESTFLAGS="-v -count=1 -parallel=1"
+#   go test ./...
+# }
+
+package() {
+  cd ${_base}
+  install -vDm 755 "dist/${_base}" "${pkgdir}/usr/bin/${pkgname}"
+  install -vDm 644 LICENSE  "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

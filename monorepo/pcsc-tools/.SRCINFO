@@ -1,0 +1,20 @@
+pkgbase = pcsc-tools
+	pkgdesc = PC/SC Architecture smartcard tools
+	pkgver = 1.7.5
+	pkgrel = 1
+	url = https://pcsc-tools.apdu.fr/
+	arch = x86_64
+	license = GPL
+	makedepends = pkg-config
+	depends = pcsclite
+	depends = pcsc-perl
+	depends = glib-perl
+	optdepends = perl-gtk3: gscriptor
+	optdepends = perl-libintl-perl: gscriptor
+	source = https://pcsc-tools.apdu.fr/pcsc-tools-1.7.5.tar.bz2
+	source = https://pcsc-tools.apdu.fr/pcsc-tools-1.7.5.tar.bz2.asc
+	validpgpkeys = F5E11B9FFE911146F41D953D78A1B4DFE8F9C57E
+	sha512sums = aecd33b057fb7ec276984fd9f0643fdf3b4e9cc59437f8ddcf1e3c106d7fc80f17ef0e8e4d0eb50489cc7ef45788aad794a86e9887807838160eafd12def4a1c
+	sha512sums = SKIP
+
+pkgname = pcsc-tools

@@ -1,0 +1,22 @@
+pkgbase = zim-tools
+	pkgdesc = Various ZIM command line tools
+	pkgver = 3.8.0
+	pkgrel = 2
+	url = https://github.com/openzim/zim-tools
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = meson
+	makedepends = mustache
+	depends = file
+	depends = libzim>=9.8.1
+	depends = docopt
+	depends = gumbo-parser
+	provides = zimwriterfs
+	conflicts = zimwriterfs
+	replaces = zimwriterfs
+	source = zim-tools-3.8.0.tar.gz::https://github.com/openzim/zim-tools/archive/3.8.0.tar.gz
+	source = 0001-Fix-build-with-ICU-76.patch
+	sha256sums = 9681f24b9873691f55807efcb9c3758ad000d2fe70b38ca967dd53495dca1bbe
+	sha256sums = 52c0408b29022e1ab6401a5a96596872746f686940c7dc67185932900cbaca23
+
+pkgname = zim-tools

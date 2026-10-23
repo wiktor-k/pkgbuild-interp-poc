@@ -1,0 +1,66 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=jami-qt
+pkgver=20260917.0
+pkgrel=2
+pkgdesc="Free and universal communication platform which preserves the users’ privacy and freedoms (Qt client)"
+arch=(x86_64)
+url="https://jami.net"
+license=(GPL-3.0-or-later)
+groups=(jami)
+depends=(jami-daemon glib2 gdk-pixbuf2 libnm libnotify
+         qt6-declarative qt6-multimedia qt6-svg qt6-5compat qt6-webengine qt6-httpserver
+         qt6-webchannel qt6-shadertools hunspell tidy md4c qwindowkit zxing-cpp)
+makedepends=(git cmake python qt6-tools)
+_sfpmcommit=a2a0c72e4db38e1c5478bd3e0f67ff99fae11f00
+_md4ccommit=ad8d41127b94e2f0633ad14b3787f0bc4613a689
+_tidycommit=d08ddc2860aa95ba8e301343a30837f157977cba
+source=(git+https://git.jami.net/savoirfairelinux/jami-client-qt.git#tag=stable/$pkgver
+        drop-qt-version-check.patch
+        fix-link.patch
+        missing-cmake-include.patch
+        unbundle-qwindowkit.patch
+        zxing-cpp-3.patch)
+sha256sums=('fefa69bf2c20aa8d81eac869fa1ed7c0c0d39d9a69d3ed65535d30a8d54bca2c'
+            '3c4da2f64dd6ca6d0871c0893a712267ab4a4623d600f46bd2d4e6095c48f27d'
+            '08d1950475835d9cf0b8cc37bca5946c9182c1e15d32b8b7efc657e3d38117f2'
+            'b2d3f7b062eb41906fcad0d52c1a34f303e99bd5a160b4631b6d2a1e21a7d45d'
+            'eeca49350b1dc81574c9a8680f83cdefa76bf91d3a90eed849a366b2f8a5fa79'
+            '2fb4c9c57e1827ec429e8e5d1bbc54376ff9b63f5ab9c7365722f7702abd65b0')
+
+#pkgver() {
+#  cd jami-client-qt
+#  TZ=UTC git show -s --pretty=%cd --date=format-local:%Y%m%d HEAD
+#}
+
+prepare() {
+  # support Qt 6.12
+  git -C jami-client-qt cherry-pick -n 252ad8be45b45bf7d20399016202a137db268d5c
+  # Drop strict Qt version check. Qt is ABI stable and jami is not using any private API
+  patch -p1 -d jami-client-qt < drop-qt-version-check.patch
+  # Fix linking
+  patch -p1 -d jami-client-qt < fix-link.patch
+  # Fix missing cmake include
+  patch -p1 -d jami-client-qt < missing-cmake-include.patch
+  # Unbundle QWindowKit
+  patch -p1 -d jami-client-qt < unbundle-qwindowkit.patch
+  # Fix build with zxing-cpp 3
+  patch -p1 -d jami-client-qt < zxing-cpp-3.patch
+}
+
+build() {
+  CXXFLAGS+=" -I/usr/include/jami" \
+  LDFLAGS+=" -ljami" \
+  cmake -B build -S jami-client-qt \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DENABLE_LIBWRAP=ON \
+    -DJAMICORE_AS_SUBDIR=OFF \
+    -DWITH_DAEMON_SUBMODULE=OFF \
+    -Wno-dev
+  make -C build VERBOSE=1
+}
+
+package() {
+  make -C build DESTDIR="${pkgdir}" install
+}

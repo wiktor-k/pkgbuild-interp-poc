@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=libkysdk-base
+pkgver=3.0.1.0
+pkgrel=2
+pkgdesc="Kylin SDK basic library"
+arch=('x86_64')
+license=('LGPL-3.0-or-later')
+url="https://gitee.com/openkylin/libkysdk-base"
+depends=('dbus' 'glibc' 'gtk3' 'libgcc' 'libstdc++' 'glib2' 'openssl' 'qt5-base' 'sqlite' 'systemd-libs' 'yaml-cpp')
+makedepends=('git' 'cmake' 'ninja')
+source=("git+https://gitee.com/openkylin/libkysdk-base.git#tag=upstream/$pkgver")
+sha512sums=('e982f08d816d1212590f0ae74d7d8a8a64e3b88d3b6b8d4b991643ded951d6507ad0be14f6d5b1704bb92f00c5342bcd74b38013e6c98ef6e9d52015fc3ead35')
+
+prepare() {
+  cd libkysdk-base
+  sed -i 's/loadFormatOptions();/loadFormatOptions(int id);/' src/log/format.h
+  sed -i 's/(VersionData\*)g_hash_table_lookup/g_hash_table_lookup/' src/conf2/api/libkysettings.c
+  sed -i 's/VersionData \*version = (AppData\*)curr->data;/VersionData *version = curr->data;/' src/conf2/api/libkysettings.c
+  sed -i 's|/usr/lib/${CMAKE_HOST_SYSTEM_PROCESSOR}-linux-gnu/|/usr/lib/|g; s|/usr/lib/${CMAKE_HOST_SYSTEM_PROCESSOR}-linux-gnu"|/usr/lib"|g' src/*/CMakeLists.txt src/utils/data-structure/CMakeLists.txt
+}
+
+build() {
+  cd libkysdk-base
+  cmake . -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  ninja
+}
+
+package() {
+  cd libkysdk-base
+  DESTDIR="$pkgdir" ninja install
+}

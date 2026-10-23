@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Hugo Doria <hugo@archlinux.org>
+# Contributor: Andrew Wright <andreww@photism.org>
+
+pkgname=nicotine+
+pkgver=3.3.11
+pkgrel=1
+pkgdesc='Soulseek music-sharing client, written in python'
+arch=(any)
+url='https://github.com/Nicotine-Plus/nicotine-plus'
+license=(GPL-3.0-only)
+depends=(gdk-pixbuf2
+         glib2
+         gtk4
+         gobject-introspection-runtime
+         pango
+         python
+         python-gobject)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/Nicotine-Plus/nicotine-plus#tag=$pkgver)
+sha256sums=('55bce2ed1066f53e5c5fe1ec97448d68a3868da10aabaaca4894e3a7d2749302')
+
+build() {
+  cd nicotine-plus
+  
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd nicotine-plus
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

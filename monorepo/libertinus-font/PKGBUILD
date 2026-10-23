@@ -1,0 +1,32 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Ivy Foster <iff@archlinux.org>
+
+pkgbase=libertinus-font
+_fname="${pkgbase%-font}"
+pkgname=(otf-$_fname ttf-$_fname)
+pkgver=7.051
+pkgrel=1
+pkgdesc='Fonts based on Linux Libertine/Biolinum, with extended math support'
+arch=(any)
+url="https://github.com/alerque/$_fname"
+license=(OFL-1.1-RFN)
+_archive="${_fname^}-$pkgver"
+source=("$url/releases/download/v$pkgver/$_archive.tar.zst")
+sha256sums=('250677c929d3775a30913643594379af264ac2ef2801035aa1dcbe30b9be23a6')
+
+package_otf-libertinus() {
+	cd "$_archive"
+	provides=("$pkgbase=$pkgver")
+	replaces=("$pkgbase")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/${_fname}/" static/OTF/*.otf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt AUTHORS.txt
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md preview.svg FONTLOG.txt documentation/*.pdf
+}
+
+package_ttf-libertinus() {
+	cd "$_archive"
+	provides=("$pkgbase=$pkgver")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/${_fname}/" static/TTF/*.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt AUTHORS.txt
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md preview.svg FONTLOG.txt documentation/*.pdf
+}

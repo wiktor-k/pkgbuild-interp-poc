@@ -1,0 +1,29 @@
+pkgbase = wasmer
+	pkgdesc = Universal Binaries Powered by WebAssembly
+	pkgver = 7.5.0
+	pkgrel = 1
+	url = https://github.com/wasmerio/wasmer
+	arch = x86_64
+	license = MIT
+	makedepends = clang
+	makedepends = git
+	makedepends = rustup
+	makedepends = cmake
+	depends = libgcc
+	depends = libstdc++
+	depends = zlib
+	depends = ncurses
+	depends = libffi
+	depends = libxkbcommon
+	depends = llvm
+	depends = glibc
+	options = staticlibs
+	options = !lto
+	source = git+https://github.com/wasmerio/wasmer#tag=v7.5.0
+	source = wasmer-napi::git+https://github.com/wasmerio/napi
+	source = wasmer-testsuite::git+https://github.com/WebAssembly/testsuite.git
+	sha512sums = 525a1e473946d900db2813124a77ad7c4a962bc838dbe9a8cde9125cf9acc237ab6e21492a10448db0d198e1a51b077b10ba6a41c87dc243833cc13e78add2b2
+	sha512sums = SKIP
+	sha512sums = SKIP
+
+pkgname = wasmer

@@ -1,0 +1,33 @@
+pkgbase = biblioteca
+	pkgdesc = API documentation viewer for GNOME
+	pkgver = 1.8
+	pkgrel = 1
+	url = https://apps.gnome.org/Biblioteca/
+	install = biblioteca.install
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = bash
+	depends = dconf
+	depends = gjs
+	depends = glib2
+	depends = glib2-docs
+	depends = gtk4
+	depends = gtk4-docs
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = webkitgtk-6.0
+	source = git+https://github.com/workbenchdev/Biblioteca.git#tag=v1.8
+	source = git+https://github.com/sonnyp/troll.git
+	source = biblioteca-no-flatpak.patch
+	source = biblioteca-build-index.hook
+	b2sums = 67f3ec67e90a4ebd61486653a33cece656a4d6fba818b6c3237ccc7e559bee7d2c114aa59c9d750ed9cc700b9f60251cc620dae78ea9ddc34247192b6729bc64
+	b2sums = SKIP
+	b2sums = f034f380cddd13538ec2e09085fa58112b79d9ec9474939e6dc8e19df642fb07181ed710df24b18b6612e7ae734ada054fb0306a1d56159fa2f48640cccf3e00
+	b2sums = defc3485c5e0e80322b8782e1706ea9d26e66c2cd766cfc2ae93d60593e502b8ad20c2583c24fbd7e9ef0e964d41a503f80e37f334024c7fc000f6111e69df90
+
+pkgname = biblioteca

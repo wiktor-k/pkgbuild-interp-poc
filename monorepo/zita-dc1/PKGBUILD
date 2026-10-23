@@ -1,0 +1,47 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=zita-dc1
+pkgver=0.3.3
+pkgrel=5
+pkgdesc="Dynamics Compressor"
+arch=(x86_64)
+url="https://kokkinizita.linuxaudio.org/linuxaudio/downloads/index.html"
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+depends=(
+  cairo
+  clthreads
+  clxclient
+  glibc
+  jack
+  libgcc
+  libpng
+  libstdc++
+  libx11
+)
+makedepends=(gendesk)
+source=(https://kokkinizita.linuxaudio.org/linuxaudio/downloads/$pkgname-$pkgver.tar.bz2)
+sha512sums=('044a32b2ba6f9971397a3014da4f0588f04c7971d76a099d49f711226a1bb45de61f53ed1d417a5feee6acaabbe81a6254b6d50b884501cb9b96e83401ea5b1d')
+
+prepare() {
+  # strip march=native
+  sed -e '/native/d' \
+      -i $pkgname-$pkgver/source/Makefile
+  # XDG desktop file
+  gendesk -n \
+          --pkgname ${pkgname} \
+          --pkgdesc "${pkgdesc}" \
+          --name ${pkgname} \
+          --categories "AudioVideo;Audio"
+}
+
+build() {
+  make -C $pkgname-$pkgver/source PREFIX=/usr
+}
+
+package() {
+  make -C $pkgname-$pkgver/source PREFIX=/usr DESTDIR="$pkgdir/" install
+  # XDG desktop integration
+  install -vDm 644 "$pkgname.desktop" -t "$pkgdir/usr/share/applications/"
+  install  -vDm 644 $pkgname-$pkgver/AUTHORS -t "$pkgdir/usr/share/doc/$pkgname/"
+}

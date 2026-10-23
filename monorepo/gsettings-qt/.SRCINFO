@@ -1,0 +1,36 @@
+pkgbase = gsettings-qt
+	pkgdesc = Library to access GSettings from Qt
+	pkgver = 1.1.1
+	pkgrel = 2
+	url = https://gitlab.com/ubports/development/core/gsettings-qt
+	arch = x86_64
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = cmake-extras
+	makedepends = qt5-declarative
+	makedepends = qt6-declarative
+	source = git+https://gitlab.com/ubports/development/core/gsettings-qt.git#tag=v1.1.1
+	sha256sums = 48eace2329dab4c50d3e0c47d28fb146e76c2c3c82a2fab056902427a309a173
+
+pkgname = gsettings-qt5
+	pkgdesc = Library to access GSettings from Qt5
+	depends = glib2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt5-base
+	depends = qt5-declarative
+	provides = gsettings-qt
+	conflicts = gsettings-qt
+	replaces = gsettings-qt
+
+pkgname = gsettings-qt6
+	pkgdesc = Library to access GSettings from Qt6
+	depends = glib2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-declarative

@@ -1,0 +1,26 @@
+pkgbase = libpoly
+	pkgdesc = C library for manipulating polynomials
+	pkgver = 0.2.1
+	pkgrel = 4
+	url = https://github.com/SRI-CSL/libpoly
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	source = https://github.com/SRI-CSL/libpoly/archive/v0.2.1/libpoly-0.2.1.tar.gz
+	sha512sums = f12a7eab7ece2b2cb123ac232e815eaaad6ff97d9219e0ef3a4785c036ef4fc887a854e4a405e3802b6b337f6616cb0177f715880dcba5473372d91754384d8b
+
+pkgname = libpoly
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	optdepends = python-polypy: Python bindings
+
+pkgname = python-polypy
+	pkgdesc = Python bindings for libpoly
+	depends = glibc
+	depends = libpoly

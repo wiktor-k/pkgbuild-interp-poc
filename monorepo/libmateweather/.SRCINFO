@@ -1,0 +1,26 @@
+pkgbase = libmateweather
+	pkgdesc = Provides access to weather information from the Internet
+	pkgver = 1.28.2
+	pkgrel = 3
+	url = https://github.com/mate-desktop/libmateweather
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gtk-doc
+	makedepends = mate-common
+	makedepends = tar
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libsoup3
+	depends = libxml2
+	source = git+https://github.com/mate-desktop/libmateweather#tag=v1.28.2
+	source = libmateweather-libsoup3.patch
+	b2sums = af967ea1debb57f97746811c2edf74d8a8f72b8879f603439a7b188634296c868f608269b66e2dff6d06d203679a8bdcf6221161b5e43ee162daef888fb70239
+	b2sums = 59552942ed4f0887e76b271cfe67a519f6bdc48754311b498e16174a8126109097beae02728ea492ecf092ed9286a9178b2ecb6d50841a76ee73c87b3fbc4954
+
+pkgname = libmateweather

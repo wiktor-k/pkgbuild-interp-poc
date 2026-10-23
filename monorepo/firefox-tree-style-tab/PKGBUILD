@@ -1,0 +1,76 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Jérémie Detrey <Jeremie.Detrey@loria.fr>
+
+_name=treestyletab
+pkgname=firefox-tree-style-tab
+pkgver=4.4.4
+pkgrel=1
+pkgdesc='Firefox extension to show tabs like a tree'
+arch=(any)
+url=https://piro.sakura.ne.jp/xul/_treestyletab.html.en
+license=(
+  MIT
+  MPL-1.1
+  MPL-2.0
+  PSF-2.0
+)
+groups=(firefox-addons)
+makedepends=(
+  git
+  jq
+  npm
+  strip-nondeterminism
+  zip
+)
+source=(
+  "git+https://github.com/piroor/treestyletab.git#tag=$pkgver"
+  git+https://github.com/piroor/webextensions-lib-configs.git
+  git+https://github.com/piroor/webextensions-lib-dom-updater.git
+  git+https://github.com/piroor/webextensions-lib-event-listener-manager.git
+  git+https://github.com/piroor/webextensions-lib-l10n.git
+  git+https://github.com/piroor/webextensions-lib-menu-ui.git
+  git+https://github.com/piroor/webextensions-lib-options.git
+  git+https://github.com/piroor/webextensions-lib-placeholder-parser.git
+  git+https://github.com/piroor/webextensions-lib-rich-confirm.git
+  git+https://github.com/piroor/webextensions-lib-shortcut-customize-ui.git
+  git+https://github.com/piroor/webextensions-lib-tab-favicon-helper.git
+)
+b2sums=('c79323e26f849e6e9d141cebf71f9484b788ba62b0fe99d84d50ad04ccfa337b7b4d4bbd84804bd6aab11a46574863f8a584fdee4417c7dc439704bb31e2aee8'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  export NPM_CONFIG_ALLOW_GIT=all
+
+  cd $_name
+  git submodule init
+  for i in ../webextensions*; do
+    git config submodule.submodules/"${i##../}".url "$i"
+  done
+  git -c protocol.file.allow=always submodule update
+  cd webextensions
+  # Remove target dependencies from install_extlib and xpi
+  sed -i 's/^\(install_extlib\|xpi\): .*/\1:/' Makefile
+  npm ci
+}
+
+build() {
+  cd $_name/webextensions
+  make install_extlib
+  make xpi
+  strip-nondeterminism -t zip $_name-we.xpi
+}
+
+package() {
+  cd $_name/webextensions
+  install -Dm644 $_name-we.xpi \
+    "$pkgdir"/usr/lib/firefox/browser/extensions/$_name@piro.sakura.ne.jp.xpi
+}

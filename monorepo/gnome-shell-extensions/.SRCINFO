@@ -1,0 +1,17 @@
+pkgbase = gnome-shell-extensions
+	pkgdesc = Extensions for GNOME shell, including classic mode
+	pkgver = 51.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-shell-extensions
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = gnome-shell
+	optdepends = gnome-menus: Apps Menu extension
+	optdepends = libgtop: System Monitor extension
+	source = git+https://gitlab.gnome.org/GNOME/gnome-shell-extensions.git#tag=51.0
+	b2sums = 0f8b65dbdf6edbcd96ab222bd5684c443965c1b344571c777dea9ee403fa7931a7c42e38aa8f9d90ed363a8cf57319983cd2d42bce39a2e28eb4aef10370f5e1
+
+pkgname = gnome-shell-extensions

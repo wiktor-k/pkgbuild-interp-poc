@@ -1,0 +1,76 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Rhys Davies <rhys@johnguant.com>
+
+pkgname=ruby-multipart-post
+pkgver=2.4.1
+pkgrel=1
+pkgdesc='A multipart form post accessory for Net::HTTP'
+arch=(any)
+url='https://github.com/socketry/multipart-post'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-covered
+  ruby-rspec
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+)
+options=(!emptydirs)
+source=(git+https://github.com/socketry/multipart-post.git#tag=v$pkgver)
+sha256sums=('1a918dd47def52e0c451f36bde215b8ccdf30224e92b5709bc70f205f6f6f976')
+
+prepare() {
+  cd multipart-post
+  sed --in-place \
+    --expression '/signing_key/d' \
+    multipart-post.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd multipart-post
+  gem build multipart-post.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    multipart-post-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd multipart-post
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd multipart-post
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

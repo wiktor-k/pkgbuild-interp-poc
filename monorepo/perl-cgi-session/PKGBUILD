@@ -1,0 +1,24 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Charles Mauch <cmauch@gmail.com>
+
+pkgname=perl-cgi-session
+pkgver=4.49
+pkgrel=1
+pkgdesc="Perl/CPAN Module CGI::Session : Session management in CGI  applications"
+arch=(any)
+url="https://search.cpan.org/dist/CGI-Session/"
+license=("GPL" "PerlArtistic")
+source=("https://www.cpan.org/authors/id/M/MA/MARKSTOS/CGI-Session-$pkgver.tar.gz")
+sha256sums=('5fd88a830a35f54526787f036ae5e4a7d14b61c414cd29ad8631bf46e6971207')
+options=(!emptydirs)
+
+build() {
+  cd "$srcdir"/CGI-Session-$pkgver
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd "$srcdir"/CGI-Session-$pkgver
+  make pure_install doc_install DESTDIR="$pkgdir"
+}

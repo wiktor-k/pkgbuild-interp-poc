@@ -1,0 +1,68 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: Roman Kyrylych <roman@archlinux.org>
+# Contributor: Johannes Sjolund <j.sjolund@gmail.com>
+
+pkgname=gnome-commander
+pkgver=2.0.3
+pkgrel=1
+pkgdesc='Graphical two-pane filemanager for GNOME'
+arch=(x86_64)
+url='https://gnome.pages.gitlab.gnome.org/gnome-commander/'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  exiv2
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libgcc
+  libgsf
+  libstdc++
+  pango
+  poppler-glib
+  taglib
+  vte4
+)
+makedepends=(
+  appstream
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  gtest
+  itstool
+  meson
+  rust
+  smbclient
+)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-commander.git#tag=$pkgver")
+b2sums=('b12383f5155be33719d4a765af1c7ec71387f12df91179a77e0a26a1ad2f18daa9dc0ae940c6f4acb6178bc27700e03641463d7ad29267535631de86be5319df')
+validpgpkeys=(7627E6FCECF4FC066A03B673F50A89A3ADE4C6E8) # Uwe Scholz <u.scholz83@gmx.de>
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

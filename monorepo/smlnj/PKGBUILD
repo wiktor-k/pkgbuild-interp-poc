@@ -1,0 +1,85 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Thomas Weißschuh <thomas@t-8ch.de>
+
+pkgname=smlnj
+pkgver=110.99.9
+pkgrel=1
+pkgdesc='Standard ML compiler from New Jersey'
+url='https://www.smlnj.org/'
+license=(SMLNJ)
+arch=(x86_64)
+makedepends=(smlnj)
+provides=(sml)
+install=smlnj.install
+_url="http://smlnj.cs.uchicago.edu/dist/working/$pkgver/"
+source=(
+  "$pkgname-$pkgver-MLRISC.tgz::${_url}MLRISC.tgz"
+  "$pkgname-$pkgver-boot.amd64-unix.tgz::${_url}boot.amd64-unix.tgz"
+  "$pkgname-$pkgver-boot.x64-unix.tgz::${_url}boot.x86-unix.tgz"
+  "$pkgname-$pkgver-ckit.tgz::${_url}ckit.tgz"
+  "$pkgname-$pkgver-cm.tgz::${_url}cm.tgz"
+  "$pkgname-$pkgver-cml.tgz::${_url}cml.tgz"
+  "$pkgname-$pkgver-compiler.tgz::${_url}compiler.tgz"
+  "$pkgname-$pkgver-config.tgz::${_url}config.tgz"
+  "$pkgname-$pkgver-doc.tgz::${_url}doc.tgz"
+  "$pkgname-$pkgver-ml-burg.tgz::${_url}ml-burg.tgz"
+  "$pkgname-$pkgver-ml-lex.tgz::${_url}ml-lex.tgz"
+  "$pkgname-$pkgver-ml-lpt.tgz::${_url}ml-lpt.tgz"
+  "$pkgname-$pkgver-ml-yacc.tgz::${_url}ml-yacc.tgz"
+  "$pkgname-$pkgver-nlffi.tgz::${_url}nlffi.tgz"
+  "$pkgname-$pkgver-old-basis.tgz::${_url}old-basis.tgz"
+  "$pkgname-$pkgver-runtime.tgz::${_url}runtime.tgz"
+  "$pkgname-$pkgver-smlnj-lib.tgz::${_url}smlnj-lib.tgz"
+  "$pkgname-$pkgver-system.tgz::${_url}system.tgz"
+  "$pkgname-$pkgver-trace-debug-profile.tgz::${_url}trace-debug-profile.tgz"
+  urlgetter.sh
+  profile.d-smlnj.sh
+  smlnj.sh)
+b2sums=('e5d831b348a6182c2717c2326dd2011aa8b7fab99f0c5d00a89b3a5f6adb9346036798059fc561b158a2cc72b53a764700a236cec395c7cea3ef1ae08177130c'
+        '000e1de60f39e863c2e17cdb263148aaf739be1e1263fe2c1f30184061fff81b817fdf82a442cc102139dbb7aacf53424a6873a49b5365ee91186101364ff87a'
+        'ba74cfe5ee9f2eba51d07895197f5a27f2681a1240bb57fde18ff0c30b2a9a322f7f1eca4844dd3e9ed21a2d5ea9e9f28b088eb9d6bed88d30c6c37b25f0b6e4'
+        'cfcffcb1ed4c1c482f1d0073bf4be6d7abe8c1ebf3db6acec6de6532ca1a2e9f331f986b946a1884323c6df5959c007ff1ee0cd5b3f7c9a4b93548326bf3c408'
+        'a731bb9299c00d77ec187e027bd6e3308d4bba814bb64cf4ceaef3f260a0131d2d05a2368bcda070a0a79ed4ce9c269a5c40257e8c6733fa8df45d283dd33056'
+        'cf1ea2b0b57cfe5fe6e53af043365955fc569b45481c73ea1127239e48743ba2a7a3caa5060aae059d17881d0fd361a0a613ef8293c52368f23346f31c311042'
+        '3c0bd5d256df5755b6c37209c7fc6694e0d1523ab037407fedeaf4a3854f46d82b259d270fd2ddb8564018cc201f993624e3259d131ae1f1a2e634310c87841d'
+        '9fcbcf95f0c12197076900afff44faac5fe63e5ff05699216acc81bb2d3da845c37bdea59325967004a1dfd348fcfeefd55264259235c36af096760d5d4d220e'
+        'a19bb2e9b7b7d6a24325fe9d793e9da8cf981052927ceb7b950e3c7e091101007f19e5a69d202a8304cd17cbc115ef06144164ac4af858ae2acec17b78ebd47c'
+        'a35d135658f05b4067188c89bb3ea454fe2699f9160bd8de85a573133c01ee8ed8f41b863127bdbbb83fef291531bbc00abc93a9dd0d037985846a0462b09d92'
+        '84da87fc04090343978004deb4250a69f6ccc18f9a5bb2f4463cf5bb03ff9d17f35bc515d5c78f174eb329039294754f7e7e6c974b481c8c30d706119fea3b8f'
+        'e08a4e2930466899d476a01de96f1d67f76c25d69e6b0f06bc9de1a955c3d5d3a529a05729d71ae4e1d0847207e6c6f846c55546fd723dbbb9691bffc2046616'
+        'c653fcb331bf979d2d8de0c475a58f0eec7fe6fedb2477120d9b9f88629098a0ee181faa798f2201a193333c66befcc5d5d8e346e692c71b37eb2d1c2ba63da0'
+        '72a8ebba0c03250f242436e0e324881670e2210d06ba0e8f08689f813d2c000e8ecc0af528f73c2f78449944de045a441f0b51d18441a36091162633386cf2fd'
+        '818ea82f8f020ffd3bef10ee7eba3d4d87d97793cd04c900f97073020215bb25b787d9f20fd85de8e6a1216f594d536277a8c1e1384608cbae966e895f70b575'
+        '10855623cd3a02c3800218ec6ebaf1d5ee86be85b917cd39755b1dfd5d06be79bb7e0234afad6c905805313427496693144abd0076deea96269e32d9f725f02e'
+        '54a5cc9d349b03c26eb301719f06770ff4b3d08aae95bf2e2ff69a89c1e10c3e3c59e2177e4c8fe43d242abea0a361b901d6fcd3f41464f656307f4525290813'
+        '70fbf0c8f18c7ede8d7d3d7e1e51e9c9897e2673d7d01d22fa4dd647720f6ab859b60611dd8221e18ab7fb109c8839dcd8d40d970441faf12ffdc4442a97f928'
+        'db1c4a009bc7724814f8c17aa556a3744c72a2adbc53bc436ab90e5e24c9a334d350a9f5b108c546130caf62f9d0289e66f09a80ed1ba43fb1ac7b10bac452e9'
+        '7940c0d5b4fb41fd4640db4cef46642c3bcfe90afc1aa7671eb2f9923e09ff69782f2f7c4b337765dd76dcb313ec14d2065109392e731cddd51cda74ea290016'
+        '6fe73a07418150711d3bfa789cca05f1093f91f7f50077c14f05e8eccc8a6ec994c638b9e90e6778313facd88d9df0a0008fb1778de61e33964ce538a4377d7e'
+        'ac695c06654586362758d454eea1848ca1180e1281d5276b9f9a95e3786a6efc85ac2edd3f08cc5375a6c814ba33b034ea9c7c80e382a704029ecc5450fdc98a')
+
+prepare() {
+  chmod +x urlgetter.sh
+  mkdir -p install
+}
+
+build() {
+  unset MAKEFLAGS SMLNJ_HOME
+  export pkgver
+  export srcdir
+  export CFLAGS="$CFLAGS -Wl,-z,relro,-z-now"
+  export INSTALLDIR="$srcdir/install"
+  export LDFLAGS="$LDFLAGS -Wl,-z,relro,-z-now"
+  export URLGETTER="$srcdir/urlgetter.sh"
+  config/install.sh -default 64
+}
+
+package() {
+  install -Dm755 profile.d-smlnj.sh "$pkgdir/etc/profile.d/smlnj.sh"
+  install -Dm755 smlnj.sh "$pkgdir/usr/bin/smlnj"
+  install -d "$pkgdir/usr/"{lib/smlnj,share}
+  cp -R "$srcdir/install/"{bin,lib} "$pkgdir/usr/lib/smlnj"
+  cp -R "$srcdir/doc/man" "$pkgdir/usr/share/"
+  find "$pkgdir/usr/share/man" -name '._*' -delete
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" compiler/LICENSE
+}

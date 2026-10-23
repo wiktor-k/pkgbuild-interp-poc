@@ -1,0 +1,19 @@
+pkgbase = cudss
+	pkgdesc = A high-performance CUDA library for Direct Sparse Solvers
+	pkgver = 0.8.0.10
+	pkgrel = 1
+	url = https://docs.nvidia.com/cuda/cudss/
+	arch = x86_64
+	license = LicenseRef-NVIDIA-cuDSS
+	depends = cuda>=13
+	depends = glibc
+	depends = libgcc
+	depends = libgomp
+	depends = libstdc++
+	optdepends = nccl: for the NCCL multi-GPU communication layer
+	optdepends = openmpi: for the OpenMPI multi-GPU communication layer
+	options = !strip
+	source = https://developer.download.nvidia.com/compute/cudss/redist/libcudss/linux-x86_64/libcudss-linux-x86_64-0.8.0.10_cuda13-archive.tar.xz
+	b2sums = eaf2a46a2fe853dc546c4f4e61c20b2a6d50302d0b3538bc696993a56da1d6d00b61a636045627dae966b84827a3277d5c5bdcf34653c57e15835acd14b190bf
+
+pkgname = cudss

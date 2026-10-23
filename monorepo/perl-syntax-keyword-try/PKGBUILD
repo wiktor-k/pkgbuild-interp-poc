@@ -1,0 +1,36 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Sean Anderson <seanga2@gmail.com>
+
+pkgname=perl-syntax-keyword-try
+pkgver=0.31
+pkgrel=2
+pkgdesc="a try/catch/finally syntax for perl"
+arch=(x86_64)
+url="https://metacpan.org/release/Syntax-Keyword-Try"
+license=('GPL' 'PerlArtistic')
+depends=(perl perl-xs-parse-keyword)
+makedepends=(perl-module-build perl-file-sharedir)
+options=(!emptydirs purge)
+source=("https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Syntax-Keyword-Try-$pkgver.tar.gz")
+sha512sums=('74ac2627bab4232852af2ddfa08510fb5115eee9661c522ccd2ee08739b24af5cf13f7b5576c04df7272c4f31286c420749db6e06183fb8673a7f95cd5c08ba7')
+
+build() {
+	cd "Syntax-Keyword-Try-$pkgver"
+	unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+	export PERL_MM_USE_DEFAULT=1 MODULEBUILDRC=/dev/null
+	/usr/bin/perl Build.PL
+	./Build
+}
+
+check() {
+	cd "Syntax-Keyword-Try-$pkgver"
+	unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+	export PERL_MM_USE_DEFAULT=1
+	./Build test
+}
+
+package() {
+	cd "Syntax-Keyword-Try-$pkgver"
+	unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+	./Build install --installdirs=vendor --destdir="$pkgdir"
+}

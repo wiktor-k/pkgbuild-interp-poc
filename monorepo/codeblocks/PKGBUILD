@@ -1,0 +1,70 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Robert Hollencamp <rhollencamp@gmail.com>
+# Contributor: Daniel J Griffiths <griffithsdj@inbox.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Roman Mikhayloff <rimf@inbox.ru>
+
+pkgname=codeblocks
+pkgver=25.03
+pkgrel=3
+pkgdesc='Cross-platform C/C++ IDE'
+arch=(x86_64)
+url='https://www.codeblocks.org/'
+license=(GPL-3.0-or-later)
+depends=(
+  bzip2
+  fontconfig
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  hunspell
+  libgcc
+  libstdc++
+  wxwidgets-common
+  wxwidgets-gtk3
+  zlib
+)
+makedepends=(
+  boost
+  imagemagick
+  zip
+)
+source=(
+  "https://downloads.sourceforge.net/codeblocks/${pkgname}_$pkgver.tar.xz"
+  codeblocks-fedora.patch
+)
+b2sums=(
+  7ce130d12a2f896252ab6747d222d9306448bf62288ee9d701d95731e1f858e067ce26237dbe0399ff1b22997a78dc41629c68abb74d2ec3e5dd4155b38ba46e
+  6e8fc34b19ccfc40e4ccbfdf99116f14db6056659309d51d61fbba7f3020fd0389c466be8df8aed4093d867289a7aa570a43c3b929b50693b1a6ffe070f54481
+)
+
+prepare() {
+  cd ${pkgname}_$pkgver
+
+  # Apply upstream fixes (taken from Fedora)
+  patch -Np1 -i ../codeblocks-fedora.patch
+
+  # Install icon into hicolor directory
+  magick src/mime/codeblocks.png +set date:create +set date:modify -background none -extent 64x64 src/mime/codeblocks.png
+  sed -i 's|$(datadir)/pixmaps|$(datadir)/icons/hicolor/64x64/apps|' src/mime/Makefile.am
+
+  autoreconf -fiv
+}
+
+build() {
+  cd ${pkgname}_$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --with-contrib-plugins=all
+  make
+}
+
+package() {
+  cd ${pkgname}_$pkgver
+  make DESTDIR="$pkgdir" install
+}

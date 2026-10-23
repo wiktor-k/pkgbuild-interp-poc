@@ -1,0 +1,17 @@
+pkgbase = teensy-loader-cli
+	pkgdesc = Command line loader for the teensy microprocessor boards
+	pkgver = 2.3
+	pkgrel = 1
+	url = https://www.pjrc.com/teensy/loader_cli.html
+	arch = x86_64
+	license = GPL-3.0-only
+	depends = libusb-compat
+	provides = teensy-loader-cli
+	conflicts = teensy-loader-cli
+	replaces = teensy-loader-cli
+	source = https://github.com/PaulStoffregen/teensy_loader_cli/archive/2.3/teensy_loader_cli-2.3.tar.gz
+	source = https://www.pjrc.com/teensy/00-teensy.rules
+	sha256sums = d9c5357d7e8b99e9a9ae93f5e921c35a133a4a5d399f57eec10f3a606be5d89f
+	sha256sums = 17f56b63603271e2cdae291fed347b66dfbdfd089b2847cf0b4383c877ffacfb
+
+pkgname = teensy_loader_cli

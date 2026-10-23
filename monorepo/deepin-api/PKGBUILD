@@ -1,0 +1,46 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-api
+pkgver=6.0.49
+pkgrel=1
+pkgdesc='Dbus interfaces for miscellaneous desktop services'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-api"
+license=('GPL-3.0-or-later' 'LGPL-3.0-or-later')
+# alsa-utils: alsactl used in sound-theme-player
+# bc: used in adjust-grub-theme
+# fontconfig: fc-match used in adjust-grub-theme
+# librsvg: rsvg-convert used in adjust-grub-theme
+# util-linux: rfkill used in device
+# deepin-application-manager: org.desktopspec.ApplicationManager1
+depends=('alsa-utils' 'bc' 'fontconfig' 'glib2' 'gdk-pixbuf-xlib' 'gtk3' 'libcanberra-pulse'
+         'librsvg' 'libxi' 'libxfixes' 'poppler-glib' 'util-linux' 'xcur2png' 'blur-effect'
+         'libpulse' 'libxcursor' 'cairo' 'gdk-pixbuf2' 'freetype2' 'alsa-lib' 'libgudev'
+         'deepin-application-manager')
+makedepends=('git' 'deepin-gettext-tools' 'go')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dde-api#tag=$pkgver")
+sha512sums=('c005366c76938d483199ea7f3e202cb0d5f68c90af56e565bc96ee66e3019d7f33f27d262a4d05e886247e6fb080e8bc5acb079edc2103353232366e5cb9a225')
+
+prepare() {
+  cd dde-api
+  sed -i "s|/etc/os-version|/etc/uos-version|" adjust-grub-theme/main.go
+}
+
+build(){
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+
+  cd dde-api
+  make
+}
+
+package() {
+  cd dde-api
+  make DESTDIR="$pkgdir" SYSTEMD_LIB_DIR=/usr/lib install
+}

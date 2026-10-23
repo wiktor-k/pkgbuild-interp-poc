@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=tls
+pkgname=haskell-tls
+pkgver=2.0.6
+pkgrel=158
+pkgdesc="TLS protocol native implementation"
+url="https://github.com/haskell-tls/hs-tls"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-asn1-encoding' 'haskell-asn1-types' 'haskell-async'
+         'haskell-base16-bytestring' 'haskell-cereal' 'haskell-crypton' 'haskell-crypton-x509'
+         'haskell-crypton-x509-store' 'haskell-crypton-x509-validation' 'haskell-data-default-class'
+         'haskell-memory' 'haskell-network' 'haskell-serialise' 'haskell-unix-time')
+makedepends=('ghc' 'haskell-quickcheck' 'haskell-hourglass' 'haskell-hspec'
+             'haskell-hspec-discover')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('f5fac47060b0ca4a4d3c83018f89b67b23eddbeb2f46b7310b79c12d1d0ce380679b608a5d5ff12e9303e1e5e5df9f23a45c459cd8f0904f21721443fec6c70c')
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-hans -fnetwork -fcompat
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

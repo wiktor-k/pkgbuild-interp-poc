@@ -1,0 +1,232 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Hurricane Pootis <hurricanepootis@protonmail.com>
+# Contributor: John Sowiak <john@archlinux.org>
+# Contributor: tobias <tobias@archlinux.org>
+
+# For legal reasons, we can't separately package the Optix headers so we'll
+# just build the package against them. I checked with NVIDIA and this way is
+# fine with them.
+
+pkgname=blender
+_optix_version=9.1.0
+pkgver=5.2.3
+pkgrel=1
+epoch=17
+pkgdesc="A fully integrated 3D graphics creation suite"
+arch=('x86_64')
+license=(
+  Apache-2.0
+  BSD-2-Clause
+  BSD-3-Clause
+  GPL-2.0-or-later
+  GPL-3.0-or-later
+  LGPL-2.1-or-later
+  MIT
+  MPL-2.0
+  Zlib
+)
+url="https://www.blender.org"
+depends=(
+  'alembic'
+  'bash'
+  'boost-libs'
+  'ceres-solver'
+  'draco'  # seems to use static lib and should probably only be makedepends
+  'embree'
+  'expat'
+  'ffmpeg'
+  'fftw'
+  'fmt'
+  'freetype2'
+  'glew'
+  'glibc'
+  'gmp'
+  'hicolor-icon-theme'
+  'imath'
+  'intel-oneapi-compiler-dpcpp-cpp-runtime-libs'
+  'intel-oneapi-compiler-shared-runtime-libs'
+  'jack'  # dlopen'ed
+  'jemalloc'
+  'level-zero-loader'  # dlopen'ed
+  'libepoxy'
+  'libgcc'
+  'libharu'
+  'libjpeg-turbo'
+  'libpng'
+  'libsndfile'
+  'libspnav'
+  'libstdc++'
+  'libtiff'
+  'libwebp'
+  'libx11'
+  'libxfixes'
+  'libxi'
+  'libxkbcommon'
+  'libxml2'
+  'libxrender'
+  'libxxf86vm'
+  'llvm-libs'
+  'manifold'
+  'materialx'
+  'onetbb'
+  'openal'
+  'opencolorio'
+  'openexr'
+  'openimagedenoise'
+  'openimageio'
+  'openjpeg2'
+  'openpgl'
+  'openshadinglanguage'
+  'opensubdiv'
+  'openvdb'
+  'openxr'
+  'potrace'
+  'pugixml'
+  'pystring'
+  'python'
+  'python-cattrs'
+  'python-numpy'
+  'python-requests'
+  'sdl2'  # dlopen'ed
+  'shared-mime-info'
+  'usd'
+  'xdg-utils'
+  'yaml-cpp'
+  'zlib'
+  'zstd'
+)
+makedepends=(
+  'boost'
+  'cmake'
+  'cuda'
+  'eigen'
+  'git'
+  'git-lfs'
+  'hip-runtime-amd'
+  'hiprt'
+  'intel-oneapi-compiler-shared-runtime'
+  'intel-oneapi-dpcpp-cpp'
+  'intel-compute-runtime'
+  'level-zero-headers'
+  'libdecor'
+  'mold'
+  'llvm'
+  'mesa'
+  'ninja'
+  'subversion'
+  'wayland-protocols'
+  'vulkan-headers'
+)
+
+makedepends_aarch64=(
+  'sse2neon'
+)
+
+optdepends=('cuda: Cycles renderer CUDA support'
+            'intel-compute-runtime: Cycles renderer Intel OneAPI support'
+            'intel-level-zero-raytracing-support: Cycles renderer Intel OneAPI Raytracing Support'
+            'hip-runtime-amd: Cycles renderer AMD ROCm support'
+            'hiprt: Ray tracing AMD ROCm support'
+            'libdecor: wayland support')
+# We're using !lto here as otherwise we get stuff such as FS#77557
+options=('!lto')
+source=("git+https://projects.blender.org/blender/blender.git#tag=v$pkgver"
+        optix-${_optix_version}.tar.gz::https://github.com/NVIDIA/optix-dev/archive/refs/tags/v${_optix_version}.tar.gz
+        ffmpeg-9.patch)
+sha512sums=('b39c6b044fba423f196e6addaa7387482aecc94898ea85d45bc03330f77094df01f7b28708f4c6d0e085cc9eac90129df83be9db3c8b0249e72517fa16de073c'
+            '3d4887d4032487363ac1a382c73d1cc99d77c8ce92751097ca4481b29b3164838cf1e2fa69b67be7eedafea4b217fa4c3ebfd8415046fc14c36973d90f1a5a93'
+            'ee67438e0c868eda0616ae444631ccbbce4484c37097875df037fb5db5341be13f1a9e886ba5a1cb514ef2764080542b90cf8d30942a4bf138a9b15e42b378a1')
+
+prepare() {
+  cd "$pkgname"
+
+  git lfs install --local
+  git remote add network-origin https://projects.blender.org/blender/blender
+  git lfs fetch network-origin
+  git lfs checkout
+
+  patch -Np1 -i ../ffmpeg-9.patch
+
+  # TODO Dirty hack / workaround to fix faulty manpage generation.. arguably an upstream issue.
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/blender/-/issues/19
+  sed -i "/blender_help = subprocess/i\    blender_env = {\"LD_LIBRARY_PATH\": \"${pkgdir}/usr/share/blender/lib\"}" \
+    doc/manpage/blender.1.py
+}
+
+_get_pyver() {
+  python -c 'import sys; print(str(sys.version_info[0]) + "." + str(sys.version_info[1]))'
+}
+
+build() {
+  # This should fix #13.
+  export CXXFLAGS=${CXXFLAGS/-Wp,-D_GLIBCXX_ASSERTIONS/}
+  CXXFLAGS+=' --param=max-vartrack-size=640000000'
+  CXXFLAGS+=' -Wno-error=format-security'
+
+  # In general, we want to list all real archs (sm_XX) and the latest virtual arch (compute_XX) for future PTX compatibility.
+  # Valid values can be discovered from nvcc --help
+  local cuda_archs="sm_75;sm_80;sm_86;sm_87;sm_88;sm_89;sm_90;sm_100;sm_103;sm_110;sm_120;sm_121;compute_121"
+
+  local cmake_options=(
+    -B build
+    -C "$pkgname/build_files/cmake/config/blender_release.cmake"
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D WITH_LINKER_MOLD=ON
+    -D CUDA_HOST_COMPILER="$NVCC_CCBIN"
+    -D CYCLES_CUDA_BINARIES_ARCH="$cuda_archs"
+    -D HIP_ROOT_DIR=/opt/rocm
+    -D HIPRT_INCLUDE_DIR=/opt/rocm/include
+    -D HIPRT_COMPILER_PARALLEL_JOBS=8
+    -D OCLOC_INSTALL_DIR=/usr
+    -D OPTIX_ROOT_DIR="$srcdir"/optix-dev-${_optix_version}
+    -D PYTHON_VERSION="$(_get_pyver)"
+    -D USD_ROOT_DIR=/usr
+    -D WITH_CYCLES_OSL=ON
+    -D WITH_CYCLES_PARALLEL_DEVICE_KERNEL_BUILD=ON
+    -D WITH_INSTALL_PORTABLE=OFF
+    -D WITH_PYTHON_INSTALL=OFF
+    -D WITH_SYSTEM_GFLAGS=ON
+    -D WITH_SYSTEM_GLOG=ON
+    -G Ninja
+    -S "$pkgname"
+    -W no-dev
+  )
+
+  if [[ $CARCH == "x86_64" ]]; then
+    cmake_options+=(
+      -D SYCL_ROOT_DIR=/opt/intel/oneapi/compiler/latest
+      -D SYCL_CPP_FLAGS="--verbose"  # for debugging
+      -D SYCL_OFFLINE_COMPILER_PARALLEL_JOBS=8
+    )
+  fi
+
+  if [[ $CARCH == "aarch64" ]]; then
+    cmake_options+=(
+      -D WITH_CYCLES_HIP_BINARIES=OFF
+      -D WITH_CYCLES_HIPRT_BINARIES=OFF
+      -D WITH_CYCLES_ONEAPI_BINARIES=OFF
+    )
+  fi
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  cd "$pkgname"
+
+  python -m compileall "${pkgdir}/usr/share/blender"
+  python -O -m compileall "${pkgdir}/usr/share/blender"
+
+  install -Dm644 release/freedesktop/org.blender.Blender.metainfo.xml "${pkgdir}/usr/share/metainfo/org.blender.Blender.metainfo.xml"
+
+  # Move OneAPI AOT lib to proper place
+  mkdir -p "${pkgdir}"/usr/lib/
+  if [[ -f "${pkgdir}"/usr/share/blender/lib/libcycles_kernel_oneapi_aot.so ]]; then
+    mv "${pkgdir}"/usr/share/blender/lib/libcycles_kernel_oneapi_aot.so "${pkgdir}"/usr/lib/
+  fi
+
+  install -vDm 644 doc/license/{BSD-{2,3}-Clause,MIT,Zlib}-license.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

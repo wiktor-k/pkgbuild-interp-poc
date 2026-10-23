@@ -1,0 +1,17 @@
+pkgbase = s3fs-fuse
+	pkgdesc = FUSE-based file system backed by Amazon S3
+	pkgver = 1.97
+	pkgrel = 1
+	url = https://github.com/s3fs-fuse/s3fs-fuse/wiki
+	arch = x86_64
+	license = GPL-2.0-or-later
+	depends = fuse3
+	depends = curl
+	depends = libxml2
+	provides = s3fs
+	conflicts = s3fs
+	replaces = s3fs
+	source = s3fs-fuse-1.97.tar.gz::https://github.com/s3fs-fuse/s3fs-fuse/archive/v1.97.tar.gz
+	sha512sums = 24b70877a5c162252f08e55176a9e9fa2fd380ed3bbe8f51306f0e1489038a80cbd2a07699689431e3294661fa8d0f2434e7fc94cd14e6c9b4b8fa8be2e1f8a7
+
+pkgname = s3fs-fuse

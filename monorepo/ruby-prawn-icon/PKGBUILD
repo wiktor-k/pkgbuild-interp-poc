@@ -1,0 +1,84 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Anatoly Bashmakov <anatoly at posteo dot net>
+
+pkgname=ruby-prawn-icon
+_pkgname=${pkgname#ruby-}
+pkgver=4.1.0
+pkgrel=3
+pkgdesc="Easy icons for Prawn"
+arch=(any)
+url="https://github.com/jessedoyle/prawn-icon"
+license=('GPL-2.0-only OR GPL-3.0-only OR Ruby')
+depends=(
+  ruby
+  ruby-prawn
+)
+makedepends=(
+  ruby-rdoc
+  rubygems
+)
+checkdepends=(
+  ruby-pdf-inspector
+  ruby-rspec
+)
+options=(!emptydirs)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('73d2309a613c169bd053605a8cee93e1be2639250dba1e6083d477e77b134751')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  sed -i -E 's|~>|>=|g' "$_pkgname.gemspec"
+  sed -i '/bundler/Id' spec/spec_helper.rb
+  sed -i '/simplecov/Id' spec/spec_helper.rb
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+}

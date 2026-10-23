@@ -1,0 +1,27 @@
+pkgbase = read-it-later
+	pkgdesc = Simple Wallabag client
+	pkgver = 0.6.3
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/read-it-later
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = openssl
+	depends = sqlite
+	depends = webkitgtk-6.0
+	depends = zlib
+	options = !lto
+	source = git+https://gitlab.gnome.org/World/read-it-later.git#tag=0.6.3
+	b2sums = 6ff63a8d8a6651d073d4e03a55b80a4ba95cfde32a1b4a756be4d66f9ce7ab1e14a0a8996d4b0af91f520feb89a801cf5613e2d8b32b6130eca61b5eb78c5e71
+
+pkgname = read-it-later

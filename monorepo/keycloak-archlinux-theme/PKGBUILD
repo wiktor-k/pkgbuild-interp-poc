@@ -1,0 +1,37 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+
+pkgname=keycloak-archlinux-theme
+pkgver=2.0.1
+pkgrel=1
+pkgdesc="Keycloak Arch Linux theme"
+arch=('any')
+url="https://gitlab.archlinux.org/archlinux/keycloak-archlinux-theme"
+license=('Apache-2.0')
+depends=('keycloak>25')
+makedepends=('git' 'yarn' 'npm' 'maven')
+source=("git+$url.git?signed#tag=v$pkgver")
+sha256sums=('a816d59a410965f4c820c1f52f9ed4735310f654066276c07ed13ad1dc999335')
+validpgpkeys=(
+  2191B89431BAC0A8B96DE93D244740D17C7FD0EC # artafinde@archlinux.org
+  05C7775A9E8B977407FE08E69D4C5AA15426DA0A # freswa@archlinux.org
+  )
+
+prepare() {
+  cd "${pkgname}/v2"
+  echo 'yarn-offline-mirror ".yarn-cache/"' >> .yarnrc
+  echo 'yarn-offline-mirror-pruning true' >> .yarnrc
+}
+
+build() {
+  cd "${pkgname}/v2"
+  yarn install --frozen-lockfile --no-progress
+  yarn run build-keycloak-theme
+}
+
+package() {
+  install -vdm 755 "${pkgdir}"/usr/share/java/keycloak/providers/
+  install -vDm 644 "${srcdir}/${pkgname}"/v2/dist_keycloak/keycloak-theme-for-kc-all-other-versions.jar \
+    "${pkgdir}"/usr/share/java/keycloak/providers/keycloak-archlinux-theme.jar
+}
+
+# vim:set ts=2 sw=2 et:

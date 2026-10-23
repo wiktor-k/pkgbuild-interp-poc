@@ -1,0 +1,20 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgname=package-notes
+pkgver=0.20
+pkgrel=1
+pkgdesc='ELF Package Notes Reference Implementation'
+arch=('any')
+url='https://github.com/systemd/package-notes'
+depends=('python' 'python-pyelftools' 'python-rich')
+makedepends=('git')
+license=('CC0-1.0')
+validpgpkeys=('A9EA9081724FFAE0484C35A1A81CEA22BC8C7E2E') # Luca Boccassi <luca.boccassi@gmail.com>
+source=("git+https://github.com/systemd/package-notes.git?signed#tag=v${pkgver}")
+sha256sums=('cd23355f0c7b2632d2dcf0cad2aca92d1447c600b9ba5333c0294d2b381fb644')
+
+package() {
+  cd package-notes
+
+  make DESTDIR="${pkgdir}" install
+}

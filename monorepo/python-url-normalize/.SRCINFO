@@ -1,0 +1,23 @@
+pkgbase = python-url-normalize
+	pkgdesc = URL normalization for Python
+	pkgver = 3.0.1
+	pkgrel = 1
+	url = https://github.com/niksite/url-normalize
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-idna
+	source = python-url-normalize::git+https://github.com/niksite/url-normalize#tag=v3.0.1
+	source = remove-pytest-args.patch
+	sha512sums = 99273aaf64da4441a2f7a92e27d9af8b1722c31d8838799520720568ffbfe9a2a6f29d2dee6cb3e59773848d9b26b389d1d36665bd81045e02ff7992ea218dea
+	sha512sums = 4f45961c8c9a029e9b14e9276a6110f42bfa2f3bbe5681b5a145efcbb2097bc0858dbb18b1188bfdd8f453ff1616902a9481d5c5db5262f46bd1ef2a17b7951d
+	b2sums = 818b8c1ca21faf7ee98316d286346216105ff987fe2bc1de93d96ef77021c4386642590b8d3e7940c02cb2347c754cd8eecc15b486c1c2ce4632987b45833e4d
+	b2sums = d94bd1031013a98ae6690cfb65ad9d5a064dcce8938c4a8f3f16aceda03b3d1f822caea03bd11cc23c3004414686e07f9c3b85e9889f236508649c7cbee9e340
+
+pkgname = python-url-normalize

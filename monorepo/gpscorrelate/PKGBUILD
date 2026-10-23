@@ -1,0 +1,50 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Hinrich Harms <arch@hinrich.de>
+# Contributor: sylvain alborini <sylvain.alborini@gmail.com>
+
+pkgname=gpscorrelate
+pkgver=2.4
+pkgrel=1
+pkgdesc='Correlate (geotagging) digital camera photos with GPS data in GPX format'
+arch=(x86_64)
+url='https://dfandrich.github.io/gpscorrelate/'
+license=(GPL-2.0-or-later)
+depends=(
+  exiv2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  libxml2
+)
+makedepends=(
+  docbook-xsl
+  git
+  intltool
+  libxslt
+)
+source=("git+https://github.com/dfandrich/gpscorrelate.git#tag=$pkgver")
+b2sums=(87c4b2bdfa27fe228949879d6c31860a5354ee694df453d2a19d4d989ad4c4e773c935f7267b3fe0cac18e845786f6870ccef648697e1852716436a95ad9a5a0)
+
+prepare() {
+  cd $pkgname
+
+  # Honor system build flags
+  sed -i '/^CFLAGS   =/d
+          /^LDFLAGS  =/d
+          s/ $(LIBSGUI) $(LDFLAGS) $(LIBS)/ $(LDFLAGS) $(LIBS) $(LIBSGUI)/' Makefile
+}
+
+build() {
+  cd $pkgname
+  make prefix=/usr
+  make io.github.dfandrich.gpscorrelate.metainfo.xml
+}
+
+package() {
+  cd $pkgname
+  make prefix=/usr DESTDIR="$pkgdir" install install-desktop-file
+  install -Dm644 -t "$pkgdir/usr/share/metainfo/" io.github.dfandrich.gpscorrelate.metainfo.xml
+}

@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: coderoar <coderoar@gmail.com>
+# Contributor: leemars <leemars@gmail.com>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=ibus-table
+pkgver=1.18.0
+pkgrel=1
+pkgdesc='IM Engine framework for table-based input methods, such as ZhengMa, WuBi, ErBi, CangJie and so on'
+arch=('any')
+url="https://github.com/kaio/ibus-table"
+license=('LGPL-2.1-or-later')
+makedepends=('git' 'docbook2x' 'docbook-sgml' 'docbook-utils')
+depends=('python-pyenchant' 'ibus' 'aspell-en')
+source=("git+https://github.com/kaio/ibus-table.git#tag=$pkgver")
+sha512sums=('06dc9b5b340ac6260799a6e4c0a34a880a51f6692008e26196868953788a4d54360d2c076744c44a794b8afff65b3de00c6e0030f41b4060ce44a51679ab77dd')
+
+build() {
+  cd $pkgname
+
+  ./autogen.sh \
+    --prefix=/usr \
+    --libexecdir=/usr/lib/ibus
+
+  make
+}
+
+package() {
+  cd $pkgname
+
+  make DESTDIR="$pkgdir" install
+}

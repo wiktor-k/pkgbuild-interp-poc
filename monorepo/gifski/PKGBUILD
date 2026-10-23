@@ -1,0 +1,46 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Philipp Wolfer <ph.wolfer@gmail.com>
+
+pkgname=gifski
+pkgver=1.34.0
+pkgrel=3
+pkgdesc='GIF encoder based on libimagequant (pngquant). Squeezes maximum possible quality from the awful GIF format.'
+arch=('x86_64')
+url='https://gif.ski'
+license=('AGPL-3.0-or-later')
+depends=('ffmpeg')
+makedepends=('cargo' 'clang')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/ImageOptim/$pkgname/archive/$pkgver.tar.gz"
+        ffmpeg-8.patch)
+sha512sums=('f741a348efa05a7f050640d3fb859d871de68ba36c050afdc0dcf8322fb38d3ee6bcaf05406049e13f344ae41901555f1a6e9b5e8f910f787c07affae843a4a0'
+            '98709e900f7e3c8191b503a82b1d0232608eaeb4da1ae48800879c810cc74e0621b459486060a3a68f9e9ecc1b2d9ca19935fe2fdc41656de63223729a949c29')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Fix build with ffmpeg 8
+  patch -p1 -i ../ffmpeg-8.patch
+
+  cargo update
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  cargo build --frozen --release --features=video
+}
+
+check() {
+  cd $pkgname-$pkgver
+
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  install -Dm 755 target/release/gifski "$pkgdir"/usr/bin/gifski
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

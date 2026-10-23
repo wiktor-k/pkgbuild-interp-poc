@@ -1,0 +1,36 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Yurii Kolesnykov <root@yurikoles.com>
+# Contributor: Nikita Puzyryov <PuzyryovN@gmail.com>
+
+pkgname=zchunk
+pkgver=1.5.4
+pkgrel=1
+pkgdesc="A file format designed for highly efficient deltas while maintaining good compression"
+url="https://github.com/zchunk/zchunk"
+arch=('x86_64')
+license=('BSD-2-Clause')
+depends=('glibc' 'libcurl.so' 'openssl' 'zstd')
+makedepends=('meson')
+provides=('libzck.so')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
+sha256sums=('7e4515412a331b31ebfaef91978c01e937fc907149fd1ab21a4661f4e3799cee')
+
+build() {
+	cd "${pkgname}-${pkgver}" 
+
+	arch-meson build
+	meson compile -C build
+}
+
+check() {
+	cd "${pkgname}-${pkgver}" 
+
+	meson test -C build
+}
+
+package() {
+	cd "${pkgname}-${pkgver}" 
+
+	DESTDIR="${pkgdir}" meson install -C build
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

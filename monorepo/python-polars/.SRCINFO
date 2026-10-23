@@ -1,0 +1,51 @@
+pkgbase = python-polars
+	pkgdesc = Blazingly fast DataFrames library using Apache Arrow Columnar Format as memory model
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://www.pola.rs/
+	arch = x86_64
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-xdist
+	checkdepends = python-matplotlib
+	checkdepends = python-hypothesis
+	checkdepends = python-moto
+	checkdepends = python-flask
+	checkdepends = python-flask-cors
+	checkdepends = python-pandas
+	checkdepends = python-pyarrow
+	checkdepends = python-pydantic
+	checkdepends = python-fsspec
+	checkdepends = python-sqlalchemy
+	checkdepends = python-zstandard
+	checkdepends = python-cloudpickle
+	checkdepends = python-aiosqlite
+	checkdepends = python-boto3
+	checkdepends = python-orjson
+	checkdepends = python-altair
+	checkdepends = python-arrow-adbc-driver-sqlite
+	makedepends = zstd
+	makedepends = maturin
+	makedepends = rustup
+	makedepends = python-installer
+	makedepends = python-build
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	options = !lto
+	source = https://github.com/pola-rs/polars/archive/refs/tags/py-2.0.0.tar.gz
+	b2sums = 245425d225b89f9554e4eb704d0451d3a7ca6054ce6c5f5f88c2d2f9847e32a2b6473b26258f679ca7924dd15c649341903b6a35f88e24b50e18b041f454b5ba
+
+pkgname = python-polars
+	depends = python
+	depends = python-numpy
+	depends = python-polars-runtime
+	optdepends = python-pandas: for interoperability with pandas frames
+	optdepends = python-pyarrow: for interoperability with arrow types
+	optdepends = python-pytz: to enable conversion to python datetimes with timezones
+	optdepends = python-fsspec: to transparently open files locally or remotely
+
+pkgname = python-polars-runtime-32
+
+pkgname = python-polars-runtime-64
+
+pkgname = python-polars-runtime-compat

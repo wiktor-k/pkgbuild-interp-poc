@@ -1,0 +1,22 @@
+pkgbase = wdisplays
+	pkgdesc = Graphical application for configuring Wayland displays
+	pkgver = 1.1.3
+	pkgrel = 2
+	url = https://github.com/artizirk/wdisplays
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = wayland-protocols
+	depends = cairo
+	depends = glibc
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libepoxy
+	depends = pango
+	depends = wayland
+	source = git+https://github.com/artizirk/wdisplays.git#tag=1.1.3
+	b2sums = 45b05ce292276c135ec3199d2abad355417c2caae21d658a82039d57e902fe44b1d94cf4546198aa19a615747f9c521adfd855b3eb6297c6734247cf3737b7ec
+
+pkgname = wdisplays

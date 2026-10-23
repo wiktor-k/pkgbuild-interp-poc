@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: gmes78 <gmes.078 at gmail dot com>
+
+pkgname=python-qasync
+pkgver=0.28.0
+pkgrel=3
+pkgdesc="Python library for using asyncio in Qt-based applications"
+arch=(any)
+url="https://github.com/CabbageDevelopment/qasync"
+license=('BSD-2-Clause')
+depends=('python')
+optdepends=('pyside6' 'python-pyqt6')
+makedepends=('git' 'python-build' 'python-installer' 'python-uv-build')
+checkdepends=('python-pytest-raises' 'pyside6' 'python-pyqt6'
+              'xorg-server-xvfb')
+source=("git+https://github.com/CabbageDevelopment/qasync.git#tag=v$pkgver")
+sha512sums=('e7c09e53876628a165787b845b1d848d6267e15308a5400922c8bcf66645a4a3319d0e466679f66ac4100d3d283a7f58cc0c8e80c3921e444bf77d7f3d4ccd0c')
+
+prepare() {
+  cd qasync
+  sed -i 's/uv_build>=0.8.3,<0.9.0/uv_build/' pyproject.toml
+}
+
+build() {
+  cd qasync
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd qasync
+  python -m venv --system-site-packages venv
+  venv/bin/python -m installer dist/*.whl
+  QT_API=pyside6 xvfb-run venv/bin/python -m pytest -k 'not test_regression_bug13'
+  QT_API=pyqt6 xvfb-run venv/bin/python -m pytest -k 'not test_regression_bug13'
+}
+
+package() {
+  cd qasync
+  python -m installer --destdir="$pkgdir/" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

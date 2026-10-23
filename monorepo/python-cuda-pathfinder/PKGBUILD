@@ -1,0 +1,51 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+# NOTE: python-cuda-pathfinder shares the git repository with python-cuda,
+# but it has different versioning scheme and release frequency
+pkgname=python-cuda-pathfinder
+epoch=1
+pkgver=1.8.3
+pkgrel=1
+pkgdesc="Utilities for locating CUDA components"
+arch=(any)
+url="https://nvidia.github.io/cuda-python/cuda-pathfinder/latest/index.html"
+license=(Apache-2.0)
+depends=(
+  python
+)
+makedepends=(
+  cuda
+  git
+  python-setuptools
+  python-wheel
+  python-build
+  python-installer
+  python-setuptools-scm
+)
+checkdepends=(
+  python-pytest
+  python-pytest-mock
+)
+source=(
+  python-cuda::git+https://github.com/NVIDIA/cuda-python#tag=cuda-pathfinder-v$pkgver
+)
+b2sums=('2178f6e2ccfc3d2d142c9223250d210347c9d1982b9c538f285f4a24337ff544186092f54e4744ad75b97ff07693679647ce94154f548b93d86a579f40b28eee')
+
+build() {
+  cd python-cuda/cuda_pathfinder
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-cuda/cuda_pathfinder
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest tests
+}
+
+package() {
+  cd python-cuda/cuda_pathfinder
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,44 @@
+# Maintainer: Campbell Jones <serebit@archlinux.org>
+pkgname=budgie-desktop-services
+pkgver=1.0.2
+pkgrel=3
+pkgdesc="Logic orchestrator for budgie-desktop"
+arch=('x86_64')
+url="https://forge.moderndesktop.dev/BuddiesOfBudgie/budgie-desktop-services"
+license=('MPL-2.0')
+groups=('budgie')
+depends=(
+	'glibc'
+	'kwayland'
+	'qt6-base'
+	'wayland'
+)
+makedepends=(
+	'cmake'
+	'git'
+	'extra-cmake-modules'
+	'ninja'
+	'toml11'
+	'vulkan-headers'
+)
+source=("git+https://forge.moderndesktop.dev/BuddiesOfBudgie/budgie-desktop-services.git#tag=$pkgver")
+b2sums=('9dd00ed3f464735dc545667c8f7067de9e47336dcb44c2a518dac69dbed45a9577d98439cbc715cd8c422d2bf1d9d2fb8819cc1747f73d7ec599308beb14c501')
+validpgpkeys=('0E0D97562A4EC8BD8E329DCDAA7A2325E04B609B')
+
+build() {
+	cd "$pkgname"
+
+	cmake \
+		-B build \
+		-G Ninja \
+		-DCMAKE_INSTALL_PREFIX='/usr' \
+		-DINSTALL_LABWC=true \
+		-Wno-dev
+	cmake --build build
+}
+
+package() {
+	cd "$pkgname"
+
+	DESTDIR="$pkgdir/" cmake --install build
+}

@@ -1,0 +1,28 @@
+pkgbase = python-cuda-core
+	pkgdesc = Pythonic access to CUDA core functionality
+	pkgver = 1.2.2
+	pkgrel = 1
+	epoch = 1
+	url = https://nvidia.github.io/cuda-python/cuda-core/latest/index.html
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = python-pytest
+	makedepends = cuda
+	makedepends = cython
+	makedepends = git
+	makedepends = python-wheel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-cuda-bindings
+	depends = python-numpy
+	source = python-cuda::git+https://github.com/NVIDIA/cuda-python#tag=cuda-core-v1.2.2
+	source = pyproject.patch
+	b2sums = 79ecc34273a3020ea278399b0265065a2227d72976ca67b1bf6258ed60b4cbf9f2e2ef65ab7a6b3491f63920c818509e92444ad16f8661c62313baa2ae8261ac
+	b2sums = bb3e04a5085a15e6a2d03444dc86ad581d9dd990ed13964dbc6de47f65ad297a898c9150ee4a26e8243d18ce70bdea72918cc0e2a3ee247ae932e55939a93b54
+
+pkgname = python-cuda-core

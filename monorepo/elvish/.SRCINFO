@@ -1,0 +1,16 @@
+pkgbase = elvish
+	pkgdesc = Versatile interactive shell & powerful scripting language in one
+	pkgver = 0.21.0
+	pkgrel = 1
+	url = https://elv.sh
+	install = elvish.install
+	arch = x86_64
+	license = BSD
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = elvish::git+https://github.com/elves/elvish.git#tag=v0.21.0
+	sha256sums = 8d131b17181b810d52b37038664146f774160c3a298762d5ea054529a03aa5b6
+
+pkgname = elvish

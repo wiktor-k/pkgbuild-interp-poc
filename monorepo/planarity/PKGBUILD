@@ -1,0 +1,32 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=planarity
+pkgver=5.1.0.0
+pkgrel=1
+pkgdesc='A library for implementing graph algorithms'
+arch=(x86_64)
+url='https://github.com/graph-algorithms/edge-addition-planarity-suite'
+license=(BSD-3-Clause)
+depends=(glibc)
+makedepends=(git)
+source=(git+https://github.com/graph-algorithms/edge-addition-planarity-suite#tag=Version_$pkgver)
+sha256sums=('75c1aefc95264b588bc33b17ba9a130fb378371de2ecffe27666a089e3b49937')
+
+prepare() {
+  cd edge-addition-planarity-suite                
+  autoreconf -vi
+}
+
+build() {
+  cd edge-addition-planarity-suite
+  ./configure \
+    --prefix=/usr
+  make
+}
+
+package() {
+  cd edge-addition-planarity-suite
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 LICENSE.TXT "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

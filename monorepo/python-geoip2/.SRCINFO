@@ -1,0 +1,26 @@
+pkgbase = python-geoip2
+	pkgdesc = MaxMind GeoIP2 API
+	pkgver = 5.3.0
+	pkgrel = 1
+	url = https://github.com/maxmind/GeoIP2-python
+	arch = any
+	license = Apache
+	checkdepends = python-pytest
+	checkdepends = python-pytest-httpserver
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-uv-build
+	makedepends = python-wheel
+	depends = python
+	depends = python-aiohttp
+	depends = python-maxminddb
+	depends = python-requests
+	depends = python-setuptools
+	source = git+https://github.com/maxmind/GeoIP2-python.git#tag=v5.3.0
+	source = git+https://github.com/maxmind/MaxMind-DB.git
+	sha512sums = d2fd9cd7c053e3342738ead97c21dc4df97498138a338e939e97ff899914284f94f877d8ed9230efa3c1f89ed3439ac2234dad56f143ed0810133377793be7a4
+	sha512sums = SKIP
+
+pkgname = python-geoip2

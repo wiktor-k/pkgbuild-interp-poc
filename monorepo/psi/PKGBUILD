@@ -1,0 +1,39 @@
+# Maintainer: Sergej Pupykin <arch+pub@sergej.pp.ru>
+
+pkgname='psi'
+pkgver=1.5
+pkgrel=5
+pkgdesc="Powerful XMPP (Jabber) client (Qt, C++) designed for power users"
+url="https://psi-im.org"
+license=('GPL2')
+arch=('x86_64')
+depends=('hunspell' 'minizip' 'qca-qt5' 'qt5-svg' 'qt5-x11extras' 'libidn')
+makedepends=('cmake' 'qt5-multimedia')
+provides=("psi-nowebengine=$pkgver")
+conflicts=('psi-nowebengine')
+replaces=('psi-nowebengine')
+source=("https://download.sourceforge.net/${pkgname}/${pkgname}-${pkgver}.tar.xz"
+        "no-qca-qt4.patch")
+sha256sums=('3167350fd43fab4dc948cb5179ca10159a7aa318472d1a8a7617e41f5aa8b5b7'
+            'a6ea9a62100b6990b8a6c8590a6d0e9df095b99b6527bb5490a7fd3f6929ac23')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 <"$srcdir"/no-qca-qt4.patch
+}
+
+build() {
+  cd $pkgname-$pkgver
+  mkdir -p build
+  cd build
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DENABLE_WEBKIT=OFF ..
+  make
+}
+
+package_psi() {
+  cd "$srcdir"/psi-$pkgver/build
+  make DESTDIR="$pkgdir" install
+  install -dm755 "$pkgdir/usr/include/psi/plugins"
+  install -m644 ../src/plugins/include/*.h "$pkgdir/usr/include/psi/plugins"
+  install -Dm644 ../$pkgname.appdata.xml "$pkgdir/usr/share/metainfo/$pkgname.appdata.xml"
+}

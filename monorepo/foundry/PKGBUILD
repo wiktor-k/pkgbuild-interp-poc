@@ -1,0 +1,64 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=foundry
+pkgver=1.2.0
+pkgrel=1
+pkgdesc='Aims to extract much of what makes GNOME Builder an IDE into a library and companion command-line tool'
+arch=(x86_64)
+url='https://gitlab.gnome.org/GNOME/foundry'
+license=(LGPL-2.1-or-later)
+depends=(
+  cmark
+  dconf
+  editorconfig-core-c
+  flatpak
+  glib2
+  glibc
+  gom
+  graphene
+  gtk4
+  gtksourceview5
+  json-glib
+  libadwaita
+  libdex
+  libgcc
+  libgit2
+  libpanel
+  libpeas-2
+  libsecret
+  libsoup3
+  libspelling
+  libssh2
+  libsysprof-capture
+  libxml2
+  libyaml
+  pango
+  template-glib
+  vte4
+  webkitgtk-6.0
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+)
+source=("git+https://gitlab.gnome.org/GNOME/foundry.git#tag=${pkgver/[a-z]/.&}")
+b2sums=(49a8daaa86a6540c67450770697491559087f339a16789a6bb18f390d55b7bc0761686dff5eb6ca678c411c95424ebcc279fa42b49fb977cef60b9852dc23ce5)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

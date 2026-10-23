@@ -1,0 +1,30 @@
+# Maintainer: Campbell Jones <serebit at archlinux dot org>
+
+pkgname=budgie-backgrounds
+pkgver=4.1
+pkgrel=1
+pkgdesc="The default background set for the Budgie Desktop"
+arch=(any)
+url="https://github.com/BuddiesOfBudgie/budgie-backgrounds"
+license=(CC0-1.0)
+groups=(budgie)
+depends=()
+makedepends=(
+  git
+  imagemagick
+  jhead
+  libjxl
+  meson
+)
+source=("git+https://github.com/BuddiesOfBudgie/budgie-backgrounds.git#tag=v$pkgver")
+b2sums=('74a0c31a8d384d30c6e3979e6f3a068f77bb9d524a6587b43e5fa646afff861b2a3bbd78b121eafdbd2f8f2b224bd76c2e06a7cfd829228a0d0bd094b5b7f3f5')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" "$pkgname/LICENSE"
+}

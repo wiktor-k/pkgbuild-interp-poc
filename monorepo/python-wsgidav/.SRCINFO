@@ -1,0 +1,37 @@
+pkgbase = python-wsgidav
+	pkgdesc = Generic WebDAV server based on WSGI
+	pkgver = 4.3.5
+	pkgrel = 1
+	url = https://github.com/mar10/wsgidav
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-cheroot
+	checkdepends = python-requests
+	checkdepends = python-webtest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-defusedxml
+	depends = python-json5
+	depends = python-jinja
+	depends = python-passlib
+	depends = python-pyyaml
+	optdepends = python-paste: WSGI server
+	optdepends = gunicorn: WSGI server
+	optdepends = python-cheroot: WSGI server
+	optdepends = python-gevent: WSGI server
+	optdepends = uvicorn: WSGI server
+	optdepends = mercurial: Mercurial WebDAV provider
+	optdepends = python-pymongo: MongoDB WebDAV provider
+	optdepends = python-mysqlclient: MySQL WebDAV provider
+	optdepends = python-pam: pam-login authentication
+	optdepends = python-lxml: performance improvements for PROPPATCH requests
+	source = python-wsgidav::git+https://github.com/mar10/wsgidav#tag=v4.3.5
+	sha512sums = 32131c61cc2dec1df597365f06c137d3141ebf00a4da94d9d76ada5e38ba1c463887a67432fa2110152847774814efbcacb360909b529be4f0d04ffd91728a55
+	b2sums = 806de3a92c8d769f90018d84426be044f2c202b45c256e211d3fe0da8e96b38aa0d1d4ada59ebce7297477c17ec236298f6fc1d5bf03f0126bd698e189f5fc01
+
+pkgname = python-wsgidav

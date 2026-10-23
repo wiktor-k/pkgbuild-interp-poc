@@ -1,0 +1,18 @@
+pkgbase = cl-trivial-garbage
+	pkgdesc = Portable Garbage Collection related APIs for Common Lisp
+	pkgver = 0.21.r8.gb3af9c0
+	pkgrel = 3
+	url = https://trivial-garbage.common-lisp.dev/
+	arch = any
+	license = custom:Public
+	checkdepends = sbcl
+	checkdepends = cl-rt
+	makedepends = git
+	depends = common-lisp
+	depends = cl-asdf
+	source = cl-trivial-garbage::git+https://github.com/trivial-garbage/trivial-garbage#commit=b3af9c0c25d4d4c271545f1420e5ea5d1c892427
+	source = run-tests.lisp
+	b2sums = SKIP
+	b2sums = 2b7c57c7c110effa0356d694a99942e4a27ffa38afa1be9c95a7f98e67a9fabb1696f10c174be9c57a90779111bc2b115510ee19edc594f6cd9ea4019e6e7d12
+
+pkgname = cl-trivial-garbage

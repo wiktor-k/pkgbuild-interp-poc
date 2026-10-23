@@ -1,0 +1,30 @@
+pkgbase = matrix-authentication-service
+	pkgdesc = Authentication service for Matrix
+	pkgver = 1.27.1
+	pkgrel = 1
+	url = https://github.com/element-hq/matrix-authentication-service
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = git
+	makedepends = nodejs-lts-krypton
+	makedepends = npm
+	makedepends = open-policy-agent
+	makedepends = pnpm
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = git+https://github.com/element-hq/matrix-authentication-service#tag=v1.27.1
+	source = 0001-Arch-Linux-paths.patch
+	source = matrix-authentication-service.service
+	source = matrix-authentication-service-worker.service
+	source = sysusers.conf
+	source = tmpfiles.conf
+	b2sums = 00ab9a2cfc854a2fe1916cea668e931f2ceb0f0e9bcecc203cf79a9f1c8d2584789bd8aa0b2b6214e8eb10f8ccb601c4a1b8416b9c55ec5a5157a4609187cd10
+	b2sums = 82775ed6b31f65ca9c61d367d52a1be6bd1179b46aa785f956bbbe4ca853bdbe67c8c30602351790035e37f0e3a50682e35e32a3fba5d1dd280b4da31450a21d
+	b2sums = 9f3e6f91897d2aee1409280d440ce4068244b007845e18f338eb43e634b970b8bf99eed2f4f877ec78f706925583136c8ba80e697983b52bd682753839916870
+	b2sums = d3fac357d8794feefba7a45f6f8815aa0b2dce17d4200ee0906e2cb3444009fe13f3921e1dbbca6cbd2892f2d45edd75c817a216ec0dfd1eb4334df0d0ec2f74
+	b2sums = 5996147ed184e2f29e06148e36584462f81f12d5246c91f64eefbe0b82bf03b2509cd9d0c818b733f7d4fd820823095b11a04ff875bc9b996b1909e7925dff52
+	b2sums = ec4959bf54b248b3b8e5f4399d0b8b3c437f39e38131ef16eec96532b8ba3b566f182175b6e5eeaede50b3b811f9a82fbeba4d0cdf964a7da0466d1796442c1e
+
+pkgname = matrix-authentication-service

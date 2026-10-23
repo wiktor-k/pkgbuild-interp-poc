@@ -1,0 +1,64 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=d2
+pkgver=0.9.0
+pkgrel=1
+pkgdesc='A modern diagram scripting language that turns text to diagrams'
+arch=(x86_64)
+url='https://d2lang.com'
+license=(MPL-2.0)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+https://github.com/terrastruct/d2#tag=v$pkgver")
+sha512sums=('8b256f233de62ba0eaaf5b81c7d157e95a66a84402ab4c163fbcd46f348c9dfc38140eeb9c46126847581d79c48895dca0164634591bf49ec96e42d180d7cfe9')
+b2sums=('2570b3644db88165cbf4447a820ed9d7428b93eb11986ba943c364b9958a71d1ba4c591b02547d5cf7b41b80b0f246f2b5d842c9e833b1d54d84c86ea25fc9b5')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X oss.terrastruct.com/d2/lib/version.Version=$pkgver" \
+    -o build \
+    .
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/d2
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" ci/release/template/man/d2.1
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr docs "$pkgdir/usr/share/doc/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

@@ -1,0 +1,48 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Nick Østergaard <oe.nick@gmail.com>
+# Contributor: Jonny Gerold <jonny@fsk141.com>
+
+pkgname=viking
+pkgver=1.11
+pkgrel=1
+pkgdesc="GTK application to manage GPS data"
+arch=('x86_64')
+url="https://sourceforge.net/projects/viking/"
+license=('GPL-2.0-only')
+depends=('curl' 'file' 'gpsd' 'gtk3' 'libgexiv2' 'geoclue' 'liboauth' 'libzip' 'libnova') #'mapnik'
+makedepends=('boost' 'docbook-xsl' 'intltool' 'itstool' 'vim' 'gtk-doc')
+optdepends=('gpsbabel: import and export GPS tracks from various formats')
+changelog=$pkgname.changelog
+source=(https://downloads.sourceforge.net/$pkgname/$pkgname-$pkgver.tar.bz2
+        https://raw.githubusercontent.com/viking-gps/$pkgname/$pkgname-$pkgver/org.viking.Viking.appdata.xml
+        nettle-4.patch)
+sha256sums=('fe21d5c111ef20877d1cd95b1a4bc34faae9dd3a17bac923f418e1271a3cfc91'
+            '075e92718bb3b274bdf7ddaef5da676068de033de16dbade641b5fc84e25af66'
+            '6c3325b7f8cc0af0aa4a34dfb5bdb2ebed6423f5b83aa03b1d098b8076bf0a1e')
+
+prepare() {
+  cd "${srcdir}"/$pkgname-$pkgver
+  sed -i 's/org.viking.Viking.desktop/viking.desktop/' ../org.viking.Viking.appdata.xml
+  patch -p1 -i ../nettle-4.patch
+  autoreconf -fiv
+  sed -e '/YELP_HELP_RULES/d' -i help/Makefile.*
+}
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  export CFLAGS+=" -std=gnu17" # Fix build with GCC 15
+  export CXXFLAGS+=" -I/usr/include/mapnik"
+  ./configure \
+    --prefix=/usr \
+    --disable-gtk-doc \
+    --disable-mapnik  #https://github.com/viking-gps/viking/issues/297 might be fixed in v1.11
+  make
+}
+
+package(){
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 ../org.viking.Viking.appdata.xml "${pkgdir}"/usr/share/metainfo/viking.appdata.xml
+}

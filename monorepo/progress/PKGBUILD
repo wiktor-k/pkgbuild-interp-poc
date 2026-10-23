@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Andy Weidenbaum <archbaum@gmail.com>
+# Contributor: Aurélien Chabot <contact@aurelienchabot.fr>
+# Contributor: Étienne Deparis <etienne@depar.is>
+
+pkgname=progress
+pkgdesc="Shows running coreutils basic commands and displays stats"
+pkgver=0.17
+pkgrel=2
+arch=('x86_64')
+license=('GPL3')
+url="https://github.com/Xfennec/progress"
+depends=('ncurses')
+replaces=('cv')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Xfennec/progress/archive/v$pkgver.tar.gz")
+sha512sums=('9c9cb276063069501677457d4808b5386e9d7b21d11bdae5cf5d07fdecaf444199ad27fe0718ec5567dd2388bcb2156fe1ef99ece471173c480e7395965f19f1')
+
+build() {
+  cd $pkgname-$pkgver
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" PREFIX="/usr" install
+}

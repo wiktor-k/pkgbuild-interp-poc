@@ -1,0 +1,113 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=jc303
+pkgname=(
+  jc303-common
+  jc303-lv2
+  jc303-vst3
+  jc303-clap
+)
+pkgver=0.13.0
+pkgrel=1
+pkgdesc='TB-303 clone'
+arch=(x86_64)
+url='https://midilab.co/jc303/'
+license=(GPL-3.0-only)
+groups=(pro-audio)
+_common_depends=(
+  fontconfig
+  freetype2
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  "${_common_depends[@]}"
+  git
+  cmake
+  libx11
+  libxrandr
+  libxinerama
+  libxcursor
+  alsa-lib
+  gtk3
+)
+options=(!lto)
+source=(
+  "$pkgbase::git+https://github.com/midilab/jc303#tag=v$pkgver"
+  disable-vst2.patch
+)
+sha512sums=('989aae41663cc0cab7845fe06d9945d17c8baff502340086275056d068a18e805b9701d3dfc8b5dc3c4e08e962af50c67d49287fdf721ab615cbe0a4becffe02'
+            'ed932be7181f8646a6b68d5832308f6a863627af8d9056c9b8836f9233af2b64c1ceb03c3ce4bebb924bbb910f33ec67bcabd4ccdd70bc8e8bb7a483ee459f76')
+b2sums=('1e190e543a652decdbb941054ebf13fc4f6f7b3d5e74c022e83f21c226320453f7613694e88bfdcbd7933c295bb0cf6a7a9836a5468d06cee89145add4617b24'
+        'ef95de0c87e9b116ef476cd04c6da20927626643cb627f689365cb7fdd56396290037947b737e59e5cd150f16d2c6f8a36620e6462568c270b6780f8bd17b890')
+
+prepare() {
+  cd "$pkgbase"
+
+  # disable VST2
+  patch -p1 -i "$srcdir/disable-vst2.patch"
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgbase"
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package_jc303-common() {
+  pkgdesc='Common files for JC303'
+
+  cd "$pkgbase"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgbase" README.md
+  cp -vr img "$pkgdir/usr/share/doc/$pkgbase"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgbase" LICENSE
+}
+
+package_jc303-lv2() {
+  pkgdesc+=' - LV2 plugin'
+  groups+=(lv2-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    "jc303-common=$pkgver"
+    lv2-host
+  )
+
+  install -vd "$pkgdir/usr/lib/lv2"
+  cp -vr build/JC303_artefacts/Release/LV2/* "$pkgdir/usr/lib/lv2"
+}
+
+package_jc303-vst3() {
+  pkgdesc+=' - VST3 plugin'
+  groups+=(vst3-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    "jc303-common=$pkgver"
+    vst3-host
+  )
+
+  install -vd "$pkgdir/usr/lib/vst3"
+  cp -vr build/JC303_artefacts/Release/VST3/* "$pkgdir/usr/lib/vst3"
+}
+
+package_jc303-clap() {
+  pkgdesc+=' - CLAP plugin'
+  groups+=(clap-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    "jc303-common=$pkgver"
+    clap-host
+  )
+
+  install -vDm644 -t "$pkgdir/usr/lib/clap" build/JC303_artefacts/Release/CLAP/*.clap
+}

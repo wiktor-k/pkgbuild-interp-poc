@@ -1,0 +1,25 @@
+pkgbase = pantheon-session
+	pkgdesc = Session settings for Pantheon
+	pkgver = 8.1.0
+	pkgrel = 1
+	url = https://github.com/elementary/session-settings
+	arch = any
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = gala
+	depends = gnome-keyring
+	depends = gnome-session
+	depends = gnome-settings-daemon
+	depends = pantheon-applications-menu
+	depends = orca
+	depends = plank
+	depends = wingpanel
+	depends = xdg-user-dirs-gtk
+	optdepends = pantheon-default-settings
+	source = pantheon-session-settings::git+https://github.com/elementary/session-settings.git#tag=8.1.0
+	b2sums = 3c85a8ada3e340fea40fc0eade4d5a89d3943df6acae10c397fcdcad4222a6392eb5e63dc8fb56b5e01d4d83caaf594e6ac3cb451a91f78f924ebcc0fafaf78a
+
+pkgname = pantheon-session

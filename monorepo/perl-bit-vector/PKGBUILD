@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Kevin Piche <kevin@archlinux.org>
+
+pkgname=perl-bit-vector
+pkgver=7.4
+pkgrel=19
+pkgdesc='Efficient bit vector, set of integers and "big int" math library'
+arch=('x86_64')
+license=('GPL' 'LGPL' 'PerlArtistic')
+url="https://search.cpan.org/dist/Bit-Vector/"
+depends=('perl-carp-clan')
+options=('!emptydirs')
+source=(https://search.cpan.org/CPAN/authors/id/S/ST/STBEY/Bit-Vector-${pkgver}.tar.gz
+        gcc-15.patch)
+sha256sums=('3c6daa671fecfbc35f92a9385b563d65f50dfc6bdc8b4805f9ef46c0d035a926'
+            '63056f6d88fd04c5feb3be25353f17f6a38476460b383ad2819ceb812ac27726')
+
+prepare() {
+  cd Bit-Vector-$pkgver
+  patch -p1 -i ../gcc-15.patch # Fix build with GCC 15 (Fedora)
+}
+
+build() {
+  cd Bit-Vector-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Bit-Vector-$pkgver
+  make test
+}
+
+package() {
+  cd Bit-Vector-$pkgver
+  make DESTDIR="${pkgdir}" install
+}

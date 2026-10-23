@@ -1,0 +1,19 @@
+pkgbase = log4cxx
+	pkgdesc = A C++ port of Log4j
+	pkgver = 1.8.0
+	pkgrel = 1
+	url = http://logging.apache.org/log4cxx
+	arch = x86_64
+	license = Apache
+	makedepends = cmake
+	makedepends = patch
+	makedepends = zip
+	makedepends = gzip
+	makedepends = sed
+	depends = apr-util
+	depends = libxml2
+	conflicts = log4cxx-svn
+	source = http://archive.apache.org/dist/logging/log4cxx/1.8.0/apache-log4cxx-1.8.0.tar.gz
+	sha512sums = 2647b930c3d8d3f55b586943d691f0b40ef1c96276a95bbcb72a49db4130d690703d4f755faee2f5835684587a66ab04a0f715d1e4bfb1ae43da466804e7a879
+
+pkgname = log4cxx

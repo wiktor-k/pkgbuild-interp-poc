@@ -1,0 +1,23 @@
+pkgbase = fbreader
+	pkgdesc = An e-book reader for Linux
+	pkgver = 0.99.4
+	pkgrel = 15
+	url = http://www.fbreader.org/
+	arch = x86_64
+	license = GPL
+	depends = fribidi
+	depends = bzip2
+	depends = curl
+	depends = qt5-base
+	depends = libunibreak
+	depends = sqlite
+	source = https://p5n.pp.ru/~sergej/dl/fbreader-sources-0.99.4.tgz
+	source = fbreader-0.99.4.patch
+	source = fbreader-gcc6.patch
+	source = fbreader-qt5.patch
+	sha256sums = 3d7c31d5ea314589d2a963290ad16f4d3d631a41e802b8b39f8be0c9f71eb8e9
+	sha256sums = cb3aa6795c8f7c694ba296f6f6e6a7939648578a289bc84c10f8302c7e72df86
+	sha256sums = bc67b538c51a5b77468469df6b5e96ce918ee11a5ff4e88e398ad5661d322f9c
+	sha256sums = 9d00f95f2a026b7bdafa6ab8519659cd2c293f1b9b00681a62d3f4992399e716
+
+pkgname = fbreader

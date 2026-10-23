@@ -1,0 +1,56 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: sputnick <gilles DOT quenot AT gmail DOT com>
+
+pkgname=xwax
+pkgver=1.10
+pkgrel=1
+pkgdesc='Open-source vinyl emulation software for Linux.'
+arch=(x86_64)
+url="https://www.xwax.co.uk/"
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  sdl2
+  sdl2_ttf
+  sh
+  ttf-dejavu
+)
+makedepends=(
+  alsa-lib
+  jack
+)
+optdepends=(
+  'cdparanoia: for direct CD import'
+  'faad: for AAC import'
+  'ffmpeg: for various audio and video import'
+  'flac: for FLAC import'
+  'mpg123: for MP3 import'
+  'sox: for live audio import'
+  'vorbis-tools: for OGG import'
+)
+source=(https://www.xwax.co.uk/releases/$pkgname-$pkgver.tar.gz)
+sha512sums=('16992935346a6866179356e539ef643346686825e297d854a42ddd76fd6d0829c07080efd37ce8f859a8028e0f206e58ebf1d71d4c8572a98eb235686c4d554d')
+b2sums=('34a5a06631081f0454a03b86276a0daa1cc15b18a864e23f1d19a69becb4828aaf37dc823e462c8f6e7fd6620b176b561e2c9649803da1ecece945adbe3251d6')
+
+build() {
+  local configure_options=(
+    --prefix /usr
+    --enable-alsa
+    --enable-jack
+  )
+
+  cd $pkgname-$pkgver
+  ./configure "${configure_options[@]}"
+  make
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    jack libjack.so
+  )
+
+  make DESTDIR="$pkgdir" EXECDIR="/usr/lib/$pkgname" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/{CHANGES,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

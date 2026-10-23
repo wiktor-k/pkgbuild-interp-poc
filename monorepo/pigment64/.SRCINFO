@@ -1,0 +1,27 @@
+pkgbase = pigment64
+	pkgdesc = A library for handling conversion between N64 texture formats and modern image formats
+	pkgver = 0.6.3
+	pkgrel = 1
+	url = https://github.com/decompals/pigment64
+	arch = x86_64
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = rust
+	makedepends = python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	depends = glibc
+	depends = libgcc
+	source = pigment64::git+https://github.com/decompals/pigment64#tag=0.6.3
+	sha512sums = 616ce5dd120d54faec91d7b0d3ae605989295e68f4c68cd45551c2ac6e4a787f0eec417934e26630f00bee6020daedf46019690cbdf4d19992ffa9b77a4bd7a9
+	b2sums = 5c35a6256c303c3caf8b3045798eac1d5966c44eb56827446cbfeb48e2c8e1eb138de4d1e7074b01e07339176b91c927c830781bc25e4183659672cb612c4c27
+
+pkgname = pigment64
+
+pkgname = python-pigment64
+	pkgdesc = A library for handling conversion between N64 texture formats and modern image formats (Python bindings)
+	depends = glibc
+	depends = libgcc
+	depends = python

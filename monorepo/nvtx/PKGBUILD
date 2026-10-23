@@ -1,0 +1,69 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=nvtx
+pkgname=(nvtx python-nvtx)
+pkgver=3.6.0
+pkgrel=1
+pkgdesc="NVIDIA Tools Extension (NVTX) library"
+url="https://nvidia.github.io/NVTX/"
+arch=(x86_64)
+license=("Apache-2.0 WITH LLVM-exception")
+makedepends=(
+  cmake
+  cython
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=($pkgbase::git+https://github.com/NVIDIA/NVTX.git#tag=v$pkgver)
+b2sums=('f8477f4cd3a4b64382554303e618ce38b5895bb7108b5e96a1d859caec72230c24259a9d360126bbd2c3b57c73b2d705851028f8a86a6d92a8a872f8bd2ffe22')
+
+build() {
+  # Build the C/C++ API (header-only)
+  local cmake_options=(
+    -B build
+    -S $pkgbase/c
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+
+  # Build the Python API
+  cd $pkgbase/python
+  python -m build --wheel --no-isolation
+}
+
+package_nvtx() {
+  # The package is header-only, but commitpkg does not support overriding arch
+  # https://gitlab.archlinux.org/archlinux/devtools/-/issues/305
+  #arch=(any)
+  provides=(nvtx3)
+  replaces=(nvtx3)
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  # Install the license
+  install -vDm 644 $pkgbase/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_python-nvtx() {
+  pkgdesc+=" - Python bindings"
+  depends=(
+    glibc
+    python
+  )
+  optdepends=(
+    'python-matplotlib: additional colors support'
+    'python-numpy: typing annotations'
+  )
+
+  cd $pkgbase/python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Install the license
+  install -vDm 644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

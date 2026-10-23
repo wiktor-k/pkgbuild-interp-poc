@@ -1,0 +1,37 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=wingpanel-indicator-bluetooth
+pkgver=8.0.0
+pkgrel=2
+pkgdesc='Wingpanel Bluetooth Indicator'
+arch=(x86_64)
+url=https://github.com/elementary/wingpanel-indicator-bluetooth
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  bluez
+  dconf
+  glib2
+  glibc
+  granite7
+  gtk4
+  libgee
+  wingpanel
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+#source=(git+https://github.com/elementary/wingpanel-indicator-bluetooth.git#tag=${pkgver})
+source=(git+https://github.com/elementary/wingpanel-indicator-bluetooth.git#tag=cccfecd0ebc24b1d1ed4e9f8ee2aa85765de5910)
+b2sums=('2ccd9fc082f9a5363437b96784dea31d741634adabb49993c2c3b1d6d9cacf42c9b435a1a05525c905f9583797acfa15949d5fd8954860abe0d66f5c0f188e81')
+
+build() {
+  arch-meson wingpanel-indicator-bluetooth build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}

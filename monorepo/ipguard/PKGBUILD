@@ -1,0 +1,41 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=ipguard
+pkgver=1.04
+pkgrel=10
+pkgdesc="ipguard - arp<->ip relation checking tool"
+arch=(x86_64)
+url="http://ipguard.deep.perm.ru/"
+license=("GPL")
+depends=(libpcap libnet)
+source=(http://ipguard.deep.perm.ru/files/$pkgname-$pkgver.tar.gz)
+md5sums=('7f44f7c31876f0d68792f02047e25409')
+sha256sums=('95bf97ae2c58827e34d40daa7065c5107d39a67eb92e2164f7758846f43c41fe')
+
+prepare() {
+  cd "$srcdir"/$pkgname-$pkgver
+  sed -i \
+    -e 's|$(PREFIX)/sbin|$(PREFIX)/bin|g' \
+    -e 's|libnet11-config|libnet-config|g' \
+    Makefile
+}
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+  export CFLAGS="${CFLAGS}  -fcommon -DLIBNET_LIL_ENDIAN"
+  make \
+    CC="gcc $CFLAGS $LDFLAGS" \
+    LOCALBASE=/usr \
+    LIBNET_CONFIG=libnet-config
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+  make \
+    PREFIX="$pkgdir"/usr \
+    LOCALBASE=/usr \
+    install
+  mkdir -p "$pkgdir"/usr/share
+  mv "$pkgdir"/usr/man "$pkgdir"/usr/share/
+}

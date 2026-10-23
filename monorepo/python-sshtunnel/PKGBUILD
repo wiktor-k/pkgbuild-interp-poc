@@ -1,0 +1,75 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+_pkgname=sshtunnel
+pkgbase=python-sshtunnel
+pkgname=('sshtunnel' 'python-sshtunnel')
+_gitcommit=58a46ef8b66be5eded29cd9bda4dccedb46ec586
+pkgver=0.4.0
+pkgrel=9
+pkgdesc='Pure python SSH tunnels'
+url='https://github.com/pahaz/sshtunnel'
+arch=('any')
+license=('MIT')
+makedepends=('git' 'python-build' 'python-installer' 'python-paramiko' 'python-setuptools' 'python-sphinx' 'python-wheel')
+checkdepends=('python-pytest' 'openssh')
+source=(${pkgbase}::"git+https://github.com/pahaz/sshtunnel#commit=${_gitcommit}"
+        0001-Use-unittest.mock-on-Python-3.3.patch
+        paramiko-4.patch)
+sha512sums=('c19ead822f4734a4f228b19263ee9477bb4fdf39ceb5b91f43cecd3b56d26c0e20de88b50c1f74e9afead09177b43725ab1669bc270c471dc709ae04d8e0731f'
+            'eb1f52abc18e12b82f55cf0576fe45c0eb211a94e4c86c3e7eb86a0005b8cef41f3b6014067a49bf93bbffd58c4fdd5c4d48098083db3b91a441360292337cf3'
+            '429999684f7ef66da6568024622605561b0847ee8cd596455a8d089d6dbe087a345a4c5ee7e185323ccf7861aef07063025608ae127f9098b14c650fd3204436')
+
+pkgver() {
+  cd ${pkgbase}
+  git describe --long --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g' | sed -E 's|\.r0\.\w+$||'
+}
+
+prepare() {
+  cd ${pkgbase}
+  sed '/sphinxcontrib.napoleon/d' -i docs/conf.py
+  patch -Np1 -i ${srcdir}/0001-Use-unittest.mock-on-Python-3.3.patch
+  patch -p1 -i ../paramiko-4.patch
+}
+
+build() {
+  cd ${pkgbase}
+  python -m build --wheel --no-isolation
+
+  export PYTHONPATH="$PWD:$PYTHONPATH"
+  sphinx-build -b text docs docs/_build/text
+  sphinx-build -b man docs docs/_build/man
+}
+
+check() {
+  cd ${pkgbase}
+  pytest -vv
+}
+
+package_sshtunnel() {
+  depends=('python' 'python-sshtunnel')
+  pkgdesc+=' (CLI)'
+
+  cd ${pkgbase}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -d "${pkgdir}/usr/share/"{licenses,doc,man/man1}
+  ln -s /usr/share/licenses/python-sshtunnel "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s /usr/share/doc/python-sshtunnel "${pkgdir}/usr/share/doc/${pkgname}"
+  ln -s /usr/share/man/man1/python-sshtunnel.1.gz "${pkgdir}/usr/share/man/man1/${pkgname}.1.gz"
+
+  rm -r "${pkgdir}/usr/lib"
+}
+
+package_python-sshtunnel() {
+  depends=('python' 'python-paramiko')
+
+  cd ${pkgbase}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 README.rst changelog.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 docs/_build/text/*.txt -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 docs/_build/man/sshtunnel.1 "${pkgdir}/usr/share/man/man1/${pkgname}.1"
+
+  rm -r "${pkgdir}/usr/bin"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,23 @@
+# Maintainer: Jelle van der Waa
+
+pkgname=python-hatch-gettext
+pkgver=1.1.2
+pkgrel=1
+pkgdesc='Hatch build hook plugin for GNU gettext'
+url='https://github.com/damonlynch/hatch-gettext'
+arch=('any')
+license=('GPL-3.0-or-later')
+depends=('python' 'python-rich')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-hatchling')
+source=($pkgname-$pkgver.tar.gz::https://github.com/damonlynch/hatch-gettext/archive/refs/tags/v${pkgver}.tar.gz)
+sha256sums=('efc9483fba824f5c35882dd81d3f5c04b9174196bff1bba1128e92c45c109a17')
+
+build() {
+    cd ${pkgname#python-}-$pkgver
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd ${pkgname#python-}-$pkgver
+    python -m installer --destdir="$pkgdir" dist/*.whl
+}

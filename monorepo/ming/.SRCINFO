@@ -1,0 +1,26 @@
+pkgbase = ming
+	pkgdesc = SWF output library
+	pkgver = 0.4.8.r68.g04aee523
+	pkgrel = 8
+	url = https://github.com/libming
+	arch = x86_64
+	license = GPL
+	license = LGPL
+	makedepends = bison
+	makedepends = pkgconf
+	makedepends = swig
+	makedepends = python-setuptools
+	makedepends = git
+	depends = freetype2
+	depends = libpng
+	depends = flex
+	depends = giflib
+	options = !emptydirs
+	source = git+https://github.com/libming/libming.git#commit=04aee52363688426eab74f5d6180c149654a6473
+	source = py3.patch
+	source = ming-0.4.8-swig-4.1.patch
+	sha256sums = SKIP
+	sha256sums = c33000d71c4e7308c6c4b7a3be05087d6b088b86caa841d0e11585c26cbc1e64
+	sha256sums = 33cca7f5f5b17805a0ca1b56e4ef1e2be3492169bbb8500a3d872b3ac762758e
+
+pkgname = ming

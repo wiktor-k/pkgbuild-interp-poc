@@ -1,0 +1,38 @@
+# Maintainer: Sergej Pupykin <arch+pub@sergej.pp.ru>
+
+pkgname='perl-graphics-toolkit-color'
+pkgver=2.22
+pkgrel=1
+pkgdesc="A color palette constructor"
+arch=('x86_64')
+license=('Artistic-1.0-Perl' 'GPL-1.0-or-later')
+options=('!emptydirs')
+depends=('perl')
+makedepends=('perl-test-warn')
+url='https://metacpan.org/release/Graphics-Toolkit-Color'
+source=("https://cpan.metacpan.org/authors/id/L/LI/LICHTKIND/Graphics-Toolkit-Color-$pkgver.tar.gz")
+sha256sums=('cb539e9e05b83c7d47b6d859a9d4784006fe4ca882285d756cad39a76ab45832')
+
+build() {
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""                 \
+      PERL_AUTOINSTALL=--skipdeps                            \
+      PERL_MM_OPT="INSTALLDIRS=vendor DESTDIR='"$pkgdir"'"     \
+      PERL_MB_OPT="--installdirs vendor --destdir '"$pkgdir"'" \
+      MODULEBUILDRC=/dev/null
+    cd "$srcdir/Graphics-Toolkit-Color-$pkgver"
+    perl Makefile.PL
+    make
+  )
+}
+
+check() {
+  cd "$srcdir/Graphics-Toolkit-Color-$pkgver"
+  ( export PERL_MM_USE_DEFAULT=1 PERL5LIB=""
+    make test
+  )
+}
+
+package() {
+  cd "$srcdir/Graphics-Toolkit-Color-$pkgver"
+  make install
+}

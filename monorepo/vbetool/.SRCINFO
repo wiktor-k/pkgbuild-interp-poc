@@ -1,0 +1,18 @@
+pkgbase = vbetool
+	pkgdesc = Uses lrmi in order to run code from the video BIOS
+	pkgver = 1.2.2
+	pkgrel = 8
+	url = https://cgit.freedesktop.org/~airlied/vbetool/
+	arch = x86_64
+	license = GPL2
+	makedepends = pciutils
+	makedepends = git
+	depends = zlib
+	depends = libx86
+	depends = libpciaccess
+	source = git+git://people.freedesktop.org/~airlied/vbetool#commit=8cf64e31ff27ac4e9daa17d9178ad7d8d652fd08
+	source = no_x86_check.patch
+	sha256sums = SKIP
+	sha256sums = 3deffcde92834425b9d71416e408a58abe07d6c807dc315747f0f02508859a81
+
+pkgname = vbetool

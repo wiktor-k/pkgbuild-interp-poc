@@ -1,0 +1,46 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: HurricanePootis <hurricanepootis@protonmail.com>
+# Contributor: Spike29 <leguen.yannick@gmail.com>
+# Contributor: Samir Faci <csgeek@archlinux.us>
+# Contributor: TimothÃ©e Ravier <tim@siosm.fr>
+
+pkgname=qxmpp
+pkgver=1.17.0
+pkgrel=1
+pkgdesc='Cross-platform C++ XMPP client and server library'
+arch=(x86_64)
+url='https://invent.kde.org/libraries/qxmpp'
+license=(LGPL-2.1-or-later)
+depends=(glib2
+         glibc
+         gstreamer
+         libgcc
+         libstdc++
+         openssl
+         qt6-base)
+makedepends=(cmake
+             extra-cmake-modules
+             git
+             libomemo-c
+             qt6-tools)
+optdepends=('libomemo-c: OMEMO support')
+conflicts=(qxmpp-qt6)
+provides=(qxmpp-qt6)
+replaces=(qxmpp-qt6)
+source=(git+https://invent.kde.org/libraries/qxmpp#tag=v$pkgver)
+sha256sums=('c03d323cc0be1b788df28de8fd8fbb57f18971d4866033550c5ede08827d5407')
+
+build() {
+  cmake -B build -S $pkgbase \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_TESTS=OFF \
+    -DWITH_GSTREAMER=ON \
+    -DBUILD_OMEMO=ON \
+    -DQT_VERSION_MAJOR=6
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

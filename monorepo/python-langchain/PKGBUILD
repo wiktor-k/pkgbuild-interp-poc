@@ -1,0 +1,73 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langchain
+pkgver=1.3.18
+pkgrel=1
+pkgdesc="Building applications with LLMs through composability"
+arch=('any')
+url="https://github.com/langchain-ai/langchain"
+license=('MIT')
+depends=(
+  'python'
+  'python-langchain-core'
+  'python-langgraph'
+  'python-pydantic'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-blockbuster'
+  'python-dotenv'
+  'python-httpx'
+  'python-langchain-openai'
+  'python-langchain-tests'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-pytest-benchmark'
+  'python-pytest-mock'
+  'python-pytest-recording'
+  'python-pytest-socket'
+  'python-pytest-xdist'
+  'python-requests'
+  'python-syrupy'
+  'python-toml'
+  'python-vcrpy'
+)
+source=("git+https://github.com/langchain-ai/langchain.git")
+sha512sums=('SKIP')
+
+prepare() {
+  cd langchain
+
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "langchain==$pkgver"
+}
+
+build() {
+  cd langchain/libs/langchain_v1
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langchain/libs/langchain_v1
+
+  # OpenAI integration cases require provider credentials or outbound network;
+  # upstream runs them in integration CI with secrets.
+  LANGGRAPH_TEST_FAST=1 python -m pytest \
+    --benchmark-disable --disable-socket --allow-unix-socket \
+    --deselect=tests/integration_tests/agents/middleware/test_human_in_the_loop_integration.py::test_hitl_reject_does_not_retry[openai] \
+    --deselect=tests/integration_tests/agents/middleware/test_shell_tool_integration.py::test_shell_tool_basic_execution[openai] \
+    --deselect=tests/integration_tests/chat_models/test_base.py::TestStandard \
+    --deselect=tests/integration_tests/embeddings/test_base.py::test_init_embedding_model[openai-text-embedding-3-large]
+}
+
+package() {
+  cd langchain/libs/langchain_v1
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 ../../LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

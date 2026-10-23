@@ -1,0 +1,25 @@
+pkgbase = gcovr
+	pkgdesc = provides a utility for managing the use of the GNU gcov utility
+	pkgver = 8.7
+	pkgrel = 1
+	url = https://gcovr.com/
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	makedepends = python-hatchling
+	makedepends = python-hatch-vcs
+	makedepends = python-hatch-fancy-pypi-readme
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = git
+	depends = python
+	depends = python-jinja
+	depends = python-lxml
+	depends = gcc
+	depends = python-colorlog
+	depends = python-pygments
+	source = git+https://github.com/gcovr/gcovr.git#tag=8.7
+	sha256sums = abd3db2070fb4c6d9114b02757edb0a6c0e9a57fcb52ee3be7e90ac3dee31bc2
+
+pkgname = gcovr

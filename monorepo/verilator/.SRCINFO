@@ -1,0 +1,21 @@
+pkgbase = verilator
+	pkgdesc = The fastest free Verilog HDL simulator
+	pkgver = 5.052
+	pkgrel = 1
+	url = https://www.veripool.org/verilator/
+	arch = x86_64
+	license = LGPL-3.0-only
+	license = Artistic-2.0
+	checkdepends = python-distro
+	makedepends = git
+	makedepends = help2man
+	makedepends = systemc
+	depends = perl
+	depends = python
+	depends = lz4
+	depends = zlib
+	optdepends = systemc
+	source = git+https://github.com/verilator/verilator.git#tag=v5.052
+	sha512sums = 172c387455628a528bb668516f519c409bc63c12538be3be9592df7634d5ad9d1456dc73d0a5640b7414a945ff734db8a66827c648929094e88fa379cd043163
+
+pkgname = verilator

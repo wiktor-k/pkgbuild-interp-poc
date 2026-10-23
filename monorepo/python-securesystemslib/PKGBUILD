@@ -1,0 +1,83 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-securesystemslib
+pkgver=1.5.1
+pkgrel=1
+pkgdesc="Cryptographic and general-purpose routines for Secure Systems Lab projects at NYU"
+arch=('any')
+url="https://github.com/secure-systems-lab/securesystemslib"
+license=(
+  'CC0-1.0'
+  'MIT'
+)
+depends=(
+  'python'
+  'python-cryptography'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-asn1crypto'
+  'python-python-pkcs11'
+  'softhsm'
+)
+optdepends=(
+  'python-boto3: AWS KMS signer support'
+  'python-botocore: AWS KMS signer support'
+  'python-hvac: HashiCorp Vault signer support'
+  'python-python-pkcs11: HSM (PKCS#11) signer support'
+)
+source=(
+  "git+$url.git#tag=v$pkgver"
+  "skip-failing-test.patch"
+)
+b2sums=('002039852d80607effa64990d62cb50b0a9709e32ea66adbb33b49ee95f9a12e917e5f2a58d596c355d4282165d3c39a848eb7f98d28b17df5b5fa366d86532f'
+        'bc38899b33d03630a9647cc064b1b09287aa5cc000618757c0c86a5d0e104bb952c8b609fd6cd44c01eb46f3c2aff523d15769ffa4b0d8cc7ee5a7fe18427c63')
+validpgpkeys=(
+  "C2FB9C910758B6827BC43233BC0C6DEDD5E5CC03" # Sebastien Awwad (upstream co-maintainer)
+  "8BA69B87D43BE294F23E812089A2AD3C07D962E8" # Lukas Puehringher (upstream maintainer)
+  "903BAB73640EB6D65533EFF3468F122CE8162295" # Santiago Torres-Arias <santiago@archlinux.org> (upstream co-maintainer)
+  "08F3409FCF71D87E30FBD3C21671F65CB74832A4" # Joshua Lock (GPG on YubiKey) <jlock@vmware.com> (upstream co-maintainer)
+  "1343C98FAB84859FE5EC9E370527D8A37F521A2F" # Jussi Kukkonen <jkukkonen@vmware.com>
+)
+
+prepare() {
+  cd ${pkgname#python-}
+  # Test requires python-pyspx which is not packaged.
+  patch -Np1 -i ../skip-failing-test.patch
+}
+
+build() {
+  cd ${pkgname#python-}
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd ${pkgname#python-}
+  # Enables the HSMSigner tests against SoftHSM.
+  export PYKCS11LIB=/usr/lib/softhsm/libsofthsm2.so
+  python -m unittest discover -vs tests
+}
+
+package() {
+  cd ${pkgname#python-}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Upstream ships the vendored ed25519 test suite and its CI helper script
+  local vendor
+  vendor="$pkgdir$(python -c 'import site; print(site.getsitepackages()[0])')/securesystemslib/_vendor"
+  rm -vr "$vendor/ed25519/test_data"
+  rm -v "$vendor/test-ed25519-upstream.sh" \
+    "$vendor/ed25519/"{science,test_ed25519}.py \
+    "$vendor/ed25519/__pycache__/"{science,test_ed25519}.cpython-*.pyc
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -vDm644 securesystemslib/_vendor/ed25519/LICENSE \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE.ed25519"
+}

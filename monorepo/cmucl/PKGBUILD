@@ -1,0 +1,47 @@
+# Contributor: John Proctor <jproctor@prium.net>
+# Contributor: Alain Kalker <a.c.kalker@gmail.com>
+# Maintainer: Juergen Hoetzel <juergen@archlinux.org>
+
+pkgname=cmucl
+pkgver=21e
+pkgrel=1
+pkgdesc="CMU Common Lisp"
+depends_i686=('glibc' 'openmotif')
+depends_x86_64=('lib32-glibc' 'openmotif')
+provides=('common-lisp' 'cl-asdf')
+makedepends=('sed' 'bc' 'lib32-gcc-libs')
+license=('custom')
+#license PublicDomain
+source=("https://common-lisp.net/project/cmucl/downloads/release/${pkgver}/cmucl-src-${pkgver}.tar.bz2"
+        "https://common-lisp.net/project/cmucl/downloads/release/${pkgver}/cmucl-src-${pkgver}.tar.bz2.asc"
+        "https://common-lisp.net/project/cmucl/downloads/release/${pkgver}/cmucl-${pkgver}-x86-linux.tar.bz2"
+        "https://common-lisp.net/project/cmucl/downloads/release/${pkgver}/cmucl-${pkgver}-x86-linux.tar.bz2.asc")
+sha256sums=('7dd5868d4091fd27f560b3ceab651547106f0331c7a7de29ffe18bcaece845d1'
+            'SKIP'
+            'bbeaa6a2f446896f0c171c9a1a4eb834df395f8922e4760285edcf6342f2544c'
+            'SKIP')
+validpgpkeys=('0EF50ED55514BFF6B72B9DAC06CE3819086C750B') # "Raymond Toy <toy.raymond@gmail.com>
+url="https://www.cons.org/cmucl/"
+arch=('x86_64')
+
+build() {
+  cd "${srcdir}"
+  export CFLAGS+=' -ffat-lto-objects'
+  export CMUCLLIB="${srcdir}"/lib/cmucl/lib
+  # Build using binary-dist lisp
+  ./bin/build-all.sh -o "${srcdir}"/bin/lisp -C x86_linux
+}
+
+package() {
+  cd "${srcdir}"
+  # install distribution
+  ./bin/make-dist.sh -I "${pkgdir}"/usr -M share/man/man1 -V ${pkgver} linux-4
+  # move docs
+  mv "${pkgdir}"/usr/doc "${pkgdir}"/usr/share/
+  # backwards compatibility
+  ln -sf lisp "${pkgdir}"/usr/bin/cmucl
+  # license
+  install -D -m644 "${srcdir}"/src/general-info/COPYRIGHTS \
+                   "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+}
+

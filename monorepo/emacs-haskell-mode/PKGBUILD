@@ -1,0 +1,37 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Gleidson <gleidson.echeli@gmail.com>
+
+pkgname=emacs-haskell-mode
+pkgver=17.5
+pkgrel=1
+_commit=2dd755a5fa11577a9388af88f385d2a8e18f7a8d
+pkgdesc="Haskell mode package for Emacs"
+arch=(any)
+license=('GPL')
+url="https://github.com/haskell/haskell-mode"
+install=emacs-haskell-mode.install
+makedepends=('emacs')
+#source=($pkgname-$pkgver.tar.gz::https://github.com/haskell/haskell-mode/archive/refs/tags/v$pkgver.tar.gz)
+source=($pkgname-${_commit}.tar.gz::https://github.com/haskell/haskell-mode/archive/${_commit}.tar.gz)
+sha256sums=('076681c723018ea28cad2a53786d71debba42af88f45f6f3c80bff005ad395ea')
+
+build() {
+#  cd "$srcdir"/haskell-mode-$pkgver
+  cd "$srcdir"/haskell-mode-${_commit}
+  export EMACS=/usr/bin/emacs
+  make
+}
+
+package() {
+#  cd "$srcdir"/haskell-mode-$pkgver
+  cd "$srcdir"/haskell-mode-${_commit}
+
+  install -dm0755 "$pkgdir"/usr/share/emacs/site-lisp/haskell-mode
+  install -m0644 *.el -t "$pkgdir"/usr/share/emacs/site-lisp/haskell-mode
+  cp -a build-$(emacs --version | head -n1 | cut -f3 -d' ') -t "$pkgdir"/usr/share/emacs/site-lisp/haskell-mode/
+
+  install -dm0755 "$pkgdir"/usr/share/doc/$pkgname
+  install -m0644 NEWS README.md "$pkgdir"/usr/share/doc/$pkgname
+
+  install -Dm0644 haskell-mode.info "$pkgdir"/usr/share/info/haskell-mode.info
+}

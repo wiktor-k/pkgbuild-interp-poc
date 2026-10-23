@@ -1,0 +1,58 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Wesley Moore <wes@wezm.net>
+
+pkgname=git-grab
+pkgver=4.0.1
+pkgrel=3
+pkgdesc='A tool to clone git repositories to a standard location organised by domain and path'
+arch=(x86_64)
+url='https://github.com/wezm/git-grab'
+license=('MIT OR Apache-2.0')
+depends=(
+  glibc
+  libgcc
+  git
+)
+makedepends=(rust)
+options=(!lto)
+source=("$pkgname::git+$url.git#tag=$pkgver")
+sha512sums=('d2de025ad0208d94a8e0f6d86754e7dd08fc520747a65f0462865afe952c2d94a65b1ef3604e00a6b5cf84d1fa3c663d9b5474c20a25ef85afad4863767bce29')
+b2sums=('cda1390dca7771fa1f7efc74ad36c28b018322b6fb5d449e70f2510b2f3b4becdcfcf686e45f9dc3971eb21fa2decc28a6b120fa7b5dfc15ee87703415ee77fa')
+
+prepare() {
+  cd "$pkgname"
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$pkgname"
+
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/git-grab
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" git-grab.1
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+  sed -n '/^Licence/,/^at your option./p' \
+    README.md \
+    > "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

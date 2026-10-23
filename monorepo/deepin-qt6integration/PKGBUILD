@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-qt6integration
+pkgver=6.0.50
+pkgrel=1
+pkgdesc='Qt 6 platform theme integration plugins for DDE'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/qt6integration"
+license=('LGPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'glibc' 'libgcc' 'libstdc++' 'libx11' 'libqtxdg')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'xcb-util-renderutil' 'gtest')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/qt6integration.git#tag=$pkgver")
+sha512sums=('5201b89867c94a8b4d100d1995efa1b4c8f486515642d2e8284507f1b38f7a956b55175965dc4b22678381ab0bf9decabdd3995cc542ae25e69ec29fc897e9f0')
+
+build() {
+  cd qt6integration
+  cmake . -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+package() {
+  cd qt6integration
+  DESTDIR="$pkgdir" ninja install
+}

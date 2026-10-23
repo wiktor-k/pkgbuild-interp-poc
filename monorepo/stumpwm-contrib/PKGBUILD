@@ -1,0 +1,48 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=stumpwm-contrib
+pkgver=r620.g78b574d
+pkgrel=1
+pkgdesc='Collection of StumpWM modules'
+arch=(any)
+url='https://github.com/stumpwm/stumpwm-contrib'
+license=(GPL-2.0-or-later)
+depends=(stumpwm)
+makedepends=(git)
+optdepends=(
+  'xorg-xprop: for stumpish, the StumpWM Interactive Shell'
+  'rlwrap: command completion and history in stumpish'
+  'alsa-utils: manipulate the volume using amixer'
+  'mpd: display information about mpd'
+  'surfraw: surf the internet'
+  'pass: pass integration'
+  'pinentry: gnupg agent integration'
+)
+_commit='78b574de489fa4a4c156d15a55ac991739a9c58f'
+source=("$pkgname::git+$url#commit=$_commit")
+sha512sums=('6eb75a72c16629f05b85cb825a6adcc75f95e674b2b378b8dbd8840a3803a64055be2232700ac7fc04b055d4fd681e17502226efa45a130e44928345d6f8f4d6')
+b2sums=('407f0759fc652748e657a87a45ad02091ae075019557a6c00a983cda8a6006499d481f9424eab0f161a2c438825406318d3a5e0945465e71f3affdcd3938664f')
+
+pkgver() {
+  cd "$pkgname"
+
+  printf 'r%s.g%s' "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+package() {
+  cd "$pkgname"
+
+  install -vd "$pkgdir/usr/share/stumpwm/contrib"
+
+  # skip useless directories/files
+  find . \
+    -maxdepth 1 \
+    -mindepth 1 \
+    -type d \
+    -not -path './docs' \
+    -not -path './.git' \
+    -exec cp -ra {} "$pkgdir/usr/share/stumpwm/contrib" \;
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.org
+}

@@ -1,0 +1,49 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Claudia Pellegrino <aur@cpellegrino.de>
+
+pkgname=python-soxr
+pkgver=1.1.0
+pkgrel=2
+pkgdesc='High quality, one-dimensional sample-rate conversion library for Python'
+arch=(x86_64)
+url=https://github.com/dofuuz/python-soxr
+license=(LGPL-2.1-or-later)
+depends=(
+  glibc
+  libgcc
+  libsoxr
+  libstdc++
+  python
+  python-numpy
+)
+makedepends=(
+  cython
+  git
+  nanobind
+  python-build
+  python-installer
+  python-scikit-build-core
+  python-setuptools
+  python-setuptools-scm
+)
+source=(git+https://github.com/dofuuz/python-soxr.git#tag=v${pkgver})
+b2sums=('659816db3ad6cff01d7d6be2b29cef2a1ce7060875e1345dbd21e91b40d3307f441f659ccfecf74c742f68eb407a70c216b9c688853d1bc82768f7a132bc542c')
+
+prepare() {
+  cd python-soxr
+  rm -rf libsoxr
+}
+
+build() {
+  cd python-soxr
+  export SETUPTOOLS_SCM_PRETEND_VERSION="${pkgver}"
+  python -m build --wheel --no-isolation \
+    -C=cmake.define.USE_SYSTEM_LIBSOXR=ON
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" python-soxr/dist/*.whl
+  install -Dm 644 python-soxr/LICENSE.txt -t "${pkgdir}"/usr/share/licenses/python-soxr/
+}
+
+# vim: ts=2 sw=2 et:

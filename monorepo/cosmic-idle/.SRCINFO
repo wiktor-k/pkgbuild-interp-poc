@@ -1,0 +1,22 @@
+pkgbase = cosmic-idle
+	pkgdesc = Cosmic idle daemon
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-idle
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	depends = libgcc
+	depends = glibc
+	depends = libxkbcommon
+	depends = wayland
+	source = git+https://github.com/pop-os/cosmic-idle.git#tag=epoch-1.10.0
+	b2sums = 4bdd89487aa752631de0268b53bc1b5c0784d845578c3f3ed08304da0abfeb2d214a393b256416d65cf635f32eb8647b883751daf693b45b9d749059a21242f4
+
+pkgname = cosmic-idle

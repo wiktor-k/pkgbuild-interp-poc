@@ -1,0 +1,21 @@
+pkgbase = opengl-man-pages
+	pkgdesc = OpenGL Man Pages - OpenGL 4.x
+	pkgver = 20261006
+	pkgrel = 1
+	url = https://github.com/KhronosGroup/OpenGL-Refpages
+	arch = any
+	license = SGI-B-2.0
+	license = OPL-1.0
+	makedepends = docbook5-xml
+	makedepends = docbook-xsl
+	makedepends = libxslt
+	makedepends = docbook-mathml
+	makedepends = w3c-mathml2
+	makedepends = python
+	makedepends = git
+	source = opengl-man-pages::git+https://github.com/KhronosGroup/OpenGL-Refpages#commit=4bdf67a73d040f79bd7b087f5c1e588809e1f329
+	source = license-from-upstream
+	sha256sums = bfe17c6097aa0dd2a5f75e764c4f9943332c1387cfabcf94ad437f7ef24859fa
+	sha256sums = a7b2f6669d7ead91dcaf5a03620cdf9d37c54d83fd1899b4ef84683c7e6d4024
+
+pkgname = opengl-man-pages

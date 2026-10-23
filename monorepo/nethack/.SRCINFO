@@ -1,0 +1,31 @@
+pkgbase = nethack
+	pkgdesc = A single player dungeon exploration game
+	pkgver = 5.0.0
+	pkgrel = 1
+	url = https://www.nethack.org
+	arch = x86_64
+	license = NGPL
+	makedepends = git
+	depends = filesystem
+	depends = ncurses
+	depends = gzip
+	depends = lua54
+	backup = etc/nethack/sysconf
+	source = nethack::git+https://github.com/NetHack/NetHack#tag=NetHack-5.0.0_Released
+	source = use-system-lua54.patch
+	source = tmpfiles.conf
+	sha512sums = e6479bfbd8a7954a2fda3043e45e1781667a0c2ded79ae3b7409aabca77313ca1fa5663ab682d1f78a3e7881d9b05212210a2cadd9ce0f9406295b2370068440
+	sha512sums = 4588e5f4065b307bcd61e0c5df487e6f5cae98aa3ff4743302bbd178f90b5aeb002f3017e70d903d71cbe757c64b1e6557e3b90aaa0c607a2558a1e750e4a4d7
+	sha512sums = 6cd65520b019bf6bff8575b621f876d6afb9aca0d6fe4f02eda161d9b2df6a5b64b865cb47ca7192dfd626de0af327585baa6eebb206a756873616938620b926
+	b2sums = 3947d6bf5d00895909dcecce3fb2bb6426ed9bdb910156aba36a4677d59fb217fa7d0dabdfb25a0eec705ea8833f535ae62b2404cb1a90e04964efa78ca1d1fe
+	b2sums = 4e7d454af1ca049e18afcd8aa6f41dba984628e59c5cf8197dfa938622c87a640016b8320205e711e31e40f1406b13a2860e1382f5e3542d345d1a44c1873b18
+	b2sums = d6e89c878857c129bd48bd04a8bfa0247d3662406882954bfc8c6d3b1ff4bfc8ee0c8e19144427cf7ba8cef3a65e314cb867bcc36970b6dead28085b9ca4748d
+
+pkgname = nethack
+	depends = filesystem
+	depends = ncurses
+	depends = gzip
+	depends = lua54
+	depends = glibc
+	depends = sh
+	depends = util-linux-libs

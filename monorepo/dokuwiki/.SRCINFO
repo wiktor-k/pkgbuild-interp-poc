@@ -1,0 +1,17 @@
+pkgbase = dokuwiki
+	pkgdesc = Simple to use and highly versatile Open Source wiki software
+	pkgver = 20260714_c
+	pkgrel = 1
+	url = https://www.dokuwiki.org/
+	arch = any
+	license = GPL
+	depends = php-interpreter
+	options = !strip
+	backup = etc/webapps/dokuwiki/.htaccess
+	backup = etc/httpd/conf/extra/dokuwiki.conf
+	source = dokuwiki-20260714_c.tar.gz::https://github.com/dokuwiki/dokuwiki/releases/download/release-2026-07-14c/dokuwiki-2026-07-14c.tgz
+	source = apache.example.conf
+	sha256sums = 7e9b4dcb5ecb91a57f71b9b77dcec7bcf929959881464796611349ed1d183176
+	sha256sums = 237e11ec2c1cd69d0b7e8cff2169d0072666b31694efd727338c9197199e0f5f
+
+pkgname = dokuwiki

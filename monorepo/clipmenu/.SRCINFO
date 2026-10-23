@@ -1,0 +1,17 @@
+pkgbase = clipmenu
+	pkgdesc = Clipboard management using dmenu
+	pkgver = 6.2.0
+	pkgrel = 3
+	url = https://github.com/cdown/clipmenu
+	arch = any
+	license = custom:Public Domain
+	depends = dmenu
+	depends = xsel
+	depends = clipnotify
+	depends = xdotool
+	optdepends = rofi: dmenu replacement (use with "export CM_LAUNCHER=rofi")
+	optdepends = fzf: terminal fuzzy launcher (use with "export CM_LAUNCHER=fzf")
+	source = clipmenu-6.2.0.tar.gz::https://github.com/cdown/clipmenu/archive/6.2.0.tar.gz
+	sha512sums = adfd649a120264552e2c05314ae2ad039055308f77d620dbb3fc206e4244a6f1f2e5ed4a7e86fd547a78692aebaec1761528e10408d838f80def99959ef58295
+
+pkgname = clipmenu

@@ -1,0 +1,34 @@
+pkgbase = rpi-imager
+	pkgdesc = Raspberry Pi Imaging Utility
+	pkgver = 2.0.12
+	pkgrel = 1
+	url = https://github.com/raspberrypi/rpi-imager
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = cmake
+	makedepends = qt6-tools
+	makedepends = qt6-svg
+	depends = curl
+	depends = glibc
+	depends = gnutls
+	depends = hicolor-icon-theme
+	depends = libarchive
+	depends = libgcc
+	depends = libstdc++
+	depends = liburing
+	depends = libusb
+	depends = polkit
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = xz
+	depends = zstd
+	optdepends = dosfstools: SD card bootloader support
+	source = git+https://github.com/raspberrypi/rpi-imager.git#tag=v2.0.12
+	source = remove-vendoring.patch
+	source = set-archlinux-version-suffix.patch
+	b2sums = 1ecd353f4d1e25cbf21dab431d7754d9bc1e20a2aa2b2769a932fc59fbf07b9d3f70186f8e26f1c6e25653eb4aac5a67c1af3158dd2159f8c228d1bb3d0990e4
+	b2sums = c74100eb29fce2bd5e54e4b7b96475b2e024e28d09098aeee573099034eaf5c406cf2e638fce85758d97ace92a35238b9fbcbe073fdf7084bbda40e900ec9a6a
+	b2sums = 514374bec639dd01a673e5b7a3f85ea88701ee4ac954c85118480732a55d44df0b7b06a4cdf41b90b309ed43eb5dd7417e7310be4765fad391df46312bf315f2
+
+pkgname = rpi-imager

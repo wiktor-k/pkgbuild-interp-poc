@@ -1,0 +1,31 @@
+pkgbase = notification-daemon
+	pkgdesc = Server implementation of the freedesktop.org desktop notification specification
+	pkgver = 3.20.0
+	pkgrel = 8
+	url = https://wiki.gnome.org/Attic/NotificationDaemon
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = autoconf-archive
+	makedepends = git
+	makedepends = glib2-devel
+	depends = at-spi2-core
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libx11
+	depends = pango
+	source = git+https://gitlab.gnome.org/Archive/notification-daemon.git#tag=3.20.0
+	source = 0001-Fix-hyperlinks-in-body.patch
+	source = 0001-Use-gtk_show_uri_on_window-to-show-links.patch
+	source = 0001-Remove-the-limit-of-20-notifications-at-a-time.patch
+	source = 0001-Allow-configuration-of-notification-location.patch
+	b2sums = f417369b7bd44a3587d30fc29fe1bbb53953ae9342aa27ffef67c59d33de974542c021668f6ffb3a4990868cd35e826faa59b104f194faa7888451362cc2fae4
+	b2sums = 40cfd948eb84d0132a1b0796d2d91c581d42d8f93f27b0a866c609f5b69aacd307bc66c09f994fc4643d7116255ac0a29434974451a1f391e3ae794104c3d965
+	b2sums = 40ae8b84d67d467ec72e0dd8c5390804b7e7fffa3b24cdb6cb75195e3f9a89e3e533bb56acb7b8a530ca3d12df029fc25c5f24f2f7466092ebdcdfa4cb14e1df
+	b2sums = c4f4e5716e7b1f40a52f4132613e664734dff220ae9cdada9f18a971dd7cd79f6f24151f381af8bda693dc561ea57ff827687a2472f0e8cbc740888e38f91ff1
+	b2sums = b8bb45ad9167fb16718b530cf9c7696e5a8b783dceeadd15a10d8b196ddca2eb7840ebf36e2b59135f19c5280673b63ee6b68c67887f0a572d207657bbc97a5b
+
+pkgname = notification-daemon

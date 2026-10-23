@@ -1,0 +1,65 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=warehouse
+pkgver=2.2.0
+pkgrel=1
+pkgdesc='Versatile toolbox for viewing Flatpak info, managing user data, and batch managing installed Flatpaks'
+arch=(any)
+url='https://github.com/flattool/warehouse'
+license=(GPL-3.0-only)
+depends=(
+  dconf
+  flatpak
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  python
+  python-gobject
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=("git+https://github.com/flattool/warehouse.git#tag=$pkgver")
+b2sums=(08f18da6d7c607c1a623b31a8d757e9dfe7f74ef38ddb36a3185a6a4ef08411455ab8e1d9985d8c076141f4ddb8c6fe7edc560d9800aa4b17c0fae9c89cae576)
+
+prepare() {
+  cd $pkgname
+
+  # Don't fail if the OS has no version
+  # https://github.com/flattool/warehouse/pull/240
+  sed -i 's/GLib.get_os_info("VERSION")/(& or "")/' src/main.py
+
+  # Mark the startup script executable for all users
+  # https://github.com/flattool/warehouse/pull/241
+  sed -i "s/install_mode: 'r-xr--r--'/install_mode: 'r-xr-xr-x'/" src/meson.build
+
+  # Use appstreamcli for metainfo validation
+  # https://github.com/flattool/warehouse/pull/242
+  sed -i 's/appstream[_-]util/appstreamcli/g' data/meson.build
+
+  # Run commands directly without flatpak-spawn
+  sed -i -E \
+    -e 's/"flatpak-spawn",[[:space:]]*"--host",?[[:space:]]*//' \
+    -e '/"flatpak-spawn",[[:space:]]*$/{N; /"flatpak-spawn",[[:space:]]*\n[[:space:]]*"--host",[[:space:]]*$/d}' \
+    src/*.py src/*/*.py
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

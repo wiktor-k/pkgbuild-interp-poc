@@ -1,0 +1,20 @@
+pkgbase = pantheon-wayland
+	pkgdesc = Wayland integration library to the Pantheon Desktop
+	pkgver = 1.1.0
+	pkgrel = 1
+	url = https://github.com/elementary/pantheon-wayland
+	arch = x86_64
+	groups = pantheon
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = wayland
+	source = git+https://github.com/elementary/pantheon-wayland.git#tag=08e7f25928c16e2a238054d9904a93dcf519a7e0
+	b2sums = fcde30695925c04676d8af79afa344395c32216c159b7ae483f9998ff5e259ed7d6694cdf525a5ec11092eb58512df459f9987f7f0fe0046aae8b9f0cbdb6412
+
+pkgname = pantheon-wayland

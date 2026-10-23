@@ -1,0 +1,25 @@
+pkgbase = pantheon-polkit-agent
+	pkgdesc = Pantheon Polkit Agent
+	pkgver = 8.1.0
+	pkgrel = 1
+	url = https://github.com/elementary/pantheon-agent-polkit
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = cmake
+	makedepends = git
+	makedepends = meson
+	makedepends = intltool
+	makedepends = vala
+	depends = gcr-4
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libadwaita-1.so
+	depends = libgranite-7.so
+	depends = pantheon-wayland
+	depends = polkit
+	source = pantheon-polkit-agent::git+https://github.com/elementary/pantheon-agent-polkit.git#tag=8.1.0
+	b2sums = be8931da419e8c5c978491db22ba876beac6f45728ea2e01919c46b17be8357632b7e02e4ca65083334f6781ce22108ef609d3bd7c01935fc5f6c24698e722b0
+
+pkgname = pantheon-polkit-agent

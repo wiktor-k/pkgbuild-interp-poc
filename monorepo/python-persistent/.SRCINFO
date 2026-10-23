@@ -1,0 +1,21 @@
+pkgbase = python-persistent
+	pkgdesc = Translucent persistent objects
+	pkgver = 6.8
+	pkgrel = 1
+	url = https://github.com/zopefoundation/persistent/
+	arch = x86_64
+	license = ZPL-2.1
+	checkdepends = python-zope-testrunner
+	checkdepends = python-manuel
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python-cffi
+	depends = python-zope-interface
+	depends = python-zope-deferredimport
+	source = git+https://github.com/zopefoundation/persistent.git#tag=6.8
+	sha512sums = 673454d9e06de0b90fd65885a3e9df80a6b5f2d91a71d08c5472f3eedecd688acdf1e613b623128d060f4696d3d9d7d9777397ec18fbb03af3350ee4d392b5a7
+
+pkgname = python-persistent

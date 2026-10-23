@@ -1,0 +1,26 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Levente Polyak <anthraxx@archlinux.org>
+# Contributor: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Frank Tetzel <frank.tetzel@mailbox.tu-dresden.de>
+# Contributor: Hugo Doria <hugo@archlinux.org>
+# Contributor: Aurelien Foret <orelien@chez.com>
+
+pkgname=zsnes
+pkgver=2.3.7
+pkgrel=1
+pkgdesc='Classic Super Nintendo emulator'
+url='https://github.com/xyproto/zsnes'
+arch=(x86_64)
+license=(GPL-2.0-only)
+depends=(hicolor-icon-theme libpng opengl-driver pipewire sdl3)
+makedepends=(git mesa python)
+source=("git+$url#tag=$pkgver")
+b2sums=('1409f2585b8fe5bcad1b468e0b28598e89dc040db6c9470929b7728e8ea81153fc3da99918682828581c4b2f16c04cf91ea275952a03f2b65fe18b40f425d7d0')
+
+build() {
+  make -C $pkgname
+}
+
+package() {
+  DESTDIR="$pkgdir" make -C $pkgname install
+}

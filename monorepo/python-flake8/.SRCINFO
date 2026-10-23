@@ -1,0 +1,25 @@
+pkgbase = python-flake8
+	pkgdesc = The modular source code checker: pep8, pyflakes and co
+	pkgver = 7.4.1
+	pkgrel = 1
+	epoch = 1
+	url = https://flake8.pycqa.org
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-pyflakes
+	depends = python-mccabe
+	depends = python-pycodestyle
+	provides = flake8
+	replaces = flake8
+	source = python-flake8::git+https://github.com/PyCQA/flake8#tag=7.4.1
+	sha512sums = 0ab4ef9948ed37f9878ca2f0c73ccb4222a83756226b71072090086dc4fb8c5bb50a27016becd398950a04bbc94cdbbba4739a2bb7f84bd51e62b92d93a2cb54
+	b2sums = d521ca4a752ca15e8f27e8589be100235a44bc0073ed0285f3c5bb0b9410d6794f52ba96732ff2c82680964f8ff261f1344ab440056178226a5652366f99f9e3
+
+pkgname = python-flake8

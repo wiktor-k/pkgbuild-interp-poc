@@ -1,0 +1,24 @@
+pkgbase = mpc
+	pkgdesc = Minimalist command line interface to MPD
+	pkgver = 0.35
+	pkgrel = 1
+	url = https://www.musicpd.org/clients/mpc/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = libmpdclient
+	makedepends = meson
+	makedepends = python-sphinx
+	makedepends = rsync
+	depends = glibc
+	source = https://www.musicpd.org/download/mpc/0/mpc-0.35.tar.xz
+	source = https://www.musicpd.org/download/mpc/0/mpc-0.35.tar.xz.sig
+	validpgpkeys = 0392335A78083894A4301C43236E8A58C6DB4512
+	sha512sums = be7ec268432eb8e34092d025e6a40379e83d54e5f87943beeb87ed8fe9db4c5c8261b09cc3230ada28300151382f97b1c2da45f54e8aad68af9946f484d0b28b
+	sha512sums = SKIP
+	b2sums = 7e47d78b762b7334f5fec13897bdf11859310932371a55c189c4554b347f097852e5fa17be3df03d047fabcc60699a3b310d0aa395aadd96a5ebff009a2ddba0
+	b2sums = SKIP
+
+pkgname = mpc
+	depends = glibc
+	depends = libmpdclient
+	depends = libmpdclient.so

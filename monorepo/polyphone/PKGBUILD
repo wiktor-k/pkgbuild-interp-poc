@@ -1,0 +1,64 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=polyphone
+pkgver=2.6.0
+pkgrel=1
+pkgdesc="A soundfont editor for quickly designing musical instruments"
+arch=(x86_64)
+url="https://polyphone-soundfonts.com/en/"
+_url=https://github.com/davy7125/polyphone
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+depends=(
+  alsa-lib
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  openssl
+  qt6-base
+  qt6-svg
+  zlib
+)
+makedepends=(
+  jack
+  libogg
+  libvorbis
+  libsndfile
+  rtaudio
+  rtmidi
+  qt6-tools
+  stk
+)
+source=(
+  $pkgname-$pkgver.tar.gz::https://github.com/davy7125/$pkgname/archive/$pkgver.tar.gz
+)
+sha512sums=('fc7081e57260acf31cd612973927d61e63b71b156191ba0942b33cb7d26c30183bd142d3264084f4e8c87d65dceee88be1369db3dfaaeb2cc2873d68d3a90f8b')
+b2sums=('7340441775c2914e40c9969ae3bdddcabf6e7a454d7d6fc4ac966b6aee9819278549eddd3ace22c7c7eacf56989951abcae430ec41ca4ca22268c2c52ffb6e23')
+
+build() {
+  cd $pkgname-$pkgver/sources
+  qmake6 $pkgname.pro PREFIX=/usr
+  make
+}
+
+package() {
+  depends+=(
+    jack libjack.so
+    libogg libogg.so
+    libsndfile libsndfile.so
+    libvorbis libvorbis.so libvorbisenc.so libvorbisfile.so
+    stk libstk-5.0.0.so
+  )
+
+  cd $pkgname-$pkgver
+  # doesn't have an install target: https://github.com/davy7125/polyphone/issues/62
+  install -vDm 755 sources/bin/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 packaging/$pkgname.png -t "$pkgdir/usr/share/icons/hicolor/512x512/apps"
+  install -vDm 644 packaging/man/fr/man1/$pkgname.*1 -t "$pkgdir/usr/share/man/fr/man1/"
+  install -vDm 644 packaging/man/man1/$pkgname.*1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 packaging/*.desktop -t "$pkgdir/usr/share/applications/"
+  install -vDm 644 packaging/*.xml -t "$pkgdir/usr/share/metainfo/"
+  install -vDm 644 packaging/$pkgname.xml -t "$pkgdir/usr/share/mime/packages/"
+  install -vDm 644 README.md sources/changelog -t "$pkgdir/usr/share/doc/$pkgname/"
+}

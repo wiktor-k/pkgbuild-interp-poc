@@ -1,0 +1,122 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+
+pkgname=jami-daemon
+pkgver=20260917
+pkgrel=2
+pkgdesc="Free and universal communication platform which preserves the users’ privacy and freedoms (daemon component)"
+arch=(x86_64)
+url="https://jami.net"
+license=(GPL-3.0-or-later)
+groups=(jami)
+depends=(
+  alsa-lib
+  ffmpeg
+  fmt
+  glibc
+  gnutls
+  jack
+  jsoncpp
+  libarchive
+  libgcc
+  libgit2
+  libnatpmp
+  libpulse
+  libsecp256k1
+  libupnp
+  libstdc++
+  nettle
+  opendht
+  openssl
+  simdutf
+  speexdsp
+  systemd-libs
+  util-linux-libs
+  webrtc-audio-processing-0.3
+  y-crdt
+  yaml-cpp
+  zlib
+)
+# portaudio needs a not-yet-upstream patch https://git.jami.net/savoirfairelinux/jami-daemon/-/issues/650
+makedepends=(
+  asio
+  cargo
+  cmake
+  git
+  meson
+  msgpack-c
+  msgpack-cxx
+  perl
+  restinio
+  systemd
+)
+checkdepends=(cppunit)
+_commit=2eb8bb2d8a2735d792c7e375ab9dee85ecc65e33
+_pjprojectver=48a63353a378e88a169551e265f33eae59ebd26c
+_dhtnetver=7e6324ffdeaf19f4a2870f9f6f40857898817575
+source=(git+https://git.jami.net/savoirfairelinux/${pkgname}.git#commit=${_commit}
+        https://github.com/savoirfairelinux/pjproject/archive/${_pjprojectver}/pjproject-${_pjprojectver}.tar.gz
+        dhtnet-$_dhtnetver.tar.gz::https://git.jami.net/savoirfairelinux/dhtnet/-/archive/$_dhtnetver/dhtnet-$_dhtnetver.tar.gz
+        ffmpeg-7.patch
+        ffmpeg-8.patch
+        ffmpeg-9.patch)
+noextract=(pjproject-${_pjprojectver}.tar.gz
+           dhtnet-${_dhtnetver}.tar.gz)
+sha512sums=('d95bd3f729670c6f653055253cc1b262888f017ef918b5f2d5c497b414b12a7c06d68b565cb60446555b534ec19a45fa3ac1f29d69984a46ffd29099d06fa257'
+            'b5630241f996b49636bab38da6c9842d7db2143c87a6036530be4b3ffc824b7061b87797a64c5340c72d57b76c34f68ccba4747e13aaabfa5b2101a057e7c92f'
+            'be1a629ecc985799306506ce94b83c914ec40c13401372e0d737ba6d4ded9e52c9558dbd8437aed38dc10c43481ffa9a85bdd508cb3f98c8a9aff09a74f8ef62'
+            '39b7181fb66f72d96b63777920a26dfc1fa5377e81d22dce622c6ef4a3d9d2e5002457908a89fc14bdf9af175b7e781114c2d2fd0c572bbea344254495bed563'
+            '8fcfe52808d00b8535dc6d181af0233dc0f3a51e8da69728a04e7f6edc82c54fb11e62ffad05344d9eeb6d203dc323ffa03181c615c7c6f84682f70a02ee4319'
+            '6e16e07f392c7530351157d66fcbe30393bdf69242fe84dbece3ee60c53b0cf33bc3d15bb91df5d966f86bc0955150b066b10dde4800eabe989e7b73c315c858')
+
+pkgver() {
+  cd ${pkgname}
+  TZ=UTC git show -s --pretty=%cd --date=format-local:%Y%m%d HEAD
+}
+
+prepare() {
+  cd ${pkgname}
+  mkdir -p contrib/tarballs
+  cp ../pjproject-${_pjprojectver}.tar.gz contrib/tarballs/
+  cp ../dhtnet-$_dhtnetver.tar.gz contrib/tarballs/
+  mkdir -p contrib/native
+
+# Fix build with fmt 12
+  pushd contrib/tarballs
+  tar -xvzf dhtnet-$_dhtnetver.tar.gz
+  sed -e 's|fmt/core.h|fmt/format.h|' -i dhtnet-$_dhtnetver/include/pj_init_lock.h -i dhtnet-$_dhtnetver/src/string_utils.cpp
+  tar -cvzf dhtnet-$_dhtnetver.tar.gz dhtnet-$_dhtnetver
+  popd
+  git cherry-pick -n bc80496d4bf7f3975e2e6e20cf9c9299458298de
+  
+  patch -p1 -i ../ffmpeg-7.patch # Fix build with ffmpeg 7+
+  patch -p1 -i ../ffmpeg-8.patch # Fix build with ffmpeg 8
+  patch -p1 -i ../ffmpeg-9.patch
+}
+
+build() {
+#  export CXXFLAGS+=" -std=c++17"
+  cd ${pkgname}/contrib/native
+  ../bootstrap \
+      --disable-downloads \
+      --disable-all \
+      --enable-pjproject \
+      --enable-dhtnet
+
+  make DEPS_pjproject= DEPS_dhtnet=pjproject
+
+  cd "${srcdir}"
+  arch-meson ${pkgname} build -D interfaces=library -D aaudio=disabled -D portaudio=disabled \
+                              $( ((CHECKFUNC)) && echo -D tests=true) \
+                              -D pkg_config_path="${PWD}/${pkgname}/contrib/$(cc -dumpmachine)/lib/pkgconfig"
+  meson compile -C build
+}
+
+#check() {
+# https://git.jami.net/savoirfairelinux/jami-daemon/-/issues/649
+#  meson test -C build --print-errorlogs
+#}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

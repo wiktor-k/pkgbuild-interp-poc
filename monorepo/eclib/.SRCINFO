@@ -1,0 +1,22 @@
+pkgbase = eclib
+	pkgdesc = Includes mwrank (for 2-descent on elliptic curves over Q) and modular symbol code used to create the elliptic curve database
+	pkgver = 20250627
+	pkgrel = 11
+	url = https://github.com/JohnCremona/eclib/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = boost
+	makedepends = git
+	depends = boost-libs
+	depends = flint
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = ntl
+	depends = pari
+	source = git+https://github.com/JohnCremona/eclib#tag=v20250627
+	source = boost-1.89.patch
+	sha256sums = f60f6b2c6f0cc76f4e52540382d3cbcd93053c3f28473b484d577c7198fcbd72
+	sha256sums = 683124d0493457ee9f4ab47e2a057c6705754244e91562c8e13b8a53a0810c44
+
+pkgname = eclib

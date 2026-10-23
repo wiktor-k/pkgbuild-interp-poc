@@ -1,0 +1,61 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Marcus Hoffmann <bubu@bubu1.eu>
+
+# This must be built against the version of dovecot being used,
+# else mail delivery will fail.
+# Specify the version of dovecot to be used here:
+_dcpkgver=2.4.5
+# Make sure to bump pkgrel if changing this.
+
+pkgname=dovecot-fts-elastic
+pkgver=2.0.0
+pkgrel=4
+pkgdesc="Dovecot FTS plugin for elasticsearch"
+arch=(x86_64)
+url="https://github.com/filiphanes/fts-elastic"
+license=(MIT)
+depends=(
+  "dovecot=${_dcpkgver}"
+  glibc
+  json-c
+)
+makedepends=(git)
+backup=('etc/dovecot/conf.d/90-fts.conf')
+install=dovecot-fts-elastic.install
+source=(
+  "git+$url.git#tag=$pkgver"
+  "90-fts.conf"
+  "$pkgname-fix-dovecot-version-detection.patch"
+)
+b2sums=('67a9e8e382ecada7d05cf7768eb398ba02507479adde7791f5ba85bd725aa91a019bd1082269a689131f35ecd786ac69719cfa017cc266dafa0dcadd62df2dbf'
+        '1f00a23a7036d7b362eb0520c3852b67e56ca59bfba80cd941b8a1d485f7dded4a40f66097ee6bb695addd12a63a0b3857928178ab5a3bbff6d522582aa45ff2'
+        'c39e0fc7ca64f3f7dcf9ab721b749d4a254371c53c27d70925651c64fecdaf6b407e0b1738dc6df7a60a0e881046e479eda0764cd281b955c395c4e63b3e4ae8')
+
+prepare() {
+  cd ${pkgname#dovecot-}
+  patch -Np1 < ../$pkgname-fix-dovecot-version-detection.patch
+  ./autogen.sh
+}
+
+build() {
+  cd ${pkgname#dovecot-}
+  ./configure \
+    --prefix=/usr \
+    --with-dovecot=/usr/lib/dovecot
+  make
+  make DESTDIR="$(pwd)/build" install
+  sed -i -e 's/LLL/MMM/g' elastic7-schema.json
+}
+
+package() {
+  cd ${pkgname#dovecot-}
+  install -vDm644 -t "${pkgdir}/etc/dovecot/conf.d" ../90-fts.conf
+  install -vDm644 -t "${pkgdir}/usr/lib/dovecot/modules" \
+    build/usr/lib/dovecot/lib21_fts_elastic_plugin.so
+  install -vDm644 -t "${pkgdir}/usr/share/doc/${pkgname}" elastic7-schema.json
+  install -vDm644 -t "${pkgdir}/usr/share/doc/${pkgname}" README.md
+  install -vDm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" COPYING.MIT
+}

@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Wesley Moore <wes@wezm.net>
+
+pkgname=viu
+pkgver=1.6.1
+pkgrel=2
+pkgdesc="Simple terminal image viewer"
+arch=('x86_64')
+url="https://github.com/atanunq/viu"
+license=('MIT')
+depends=('glibc'
+         'libgcc' 'libgcc_s.so')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('639c1fe14aee5e34b635de041ac77177e2959cf26072d8ef69c444b15c8273bd')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release --features sixel
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

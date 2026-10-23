@@ -1,0 +1,52 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Clément DEMOULINS <clement@archivel.fr>
+pkgname=texstudio
+pkgver=4.9.8
+pkgrel=1
+pkgdesc="Integrated writing environment for creating LaTeX documents"
+arch=('x86_64')
+url="http://texstudio.sourceforge.net/"
+license=('GPL-3.0-only')
+depends=('poppler-qt6' 'qt6-svg' 'libxkbcommon-x11' 'hicolor-icon-theme' 'hunspell' 'quazip-qt6' 'desktop-file-utils'
+         'qt6-base' 'qt6-declarative' 'qt6-5compat' 'zlib' 'glibc' 'libstdc++' 'libgcc' 'libx11')
+makedepends=('qt6-tools' 'mercurial' 'imagemagick' 'librsvg' 'ninja' 'cmake')
+optdepends=('evince: pdf reader'
+            'languagetool: spelling and grammar checking'
+            'okular: alternate pdf reader')
+replaces=('texmakerx')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/texstudio-org/texstudio/archive/${pkgver}.tar.gz"
+        fs54269.patch
+        fs72345.patch)
+sha512sums=('15e0b21149f4b1edf7ebd71c265107273695371e98debcf039d1f89a73813d0cb92678206714ca9aa33d15262b24e0022a64e865b95e060081e3cf4a98521d28'
+            '247e85f668b06c8a2def4e7456f0ddc8d35c7990484c1c037f7cf43fdee91419b5df66e968ef1e0c637fe685722bbad9171bdd79fad7a10912ae329aff088b68'
+            'db176ba3e3b07a70c39c858b5edac3c2cec2278e7253d0a47ec7ec027586dae6354bd1114e5aac6857b85c23215af4417c43ca10ffe011ac5b6d92cccef3447b')
+
+prepare() {
+    cd texstudio-${pkgver}
+    patch -Np1 -i "${srcdir}"/fs72345.patch
+    patch -Np1 -d src -i "${srcdir}"/fs54269.patch
+}
+
+build() {
+    cmake -B build -S texstudio-${pkgver} \
+        -GNinja \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -Wno-dev
+
+    ninja -C build
+}
+
+package() {
+    DESTDIR="${pkgdir}" ninja -C build install
+
+    for res in $(/bin/ls /usr/share/icons/hicolor | grep '^[0-9]\+x[0-9]\+$'); do
+        mkdir -p "${pkgdir}"/usr/share/icons/hicolor/${res}/apps
+        convert +set date:create +set date:modify -background none -density 1200 -resize ${res} \
+            "${pkgdir}"/usr/share/icons/hicolor/scalable/apps/texstudio.svg \
+            "${pkgdir}"/usr/share/icons/hicolor/${res}/apps/texstudio.png
+    done
+
+    # Remove the included dictionaries in favor of hunspell (FS#78778)
+    rm -rf "${pkgdir}"/usr/share/texstudio/{*.dic,*.aff}
+}

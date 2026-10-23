@@ -1,0 +1,29 @@
+pkgbase = sshuttle
+	pkgdesc = Transparent proxy server that forwards all TCP packets over ssh
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/sshuttle/sshuttle
+	arch = any
+	license = LGPL-2.1-or-later
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-sphinx
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	depends = iptables
+	depends = openssh
+	depends = net-tools
+	depends = python
+	backup = etc/sshuttle/tunnel.conf
+	backup = etc/sshuttle/prefixes.conf
+	source = git+https://github.com/sshuttle/sshuttle.git#tag=v2.0.0
+	source = sshuttle.service
+	source = prefixes.conf
+	source = tunnel.conf
+	sha512sums = 8d067525b88a8c3005b9df7a2a98ea7ba7eba69150a1265e2b1305d7e69ce67d102d40db823afd6047643ea3425815fe8eae6ff267cd89ffbd29344fcc445a32
+	sha512sums = c22504798f6220cd6b0946d6975375437c52753a241cd2a6a03d3aeb005ed1d78e6356dde23716e2514ccf6d7f1c6aace43956dbeede1bf028753b9bdcdd8b7d
+	sha512sums = cc5a5dee7991c7641fa8a4fb356e1977aa9d1cbfed63cb5ebf8732c4de76be841f66d9267472e70578b176f528d8cfb4f75e634d5d915f4c8bcdc0b801db8a13
+	sha512sums = acd3d0024d4604cc6a96609286c3f27bce2f0b70a068f58a2110dacc235b22ba7cd83c8989f46d0a9391eda7d272040bb3b1b2c547ae3fa0c9f61bef0a187dda
+
+pkgname = sshuttle

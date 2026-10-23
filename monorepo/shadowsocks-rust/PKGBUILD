@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: BigmenPixel <bigmen dot pixel at tuta dot io>
+# Contributor: rustemb <rustemb at systemli dot org>
+
+pkgname=shadowsocks-rust
+pkgver=1.25.0
+pkgrel=1
+pkgdesc='A Rust port of shadowsocks'
+arch=(x86_64)
+url='https://github.com/shadowsocks/shadowsocks-rust'
+license=('MIT')
+depends=('glibc' 'libgcc' 'libstdc++' 'openssl' 'rocksdb' 'zstd')
+makedepends=('git' 'cargo' 'clang' 'cmake')
+source=("git+https://github.com/shadowsocks/shadowsocks-rust.git#tag=v$pkgver"
+        'shadowsocks-rust@.service'
+        'shadowsocks-rust-server@.service')
+sha512sums=('7258469e8784a72c934e6ba63bb007218460579661246a1d209f80e7d0288bfc7269006cdc91addfaeca79acd82918ee8bcea88a802eb9b7b075144a16d13818'
+            '90ee8735104795b5c50bc855ad11ee9c741fa1695409d72de7c69b89b0aa80c9596459edbb3a2c1d49e9414e3d06bc55328126c0062f1e28cac141ea202e455d'
+            'ef5a348dfbbfd0bad733da217824dd55851aff3490c63685e9f1bc2b393998fea1bdad864c16a98b8af07264851bb0a11326959529a669008c5e62e94b26b209')
+
+prepare() {
+  cd shadowsocks-rust
+  export CARGO_HOME="$srcdir"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd shadowsocks-rust
+  CFLAGS+=' -ffat-lto-objects'
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=true
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  export ROCKSDB_LIB_DIR=/usr/lib
+  cargo build --release --frozen --features full-extra
+}
+
+package() {
+  cd shadowsocks-rust
+  install -Dm755 target/release/{sslocal,ssserver,ssurl,ssmanager,ssservice} -t "$pkgdir"/usr/bin/
+  install -Dm644 "$srcdir"/$pkgname{@,-server@}.service -t "$pkgdir"/usr/lib/systemd/system/
+  install -Dm644 examples/config_ext.json "$pkgdir"/etc/$pkgname/config_ext_rust.json.example
+  install -Dm644 examples/config.json "$pkgdir"/etc/$pkgname/config_rust.json.example
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

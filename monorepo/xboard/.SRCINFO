@@ -1,0 +1,22 @@
+pkgbase = xboard
+	pkgdesc = Graphical user interfaces for chess
+	pkgver = 4.9.1
+	pkgrel = 4
+	url = https://www.gnu.org/software/xboard/
+	arch = x86_64
+	license = GPL3
+	makedepends = texinfo
+	makedepends = xdg-utils
+	depends = cairo
+	depends = librsvg
+	depends = libxaw
+	depends = xorg-fonts-misc
+	optdepends = gnuchess: chess engine
+	optdepends = perl
+	source = https://ftp.gnu.org/gnu/xboard/xboard-4.9.1.tar.gz
+	source = https://ftp.gnu.org/gnu/xboard/xboard-4.9.1.tar.gz.sig
+	validpgpkeys = 47D20669A1ED486C0257C0362A0C7CF1F51BC536
+	sha256sums = 2b2e53e8428ad9b6e8dc8a55b3a5183381911a4dae2c0072fa96296bbb1970d6
+	sha256sums = SKIP
+
+pkgname = xboard

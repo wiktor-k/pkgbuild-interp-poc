@@ -1,0 +1,31 @@
+pkgbase = ghex
+	pkgdesc = Hex editor for the GNOME desktop
+	pkgver = 50.4
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Ghex
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = gi-docgen
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = pango
+	source = git+https://gitlab.gnome.org/GNOME/ghex.git#tag=50.4
+	b2sums = fb7f6929112ebca42220eb0b4451ab4d6d54cf344c5c84d1060824c2e039cfebea8cbab683247b2a8c9a170b1504a6cb53dce72de60d6311a9b33f9ee1501bf8
+
+pkgname = ghex
+	groups = gnome-extra
+	provides = libgtkhex-4.so
+
+pkgname = ghex-docs
+	pkgdesc = Hex editor for the GNOME desktop (documentation)
+	depends = 

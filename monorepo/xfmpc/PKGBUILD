@@ -1,0 +1,27 @@
+# Maintainer: Christian Hesse <arch@eworm.de>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor:  TDY <tdy@gmx.com>
+# Contributor: Marc St-Laurent <mstlaurent@canada.com>
+
+pkgname=xfmpc
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='A graphical GTK+ MPD client focusing on low footprint'
+arch=('x86_64')
+url='https://docs.xfce.org/apps/xfmpc/start'
+license=('GPL-2.0-or-later')
+depends=('libxfce4ui' 'libmpd')
+makedepends=('git' 'meson' 'vala' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/apps/xfmpc.git#tag=$pkgname-$pkgver")
+sha256sums=('f05024c95f639c337e37eac76127fe597d47215cb526d4d31536d33cc480fcfd')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set ts=2 sw=2 et:

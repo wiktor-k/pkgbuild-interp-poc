@@ -1,0 +1,28 @@
+pkgbase = pulseview
+	pkgdesc = A Qt based logic analyzer GUI for sigrok
+	pkgver = 0.4.2
+	pkgrel = 21
+	url = https://sigrok.org/wiki/Main_Page
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = boost
+	makedepends = cmake
+	makedepends = git
+	makedepends = qt5-tools
+	depends = boost-libs
+	depends = glib2
+	depends = glibc
+	depends = glibmm
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libsigrok
+	depends = libsigrokdecode
+	depends = libstdc++
+	depends = qt5-base
+	depends = qt5-svg
+	source = git+https://github.com/sigrokproject/pulseview#tag=pulseview-0.4.2
+	source = pulseview-boost-1.89.0-compatibility.patch
+	b2sums = 2b4913bb3253d73323d3f51461deeeea028139bd456301be724adad06a195e4e2a3bb5d0f6775cf03b28d5cf7deb6d69f2cec7bade03759cd5334348ab57a20c
+	b2sums = ba7f66639d26163a57e0db46a177548550da839ad6a9eb20838af8973ed28d3e5801a31d4deae07edd1e6e2cce1ba2dda09cb467fada92f8c1b90aa4b347a65c
+
+pkgname = pulseview

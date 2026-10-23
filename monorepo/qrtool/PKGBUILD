@@ -1,0 +1,58 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=qrtool
+pkgver=0.13.2
+pkgrel=1
+pkgdesc="An utility for encoding or decoding QR code"
+arch=('x86_64')
+url="https://github.com/sorairolake/qrtool"
+license=('MIT' 'Apache-2.0' 'CC-BY-4.0')
+depends=('gcc-libs')
+makedepends=('cargo' 'asciidoctor')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('6dde70434c747c74d3d5f4bf491f2ff0c893c6779ad43db4a562a2bf7bca5ae8a9e3838ee16ebf8fd14c4ee097488ef1c9513f088cf05e2aee63d9dcda2dafaf')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir completions/
+  mkdir man/
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  local compgen="target/release/$pkgname completion"
+  $compgen bash >"completions/$pkgbase"
+  $compgen elvish >"completions/$pkgbase.elv"
+  $compgen fish >"completions/$pkgbase.fish"
+  $compgen zsh >"completions/_$pkgbase"
+  asciidoctor -b manpage "docs/man/man1/$pkgname.1.adoc"
+  asciidoctor -b manpage "docs/man/man1/$pkgname-encode.1.adoc"
+  asciidoctor -b manpage "docs/man/man1/$pkgname-decode.1.adoc"
+  asciidoctor -b manpage "docs/man/man1/$pkgname-completion.1.adoc"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSES/MIT.txt -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 LICENSES/CC-BY-4.0.txt -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 "completions/$pkgbase" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm644 "completions/$pkgbase.elv" -t "$pkgdir/usr/share/elvish/lib/"
+  install -Dm644 "completions/$pkgbase.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm644 "completions/_$pkgbase" -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -Dm644 "docs/man/man1/$pkgname.1" -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 "docs/man/man1/$pkgname-encode.1" -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 "docs/man/man1/$pkgname-decode.1" -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 "docs/man/man1/$pkgname-completion.1" -t "$pkgdir/usr/share/man/man1/"
+}
+
+# vim: ts=2 sw=2 et:

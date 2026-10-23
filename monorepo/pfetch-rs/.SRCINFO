@@ -1,0 +1,18 @@
+pkgbase = pfetch-rs
+	pkgdesc = A rewrite of the pfetch system information tool in Rust
+	pkgver = 3.0.2
+	pkgrel = 1
+	url = https://github.com/Gobidev/pfetch-rs
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = sqlite
+	provides = pfetch
+	conflicts = pfetch
+	source = git+https://github.com/Gobidev/pfetch-rs#tag=v3.0.2
+	sha256sums = 1a21950e034a1b54b43bdef3eda1cbcd863b1ca8c7d7c42a7fe15b33ac6b6247
+
+pkgname = pfetch-rs

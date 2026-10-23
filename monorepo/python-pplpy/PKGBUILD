@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=pplpy
+pkgname=python-pplpy
+pkgver=0.9.0
+pkgrel=1
+pkgdesc='Python wrapper to the C++ Parma Polyhedra Library (PPL)'
+arch=(x86_64)
+url='https://gitlab.com/videlec/pplpy/'
+license=(GPL-3.0-or-later)
+depends=(glibc
+         gmp
+         libgcc
+         libstdc++
+         ppl
+         python
+         python-cysignals
+         python-gmpy2)
+makedepends=(cython
+             meson-python
+             python-build
+             python-installer
+             python-sphinx)
+source=(https://github.com/sagemath/pplpy/archive/$pkgver/$_pyname-$pkgver.tar.gz)
+sha256sums=('bae4d5e3fa8c126ca17d319bdd45c9acef7193eb39f8f56c273b8dc37bfb0b03')
+
+build() {
+  cd $_pyname-$pkgver
+  python -m build --wheel --no-isolation
+
+  mkdir -p tmp-dir
+  bsdtar -xf dist/*.whl -C tmp-dir
+  PYTHONPATH="$PWD"/tmp-dir make -C docs html
+}
+
+package() {
+  cd $_pyname-$pkgver 
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  mkdir -p "$pkgdir"/usr/share/doc/pplpy
+  cp -r docs/build/html/* "$pkgdir"/usr/share/doc/pplpy
+}

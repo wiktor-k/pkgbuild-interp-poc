@@ -1,0 +1,53 @@
+# Maintainer: Sébastien Luttringer
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+
+pkgname=bird
+pkgver=3.3.3
+pkgrel=1
+pkgdesc='RIP, OSPF, BGP, MPLS, BFD, Babel routing daemon'
+arch=('x86_64')
+url='https://bird.network.cz/'
+license=('GPL-2.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+  'libssh'
+  'ncurses'
+  'readline'
+)
+replaces=('bird6')
+backup=('etc/bird.conf')
+source=("https://gitlab.nic.cz/labs/bird/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz"
+        'bird.service')
+b2sums=('21aaf5fec5428bf3f6f8a587bb2ad6ad2858d6d6c69d5f72f3e082c4e25cfb0f628e2d4372b9e679f74fa439089476aa5c9c192c330accbbd6fd00684cf34da7'
+        '03ba113301babdba0f12974157386dab76603e84ee868af9c21718184a8fc87b7a1bc8e363258e76cca6397781d93a9f7210f49c3f602154ed4e2d6730c76e03')
+
+prepare() {
+  cd $pkgname-v$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-v$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --runstatedir=/run/$pkgname \
+    --docdir=/usr/share/doc/$pkgname
+  make
+}
+
+check() {
+  cd $pkgname-v$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-v$pkgver
+  make DESTDIR="$pkgdir" install
+  rm -vr "$pkgdir/run" # Remove installed runstatedir, should not be packaged.
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" "$srcdir/bird.service"
+}

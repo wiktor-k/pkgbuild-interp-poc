@@ -1,0 +1,21 @@
+pkgbase = poke
+	pkgdesc = Interactive, extensible editor for binary data.
+	pkgver = 4.3
+	pkgrel = 2
+	url = http://www.jemarch.net/poke.html
+	arch = x86_64
+	license = GPL3
+	checkdepends = dejagnu
+	makedepends = help2man
+	depends = gc
+	depends = readline
+	depends = gettext
+	options = !lto
+	source = https://ftp.gnu.org/gnu/poke/poke-4.3.tar.gz
+	source = https://ftp.gnu.org/gnu/poke/poke-4.3.tar.gz.sig
+	validpgpkeys = BDFA5717FC1DD35C2C3832A23EF90523B304AF08
+	validpgpkeys = F951CD18180E20B7DBD9359D54583674549E7E3A
+	sha256sums = a84cb9175d50d45a411f2481fd0662b83cb32ce517316b889cfb570819579373
+	sha256sums = SKIP
+
+pkgname = poke

@@ -1,0 +1,28 @@
+pkgbase = textpieces
+	pkgdesc = Powerful scratchpad with ability to perform a lot of text transformations
+	pkgver = 4.3.2
+	pkgrel = 1
+	url = https://apps.gnome.org/TextPieces/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = pango
+	source = git+https://gitlab.com/liferooter/textpieces.git#tag=4.3.2
+	source = textpieces-activate.patch
+	b2sums = 78bc7302f4c1b5e530cc4669f738a514d6275c23e562e68861b309a06da2bc8cc790209e924cb972164a218a77e82d5375e2e43f937acb33eb62c999ef046c38
+	b2sums = 41fb9d980a6620a1ad6b70bb4ad9860de82139db20e3f07ddcbbeee5f59298d3b398309218f973a5d3b08245b08178b4e96205807535f252851b590f08b73d2f
+
+pkgname = textpieces

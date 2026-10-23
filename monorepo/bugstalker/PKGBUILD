@@ -1,0 +1,41 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=bugstalker
+_pkgname=BugStalker
+pkgver=0.4.9
+pkgrel=1
+pkgdesc="Rust debugger for Linux x86-64"
+arch=('x86_64')
+url="https://github.com/godzie44/BugStalker"
+license=('MIT')
+depends=('glibc' 'libgcc' 'libunwind' 'oniguruma')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('82cbce382a2f20e08dc4110dea5d8fa676b5c59d8f3412dcff8506197f72f2253637b05c5828989de8449e3188e0b15ebd23c1ceaf61579e6f1089c4702fa430')
+options=('!lto')
+
+prepare() {
+  mv "$_pkgname-$pkgver" "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen --lib
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/bs" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,29 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: knucker <www.knucker[at]gmail.com>
+
+pkgname=python-hexdump
+_name=${pkgname/python-/}
+pkgver=3.3
+pkgrel=12
+pkgdesc='Library and tool to work with hex and binary data'
+url='https://pypi.org/project/hexdump/'
+arch=('any')
+license=('Public Domain')
+depends=('python' 'python-setuptools')
+makedepends=('python-build' 'python-installer' 'python-wheel')
+source=(https://files.pythonhosted.org/packages/source/${_name::1}/$_name/$_name-$pkgver.zip)
+sha512sums=('3299f6a29dcf4293616c5ea652397429ee844ca30964ee0fc784fb2a93252b75eb28fb797640e26477eb6b291aa38e14ad5046d8b4488dc4e03bd79b9449898b')
+
+build() {
+  python -m build --wheel --no-isolation
+}
+
+
+package() {
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  # The below seems like test data and completly in wrong place
+  rm -v "${pkgdir}/usr/data/hexfile.bin"
+  rmdir "${pkgdir}/usr/data"
+}
+
+# vim: ts=2 sw=2 et:

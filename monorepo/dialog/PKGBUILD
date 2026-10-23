@@ -1,0 +1,49 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Evangelos Foutras <foutrelis@archlinux.org>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Andreas Radke <andyrtr@archlinux.org>
+
+pkgname=dialog
+pkgver=1.3_20260721
+pkgrel=1
+epoch=1
+pkgdesc="A tool to display dialog boxes from shell scripts"
+arch=(x86_64)
+url="https://invisible-island.net/dialog/"
+license=(LGPL-2.1-or-later)
+depends=(
+  glibc
+  ncurses
+  sh
+)
+provides=(libdialog.so)
+source=(https://invisible-mirror.net/archives/$pkgname/$pkgname-${pkgver/_/-}.tgz{,.asc})
+sha512sums=('9bd15f27e86a695cca2a3cf92652ce6197415a907975e56c2075fa810f43906b695e2cf3f8b9d642d09110323709cffc9264ac4946b05ee5a4eba3f0a271c9a3'
+            'SKIP')
+b2sums=('39810f45337bb7b5df297f58cd5a13f3350d32d73ca2192624ea22203afb837c0777484af6f400ee7ee36291163f1e5a14cd777281249878577580badd3cfd19'
+        'SKIP')
+validpgpkeys=('19882D92DDA4C400C22C0D56CC2AF4472167BE03') # Thomas E. Dickey (self-signed w/o SHA1) <dickey@invisible-island.net>
+
+build() {
+  local configure_options=(
+    --enable-nls
+    --prefix=/usr
+    --with-libtool
+    --with-ncursesw
+  )
+
+  cd $pkgname-${pkgver/_/-}
+  ./configure "${configure_options[@]}"
+  make
+}
+
+check() {
+  make -C $pkgname-${pkgver/_/-} -k check
+}
+
+package() {
+  make DESTDIR="$pkgdir" -C $pkgname-${pkgver/_/-} install
+}
+
+# vim:set ts=2 sw=2 et:

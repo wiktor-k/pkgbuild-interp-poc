@@ -1,0 +1,17 @@
+pkgbase = uucp
+	pkgdesc = Taylor UUCP is a free implementation of UUCP and is the standard UUCP used on the GNU system
+	pkgver = 1.07
+	pkgrel = 8
+	url = https://www.gnu.org/software/uucp/uucp.html
+	arch = x86_64
+	license = GPL
+	makedepends = wget
+	makedepends = sed
+	makedepends = grep
+	backup = etc/uucp/config
+	backup = etc/uucp/port
+	backup = etc/uucp/sys
+	source = https://ftp.gnu.org/gnu/uucp/uucp-1.07.tar.gz
+	sha256sums = 060c15bfba6cfd1171ad81f782789032113e199a5aded8f8e0c1c5bd1385b62c
+
+pkgname = uucp

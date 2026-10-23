@@ -1,0 +1,23 @@
+pkgbase = libcoverart
+	pkgdesc = C/C++ library for accessing the MusicBrainz Cover Art Archive
+	pkgver = 1.0.0
+	pkgrel = 9
+	url = https://musicbrainz.org/doc/libcoverart
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	depends = jansson
+	depends = libgcc
+	depends = libstdc++
+	depends = neon
+	source = git+https://github.com/metabrainz/libcoverart.git?signed#tag=release-1.0.0
+	source = libcoverart-out-of-tree.patch
+	validpgpkeys = 993F7C88ECC03DEA1375413B95514550A6F93B92
+	b2sums = c4b70ea71cb10b7a2d223a504b6d7a240647fc09c0e5018951aebc90822f703037893a79379a448b85a7b4835b70c2e0121e82e584c463eb7a570a0fcc9d66f4
+	b2sums = eb6e9f50f18ffa17d50bf100984ea16c83bce55694bd1143c1d293242372f2937e0d3b7154aae71d46c6028194693bac8819d97a676a092e04e7a4c4cd67d064
+
+pkgname = libcoverart

@@ -1,0 +1,15 @@
+pkgbase = libnfc
+	pkgdesc = Platform independent Near Field Communication (NFC) library
+	pkgver = 1.8.0
+	pkgrel = 3
+	url = http://nfc-tools.org/
+	arch = x86_64
+	license = LGPL3
+	makedepends = cmake
+	depends = libusb-compat
+	depends = pcsclite
+	optdepends = acsccid: acr122_pcsc support
+	source = https://github.com/nfc-tools/libnfc/releases/download/libnfc-1.8.0/libnfc-1.8.0.tar.bz2
+	sha256sums = 6d9ad31c86408711f0a60f05b1933101c7497683c2e0d8917d1611a3feba3dd5
+
+pkgname = libnfc

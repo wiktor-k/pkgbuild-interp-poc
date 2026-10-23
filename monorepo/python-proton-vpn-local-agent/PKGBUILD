@@ -1,0 +1,45 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: Ali Molaei <ali dot molaei at protonmail dot com>
+# Contributor: Self Denial <selfdenial at pm dot me>
+# Contributor: antermin <github dot com slash antermin>
+
+pkgname=python-proton-vpn-local-agent
+pkgver=1.6.3
+pkgrel=1
+_pyver=3.14
+pkgdesc="Proton VPN local agent written in Rust"
+arch=(x86_64)
+url="https://github.com/ProtonVPN/local-agent-rs"
+license=(GPL-3.0-or-later)
+options=(!lto !debug)
+depends=(
+  libgcc
+  glibc
+  python
+)
+makedepends=(
+  git
+  cargo
+)
+source=("git+https://github.com/ProtonVPN/local-agent-rs.git#tag=${pkgver}")
+sha256sums=('a032d3e663b966ec2e80f66c8454dee883a02d60140e898a9fb96f6661e87f19')
+
+prepare() {
+    cd "${srcdir}"/local-agent-rs/python-proton-vpn-local-agent
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+    cd "${srcdir}"/local-agent-rs/python-proton-vpn-local-agent
+    cargo build --frozen --release --all-features
+}
+
+check() {
+    cd "${srcdir}"/local-agent-rs/python-proton-vpn-local-agent
+    cargo test --frozen --all-features
+}
+
+package() {
+    mkdir -p "${pkgdir}"/usr/lib/python"${_pyver}"/site-packages/proton/vpn
+    install -Dm755 "${srcdir}"/local-agent-rs/python-proton-vpn-local-agent/target/release/libpython_proton_vpn_local_agent.so "${pkgdir}"/usr/lib/python"${_pyver}"/site-packages/proton/vpn/local_agent.abi3.so
+}

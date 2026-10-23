@@ -1,0 +1,70 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+_name=pydantic-extra-types
+pkgname=python-pydantic-extra-types
+pkgver=2.11.2
+pkgrel=1
+pkgdesc="Extra pydantic types"
+arch=(any)
+url="https://github.com/pydantic/pydantic-extra-types"
+license=(MIT)
+depends=(
+  python
+  python-pydantic
+  python-pydantic-core
+)
+makedepends=(
+  python-build
+  python-hatchling
+  python-installer
+)
+checkdepends=(
+  python-cron-converter
+  python-dirty-equals
+  python-jsonschema
+  python-pendulum
+  python-phonenumbers
+  python-pycountry
+  python-pymongo
+  python-pytest
+  python-pytz
+  python-semver
+  python-ulid
+)
+optdepends=(
+  'python-cron-converter: for cron support'
+  'python-pendulum: for datetime support'
+  'python-phonenumbers: for phone number support'
+  'python-pycountry: for country code support'
+  'python-pymongo: for MongoDB support'
+  'python-pytz: for timezone support'
+  'python-semver: for semantic versioning support'
+  'python-tzdata: for timezone support'
+  'python-ulid: for ULID support'
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('0b1a8b530a871a59840f55925efd584dd2fc62f6810ac4b5cc94ddc7f3ec881cd1bb5d2a1e60f8be771911082b973f7f26c3ad2add2a6239b3a79d7ff23d557c')
+b2sums=('e6190084136175cdc534820df7fe7880ba280154accb9a81ca9a42bdba9fcdde9b06995eb0afa84e56e92f4ee457170eaf865f3a2ae8f20283d51cb378480bef')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+
+  cd $_name-$pkgver
+  export TZ=UTC
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

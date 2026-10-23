@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: bemxio <bemxiov at protonmail dot com>
+
+pkgname=countryfetch
+pkgver=0.2.0
+pkgrel=2
+pkgdesc="A neofetch-like tool for fetching information about your country"
+arch=('x86_64')
+url="https://github.com/nik-rev/countryfetch"
+license=('MIT')
+depends=('glibc' 'libgcc' 'openssl')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('8c6b17edec106d6e22f184ff338b4df4f649cd831171f1deec211d0b63e3168c944c23824cff72027c1f360d25b655e075e54b802ff9e71a8f905e57dfd683a5')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  # use the system-provided openssl
+  sed -i 's/openssl = { version = "0.10", features = \["vendored"\] }//' Cargo.toml
+  cargo fetch --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 LICENSE-MIT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 README.md "${pkgdir}/usr/share/doc/$pkgname/README.md"
+}
+
+# vim: ts=2 sw=2 et:

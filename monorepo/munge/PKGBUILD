@@ -1,0 +1,71 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Gordian Edenhofer <gordian.edenhofer@gmail.com>
+# Contributor: Fredrik Tegenfeldt <fredrik.tegenfeldt@unige.ch>
+
+pkgname=munge
+pkgver=0.5.18
+pkgrel=2
+pkgdesc="An authentication service for creating and validating credentials. It is designed to be highly scalable for use in an HPC cluster environment."
+arch=(x86_64)
+url="https://github.com/dun/munge"
+license=(GPL-3.0-or-later LGPL-3.0-or-later)
+depends=(
+  bzip2
+  libgcc
+  glibc
+  openssl
+  zlib
+)
+makedepends=(systemd)
+checkdepends=(procps-ng)
+source=("https://github.com/dun/munge/archive/$pkgname-$pkgver.tar.gz"
+        "munge.sysusers"
+        "munge.tmpfiles"
+        "munge-create-key.hook")
+sha512sums=('39a59bc70b523ae7d449925c6864e86e9c6b8916003b6ab765c1c38eebc64d4ae4b8144b0d28b4d4cdac41586090eb21a9bcf497f519d317cd6a2fc834eabbfe'
+            'f2c71ba6526ce550a601245809fec671d6dfcd12930ba533febcaf5c500b6b300333b6500056542196cf32cbe5c94fb358fcd9d53f74d3ffd825facbe78deebd'
+            '33e3210634c1d5aa14597d70ec73c49aa83e9e0cea5c98a656099016876d2bf4dc8e1ec20426ee0baba9522be2e6a4422fa67a028ebf5e7c04f72f7daf0fd53f'
+            '69ac9b7e27f20241f004410df79ec9e057fb95e92cf87fb118602bddb8cc0e8cbb89fd2e62f18d976981a772ec5d9716c440e1be2dc2bceb36fe4d9f8bede1c1')
+
+prepare() {
+  cd $pkgname-$pkgname-$pkgver
+
+  ./bootstrap
+}
+
+build() {
+  cd $pkgname-$pkgname-$pkgver
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --localstatedir=/var \
+    --sysconfdir=/etc \
+    --runstatedir=/run
+
+  make
+}
+
+check() {
+  cd $pkgname-$pkgname-$pkgver
+  make check root="$srcdir"/test-tmp verbose=t VERBOSE=t
+}
+
+package() {
+  cd $pkgname-$pkgname-$pkgver
+
+  make DESTDIR="$pkgdir" install
+
+  install -D -m644 ../munge.sysusers "$pkgdir"/usr/lib/sysusers.d/munge.conf
+  install -D -m644 ../munge.tmpfiles "$pkgdir"/usr/lib/tmpfiles.d/munge.conf
+  install -vDm 644 ../munge-create-key.hook -t "$pkgdir"/usr/share/libalpm/hooks/
+
+  # The dir /var/run/munge will be created by systemd-tmpfiles
+  rm -rf "$pkgdir"/var/run/munge
+  rm -rf "$pkgdir"/var/run
+
+  chmod 0700 "$pkgdir"/etc/munge
+  chmod 0711 "$pkgdir"/var/lib/munge
+  chmod 0700 "$pkgdir"/var/log/munge
+}

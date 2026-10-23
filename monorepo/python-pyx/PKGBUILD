@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Douglas Soares de Andrade <dsa@aur.archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+
+pkgname=python-pyx
+pkgver=0.18
+pkgrel=1
+pkgdesc='Python library for the creation of PostScript and PDF files'
+arch=('any')
+url="https://pyx-project.org/"
+license=('GPL-2.0-or-later')
+depends=('python' 'texlive-latex')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('ghostscript' 'python-pillow' 'python-testfixtures' 'texlive-fontsrecommended')
+source=("git+https://github.com/pyx-project/pyx.git#tag=$pkgver")
+sha512sums=('c40470934aec906d7c0c72cedc4575a260b8db36d98d7ea76268128e120b200f160f1b537570da030a44523c641e3251a833ddf1d1a06747bc1aaeb125b555d4')
+
+prepare() {
+  cd pyx/pyx/data
+  # https://github.com/pyx-project/pyx/issues/39
+  sed -i 's|methods = local internal pykpathsea kpsewhich|methods = local internal recursivedir pykpathsea kpsewhich|' pyxrc
+  echo "recursivedir = /usr/share/texmf-dist/fonts/type1/public/amsfonts/" >> pyxrc
+}
+
+build() {
+  cd pyx
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pyx
+  # doctest disabled: sphinx_selective_exclude isn't available in our repos
+  make -C test unit functional svg
+}
+
+package() {
+  cd pyx
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

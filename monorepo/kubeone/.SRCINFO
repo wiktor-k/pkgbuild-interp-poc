@@ -1,0 +1,15 @@
+pkgbase = kubeone
+	pkgdesc = A lifecycle management tool for Highly-Available Kubernetes clusters
+	pkgver = 1.12.3
+	pkgrel = 3
+	url = https://github.com/kubermatic/kubeone
+	arch = x86_64
+	license = Apache
+	makedepends = go
+	makedepends = git
+	optdepends = terraform: sourcing data about infrastructure and control plane nodes
+	options = !lto
+	source = kubeone-1.12.3::git+https://github.com/kubermatic/kubeone#commit=f69803795c04bbfdfcd6058d9d8206d25c389e3b
+	sha512sums = d7ec6c2817bd825dbe6c33c14706db94d949a0ebae1cd8e8c907e8cbbfc238193a8b01055d89187690235e3ea819546e1a0ca1779c44c8e89fe989831e8a7598
+
+pkgname = kubeone

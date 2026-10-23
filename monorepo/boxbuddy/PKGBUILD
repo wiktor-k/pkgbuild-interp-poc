@@ -1,0 +1,67 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=boxbuddy
+pkgver=2.6.2
+pkgrel=1
+pkgdesc='Graphical user interface for Distrobox'
+arch=(x86_64)
+url='https://github.com/Dvlv/BoxBuddyRS'
+license=(MIT)
+depends=(
+  dconf
+  distrobox
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  git
+  rust
+)
+source=("git+https://github.com/Dvlv/BoxBuddyRS.git#tag=$pkgver")
+b2sums=(d4b3b722e01dcab8f7e7bb97c1578f595afaf468b7844f2738e4cc093d852f9d696d476bf9d6feb2f94ad487818b366d74e0159ded6089ff7e3f9afb8be33f46)
+
+
+prepare() {
+  cd BoxBuddyRS
+
+  CARGO_HOME="$srcdir/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # Set paths
+  sed -i 's|"./po"|"/usr/share/locale"|
+          s|"{data_home}/icons/boxbuddy/{icon}"|"/usr/share/boxbuddy/icons/{icon}"|' src/utils.rs
+}
+
+build() {
+  cd BoxBuddyRS
+
+  CARGO_HOME="$srcdir/cargo-home" \
+    CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    cargo build --frozen --release --all-features
+
+  for i in po/*/; do
+    msgfmt "$i"/LC_MESSAGES/*.po -o "$i/LC_MESSAGES/boxbuddyrs.mo"
+  done
+}
+
+package() {
+  cd BoxBuddyRS
+  install -Dm755 -t "$pkgdir/usr/bin/" target/release/boxbuddy-rs
+  install -Dm644 -t "$pkgdir/usr/share/boxbuddy/icons/" icons/build-alt-symbolic{,-light}.svg
+  install -Dm644 -t "$pkgdir/usr/share/applications/" io.github.dvlv.boxbuddyrs.desktop
+  install -Dm644 -t "$pkgdir/usr/share/metainfo/" io.github.dvlv.boxbuddyrs.metainfo.xml
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" icons/io.github.dvlv.boxbuddyrs.svg
+  install -Dm644 -t "$pkgdir/usr/share/glib-2.0/schemas/" io.github.dvlv.boxbuddyrs.gschema.xml
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+
+  for i in po/*/; do
+    install -Dm644 -t "$pkgdir/usr/share/locale/${i#po/}/LC_MESSAGES/" "$i/LC_MESSAGES/boxbuddyrs.mo"
+  done
+}

@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Sergey A. <murlakatamenka@disroot.org>
+
+pkgname=cargo-wizard
+pkgver=0.2.3
+pkgrel=1
+pkgdesc='Cargo subcommand for configuring Cargo profile'
+arch=('x86_64')
+url='https://github.com/Kobzol/cargo-wizard'
+license=('MIT')
+depends=('glibc' 'libgcc')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('e8eb9c8e0e462e979507f56d46b5f6d440f80214200671b767fc0031d8044b36b430aecf24555705271c3e4d8e9605ffb0447897d52f9c1362d9ccd42b3a7d1e')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+# vim: ts=2 sw=2 et:

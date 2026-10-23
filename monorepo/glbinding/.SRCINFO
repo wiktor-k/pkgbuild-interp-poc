@@ -1,0 +1,16 @@
+pkgbase = glbinding
+	pkgdesc = A C++ binding for the OpenGL API, generated using the gl.xml specification
+	pkgver = 3.5.0
+	pkgrel = 1
+	url = http://www.glbinding.org
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = mesa
+	makedepends = ninja
+	depends = libgl
+	depends = glfw
+	source = glbinding-3.5.0.tar.gz::https://github.com/cginternals/glbinding/archive/v3.5.0.tar.gz
+	sha256sums = bb39a97d5d94f70fe6e9c2152e0d8d760758bb031b352e1707fa90f00a43fc69
+
+pkgname = glbinding

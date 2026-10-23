@@ -1,0 +1,28 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Aaron Bull Schaefer <aaron@elasticdog.com>
+# Contributor: Felix Hanley <felix@seconddrawer.com.au>
+
+pkgname=spawn-fcgi
+pkgver=1.6.6
+_branch=1.6.x
+pkgrel=1
+pkgdesc='A FastCGI process manager for web applications'
+arch=('x86_64')
+url='https://redmine.lighttpd.net/projects/spawn-fcgi/'
+license=('BSD')
+depends=('glibc')
+makedepends=('meson')
+source=("https://download.lighttpd.net/${pkgname}/releases-${_branch}/${pkgname}-${pkgver}.tar.xz"{,.asc})
+sha256sums=('c962345eecf0553edd9bf5cf61ee45e7d11837f34037067fbda165cf4addce18'
+            'SKIP')
+validpgpkeys=(C7CA1E9E29DC77F5480894B2E0E7D0171E95BAD7) # Stefan Bühler <stefan@stbuehler.de>
+
+build() {
+  arch-meson "${pkgname}-${pkgver}" build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm0644 "${pkgname}-${pkgver}/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

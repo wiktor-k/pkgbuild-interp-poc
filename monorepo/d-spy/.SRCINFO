@@ -1,0 +1,23 @@
+pkgbase = d-spy
+	pkgdesc = D-Bus debugger for GNOME
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Dspy/
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libdex
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/GNOME/d-spy.git#tag=50.0
+	b2sums = 2968f2996eb6ebe30144cffa1d63d6103b31031e715ca84732310fa19d9778ee39ecb22f3cb7a2fe278b3326bf6e0ecf5bbd493229b919e0bf31eecb6a0534a8
+
+pkgname = d-spy

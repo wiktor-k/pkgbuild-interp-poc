@@ -1,0 +1,84 @@
+# Contributor: TDY <tdy@gmx.com>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+
+_name=pure-data
+pkgname=pd
+pkgver=0.57.0
+_ver=${pkgver%.*}-${pkgver##*.}
+pkgrel=1
+pkgdesc="The Pure Data real-time music and multimedia environment"
+arch=(x86_64)
+url="http://msp.ucsd.edu/software.html"
+license=(BSD-3-Clause)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  sh
+  tcl
+  tk
+)
+makedepends=(
+  alsa-lib
+  fftw
+  jack
+  portaudio
+  portmidi
+)
+provides=(
+  puredata
+  libpd.so
+)
+source=($pkgname-$_ver.tar.gz::https://github.com/pure-data/pure-data/archive/refs/tags/$_ver.tar.gz)
+sha512sums=('67d4f019322d80b974f44884136528112fac2064e8bd126025162bc8aee08059872c4326d09ccbed36b1f1b65759646309e5dc05c6024864f259e5933ad6bfd6')
+b2sums=('6df9b68673b5a91f99d1ea9dc54d189311e32cf920fc3fd6fb37b52930b7b3ee55c6e4a59b3b45f2d70fb7ec1231db791accdf46fa23ae8daad0706e508bfebf')
+
+prepare() {
+  cd $_name-$_ver
+  autoreconf -fiv
+}
+
+build() {
+  local configure_options=(
+    --prefix=/usr
+    --enable-alsa
+    --enable-fftw
+    --enable-jack
+    --enable-libpd
+    --enable-libpd-utils
+    --enable-libpd-instance
+    --enable-libpd-extra
+    --enable-portaudio
+    --enable-portmidi
+    --disable-oss
+    --without-local-portaudio
+    --without-local-portmidi
+  )
+
+  cd $_name-$_ver
+  export EXTERNAL_LDFLAGS="$LDFLAGS"
+  ./configure "${configure_options[@]}"
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    fftw libfftw3f.so
+    jack libjack.so
+    portaudio libportaudio.so
+    portmidi libportmidi.so
+  )
+
+  cd $_name-$_ver
+  # use one job as install target is flaky otherwise: https://github.com/pure-data/pure-data/issues/2345
+  make DESTDIR="$pkgdir" install -j1
+
+  # license
+  install -vDm 644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname"
+
+  # readme
+  install -vDm 644 README.txt -t "$pkgdir/usr/share/doc/$pkgname/"
+}

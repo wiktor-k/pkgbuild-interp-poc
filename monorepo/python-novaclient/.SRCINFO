@@ -1,0 +1,34 @@
+pkgbase = python-novaclient
+	pkgdesc = Client library for OpenStack Compute API
+	pkgver = 18.13.1
+	pkgrel = 1
+	url = https://docs.openstack.org/python-novaclient/latest/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-fixtures
+	checkdepends = python-openstacksdk
+	checkdepends = python-osprofiler
+	checkdepends = python-requests-mock
+	checkdepends = python-stestr
+	checkdepends = python-testscenarios
+	checkdepends = python-testtools
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-pbr
+	depends = python-babel
+	depends = python-prettytable
+	depends = python-keystoneauth1
+	depends = python-requests
+	depends = python-iso8601
+	depends = python-oslo-utils
+	depends = python-oslo-i18n
+	depends = python-oslo-serialization
+	depends = python-stevedore
+	source = git+https://github.com/openstack/python-novaclient.git#tag=18.13.1
+	sha512sums = 7dd1dd1e4c18e3815b38ba22c2adecdf00d5b102d6453bf7c3ef9e71863f7d85447084defff71ba42367dc82a4c26162683d18f059e1091924717ea8a2f55320
+
+pkgname = python-novaclient

@@ -1,0 +1,42 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=libinstpatch
+pkgver=1.1.8
+pkgrel=1
+pkgdesc="Instrument file software library"
+arch=(x86_64)
+url="https://github.com/swami/libinstpatch"
+license=(LGPL-2.1-only)
+depends=(glibc)
+makedepends=(cmake glib2 libsndfile python glib2-devel)
+provides=(libinstpatch-1.0.so)
+source=($url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+b2sums=('2126a31b68dae5385531cd2db1dc5bfd799b5a1f8b5b78c6baaa65632319c04a9110da97e519413a4628bf21aef416999674e0f7b439765ec69750a4786c5f21')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_INSTALL_LIBDIR=/usr/lib
+    -D CMAKE_BUILD_TYPE=None
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    glib2 libglib-2.0.so libgobject-2.0.so
+    libsndfile libsndfile.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,ChangeLog,README.md,TODO.tasks} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

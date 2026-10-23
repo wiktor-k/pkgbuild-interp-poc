@@ -1,0 +1,33 @@
+# Maintainer: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+# Contributor: kevku <kevku@gmx.com>
+
+pkgname=kodi-addon-inputstream-rtmp
+pkgver=21.1.2
+_codename=Omega
+pkgrel=7
+pkgdesc="RTMP input stream add-on for Kodi"
+arch=('x86_64')
+url="https://github.com/xbmc/inputstream.rtmp"
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-inputstream')
+makedepends=('cmake' 'rtmpdump' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/inputstream.rtmp/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('4f5930a65132302665c07a6a0ffa693e0a20c5b3244627bd3773514907bda0a403f1ff0016af5bd61ac2ea5bf4288b169d104e09f57440c0f64e0094bd3deba6')
+
+build() {
+    cd "inputstream.rtmp-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi' 'rtmpdump')
+    cd "inputstream.rtmp-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}

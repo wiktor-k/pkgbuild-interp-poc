@@ -1,0 +1,199 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Vesa Kaihlavirta <vegai@iki.fi>
+# Contributor: Angelo Theodorou <encelo@users.sourceforge.net>
+
+pkgname=warzone2100
+pkgver=4.7.0
+pkgrel=10
+pkgdesc='3D realtime strategy game on a future Earth'
+arch=(x86_64)
+url='https://wz2100.net'
+license=(GPL-2.0-or-later)
+depends=(
+  sdl3
+  libtheora
+  openal
+  libvorbis
+  physfs
+  fribidi
+  libsodium
+  freetype2
+  protobuf
+  opus
+  sqlite
+  libzip
+  harfbuzz
+  libpng
+  curl
+  glibc
+  libgcc
+  libstdc++
+  zlib
+  libogg
+  miniupnpc
+)
+makedepends=(
+  zip
+  unzip
+  git
+  asciidoc
+  asciidoctor
+  cmake
+  ninja
+  vulkan-headers
+  basis-universal
+  shaderc
+)
+source=(
+  "$pkgname::git+https://github.com/Warzone2100/warzone2100.git#tag=$pkgver"
+  'git+https://github.com/JuliaStrings/utf8proc.git'
+  'git+https://github.com/g-truc/glm.git'
+  'git+https://github.com/nemtrif/utfcpp.git'
+  'git+https://github.com/past-due/launchinfo.git'
+  'git+https://github.com/google/re2.git'
+  'git+https://github.com/past-due/EmbeddedJSONSignature.git'
+  'git+https://github.com/HowardHinnant/date.git'
+  'git+https://github.com/Warzone2100/data-texpages.git'
+  'git+https://github.com/Warzone2100/data-music-opus.git'
+  'git+https://github.com/past-due/discord-rpc.git'
+  'git+https://github.com/SRombauts/SQLiteCpp.git'
+  'git+https://github.com/cameron314/readerwriterqueue.git'
+  'git+https://github.com/fmtlib/fmt.git'
+  'git+https://github.com/xiph/opusfile.git'
+  'git+https://github.com/Warzone2100/quickjs-wz.git'
+  'git+https://github.com/Warzone2100/data-fonts.git'
+  'git+https://github.com/Warzone2100/maptools-cli.git'
+  'git+https://github.com/BinomialLLC/basis_universal.git'
+  'git+https://github.com/Warzone2100/data-terrain-classic.git'
+  'git+https://github.com/Warzone2100/data-terrain-high.git'
+  'git+https://github.com/Warzone2100/reclamation.git'
+  'git+https://github.com/Warzone2100/fractured-kingdom.git'
+  'git+https://github.com/paullouisageneau/libplum.git'
+  'git+https://github.com/miniupnp/miniupnp.git'
+  'git+https://github.com/TartanLlama/expected.git'
+  'git+https://github.com/Warzone2100/GameNetworkingSockets.git'
+  'git+https://github.com/past-due/innohelperscripts.git'
+  'git+https://github.com/Warzone2100/win_installer_resources.git'
+  'git+https://github.com/Warzone2100/blender-pie-addon.git'
+)
+sha512sums=('400cbdc60b2ad8e1be973d18f7acca23a6f0b9951de116f23a815de35a965185c0c6484c5af1d3d47552e13d4c2cf1d5973ea04563230a7c46a61b81fe4f9256'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('3e8e34b649f44fe14f06ce150a7045435ef9799104b3eb8d7ddb69579b655680f3fafa1ac796ad15aba5313e049740e10e64fd64f78febce6b46a4522aa7c50b'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  git submodule init
+  git config submodule.3rdparty/utf8proc.url "$srcdir/utf8proc"
+  git config submodule.3rdparty/glm.url "$srcdir/glm"
+  git config submodule.3rdparty/utfcpp.url "$srcdir/utfcpp"
+  git config submodule.3rdparty/launchinfo.url "$srcdir/launchinfo"
+  git config submodule.3rdparty/re2.url "$srcdir/re2"
+  git config submodule.3rdparty/EmbeddedJSONSignature.url "$srcdir/EmbeddedJSONSignature"
+  git config submodule.3rdparty/date.url "$srcdir/date"
+  git config submodule.data/base/texpages.url "$srcdir/data-texpages"
+  git config submodule.data/music.url "$srcdir/data-music-opus"
+  git config submodule.3rdparty/discord-rpc.url "$srcdir/discord-rpc"
+  git config submodule.3rdparty/SQLiteCpp.url "$srcdir/SQLiteCpp"
+  git config submodule.3rdparty/readerwriterqueue.url "$srcdir/readerwriterqueue"
+  git config submodule.3rdparty/fmt.url "$srcdir/fmt"
+  git config submodule.lib/sound/3rdparty/opusfile.url "$srcdir/opusfile"
+  git config submodule.3rdparty/quickjs-wz.url "$srcdir/quickjs-wz"
+  git config submodule.data/fonts.url "$srcdir/data-fonts"
+  git config submodule.tools/maptools-cli.url "$srcdir/maptools-cli"
+  git config submodule.3rdparty/basis_universal.url "$srcdir/basis_universal"
+  git config submodule.3rdparty/data/terrain_overrides/classic.url "$srcdir/data-terrain-classic"
+  git config submodule.3rdparty/data/terrain_overrides/high.url "$srcdir/data-terrain-high"
+  git config submodule.3rdparty/data/mods/campaign/reclamation.url "$srcdir/reclamation"
+  git config submodule.3rdparty/data/mods/campaign/fractured-kingdom.url "$srcdir/fractured-kingdom"
+  git config submodule.3rdparty/libplum.url "$srcdir/libplum"
+  git config submodule.lib/netplay/3rdparty/miniupnp.url "$srcdir/miniupnp"
+  git config submodule.3rdparty/expected.url "$srcdir/expected"
+  git config submodule.3rdparty/GameNetworkingSockets.url "$srcdir/GameNetworkingSockets"
+  git config submodule.pkg/win_installer/innohelperscripts.url "$srcdir/innohelperscripts"
+  git config submodule.pkg/win_installer/resources.url "$srcdir/win_installer_resources"
+  git config submodule.tools/blender/pie-addon.url "$srcdir/blender-pie-addon"
+  git -c protocol.file.allow=always submodule update
+
+  # https://github.com/Warzone2100/warzone2100/pull/4918
+  # ftbfs: deprecated vulkan api
+  git cherry-pick --no-commit 8701c62ae68ca70da43ec915cbf6776c492e6656
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D WZ_DISTRIBUTOR="ArchLinux"
+    -D WZ_ENABLE_WARNINGS_AS_ERRORS=Off
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

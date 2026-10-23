@@ -1,0 +1,34 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=bigsh0t
+pkgver=2.7
+pkgrel=2
+pkgdesc='A collection of frei0r plugins for VR video, with support for Shotcut'
+arch=(x86_64)
+url='https://bitbucket.org/leo_sutic/bigsh0t'
+license=(GPL-2.0-only)
+depends=(glibc
+         libgcc
+         libgomp
+         libstdc++)
+makedepends=(cmake
+             python)
+source=($pkgname-$pkgver::https://bitbucket.org/leo_sutic/bigsh0t/get/$pkgver.tar.gz)
+sha256sums=('ab5b4cd3ff16bbbf7bf2d949b955edd1074955f9ddde9ed9caf5ff099d618ffb')
+
+prepare() {
+  sed -e 's|-march=native||' -i leo_sutic-$pkgname-*/CMakeLists.txt # Don't use -march=native
+}
+
+build() {
+  cmake -B build -S leo_sutic-$pkgname-* \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+#  DESTDIR="$pkgdir" cmake --install build
+  install -Dm755 build/*.so -t "$pkgdir"/usr/lib/frei0r-1
+  install -d "$pkgdir"/usr/share
+  mv build/shotcut "$pkgdir"/usr/share
+}

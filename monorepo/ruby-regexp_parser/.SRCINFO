@@ -1,0 +1,22 @@
+pkgbase = ruby-regexp_parser
+	pkgdesc = A library for tokenizing, lexing, and parsing Ruby regular expressions
+	pkgver = 2.13.1
+	pkgrel = 1
+	url = https://github.com/ammar/regexp_parser
+	arch = any
+	license = MIT
+	checkdepends = ruby-benchmark-ips
+	checkdepends = ruby-ice_nine
+	checkdepends = ruby-leto
+	checkdepends = ruby-regexp_property_values
+	makedepends = git
+	makedepends = ragel6
+	makedepends = ruby-bundler
+	makedepends = ruby-rake
+	makedepends = ruby-rspec
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/ammar/regexp_parser.git#tag=v2.13.1
+	sha256sums = 6bed4cb074ec86624484cc2efd4839ffbbfd1a7fda7af34750f06fbd3516e267
+
+pkgname = ruby-regexp_parser

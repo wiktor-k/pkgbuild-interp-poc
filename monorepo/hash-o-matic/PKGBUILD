@@ -1,0 +1,54 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=hash-o-matic
+pkgver=1.0.1
+pkgrel=3
+pkgdesc='Simple hash validator allowing to compare two files, generate the checksum of a file and verify if a hash matches a file'
+arch=(x86_64)
+url='https://apps.kde.org/hashomatic/'
+license=(LGPL-2.1-or-later)
+depends=(
+  glibc
+  gpgmepp
+  hicolor-icon-theme
+  kconfig
+  kcoreaddons
+  kdbusaddons
+  ki18n
+  kirigami
+  kirigami-addons
+  kwindowsystem
+  libkleo
+  libstdc++
+  qgpgme
+  qqc2-desktop-style
+  qt6-base
+  qt6-declarative
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  git
+  ninja
+)
+source=("git+https://invent.kde.org/utilities/hash-o-matic.git?signed#tag=v$pkgver")
+b2sums=(566e8160c43c3d7fdb1a88c6420b117d5844f436c7b9aaf35ec36aa380f7b2710da995792a8197926f2ed814896033f4c0ab13b829e884d429076601d818fad3)
+validpgpkeys=(39FFA93CAE9C6AFC212AD00202325448204E452A) # Carl Schwan <carl@carlschwan.eu>
+
+prepare() {
+  cd $pkgname
+
+  # Add category to desktop file
+  git cherry-pick -n ce49b51b115cae03313715ebf098d3901c02f8bf
+}
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

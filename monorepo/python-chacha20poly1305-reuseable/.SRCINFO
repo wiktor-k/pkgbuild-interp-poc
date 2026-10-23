@@ -1,0 +1,20 @@
+pkgbase = python-chacha20poly1305-reuseable
+	pkgdesc = A reusable version of ChaCha20Poly1305 for use with cryptography and asyncio
+	pkgver = 0.13.2
+	pkgrel = 4
+	url = https://github.com/bdraco/chacha20poly1305-reuseable
+	arch = any
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-poetry-core
+	depends = python
+	depends = python-cryptography
+	source = git+https://github.com/bdraco/chacha20poly1305-reuseable.git#tag=v0.13.2
+	source = remove-setuptools-dependency.patch
+	b2sums = 78a2f6006ded87ab065183788f717af690164ff05caee46ba552707a5dd56caa4a38b5c2a535c059e9e02826f9844cad80a63b12e3551215a1a83dbd33a17165
+	b2sums = f64dd4881b4ce99fa6e6883adf692a061ce3ebb4064c3e20672bfb0dd9e1d0ed8294c12a8626c336cd2844b8a1bc915fdedbef5dd2cf1de413eb994556995f36
+
+pkgname = python-chacha20poly1305-reuseable

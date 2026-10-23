@@ -1,0 +1,63 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=repro-env
+pkgver=0.4.5
+pkgrel=1
+pkgdesc="Dependency lockfiles for reproducible build environments"
+url='https://github.com/kpcyrd/repro-env'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'catatonit'
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+  'podman'
+)
+makedepends=(
+  'cargo'
+  'scdoc'
+)
+options=(!lto)
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz
+        https://github.com/kpcyrd/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz.asc)
+validpgpkeys=("64B13F7117D6E07D661BBCE0FE763A64F5E54FD6")
+sha256sums=('5bb6a2c7f300b8f13cc0967acf13a6f091661abe719e135cec2e24da82a9ece4'
+            'SKIP')
+b2sums=('e387a7c73b18e7578cbfef430c7b9a463b5d0d2c15b4d432cd1ecb01c30f25b7eebee353e423e2ce92b826e1dc9a395c102605b998bfb7f914f7984daff41f88'
+        'SKIP')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+  make docs
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+  target/release/repro-env --help
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/repro-env
+
+  install -Dm 644 -t "${pkgdir}/usr/share/man/man1" \
+    docs/repro-env.1
+
+  # install completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completions bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,59 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Florian Pritz <bluewind@xinu.at>
+# Contributor: David McInnis <dave@dave3.xyz>
+# Contributor: jyantis <yantis@yantis.net>
+
+pkgname=python-internetarchive
+pkgver=5.11.1
+pkgrel=1
+pkgdesc="A Python and Command-Line Interface to Archive.org"
+arch=(any)
+url="https://github.com/jjjake/internetarchive"
+license=(AGPL-3.0-or-later)
+depends=(
+  python
+  python-jsonpatch
+  python-requests
+  python-tqdm
+  python-urllib3
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-responses
+)
+optdepends=(
+  'cython: speedups'
+  'python-gevent: concurrent downloads'
+  'python-ujson: faster json parsing'
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('4717ced157d45e8dbd2a5ea156901f42631d76934f80677b126f2e3c5b2e759469454d4b8fdaee8f6ec25779c1785ecb4a67857c3710379f247cb2d55699221f')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  # Deselect test failing due to the following exception, not sure why:
+  #   >           return body.read()
+  #   E           io.UnsupportedOperation: read
+  PATH="$PWD/test-env/bin:$PATH" test-env/bin/python -m pytest \
+    --deselect tests/test_item.py::test_upload_automatic_size_hint
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

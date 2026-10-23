@@ -1,0 +1,16 @@
+pkgbase = atkinson-hyperlegible-font
+	pkgdesc = A typeface focusing on leterform distinction for legibility for low vision readers
+	pkgver = 1.006
+	pkgrel = 2
+	url = https://www.brailleinstitute.org/freefont
+	arch = any
+	license = OFL
+	source = https://github.com/googlefonts/atkinson-hyperlegible/archive/1cb311624b2ddf88e9e37873999d165a8cd28b46/atkinson-hyperlegible-1cb311624b2ddf88e9e37873999d165a8cd28b46.tar.gz
+	sha256sums = d761a7dd4f020d883a90cebda3258618159230523a19a16ed8b94ab0b0d17dae
+
+pkgname = otf-atkinson-hyperlegible
+	provides = atkinson-hyperlegible-font
+	replaces = atkinson-hyperlegible-fonts
+
+pkgname = ttf-atkinson-hyperlegible
+	provides = atkinson-hyperlegible-font

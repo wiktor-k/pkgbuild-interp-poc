@@ -1,0 +1,28 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Danct12 <danct12@disroot.org>
+
+pkgname=libglibutil
+pkgver=1.0.83
+pkgrel=1
+pkgdesc="Library of glib utilities"
+arch=('x86_64')
+url="https://github.com/sailfishos/${pkgname}"
+license=('BSD-3-Clause')
+depends=('glib2')
+provides=('libglibutil.so')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha512sums=('01a65239a6b7dead6fa833ae9d62794ae64dd239afb4f2bbd021515df5f67c1b78e7ae80962350096e528447a5a24825efc228f694db3e7562f6032fda6e1aec')
+
+build() {
+	KEEP_SYMBOLS=1 make -C "${pkgname}-${pkgver}" release pkgconfig
+}
+
+check() {
+	make -C "${pkgname}-${pkgver}" test
+}
+
+package() {
+	cd "${pkgname}-${pkgver}/"
+	DESTDIR="${pkgdir}" make install-dev
+	install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

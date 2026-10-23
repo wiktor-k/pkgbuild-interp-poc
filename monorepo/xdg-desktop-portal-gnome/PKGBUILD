@@ -1,0 +1,70 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=xdg-desktop-portal-gnome
+pkgver=51.0
+pkgrel=1
+pkgdesc="Backend implementation for xdg-desktop-portal for the GNOME desktop environment"
+url="https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  cairo
+  dconf
+  fontconfig
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop-4
+  graphene
+  gtk4
+  libadwaita
+  libgcc
+  libx11
+  nautilus
+  wayland
+  xdg-desktop-portal
+  'xdg-desktop-portal-gtk>=1.10.0-2'
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+optdepends=('evince: Print previews')
+provides=(xdg-desktop-portal-impl)
+conflicts=('xdg-desktop-portal-gtk<1.10.0-2')
+replaces=('xdg-desktop-portal-gtk<1.10.0-2')
+groups=(gnome)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/xdg-desktop-portal-gnome.git?signed#tag=${pkgver/[a-z]/.&}"
+  "git+https://gitlab.gnome.org/GNOME/libgxdp.git#commit=df896e3412b749947bc6f62a91a1aac8e6b6d19b"
+)
+b2sums=('e741415df2143c413def3e1f4e4821258ed541d84537f8cd2d462a3003580f8d3a80b617bcc441ea77371254a132fbbbae0ae97e1777cf8de0c2a770327c640d'
+        'f5bd238c316a55784f97b1b7c8b498d3dfa727375cf8a1bf61f4771e306232b36752df8f61edb8d8c5da7c5e1a7acd8c0e85a53725af56e9b18b8dd1a6f284e0')
+validpgpkeys=(
+  8307C0A224BABDA1BABD0EB9A6EEEC9E0136164A # Jonas Ådahl <jadahl@gmail.com>
+  9038F70CA72FAC9D10C6327B89AFE307C861D158 # Georges Basile Stavracas Neto (Primary Key) <georges.stavracas@gmail.com>
+)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  # Inject libgxdp
+  export MESON_PACKAGE_CACHE_DIR="$srcdir"
+
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

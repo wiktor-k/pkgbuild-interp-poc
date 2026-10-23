@@ -1,0 +1,44 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=eog-plugins
+pkgver=44.1
+pkgrel=3
+pkgdesc="Plugins for Eye of Gnome"
+url="https://wiki.gnome.org/Apps/EyeOfGnome/Plugins"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  eog
+  python-gobject
+)
+makedepends=(
+  git
+  gobject-introspection
+  meson
+)
+source=("git+https://gitlab.gnome.org/GNOME/eog-plugins.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('4dd845ddba303d8f2acfd40bc30e10087ab3d179b2c01b0bf62cd9bd94b0ee8d701fd1fc14ea352d8c2c22cf7002cb6162f0797804508003e343b0afdbce4d8e')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  local meson_options=(
+    -D plugin_map=false
+    -D plugin_postasa=false
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

@@ -1,0 +1,34 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=qaseprite
+pkgver=1.0.3
+pkgrel=1
+pkgdesc="A Qt image format plugin for loading Aseprite files"
+arch=('x86_64')
+url="https://github.com/mapeditor/qaseprite"
+license=('MIT')
+depends=('glibc' 'qt6-base' 'zlib' 'pixman')
+makedepends=('cmake' 'ninja' 'libxcursor' 'xorg-xinput')
+source=("https://github.com/mapeditor/qaseprite/releases/download/$pkgver/$pkgname-$pkgver-source.tar.gz")
+sha256sums=('f402c1c8e04841bf91ee6c7c643b64627780bb8316d9f190b5a97c9e106300e3')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cmake -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DUSE_SHARED_ZLIB=on \
+    -DUSE_SHARED_LIBPNG=on \
+    -DUSE_SHARED_PIXMAN=on \
+    -DUSE_SHARED_FREETYPE=on \
+    -DUSE_SHARED_HARFBUZZ=on
+  cmake --build build
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 LICENSE.txt "$pkgdir"/usr/share/licenses/${pkgname}/LICENSE.txt
+}
+
+# vim:set ts=2 sw=2 et:

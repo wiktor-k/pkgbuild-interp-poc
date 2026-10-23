@@ -1,0 +1,45 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Blair Noctis <ncts@nightsail.net>
+
+pkgname=heretek
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='A GDB TUI Dashboard'
+arch=('x86_64')
+url='https://github.com/wcampbell0x2a/heretek'
+license=('Apache-2.0' 'MIT')
+depends=('gdb')
+makedepends=('cargo' 'openssl')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/wcampbell0x2a/heretek/archive/refs/tags/v${pkgver}.tar.gz"
+  ${pkgname}.fish)
+sha256sums=('35496e5b216e719dc5db2d9ca606b481572e450a2b614522ac773cf796c1c13e'
+            '27a10d33e845830df96a9c5041e05a1ee8500c9ab42f27c24a760e1365dba002')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen -- --skip "tests::test_render_app" --skip "tests::test_repeated_ptr"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  fish_comp="$pkgdir/usr/share/fish/vendor_completions.d/"
+  mkdir -p "$fish_comp"
+  install -Dm 644 "$srcdir/heretek.fish" "$fish_comp/"
+}
+
+# vim: ts=2 sw=2 et:

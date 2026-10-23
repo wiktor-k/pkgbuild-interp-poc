@@ -1,0 +1,64 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=python-markdown2
+pkgver=2.5.5
+pkgrel=1
+pkgdesc='A fast and complete implementation of Markdown in Python'
+arch=(any)
+url='https://github.com/trentm/python-markdown2'
+license=(MIT)
+depends=(python python-pygments)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-latex2mathml
+  python-wavedrom
+)
+optdepends=(
+  'python-latex2mathml: latex support'
+  'python-wavedrom: wavedrom support'
+)
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  no-install-tox.ini.patch
+)
+sha512sums=('3b3e71a4c251c80f62a13dd5e6a443333d49e611773102e1cb706c02f0d0288af166485b7a2b75924aa426b3c531291d33ce2579f71fc82d620a8e3d13641e85'
+            '7592abede4364eaf6409a4916856370282945a8a41adc5667e66b8f742d898f248108cd3e6f9a99cca58160a4662ed9d40bcd89f90922f589033982a83c900a3')
+b2sums=('6f866aa6074157330b7af193c85a4a680d377ccc8f4dc26c01f5d13bfdc1ca804d10a9986321df8982c353026cba50b53bd0b4e6f864a3b2859b30ce57aa4234'
+        '75f6ceb8ca13217476780d733a9f029a831ac6a0a3e947a06cb9a62e12fc0bbdcb46e5af7697fa7721613d1948065e99575900fe082cfdccaf03aff7a74f36b1')
+
+prepare() {
+  cd "$pkgname"
+
+  # revert the following commit; avoid /usr/testing/tox.ini
+  # https://github.com/trentm/python-markdown2/commit/0896a1f0b6b4390348cea72217f10bf13b9e8dec
+  patch -p1 -i "$srcdir/no-install-tox.ini.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname/test"
+
+  python testall.py
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}
+# vim:set ts=2 sw=2 et:

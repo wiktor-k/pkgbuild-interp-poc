@@ -1,0 +1,36 @@
+pkgbase = clamui
+	pkgdesc = Modern GUI for ClamAV antivirus
+	pkgver = 0.4.1
+	pkgrel = 1
+	url = https://clamui.com/
+	arch = any
+	license = MIT
+	checkdepends = python-hypothesis
+	checkdepends = python-pytest
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = clamav
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libdbusmenu-glib
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-certifi
+	depends = python-gobject
+	depends = python-keyring
+	depends = python-matplotlib
+	depends = python-pillow
+	depends = python-psutil
+	depends = python-requests
+	source = git+https://github.com/linx-systems/clamui.git#tag=v0.4.1
+	b2sums = 3121fbb842cf6a2d55f8bc7f41c099ffa2cabb94e75f3266910dbeb7eabc12fb3b721f7f7f2340d944936189282bab303ecd1d1d60452497aaa4978e807b5c58
+
+pkgname = clamui

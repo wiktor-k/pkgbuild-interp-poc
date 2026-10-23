@@ -1,0 +1,45 @@
+# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# Contributor: WorMzy Tykashi <wormzy.tykashi@gmail.com>
+
+pkgname=lprint
+pkgver=1.4.0
+pkgrel=1
+pkgdesc="Label Printer Application"
+arch=('x86_64')
+url="https://www.msweet.org/lprint/"
+license=('Apache-2.0')
+install=lprint.install
+depends=('pappl' 'libcups' 'glibc') #'libpng' 'libusb' 'pam' 
+source=("https://github.com/michaelrsweet/lprint/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz"{,.sig}
+        lprint-buildfix.patch::https://github.com/michaelrsweet/lprint/commit/4936e5f00cb6f2972786f36b4eb318b1eaebd65c.patch)
+#validpgpkeys=('845464660B686AAB36540B6F999559A027815955')  # "Michael R Sweet <michael.r.sweet@gmail.com>"
+validpgpkeys=('9086C3CDC66C3F563CF8F405BE67C75EC81F3244') # "Michael R Sweet <msweet@msweet.org>"
+sha256sums=('f0a7f8d84b529db000e2ba23fdd30980d0ef50c26b8ef780b36bfdf18cd67ba5'
+            'SKIP'
+            'dd6e3308e417f3568418deb3d1ab77683b9f3d88e91a22658d1ff2cc68dada0a')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  # https://github.com/michaelrsweet/lprint/issues/210
+  patch -Np1 -i ../lprint-buildfix.patch
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr \
+    --with-systemd \
+    --with-ldflags=" -Wl,-z,now"
+  make
+}
+
+check() {
+   cd "$pkgname-$pkgver"
+   make test
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  # add license + exception
+  install -m644 -Dt "${pkgdir}/usr/share/licenses/${pkgname}" {LICENSE,NOTICE}
+}

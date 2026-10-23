@@ -1,0 +1,48 @@
+# Maintainer:
+# Contributor: Anatol Pomozov <anatol.pomozov@gmail.com>
+
+pkgname=stlink
+pkgver=1.9.0
+pkgrel=1
+pkgdesc='Open source STM32 MCU programming toolset'
+arch=(x86_64)
+url='https://github.com/stlink-org/stlink'
+license=(BSD-3-Clause)
+depends=(
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libusb
+)
+makedepends=(
+  git
+  cmake
+  ninja
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('2bb45c7499eb6f8de630936c6a54d82010480858b609cd35813df1d050e1b096ed3922dc575d2829beefe06c0e6747ba3c7c4fc4f05aba280cf178aef87f8ae4')
+b2sums=('4869301318a01b23f10948f031e5aac8b2edc7b0bc917e275d4fb3afd3f0dfb8cdb23da2fa819ea9c0b451cb96894785dced962f3b3676358b464d82373b4ca2')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D STLINK_MODPROBED_DIR=/usr/lib/modprobe.d
+    -D STLINK_UDEV_RULES_DIR=/usr/lib/udev/rules.d
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE.md"
+}

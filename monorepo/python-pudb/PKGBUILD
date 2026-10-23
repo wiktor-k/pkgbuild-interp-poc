@@ -1,0 +1,66 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Kwpolska <kwpolska@kwpolska.tk>
+
+pkgname=python-pudb
+pkgver=2025.1.5
+pkgrel=2
+pkgdesc="A full-screen, console-based Python debugger"
+url="https://github.com/inducer/pudb"
+arch=('any')
+license=('MIT')
+depends=(
+  'python'
+  'python-jedi'
+  'python-packaging'
+  'python-pygments'
+  'python-typing_extensions'
+  'python-urwid'
+  'python-urwid_readline'
+)
+makedepends=(
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-shtab'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest'
+  'python-pytest-mock'
+)
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "$pkgname-exclude-tests.patch"
+)
+sha512sums=('5232189e56c45f23b1f24850f442ffff83fa5b942f6d9c8969b898e827b5c68fbe646c9e4770648e73abc1b4ca95f57a5011f9bc81fef09d1605018d15cbc339'
+            '25d34a9c5b00e5cc59c0a692a7ca494f1d046a2aa2ace801a47eca743de7e066c0ed95b05653429333121fbd005de2dc63711161f7915de24ec0de12aaf03dcf')
+
+prepare() {
+  cd ${pkgname#python-}-$pkgver
+  patch -Np1 < ../$pkgname-exclude-tests.patch
+}
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+
+  # Completions
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/pudb --print-completion bash > completion.bash
+  test-env/bin/pudb --print-completion zsh > completion.zsh
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  test-env/bin/python -m pytest
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 completion.bash "$pkgdir/usr/share/bash-completion/completions/pudb"
+  install -vDm644 completion.zsh "$pkgdir/usr/share/zsh/site-functions/_pudb"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

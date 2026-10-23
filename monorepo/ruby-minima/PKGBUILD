@@ -1,0 +1,73 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_name=minima
+pkgname=ruby-$_name
+pkgver=2.5.2
+pkgrel=2
+pkgdesc='A Jekyll plugin to generate an Atom feed of your Jekyll posts'
+arch=('any')
+url='https://github.com/jekyll/minima'
+license=('MIT')
+# N.B. dependencies declared in package() to break cycles
+makedepends=(git ruby)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha256sums=('97e1ebe014aaf7635851eeed5ae74170aba686ff511bc2850e849cc5965c007e')
+
+build() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_name}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_name}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_name}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_name}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+# No check(), this package  does not contain any executable code
+
+package() {
+  cd "$pkgname"
+
+  # Only declare dependencies here, which simplifies dependency cycles
+  depends=(
+    'ruby'
+    'ruby-jekyll'{,-feed,-seo-tag}
+  )
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

@@ -1,0 +1,24 @@
+pkgbase = igraph
+	pkgdesc = A library for creating and manipulating (un)directed graphs
+	pkgver = 1.0.1
+	pkgrel = 2
+	url = https://igraph.org/c/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = cmake
+	makedepends = git
+	depends = arpack
+	depends = blas
+	depends = glibc
+	depends = glpk
+	depends = gmp
+	depends = lapack
+	depends = libgcc
+	depends = libgomp
+	depends = libstdc++
+	depends = libxml2
+	depends = plfit
+	source = git+https://github.com/igraph/igraph#tag=1.0.1
+	sha256sums = 9973f43e5c3be003d74315c0f5a0671fa44ecf15a1ab76b45de5aa78adca99f8
+
+pkgname = igraph

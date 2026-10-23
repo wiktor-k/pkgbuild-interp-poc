@@ -1,0 +1,48 @@
+# Maintainer: Morgan <morganamilo@archlinux.org>
+
+pkgname=paccat
+pkgver=1.4.0
+pkgrel=5
+pkgdesc='Print pacman package files'
+url='https://github.com/morganamilo/paccat'
+source=(
+  "git+https://github.com/Morganamilo/paccat?signed#tag=v$pkgver"
+  '0001-Update-deps-for-pacman-7.1.patch'
+)
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+makedepends=('cargo' 'git')
+depends=('glibc' 'gcc-libs' 'libarchive' 'libalpm.so')
+optdepends=('bat: syntax highlighting')
+sha256sums=('c314802cf54c4215df5e7791106c2b1b5c19bb6c201d3523f539f17ecdfaefa2'
+            '324345be3c0059559d8552f43038441ae09572c990e3781d17e09ec033829672')
+validpgpkeys=('F850562FCDA369F80D33000AE48D0A8326DE47C5')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd "$pkgname"
+  git apply -3 ../0001-Update-deps-for-pacman-7.1.patch
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+}
+
+build () {
+  cd "$pkgname"
+  export RUSTUP_TOOLCHAIN=stable
+  COMPLETIONS_DIR=target cargo build --frozen --release --target-dir target
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm755 target/release/paccat -t "$pkgdir/usr/bin/"
+
+  install -Dm644 man/$pkgname.1 -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 target/$pkgname.bash -t "$pkgdir/usr/share/bash-completion/completions"
+  install -Dm644 target/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm644 target/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions"
+}

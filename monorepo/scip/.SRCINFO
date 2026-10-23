@@ -1,0 +1,25 @@
+pkgbase = scip
+	pkgdesc = Solving Constraint Integer Programs
+	pkgver = 10.1.0
+	pkgrel = 1
+	url = https://www.scipopt.org/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = boost
+	makedepends = cmake
+	makedepends = git
+	depends = bliss
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	depends = mpfr
+	depends = onetbb
+	depends = papilo
+	depends = readline
+	depends = soplex
+	depends = zlib
+	source = git+https://github.com/scipopt/scip#tag=v10.1.0
+	sha256sums = b92cf8c499fe4675ab25af9db0c767058ac7653c420e56075209e19b0ee6489a
+
+pkgname = scip

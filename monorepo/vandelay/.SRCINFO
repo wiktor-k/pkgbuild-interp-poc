@@ -1,0 +1,18 @@
+pkgbase = vandelay
+	pkgdesc = JMAP importer-exporter & backup tool
+	pkgver = 1.0.12
+	pkgrel = 1
+	url = https://github.com/stalwartlabs/vandelay
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = sqlite
+	options = !lto
+	source = vandelay::git+https://github.com/stalwartlabs/vandelay#tag=v1.0.12
+	sha512sums = 589433420df353b321f1eb7d9957fab737b7d68961a6dbe832dda231ddf686cebec0515bbbf1ad9cc6f532e1607bf03f3c44dfcdf47892f0f46e1dedb748ac64
+	b2sums = d01eb1a6ad052f169dacebdcafa6a65736c5e786577789af12b72090bfe0475b0b045cbe2573d9f1e91afa606d9fe782e7091c03efbbf621ad992586e7470edd
+
+pkgname = vandelay

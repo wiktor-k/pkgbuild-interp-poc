@@ -1,0 +1,25 @@
+pkgbase = libretro-picodrive
+	pkgdesc = Sega MS/MD/CD/32X core
+	pkgver = 20260402.125053.gf0d4a0118a97
+	pkgrel = 1
+	url = https://github.com/libretro/picodrive
+	arch = x86_64
+	groups = libretro
+	license = BSD-3-Clause
+	makedepends = git
+	depends = glibc
+	depends = libretro-core-info
+	source = libretro-picodrive::git+https://github.com/libretro/picodrive.git#commit=f0d4a0118a97
+	source = picodrive-cyclone::git+https://github.com/irixxxx/cyclone68000.git
+	source = git+https://github.com/mackron/dr_libs.git
+	source = git+https://github.com/digital-sound-antiques/emu2413.git
+	source = picodrive-libchdr::git+https://github.com/irixxxx/libchdr.git
+	source = git+https://github.com/irixxxx/libpicofe.git
+	b2sums = fafac5fbb5aac06181b3b6662ba155637d24bd3fe4882a99fe14c789d63a46fed4cca7e9732aa1701d5ebf9518c303f0631bb1b82b29029dc31defd091bd2263
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = libretro-picodrive

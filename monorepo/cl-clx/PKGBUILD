@@ -1,0 +1,42 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=cl-clx
+_pkgname="${pkgname#cl-}"
+pkgver=0.7.8
+pkgrel=1
+pkgdesc='An implementation of the X Window System protocol in Common Lisp'
+arch=(any)
+url='https://github.com/sharplispers/clx'
+license=(MIT)
+depends=(
+  common-lisp
+  cl-asdf
+  xorg-server
+)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('c6b434f3849d731375abbeed99126ec5101ac54c915a0d2d41943da1d5c75eee9e05f524d5bae87f7bcd41ab10120cd16f461df19e8ff60ed826a70f409a4521')
+b2sums=('093379638a5e62b4105e549139b1da24cbc2bc07bd9545ce4cd43e99d0b9ce2fcaeea9eeaf831efb6f4342744cbe71d0d9bec223bf1eadfab631784bd0c91a12')
+
+build() {
+  cd "$pkgname/manual"
+
+  makeinfo clx.texinfo
+}
+
+package() {
+  cd "$pkgname"
+
+  # library
+  install -vd "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+  cp -vr \
+    debug demo extensions tests ./*.{lisp,asd} \
+    "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md 
+  install -vDm644 -t "$pkgdir/usr/share/info" manual/clx.info
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

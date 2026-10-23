@@ -1,0 +1,49 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=linbox
+pkgver=1.7.1
+pkgrel=2
+pkgdesc='A template library for exact, high-performance linear algebra computation with dense, sparse, and structured matrices over the integers and over finite fields'
+arch=(x86_64)
+url='https://linalg.org/'
+license=(GPL-2.0-or-later
+         LGPL-2.1-or-later)
+depends=(fflas-ffpack
+         glibc
+         libgcc
+         libstdc++
+         sh)
+makedepends=(iml
+             flint
+             fplll
+             git
+             lapack
+             m4rie
+             ntl)
+source=(git+https://github.com/linbox-team/linbox#tag=v$pkgver)
+sha256sums=('4bf588e21058c7220a257076db1dada34259138d23190466cef1885227e1cfc1')
+
+prepare() {
+  cd $pkgname
+  autoreconf -vif
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-sage \
+    --with-fplll=/usr
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool # fix overlinking
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

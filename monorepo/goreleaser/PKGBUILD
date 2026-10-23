@@ -1,0 +1,37 @@
+# Maintainer : Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: Fernandez Ludovic <lfernandez dot dev at gmail dot com>
+
+pkgname='goreleaser'
+pkgver=2.14.0
+pkgrel=2
+pkgdesc='Deliver Go binaries as fast and easily as possible'
+url='https://github.com/goreleaser/goreleaser'
+arch=('x86_64')
+license=('MIT')
+depends=('glibc')
+makedepends=('git' 'go')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/goreleaser/goreleaser/archive/v${pkgver}.tar.gz")
+sha512sums=('e7d6acc40324bba6c3ed9ee313b9faadc1e645872ccb3c20a83b65a745f010a4a61ae24a78b23634062d498b2e57fd79aa998ab7ee1cee8e7f14754b662696c7')
+b2sums=('ccfcb1e80d39d297c289e977caa2e02fa5e2265478da7df3504f61bd0d6e3c54b5b5edd1925b53beca40b5103bc8b0ecccfac3fd85e03992b005540ef77bba02')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  go build -ldflags="-w -s -buildid='' -linkmode=external -X main.version=${pkgver}" .
+  chmod +x ./goreleaser
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dsm755 ./goreleaser "${pkgdir}/usr/bin/goreleaser"
+  mkdir -p "${pkgdir}/usr/share/bash-completion/completions/"
+  mkdir -p "${pkgdir}/usr/share/zsh/site-functions/"
+  mkdir -p "${pkgdir}/usr/share/fish/vendor_completions.d/"
+  ./goreleaser completion bash > "${pkgdir}/usr/share/bash-completion/completions/goreleaser"
+  ./goreleaser completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_goreleaser"
+  ./goreleaser completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/goreleaser.fish"
+}

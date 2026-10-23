@@ -1,0 +1,45 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=cl-flexi-streams
+_pkgname="${pkgname#cl-}"
+pkgver=1.0.20
+pkgrel=1
+pkgdesc='Flexible bivalent streams for Common Lisp'
+arch=(any)
+url='https://edicl.github.io/flexi-streams/'
+license=(BSD-2-Clause)
+depends=(common-lisp cl-asdf cl-trivial-gray-streams)
+makedepends=(git sbcl)
+source=("$pkgname::git+https://github.com/edicl/flexi-streams#tag=v$pkgver")
+sha512sums=('b38b65e3837b61ce6a205a8345e94e34046cc2db7399e43f97df822429d537892ebcb5b48aedc08eea8ec300ca7ed33012c25816b543724025441952e44d1287')
+b2sums=('2683b370b85bc0390966fd3c5ad431e603fce68b3e57ff61ef0f4e2991bd56fed6d9dc7c0e6645bcc84fe76697a65a51f54fa085bd0e96c37873dfd0423c28bd')
+
+prepare() {
+  cd "$pkgname"
+
+  sed -n '/;;; Copyright/,/;;; SOFTWARE/p' flexi-streams.asd \
+    | sed 's/;;; //' \
+    > LICENSE
+}
+
+package() {
+  cd "$pkgname"
+
+  # create directories
+  install -vd \
+    "$pkgdir/usr/share/common-lisp/source/$_pkgname" \
+    "$pkgdir/usr/share/common-lisp/systems"
+
+  # library
+  cp -vr test ./*.{lisp,asd} "$pkgdir/usr/share/common-lisp/source/$_pkgname"
+  pushd "$pkgdir/usr/share/common-lisp/systems"
+  ln -s "../source/$_pkgname/$_pkgname.asd" .
+  ln -s "../source/$_pkgname/$_pkgname-test.asd" .
+  popd
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md docs/index.html
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

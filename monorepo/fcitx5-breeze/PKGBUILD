@@ -1,0 +1,24 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: foobat <scratcher@foxmail.com>
+
+pkgname=fcitx5-breeze
+pkgver=3.1.0
+pkgrel=1
+pkgdesc="Fcitx5 theme to match KDE's Breeze style."
+arch=('any')
+url="https://gitlab.com/scratch-er/fcitx5-breeze"
+license=('GPL-3.0-or-later')
+makedepends=('git' 'python' 'inkscape')
+source=("git+https://gitlab.com/scratch-er/fcitx5-breeze.git#tag=v$pkgver")
+sha512sums=('7bf0256762cfc70ad5bfd6722e5ced79f4ba64faebdbf1ddfb03a0e924567974ba786d5342b0a9f48383192fdff889d1508ec39e0d49fed2cff6c2cee58ea528')
+
+build() {
+  cd $pkgname
+  ./build.py
+}
+
+package() {
+  cd $pkgname
+  install -dm755 "$pkgdir"/usr/share/fcitx5/themes
+  ./install.sh "$pkgdir"/usr
+}

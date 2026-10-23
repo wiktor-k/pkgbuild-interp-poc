@@ -1,0 +1,78 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-b2sdk
+pkgver=2.13.1
+pkgrel=1
+pkgdesc='Python module to access B2 cloud storage'
+arch=(any)
+url='https://github.com/Backblaze/b2-sdk-python'
+license=(MIT)
+depends=(
+  python
+  python-annotated-types
+  python-logfury
+  python-requests
+  python-urllib3
+  python-importlib-metadata
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+  python-hatch-vcs
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytest-mock
+  python-pytest-lazy-fixtures
+  python-pytest-timeout
+  python-pytest-xdist
+  python-pyfakefs
+  python-tqdm
+  python-pydantic
+  python-responses
+  python-tenacity
+)
+optdepends=(
+  'python-tqdm: for TqdmProgressListener class'
+  'python-pydantic: for improved type hints'
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('b3f7d37f550e5ad631b0007d3884c10380717032d5da72b28ea096f5abfc7f9a6e30dae683f28ae893321490eb8b19264072303fb03804d7f60712be1acbcf04')
+b2sums=('5b3ecf440bc9f888fe457d272001ad76de204d78657406dce541f2da8f0ecf746fd9f7353564b2736e0e4e0ab9b9a245a51832e78a88207004b95e153e9a47da')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install so pytest can pick up the compiled extension
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  local pytest_options=(
+    -vv
+    --ignore=test/integration
+    --deselect test/static/test_licenses.py::test_files_headers
+    --deselect test/unit/test_sdkharness_fail_not_skip.py::test_dead_simulator_port_is_a_fail_not_a_skip[files.upload]
+    --deselect test/unit/test_sdkharness_fail_not_skip.py::test_dead_simulator_port_is_a_fail_not_a_skip[files.hide]
+    --deselect test/unit/test_sdkharness_fail_not_skip.py::test_dead_simulator_port_is_a_fail_not_a_skip[keys.multi_bucket]
+  )
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,122 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=ponyc
+pkgver=0.72.1
+pkgrel=1
+pkgdesc='An actor model, capabilities, high performance programming language'
+arch=('x86_64')
+url='https://ponylang.org/'
+license=('BSD-2-Clause')
+depends=(
+  'glibc'
+  'libatomic'
+  'libgcc'
+  'openssl'
+  'zlib'
+)
+makedepends=(
+  'cmake'
+  'git'
+  'python'
+)
+options=('!lto')
+source=(
+  "git+https://github.com/ponylang/ponyc.git#tag=$pkgver"
+  "git+https://github.com/llvm/llvm-project.git"
+  "ponyc-remove-usr-local-refs.patch"
+)
+b2sums=('8ece30a2dd7cd386985065a4a91b137c1c92755586dd1e2cc7450253773f26fc9eb222a03e1ac9fa5b194b3ef60601c3b76a3fd6ec3273c8c303c567e9954057'
+        'SKIP'
+        '42844af44b7728b0f1cb7886113e52e6a40bb4863215d3637141e26c23e519b16776e692ed8cc437336778fcb5c093ae978bd41f28c41c11b188dec72d47cfe1')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.lib/llvm/src.url ../llvm-project
+  git -c protocol.file.allow=always submodule update \
+    lib/llvm/src
+
+  patch -Np1 < ../ponyc-remove-usr-local-refs.patch
+}
+
+build() {
+  cmake_options=(
+    -DCMAKE_BUILD_TYPE=release
+    -Wno-dev
+  )
+  if [ "$CARCH" = "aarch64" ]; then
+    cmake_options+=(-DPONY_PIC_FLAG=-fPIC)
+  fi
+
+  ponyc_cmake_options=(
+    "${cmake_options[@]}"
+    -DPONYC_VERSION="$pkgver"
+    -DPONY_INSTALL_SYMLINKS=OFF
+  )
+
+  cd $pkgname
+  # Build vendored dependencies (LLVM, googletest, gbenchmark, blake2)
+  cmake -B build/build_libs -S lib \
+    "${cmake_options[@]}" \
+    -DCMAKE_INSTALL_PREFIX="$PWD/build/libs" \
+    -DLLVM_TARGETS_TO_BUILD="Native" \
+    -DGIT_SUBMODULE=OFF
+  cmake --build build/build_libs --target install
+
+  cmake -B build/build_release -S . \
+    "${ponyc_cmake_options[@]}" \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_SKIP_RPATH=ON
+  cmake --build build/build_release
+
+  mkdir docs
+  build/release/pony-doc -o docs packages/stdlib
+}
+
+check() {
+  cd $pkgname/build/release
+  ./libponyrt.tests --gtest_shuffle
+  ./libponyc.tests --gtest_shuffle
+
+  mkdir -p full-program-tests/release
+  ../build_release/test/full-program-runner/full-program-runner \
+    --timeout_s=60 --max_parallel=1 \
+    --compiler="$PWD/ponyc" \
+    --output="$PWD/full-program-tests/release" \
+    --test_lib="$PWD/test_lib" \
+    ../../test/full-program-tests
+
+  mkdir -p full-program-tests/debug
+  ../build_release/test/full-program-runner/full-program-runner \
+    --timeout_s=60 --max_parallel=1 \
+    --compiler="$PWD/ponyc" --debug \
+    --output="$PWD/full-program-tests/debug" \
+    --test_lib="$PWD/test_lib" \
+    ../../test/full-program-tests
+
+  # Use upstream's SSL flags and certificate fixtures for networking tests.
+  PONY_STDLIB_TEST_EXCLUDES='--exclude=net/Broadcast' \
+    ctest --test-dir ../build_release --output-on-failure \
+      --tests-regex '^(stdlib-release|examples)$'
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" cmake --install build/build_release
+
+  install -vdm755 "$pkgdir/usr/bin"
+  ln -vs -t "$pkgdir/usr/bin" /usr/lib/pony/$pkgver/bin/ponyc
+  ln -vs -t "$pkgdir/usr/bin" /usr/lib/pony/$pkgver/bin/pony-lsp
+  ln -vs -t "$pkgdir/usr/bin" /usr/lib/pony/$pkgver/bin/pony-lint
+  ln -vs -t "$pkgdir/usr/bin" /usr/lib/pony/$pkgver/bin/pony-doc
+
+  install -vdm755 "$pkgdir/usr/lib"
+  ln -vs -t "$pkgdir/usr/lib" /usr/lib/pony/$pkgver/lib/native/libponyc-standalone.a
+  ln -vs -t "$pkgdir/usr/lib" /usr/lib/pony/$pkgver/lib/native/libponyc.a
+
+  install -vdm755 "$pkgdir/usr/share/doc/$pkgname"
+  cp -va -t "$pkgdir/usr/share/doc/$pkgname" docs/*
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

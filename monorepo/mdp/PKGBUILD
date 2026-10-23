@@ -1,0 +1,26 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Maxim Andersson <thesilentboatman@gmail.com>
+
+pkgname=mdp
+pkgver=1.0.19
+pkgrel=1
+pkgdesc="A command-line based markdown presentation tool"
+arch=('x86_64')
+url="https://github.com/visit1985/mdp"
+license=('GPL-3.0-only')
+depends=('ncurses')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/visit1985/${pkgname}/archive/${pkgver}.tar.gz")
+sha256sums=('4043838ff3048a5234ea6e24ab42301ab78ff3f51ed6ba19c0c4711414f6a74a')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make PREFIX="/usr" DESTDIR="${pkgdir}" install
+}
+
+# vim:set ts=2 sw=2 et:

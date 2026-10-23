@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Bruce Zhang <zttt183525594@gmail.com>
+
+pkgname=feeluown-netease
+pkgver=1.0.8
+pkgrel=1
+pkgdesc="feeluown netease plugin"
+arch=('any')
+url="https://github.com/feeluown/feeluown-netease"
+license=('GPL3')
+depends=('feeluown' 'python-beautifulsoup4' 'python-pycryptodome' 'python-marshmallow'
+         'python-requests' 'python-mutagen')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools')
+checkdepends=('python-pytest')
+groups=('feeluown-full')
+source=("git+https://github.com/feeluown/feeluown-netease.git#tag=v$pkgver")
+sha512sums=('c483b4ea3ce777b686c0b18dd0105ae6f35bccedbb25e9f8aff1ff066e54f27318d5aa100f75800273b36eefe85eeec10bd785393305fa96511b7a164ee3dc58')
+
+build() {
+  cd feeluown-netease
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd feeluown-netease
+  pytest
+}
+
+package() {
+  cd feeluown-netease
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,36 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: acxz <akashpatel2008 at yahoo dot com>
+
+pkgname=rocr-debug-agent
+pkgver=7.2.4
+pkgrel=1
+pkgdesc="ROCr Debug Agent Library"
+arch=('x86_64')
+url="https://rocm.docs.amd.com/projects/rocr_debug_agent/en/latest/"
+license=('NCSA')
+depends=('rocm-core' 'hip-runtime-amd' 'rocm-dbgapi')
+makedepends=('cmake')
+provides=("rocm-debug-agent=$pkgver")
+_git='https://github.com/ROCm/rocr_debug_agent'
+source=("$pkgname-$pkgver.tar.gz::$_git/archive/rocm-$pkgver.tar.gz")
+sha256sums=('3e8c8de1e4aff795fc98521508b0625fb156315a56a894674e035ebb5ac23119')
+_dirname="$(basename "$_git")-$(basename "${source[0]}" ".tar.gz")"
+
+build() {
+  local cmake_args=(
+    -Wno-dev
+    -B build
+    -S "$_dirname"
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm6444 "$_dirname/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

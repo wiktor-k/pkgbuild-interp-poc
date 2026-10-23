@@ -1,0 +1,18 @@
+pkgbase = python-patchwork
+	pkgdesc = Common deployment/sysadmin operations, built on Fabric
+	pkgver = 1.0.1
+	pkgrel = 11
+	url = https://github.com/fabric/patchwork
+	arch = any
+	license = BSD-2-Clause
+	makedepends = python-setuptools
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = fabric
+	source = https://github.com/fabric/patchwork/archive/1.0.1/python-patchwork-1.0.1.tar.gz
+	source = invoke-devendor.patch
+	sha256sums = 0fda64a68a26a8acab897742773894fb765e1cc0049971675f50d7d5f8ae4fd7
+	sha256sums = 97f70aa48d650a8b52a1562adf09d44d2e734ee431553ad68c23ce2dcc9370f3
+
+pkgname = python-patchwork

@@ -1,0 +1,43 @@
+pkgbase = python-cuda
+	pkgdesc = Python interface for CUDA provided by NVIDIA
+	pkgver = 13.4.4
+	pkgrel = 1
+	url = https://nvidia.github.io/cuda-python
+	arch = x86_64
+	license = LicenseRef-NVIDIA
+	checkdepends = python-pytest
+	checkdepends = python-pytest-benchmark
+	checkdepends = python-numpy
+	checkdepends = python-scipy
+	makedepends = cuda
+	makedepends = cython
+	makedepends = git
+	makedepends = python-wheel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-versioneer
+	makedepends = python-pyclibrary
+	makedepends = python-cuda-pathfinder
+	options = !emptydirs
+	source = python-cuda::git+https://github.com/NVIDIA/cuda-python#tag=v13.4.4
+	b2sums = eb5a2d2c7a488ad2e4fd32ea4222226d012789fc9fdd9e8991518cbb61c0a4ecc1e1b0e65177037ddf52d7ac910df9ec5e86b5e86d24a481cf7e8a46cef02520
+
+pkgname = python-cuda
+	depends = python-cuda-bindings
+	depends = python-cuda-core
+	depends = python-cuda-pathfinder
+	optdepends = python-cccl: cuda.coop and cuda.compute modules
+	optdepends = python-numba-cuda: a DSL for CUDA SIMT programming model
+	optdepends = python-cuda-tile: a DSL for CUDA Tile programming model
+	optdepends = python-nvmath: bindings for math libraries
+	optdepends = python-nvshmem: bindings for NVSHMEM
+	optdepends = python-nsight: Python kernel profiling interface for performance analysis
+
+pkgname = python-cuda-bindings
+	depends = cuda
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-cuda-pathfinder

@@ -1,0 +1,42 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: KokaKiwi <kokakiwi+aur at kokakiwi dot net>
+
+pkgname=cargo-semver-checks
+pkgver=0.51.0
+pkgrel=1
+pkgdesc='Scan your Rust crate for semver violations'
+url='https://github.com/obi1kenobi/cargo-semver-checks'
+license=('Apache-2.0' 'MIT')
+arch=('x86_64')
+depends=('cargo' 'glibc' 'libgcc' 'openssl' 'zlib')
+makedepends=('git' 'cmake')
+options=('!lto')
+source=("$pkgname-$pkgver::git+$url.git#tag=v$pkgver")
+sha256sums=('9f414efb3515740b07ec2be747ad82d3db29e4aa41edb5649c60b5b1790f1556')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+
+check() {
+  cd "$pkgname-$pkgver"
+  ./scripts/regenerate_test_rustdocs.sh
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

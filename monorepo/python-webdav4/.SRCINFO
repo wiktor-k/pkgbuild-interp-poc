@@ -1,0 +1,28 @@
+pkgbase = python-webdav4
+	pkgdesc = WebDAV client library with a fsspec based filesystem and a CLI
+	pkgver = 0.11.0
+	pkgrel = 2
+	url = https://skshetry.github.io/webdav4
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-cheroot
+	checkdepends = python-colorama
+	checkdepends = python-pytest-xdist
+	checkdepends = python-wsgidav
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-hatch-vcs
+	depends = python
+	depends = python-httpx
+	depends = python-dateutil
+	depends = python-fsspec
+	optdepends = python-h2: HTTP/2 support
+	optdepends = python-colorama: pretty output
+	source = python-webdav4::git+https://github.com/skshetry/webdav4#tag=v0.11.0
+	sha512sums = 8db8fb10c2644a6603434ca1269f0c60e679b677d46872054aea0b6a9a3e59654dd422b6f20469cd19b0b95fc5730034ca303c8365f6c481f77f785505506c51
+	b2sums = d642449e71c1ed22f5420a9b8b9bbcf491209a723eb76d41098bcbfb2ff9b0dadb58d0ab4e82f6f3e56e1b9f2e8aad23f70ad8937c78d25523942695b999b766
+
+pkgname = python-webdav4

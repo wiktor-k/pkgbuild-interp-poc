@@ -1,0 +1,37 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=rshijack
+pkgver=0.5.2
+pkgrel=2
+pkgdesc='TCP connection hijacker, rust rewrite of shijack'
+url='https://github.com/kpcyrd/rshijack'
+depends=(
+  'gcc-libs'
+  'glibc'
+)
+makedepends=('cargo')
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz
+        https://github.com/kpcyrd/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz.asc)
+sha256sums=('c13cc07825d72f09887ec0f098aa40d335f73a0bc0b31c4d1e7431271e1cb53e'
+            'SKIP')
+b2sums=('10bc626967276e39ca9e81dc0738bd719cb3cf6a513d98521e122a5aa8098b4d7ece27f849179d1143aa540f3061b656996d6f0022714f155bd6d13070a99a61'
+        'SKIP')
+
+validpgpkeys=("64B13F7117D6E07D661BBCE0FE763A64F5E54FD6")
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --release --locked
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 target/release/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

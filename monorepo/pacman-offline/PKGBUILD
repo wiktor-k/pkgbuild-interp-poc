@@ -1,0 +1,24 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgname=pacman-offline
+pkgver=0.3.11
+pkgrel=1
+pkgdesc='offline system update with pacman'
+arch=('any')
+url='https://github.com/eworm-de/pacman-offline'
+license=('GPL-3.0-or-later')
+depends=('bash' 'systemd' 'pacman')
+optdepends=('polkit: elevate privileges')
+makedepends=('git' 'discount')
+backup=('etc/pacman.d/offline.conf'
+        'etc/pacman.d/offline-include.conf')
+validpgpkeys=('BD84DE71F493DF6814B0167254EDC91609BC9183')
+source=("git+https://github.com/eworm-de/pacman-offline.git#tag=${pkgver}?signed")
+sha256sums=('d29b321a7c172e2403d3e37b36711b73d3bf450e12bd2fbef9d87d7b519fc5c9')
+
+package() {
+	cd 'pacman-offline/'
+
+	make DESTDIR=${pkgdir} install
+}
+

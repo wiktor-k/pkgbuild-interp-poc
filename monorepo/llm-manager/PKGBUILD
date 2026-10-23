@@ -1,0 +1,24 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=llm-manager
+pkgver=1.2.1
+pkgrel=1
+pkgdesc='LLM task->model configuration utility'
+arch=(any)
+url='https://github.com/xyproto/llm-manager'
+license=(BSD-3-Clause)
+makedepends=(git)
+depends=(ollama python)
+optdepends=('ollama-cuda: CUDA support for Ollama'
+            'ollama-rocm: ROCm support for Ollama')
+provides=(ollama-environment)
+backup=(etc/llm.conf)
+source=("git+$url#tag=v$pkgver")
+b2sums=('907e3d4dbddd12bcf6feef1e42634b3548b7a6f23f29c519770a16b128ea08f1abd2a93e85ea0b0b298f7c82c38f262350c481bb7bf2f51e5a131e7080edb852')
+
+package() {
+  cd $pkgname
+  install -Dm755 main.py "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 llm.conf "$pkgdir/etc/llm.conf"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

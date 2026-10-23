@@ -1,0 +1,95 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor GI Jack <GI_Jack@hackermail.com>
+
+pkgname=afl++
+pkgver=5.00c
+pkgrel=1
+pkgdesc='instrumentation-driven fuzzer for binary format'
+url='https://aflplus.plus/'
+arch=(x86_64)
+license=(Apache-2.0)
+depends=(
+  bash
+  clang
+  compiler-rt
+  glib2
+  glibc
+  libgcc
+  libstdc++
+  lld
+  llvm
+  python
+  python-tqdm
+  zlib
+)
+makedepends=(
+  cpio
+  git
+  grep
+  pax-utils
+  python-jinja
+  python-msgpack
+  rust
+)
+checkdepends=(
+  cmake
+  cmocka
+  meson
+)
+provides=(
+  afl
+)
+conflicts=(
+  afl
+  aflplusplus
+)
+replaces=(
+  afl
+  aflplusplus
+)
+options=(!lto)
+source=(
+  "https://github.com/AFLplusplus/AFLplusplus/archive/refs/tags/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+)
+sha256sums=('b0c005a1d28883ad1cad17ac01837d5c6b0cc7a72d19db700823e42ce3848534')
+b2sums=('88fe7ebc95d4f116eb2ed183bc92d6d90fbb2cab03fc12132a5c1c5eabe057deb7dc710cd538159ffe7d1c1f38f05f497e08afa64e69912d9137ff0937cbb0dc')
+
+prepare() {
+  # https://github.com/AFLplusplus/AFLplusplus/issues/2643
+  # Drop afl+ +'s CFLAGS when building qemu due to broken escaping
+  sed -i 's|-cd qemu_mode && sh ./build_qemu_support.sh|-cd qemu_mode \&\& unset CFLAGS \&\& sh ./build_qemu_support.sh|' "AFLplusplus-${pkgver}"/GNUmakefile
+
+  cd "AFLplusplus-${pkgver}"
+
+  # handle patches
+  local src
+  for src in "${source[@]}"; do
+    src="${src%%::*}"
+    src="${src##*/}"
+    [[ $src = *.patch ]] || continue
+    msg2 "Applying patch $src..."
+    patch -Np1 < "../$src"
+  done
+}
+
+build() {
+  cd "AFLplusplus-${pkgver}"
+  CFLAGS=${CFLAGS/-fcf-protection/} make PREFIX=/usr
+}
+
+check() {
+  cd "AFLplusplus-${pkgver}"
+  # we don't need performance tests
+  rm -v test/test-performance.sh
+  # Unset our CFLAGS/CXXFLAGS for the tests since these may
+  # interact in unexpected ways with afl-cc instrumentation.
+  CFLAGS= CXXFLAGS= make ARCH= test
+}
+
+package() {
+  cd "AFLplusplus-${pkgver}"
+  CFLAGS=${CFLAGS/-fcf-protection/} make install PREFIX=/usr DESTDIR="${pkgdir}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,50 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=noise-repellent
+pkgver=0.2.5
+pkgrel=1
+pkgdesc="An lv2 plug-in for broadband noise reduction"
+arch=(x86_64)
+url="https://github.com/lucianodato/noise-repellent"
+license=(LGPL-3.0-or-later)
+groups=(
+  lv2-plugins
+  pro-audio
+)
+depends=(
+  glibc
+  libspecbleach
+  lv2-host
+)
+makedepends=(
+  lv2
+  meson
+)
+checkdepends=(lv2lint)
+source=($url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('b7c4f6f1531d649a193db9e1083a031d603a9ecee45577357b4defe6525ce3e5141ff51bb054ec6416cc3e4388c96e1dc5a16b7f5aa488ce5e235355c0d39255')
+b2sums=('553d51400d42f2dbc86305f90d3ec4ac0d09653c09997582e97af31e1843cdccce50af2b45d82b0c8e0cdb5e9dfc81e24b5782f0a12a07548215801b13e32f58')
+
+build() {
+  arch-meson build $pkgname-$pkgver
+  meson compile -C build
+}
+
+check() {
+  local _links=(
+    "https://github.com/lucianodato/noise-repellent#new"
+    "https://github.com/lucianodato/noise-repellent-stereo#new"
+  )
+  for _link in "${_links[@]}"; do
+    lv2lint -Mpack -I build/ "${_link}"
+  done
+}
+
+package() {
+  depends+=(
+    libspecbleach libspecbleach.so
+  )
+
+  meson install -C build --destdir="$pkgdir"
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

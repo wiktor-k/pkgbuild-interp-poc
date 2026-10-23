@@ -1,0 +1,54 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Johannes Schleifenbaum <johannes [at] js-webcoding [dot] de>
+
+pkgname=testssl.sh
+pkgver=3.2.4
+pkgrel=1
+pkgdesc='Testing TLS/SSL encryption'
+url=https://github.com/testssl/testssl.sh
+arch=(any)
+license=(GPL-2.0-only)
+depends=(
+  bash
+  bind-tools
+  coreutils
+  openssl
+  procps-ng
+  util-linux
+)
+makedepends=(
+  perl
+  perl-data-dump
+  perl-json
+  perl-test-base
+)
+source=(
+  "https://github.com/testssl/testssl.sh/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+  set-install-dir.patch
+)
+sha512sums=('8da1e356bdff7eb436f33468f91cf416f8434eada74af1081ac51341e3364839c864d55d8c1d34a513f623e1f4d20ea4d501870a2fc72a96d77b8465da6a158d'
+            '3272f29564325ff08cd9b28077969fcef8c7e5c72e3cd50ba3002b52f6dca0ce5933434a8f3052e0c94face96e7e4fd2af9b6da39c6f3f58565aa01e182fd9c1')
+b2sums=('17d67eb31724c6527c65c4ee9ef1dcf9834143937beb94943c17f7f6e834eb44e92809f528aca10330abfbb01caecaf42c4a80d7f5966159da01e9a81f8faa26'
+        'c4f51614e4f7d029f6b27d08a507fe7ac8a04e3dac2a7cc50705c008c1900e7ac4db5d0a3f29e2dac2834ab022b6c6bae26907d9b388fc73ad78dfa59278b963')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  patch -Np1 < "${srcdir}/set-install-dir.patch"
+  rm bin/openssl.Linux*
+}
+
+check() {
+ cd ${pkgname}-${pkgver}
+ # the bundled openssl segfaults in the tests
+ # TESTSSL_INSTALL_DIR="$(pwd)" prove -v
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 testssl.sh "${pkgdir}/usr/bin/testssl"
+  install -Dm 644 etc/* -t "${pkgdir}/usr/share/testssl.sh/etc"
+  install -Dm 644 Readme.md doc/testssl.1.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 doc/testssl.1 -t "${pkgdir}/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

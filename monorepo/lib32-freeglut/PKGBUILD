@@ -1,0 +1,68 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Eric Belanger <eric@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=lib32-freeglut
+pkgver=3.8.0
+pkgrel=2
+pkgdesc="Free OpenGL Utility Toolkit (32-bit)"
+url="https://freeglut.sourceforge.net/"
+arch=(x86_64)
+license=(X11)
+depends=(
+  freeglut
+  lib32-glibc
+  lib32-glu # Required by headers
+  lib32-libgl
+  lib32-libx11
+  lib32-libxi
+  lib32-libxrandr
+  lib32-libxxf86vm
+)
+makedepends=(
+  cmake
+  git
+  lib32-mesa
+  ninja
+)
+provides=(lib32-glut)
+conflicts=(lib32-glut)
+source=("git+https://github.com/FreeGLUTProject/freeglut#tag=v${pkgver/[a-z]/-&}")
+b2sums=('2681b876d8867c6fb1f5a4242068434575c0c5ea14ce62b4754f1656bb5297821a95ce24eb14f326acccc929675211e908e6c702796a6d8c72b0f96e6503fbc0')
+
+prepare() {
+  cd freeglut
+}
+
+build() {
+  local cmake_options=(
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_LIBDIR=lib32
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D FREEGLUT_BUILD_STATIC_LIBS=OFF
+    -D FREEGLUT_INSTALL_MAN_PAGES=OFF
+  )
+
+  export CC="gcc -m32"
+  export CXX="g++ -m32"
+  export PKG_CONFIG=i686-pc-linux-gnu-pkg-config
+
+  cmake -S freeglut -B build -G Ninja "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure --stop-on-failure -j$(nproc)
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  rm -r "$pkgdir/usr/include"
+
+  ln -s glut.pc "$pkgdir/usr/lib32/pkgconfig/freeglut.pc"
+
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" freeglut/COPYING
+}
+
+# vim:set sw=2 sts=-1 et:

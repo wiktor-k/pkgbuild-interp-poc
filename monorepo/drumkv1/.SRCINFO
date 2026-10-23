@@ -1,0 +1,59 @@
+pkgbase = drumkv1
+	pkgdesc = An old-school drum-kit sampler
+	pkgver = 1.5.0
+	pkgrel = 1
+	url = https://drumkv1.sourceforge.io/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = alsa-lib
+	makedepends = cmake
+	makedepends = jack
+	makedepends = libgcc
+	makedepends = liblo
+	makedepends = libsndfile
+	makedepends = libstdc++
+	makedepends = lv2
+	makedepends = qt6-base
+	makedepends = qt6-svg
+	makedepends = qt6-tools
+	source = https://download.sourceforge.net/drumkv1/drumkv1-1.5.0.tar.gz
+	sha512sums = 3456dd992476da0f9edf8afbcc08912b74fc6e49206809853b9341e6d5273d469756bc1ac01caa9533cc9b89ce2e0c398a91afcbe6d1291d5eaf63f2d6e98078
+	b2sums = 7631822eeccadb416b001bd33261c64e170b7d0b1b824554a8fa52e8bbb3f90c36351988b7789379107ee566ab196a5b82471d836a02919c19f355b72b81d606
+
+pkgname = drumkv1
+	depends = drumkv1-lv2=1.5.0
+	depends = drumkv1-standalone=1.5.0
+
+pkgname = drumkv1-common
+	pkgdesc = An old-school drum-kit sampler - common files
+
+pkgname = drumkv1-lv2
+	pkgdesc = An old-school drum-kit sampler - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = drumkv1-common=1.5.0
+	depends = glibc
+	depends = libgcc
+	depends = libsndfile
+	depends = libsndfile.so
+	depends = libstdc++
+	depends = lv2-host
+	depends = qt6-base
+	depends = qt6-svg
+
+pkgname = drumkv1-standalone
+	pkgdesc = An old-school drum-kit sampler - standalone
+	groups = pro-audio
+	depends = alsa-lib
+	depends = drumkv1-common=1.5.0
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = jack
+	depends = libgcc
+	depends = liblo
+	depends = libsndfile
+	depends = libsndfile.so
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-svg
+	optdepends = new-session-manager: for session management using the standalone application

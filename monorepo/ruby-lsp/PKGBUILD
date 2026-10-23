@@ -1,0 +1,84 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='lsp'
+pkgname="ruby-${_gemname}"
+pkgver=0.26.10
+pkgrel=1
+pkgdesc='An opinionated language server for Ruby'
+arch=('any')
+url="https://github.com/Shopify/ruby-${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-language_server-protocol
+  ruby-rbs
+  ruby-sorbet-runtime
+)
+makedepends=(
+  ruby-rdoc
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/ruby-${pkgname}-${pkgver}.tar.gz")
+sha512sums=('23aafb17c32dfae75da290ac793f586b98cccac7016c51c8fef901d7a523a4adf5cf062f3e3635f1db0bf29ad55807f8994aa9900e796859fe4df731f006b104')
+b2sums=('6fdbc73d04eb2d7ef6393628dd2140427ee3462d22b79f1dc77dd3afb2015b1449c9cc0033b1a97d319f67131e1b357b50d09f5db8af98da3be17ea2fd9e39f4')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${pkgname}.gemspec"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${pkgname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${pkgname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${pkgname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${pkgname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

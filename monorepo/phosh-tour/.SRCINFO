@@ -1,0 +1,23 @@
+pkgbase = phosh-tour
+	pkgdesc = Simple tour through Phosh
+	pkgver = 0.58.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/Phosh/phosh-tour
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libgmobile
+	source = git+https://gitlab.gnome.org/World/Phosh/phosh-tour.git?signed#tag=v0.58.0
+	validpgpkeys = 0DB3932762F78E592F6522AFBB5A2C77584122D3
+	b2sums = b2b64d0cc43cf7e8c2239e230eedf7bdb2ae674434e76a203b528bed6fc317ec23c3101dbbe34575c3ebd1c6ba77d67b97c0f9b0457f45f4fe0c5a995feca4be
+
+pkgname = phosh-tour

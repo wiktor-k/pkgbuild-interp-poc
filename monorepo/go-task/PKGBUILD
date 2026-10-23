@@ -1,0 +1,71 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=go-task
+pkgver=3.54.0
+pkgrel=1
+pkgdesc='A task runner written in Go'
+arch=(x86_64)
+url='https://taskfile.dev'
+license=(MIT)
+depends=(glibc)
+makedepends=(git go)
+install=go-task.install
+source=(
+  "$pkgname::git+https://github.com/go-task/task#tag=v$pkgver"
+  fix-version.patch
+)
+sha512sums=('73260da7d0b5b1589c1242a02a0078435dfbdd727339524e03ee6a381bedcdd7eb204c94b5743a5fc36ec17d3a04b963dc123a72fbb9d8ccde6857ba9065cf83'
+            '5ca079e3d2875d1efe8bba390ae8960445f42b53f309b50cff8a8c13dc3d5ca06065a0bd9ea4504817bbdccc36f7ff39f937817f4feb28fd1d3006dbf382636a')
+b2sums=('49a2f8b4b495e7adceefc9df7c99ef58a31d29ac12d05361c7504b1aec09a0f7a5fe8a18705300563620c8d4b145ccf03b6864dbd845fa3524484bda4a3a5b74'
+        '99f5fd755334a9c5b0a0375d4cdda6e640444d7550d1c105d41f4b94da9f25f74331465b90bc2f79ab0daa5e3d95d9d27d62cce86646f5c22b6c95947c919a0c')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+
+  # fix version
+  patch -p1 -i "$srcdir/fix-version.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -s -w -buildid='' \
+    -extldflags '${LDFLAGS}' \
+    -X github.com/go-task/task/v3/internal/version.version=${pkgver} \
+    -X github.com/go-task/task/v3/internal/version.commit=$(git rev-parse --short HEAD)" \
+    -o go-task \
+    ./cmd/task
+}
+
+# tests make network calls, yuck
+#check() {
+#  cd "$pkgname"
+#
+#  go test -v ./...
+#}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" go-task
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

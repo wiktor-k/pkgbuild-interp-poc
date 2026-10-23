@@ -1,0 +1,27 @@
+pkgbase = mugshot
+	pkgdesc = User Management Utility for Linux
+	pkgver = 0.4.3
+	pkgrel = 7
+	url = https://github.com/bluesabre/mugshot
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-distutils-extra
+	makedepends = intltool
+	depends = gtk3
+	depends = python
+	depends = python-pexpect
+	depends = python-cairo
+	depends = python-gobject
+	depends = accountsservice
+	depends = hicolor-icon-theme
+	depends = which
+	optdepends = gnome-control-center: collection of stock face icons
+	source = git+https://github.com/bluesabre/mugshot.git#tag=mugshot-0.4.3?signed
+	validpgpkeys = 21D00B5001E804E5DE6E4BF876E6FEEC95FC5E22
+	sha256sums = 18162cb0bbd5f852612e233cb53975a132635c03533f019a95e9017b473287a2
+
+pkgname = mugshot

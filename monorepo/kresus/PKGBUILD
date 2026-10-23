@@ -1,0 +1,62 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=kresus
+pkgver=0.25.2
+pkgrel=1
+pkgdesc="Self-hosted personal finance manager"
+arch=(x86_64)
+url="https://kresus.org"
+license=(AGPL-3.0-or-later)
+backup=('etc/webapps/kresus/config.ini')
+depends=(python python-requests nodejs-lts-krypton woob)
+makedepends=(git yarn libpng node-gyp)
+optdepends=('python-pdfminer: La Banque Postale support')
+source=(git+https://codeberg.org/kresus/kresus.git#tag=${pkgver}
+        ${pkgname}.service
+        ${pkgname}.sysusers
+        ${pkgname}.tmpfiles)
+sha256sums=('96c47de90d5f0c0b5b10d1bfa3105d8b8f14be1c0879d0218f87820b1ad35a57'
+            '14d1373b0ba27b5695d75119af066348328be4104028d4d7a981252f7c9b1265'
+            'a2865fd7eb63aa0a61b22a61a1b5969684355d3fe4d63794f6710453dac972f6'
+            'ba8ad7d9eb5d2b47fde5f6a3ab98596e5c679141b78d76d54b44830604b67632')
+
+prepare() {
+    cd ${pkgname}
+    yarn install --no-fund
+    sed -e 's|^datadir=$|&/var/lib/kresus|' -e 's|^python_exec=$|&python|' -i support/docker/config.example.ini
+}
+
+build() {
+    cd ${pkgname}
+    export CFLAGS+=" -ffat-lto-objects"
+    yarn run build:prod --offline
+}
+
+package() {
+    cd ${pkgname}
+    # Remove building modules and install production ones only
+    rm -rf node_modules
+    yarn install --production --no-fund
+    # Move to install point
+    install -d "${pkgdir}"/usr/{bin,lib/kresus/}
+    mv bin build node_modules "${pkgdir}"/usr/lib/kresus/
+    # Symlink executable
+    ln -s /usr/lib/kresus/bin/kresus.js "${pkgdir}"/usr/bin/kresus
+
+    # Remove useless stuff
+    find "${pkgdir}"/usr/lib/kresus/ -type d \( -name 'test' -o -name 'tests' -o -name 'tools' -o -name '\.github' \) -exec rm -rv {} \+
+    find "${pkgdir}"/usr/lib/kresus/ -type f \( -name '*\.md' -o -name '*\.txt' -o -name 'AUTHORS' -o -iname 'LICENSE*' -o -name 'Dockerfile' -o -name 'Makefile' -o -iname 'README*' -o -name '\.*' \) -delete -print
+    # No -o -name 'package.json' because they seem required
+
+    # Fix permissions
+    chmod -R go-w "${pkgdir}"/usr/lib/kresus
+    chown -R root:root "${pkgdir}"/usr/lib/kresus
+
+    install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+    install -Dm600 support/docker/config.example.ini "${pkgdir}"/etc/webapps/kresus/config.ini
+
+    cd ..
+    install -Dm644 ${pkgname}.service -t "${pkgdir}"/usr/lib/systemd/system/
+    install -Dm644 ${pkgname}.sysusers "${pkgdir}"/usr/lib/sysusers.d/${pkgname}.conf
+    install -Dm644 ${pkgname}.tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/${pkgname}.conf
+}

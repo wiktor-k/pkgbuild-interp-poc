@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-ext4
+pkgver=1.4.1
+pkgrel=2
+pkgdesc='Library for read-only interaction with EXT4 filesystems'
+arch=(any)
+url='https://github.com/Eeems/python-ext4'
+license=(MIT)
+depends=(
+  python
+  python-cachetools
+  python-crcmod
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  xz
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  no-nuitka.patch
+)
+sha512sums=('ca38c9ddaa75d4d7e620d6507aefb3fcab921a42511a5411130635a630fe45433eed15334ec44a3c02eb6db9119e36fe2d48f3fe2c0a8e44ab3e7faa2f90d466'
+            '74fd87edaa06cd881cce0e826177a4de7c4758e628ffd028911de51c55381c9203f123aefe371ba45151f754c5071fcfb9f6d997dc81f89cd439985230025ad9')
+b2sums=('7b22df65701f628c4d8a3dfe9315fe429908c1693a242609d7100c9e621388996d8537370fa598857e4c0bd810dc316ce1439826bcc35c4de10ceaeb717ab392'
+        'bb9545d55197bf14454824b78769cdb2dcb7c47f644429b39ab50f6255e7602c3aedd3763798a02487f6a9c873643ca15916c2965811008dcf72951b397a9ca9')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/no-nuitka.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

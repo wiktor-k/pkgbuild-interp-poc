@@ -1,0 +1,82 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Pavol (Lopo) Hluchy <lopo AT losys DOT eu>
+
+pkgname=ruby-chunky_png
+_pkgname=${pkgname#ruby-}
+pkgver=1.4.0
+pkgrel=5
+pkgdesc="Read/write access to PNG images in pure Ruby"
+arch=(any)
+url="https://github.com/wvanbergen/chunky_png"
+license=(MIT)
+depends=(ruby)
+makedepends=(
+  git
+  rubygems
+)
+checkdepends=(ruby-rspec)
+source=(
+  "git+$url.git#tag=v$pkgver"
+  "fix-object-regex-match-op.patch::$url/commit/8e6f5934541833f15664398f90331f3724e40933.patch"
+)
+sha256sums=('941ea2ba3ba177096efea8d5822dcc63daae4237cc09097dc4a7778cee3ed940'
+            '0247213c78e5591229b26d75b3bc780f1a6c3e08152aa227b4ba17a512921fa2')
+
+prepare() {
+  cd "$_pkgname"
+  sed -i -E 's|~>|>=|g' "$_pkgname.gemspec"
+  sed -i '/bundler/Id' spec/spec_helper.rb
+  patch -Np1 -i "$srcdir/fix-object-regex-match-op.patch"
+}
+
+build() {
+  cd "$_pkgname"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd "$_pkgname"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

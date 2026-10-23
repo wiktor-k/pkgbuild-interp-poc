@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=comtool
+pkgver=3.4.1
+pkgrel=1
+pkgdesc="A cross platform serial debug tools written by python"
+arch=('any')
+url="https://github.com/Neutree/COMTool"
+license=('LGPL-3.0-only')
+depends=('python-pyqt5' 'python-pyserial' 'python-requests' 'python-babel' 'python-qtawesome' 'python-paramiko' 'python-pyte' 'python-pyperclip' 'python-coloredlogs' 'python-pyqtgraph')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/Neutree/COMTool.git#tag=v$pkgver")
+sha512sums=('96ad9d997282f54c98fdb5fe9acf0d656e41bb72ed0c23a854f63098a2ac60e7f2a32601779c5981a7e66a77d027518cbc48aafcd89465401957e3b89115aee3')
+
+prepare() {
+  cd COMTool
+  sed -i "s/'pyqt5>=5',//" setup.py
+}
+
+build() {
+  cd COMTool
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd COMTool
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  rm "$pkgdir"/usr/{LICENSE,README.MD}
+}
+
+# vim:set ts=2 sw=2 et:

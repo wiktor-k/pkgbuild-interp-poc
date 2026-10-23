@@ -1,0 +1,71 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Jon Nordby <jononor@gmail.com>
+
+pkgname=mypaint
+pkgver=2.0.1
+pkgrel=8
+pkgdesc='Fast and easy painting application for digital painters, with brush dynamics'
+arch=(x86_64)
+url='https://www.mypaint.app/'
+license=(GPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  lcms2
+  libgcc
+  libgomp
+  libmypaint
+  libpng
+  libstdc++
+  mypaint-brushes
+  pango
+  python
+  python-cairo
+  python-gobject
+  python-numpy
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  swig
+)
+source=(
+  "git+https://github.com/mypaint/mypaint.git?signed#tag=v$pkgver"
+  mypaint-backport-fixes.patch
+)
+b2sums=(
+  0b6010d0c3d3ef1b2a8e9132ad80ba4bbb701c8dfa33d619157aa01d3d87baf9832defba2b141b9ed58ec8345165bb7c80edebdeb6945689217d22754ec23646
+  9e858de9dbe6ddaa58955ab868357da87a3a7a32648fc49cca5eb58d991493992117382e3df27951d4e3bb3a0bd27517b9dc742fce427ab214d9aa2454c20737
+)
+validpgpkeys=(A5EF2D077F35BBD2973418254803CB83E02F8A4D) # Jesper Lloyd (Stoneface) <jpl.lloyd@gmail.com>
+
+prepare() {
+  cd $pkgname
+
+  # Backport fixes
+  # https://github.com/mypaint/mypaint/pull/1252
+  git apply -3 ../mypaint-backport-fixes.patch
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  mv "$pkgdir/usr/lib/python3.14/site-packages" "$pkgdir/usr/lib/mypaint"
+  rm -r "$pkgdir/usr/lib/python3.14"
+
+  install -dm755 "$pkgdir/usr/share"
+  mv "$pkgdir"/usr/{applications,icons,locale,metainfo,mypaint,thumbnailers} "$pkgdir/usr/share/"
+}

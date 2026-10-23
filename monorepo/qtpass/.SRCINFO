@@ -1,0 +1,21 @@
+pkgbase = qtpass
+	pkgdesc = A multi-platform GUI for pass
+	pkgver = 1.8.3
+	pkgrel = 2
+	url = https://qtpass.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = qt6-tools
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = pass
+	depends = pwgen
+	depends = qt6-base
+	depends = qt6-svg
+	source = git+https://github.com/IJHack/QtPass.git#tag=v1.8.3
+	validpgpkeys = DF7FEF8DFBA721E320B18F5615B63ADCA0034B9E
+	sha256sums = badbf1aa91b4e166cc9ea261fc4563dd2870e28e5acc9a3256ef751dce9f70f9
+
+pkgname = qtpass

@@ -1,0 +1,77 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gnome-remote-desktop
+pkgver=51.0
+pkgrel=2
+pkgdesc="GNOME Remote Desktop server"
+url="https://gitlab.gnome.org/GNOME/gnome-remote-desktop"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  freerdp
+  fuse3
+  glib2
+  glibc
+  krb5
+  libdrm
+  libei
+  libepoxy
+  libfdk-aac
+  libgcc
+  libnotify
+  libpipewire
+  libsecret
+  libva
+  libvncserver
+  libxkbcommon
+  opus
+  pipewire
+  polkit
+  systemd
+  systemd-libs
+  tpm2-tss
+  vulkan-icd-loader
+)
+makedepends=(
+  asciidoc
+  ffnvcodec-headers
+  git
+  glib2-devel
+  meson
+  vulkan-headers
+)
+groups=(gnome)
+source=(
+  "git+$url.git?signed#tag=${pkgver/[a-z]/.&}"
+  0001-Lock-user-account.patch
+)
+b2sums=('360cc3b47fdd674ac448634018a646447f17966ec91b842112626fe88f802e6201878ca47639678a8b04c0de56e74445bc17f067787f587d072a31e4fed06e40'
+        '11fd01261925345e6e918b7525d107abf9fcf41d58fdc3701d05d0f36f8d77876b1df2bc31d318e83bf371818a993264c0def15a4b490196598922cb820f4389')
+validpgpkeys=(
+  8307C0A224BABDA1BABD0EB9A6EEEC9E0136164A # Jonas Ådahl <jadahl@gmail.com>
+  E60DADB5546D3F01AF35B87289F540EAB24513E2 # Ray Strode <rstrode@redhat.com>
+)
+
+prepare() {
+  cd $pkgname
+  git apply -3 ../0001-Lock-user-account.patch
+}
+
+build() {
+  local meson_options=(
+    -D tests=false
+    -D vnc=true
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

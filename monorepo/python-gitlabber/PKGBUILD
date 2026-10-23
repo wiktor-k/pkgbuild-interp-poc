@@ -1,0 +1,68 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=python-gitlabber
+pkgver=2.1.2
+pkgrel=1
+pkgdesc='Clones or pulls entire groups tree from GitLab'
+arch=('any')
+license=('MIT')
+url='https://github.com/ezbz/gitlabber'
+depends=(
+  'python-setuptools'
+  # https://github.com/ezbz/gitlabber/blob/master/requirements.txt
+  'python-anytree'
+  'python-gitpython'
+  'python-gitlab'
+  'python-globre'
+  'python-pyyaml'
+  'python-rich'
+  'python-typer'
+  'python-pydantic'
+  'python-pydantic-settings'
+)
+optdepends=(
+  'python-keyring: Store GitLab tokens securely using your OS keyring'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest-integration'
+)
+source=("$pkgname::git+${url}#tag=v${pkgver}")
+sha256sums=('63d6ec094cf1beb877197831aea72d592b854e34c2c5b39b9dbf1194ae5cf2a3')
+
+pkgver() {
+  cd "$pkgname"
+  git describe --tags | sed 's/^v//;s/-/+/g'
+}
+
+prepare() {
+  cd "$pkgname"
+
+  sed -i '/optional arguments/d' tests/test_integration.py
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  python -m pytest
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+  install -Dm644 README.rst "$pkgdir/usr/share/doc/$pkgname/README.rst"
+}

@@ -1,0 +1,83 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgbase=libshumate
+pkgname=(
+  libshumate
+  libshumate-docs
+)
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="Map widget for GTK 4"
+url="https://gitlab.gnome.org/GNOME/libshumate"
+license=(LGPL-2.1-or-later)
+arch=(x86_64)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gtk4
+  json-glib
+  libgcc
+  libsoup3
+  libsysprof-capture
+  pango
+  protobuf-c
+  sqlite
+)
+makedepends=(
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  gperf
+  meson
+  vala
+)
+checkdepends=(xorg-server-xvfb)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/libshumate.git?signed#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('2c3e236405e9cdf7e63140c63fcfdf0a75690c70ac1478c86c07ad10c835bfd75a7383c463e6792721b0e9259f33248e58e1f53edc31f799566cba594d4bbcea')
+validpgpkeys=(
+  7448F128A4B18AB2EF87F092FA6624580A420D5D # Marcus Lundblad <ml@update.uu.se>
+)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  local meson_options=(
+    --buildtype debugoptimized  # Required for tests
+    -D demos=true
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  GTK_A11Y=none dbus-run-session xvfb-run -s '-nolisten local' \
+    meson test -C build --print-errorlogs
+}
+
+package_libshumate() {
+  provides=(libshumate-1.0.so)
+
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+
+  mkdir -p doc/usr/share
+  mv {"$pkgdir",doc}/usr/share/doc
+}
+
+package_libshumate-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+
+  mv doc/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

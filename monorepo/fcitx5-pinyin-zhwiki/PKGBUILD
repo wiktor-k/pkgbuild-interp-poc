@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgbase=fcitx5-pinyin-zhwiki
+pkgname=(fcitx5-pinyin-zhwiki rime-pinyin-zhwiki)
+_converterver=0.3.1
+_zhwikiver=20261001
+_webslangver=20261018
+pkgver=$_converterver.$_webslangver
+pkgrel=1
+epoch=1
+pkgdesc="Fcitx 5 Pinyin Dictionary from zh.wikipedia.org"
+arch=('any')
+url="https://github.com/felixonmars/fcitx5-pinyin-zhwiki"
+license=('CC-BY-SA-4.0' 'GFDL-1.3-or-later')
+makedepends=('git' 'libime' 'opencc' 'pypinyin' 'python-more-itertools' 'python-regex'
+             'python-requests' 'python-tenacity')
+source=(git+https://github.com/felixonmars/fcitx5-pinyin-zhwiki.git#tag=$_converterver
+        https://github.com/felixonmars/fcitx5-pinyin-zhwiki/releases/download/$_converterver/web-slang-$_webslangver.wikitext
+        https://dumps.wikimedia.org/zhwiki/$_zhwikiver/zhwiki-$_zhwikiver-all-titles-in-ns0.gz
+        https://dumps.wikimedia.org/zhwikisource/$_zhwikiver/zhwikisource-$_zhwikiver-all-titles-in-ns0.gz
+        https://dumps.wikimedia.org/zhwiktionary/$_zhwikiver/zhwiktionary-$_zhwikiver-all-titles-in-ns0.gz)
+sha512sums=('03f8a074bb811cb0ad3f8b59737db6a2d1210194a788dfb6dc88072fcb927ba4b6d93ec16ce7032cdd1f37b098f7f90084566314f56269afbeb8c6897c004ece'
+            '64208053379b9c9a61a63a6db757ac036327ba80123a975bbdb7e5d15c6cdbd035dda380bdfb87ac3285b03ad68e31bc86be692325db83390c8f7f2610d76ff0'
+            'd61a873cebd32f16cf14924cdd6df65e31d2479b953de152a420d6241a250795cae1ffeca7d8faca290f5fa47e07841497bf9ffe0c1930cbaa0d29cc8cfd222b'
+            '521cda7b0fb8405cfe3dd8cb5147c5a8080943cf4e1bb8f5ff0b7afdcafa7e25a2eb533d08e2cf991d651e66d800241a4751f5c4c6e46c65637e720be4b96e65'
+            'e4476bac2e58f28a7b58fe963b2c6081f28e413e254bc2a63795302ac37f4dff6c6ada843631dd78d4dca24ee1ea2b06a7381408f99034678b8c6a32f0344909')
+
+_make="make -L VERSION=$_zhwikiver WEB_SLANG_VERSION=$_webslangver"
+
+prepare() {
+  cd $pkgbase
+  sed -i 's/zhwikidictionary/zhwiktionary/' Makefile
+
+  # Workaround pacman decompression
+  touch zhwik{i,isource,tionary}-$_zhwikiver-all-titles-in-ns0.gz
+
+  ln -s ../zhwiki-$_zhwikiver-all-titles-in-ns0
+  ln -s ../zhwikisource-$_zhwikiver-all-titles-in-ns0
+  ln -s ../zhwiktionary-$_zhwikiver-all-titles-in-ns0
+  ln -s ../web-slang-$_webslangver.wikitext
+}
+
+build() {
+  cd $pkgbase
+  $_make build build_rime_dict
+}
+
+package_fcitx5-pinyin-zhwiki() {
+  cd $pkgbase
+  $_make DESTDIR="$pkgdir" install
+}
+
+package_rime-pinyin-zhwiki() {
+  cd $pkgbase
+  $_make DESTDIR="$pkgdir" install_rime_dict
+}

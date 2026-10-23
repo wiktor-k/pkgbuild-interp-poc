@@ -1,0 +1,94 @@
+pkgbase = simpleitk
+	pkgdesc = A simplified layer built on top of ITK
+	pkgver = 2.5.6
+	pkgrel = 1
+	url = https://github.com/SimpleITK/SimpleITK
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = eigen
+	makedepends = git
+	makedepends = intel-oneapi-mkl
+	makedepends = java-environment
+	makedepends = ninja
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = swig
+	makedepends = itk
+	makedepends = java-runtime
+	makedepends = lua
+	makedepends = mono
+	makedepends = python
+	makedepends = python-numpy
+	makedepends = r
+	makedepends = ruby
+	makedepends = tcl
+	makedepends = tk
+	source = simpleitk::git+https://github.com/SimpleITK/SimpleITK.git#tag=v2.5.6
+	source = lua-5.5.patch
+	b2sums = 88dfcde8accee786ce443d5110f5825388528b16cb1d024975fdd72829ee8d2b7faeb353590107a8f72aeafa56632d9e2efcf8f583682a29512a4c9f7bd79b8d
+	b2sums = 85bff06de13feded08bede6ed237a5639cc43da45ba2db63a977ad45441d449761bfa4ff05e181f7240f18b7364251f929565a64e0daa2675447182bec8efaee
+
+pkgname = simpleitk
+	depends = glibc
+	depends = itk
+	depends = libgcc
+	depends = libstdc++
+
+pkgname = java-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - Java bindings
+	depends = glibc
+	depends = java-runtime
+	depends = libgcc
+	depends = libstdc++
+	depends = simpleitk
+
+pkgname = lua-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - Lua bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = lua
+	depends = simpleitk
+
+pkgname = mono-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - C# bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = mono
+	depends = simpleitk
+
+pkgname = python-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - Python bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-numpy
+	depends = simpleitk
+
+pkgname = r-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - R bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = r
+	depends = simpleitk
+
+pkgname = ruby-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - Ruby bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = ruby
+	depends = simpleitk
+
+pkgname = tcl-simpleitk
+	pkgdesc = A simplified layer built on top of ITK - TCL bindings
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = simpleitk
+	depends = tcl
+	depends = tk

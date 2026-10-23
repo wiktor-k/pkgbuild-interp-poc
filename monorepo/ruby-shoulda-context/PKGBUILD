@@ -1,0 +1,97 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-shoulda-context
+pkgver=2.0.0
+pkgrel=9
+pkgdesc='Minitest & Test::Unit context framework'
+arch=(any)
+url='https://github.com/thoughtbot/shoulda-context'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-byebug
+  ruby-irb
+  ruby-m
+  ruby-minitest
+  ruby-mocha
+  ruby-pry
+  ruby-pry-byebug
+  ruby-rake
+  ruby-snowglobe
+  ruby-test-unit
+  ruby-warnings_logger
+)
+options=(!emptydirs)
+source=(
+  "git+${url}.git#tag=v${pkgver}"
+  "${pkgname}_exists.patch::${url}/commit/ee3aeb239ea69c9a855d64e8c1cfda87958c833d.patch"
+)
+sha512sums=('c06011503e8666ec3b6eaa40be7f477feb5925767885b9d5161bd7d60d03cef9935105ba268a8055506f871cd5402cc014c165d870b2016f65733af9a1945069'
+            '25a10a6448ae630a06faa7f2c4a98dce7d6148cc4e2e1761975c1d260cc3231ca3c4adb523c06d35847794efc4978ae042fbfe75aa98f2a3adc79ab38b77c522')
+b2sums=('b41df5851ac20d9226eb853872494b4e6d3dc7eadc56b465065ac3b072edd5e0bbee0ba7fe3c00b08ef7233faafa5bfd739aa7205b738db8158e2a9329a0059c'
+        '8b8210c86825dda93f9dd93711c374bd15bd9a9629d0b5d3f31802034beff71f11f3c46fd28455efa3a34e9bf2ab8274eea639710c570eedd5ccb23dd9e6918c')
+
+prepare() {
+  cd shoulda-context
+
+  patch --verbose --strip=1 --input="../${pkgname}_exists.patch"
+
+  sed -i \
+    -e 's|~>|>=|' \
+    -e '/appraisal/d' \
+    -e '/rubocop/d' \
+    -e 's/, "0.71.0"//' \
+    Gemfile
+
+  # Multiple hacks to avoid appraisal and rails
+  sed -i 's/Tests::CurrentBundle.instance.appraisal_in_use?/true/' Rakefile
+  sed -i '/current_bundle/d;/assert_appraisal/d;/rails_application_with_shoulda_context/d' test/test_helper.rb Rakefile
+
+  git rm Gemfile.lock
+  git rm test/shoulda/test_framework_detection_test.rb test/shoulda/rerun_snippet_test.rb test/shoulda/railtie_test.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd shoulda-context
+  gem build shoulda-context.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    shoulda-context-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd shoulda-context
+  GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd shoulda-context
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 MIT-LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

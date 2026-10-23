@@ -1,0 +1,24 @@
+pkgbase = python-pyfuse3
+	pkgdesc = Python bindings for libfuse 3 with asynchronous API
+	pkgver = 3.5.0
+	pkgrel = 1
+	url = https://github.com/libfuse/pyfuse3
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	checkdepends = python-pytest
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = fuse3
+	depends = glibc
+	depends = python
+	depends = python-trio
+	source = git+https://github.com/libfuse/pyfuse3.git#tag=v3.5.0
+	validpgpkeys = 6D5BEF9ADD2075805747B70F9F88FB52FAF7B393
+	b2sums = 1ab12b8f6ec16cb224ba92f9fbe05655c83a7f4d423832f79df3a13bc9396cf1af21dfa77c567a225d535cc9681185dd071280ccad32a28a8c6e194cced64c9e
+
+pkgname = python-pyfuse3

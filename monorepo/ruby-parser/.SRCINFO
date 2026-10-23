@@ -1,0 +1,24 @@
+pkgbase = ruby-parser
+	pkgdesc = A production-ready Ruby parser written in pure Ruby
+	pkgver = 3.3.12.0
+	pkgrel = 1
+	url = https://github.com/whitequark/parser
+	arch = any
+	license = MIT
+	checkdepends = ruby-erb
+	checkdepends = ruby-minitest
+	checkdepends = ruby-simplecov
+	makedepends = git
+	makedepends = ragel6
+	makedepends = ruby-bundler
+	makedepends = ruby-rake
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-ast
+	depends = ruby-racc
+	options = !emptydirs
+	source = git+https://github.com/whitequark/parser.git#tag=v3.3.12.0
+	sha512sums = 14dff2506c7f6153fac1c1793f99eddbb60953f92aca3471f208f906a540ccb699ccd5eb49a57d2b7499c8a6abc0cd50e0db01b54c51c1f26aa8a6cd7bb9c487
+	b2sums = 7cf186dabf243af2e5ebc7462c3f787e421100fdc57c520b545386b8d4e9dcdafb8e7e8b783ddc3de450a9cd000141fbd9f9606a1c08fc2b6cf7f8302ab0b45a
+
+pkgname = ruby-parser

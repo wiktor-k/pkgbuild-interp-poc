@@ -1,0 +1,29 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Matteo Giordano <mail at matteogiordano dot me>
+
+pkgname=kew
+pkgver=4.4.1
+pkgrel=2
+pkgdesc="Music for the Shell"
+url="https://codeberg.org/ravachol/kew"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libstdc++' 'libatomic' 'libgcc' 'zlib' 'fftw' 'chafa' 'glib2' 'opus' 'opusfile' 'libvorbis' 'taglib' 'libogg' 'faad2' 'hicolor-icon-theme')
+optdepends=("kew-data: Artist information database")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha512sums=('ef0127c54c7bed32388d800ad5d017dffc27e2122d890378a38cf5fe22137cdd1d65d469dde638be97d5e8485196071ff792ede1c04a9f1781e3b463b433c162')
+
+prepare() {
+	cd "${pkgname}"
+	make clean
+}
+
+build() {
+	cd "${pkgname}"
+	make
+}
+
+package() {
+	cd "${pkgname}"
+	make PREFIX=/usr DESTDIR="${pkgdir}" install
+}

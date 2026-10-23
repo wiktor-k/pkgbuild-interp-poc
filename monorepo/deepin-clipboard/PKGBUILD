@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-clipboard
+pkgver=6.1.37
+pkgrel=1
+pkgdesc='DDE clipboard manager component'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-clipboard"
+license=('GPL-3.0-or-later' 'LGPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'gio-qt' 'qt6-base' 'qt6-declarative'
+         'deepin-shell' 'deepin-tray-loader')
+makedepends=('git' 'cmake' 'ninja' 'gtest' 'qt6-tools' 'extra-cmake-modules')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/dde-clipboard.git#tag=$pkgver")
+sha512sums=('639eec4822e41d32fe95e063f8906c5dc83d8d45099de8e597d88c7a2495b35ee9910ef77abac1f2afc6814d71d534a926a73d2185506d3be744d97da5ef55f8')
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  cd build
+  cmake -GNinja ../dde-clipboard
+  ninja
+}
+
+package() {
+  cd build
+  DESTDIR="$pkgdir" ninja install
+}

@@ -1,0 +1,79 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Lukas Jirkovsky <l.jirkovsky@gmail.com>
+# Contributor: Dmitry N. Shilov <stormblast@land.ru>
+
+pkgname=luminancehdr
+pkgver=2.6.1.1
+pkgrel=14
+pkgdesc='Open source graphical user interface application that aims to provide a workflow for HDR imaging'
+arch=('x86_64')
+url='http://qtpfsgui.sourceforge.net/'
+license=('GPL-2.0-or-later')
+depends=('exiv2' 'fftw' 'gsl' 'lcms2' 'libraw' 'openexr' 'qt5-svg'
+         'ccfits' 'desktop-file-utils' 'hicolor-icon-theme' 'boost-libs')
+makedepends=('cmake' 'boost' 'gtest' 'qt5-tools' 'eigen')
+optdepends=('hugin: align image stack functionality')
+changelog=$pkgname.changelog
+options=('!emptydirs')
+source=(https://sourceforge.net/projects/qtpfsgui/files/luminance/$pkgver/luminance-hdr-$pkgver.tar.bz2
+        luminancehdr-openexr3.patch
+        fix-headers.patch
+        exiv2-0.28.patch
+        https://github.com/LuminanceHDR/LuminanceHDR/commit/33b364f7.patch
+        clamp.patch
+        luminancehdr-fix-boost-1.87.0-compilation.patch
+        eigen-5.patch
+        boost-1.89.patch
+        luminance-hdr-2.6.1.1-no-qtwebengine.patch)
+sha512sums=('9006339037aa3a0b7332cf71e1cf143d9e700eaae1102dfb8eccea8a9d97a5bcb6331202684adf76542116927dd9a69169882518af6ebb25c85d08057fdc552e'
+            '78da713154042f125511ddc7ad184f961c92fa679ff0aa5d33700b619a0eed973722ea9f51c44c58595043ea308f4f3c44f6613b88fbb41e5159849bc0f8741e'
+            '6d7ae3df647ffb67a27ef2729c8e8fd04e2b400bd960744dd0172406bc27773156a2b0bd67a7b71157cc59d0f528fbe00882085baa42f503dd506baa2826d0e9'
+            '711e64209cba59b218b09715451ddcca3084b020da9bd1baa7decc71e5d3ad7375cba5703bc042e2371e9465c01436a67d0162731718dbef158e207de5266615'
+            'eb4d32d279eab7658e38007ae9e8680fdce36abb6e0f3c1864de2163dcb5ec2dbba9c19341f23aebd799124dc64338f34570b041ac995249941b2ac4ba718e30'
+            'f7db0507be5f9c9f83c3fa07fa017922094b5adf9d5c0d4c036f9b13f52a250d135a04191bac4cdcf82ebb31428ee9e5f551fadabf89f05226a5fa5cff2e2b9f'
+            'cc211bfa378342f03a767ca637fb71d4624178f38580f965db03bbf60aa23488d916bd1708a5f2ecf9d423d53f0c0f20604b13809ddf2330ddecc658a2fec6bb'
+            'f6dda6db10552c4b52b045c3fcd9906a7c9be926ed3efcd6666b047e032f59ed249a5de8aec1aecf65ffaaf8116da4aa4367a22f74373098bbedebd2f6f98809'
+            'a39a3c5714b2a54d3db57f2dac633a9c5e567228471f92a937b4131ec867ed0b0076236d607ab673e62dadfe73902fe85dce6a0509005c48c930d00959d3d725'
+            '629268f125f1f005c4151f45dca6e944eaccbb9c3e464b7e143c20af29216933818107de2f202bcef9228b82c78f4e054ea2dd5ce3febeb44f08c27eb50e8cc2')
+
+prepare() {
+  cd luminance-hdr-$pkgver
+  patch -p1 < ../luminancehdr-openexr3.patch
+  patch -p1 < ../fix-headers.patch
+  # Fix build with exiv2 0.28
+  patch -p1 < ../exiv2-0.28.patch
+  # Fix build with boost 1.85
+  patch -p1 < ../33b364f7.patch
+  # Remove clamp redefinition
+  patch -p1 < ../clamp.patch
+  # remove hardcoded reference to c++11
+  patch -p1 < ../luminancehdr-fix-boost-1.87.0-compilation.patch
+  # Fix build with eigen 5.x
+  patch -p1 < ../eigen-5.patch
+  # Fix build with boost 1.89
+  patch -p1 < ../boost-1.89.patch
+  # Disable help browser to remove qt5-webengine dependency (Gentoo)
+  patch -p1 < ../luminance-hdr-2.6.1.1-no-qtwebengine.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S luminance-hdr-$pkgver
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    -DWITH_HELPBROWSER=OFF
+  )
+
+  export CXXFLAGS="-std=gnu++20 $CXXFLAGS"
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  #https://sourceforge.net/p/qtpfsgui/feature-requests/51/
+  mv "${pkgdir}"/usr/share/appdata/ "${pkgdir}"/usr/share/metainfo/
+}

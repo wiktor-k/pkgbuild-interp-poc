@@ -1,0 +1,66 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: sh4nks <sh4nks7@gmail.com
+
+pkgname=lightdm-pantheon-greeter
+pkgver=8.1.2
+pkgrel=2
+pkgdesc='Pantheon greeter for LightDM'
+arch=(x86_64)
+url=https://github.com/elementary/greeter
+license=(GPL-2.0-or-later)
+groups=(pantheon)
+depends=(
+  accountsservice
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop
+  granite
+  graphene
+  gtk3
+  hicolor-icon-theme
+  libgee
+  libgl
+  libhandy
+  lightdm
+  libx11
+  mutter49
+  wayland
+)
+makedepends=(
+  cmake
+  meson
+  git
+  libglvnd
+  vala
+)
+source=(lightdm-pantheon-greeter::git+https://github.com/elementary/greeter.git#tag=$pkgver)
+b2sums=('2be21ec468c54c183fa22380f1f1d44aa826efd39572c0870aa5b48edf07c18c864d5c16e882f45567419f8c532e0a0f7ce0437b4e8da0a92a5670746bedda1b')
+
+pkgver() {
+  cd lightdm-pantheon-greeter
+  git describe --tags | sed 's/-/.r/; s/-g/./'
+}
+
+build() {
+  arch-meson lightdm-pantheon-greeter build
+  meson compile -C build
+}
+
+package() {
+  depends+=(
+    libgdk-3.so
+    libgtk-3.so
+    libgio-2.0.so
+    libglib-2.0.so
+    libgobject-2.0.so
+    libgranite.so
+    libhandy-1.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim: ts=2 sw=2 et:

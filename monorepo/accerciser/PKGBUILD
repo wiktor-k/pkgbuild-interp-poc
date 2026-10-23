@@ -1,0 +1,63 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Steve Holmes <steve.holmes88@gmail.com>
+# Contributor: Giulio Bai <giulio@hewle.com>
+
+pkgname=accerciser
+pkgver=3.48.0
+pkgrel=3
+pkgdesc="Interactive Python accessibility explorer for the GNOME desktop"
+url="https://gitlab.gnome.org/GNOME/accerciser"
+arch=(any)
+license=(BSD-3-Clause)
+depends=(
+  at-spi2-core
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  ipython
+  librsvg
+  libwnck3
+  pango
+  python
+  python-atspi
+  python-cairo
+  python-dbus
+  python-gobject
+  python-packaging
+  python-traitlets
+  python-xdg
+)
+makedepends=(
+  appstream
+  git
+  meson
+  python-setuptools
+  yelp-tools
+)
+source=("git+https://gitlab.gnome.org/GNOME/accerciser.git#tag=$pkgver")
+b2sums=('9c1ce897e9a5d3eac9f3cb59b9de9476b36bc99fd44a7079fb94297c5ece91dee24810cf5785f10d6455c7d6580b117357cdcd602c655737b5421eb8b8902ef5')
+
+prepare() {
+  cd $pkgname
+  # Fix use of deprecated / removed pkg_resources
+  git cherry-pick -n 96ee4cb698ca82dc40a704dc579fe3190999cb89
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 $pkgname/COPYING
+}
+
+# vim:set sw=2 sts=-1 et:

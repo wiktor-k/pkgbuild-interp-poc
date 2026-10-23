@@ -1,0 +1,24 @@
+# Maintainer: daurnimator <daurnimator@archlinux.org>
+
+pkgname=postgresql-ip4r
+pkgver=2.4.2
+pkgrel=6
+pkgdesc="IPv4/v6 and IPv4/v6 range index type for PostgreSQL"
+arch=('x86_64')
+url="https://github.com/RhodiumToad/ip4r/"
+license=('PostgreSQL')
+depends=('glibc' 'postgresql')
+makedepends=('clang' 'llvm')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/RhodiumToad/ip4r/archive/$pkgver.tar.gz")
+sha256sums=('0f7b1f159974f49a47842a8ab6751aecca1ed1142b6d5e38d81b064b2ead1b4b')
+
+build() {
+    cd "ip4r-$pkgver"
+    make
+}
+
+package() {
+    cd "ip4r-$pkgver"
+    make DESTDIR="$pkgdir" install
+    install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

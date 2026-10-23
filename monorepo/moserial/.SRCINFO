@@ -1,0 +1,22 @@
+pkgbase = moserial
+	pkgdesc = Clean, friendly GTK-based serial terminal
+	pkgver = 3.0.21
+	pkgrel = 2
+	url = https://wiki.gnome.org/Apps/Moserial
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = intltool
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = glib2
+	depends = glibc
+	depends = gsettings-desktop-schemas
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	optdepends = lrzsz: Support for xmodem, ymodem and zmodem file transfer protocols
+	source = git+https://gitlab.gnome.org/GNOME/moserial.git#tag=moserial_3_0_21
+	b2sums = d672f848799e1e979a29b856e75b50f452d8770b0095f0e372ec5959fed742dd62d32e969772ddcbc6ab38cd81a6b9176be87f4dae39e1b0ae1c210eb842c856
+
+pkgname = moserial

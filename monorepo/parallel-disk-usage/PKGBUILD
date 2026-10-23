@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Hoàng Văn Khải <hvksmr1996@gmail.com>
+
+pkgname=parallel-disk-usage
+_pkgname=pdu
+pkgver=0.24.0
+pkgrel=1
+pkgdesc='Summarize disk usage of the set of files, recursively for directories'
+arch=('x86_64')
+url='https://github.com/KSXGitHub/parallel-disk-usage'
+license=('Apache-2.0')
+depends=('gcc-libs')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('644b1142be6ed0768db2c86f50aa0b6eeb5791329ead068ed5e018b405beaba2bb7eff7cc2fc7894d610b32e6a42c6f73213c45c6416df18a41e12b4d327eb0b')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen --bin "$_pkgname"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen -- --skip "cross_device_excludes_mount"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 "target/release/$_pkgname" "$pkgdir/usr/bin/$_pkgname"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 exports/completion.bash "$pkgdir/usr/share/bash-completion/completions/pdu"
+  install -Dm644 exports/completion.fish "$pkgdir/usr/share/fish/vendor_completions.d/pdu.fish"
+  install -Dm644 exports/completion.zsh "$pkgdir/usr/share/zsh/site-functions/_pdu"
+  install -Dm644 exports/completion.elv "$pkgdir/usr/share/elvish/lib/pdu.elv"
+}
+
+# vim: ts=2 sw=2 et:

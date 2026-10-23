@@ -1,0 +1,26 @@
+pkgbase = python-pytoolconfig
+	pkgdesc = Manage configuration for python tools, such as black and rope.
+	pkgver = 1.3.1
+	pkgrel = 4
+	url = https://github.com/bagel897/pytoolconfig
+	arch = any
+	license = LGPL-3.0-or-later
+	checkdepends = python-docutils
+	checkdepends = python-pytest
+	checkdepends = python-sphinx
+	checkdepends = python-tabulate
+	checkdepends = python-platformdirs
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-pdm-backend
+	depends = python
+	depends = python-packaging
+	optdepends = python-platformdirs: for finding configuration dirs
+	optdepends = python-pydantic: for validation
+	optdepends = python-sphinx: for automatic documentation
+	optdepends = python-tabulate: for tables in documentation
+	source = pytoolconfig-1.3.1.tar.gz::https://github.com/bagel897/pytoolconfig/archive/refs/tags/v1.3.1.tar.gz
+	sha256sums = 07eaa7e66f25c9fda089c4f4ac306faea0794f65df9cabd9d4755a6b9e0ed8e3
+
+pkgname = python-pytoolconfig

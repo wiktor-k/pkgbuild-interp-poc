@@ -1,0 +1,42 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-browse
+_pkgname=browse-activity
+pkgver=208
+pkgrel=2
+pkgdesc='Sugar activity to browse the internet'
+arch=(any)
+url='https://github.com/sugarlabs/browse-activity'
+license=(GPL-3.0-or-later)
+groups=(sugar-fructose)
+depends=(
+  evince
+  gdk-pixbuf2
+  glib2
+  gtk3
+  librsvg
+  libsoup3
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  sugar-toolkit-gtk3
+  telepathy-glib
+  webkit2gtk-4.1
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(345f2019152f0208dea27b4bd3849987a917bfa90a2627330e52c68e9220e9c8719730e2d6bcda4d9bbc684d670ce04d8a9bac6fa5d6b2e582ece788c1bedd0e)
+
+prepare() {
+  cd $_pkgname
+
+  # Use standard icon name
+  sed -i "s/icon_name='add'/icon_name='list-add'/" widgets.py
+}
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

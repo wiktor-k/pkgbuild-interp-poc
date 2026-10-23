@@ -1,0 +1,25 @@
+pkgbase = python-barectf
+	pkgdesc = Generator of ANSI C tracers which output CTF
+	pkgver = 3.1.2
+	pkgrel = 4
+	url = http://barectf.org
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = patchutils
+	makedepends = python-poetry-core
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-termcolor
+	depends = python-yaml
+	depends = python-jsonschema
+	depends = python-jinja
+	source = python-barectf-3.1.2.tar.gz::https://github.com/efficios/barectf/archive/v3.1.2.tar.gz
+	source = python-barectf-remove-pkg_resources.patch::https://github.com/efficios/barectf/commit/e16d289546bb4f6b0d909f79b8d6188eabe32640.patch
+	source = python-barectf-pytest9.patch::https://github.com/efficios/barectf/commit/fa164b5b47bd3410faa4afd982ee3fd684e291f9.patch
+	sha256sums = bad30bee4370408a101e6cca7af325cf9875e1a1a0fd712219603f44ac2e7ec8
+	sha256sums = da7985d6b75b0403199efb518c959de350835aafc471933acd6992bc861a1903
+	sha256sums = db15f966fcbd56a0d0e5c62deba16d7570f06250141e857ef203d335c2e1e652
+
+pkgname = python-barectf

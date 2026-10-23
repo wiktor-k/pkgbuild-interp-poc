@@ -1,0 +1,17 @@
+pkgbase = ttf-input-nerd
+	pkgdesc = Patched font Input containing nerd font symbols
+	pkgver = 3.5.1
+	pkgrel = 1
+	url = https://input.djr.com/
+	arch = any
+	license = custom
+	makedepends = fontforge
+	makedepends = parallel
+	provides = ttf-font
+	provides = ttf-font-nerd
+	source = https://sources.archlinux.org/other/packages/ttf-input/Input_Fonts_20220502.zip
+	source = nerd-fonts-patcher-3.5.1.zip::https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/FontPatcher.zip
+	sha256sums = bc314ea9026fba5134cd2a7ba93a4ec48607f341d32e4eb3dfae20d141cb91b3
+	sha256sums = 42bcb32145499a35732274c7fc48deb434ad0d2e0e118f98527c1479c6fa251a
+
+pkgname = ttf-input-nerd

@@ -1,0 +1,19 @@
+pkgbase = kodi-addon-inputstream-rtmp
+	pkgdesc = RTMP input stream add-on for Kodi
+	pkgver = 21.1.2
+	pkgrel = 7
+	url = https://github.com/xbmc/inputstream.rtmp
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-inputstream
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = rtmpdump
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-inputstream-rtmp-21.1.2.tar.gz::https://github.com/xbmc/inputstream.rtmp/archive/21.1.2-Omega.tar.gz
+	sha512sums = 4f5930a65132302665c07a6a0ffa693e0a20c5b3244627bd3773514907bda0a403f1ff0016af5bd61ac2ea5bf4288b169d104e09f57440c0f64e0094bd3deba6
+
+pkgname = kodi-addon-inputstream-rtmp
+	depends = kodi
+	depends = rtmpdump

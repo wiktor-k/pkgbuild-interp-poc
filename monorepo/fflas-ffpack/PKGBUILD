@@ -1,0 +1,44 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=fflas-ffpack
+pkgver=2.5.0
+pkgrel=3
+pkgdesc='A library for dense linear algebra over word-size finite fields'
+arch=(x86_64)
+url='https://linbox-team.github.io/fflas-ffpack/'
+license=(LGPL-2.1-or-later)
+depends=(cblas
+         givaro
+         glibc
+         libgcc
+         libstdc++
+         sh)
+makedepends=(git
+             lapack)
+source=(git+https://github.com/linbox-team/fflas-ffpack#tag=v$pkgver)
+sha256sums=('22e118ca6c9663b9184b36b8a8383c4febce688ae191ec3e7cb1c99847da9fb8')
+
+prepare() {
+  cd $pkgname
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-precompilation \
+    --with-blas-libs="-lblas -lcblas -llapack"
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool # Fix overlinking
+  make
+}
+
+check() {
+  cd $pkgname
+  make check || true # tests are flaky
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

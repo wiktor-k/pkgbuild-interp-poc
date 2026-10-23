@@ -1,0 +1,74 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: kirek <rbuldo@gmail.com>
+# Contributor: Cédric Bellegarde <gnumdk@gmail.com>
+
+pkgname=lollypop
+pkgver=1.4.48
+pkgrel=1
+pkgdesc='Music player for GNOME'
+arch=(any)
+url=https://gitlab.gnome.org/World/lollypop
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libgoa
+  libhandy
+  libsecret
+  libsoup3
+  pango
+  python
+  python-beautifulsoup4
+  python-cairo
+  python-gobject
+  python-pillow
+  totem-plparser
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+optdepends=(
+  'gst-libav: FFmpeg plugin for GStreamer'
+  'gst-plugins-bad: "Bad" plugin libraries'
+  'gst-plugins-ugly: "Ugly" plugin libraries'
+  'kid3-common: Store covers in tags'
+  'yt-dlp: YouTube support'
+)
+source=(git+https://gitlab.gnome.org/World/lollypop.git#tag=${pkgver}
+        git+https://gitlab.gnome.org/gnumdk/lollypop-po)
+b2sums=('1392f3e74b1e802fc9795e2c5d8cd40aaf4b4b06185a393bf136601e45bf177b6b2ced2f8ccf434556f97da41126635a4bcff29b1b3e8a6ec1d5f0784c478f34'
+        'SKIP')
+
+prepare() {
+  cd lollypop
+  git submodule init
+  git config submodule.subprojects/po.url "${srcdir}/lollypop-po"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson lollypop build \
+    --libexecdir=lib/lollypop
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+
+  python -m compileall -d /usr/lib "${pkgdir}/usr/lib"
+  python -O -m compileall -d /usr/lib "${pkgdir}/usr/lib"
+}

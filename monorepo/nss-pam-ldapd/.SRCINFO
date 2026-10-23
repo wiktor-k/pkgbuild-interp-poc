@@ -1,0 +1,28 @@
+pkgbase = nss-pam-ldapd
+	pkgdesc = LDAP module for NSS and PAM
+	pkgver = 0.9.13
+	pkgrel = 1
+	url = https://arthurdejong.org/nss-pam-ldapd/
+	arch = x86_64
+	license = LGPL2.1
+	depends = pam
+	depends = python
+	provides = nslcd
+	conflicts = pam_ldap
+	options = !emptydirs
+	backup = etc/nslcd.conf
+	source = https://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-0.9.13.tar.gz
+	source = https://arthurdejong.org/nss-pam-ldapd/nss-pam-ldapd-0.9.13.tar.gz.sig
+	source = nslcd.service
+	source = nslcd.sysusers
+	source = nslcd.tmpfiles
+	source = nss-pam-ldapd-c++15.patch::https://arthurdejong.org/git/nss-pam-ldapd/patch/?id=8ddb983a546f632986a84a784c4625110f7782a2
+	validpgpkeys = 452EC2CB65CF68C2A1ADBF5F2A8B746810E0AFC1
+	sha512sums = 6c2f73cbc800704a23cb98f405d8391dc12d2322fc6ce59cc20e9be34a74752952d8ae6c1980836fcb178a5c7e84f5ed794a15271bda90f611f9e6aefb6eee0a
+	sha512sums = SKIP
+	sha512sums = 19d8bd23b5fe7f83979724cb579f23991bc4049d3c5caaa6ae64444ff7aa7d13226e39de6321f0425781cf013db7370b6841a396c2274af262b9fd3255ea2aa0
+	sha512sums = c419c9e47c428db9354ca4b2abacdcf3b93a7d4a31f57fb838ffe85262eaf24177f1d28a7a44b14a7815058a75697ffe282bc76054d4c2089d442ec0f4b48d9e
+	sha512sums = ccffd327cfa015ec746f4e1506c02beb514763625b0e5818455491b911d9328b19f17620926c15aaf18f5cd9268ea71f5ef35ce7a427aefab950579d5629ee5d
+	sha512sums = d0699b286f98a285eb7f5ac11a23e148850541a98f5ba5d56567af436ad15a9d56eb571c27272828ddfef2d123c04da6ca9475e52c54c026a14f8efd9a6ddf4d
+
+pkgname = nss-pam-ldapd

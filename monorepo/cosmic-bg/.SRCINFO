@@ -1,0 +1,24 @@
+pkgbase = cosmic-bg
+	pkgdesc = COSMIC session service which applies backgrounds to displays
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-bg
+	arch = x86_64
+	groups = cosmic
+	license = MPL-2.0
+	makedepends = clang
+	makedepends = cargo
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	makedepends = nasm
+	depends = cosmic-icon-theme
+	depends = libgcc
+	depends = glibc
+	depends = libxkbcommon
+	depends = dav1d
+	source = git+https://github.com/pop-os/cosmic-bg.git#tag=epoch-1.10.0
+	b2sums = 20430028cb572db59f3bae3708cc965b0cf43d5bd3f5efb7bfeba8d1400805e4848c14830f48a822642e75da0f6395f05090046b7ec779e0de46fde4552ca77e
+
+pkgname = cosmic-bg

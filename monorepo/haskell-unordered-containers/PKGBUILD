@@ -1,0 +1,55 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Nagy <danielnagy at gmx de>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+# Contributor: Martin Harvan <martinhrvn@gmail.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=unordered-containers
+pkgname=haskell-unordered-containers
+pkgver=0.2.21
+pkgrel=77
+pkgdesc="Efficient hashing-based container types"
+url="https://github.com/haskell-unordered-containers/unordered-containers"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-hashable')
+makedepends=('ghc')
+checkdepends=('haskell-chasingbottoms' 'haskell-hunit' 'haskell-nothunks' 'haskell-quickcheck'
+              'haskell-random' 'haskell-tasty' 'haskell-tasty-hunit' 'haskell-tasty-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('b54ebd840d40e92baf303cd2867d7592d3f3f839aa5986c6277014775db4157fab6cae58f92ff32dbd5cc75dfe626b17c5849259397643aa7149484d60acae22')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-debug
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

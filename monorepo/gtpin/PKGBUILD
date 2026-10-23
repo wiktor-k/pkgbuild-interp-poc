@@ -1,0 +1,27 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+pkgname=gtpin
+pkgver=4.7.1+914392
+_pkgver="${pkgver%+*}"
+_buildid="${pkgver#*+}"
+pkgrel=1
+pkgdesc="Dynamic Binary Instrumentation Framework for Intel GPUs"
+arch=("x86_64")
+url="https://www.intel.com/content/www/us/en/developer/articles/tool/gtpin.html"
+license=('LicenseRef-Intel-Simplified AND MIT')
+depends=(
+	glibc
+	libgcc
+	libstdc++
+	zlib
+	python
+)
+source=("$pkgname-$pkgver.tar.xz::https://downloadmirror.intel.com/$_buildid/external-release-gtpin-$_pkgver-linux.tar.xz")
+sha256sums=('b77bafe75d8299a15f2ee62c824aad9db940f5d80c91231dddc0fc16f3dee7eb')
+
+package() {
+	mkdir -p "$pkgdir"/opt/intel
+	cp -av Profilers "$pkgdir"/opt/intel
+
+	mkdir -p "$pkgdir"/usr/share/licenses
+	ln -sv /opt/intel/Profilers/Licensing "$pkgdir"/usr/share/licenses/$pkgname
+}

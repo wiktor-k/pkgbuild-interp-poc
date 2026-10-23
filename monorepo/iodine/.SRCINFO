@@ -1,0 +1,19 @@
+pkgbase = iodine
+	pkgdesc = Tunnel IPv4 data through a DNS server
+	pkgver = 0.8.0
+	pkgrel = 2
+	url = https://code.kryo.se/iodine
+	arch = x86_64
+	license = custom:ISC
+	depends = zlib
+	depends = net-tools
+	depends = systemd-libs
+	backup = etc/conf.d/iodined
+	source = https://code.kryo.se/iodine/iodine-0.8.0.tar.gz
+	source = iodined.service
+	source = iodined.conf.d
+	sha512sums = 26d0d4fd1a8ed1854fc3f2478e91e9702732a11dda30aae21e3098630e110d8316e08df581bf0083d91ca7ea3433856827d5b1031e02f9fd25217778361ec6e5
+	sha512sums = 9dcc2540d12b98befab4f2695fd8ff3afe9dc6f52868826ac2997cc078b8152c1c7e8918a4daa3d3035e205a0c27062f5a422c46eb9763ebbc8824ea03a926c5
+	sha512sums = 07c4733b98287672fe98bdb8d666672994aa675d1bbde58d342471e318f1a7b5fc2f66cb8d068a1a4ef5697647608a217eb1949dfbd5b672b4d8982f09e902aa
+
+pkgname = iodine

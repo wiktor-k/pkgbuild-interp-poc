@@ -1,0 +1,26 @@
+pkgbase = python-apispec
+	pkgdesc = A pluggable API specification generator. Currently supports the OpenAPI Specification.
+	pkgver = 6.10.0
+	pkgrel = 1
+	url = https://github.com/marshmallow-code/apispec
+	arch = any
+	license = MIT
+	checkdepends = python-tornado
+	checkdepends = python-bottle
+	checkdepends = python-marshmallow
+	checkdepends = python-flask
+	checkdepends = python-yaml
+	checkdepends = python-openapi-spec-validator
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-flit-core
+	makedepends = python-installer
+	makedepends = git
+	depends = python
+	depends = python-packaging
+	optdepends = python-marshmallow: for marshmallow support
+	optdepends = python-yaml: for yaml support
+	source = git+https://github.com/marshmallow-code/apispec.git#tag=6.10.0
+	sha512sums = b1cb30bc120c5339b32ac349640b22408ef0805850b2a1cdf2076a46705972dbd8f2521b7b57ddcc9e2b4a2ec34a315c0f1bfaeced2e7e8e6b908a78a656eea9
+
+pkgname = python-apispec

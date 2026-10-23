@@ -1,0 +1,37 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=nbsdgames
+pkgver=6.0.3
+pkgrel=4
+pkgdesc="A collection of text-based games"
+url="https://github.com/abakh/nbsdgames"
+arch=('x86_64')
+license=('LicenseRef-custom')
+depends=('glibc' 'ncurses')
+install="${pkgname}.install"
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        "fix_makefile.patch::https://github.com/abakh/nbsdgames/commit/6cdc8b08b6b4a6c18f7e9f40fde3a5d5dffe4dcf.patch?full_index=1")
+sha256sums=('359da5f698da00437205eddad3fc97fbdcecfa8cb005fd8d1830fe8fd3dd7e3b'
+            'ac3785de50eec5934c8ea5bf3b7ec86eaa6a65574622b7e8d9977a1d7ee202eb')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	# Various fixes to the Makefile
+	# See https://github.com/abakh/nbsdgames/pull/63
+	patch -Np1 -i "${srcdir}/fix_makefile.patch"
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	make -C src nb
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	make -C src PREFIX=/usr DESTDIR="${pkgdir}" nbinstall
+	make -C src PREFIX=/usr DESTDIR="${pkgdir}" nbmanpages
+	make -C src PREFIX=/usr DESTDIR="${pkgdir}" menu
+
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

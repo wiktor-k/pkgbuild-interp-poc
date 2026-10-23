@@ -1,0 +1,62 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=melange
+pkgver=0.62.1
+pkgrel=1
+pkgdesc='Build APKs from source code'
+url='https://github.com/chainguard-dev/melange'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  'alpine-keyring'
+  'apk-tools'
+  'bubblewrap'
+  'glibc'
+)
+optdepends=(
+  'qemu-user-static-binfmt: build packages for other architectures'
+)
+makedepends=('go')
+options=('!lto')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/chainguard-dev/melange/archive/v${pkgver}.tar.gz")
+sha256sums=('3311d03ee9a4dcad8a85a18b7215208dd089fd217f7d2ac2519aa18a7ff962b6')
+b2sums=('c80ed80e4b46c71c29c1af97fc45882efc5222f5f1f050e5303c8f1aed886cf27ad24828909f766fb3d44632ab04319e4a4de413f5776d4d79511030380db6fa')
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags '-compressdwarf=false -linkmode=external' \
+    .
+
+  for shell in bash fish zsh; do
+    ./melange completion ${shell} > ./melange.${shell}
+  done
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  ./melange --help
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 melange -t "${pkgdir}/usr/bin"
+  install -dm 755 "${pkgdir}/usr/share/melange"
+  cp -a pkg/build/pipelines/ "${pkgdir}/usr/share/melange"
+
+  install -Dm644 melange.bash "${pkgdir}"/usr/share/bash-completion/completions/melange
+  install -Dm644 melange.zsh "${pkgdir}"/usr/share/zsh/site-functions/_melange
+  install -Dm644 melange.fish "${pkgdir}"/usr/share/fish/vendor_completions.d/melange.fish
+}
+
+# vim: ts=2 sw=2 et:

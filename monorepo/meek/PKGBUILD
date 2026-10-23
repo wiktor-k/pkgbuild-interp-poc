@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: shyokou <shyokou at gmail dot com>
+# Contributor: N. Izumi aka izmntuk
+
+pkgname=meek
+pkgver=0.38.0
+pkgrel=3
+arch=('x86_64')
+pkgdesc='A pluggable transport proxy written in Go'
+optdepends=('tor')
+url='https://trac.torproject.org/projects/tor/wiki/doc/meek'
+license=('CC0-1.0')
+depends=('glibc')
+makedepends=('go' 'git')
+options=('!lto')
+source=("git+https://git.torproject.org/pluggable-transports/meek.git#tag=v$pkgver")
+sha512sums=('4e0db9ab3f93a2eb39049ee56e25597d6cc513c6a3cf586e3bd5e1ce4c425df1e9044824c766c2afb4b2698aab060f040db5c6ef8c4078afb47a2057f90dccb9')
+
+prepare() {
+	cd "$srcdir"/meek
+	sed 's|./meek-client|/usr/bin/meek-client|g;
+	     s|./meek-server|/usr/bin/meek-server|g;
+	     s|\(meek-server\.log\)|/tmp/\1|;
+	     s|\(meek-client\.log\)|/tmp/\1|' -i meek-{server,client}/torrc
+	go mod download
+}
+
+build() {
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export CGO_REQUIRED="1"
+
+	for bin in meek-server meek-client; do
+		cd "$srcdir/meek/$bin"
+		go build \
+			-buildmode=pie \
+			-mod=readonly \
+			-modcacherw \
+			-ldflags '-compressdwarf=false -linkmode=external' \
+			./...
+	done
+}
+
+package() {
+	install -d "$pkgdir"/usr/{bin,share/{{doc,licenses}/$pkgname,man/man1}}
+	cd "$srcdir"/meek/meek-server
+	install -m755 meek-server "$pkgdir"/usr/bin
+	install -Dm644 torrc "$pkgdir"/usr/share/doc/$pkgname/torrc.meek-server
+	install -Dm644 README "$pkgdir"/usr/share/doc/$pkgname/README.meek-server
+
+	cd "$srcdir"/meek/meek-client
+	install -m755 meek-client "$pkgdir"/usr/bin
+	install -Dm644 torrc "$pkgdir"/usr/share/doc/$pkgname/torrc.meek-client
+	install -m644 ../README "$pkgdir"/usr/share/doc/$pkgname
+	install -m644 ../COPYING "$pkgdir"/usr/share/licenses/$pkgname
+	install -m644 ../doc/meek-{server,client}.1 "$pkgdir"/usr/share/man/man1
+}

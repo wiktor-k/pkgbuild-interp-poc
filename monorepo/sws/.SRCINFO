@@ -1,0 +1,30 @@
+pkgbase = sws
+	pkgdesc = A collection of features that seamlessly integrate into REAPER
+	pkgver = 2.14.0.7
+	pkgrel = 2
+	url = https://www.sws-extension.org/
+	install = sws.install
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = cmake
+	makedepends = php
+	makedepends = perl
+	makedepends = gtk3
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = reaper
+	depends = taglib
+	source = git+https://github.com/reaper-oss/sws.git#tag=v2.14.0.7
+	source = github.com-justinfrankel-wdl::git+https://github.com/justinfrankel/WDL
+	source = github.com-justinfrankel-reaper-sdk::git+https://github.com/justinfrankel/reaper-sdk
+	sha512sums = bbbb655565958f19adb2093e2ddca3c9f73b4021f1d5699d9787befb10894d6c11d0ad1ecef8b32560bef3a29ae4b30db246eb6782ddb57e8ceef1c2ce5df1f1
+	sha512sums = SKIP
+	sha512sums = SKIP
+	b2sums = 18272872585ec7b736f0b42ed7c14a50e2c28c55dd293f921bac351997d0d3c2b61f1f8e27a0ebc09090c081417c3fbce6aaf36e59450a0445aa3a4468104a1c
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = sws

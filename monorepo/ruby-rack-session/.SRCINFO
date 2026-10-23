@@ -1,0 +1,23 @@
+pkgbase = ruby-rack-session
+	pkgdesc = Session management implementation for Rack.
+	pkgver = 2.1.2
+	pkgrel = 1
+	url = https://github.com/rack/rack-session
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-minitest
+	checkdepends = ruby-minitest-global_expectations
+	checkdepends = ruby-minitest-sprint
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-rack
+	depends = ruby-base64
+	options = !emptydirs
+	source = git+https://github.com/rack/rack-session.git#tag=v2.1.2
+	sha256sums = c60473829ba10757ab180ce42ec4281588141d49aa4db99715bef19030b4b849
+	sha512sums = 9f87025cbb77708444ed338173a1ff6db83b127af400ca706414100523c30625370b4a3f50a66680de593c72c2653fa341af923dab609183fc8e8893fc951452
+
+pkgname = ruby-rack-session

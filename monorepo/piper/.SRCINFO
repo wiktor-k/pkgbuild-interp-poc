@@ -1,0 +1,26 @@
+pkgbase = piper
+	pkgdesc = GTK application to configure gaming mice
+	pkgver = 0.8
+	pkgrel = 5
+	url = https://github.com/libratbag/piper
+	arch = any
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = appstream
+	depends = gtk3
+	depends = python
+	depends = python-gobject
+	depends = libratbag
+	depends = python-evdev
+	depends = python-lxml
+	depends = python-cairo
+	source = git+https://github.com/libratbag/piper#tag=0.8?signed
+	validpgpkeys = 3DCE51D60930EBA47858BA4146F633CBB0EB4BF2
+	validpgpkeys = 3C2C43D9447D5938EF4551EBE23B7E70B467F0BF
+	validpgpkeys = 2F2670AC164DB36F
+	validpgpkeys = BB45B0B3FF561BDBD45EE8A9B35B49EA5D563EFE
+	validpgpkeys = 4F60BCD32573AB28D84FD0C4CCF75EB2BBF8F69C
+	sha256sums = 56d20003503c62ad6d879b316d40cc31e5be8c6f2e650d64b7e0f44bde63c242
+
+pkgname = piper

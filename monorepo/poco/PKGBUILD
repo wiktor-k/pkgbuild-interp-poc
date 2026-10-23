@@ -1,0 +1,58 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Contributor: Ido Rosen <ido@kernel.org>
+# Contributor: Ross Whitfield <whitfieldre@ornl.gov>
+# Contributor: Mateusz Paluszkiewcz <aifam96 at gmail dot com>
+# Contributor: Christopher Reimer <vdr4arch at creimer dot net>
+
+pkgname=poco
+pkgver=1.15.4
+pkgrel=1
+pkgdesc="C++ class libraries for network-centric, portable applications, complete edition with debug libraries"
+arch=('x86_64')
+url="https://pocoproject.org/"
+_url='https://github.com/pocoproject/poco'
+license=(BSL-1.0)
+depends=('glibc' 'libgcc' 'libstdc++' 'mariadb-libs' 'openssl' 'unixodbc')
+makedepends=('cmake' 'ninja')
+provides=(
+  libPocoActiveRecord.so
+  libPocoCrypto.so
+  libPocoData.so
+  libPocoDataMySQL.so
+  libPocoDataODBC.so
+  libPocoDataSQLite.so
+  libPocoEncodings.so
+  libPocoFoundation.so
+  libPocoJSON.so
+  libPocoJWT.so
+  libPocoMongoDB.so
+  libPocoNet.so
+  libPocoNetSSL.so
+  libPocoPrometheus.so
+  libPocoRedis.so
+  libPocoUtil.so
+  libPocoXML.so
+  libPocoZip.so
+)
+source=("$_url/archive/refs/tags/$pkgname-$pkgver-release.tar.gz")
+sha256sums=('4635007f593646b3db8754bbb31ded34cd533487519d4d4a45c788dbff3fe07f')
+
+build() {
+  local cmake_options=(
+    -B build
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S "$pkgname-$pkgname-$pkgver-release"
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  install -vDm 644 "$pkgname-$pkgname-$pkgver-release"/LICENSE -t "${pkgdir}/usr/share/licenses/$pkgname/"
+}

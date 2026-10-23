@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=kwaak
+pkgver=0.19.0
+pkgrel=1
+pkgdesc="Run a team of autonomous AI agents from your terminal"
+arch=('x86_64')
+url="https://github.com/bosun-ai/kwaak"
+license=('MIT')
+depends=('gcc-libs' 'openssl' 'oniguruma')
+makedepends=('cargo' 'protobuf')
+checkdepends=('git')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('59427415be5d4a9b122a10a295851052e44a84bd5ffe980d8622d125b3d4e2e734b20ff96f61c5155f44b084e09e32454665d14e67c1918913d67c292395ddda')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen --lib -- --skip "config::defaults"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

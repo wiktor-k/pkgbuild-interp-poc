@@ -1,0 +1,15 @@
+pkgbase = opensmtpd-table-postgres
+	pkgdesc = PostgreSQL support for OpenSMTPD
+	pkgver = 1.1.1
+	pkgrel = 1
+	url = https://github.com/OpenSMTPD/table-postgres
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	depends = glibc
+	depends = postgresql-libs
+	source = git+https://github.com/OpenSMTPD/table-postgres.git#tag=1.1.1
+	sha512sums = 84ef72d62606109561e3bb2814f1affe9f3e3c110fa34e6f2d6d70785bf28d8e0dfde06bc0d81aa753ddcd5432f67153911e9656aafa0135cc39eab3f10df4ef
+	b2sums = c3adf161664f4a0995cfaf9657432b0f58df03d32d5aaa8f3bd0005900834d317c1c87c614120a2b448e38c3c97697c8a23ebc7a159b98de801edcd9f06058cb
+
+pkgname = opensmtpd-table-postgres

@@ -1,0 +1,26 @@
+pkgbase = netcdf-openmpi
+	pkgdesc = network Common Data Form interface for array-oriented data access and corresponding library with parallel support (openmpi version)
+	pkgver = 4.10.1
+	pkgrel = 1
+	url = https://www.unidata.ucar.edu/software/netcdf/
+	arch = x86_64
+	license = custom
+	checkdepends = unzip
+	makedepends = cmake
+	makedepends = git
+	depends = hdf5-openmpi
+	depends = pnetcdf-openmpi
+	depends = curl
+	depends = libxml2
+	depends = libzip
+	depends = zlib
+	depends = blosc
+	optdepends = netcdf-fortran: fortran bindings
+	optdepends = netcdf-cxx: c++ bindings
+	provides = netcdf
+	conflicts = netcdf
+	options = !makeflags
+	source = git+https://github.com/Unidata/netcdf-c.git#tag=v4.10.1
+	sha256sums = 130365b47e8296fa8ac90d8c0c07953257261c3e64ee12473f68453762b3309d
+
+pkgname = netcdf-openmpi

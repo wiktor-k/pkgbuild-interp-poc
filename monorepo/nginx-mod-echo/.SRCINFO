@@ -1,0 +1,15 @@
+pkgbase = nginx-mod-echo
+	pkgdesc = Nginx module that provides directives "echo", "sleep", "time" and more
+	pkgver = 0.65
+	pkgrel = 5
+	url = https://github.com/openresty/echo-nginx-module
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = nginx
+	makedepends = nginx-src
+	backup = etc/nginx/modules.d/20-echo.conf
+	source = https://github.com/openresty/echo-nginx-module/archive/v0.65/echo-0.65.tar.gz
+	sha256sums = 448393d4da20a14922c424d575ecc274990cd02e9882efa24b52ed40cc1a50af
+
+pkgname = nginx-mod-echo
+	depends = nginx

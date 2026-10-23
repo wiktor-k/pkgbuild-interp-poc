@@ -1,0 +1,61 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-vcs-versioning
+pkgver=2.6.0
+pkgrel=1
+pkgdesc='the blessed package to manage your versions by vcs metadata'
+arch=(any)
+url='https://github.com/pypa/setuptools-scm'
+license=(MIT)
+depends=(
+  python
+  python-packaging
+  python-setuptools
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+)
+checkdepends=(
+  python-pytest
+  python-pytest-timeout
+  python-setuptools-scm
+  jujutsu
+  mercurial
+)
+optdepends=('python-rich: formatting of log messages')
+source=("python-setuptools-scm::git+$url#tag=vcs-versioning-v$pkgver")
+sha512sums=('818c3e797062b947d425f937fc391e5d4d1f75dfe50c8bfbcfff166f36a7abb9fd0e323736fb381def7a6fc0631b87e4cda1ebce2699052d3e8c1c05f9b70fad')
+b2sums=('7cdafb46b351ee697f14adb8f30f0fa6c655d79e8c45c17d9200a5a1dac516b9623b80d8964f62ad3a8759f6d5c0ee28c070b5e1c4f3a37c81f66e481d569fd2')
+
+build() {
+  cd python-setuptools-scm/vcs-versioning
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-setuptools-scm/vcs-versioning
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  local pytest_options=(
+    -vv
+    --deselect testing_vcs/test_jj.py::test_jj_disable_jj_falls_back_to_git
+  )
+
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd python-setuptools-scm/vcs-versioning
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

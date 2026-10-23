@@ -1,0 +1,23 @@
+pkgbase = qwen-code
+	pkgdesc = Open-source AI agent for the terminal, optimized for Qwen-Coder
+	pkgver = 0.22.1
+	pkgrel = 1
+	url = https://github.com/QwenLM/qwen-code
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = jq
+	makedepends = npm
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = nodejs
+	depends = ripgrep
+	optdepends = alsa-utils: voice dictation recording via arecord
+	optdepends = npm: optional computer-use tools via npx
+	optdepends = sox: voice dictation recording
+	source = git+https://github.com/QwenLM/qwen-code.git#tag=v0.22.1
+	sha256sums = 886c1829ddb4d79670187794e1b0bf5c201f62ebddfd1d74de9fc67d8b2a4891
+	b2sums = fae13a7396e4b7a42e6d093fb759dda3226d966f4c20bdfe21c38b40b97d5a1f571c932bbaf793275dc9292d5dc2fac7d357b00251fc4c84d1e3d10f60f9375c
+
+pkgname = qwen-code

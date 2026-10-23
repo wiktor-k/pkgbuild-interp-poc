@@ -1,0 +1,18 @@
+pkgbase = vdpauinfo
+	pkgdesc = Command line utility for querying the capabilities of a VDPAU device
+	pkgver = 1.5
+	pkgrel = 3
+	url = https://gitlab.freedesktop.org/vdpau/vdpauinfo
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libvdpau
+	depends = libx11
+	source = git+https://gitlab.freedesktop.org/vdpau/vdpauinfo.git#tag=1.5
+	validpgpkeys = BD68A042C603DDAD9AA354B0F56ACC8F09BA9635
+	b2sums = edb8729486946f2b8ea4b2b3e582797f0ea4dfd2269ecba7f1a249576fb666e459b707f1c7f2ea425898a23b28e55719a2359794753b18e236a0f0390ee1048f
+
+pkgname = vdpauinfo

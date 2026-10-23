@@ -1,0 +1,49 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=gmsynth.lv2
+pkgver=0.6.4
+pkgrel=1
+pkgdesc="General MIDI LV2 Synth"
+arch=(x86_64)
+url="https://x42-plugins.com/x42/x42-gmsynth"
+license=(GPL-2.0-or-later)
+groups=(
+  pro-audio
+  lv2-plugins
+)
+depends=(glibc)
+makedepends=(
+  fluidsynth
+  lv2
+)
+checkdepends=(lv2lint)
+source=(
+  $pkgname-$pkgver.tar.gz::https://github.com/x42/$pkgname/archive/v$pkgver.tar.gz
+  $pkgname-0.5.1-use_system_fluidsynth.patch
+)
+sha512sums=('3448a161df42d183986efe8668ff5bc6bda7bb2427a4c5c929ebcac5d90d7b2c52aa1c08160b276a36e650ff27c5e2731d3ac7ac20e62040fc7aa5a5039f9ebb'
+            'a0f2a09a6a839c38dc3234a719a633eb221f2afca2a97bbecf17b7d0c8dc71befec3768b882deb20357d55186e81e342cad73eb5e08426a1e2108949d11b3cf2')
+b2sums=('52534fbfa9fc6b4ae3ff04ef46888f8a7135dd0d6ae35e7a5d056d7d0eb19d4fedfc86c0f4ca6b496894e548202d0ffc93785ec8e4f321ded3bb9203fc7fbd05'
+        'cb327b55536006a862540e769497d138a6815bbee83f9365f97778adf8c542f3ce49e83d07dd532e66c39ce57a4c1eedc79c982b8ac350f22311f9443f682954')
+
+prepare() {
+  # use system fluidsynth
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-0.5.1-use_system_fluidsynth.patch
+}
+
+build() {
+  make -C $pkgname-$pkgver
+}
+
+check() {
+  lv2lint -Mpack -I $pkgname-$pkgver/build "http://gareus.org/oss/lv2/gmsynth"
+}
+
+package() {
+  depends+=(
+    fluidsynth libfluidsynth.so
+  )
+
+  make DESTDIR="$pkgdir/" PREFIX=/usr install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

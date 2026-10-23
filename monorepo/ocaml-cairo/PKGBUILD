@@ -1,0 +1,44 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Contributor: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+
+pkgname=ocaml-cairo
+pkgver=0.6.5
+pkgrel=6
+pkgdesc="OCaml binding to Cairo, a 2D Vector Graphics Library"
+arch=('x86_64')
+url="https://github.com/Chris00/ocaml-cairo"
+license=('LGPL3')
+depends=('ocaml' 'cairo')
+makedepends=('ocaml-findlib' 'dune')
+source=("https://github.com/Chris00/ocaml-cairo/releases/download/${pkgver}/cairo2-${pkgver}.tbz")
+b2sums=('bbabef5ab1dc455306f85351519c1f7a9a92df994ef02c151566b2698f507e603195e05fd5c3cba4a42590cfada062d78f0b10cc7c94779b073b95f842374a81')
+
+_dune_release_pkgs=('cairo2')
+
+dune_release_pkgs_comma() {
+  # dune build needs a comma separated list of packages
+  local dune_release_pkgs='dummy'
+  for _pkg in "${_dune_release_pkgs[@]}"; do
+    dune_release_pkgs+=",${_pkg}"
+  done
+  dune_release_pkgs="${dune_release_pkgs#dummy,}"
+  echo "${dune_release_pkgs}"
+}
+
+build() {
+  cd "${srcdir}/cairo2-${pkgver}"
+  export OCAMLPATH="$(ocamlfind printconf destdir)"
+  dune build -p "$(dune_release_pkgs_comma)"
+}
+
+
+package() {
+  cd "${srcdir}/cairo2-${pkgver}"
+  # we need to install packages one by one
+  for _pkg in "${_dune_release_pkgs[@]}"; do
+    dune install "${_pkg}" --destdir="${pkgdir}" --prefix="/usr" --libdir="$(ocamlfind printconf destdir)"
+  done
+
+  install -dm755 "${pkgdir}/usr/share/"
+  mv "${pkgdir}/usr/doc" "${pkgdir}/usr/share/"
+}

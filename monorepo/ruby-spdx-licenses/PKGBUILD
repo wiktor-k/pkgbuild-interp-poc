@@ -1,0 +1,43 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+
+_gemname='spdx-licenses'
+pkgname="ruby-${_gemname}"
+pkgver=1.4.0
+pkgrel=1
+pkgdesc='Tool to check the validity of Puppet metadata.json files'
+arch=('any')
+url="https://github.com/voxpupuli/${_gemname}"
+license=('MIT')
+depends=('ruby')
+makedepends=('ruby-rdoc' 'ruby-rake' 'ruby-minitest' 'ruby-mocha')
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${_gemname}-v${pkgver}.tar.gz")
+sha512sums=('43abcf040abca6de3d2c2a94cf2194a8fa110b53dd980644a2d573b9f2df5064214772c471509b149c0237cd3b7cef544b253553502d61d0bd41b2cb80877cb9')
+
+prepare() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+
+  sed --in-place 's|git ls-files|find|' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  rake
+}
+
+package() {
+cd "${srcdir}/${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}

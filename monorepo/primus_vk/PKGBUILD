@@ -1,0 +1,29 @@
+# Maintainer: Giancarlo Razzolini <grazzolini@archlinux.org>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+pkgname=primus_vk
+pkgver=1.6.4
+pkgrel=1
+pkgdesc="Nvidia Vulkan offloading for Bumblebee"
+arch=(x86_64)
+url="https://github.com/felixdoerre/primus_vk"
+license=(BSD-2-Clause)
+depends=(nvidia-utils bumblebee vulkan-icd-loader primus)
+makedepends=(git libxrandr vulkan-headers vulkan-validation-layers)
+_tag=6b9b5022f91d17e98b0f196a2feb2b2cc187975a # git rev-parse v${pkgver}
+source=(git+${url}.git#tag=${_tag}?signed)
+sha512sums=(SKIP)
+validpgpkeys=(0A9D381479E6D19CE365E301FD4066F7DB7D993F) # Felix Dörre <felix@dogcraft.de>
+
+build() {
+  cd ${pkgname}
+  export CXXFLAGS+=' -DNV_DRIVER_PATH=\"/usr/lib/libGLX_nvidia.so.0\"'
+  make all primus_vk_diag
+}
+
+package() {
+  cd ${pkgname}
+  make PREFIX="${pkgdir}"/usr install
+  install -Dm755 primus_vk_diag -t "${pkgdir}"/usr/bin/
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}

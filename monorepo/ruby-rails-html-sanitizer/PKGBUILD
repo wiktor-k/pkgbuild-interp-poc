@@ -1,0 +1,47 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='rails-html-sanitizer'
+pkgname="ruby-${_gemname}"
+pkgver=1.7.1
+pkgrel=1
+pkgdesc='HTML sanitization for Rails applications'
+arch=('any')
+url='https://github.com/rails/rails-html-sanitizer'
+license=('MIT')
+options=(!emptydirs)
+depends=('ruby' 'ruby-loofah')
+makedepends=('ruby-bundler' 'ruby-minitest' 'ruby-rake')
+checkdepends=('ruby-rails-dom-testing')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('ea06606a53361b3b13ed29f571218f80cb47dbd3f77003fb108eaebffdad14963bdf3b514b1b225123e5f51b6126c76d91bdf55bb2ae5aa55c9ac61ee501ebc5')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed -r 's|~>|>=|g' -i "${_gemname}.gemspec" Gemfile
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  rake build
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}/${_gemdir}" -n "${pkgdir}/usr/bin" "pkg/${_gemname}-${pkgver}.gem"
+
+  rm "${pkgdir}/${_gemdir}/cache/${_gemname}-${pkgver}.gem"
+
+  install -D -m644 MIT-LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

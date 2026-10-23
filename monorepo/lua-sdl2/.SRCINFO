@@ -1,0 +1,22 @@
+pkgbase = lua-sdl2
+	pkgdesc = Pure C binding of SDL 2.0 for Lua
+	pkgver = 2.0.5.6.0
+	pkgrel = 7
+	url = https://github.com/Tangent128/luasdl2
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = lua53
+	depends = sdl2_gfx
+	depends = sdl2_image
+	depends = sdl2_mixer
+	depends = sdl2_net
+	depends = sdl2_ttf
+	source = git+https://github.com/Tangent128/luasdl2#commit=01a749db3acf300dfd3eee3a6ba38dbe298d1081
+	b2sums = 016acffbd600e48e076a436b6af1bbd2b7679dfe82d789b9718d8288aaad7a1c0e3b3ad2babf862298a3bb87262412e5967b730c489adfb91ffb91136f457bd4
+
+pkgname = lua53-sdl2
+	conflicts = lua-sdl2
+	replaces = lua-sdl2

@@ -1,0 +1,133 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Sascha Weaver <wzyboy@wzyboy.org>
+
+# This font has four versions:
+#
+# * Multilingual versions with a default language: (OTF)
+#   (We do not package them)
+#   * Multilingual version with Japanese glyphs as default priority
+#   * Multilingual version with Korean glyphs as default priority
+#   * Multilingual version with Simplified Chinese glyphs as default priority
+#   * Multilingual version with Traditional Chinese glyphs as default priority
+# * Multilingual version combined the four versions above. (OTC) (Not included in the tarball anymore)
+#   (This version is "the best of the worlds", but it cannot be used in Windows)
+#   -> adobe-source-han-sans-otc-fonts
+# * Multilingual version compressed the 7 files into a single ttc file. (SuperOTC)
+#   (We package them now, as there's no difference from the OTC version above)
+# * Regional subsets with only characters used in CN, JP, KR or TW: (SubsetOTF)
+#   (This version is smaller and has better compatibility)
+#   * Regional subset with only Japanese glyphs + Latin
+#   -> adobe-source-han-sans-jp-fonts
+#   * Regional subset with only Korean glyphs + Latin
+#   -> adobe-source-han-sans-kr-fonts
+#   * Regional subset with only Simplified Chinese glyphs + Latin
+#   -> adobe-source-han-sans-cn-fonts
+#   * Regional subset with only Traditional Chinese glyphs + Latin
+#   -> adobe-source-han-sans-tw-fonts
+
+_pkgbase=adobe-source-han-sans
+pkgbase=$_pkgbase-fonts
+pkgname=($_pkgbase-jp-fonts $_pkgbase-kr-fonts $_pkgbase-cn-fonts $_pkgbase-tw-fonts $_pkgbase-hk-fonts $_pkgbase-otc-fonts)
+pkgver=2.005
+pkgrel=2
+pkgdesc='Adobe Source Han Sans - A set of Pan-CJK fonts designed to complement Source Sans Pro'
+arch=('any')
+license=('OFL-1.1-RFN')
+url='https://github.com/adobe-fonts/source-han-sans'
+source=("$pkgbase-$pkgver.tar.gz::https://github.com/adobe-fonts/source-han-sans/archive/${pkgver}R.tar.gz")
+sha512sums=('3ff212a584f1b8c122f7621080187238720cb566bbc2bf4a097fd10764d89f41f4114db03202c60dd77b36f08919a00a5f1532290080e6a4e950a4847bca7f70')
+
+_jp=(
+SourceHanSansJP-Bold.otf
+SourceHanSansJP-ExtraLight.otf
+SourceHanSansJP-Heavy.otf
+SourceHanSansJP-Light.otf
+SourceHanSansJP-Medium.otf
+SourceHanSansJP-Normal.otf
+SourceHanSansJP-Regular.otf
+)
+_kr=(
+SourceHanSansKR-Bold.otf
+SourceHanSansKR-ExtraLight.otf
+SourceHanSansKR-Heavy.otf
+SourceHanSansKR-Light.otf
+SourceHanSansKR-Medium.otf
+SourceHanSansKR-Normal.otf
+SourceHanSansKR-Regular.otf
+)
+_cn=(
+SourceHanSansCN-Bold.otf
+SourceHanSansCN-ExtraLight.otf
+SourceHanSansCN-Heavy.otf
+SourceHanSansCN-Light.otf
+SourceHanSansCN-Medium.otf
+SourceHanSansCN-Normal.otf
+SourceHanSansCN-Regular.otf
+)
+_tw=(
+SourceHanSansTW-Bold.otf
+SourceHanSansTW-ExtraLight.otf
+SourceHanSansTW-Heavy.otf
+SourceHanSansTW-Light.otf
+SourceHanSansTW-Medium.otf
+SourceHanSansTW-Normal.otf
+SourceHanSansTW-Regular.otf
+)
+_hk=(
+SourceHanSansHK-Bold.otf
+SourceHanSansHK-ExtraLight.otf
+SourceHanSansHK-Heavy.otf
+SourceHanSansHK-Light.otf
+SourceHanSansHK-Medium.otf
+SourceHanSansHK-Normal.otf
+SourceHanSansHK-Regular.otf
+)
+_otc=(
+SourceHanSans.ttc
+)
+
+function _package {
+    cd "$srcdir/source-han-sans-${pkgver}R"
+
+    case "$1" in
+        $_pkgbase-jp-fonts)
+            fonts=(${_jp[@]})
+            cd SubsetOTF/JP
+            pkgdesc="Adobe Source Han Sans Subset OTF - Japanese OpenType/CFF fonts";;
+        $_pkgbase-kr-fonts)
+            fonts=(${_kr[@]})
+            cd SubsetOTF/KR
+            pkgdesc="Adobe Source Han Sans Subset OTF - Korean OpenType/CFF fonts";;
+        $_pkgbase-cn-fonts)
+            fonts=(${_cn[@]})
+            cd SubsetOTF/CN
+            pkgdesc="Adobe Source Han Sans Subset OTF - Simplified Chinese OpenType/CFF fonts";;
+        $_pkgbase-tw-fonts)
+            fonts=(${_tw[@]})
+            cd SubsetOTF/TW
+            pkgdesc="Adobe Source Han Sans Subset OTF - Traditional Chinese (Taiwan) OpenType/CFF fonts";;
+        $_pkgbase-hk-fonts)
+            fonts=(${_hk[@]})
+            cd SubsetOTF/HK
+            pkgdesc="Adobe Source Han Sans Subset OTF - Traditional Chinese (Hong Kong) OpenType/CFF fonts";;
+        $_pkgbase-otc-fonts)
+            fonts=(${_otc[@]})
+            cd SuperOTC
+            bsdtar xf SourceHanSans.ttc.zip
+            pkgdesc="Adobe Source Han Sans - Pan-CJK OpenType/CFF Collection fonts";;
+    esac
+
+    # Prepare destination directory
+    install -dm755 "$pkgdir/usr/share/fonts/adobe-source-han-sans"
+
+    # Install fonts
+    for font in "${fonts[@]}"; do
+        install -m644 "$font" "$pkgdir/usr/share/fonts/adobe-source-han-sans"
+    done
+
+    install -Dm644 "$srcdir"/source-han-sans-${pkgver}R/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$1/
+}
+
+for _pkgname in ${pkgname[@]}; do
+    eval "function package_$_pkgname() { _package $_pkgname; }"
+done

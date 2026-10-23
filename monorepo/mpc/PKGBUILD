@@ -1,0 +1,44 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+# Contributor: Alexander Fehr <pizzapunk gmail com>
+# Contributor: Link Dupont <link@subpop.net>
+
+pkgname=mpc
+pkgver=0.35
+pkgrel=1
+pkgdesc="Minimalist command line interface to MPD"
+arch=(x86_64)
+url="https://www.musicpd.org/clients/mpc/"
+license=(GPL-2.0-or-later)
+depends=(glibc)
+makedepends=(
+  libmpdclient
+  meson
+  python-sphinx
+  rsync
+)
+source=(https://www.musicpd.org/download/$pkgname/${pkgver%.*}/$pkgname-$pkgver.tar.xz{,.sig})
+sha512sums=('be7ec268432eb8e34092d025e6a40379e83d54e5f87943beeb87ed8fe9db4c5c8261b09cc3230ada28300151382f97b1c2da45f54e8aad68af9946f484d0b28b'
+            'SKIP')
+b2sums=('7e47d78b762b7334f5fec13897bdf11859310932371a55c189c4554b347f097852e5fa17be3df03d047fabcc60699a3b310d0aa395aadd96a5ebff009a2ddba0'
+        'SKIP')
+validpgpkeys=('0392335A78083894A4301C43236E8A58C6DB4512') # Max Kellermann <max@blarg.de>
+
+
+build() {
+  arch-meson build $pkgname-$pkgver
+  meson compile -C build
+}
+
+package() {
+  depends+=(
+    libmpdclient libmpdclient.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+  install -vDm 644 $pkgname-$pkgver/contrib/mpc-completion.bash "$pkgdir/usr/share/bash-completion/completions/mpc"
+  # the html documentation is not reproducible and only the man page is needed
+  rm -rvf "$pkgdir/usr/share/doc/$pkgname/"{html,contrib/*.bash}
+}

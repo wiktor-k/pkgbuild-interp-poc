@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: eagletmt <eagletmt@gmail.com>
+# Contributor: kusanaginoturugi <kusanaginoturugi@gmail.com>
+
+pkgname=libskk
+pkgver=1.1.1
+pkgrel=2
+pkgdesc='GObject-based library to deal with Japanese kana-to-kanji conversion method'
+arch=('x86_64')
+url='https://github.com/ueno/libskk'
+license=('GPL-3.0-or-later')
+depends=('glib2' 'glibc' 'libgee' 'libxkbcommon' 'json-glib')
+makedepends=('git' 'gobject-introspection' 'vala')
+source=("git+https://github.com/ueno/libskk.git#tag=$pkgver")
+sha512sums=('11a0c877c0c28bdf026e5b7bad8c858d21d8f0a1439b5f88524007ab3cf0387a7f1207ebf0d42e46dfad31fa41b6277ff534f76e66e84ab3e34cdabdf242735d')
+
+build() {
+  cd libskk
+  ./autogen.sh --prefix=/usr
+  make
+}
+
+check() {
+  cd libskk
+  make check
+}
+
+package() {
+  cd libskk
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

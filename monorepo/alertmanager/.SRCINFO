@@ -1,0 +1,24 @@
+pkgbase = alertmanager
+	pkgdesc = Service which handles alerts sent by client applications such as the Prometheus server
+	pkgver = 0.34.1
+	pkgrel = 1
+	url = https://github.com/prometheus/alertmanager
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	makedepends = git
+	makedepends = npm
+	depends = glibc
+	options = !lto
+	backup = etc/alertmanager/alertmanager.yml
+	backup = etc/conf.d/alertmanager
+	source = alertmanager-0.34.1.tar.gz::https://github.com/prometheus/alertmanager/archive/v0.34.1.tar.gz
+	source = alertmanager.service
+	source = alertmanager.sysusers
+	source = alertmanager.conf
+	sha512sums = 48a4ac4def84200ccd133ea50fb16697f7c2c9ef5d8d775827c09fd067b2202ee8e10510b815c55f057d5ebb2b437474511bc12e6f3ec8cf7067a3706052a4ec
+	sha512sums = 15b2a91afe77d89accda5f5d42ef7a0fb07807a453c393003e346d9747a57d3d45e0f24a2ae1068e18b191be9e890bd6a8083d51d27cf10390a54173c05a9a08
+	sha512sums = 469f321f40b0dd6e1cc6d0791032c476449bb2ab2364d57b06d0e0309d09710be8751ded64d84e29dd6e28e96b71ef69e2bee6c71282500a9074a9d7ada8bdf0
+	sha512sums = 505c42b175be804961215cd5581e984464c21348c82f0ba6490fc58e21a6b8d8b3e1db29a95807316d7060132f3e130ae7d604a7b60fd6f15bad55bda6a45f2e
+
+pkgname = alertmanager

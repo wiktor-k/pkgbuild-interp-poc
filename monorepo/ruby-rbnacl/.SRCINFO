@@ -1,0 +1,20 @@
+pkgbase = ruby-rbnacl
+	pkgdesc = Ruby FFI binding to the Networking and Cryptography (NaCl) library (libsodium)
+	pkgver = 7.1.2
+	pkgrel = 2
+	url = https://github.com/RubyCrypto/rbnacl
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-rake
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = libsodium
+	depends = ruby
+	depends = ruby-ffi
+	options = !emptydirs
+	source = git+https://github.com/RubyCrypto/rbnacl.git#tag=v7.1.2
+	sha256sums = 4a943573ae3b954c9ec887ea0087a024bd16145a6992706bd257f094853299bb
+
+pkgname = ruby-rbnacl

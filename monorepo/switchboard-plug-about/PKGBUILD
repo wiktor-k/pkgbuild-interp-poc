@@ -1,0 +1,47 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-about
+pkgver=8.2.3
+pkgrel=2
+pkgdesc='Switchboard About Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-about
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  appstream
+  fwupd
+  glib2
+  glibc
+  gtk4
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+  libgtop
+  libgudev
+  libpackagekit-glib
+  libswitchboard-3.so
+  polkit
+  switcheroo-control
+  udisks2
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+source=(
+  git+https://github.com/elementary/switchboard-plug-about.git#tag=${pkgver}
+)
+b2sums=('a7fe3ba6fa415a783b25176c095da22ec115ed6c2e86694632660da4bf6431053f04ef053de4e388133343130c6565c9754f22ceb8b64b773643eef8d0a8972a')
+
+build() {
+  arch-meson switchboard-plug-about build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

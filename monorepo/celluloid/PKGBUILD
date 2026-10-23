@@ -1,0 +1,49 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Ainola
+
+pkgname=celluloid
+pkgver=0.30
+pkgrel=2
+pkgdesc='Simple media player, a GTK frontend for mpv'
+arch=(x86_64)
+url='https://celluloid-player.github.io/'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libepoxy
+  mpv
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+source=("git+https://github.com/celluloid-player/celluloid.git#tag=v$pkgver")
+b2sums=(779e4a5d12e66d81ca74eb2ea56edf9b4f0952d3ff5279a4ca9d91619b3a2bc9fcfe1aa1d9415c714d3db609ef5a306d84a2b262c891220759059bbac1004d33)
+
+prepare() {
+  cd $pkgname
+
+  # Present window on activation
+  # https://github.com/celluloid-player/celluloid/pull/1132
+  git cherry-pick -n fabafcb426dda196d271d2fb56fcd5cbed6bae6b
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

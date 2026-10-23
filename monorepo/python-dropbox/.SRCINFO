@@ -1,0 +1,28 @@
+pkgbase = python-dropbox
+	pkgdesc = Python SDK for Dropbox Core APIs
+	pkgver = 12.2.3
+	pkgrel = 1
+	url = https://github.com/dropbox/dropbox-sdk-python
+	arch = any
+	license = MIT
+	checkdepends = python-ply
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-requests
+	depends = python-stone
+	depends = python-urllib3
+	source = python-dropbox::git+https://github.com/dropbox/dropbox-sdk-python#tag=v12.2.3
+	source = remove-version-constraints.patch
+	sha512sums = 95fb9ca398c029e88a93a8dab273e97074f3f0c203d0efb0d1b467695c0be9382b479e0d908f9aa19eeb49b86987311ad28745cba95c0705407e88f593d3bd95
+	sha512sums = 34538c6664424b4e5b2b73f202518db96dea67be8ac76db36dc2464d4f2e5d03dbc174d544993ebf3b093a05b7a8358155e3e0813393e138cc78d08c20759f82
+	b2sums = 130bb49c6859dcfe7e26e458141629cd4642a696f48fd8028c34ce4e6a85bdaa4880de208d906d1d53fc68f7879e2dafc40e87ed03c06a79a978d861672c6626
+	b2sums = 522bae5dd90c4abf9fe18b8ab0069cc1707f8759c19fd5821bdb7b4275db7c7c32513cd6d2e9932976ec99302a091cf8b347c562ed5a978b695a71edc7d21daa
+
+pkgname = python-dropbox

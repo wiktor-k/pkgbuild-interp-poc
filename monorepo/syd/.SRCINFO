@@ -1,0 +1,24 @@
+pkgbase = syd
+	pkgdesc = Seccomp and landlock based application sandbox with support for namespaces
+	pkgver = 3.59.0
+	pkgrel = 1
+	url = https://gitlab.exherbo.org/sydbox/sydbox
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = scdoc
+	depends = bash
+	depends = libgcc
+	depends = glibc
+	depends = libseccomp
+	depends = gperftools
+	optdepends = syd-tui: Syd's Terminal User Interface
+	optdepends = pandora_box: Syd's log inspector & profile writer
+	provides = sydbox
+	options = !lto
+	source = git+https://gitlab.exherbo.org/sydbox/sydbox.git#tag=v3.59.0?signed
+	validpgpkeys = 5DF763560390A149AC6C14C7D076A377FB27DE70
+	sha256sums = f1ab42bcf453f3cb2802dfbced976cfca76df0fd604695bf49739fe126821b3f
+
+pkgname = syd

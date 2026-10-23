@@ -1,0 +1,17 @@
+pkgbase = menyoki
+	pkgdesc = Screen{shot,cast} and perform ImageOps on the command line
+	pkgver = 1.8.0
+	pkgrel = 1
+	url = https://github.com/orhun/menyoki
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = libx11
+	depends = libxrandr
+	options = !lto
+	source = menyoki-1.8.0.tar.gz::https://github.com/orhun/menyoki/archive/v1.8.0.tar.gz
+	sha512sums = 36c092f323f083defe5a7f0f6c66985f24ac4476f5a4fcd9e555346d85c3b2dabb4086c51a609b4b4974dd6974fd083ff12f249754cd0d8cc0915b2a22554767
+
+pkgname = menyoki

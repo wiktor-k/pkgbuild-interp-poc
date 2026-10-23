@@ -1,0 +1,46 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-quart-cors
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='A Quart extension to provide Cross Origin Resource Sharing, access control, support'
+url=https://github.com/pgjones/quart-cors
+arch=(any)
+license=(MIT)
+depends=(
+  python
+  python-quart
+  python-typing_extensions
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-pdm-backend
+  python-poetry-core
+)
+checkdepends=(
+  python-flask
+  python-pytest
+  python-pytest-asyncio
+  python-pytest-sugar
+)
+source=(git+https://github.com/pgjones/quart-cors.git#tag=${pkgver})
+b2sums=(SKIP)
+
+build() {
+  cd quart-cors
+  python -m build --wheel --no-isolation
+}
+
+#check() {
+#  cd quart-cors
+#  python -m pytest
+#}
+
+package() {
+  python -m installer --destdir="${pkgdir}" quart-cors/dist/*.whl
+  install -Dm 644 quart-cors/LICENSE -t "${pkgdir}"/usr/share/licenses/python-quart-cors/
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,105 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_gemname=jekyll
+pkgname=$_gemname
+pkgver=4.4.1
+pkgrel=4
+pkgdesc='A simple, blog aware, static site generator.'
+arch=('any')
+url='https://github.com/jekyll/jekyll'
+license=('MIT')
+depends=(
+  'ruby'
+  'ruby-addressable'
+  'ruby-base64'
+  'ruby-bigdecimal'
+  'ruby-colorator'
+  'ruby-csv'
+  'ruby-jekyll-sass-converter'
+  'ruby-jekyll-watch'
+  'ruby-kramdown'
+  'ruby-liquid-4'
+  'ruby-mercenary'
+  'ruby-pathutil'
+  'ruby-rouge'
+  'ruby-safe_yaml'
+  'ruby-i18n'
+  'ruby-em-websocket'
+  'ruby-kramdown-parser-gfm'
+  'ruby-terminal-table'
+  'ruby-webrick'
+)
+optdepends=(
+  'ruby-minima: Default theme for Jekyll'
+)
+provides=("ruby-jekyll")
+conflicts=('ruby-jekyll')
+replaces=('ruby-jekyll')
+options=(!emptydirs)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/jekyll/jekyll/archive/v${pkgver}.tar.gz
+        dependencies.patch)
+sha256sums=('face80f211ffc55c87a99dd540f605208ea8b4c26fe505ed263cd2f81cd22d2d'
+            '1bdc33c93835bdcc1bc9a6bf0a67a436d3315f69605d04101686f94032dcb07f')
+
+prepare() {
+  cd ${_gemname}-${pkgver}
+  patch -p1 -i  ../dependencies.patch
+  sed -i /minitest-profile/d Gemfile
+}
+
+build() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+
+  gem build ${_gemname}.gemspec
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+
+  # Actual tests are difficult to run, but we can instead do some minor
+  # smoke tests
+  GEM_HOME="tmp_install/${_gemdir}" ruby -e 'require "jekyll"; puts Jekyll::VERSION'
+}
+
+package() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+}

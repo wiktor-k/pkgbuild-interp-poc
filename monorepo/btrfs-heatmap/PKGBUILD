@@ -1,0 +1,28 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Jiachen YANG <farseerfc@gmail.com>
+# AUR Maintainer: Timofey Titovets <nefelim4ag@gmail.com>
+
+pkgname=btrfs-heatmap
+pkgver=9
+pkgrel=4
+pkgdesc="Visualize the layout of data on your btrfs filesystem over time"
+arch=('any')
+url="https://github.com/knorrie/btrfs-heatmap"
+license=('MIT')
+depends=(
+  'python'
+  'python-btrfs'
+)
+makedepends=('git')
+replaces=('python-btrfs-heatmap')
+conflicts=('python-btrfs-heatmap')
+provides=('python-btrfs-heatmap')
+source=("$pkgname::git+$url.git#tag=v${pkgver}")
+sha256sums=('e9dc00e62ce628745c892c14eb7869d45ffbe7d598c98ebf88df29ceafe3a965')
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" btrfs-heatmap
+  install -vDm755 -t "$pkgdir/usr/share/man/man1" man/btrfs-heatmap.1
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING
+}

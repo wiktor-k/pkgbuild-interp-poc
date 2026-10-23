@@ -1,0 +1,17 @@
+pkgbase = intel-metrics-discovery
+	pkgdesc = User mode library providing access to Intel GPU performance data (MDAPI)
+	pkgver = 1.14.186
+	pkgrel = 1
+	url = https://github.com/intel/metrics-discovery
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libdrm
+	source = intel-metrics-discovery-1.14.186.tar.gz::https://github.com/intel/metrics-discovery/archive/refs/tags/1.14.186.tar.gz
+	sha256sums = 4d1875c2061e92fd2136022edc774a838f71b4a6ce507734b826507ca6441c60
+
+pkgname = intel-metrics-discovery

@@ -1,0 +1,47 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Baptiste Jonglez <archlinux at bitsofnetworks dot org>
+# Contributor: NeoRaider
+
+pkgname=fastd
+pkgver=23
+pkgrel=1
+pkgdesc="Fast and secure tunneling daemon"
+arch=('x86_64')
+url="https://github.com/neocturne/fastd"
+license=('BSD-2-Clause AND BSD-3-Clause AND LGPL-2.1-or-later')
+depends=(
+  'glibc'
+  'json-c'
+  'libcap'
+  'libmnl'
+  'libsodium'
+  'libuecc>=6'
+  'openssl'
+)
+makedepends=('meson')
+checkdepends=('cmocka')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('2b35be0fc93be993c4d685c138b2e45aea6d2540a0de35e9da835e4cf8abfcc73dc4ad7c672d3e032ba55c7e05c5c103f5398b4f05e8cf6e7d2bcc99132040a5')
+
+build() {
+  arch-meson $pkgname-$pkgver build \
+    -D b_lto=true \
+    -D systemd=enabled \
+    -D build_tests=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  cd $pkgname-$pkgver
+  install -vdm755 "$pkgdir/etc/fastd/"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/system" doc/examples/fastd@.service
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" doc/fastd.1
+}

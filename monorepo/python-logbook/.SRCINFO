@@ -1,0 +1,28 @@
+pkgbase = python-logbook
+	pkgdesc = Logging sytem for Python that replaces the standard library’s logging module
+	pkgver = 1.10.1
+	pkgrel = 1
+	url = https://logbook.readthedocs.io/en/stable/
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = valkey
+	checkdepends = python-pytest
+	checkdepends = python-sqlalchemy
+	checkdepends = python-redis
+	checkdepends = python-pyzmq
+	checkdepends = python-execnet
+	checkdepends = python-jinja
+	checkdepends = python-brotli
+	checkdepends = pifpaf
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-setuptools-rust
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-typing_extensions
+	source = git+https://github.com/mitsuhiko/logbook.git#tag=1.10.1
+	sha512sums = 95eea24f1e75553f4f8a907874464d4778178e073c2c7329bc8c42cc35eba43b523d4b66f69dd27bf59a4422cc7125125ac10ece44071fee86984c3158f0c47f
+
+pkgname = python-logbook

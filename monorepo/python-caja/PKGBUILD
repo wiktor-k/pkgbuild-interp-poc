@@ -1,0 +1,46 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=python-caja
+pkgver=1.28.0
+pkgrel=6
+pkgdesc="Python binding for Caja, to allow Caja property page and menu item extensions to be written in Python"
+arch=(x86_64)
+url='https://github.com/mate-desktop/python-caja'
+license=(GPL-2.0-or-later)
+depends=(
+  caja
+  glib2
+  glibc
+  gtk3
+  python
+  python-gobject
+)
+makedepends=(
+  git
+  gtk-doc
+  mate-common
+)
+source=("git+https://github.com/mate-desktop/python-caja.git#tag=v$pkgver")
+b2sums=(7f3817cf6a12d5b602bc5d3375f154457d27f345a35aab95661461dcf36ee9566e5dd678c50007c355d5a8228f149cb9a287936152983e17c081858c3c7182bb)
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-gtk-doc
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

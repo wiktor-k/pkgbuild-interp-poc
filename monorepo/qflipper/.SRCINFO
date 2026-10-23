@@ -1,0 +1,31 @@
+pkgbase = qflipper
+	pkgdesc = Desktop application for updating Flipper Zero firmware via PC
+	pkgver = 1.3.3
+	pkgrel = 4
+	url = https://github.com/flipperdevices/qFlipper
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = qt6-svg
+	makedepends = qt6-tools
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = libusb
+	depends = qt6-5compat
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-serialport
+	depends = zlib
+	source = qflipper::git+https://github.com/flipperdevices/qFlipper.git#tag=1.3.3
+	source = git+https://github.com/pbatard/libwdi.git
+	source = git+https://github.com/nanopb/nanopb.git
+	sha512sums = d779c2071d5eb64058cafaa09e3163de5b57473b35e46bf30f645fcf0e74a8e217da3c4d6aedb182189ba84d038e4492d3a8f4fe13e5055ab40afd8080233159
+	sha512sums = SKIP
+	sha512sums = SKIP
+	b2sums = ce0f5059545ed05ff13c7556e4cde4fdd10e3a8a8ae46661a6cf8aa43cd286c46d4cf406eafbccdd39d6988d43ba8e15a0f6390f7efa5c47c3971cb5147788e3
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = qflipper

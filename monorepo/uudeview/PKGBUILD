@@ -1,0 +1,35 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: kmaster <kmaster12@sasktel.net>
+
+pkgname=uudeview
+pkgver=20250320
+pkgrel=1
+_commit=7640bc56aa5016cdc9c139eb1ab3ec874e47c744
+pkgdesc="UUDeview helps transmitting & receiving binary files using mail or newsgroups. Includes library files."
+arch=('x86_64')
+url="https://github.com/hannob/uudeview"
+license=('GPL')
+makedepends=('git')
+optdepends=('tk: for GUI')
+source=("git+https://github.com/hannob/uudeview.git#commit=${_commit}")
+sha256sums=('SKIP')
+
+prepare() {
+  cd "$srcdir"/$pkgname
+  autoreconf -fi
+}
+
+build(){
+  cd "$srcdir"/$pkgname
+  CFLAGS="$CFLAGS -ffat-lto-objects -std=gnu99"
+  ./configure --prefix=/usr --mandir=/usr/share/man
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm0644 uulib/libuu.a "$pkgdir"/usr/lib/libuu.a
+  install -d "$pkgdir"/usr/include/uudeview
+  cp -v uulib/*.h "$pkgdir"/usr/include/uudeview
+}

@@ -1,0 +1,35 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=python-pyperformance
+pkgver=1.14.0
+pkgrel=1
+pkgdesc="Python Performance Benchmark Suite"
+arch=(any)
+url="https://github.com/python/pyperformance"
+license=("MIT")
+depends=(python-perf python-packaging)
+makedepends=(python-setuptools python-build python-installer python-wheel python-sphinx)
+source=($pkgname-$pkgver.tar.gz::https://github.com/python/pyperformance/archive/refs/tags/${pkgver}.tar.gz)
+
+build() {
+  cd pyperformance-$pkgver
+  python -m build --wheel --no-isolation
+
+  make -C doc man
+}
+
+package() {
+  cd pyperformance-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # HACK Remove conflicting doc directory
+  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  rm -rf "$pkgdir/usr/lib/python${python_version}/site-packages/doc/"
+
+  install -Dm644 doc/build/man/pythonperformancebenchmarksuite.1 \
+	  -t "$pkgdir/usr/share/man/man1/"
+  install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+
+sha256sums=('2eb90812292522297bb046e589e0876c00ec5b5f49e8653eca39f8fd942840ed')

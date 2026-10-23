@@ -1,0 +1,67 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: Corrado Primier <bardo@aur.archlinux.org>
+# Contributor: Aurelien Foret <orelien@chez.com>
+
+pkgname=gammu
+pkgver=1.45.0
+pkgrel=1
+pkgdesc="GNU All Mobile Management Utilities"
+arch=('x86_64')
+url="https://wammu.eu/gammu/"
+license=('GPL-2.0-or-later')
+depends=(
+  'bluez-libs'
+  'curl'
+  'glib2'
+  'glibc'
+  'libdbi'
+  'libgudev'
+  'libusb'
+  'mariadb-libs'
+  'postgresql-libs'
+)
+makedepends=(
+  'cmake'
+  'doxygen'
+  'python'
+  'systemd'
+  'git'
+)
+checkdepends=('libdbi-drivers')
+optdepends=(
+  'dialog: support for the gammu-config script'
+  'python: for Python bindings'
+)
+source=(
+  "git+https://github.com/gammu/gammu.git#tag=$pkgver"
+  "$pkgname-add-missing-mysql-include.patch"
+)
+b2sums=('a5ee471122404261ac6568fffc5f18b6a91b391911869de982e237d6b1b61e82b5c5b76810d76330e19018460ea1040374a72f424ff55e3f2875be888c2f1eed'
+        'c29a3712886d8b04df9fefd6167a557c39efc9ed42cf9ba89c68974355adfce16965311bf8ce36a2884f924524ab9aced63acbda440c679dcfff981a51293952')
+
+prepare() {
+  cd $pkgname
+  # bash completion dir change
+  sed -i 's,COMPLETIONSDIR "/etc/bash_completion.d",COMPLETIONSDIR "/usr/share/bash-completion/completions",' \
+    contrib/CMakeLists.txt
+  patch -Np1 < ../$pkgname-add-missing-mysql-include.patch
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DLIB_SUFFIX=""
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

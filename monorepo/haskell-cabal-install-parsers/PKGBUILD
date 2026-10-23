@@ -1,0 +1,57 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=cabal-install-parsers
+pkgname=haskell-cabal-install-parsers
+pkgver=0.6.1.1
+pkgrel=113
+pkgdesc="Utilities to work with cabal-install files"
+url="https://haskell-ci.rtfd.org/"
+license=("GPL" "BSD")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-base16-bytestring' 'haskell-binary-instances'
+         'haskell-cryptohash-sha256' 'haskell-lukko' 'haskell-network-uri' 'haskell-tar')
+makedepends=('ghc' 'uusi' 'haskell-ansi-terminal' 'haskell-tasty' 'haskell-tasty-golden'
+             'haskell-tasty-hunit' 'haskell-tree-diff')
+checkdepends=('cabal-install')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('a1c48ad793020b0b6c0642f78ca180c3edebf1f801d44c428d33ea80f88e6af0000910a167c9593a3dec2db84cc0c492d195c1baeff464e0e8839d4ff31212d5')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+  uusi -u ansi-terminal
+}
+
+build() {
+  cd $_hkgname-$pkgver    
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  cabal update  # Generate cabal config for tests
+  # See https://github.com/haskell-CI/haskell-ci/issues/655
+  export CABAL_CONFIG="/build/.config/cabal/config"
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

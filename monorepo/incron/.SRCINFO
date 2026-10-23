@@ -1,0 +1,25 @@
+pkgbase = incron
+	pkgdesc = Like the regular cron but is driven by filesystem events instead of time periods
+	pkgver = 0.5.12
+	pkgrel = 7
+	url = https://github.com/ar-/incron
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	depends = bash
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	options = emptydirs
+	source = git+https://github.com/ar-/incron.git#commit=f45c2f5ac4baea99b48e99a713d1f4ec1854aa76
+	source = 0001-GetSafePath.patch
+	source = incron.sysusers
+	source = incron.tmpfiles
+	source = incrond.service
+	sha256sums = 2f7d1b3ac2320f86a4402210d0ee537bc6a6908fd8d955f4f43a35e7d637454f
+	sha256sums = 4a939f4af82c8d972478f2703aea6e524af8f7bf8bd1d8cf516ef78ff5e6713b
+	sha256sums = e5da0a3af368c286fa2b180015c9efc5aef5018c271a16620b8c30bfe6f9ccc2
+	sha256sums = 422c4a715da4037550d2f97de28f47f91d0b58983c188c6cf1d1233370e048a4
+	sha256sums = 5ff72411c704dd38823892d7fd13992509c3d906bfe0b4a5cafbe382e4e01c24
+
+pkgname = incron

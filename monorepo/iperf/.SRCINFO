@@ -1,0 +1,19 @@
+pkgbase = iperf
+	pkgdesc = A tool to measure maximum TCP bandwidth
+	pkgver = 2.2.1
+	pkgrel = 2
+	url = https://sourceforge.net/projects/iperf2/
+	install = iperf.install
+	arch = x86_64
+	license = LicenseRef-IPerf
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = https://downloads.sourceforge.net/iperf2/iperf-2.2.1.tar.gz
+	source = iperf-tcp.service
+	source = iperf-udp.service
+	sha256sums = 754ab0a7e28033dbea81308ef424bc7df4d6e2fe31b60cc536b61b51fefbd8fb
+	sha256sums = 5bfeaf4b7fc9bcc424cfc2257c6eefd21ed491bd140e9ae5562b270dcf84d794
+	sha256sums = fec34a6f352619caaf4ed3bc23f75a3ffb6b3ab5c2947cd2c24c6be36851738c
+
+pkgname = iperf

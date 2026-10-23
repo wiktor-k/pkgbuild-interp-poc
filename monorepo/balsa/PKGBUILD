@@ -1,0 +1,71 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: Brad Fanella <bradfanella@archlinux.us>
+# Contributor: Roman Kyrylych <roman@archlinux.org>
+
+pkgname=balsa
+pkgver=2.6.5
+pkgrel=3
+pkgdesc="An e-mail client for GNOME"
+arch=(x86_64)
+url='https://pawsa.fedorapeople.org/balsa/'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  enchant
+  fribidi
+  gdk-pixbuf2
+  glib2
+  glibc
+  gmime3
+  gnutls
+  gpgme
+  gtk3
+  gtksourceview4
+  krb5
+  libcanberra
+  libical
+  libldap
+  libsecret
+  pango
+  sqlite
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  meson
+  yelp-tools
+)
+changelog=$pkgname.changelog
+source=("git+https://gitlab.gnome.org/GNOME/balsa.git?signed#tag=$pkgver"
+         libical-4.patch)
+b2sums=('cbdc7a00fbf25274b2b311f08cd90458a845112ef62941471506ba9286149ad6f0afb640bc46c7c3fef8a8ccd87b6fa1e6f0780acfe23272dde90439b758712f'
+        '914827324761437ed1ec972779f039fe589812e985107e0fa3eb16943fe3ff09eb424eeced05dd8b39ec35715b887b5378cfd820a65078013ca4cde24c024965')
+validpgpkeys=(59BD313DE82B3659B822664FEA43CEFB339B833A) # Albrecht Dreß <albrecht.dress@posteo.de>
+
+prepare() {
+  cd $pkgname
+
+  # Don't try to run gtk-update-icon-cache during packaging
+  sed -i 's/gtk_update_icon_cache_program.found()/false/' images/meson.build
+
+  # Don't use -Werror
+  sed -e '/Werror/d' -i meson.build
+
+  # Fix build with libical 4
+  patch -p1 -i ../libical-4.patch
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D canberra=true \
+    -D gss=true \
+    -D gtksourceview=true \
+    -D ldap=true \
+    -D help-files=true
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

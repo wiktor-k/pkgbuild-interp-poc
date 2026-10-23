@@ -1,0 +1,20 @@
+pkgbase = ibus-libpinyin
+	pkgdesc = Intelligent Pinyin engine based on libpinyin for IBus
+	pkgver = 1.16.5
+	pkgrel = 5
+	url = https://github.com/libpinyin/ibus-libpinyin
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = boost
+	makedepends = git
+	depends = ibus
+	depends = libpinyin
+	depends = libnotify
+	depends = libsoup3
+	depends = lua
+	depends = opencc
+	depends = python-pyxdg
+	source = git+https://github.com/libpinyin/ibus-libpinyin.git#tag=1.16.5
+	sha512sums = 3a5c237aca63f7e283b1d82da0d387541d70322dd052e7907552cc2ed835e4e75ab171fd4605e7c70031024291dc59b953af2770e935cfd994a165694587485e
+
+pkgname = ibus-libpinyin

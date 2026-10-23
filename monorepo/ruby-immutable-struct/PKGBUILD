@@ -1,0 +1,44 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+_gemname=immutable-struct
+pkgname=ruby-${_gemname}
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="Create struct-like classes that don't have setters, but have an awesome constructor"
+url='https://github.com/stitchfix/immutable-struct'
+arch=(any)
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  ruby-rdoc
+  rubygems
+)
+options=('!emptydirs')
+source=(https://github.com/stitchfix/immutable-struct/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.gz)
+sha512sums=('a4d506b6d78f5d3105f3b66811fa18f9b71dc2b83c6bdf4d108981a7b51c0303f00ed6edee1d5931031379ba7d3828f0ed3c7a5c6ab07d19b51a5e00f9e175e8')
+b2sums=('2aa93b35a864392a974d1ebb29e15d26b4f46868c1918f02d29bcad1d37fc543ce3b45e1581f3b268beab47a5aa395679ca2c5154b71ba3cb7140807e848071a')
+
+prepare() {
+  cd ${_gemname}-${pkgver}
+  sed -r 's|~>|>=|g' -i ${_gemname}.gemspec
+  sed 's|git ls-files|find|' -i ${_gemname}.gemspec
+}
+
+build() {
+  cd ${_gemname}-${pkgver}
+  gem build ${_gemname}.gemspec
+}
+
+package() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}${_gemdir}" \
+    -n "${pkgdir}/usr/bin" ${_gemname}-${pkgver}.gem
+  install -Dm 644 README.rdoc -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  rm -r "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

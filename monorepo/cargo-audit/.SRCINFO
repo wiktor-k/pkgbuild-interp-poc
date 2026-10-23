@@ -1,0 +1,17 @@
+pkgbase = cargo-audit
+	pkgdesc = Audit Cargo.lock for crates with security vulnerabilities
+	pkgver = 0.22.2
+	pkgrel = 1
+	url = https://github.com/RustSec/cargo-audit
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	depends = cargo
+	depends = libgcc
+	depends = glibc
+	options = !lto
+	source = https://github.com/RustSec/rustsec/archive/cargo-audit/v0.22.2/cargo-audit-0.22.2.tar.gz
+	sha256sums = 85c368a4d166b2cc4972108d50abc5fad605013b65098929a06122439488beb5
+	b2sums = 224799d5bb1f4dbce52c7e81c3392f5d513622e1c7dc4c59ce7664da818281a277ff06cdeff2e6def2dca5ac0bb9e946e034f90de77534f1e44f6b1169ab3fc9
+
+pkgname = cargo-audit

@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+# Contributor: Thomas S Hatch <thatch45@gmail.com>
+
+pkgname=python-mockito
+pkgver=2.0.4
+pkgrel=1
+pkgdesc='Spying framework'
+arch=('any')
+url='https://github.com/kaste/mockito-python'
+license=('MIT')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-hatchling' 'python-hatch-vcs')
+checkdepends=('python-pytest' 'python-numpy')
+source=("git+https://github.com/kaste/mockito-python.git#tag=$pkgver")
+sha512sums=('5ce60490a1ca8f2ca9f7dab87f935c0c6fcddf34da8e18853988f31e455c803868899320c59547f4cf81708a10cb6b197888829de92c6440f32c6c914b5008f3')
+
+build() {
+  cd mockito-python
+  python -m build -nw
+}
+
+check() {
+  cd mockito-python
+  pytest
+}
+
+package() {
+  cd mockito-python
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

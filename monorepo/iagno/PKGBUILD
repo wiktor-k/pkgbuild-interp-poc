@@ -1,0 +1,49 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=iagno
+pkgver=50.0
+pkgrel=2
+pkgdesc="Dominate the board in a classic version of Reversi"
+url="https://wiki.gnome.org/Apps/Reversi"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  glycin
+  glycin-gtk4
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+)
+makedepends=(
+  appstream
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/GNOME/iagno.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('e844f4223f15cdd4ac519ac47729a5369be75f841c66557b947d3df4689666614ff65241e8cd9415d86798c613e9467270f151e85ad1d49d08f46df0929c1c85')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

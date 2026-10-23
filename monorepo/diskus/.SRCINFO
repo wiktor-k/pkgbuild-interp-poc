@@ -1,0 +1,15 @@
+pkgbase = diskus
+	pkgdesc = Minimal, fast alternative to 'du -sh'
+	pkgver = 0.9.0
+	pkgrel = 2
+	url = https://github.com/sharkdp/diskus
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	source = git+https://github.com/sharkdp/diskus.git#tag=v0.9.0
+	b2sums = cce6328f89d6daabfdb36b554c7f686f11754fb5d4aedd06af81b1813e6cf08d48d7cf74efc863e6b63d8a9553f1c0b8919d25a7c11c5f3ab07978a3a877ae71
+
+pkgname = diskus

@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=prettyprinter-ansi-terminal
+pkgname=haskell-prettyprinter-ansi-terminal
+pkgver=1.1.4
+pkgrel=169
+pkgdesc="ANSI terminal backend for the prettyprinter package."
+url="https://github.com/quchen/prettyprinter/tree/master/prettyprinter-ansi-terminal"
+license=('BSD-2-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-ansi-terminal' 'haskell-prettyprinter')
+makedepends=('ghc')
+checkdepends=('haskell-doctest')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('82d51b570e1a4ab61bab3d062196b9386f71e405910b23b96e86e37d7899155653816c1ea091473f5c491c3e910b5e61699c9e1909881c120bad40577d2b1f2e')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-buildReadme
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.md
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.md
+}

@@ -1,0 +1,170 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgbase=reproducible-faketools
+pkgname=(
+  reproducible-faketools-ant
+  reproducible-faketools-ar
+  reproducible-faketools-date
+  reproducible-faketools-find
+  reproducible-faketools-gzip
+  reproducible-faketools-hostname
+  reproducible-faketools-jar
+  reproducible-faketools-lib
+  reproducible-faketools-tar
+  reproducible-faketools-uname
+  reproducible-faketools-zip
+)
+pkgver=0.5.5
+pkgrel=3
+pkgdesc="Fake system tools for reproducible builds"
+url='https://github.com/bmwiedemann/reproducible-faketools'
+arch=('any')
+license=('MIT')
+source=(https://github.com/bmwiedemann/${pkgbase}/archive/v${pkgver}/${pkgbase}-${pkgver}.tar.gz)
+sha256sums=('487464bc9956c936a9c5d0fbbf8982aaa95bd00a707fbbe8e9398980be8a7db5')
+
+package_reproducible-faketools-lib() {
+  pkgdesc+=" (library files)"
+
+  cd "${pkgbase}-${pkgver}"
+  install -d "${pkgdir}/usr/lib/reproducible-faketools/lib/"
+  cp -a lib/reproducible-faketools "${pkgdir}/usr/lib/reproducible-faketools/lib/"
+
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-ant() {
+  pkgdesc+=" (ant)"
+  groups=(reproducible-faketools)
+  depends=(
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/ant
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-ar() {
+  pkgdesc+=" (ar)"
+  depends=(
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/{ar,strip}
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-date() {
+  pkgdesc+=" (date)"
+  depends=(
+    bash
+    reproducible-faketools-lib
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/date
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-find() {
+  pkgdesc+=" (find)"
+  depends=(
+    bash
+    reproducible-faketools-lib
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/find
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-gzip() {
+  pkgdesc+=" (gzip)"
+  depends=(
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/gzip
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-hostname() {
+  pkgdesc+=" (hostname)"
+  depends=(
+    inetutils
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/hostname
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-jar() {
+  pkgdesc+=" (jar)"
+  depends=(
+    bash
+    reproducible-faketools-lib
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/jar
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-tar() {
+  pkgdesc+=" (tar)"
+  depends=(
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/tar
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-uname() {
+  pkgdesc+=" (uname)"
+  depends=(
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/uname
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_reproducible-faketools-zip() {
+  pkgdesc+=" (zip)"
+  depends=(
+    p7zip
+    perl
+    reproducible-faketools-lib
+    sh
+  )
+
+  cd "${pkgbase}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/lib/reproducible-faketools/bin" \
+    bin/{reproducible-zip.pl,zip}
+  install -Dm 644 LICENSE.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

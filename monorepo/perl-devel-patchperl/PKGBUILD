@@ -1,0 +1,29 @@
+# Maintainer:
+
+pkgname=perl-devel-patchperl
+pkgver=2.14
+pkgrel=2
+pkgdesc="Patch perl source a la Devel::PPPort's buildperl.pl"
+arch=('any')
+url="https://search.cpan.org/dist/Devel-PatchPerl/"
+license=('PerlArtistic' 'GPL')
+depends=('perl' 'perl-file-pushd' 'perl-module-pluggable')
+options=('!emptydirs')
+source=("https://search.cpan.org/CPAN/authors/id/B/BI/BINGOS/Devel-PatchPerl-$pkgver.tar.gz")
+sha256sums=('2426d27ab00f65ecded5cdc8f2c2889b01c199063ab4ab688fc8df39cdde9a0f')
+
+build() {
+  cd Devel-PatchPerl-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Devel-PatchPerl-$pkgver
+  make test
+}
+
+package() {
+  cd Devel-PatchPerl-$pkgver
+  make install DESTDIR="$pkgdir"
+}

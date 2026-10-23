@@ -1,0 +1,23 @@
+pkgbase = workerd
+	pkgdesc = The JavaScript / Wasm runtime that powers Cloudflare Workers
+	pkgver = 1.20261011.1
+	pkgrel = 1
+	url = https://github.com/cloudflare/workerd
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = bazel
+	makedepends = clang
+	makedepends = git
+	makedepends = lld
+	makedepends = python
+	makedepends = rust
+	makedepends = tcl
+	depends = glibc
+	depends = libc++
+	depends = libc++abi
+	options = !lto
+	source = https://github.com/cloudflare/workerd/archive/v1.20261011.1/workerd-1.20261011.1.tar.gz
+	sha256sums = 4f6f2adfb7561a888be7b3671821bf83fd30e721b3f67896124d7090de0d72a6
+	b2sums = e0e4ea9e288d4f3cc6b4f3d7b89db7102634fa7a760e64bcb6849c9a9ab56ac48fde64885a253ab1285636ed77d661c21275ca160b8b7218b8a9434c0195ecb7
+
+pkgname = workerd

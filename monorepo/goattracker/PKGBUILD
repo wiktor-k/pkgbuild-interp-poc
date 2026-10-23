@@ -1,0 +1,64 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Jordan Day < jordanday444 at gmail dot com >
+# Contributor: Florian Dejonckheere <florian at floriandejonckheere dot be>
+# Contributor: Eric Forgeot < http://anamnese.online.fr >
+
+pkgname=goattracker
+pkgver=2.77
+pkgrel=2
+pkgdesc='Cross-platform C64 music tracker'
+arch=(x86_64)
+url='https://sourceforge.net/projects/goattracker2'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  sdl12-compat
+  hicolor-icon-theme
+)
+makedepends=(gendesk)
+source=("$pkgname-$pkgver.zip::https://sourceforge.net/projects/goattracker2/files/GoatTracker%202/$pkgver/GoatTracker_$pkgver.zip/download")
+sha512sums=('eadeb78f181bdb58ba0cc7b70c4d94b562d049c19476e3b59224718fcbec52c4a9422cb010bf286f144e3b32ed9d413efff57e9eed1f355be9b27a987b21f92f')
+b2sums=('564f6585a68fd53be8258583391ae4fb4dd82396beabf7095975eba4f0833c4e67cc99f483250a9c7948f3e724d928ae7ce8b987539de23d11179aed762d1a33')
+
+prepare() {
+  cd src
+
+  gendesk -n \
+    --pkgname "$pkgname" \
+    --pkgdesc "$pkgdesc" \
+    --name 'GoatTracker' \
+    --exec 'goattracker %F' \
+    --genericname 'C64 Music tracker' \
+    --categories 'AudioVideo;AudioVideoEditing' \
+    --icon "$pkgname" \
+    --mimetypes 'audio/sng'
+}
+
+build() {
+  cd src
+
+  make clean
+
+  make
+}
+
+package() {
+  # binaries
+  find linux -type f -executable -exec install -vDm755 -t "$pkgdir/usr/bin" {} +
+  mv "$pkgdir/usr/bin/"{goattrk2,goattracker}
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" goat_tracker_commands.pdf readme.txt
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/examples" examples/*.{sng,txt,ins,prg}
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" linux/goattracker.1
+
+  # desktop file
+  install -vDm644 -t "$pkgdir/usr/share/applications" src/goattracker.desktop
+
+  # application icon
+  install -vDm644 morphos/goattrk2.info "$pkgdir/usr/share/icons/hicolor/32x32/apps/$pkgname.png"
+}

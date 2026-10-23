@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-power-control
+pkgver=2.0.6
+pkgrel=1
+pkgdesc='Deepin power modes and adaptive Wi-Fi power saving'
+arch=('x86_64')
+url='https://www.deepin.org'
+license=('GPL-3.0-or-later' 'GPL-2.0-or-later' 'Apache-2.0')
+depends=('glibc' 'iw' 'tlp')
+makedepends=('go')
+backup=('etc/deepin-power-control/config.yaml')
+source=("https://community-packages.deepin.com/deepin/beige/pool/main/d/deepin-power-control/deepin-power-control_$pkgver.tar.xz")
+sha256sums=('0f627fbc22654dea0f43fcb02fe5920fc1f10eae92ca5dd983f89bee331ff66d')
+
+prepare() {
+  cd BUILD
+  go mod download -modcacherw
+}
+
+build() {
+  cd BUILD
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  go build -o out/deepin-power-control ./cmd/deepin-power-control
+  out/deepin-power-control completion > out/deepin-power-control.bash
+}
+
+check() {
+  cd BUILD
+  go test ./...
+}
+
+package() {
+  cd BUILD
+  make DESTDIR="$pkgdir" BIN_DIR=/usr/bin install
+  install -Dm644 out/deepin-power-control.bash "$pkgdir/usr/share/bash-completion/completions/deepin-power-control"
+  install -Dm644 LICENSES/* -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

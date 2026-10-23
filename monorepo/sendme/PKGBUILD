@@ -1,0 +1,43 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=sendme
+pkgver=0.37.0
+pkgrel=1
+pkgdesc="A tool to send files and directories, based on iroh"
+arch=(x86_64)
+url="https://github.com/n0-computer/sendme"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  rust
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('1690be37e0e42233f1a84e1f306fbea0a2c64f916dd2fb0fbc16268f2b80a78fe24805c3603d6d213496a3f10741dae75ef087c9320345e4e1dde96b996345b9')
+b2sums=('d8751e12f037871f766be930f6eddaa78c5b7710a337babea861bcd56d7361bd06e3f52e8afc92cf318d592b95175ea54c455ea5a732889d0e20bd8daef5b2ad')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname-$pkgver
+  # NOTE: The ring dependency cannot be built/linked with LTO.
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname-$pkgver
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE-{APACHE,MIT} -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

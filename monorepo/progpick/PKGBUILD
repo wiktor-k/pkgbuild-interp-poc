@@ -1,0 +1,46 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=progpick
+pkgver=0.3.0
+pkgrel=1
+pkgdesc='Bruteforce with a stream of permutations of a specific pattern'
+url='https://github.com/kpcyrd/progpick'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+)
+makedepends=(
+  'cargo'
+  'scdoc'
+)
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz
+        https://github.com/kpcyrd/${pkgname}/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.gz.asc)
+b2sums=('66bdddcb7fd7d20b69039ca2833094b2fc8cc86e971bc475efaea6ee7c9e8d1e9b8797391f1c9c78a25e801a23fcbf610d6428d674a19f824cefcd38a2dde37e'
+        'SKIP')
+validpgpkeys=("64B13F7117D6E07D661BBCE0FE763A64F5E54FD6")
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+  make docs
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 target/release/${pkgname} -t "${pkgdir}/usr/bin"
+  install -Dm 644 contrib/${pkgname}.1 -t "${pkgdir}/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

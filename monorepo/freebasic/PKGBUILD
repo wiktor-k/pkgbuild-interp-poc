@@ -1,0 +1,28 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Jesse Jaara <gmail.com: jesse.jaara>
+# Contributor: rabyte <gmail.com: rabyte>
+
+pkgname=freebasic
+pkgver=1.10.2
+pkgrel=2
+pkgdesc="A free BASIC compiler"
+arch=('x86_64')
+url="https://www.freebasic.net/"
+license=('GPL-2.0-or-later' 'LGPL-2.1-or-later')
+options=('!lto')
+depends=('ncurses')
+makedepends=('freebasic' 'libxpm' 'gpm' 'libxrandr' 'mesa')
+#source=("https://downloads.sourceforge.net/fbc/FreeBASIC-$pkgver-source-bootstrap.tar.xz")
+source=("https://downloads.sourceforge.net/fbc/FreeBASIC-$pkgver-source.tar.xz")
+sha512sums=('6b770f02e0703fda97a38e941f7029af735867d88cf9ae5934b4a3dc166bd3d28db746f75b85de83c3ace8cef2d014be308fa4ed45a932e4fada95be1969c37f')
+
+build() {
+  cd FreeBASIC-$pkgver-source # -bootstrap
+  make CFLAGS="$CFLAGS" # bootstrap
+}
+
+package() {
+  cd FreeBASIC-$pkgver-source # -bootstrap
+  # PATH="$PWD/bin:$PATH" make install prefix="$pkgdir/usr" FBCFLAGS="-i inc"
+  make install prefix="$pkgdir/usr"
+}

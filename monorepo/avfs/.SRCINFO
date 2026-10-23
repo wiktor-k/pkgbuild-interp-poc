@@ -1,0 +1,19 @@
+pkgbase = avfs
+	pkgdesc = Virtual filesystem that allows browsing compressed files
+	pkgver = 1.4.0
+	pkgrel = 1
+	url = http://avf.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	license = LGPL-2.0-or-later
+	makedepends = git
+	depends = fuse3
+	depends = lzlib
+	depends = perl
+	depends = xz
+	depends = zstd
+	options = !emptydirs
+	source = avfs::git+https://git.code.sf.net/p/avf/git#tag=v1_4_0
+	sha512sums = e9ccef457526f5fe8c61d087181135cdffb876a9da558eb88f86131f442eb3ce5cd2c027f7332e1acf910871093790f06e9d59b5ebe709202d71e431a0d4bf0c
+
+pkgname = avfs

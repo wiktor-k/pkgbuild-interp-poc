@@ -1,0 +1,46 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=lightsoff
+pkgver=50.0
+pkgrel=1
+pkgdesc="Turn off all the lights"
+url="https://wiki.gnome.org/Apps/Lightsoff"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+)
+makedepends=(
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/GNOME/lightsoff.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('a5f13c318c7dfe5dcfb3d3d62f0db8beaa71ddccf87e2d42cabf1034922246384f4db1b63c8dea1eab245ad11ab6a74b86e6ca2c8f2aab10da9a3ceb6a3f33c9')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

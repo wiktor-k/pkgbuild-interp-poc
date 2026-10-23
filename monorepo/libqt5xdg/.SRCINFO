@@ -1,0 +1,26 @@
+pkgbase = libqt5xdg
+	pkgdesc = Library providing freedesktop.org XDG specs implementations for Qt
+	pkgver = 3.12.0
+	pkgrel = 9
+	url = https://github.com/lxqt/libqtxdg
+	arch = x86_64
+	license = LGPL
+	license = custom
+	checkdepends = xorg-server-xvfb
+	makedepends = cmake
+	makedepends = lxqt-build-tools-qt5
+	depends = libsm
+	depends = libxkbcommon-x11
+	depends = qt5-base
+	depends = qt5-svg
+	optdepends = xterm: the default terminal for running .desktop files
+	provides = libQt5Xdg.so
+	provides = libQt5XdgIconLoader.so
+	conflicts = libqtxdg<4.0
+	source = https://github.com/lxqt/libqtxdg/releases/download/3.12.0/libqtxdg-3.12.0.tar.xz
+	source = https://github.com/lxqt/libqtxdg/releases/download/3.12.0/libqtxdg-3.12.0.tar.xz.asc
+	validpgpkeys = 19DFDF3A579BD509DBB572D8BE793007AD22DF7E
+	sha256sums = 726856ff447220575c84461800b151328e784c6c326a5065ef3f9a7f9506d4dc
+	sha256sums = SKIP
+
+pkgname = libqt5xdg

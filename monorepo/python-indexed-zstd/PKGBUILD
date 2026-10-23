@@ -1,0 +1,55 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-indexed-zstd
+pkgver=1.7.2
+pkgrel=1
+pkgdesc='Fast random access to zstd-compressed files'
+arch=(x86_64)
+url='https://github.com/martinellimarco/indexed_zstd'
+license=('MIT OR GPL-3.0-only')
+depends=(python zstd)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  cython
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  'github.com-martinellimarco-libzstd-seek::git+https://github.com/martinellimarco/libzstd-seek'
+)
+sha512sums=('ef8d868942dd898e98e9174bf9e9433a92af9f5cc0528980785ba71b8c27cec92f4ea23295eafe40824ad5ac09fd9f8ad89f29dc1ea150808b725e94deb8f541'
+            'SKIP')
+b2sums=('b042d28df27db28b4a499ed35644cecd163fb047c38727cd5d3f68b2f814a2be41f477685ca4f7ae8f0e960302ba8aa9aa51a2218bb3ada63bd9099fd3949a2f'
+        'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodule(s)
+  git submodule init
+  git config submodule.indexed_zstd/libzstd-seek.url "$srcdir/github.com-martinellimarco-libzstd-seek"
+  git -c protocol.file.allow=always submodule update --init
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+    libstdc++ libstdc++.so
+  )
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

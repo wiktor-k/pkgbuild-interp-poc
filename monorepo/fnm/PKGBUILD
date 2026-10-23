@@ -1,0 +1,33 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Wesley Moore <wes@wezm.net>
+
+pkgname=fnm
+pkgver=1.39.0
+pkgrel=1
+pkgdesc="Fast and simple Node.js version manager, built with Rust"
+arch=('x86_64')
+url="https://github.com/Schniz/${pkgname}"
+license=('GPL-3.0-or-later')
+depends=('xz' 'glibc' 'libgcc')
+makedepends=('cargo')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('224081a677a02acd9f972885e824a98fa3843f5b778b28400ad5af97752f6127')
+
+prepare() {
+	cd "${pkgname}-${pkgver}/"
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd "${pkgname}-${pkgver}/"
+	CFLAGS+=" -ffat-lto-objects" cargo build --frozen --release --all-features
+}
+
+package() {
+	cd "${pkgname}-${pkgver}/target/release/"
+	install -Dm755 "${pkgname}" -t "${pkgdir}/usr/bin/"
+
+	install -Dm644 <("./${pkgname}" completions --shell bash) "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+	install -Dm644 <("./${pkgname}" completions --shell fish) "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+	install -Dm644 <("./${pkgname}" completions --shell zsh) "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+}

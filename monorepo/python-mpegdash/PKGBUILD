@@ -1,0 +1,34 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+# Contributor: a821 at mail dot de
+
+pkgname=python-mpegdash
+pkgver=0.4.1
+pkgrel=1
+pkgdesc="MPD (Media Presentation Description) parser"
+url="https://github.com/sangwonl/python-mpegdash"
+arch=("any")
+license=("MIT")
+depends=("python")
+makedepends=(
+	"python-setuptools"
+	"python-build"
+	"python-installer"
+)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('fbcedd9a95cb28f99ec6d87e13b72697873965d72c53183ffe5d9f9b13d78161')
+
+build() {
+	cd ${pkgname}-${pkgver}
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd ${pkgname}-${pkgver}
+	python -m unittest discover
+}
+
+package() {
+	cd ${pkgname}-${pkgver}
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+	install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

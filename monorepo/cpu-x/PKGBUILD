@@ -1,0 +1,65 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: UnicornDarkness
+
+pkgname=cpu-x
+pkgver=5.4.1
+pkgrel=1
+pkgdesc="A Free software that gathers information on CPU, motherboard and more"
+arch=(x86_64)
+url="https://thetumultuousunicornofdarkness.github.io/CPU-X"
+license=(GPL-3.0-only)
+depends=(
+  cairomm
+  dconf
+  glib2
+  glibc
+  glibmm
+  gtkmm3
+  hicolor-icon-theme
+  libcpuid
+  libgcc
+  libglvnd
+  libsigc++
+  libstdc++
+  ncurses
+  opencl-icd-loader
+  pangomm
+  pciutils
+  procps-ng
+  vulkan-icd-loader
+)
+makedepends=(
+  cmake
+  git
+  nasm
+  ninja
+  opencl-headers
+  polkit
+  vulkan-headers
+)
+optdepends=('opengl-driver: packaged openGL driver'
+            'vulkan-driver: packaged Vulkan driver'
+            'opencl-driver: packaged OpenCL driver')
+source=("cpu-x::git+https://github.com/TheTumultuousUnicornOfDarkness/CPU-X.git#tag=v${pkgver}")
+sha512sums=('0082779930e7b64ee201c914c2f3f0547f2ef956ac56886a53c93daf361c5701dbbadb5e9884613713757e5a19d41194fec7926927e2477b8f26e3d70b18c019')
+
+prepare() {
+	cd "$pkgname"
+	# https://github.com/TheTumultuousUnicornOfDarkness/CPU-X/pull/402
+	sed -i 's/^cpu\s\+ia64$/cpu default/' \
+		src/core/bandwidth/routines-x86-64bit.asm \
+		src/core/bandwidth/OOC/utility-x86-64bit.asm
+}
+
+build() {
+	cmake -S "$pkgname" -B build -GNinja -DCMAKE_BUILD_TYPE=None -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBEXECDIR="lib/cpu-x"
+	cmake --build build
+}
+
+check() {
+	ninja -C build test
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}

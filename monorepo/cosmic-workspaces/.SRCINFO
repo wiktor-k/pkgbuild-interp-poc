@@ -1,0 +1,23 @@
+pkgbase = cosmic-workspaces
+	pkgdesc = Cosmic workspaces
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 2
+	url = https://github.com/pop-os/cosmic-workspaces-epoch
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = lld
+	depends = cosmic-icon-theme
+	depends = libgcc
+	depends = glibc
+	depends = libinput
+	depends = libxkbcommon
+	depends = mesa
+	depends = wayland
+	source = git+https://github.com/pop-os/cosmic-workspaces-epoch.git#tag=epoch-1.10.0
+	b2sums = f23ad07332c59bd38c12b603d33208db4ddb64fe69fd5e7181be66fb57afe53315546830f9240d23ecfb585c486bb12f130a612f64c8fa36db85562727149c5f
+
+pkgname = cosmic-workspaces

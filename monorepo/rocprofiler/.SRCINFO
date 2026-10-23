@@ -1,0 +1,37 @@
+pkgbase = rocprofiler
+	pkgdesc = ROC profiler library. Profiling with perf-counters and derived metrics.
+	pkgver = 7.2.4
+	pkgrel = 2
+	url = https://rocm.docs.amd.com/projects/rocprofiler/en/latest/index.html
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = gtest
+	makedepends = hsa-rocr
+	makedepends = python-barectf
+	makedepends = python-cppheaderparser
+	makedepends = python-pandas
+	makedepends = python-yaml
+	makedepends = rocm-dbgapi
+	makedepends = rocm-llvm
+	makedepends = rocm-smi-lib
+	makedepends = rocm-toolchain
+	makedepends = roctracer
+	makedepends = pybind11
+	makedepends = ninja
+	depends = hip-runtime-amd
+	depends = hsa-amd-aqlprofile
+	depends = python
+	depends = python-lxml
+	depends = rocm-core
+	depends = fmt
+	depends = google-glog
+	depends = yaml-cpp
+	options = !lto
+	source = rocm-systems::git+https://github.com/ROCm/rocm-systems#tag=rocm-7.2.4
+	source = rocm-systems-perfetto::git+https://github.com/google/perfetto
+	sha256sums = a619465777d59fd484a1e37cb975c738e0122b37804296598130ac3fb6d93314
+	sha256sums = SKIP
+
+pkgname = rocprofiler

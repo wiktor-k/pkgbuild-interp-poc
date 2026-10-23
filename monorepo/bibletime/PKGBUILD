@@ -1,0 +1,45 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Contributor: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: SanskritFritz (gmail)
+# Contributor: Tobias T. <OldShatterhand at gmx-topmail dot de>
+
+pkgname=bibletime
+pkgver=3.2.0
+pkgrel=3
+pkgdesc='Bible study tool'
+arch=('x86_64')
+url='https://www.bibletime.info/'
+license=('GPL-2.0-only')
+depends=('sword' 'clucene' 'qt6-speech' 'qt6-svg')
+makedepends=('cmake' 'docbook-xsl' 'expac' 'fop' 'git' 'po4a' 'qt6-tools')
+source=("git+https://github.com/bibletime/bibletime.git?signed#tag=v${pkgver}")
+sha256sums=('8b866b2b9493beaf3a1cb33965f24f318ed84178db2f16fac5cc0aa2b1fb2c81')
+validpgpkeys=('6C0462117260CA4934F7B3E049D76194699FD9A4') # Jaak Ristioja
+
+prepare() {
+  cd $pkgname
+
+  # Fix compilation with C++20 and later
+  git cherry-pick -n 378c83d1fec533a04976b055cf11f2707384f269
+}
+
+build() {
+  local xsl_shared=/usr/share/xml/docbook/xsl-stylesheets-$(expac %v docbook-xsl | cut -d - -f 1)
+  local cmake_options=(
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BT_DOCBOOK_XSL_HTML_CHUNK_XSL="$xsl_shared/html/chunk.xsl"
+    -D BUILD_HANDBOOK_PDF=Off
+    -D BUILD_HOWTO_PDF=Off
+  )
+  cmake -B build -S $pkgname -W no-dev ${cmake_options[@]}
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}
+
+# vim:set ts=2 sw=2 et:

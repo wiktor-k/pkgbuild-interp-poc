@@ -1,0 +1,46 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=keepsecret
+pkgver=26.08.2
+pkgrel=1
+pkgdesc='Password manager'
+arch=(x86_64)
+url='https://apps.kde.org/keepsecret/'
+license=(GPL-2.0-or-later)
+depends=(glib2
+         glibc
+         kconfig
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         ki18n
+         kitemmodels
+         kirigami
+         kirigami-addons
+         kirigami-app-components
+         libsecret
+         libstdc++
+         org.freedesktop.secrets
+         qqc2-desktop-style
+         qt6-base
+         qt6-declarative
+         qt6-svg)
+makedepends=(extra-cmake-modules)
+groups=(kde-applications
+        kde-utilities)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('9dfc788927c536c0a37537ffb1e4b6b4e0dbf2b1e36bfb5fbcc5dcc725a051de'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

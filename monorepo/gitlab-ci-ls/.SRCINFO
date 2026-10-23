@@ -1,0 +1,17 @@
+pkgbase = gitlab-ci-ls
+	pkgdesc = Language server for Gitlab CI
+	pkgver = 1.4.0
+	pkgrel = 1
+	url = https://github.com/alesbrelih/gitlab-ci-ls
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = openssl
+	options = !lto
+	source = git+https://github.com/alesbrelih/gitlab-ci-ls.git#tag=1.4.0
+	b2sums = 3a18471e4abc24b4e97ec99f811e91abc5198632e87c5b9cfd04398b7b11938d17a8bf108bccb6ab240dca1e35f274bffbe8542b353527e253c09a80c3f5ebf2
+
+pkgname = gitlab-ci-ls

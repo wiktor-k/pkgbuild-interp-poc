@@ -1,0 +1,57 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: smmalis37
+
+pkgname=python-aiorpcx
+pkgver=0.25.0
+pkgrel=3
+pkgdesc="A generic asyncio library implementation of RPC suitable for an application that is a client, server or both"
+url="https://github.com/kyuupichan/aiorpcX"
+arch=('any')
+license=('MIT')
+depends=('python')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-websockets'
+)
+optdepends=('python-websockets: websocket transport')
+source=(
+  "$pkgname::git+$url.git#tag=$pkgver"
+  "$pkgname-python-3.14-compatibility.patch"
+)
+b2sums=('cad402a4faf842fa6cea53aebe6383ac6f335693f002dbd61711f035ebbb82b0163bba487c6c8964d6851fc27cdeb850b8e11f0309030afaa110fc6733134a5c'
+        '0a84a2e4f3f8215c40f484d71fe97bbdf62a13896ca9c281402f69a3fca4cecade1c41ddf6740e255c1e66fc7d2cbbf28c47767d4d72a90d82951e00447ad8e7')
+
+prepare() {
+  cd $pkgname
+  # python-pytest-asyncio 1.X compatibility
+  git cherry-pick -n b8ce32889c45c98b44c4e247ec0b0ae206e9ee91
+  patch -Np1 < ../$pkgname-python-3.14-compatibility.patch
+}
+
+build() {
+  cd $pkgname
+  # python-pytest-asyncio 1.X compatibility
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  python -m installer --destdir=tmp_install dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  PYTHONPATH="$PWD/tmp_install/$site_packages" pytest
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENCE
+}

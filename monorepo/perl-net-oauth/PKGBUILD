@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# CPAN Name  : Net-OAuth
+# Contributor: Anonymous
+# Generator  : CPANPLUS::Dist::Arch 1.28
+
+pkgname=perl-net-oauth
+pkgver=0.33
+pkgrel=1
+pkgdesc="An implementation of the OAuth protocol"
+arch=('any')
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+options=('!emptydirs')
+depends=('perl-class-accessor' 'perl-class-data-inheritable' 'perl-crypt-sysrandom' 'perl-libwww' 'perl-uri')
+checkdepends=('perl-test-warn')
+url='https://metacpan.org/release/Net-OAuth'
+source=("https://cpan.metacpan.org/authors/id/R/RR/RRWO/Net-OAuth-$pkgver.tar.gz")
+sha512sums=('f2f9f122a68e64b54cd2892ac92d6443bd21a839b5caf689703d1d609dfb2f81e8a9076f099eb8bfae232cd2fd333b497951043028f7a3238ba3c2df1f367e4c')
+
+build() {
+  cd "$srcdir/Net-OAuth-$pkgver"
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd "$srcdir/Net-OAuth-$pkgver"
+  PERL_MM_USE_DEFAULT=1
+  make test
+}
+
+package() {
+  cd "$srcdir/Net-OAuth-$pkgver"
+  make install DESTDIR="$pkgdir"
+}

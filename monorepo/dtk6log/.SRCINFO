@@ -1,0 +1,20 @@
+pkgbase = dtk6log
+	pkgdesc = Simple, convinient and thread safe logger for Qt-based C++ apps
+	pkgver = 0.0.6
+	pkgrel = 4
+	url = https://github.com/linuxdeepin/dtk6log
+	arch = x86_64
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = libsystemd
+	depends = qt6-base
+	depends = spdlog
+	depends = fmt
+	depends = gcc-libs
+	source = git+https://github.com/linuxdeepin/dtk6log.git#tag=0.0.6
+	sha512sums = 08a572b115a7906929ed9ba81a8a46b3bc5ba318e93df8bbe24d2c1566073c1b467d081ec537c9e4849d44c8ec0e89b318031498316e62907cad6e774eb5d99b
+
+pkgname = dtk6log

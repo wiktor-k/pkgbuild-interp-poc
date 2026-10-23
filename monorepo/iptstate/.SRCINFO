@@ -1,0 +1,18 @@
+pkgbase = iptstate
+	pkgdesc = top-like interface to netfilter connection-tracking table
+	pkgver = 2.2.7
+	pkgrel = 2
+	url = https://www.phildev.net/iptstate/
+	arch = x86_64
+	license = custom
+	depends = glibc
+	depends = gcc-libs
+	depends = ncurses
+	depends = libnetfilter_conntrack
+	source = https://github.com/jaymzh/iptstate/releases/download/v2.2.7/iptstate-2.2.7.tar.bz2
+	source = https://github.com/jaymzh/iptstate/releases/download/v2.2.7/iptstate-2.2.7.tar.bz2.asc
+	validpgpkeys = 121BDA2D4ACB63616B367A0E58E11BB1E414D9AD
+	sha256sums = 896df0602885456a2631f795d634fc21311e505f8c910348e6312860f2097955
+	sha256sums = SKIP
+
+pkgname = iptstate

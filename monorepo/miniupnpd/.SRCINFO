@@ -1,0 +1,28 @@
+pkgbase = miniupnpd
+	pkgdesc = Lightweight UPnP IGD daemon
+	pkgver = 2.3.11
+	pkgrel = 1
+	url = https://miniupnp.tuxfamily.org/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = lsb-release
+	makedepends = procps-ng
+	depends = glibc
+	depends = iptables
+	depends = libcap-ng
+	depends = libcap-ng.so
+	depends = libnetfilter_conntrack
+	depends = libuuid.so
+	depends = util-linux
+	depends = util-linux-libs
+	backup = etc/miniupnpd/miniupnpd.conf
+	source = git+https://github.com/miniupnp/miniupnp.git#tag=miniupnpd_2_3_11
+	source = miniupnpd.service
+	validpgpkeys = 751E9FF6944A3B36A5432216DB511043A31ACAAF
+	sha512sums = a37b24e845eca27bd5865c663c9d9794f40169f45462afd149140e6d0143eed7bf1c490188e601e879bb0456b65ee588b2890d624af41b2db40945736cfeb925
+	sha512sums = 6387f646d91257e50159f66c5168830c5c845e1de739e52cc86647baafaa96ed3a5d00b6c7e46080c3dd998a486d81183c3c11ce9bf32e2f6d9fdd40b0ea8bef
+	b2sums = 7951bf051f0696e2fb72cef3a854281757f5ba0435fb28993e8892e67b4bbe81e53adc1d3a9d66cfedebe90a5948d427706694bca010a0465647524202ef24e1
+	b2sums = 3db5bae2f4624f436a509dfda79183468b7d2112b5351b70f972319f3223722b1d2b5ac44516bb8f76995f04af0bb76b1e3a19e9afe011f5b104aae5f2058638
+
+pkgname = miniupnpd

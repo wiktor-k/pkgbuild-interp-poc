@@ -1,0 +1,17 @@
+pkgbase = spytrap-adb
+	pkgdesc = Test a phone for stalkerware using adb and usb debugging to scan for suspicious apps and configuration
+	pkgver = 0.3.5
+	pkgrel = 2
+	url = https://github.com/spytrap-org/spytrap-adb
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	depends = android-tools
+	depends = gcc-libs
+	depends = glibc
+	options = !lto
+	source = https://github.com/spytrap-org/spytrap-adb/archive/v0.3.5/spytrap-adb-0.3.5.tar.gz
+	sha256sums = e33a342aa461b56a8d857c2c29b743658bd87b4ade7bed20399dea2cea01b0f8
+	b2sums = 56b349c307bd42beba9db28ab3cedb9e98f9d535f465bb38ebdb6d2953e93c5a6f1902bdc22d1f3a98a4c3f4567be8bdb77f683cc6c387f7c5a557afb651be4b
+
+pkgname = spytrap-adb

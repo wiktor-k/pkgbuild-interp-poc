@@ -1,0 +1,36 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=opensearch-asynchronous-search-plugin
+pkgver=3.9.0.0
+pkgrel=1
+_opensearchver=3.9.0
+_jdkver=21
+pkgdesc="OpenSearch Asynchronous Search Plugin"
+arch=('x86_64')
+url="https://opensearch.org/docs/latest/search-plugins/async"
+license=('Apache-2.0')
+depends=("opensearch=${_opensearchver}")
+makedepends=("java-environment-openjdk=${_jdkver}" 'unzip')
+source=(
+  "${pkgname}-${pkgver}.tar.gz::https://github.com/opensearch-project/asynchronous-search/archive/${pkgver}.tar.gz"
+)
+sha256sums=('8acf4fd8ecb46a6bae96a23825d88e730dd176c7b48822c79ba7adac53c7ac45')
+
+build() {
+  cd "asynchronous-search-${pkgver}"
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  export GRADLE_OPTS="-Dbuild.snapshot=false -Dopensearch.version=${_opensearchver}"
+  # integTest (Reaper) requires JDK 14
+  ./gradlew assemble \
+    --exclude-task ":integTest" \
+    --exclude-task ":jacocoTestReport"
+}
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/opensearch/plugins/opensearch-asynchronous-search"
+  cd "${pkgdir}/usr/share/opensearch/plugins/opensearch-asynchronous-search"
+  unzip "${srcdir}/asynchronous-search-${pkgver}/build/distributions/opensearch-asynchronous-search-${pkgver}.zip"
+
+  install -Dm644 "${srcdir}/asynchronous-search-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,79 @@
+pkgbase=ast-grep
+pkgname=(
+  ast-grep
+  python-ast-grep
+)
+pkgver=0.44.1
+pkgrel=1
+pkgdesc='CLI tool for code structural search, lint and rewriting'
+url='https://ast-grep.github.io/'
+arch=(x86_64)
+license=(MIT)
+depends=(
+  libgcc
+  glibc
+)
+makedepends=(
+  cargo
+  python-build
+  python-installer
+  python-maturin
+  python-wheel
+)
+options=(!lto)
+source=(https://github.com/ast-grep/ast-grep/archive/${pkgver}/${pkgbase}-${pkgver}.tar.gz)
+sha512sums=('df62d47ea32b9904f8923256285f6d8876224d59deb246e5b7069409aac7a8b080dc3f46a211ed9b48a134da3e5107bcb0e7ef6d5001c03e94ba9d9814e81ff1')
+b2sums=('6fad1f36e1b486c171bc4bfab93e41899e7fa11862b1475a62f453378db7be4e0196511c7ed07c787cebe5ea8a41138fe87ed975e6f00476f1ea00872f547b09')
+
+prepare() {
+  cd ${pkgbase}-${pkgver}
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  cargo build --frozen --release --all-features
+
+	local shell; for shell in bash fish zsh; do
+		./target/release/ast-grep completions "${shell}" > target/ast-grep.${shell}
+	done
+
+  cd crates/pyo3
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgbase}-${pkgver}
+  cargo test --frozen --all-features --workspace
+}
+
+package_ast-grep() {
+  depends=(
+    libgcc
+    glibc
+  )
+
+  cd ${pkgbase}-${pkgver}
+  install -Dm 755 target/release/ast-grep -t "${pkgdir}/usr/bin/"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+	install -Dm 644 target/${pkgname}.bash "${pkgdir}"/usr/share/bash-completion/completions/${pkgname}
+	install -Dm 644 target/${pkgname}.fish "${pkgdir}"/usr/share/fish/vendor_completions.d/${pkgname}.fish
+	install -Dm 644 target/${pkgname}.zsh "${pkgdir}"/usr/share/zsh/site-functions/_${pkgname}
+}
+
+package_python-ast-grep() {
+  depends=(
+    libgcc
+    glibc
+    python
+  )
+
+  cd ${pkgbase}-${pkgver}
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  cd crates/pyo3
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

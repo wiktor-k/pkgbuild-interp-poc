@@ -1,0 +1,18 @@
+pkgbase = foremost
+	pkgdesc = A console program to recover files based on their headers, footers, and internal data structures
+	pkgver = 1.5.7
+	pkgrel = 7
+	url = http://foremost.sourceforge.net/
+	arch = x86_64
+	license = custom
+	makedepends = patch
+	depends = glibc
+	backup = etc/foremost.conf
+	source = https://foremost.sourceforge.net/pkg/foremost-1.5.7.tar.gz
+	source = foremost-makefile.patch
+	source = foremost-1.5.7-fno-common.patch
+	sha512sums = 8827c29d52496783be26374f3943eb26a154d842f34e50fb489f87b3a5045bf85f1e44d7d8d8b12b2355ba3fe4b06a0db979cc22c0f431593c5976001eb931ab
+	sha512sums = eb3fc70590cafa3fb953946f6d80051ab3d976bcb3687cadb141a72dbd5bf317de68f39db7e28e27b49dd1629cab7e4c0ff5bc83c962c33026e9fe4d4ad2dc96
+	sha512sums = 4a129e0bb97f2c8aa09d6861077e732886e1d26573cc8698abfb03b55ebcf73c7ba1fbd6de25c5a4d2ce8cd271ebf07aa277d823d54640e6922ebc72a6aaba46
+
+pkgname = foremost

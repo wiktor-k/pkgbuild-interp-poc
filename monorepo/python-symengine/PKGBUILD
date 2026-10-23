@@ -1,0 +1,51 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Lukas Spies <lukas (at) photoqt _dot_ org>
+
+pkgname=python-symengine
+_pkgname=symengine.py
+pkgver=0.14.1
+pkgrel=4
+arch=(x86_64)
+pkgdesc='Python wrappers for SymEngine'
+url='https://github.com/symengine/symengine.py'
+depends=(glibc
+         gmp
+         gperftools
+         libgcc
+         libmpc
+         libstdc++
+         mpfr
+         python
+         symengine)
+makedepends=(boost
+             cereal
+             cmake
+             cython
+             git
+             llvm
+             python-build
+             python-installer
+             python-setuptools)
+license=(MIT)
+source=(git+https://github.com/symengine/symengine.py#tag=v$pkgver
+        no-tcmalloc.patch)
+sha256sums=('898d538937e36e2bb796ef0308cb3dcd4cd07e4e290375ce897623b0f5764871'
+            '4f733b108ec21897b55b69476961d178f3bb02cc54c8b86e440b16ef7370927a')
+
+prepare() {
+  cd $_pkgname
+# https://github.com/symengine/symengine.py/issues/475
+  patch -p1 -i ../no-tcmalloc.patch
+}
+
+build() {
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cd $_pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

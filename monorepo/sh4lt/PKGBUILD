@@ -1,0 +1,60 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=sh4lt
+pkgver=0.3.4
+pkgrel=1
+pkgdesc="Library to share streams of framed data between applications"
+arch=(x86_64)
+url="https://gitlab.com/sh4lt/sh4lt/"
+license=(
+  LGPL-2.0-or-later
+  LGPL-2.1-or-later
+)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  cmake
+  doxygen
+  graphviz
+  pybind11
+)
+source=(
+  "${url}-/archive/$pkgver/$pkgname-$pkgver.tar.gz"
+)
+sha512sums=('06247ab282b07605a012525457fd2f0d8f45148adb6b49f55002347519aa77fd1f7f85c9565280bb8620e04505d23c9f67deb8fbe4876cbd6483539638f7e413')
+b2sums=('dca80ac5b011badc098c1413b536581c5a823f1e3bc65bd22f8f0962bba378b8cfff54dd1865c71230a12422449a4bb536353c929b4a275d129dc91a3f6b40bd')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname-$pkgver"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D SH4LT_USE_SYSTEM_PYBIND11=ON
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  local excluded_tests="pysh4lt_writer_follower"
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel "$(nproc)"
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_flags[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

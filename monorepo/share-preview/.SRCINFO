@@ -1,0 +1,24 @@
+pkgbase = share-preview
+	pkgdesc = Preview and debug websites metadata tags for social media share
+	pkgver = 1.0.0
+	pkgrel = 3
+	url = https://apps.gnome.org/SharePreview/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = curl
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://github.com/rafaelmardojai/share-preview.git#tag=1.0.0
+	b2sums = 983ea936791760a37f386e424c815ae855cf58fe5a363b6bf5c8f4aa4c904327d0da80c819a3ec451b1840abdb81b1af29392457ce864b7114bd0c694fd0a7fc
+
+pkgname = share-preview

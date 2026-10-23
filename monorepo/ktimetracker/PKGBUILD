@@ -1,0 +1,46 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=ktimetracker
+pkgver=6.0.0
+pkgrel=3
+pkgdesc='Todo management and time tracker'
+url='https://apps.kde.org/ktimetracker/'
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+depends=(glibc
+         kcalendarcore
+         kcmutils
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         ki18n
+         kiconthemes
+         kidletime
+         kio
+         kstatusnotifieritem
+         ktextwidgets
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libstdc++
+         qt6-5compat
+         qt6-base)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/unstable/$pkgname/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('50597e689f08efdaa79439a0aa9886ce47aaddb5a6018a57ffeea6cb7f666e69'
+            'SKIP')
+validpgpkeys=(D7A4AE3E9A5A18C98F36477DC7AF5D57818E49C3  # Alexander Potashev <aspotashev@gmail.com>
+              82F66DFD203000800F830A48CA1824A774CDA188) # Thiago Sueto <herzenschein@gmail.com>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

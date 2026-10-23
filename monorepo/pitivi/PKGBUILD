@@ -1,0 +1,90 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Abhishek Dasgupta <abhidg@gmail.com>
+# Contributor: Gabor Nyekhelyi (n0gabor) <n0gabor@vipmail.hu>
+
+pkgname=pitivi
+pkgver=2023.03
+pkgrel=11
+pkgdesc='Editor for audio/video projects using the GStreamer framework'
+arch=(x86_64)
+url='https://pitivi.org/'
+license=(LGPL-2.1-or-later)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gsound
+  gst-editing-services
+  gst-plugin-gtk
+  gst-plugins-bad
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libnotify
+  libpeas
+  pango
+  python
+  python-cairo
+  python-gobject
+  python-matplotlib
+  python-numpy
+  python-scipy
+)
+makedepends=(
+  git
+  itstool
+  meson
+)
+optdepends=(
+  'frei0r-plugins: Additional video effects, clip transformation feature'
+  'gst-libav: Additional multimedia codecs'
+  'gst-plugin-opencv: Object tracking feature'
+  'gst-plugins-ugly: Additional multimedia codecs'
+  'python-librosa: Beat detection functionality'
+)
+_tagver=$(echo "$pkgver" | sed 's/^[0-9]\+\.[0-9]\+$/&.0/')
+source=(
+  "git+https://gitlab.gnome.org/GNOME/$pkgname.git#tag=$_tagver"
+  pitivi-icon-name.patch
+  pitivi-set-prgname.patch
+  pitivi-embed-video.patch
+)
+b2sums=(
+  d453256e931a8f4b2bf0efae27450c65b9393539ca2aa99ac2b6892aec91b9f3d389ec34cb36fd090cf6841ee228aee564f4fe191cfb01e27717c21f00cef87e
+  5abcf151aa37bb90f30bd7a00c406be494060a867ac45bae43b61cb29d1ee646cfd9e1c6283f5cb93e9f86b70b0ed1fd8d072f8a46f783d9b26f90a414651fca
+  c22aa4f32821154a219468b807487de11086501474b6a3033e471af7dbe0d4e84866052492dc7d87583943046c13676137dd7dbae0e48d608e85788e5d283b19
+  5633f9a05e946d71fd852f1ceac0d6fc10fd2b8092e5e3a4311c1d355ae9fb24810dbd254d9fc25fa2d99f03c0db048f6c02f53670aae4afd8f639e6b70b21a9
+)
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/GNOME/pitivi/-/merge_requests/481
+  git apply -3 ../pitivi-icon-name.patch
+
+  # https://gitlab.gnome.org/GNOME/pitivi/-/merge_requests/482
+  git apply -3 ../pitivi-set-prgname.patch
+
+  # https://gitlab.gnome.org/GNOME/pitivi/-/merge_requests/485
+  git apply -3 ../pitivi-embed-video.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

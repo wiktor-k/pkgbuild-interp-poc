@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-pcpp
+pkgver=1.30
+pkgrel=8
+pkgdesc='A C99 preprocessor written in pure Python'
+arch=('any')
+url='https://github.com/ned14/pcpp'
+license=('BSD-3-Clause')
+depends=('python' 'python-ply')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/ned14/pcpp.git#tag=v$pkgver")
+sha512sums=('9389084817952bd2d342453354e31df1372b330242fb9b51b679251643f90de978f45b7fd4b7a76c4ec6a2fc987daefa9011cdec7a7931c2160559f899138b1b')
+
+prepare() {
+  cd pcpp
+  sed -i "s/packages=\['pcpp', 'pcpp\/ply\/ply'\]/packages=['pcpp']/" setup.py
+  rm -rf pcpp/ply
+}
+
+build() {
+  cd pcpp
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pcpp
+  python -m unittest discover -s tests -p '*.py'
+}
+
+package() {
+  cd pcpp
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

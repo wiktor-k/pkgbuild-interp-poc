@@ -1,0 +1,28 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Kaushal M <kshlmster@gmail.com>
+
+pkgname=perl-file-finder
+pkgver=1.01
+pkgrel=1
+pkgdesc="Perl/CPAN Module File::Finder"
+arch=('any')
+url='https://search.cpan.org/dist/File-Finder/'
+license=('GPL' 'PerlArtistic')
+depends=('perl')
+options=('!emptydirs')
+source=(https://search.cpan.org/CPAN/authors/id/M/ME/MERLYN/File-Finder-$pkgver.tar.gz)
+sha256sums=('2b6abd64354e76c5c2e5b37a34228af2d807f6ed4ab7070b116b6b448265fb87')
+
+build() {
+  cd "${srcdir}"/File-Finder-$pkgver
+
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL installdirs=vendor
+  make
+}
+
+package() {
+  cd "${srcdir}"/File-Finder-$pkgver
+
+  make install DESTDIR="${pkgdir}"
+
+}

@@ -1,0 +1,20 @@
+pkgbase = blisp
+	pkgdesc = ISP tool & library for Bouffalo Labs RISC-V Microcontrollers and SoCs
+	pkgver = 0.0.5
+	pkgrel = 1
+	url = https://github.com/pine64/blisp
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	options = !debug
+	source = git+https://github.com/pine64/blisp.git#tag=caccc7818a31d5ba33d313fda7d7610d565a5fea
+	source = git+https://github.com/argtable/argtable3.git
+	source = git+https://github.com/sigrokproject/libserialport.git
+	b2sums = 2a50ccb55702a490bdcfe729373c88eb97b518763f0bcd710933dec8d5a21ce3644986320c4c9cd30b8dfbc482f5ab0f344665260e985d5442e82c3c5185a8c6
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = blisp

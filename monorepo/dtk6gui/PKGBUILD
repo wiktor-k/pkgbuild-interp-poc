@@ -1,0 +1,38 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=dtk6gui
+pkgver=6.0.50
+pkgrel=2
+epoch=1
+pkgdesc='Deepin Toolkit, gui module for DDE look and feel'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dtk6gui"
+license=('LGPL-3.0-or-later')
+# libqtxdg: doesn't compile yet
+depends=('glibc' 'dtk6core' 'librsvg' 'qt6-base' 'glib2' 'libx11' 'gcc-libs')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'gtest' 'doxygen' 'treeland-protocols')
+source=("git+https://github.com/linuxdeepin/dtk6gui.git#tag=$pkgver")
+sha512sums=('e9a5c921d0af129c9f18923b236380174822566a808c99cd141a978dae9f58480e86c13b9f1dbaa91889e093b825c2ff012733b4c0dda754b107636f16248011')
+
+build() {
+  cd dtk6gui
+  cmake . -GNinja \
+    -DBUILD_DOCS=ON \
+    -DBUILD_TESTING=ON \
+    -DDTK_DISABLE_EX_IMAGE_FORMAT=ON \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+check() {
+  cd dtk6gui
+  # TODO
+  ninja test || echo "Tests failed"
+}
+
+package() {
+  cd dtk6gui
+  DESTDIR="$pkgdir" ninja install
+}

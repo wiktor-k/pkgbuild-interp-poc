@@ -1,0 +1,47 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: AudioLinux  <audiolinux AT fastmail DOT fm>
+# Contributor: Fabio 'Lolix' Loli <fabio.loli@disroot.org> -> https://github.com/FabioLolix
+# Contributor: Mansour Behabadi <mansour@oxplot.com>
+# Contributor: Tilman Vatteroth <tilman.vatteroth@udo.edu>
+
+pkgname=upmpdcli
+pkgver=1.9.17
+pkgrel=2
+pkgdesc="A UPnP Media Renderer front-end for the Music Player Daemon (MPD)"
+arch=(x86_64)
+url="https://www.lesbonscomptes.com/upmpdcli/"
+license=(LGPL-2.1-or-later)
+depends=(python libmpdclient libupnpp libmicrohttpd jsoncpp)
+makedepends=(python-setuptools python-requests python-bottle python-mutagen aspell-en id3lib python-waitress sqlite meson)
+optdepends=(aspell-en id3lib sqlite
+            'python-requests: enable search'
+            'python-bottle: enable uprcl media server'
+            'python-mutagen: enable uprcl media server'
+            'python-waitress: enable uprcl media server'
+            'recoll: enable uprcl media server')
+source=("http://www.lesbonscomptes.com/upmpdcli/downloads/$pkgname-$pkgver.tar.gz"
+        "upmpdcli-sysusers.conf"
+        "upmpdcli-tmpfiles.conf"
+        'upmpdcli.service')
+sha256sums=('5eb9ba2f4d2790e302fc1788509789804bb866161e4d9ae05e13bc6f75fc4e1f'
+            'fbdb004ca50c344cd0d9f6310c20236d0d4aa2a31e0feef806167cbd0cd1d525'
+            '1f2872e1f8d957b9e90acda46cdd2c9d724be8aa18d74560bbe3b05d72f38047'
+            '5bf5d476cf57695f7d839d4fc042e4bd99d3e8be881e8166e47da18384d18141')
+backup=('etc/upmpdcli.conf')
+
+build(){
+  arch-meson $pkgname-$pkgver build
+  meson compile -C build
+}
+
+package(){
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 $pkgname-$pkgver/systemd/upmpdcli.service "${pkgdir}"/usr/lib/systemd/system/upmpdcli.service
+  sed '/\[Service\]/a User=upmpdcli' -i ${pkgdir}/usr/lib/systemd/system/upmpdcli.service
+  sed -i '/^After/ s/$/ mpd.service/' ${pkgdir}/usr/lib/systemd/system/upmpdcli.service
+  install -Dm644 "${srcdir}"/upmpdcli.service "${pkgdir}"/usr/lib/systemd/user/upmpdcli.service
+  install -vDm 644 "${srcdir}"/upmpdcli-sysusers.conf "${pkgdir}/usr/lib/sysusers.d/upmpdcli.conf"
+  install -vDm 644 "${srcdir}"/upmpdcli-tmpfiles.conf "${pkgdir}"/usr/lib/tmpfiles.d/upmpdcli.conf
+  chmod 644 "${pkgdir}"/etc/upmpdcli.conf
+  rm  "${pkgdir}"/etc/upmpdcli.conf-dist
+}

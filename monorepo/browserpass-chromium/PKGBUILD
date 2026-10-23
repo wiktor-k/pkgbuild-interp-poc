@@ -1,0 +1,43 @@
+# Maintainer: Maxim Baz <archlinux at maximbaz dot com>
+
+_id=pjmbgaakjkbhpopmakjoedenlfdmcdgm
+_name=browserpass-extension
+pkgname=browserpass-chromium
+pkgver=3.13.0
+pkgrel=1
+pkgdesc="Chromium extension for Browserpass, browser extension for zx2c4's pass (password manager)"
+arch=('any')
+url="https://github.com/browserpass/${_name}"
+license=('ISC')
+depends=('browserpass')
+source=("${pkgname}-${pkgver}.crx::${url}/releases/download/${pkgver}/browserpass-github-${pkgver}.crx"
+        "${pkgname}-${pkgver}.crx.asc::${url}/releases/download/${pkgver}/browserpass-github-${pkgver}.crx.asc"
+        "https://raw.githubusercontent.com/browserpass/browserpass-extension/master/LICENSE")
+noextract=("${pkgname}-${pkgver}.crx")
+b2sums=('51b31f5fbe9648311d08e535001e46b848510c0f4eabd963e197e274f6458d5d7a871a58506facb57e23bbfde2c0c8fbbccbf9da870145791b9c1d8c9780f115'
+        'SKIP'
+        'a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101')
+validpgpkeys=('56C3E775E72B0C8B1C0C1BD0B5DB77409B11B601')
+
+prepare() {
+    # Create extension json
+    cat << EOF > "${_id}".json
+{
+    "external_crx": "/usr/lib/${pkgname}/${pkgname}-${pkgver}.crx",
+    "external_version": "${pkgver}"
+}
+EOF
+}
+
+package() {
+    install -Dm644 -t "${pkgdir}/usr/share/chromium/extensions/" "${_id}.json"
+    install -Dm644 -t "${pkgdir}/usr/lib/${pkgname}/" "${pkgname}-${pkgver}.crx"
+
+    # Install host json from browserpass package
+    install -dm755 "${pkgdir}/etc/chromium/native-messaging-hosts/"
+    ln -sf "/usr/lib/browserpass/hosts/chromium/com.github.browserpass.native.json" "${pkgdir}/etc/chromium/native-messaging-hosts/"
+
+    install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}/" LICENSE
+}
+
+# vim:set ts=4 sw=4 et:

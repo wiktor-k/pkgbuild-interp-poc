@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langchain-protocol
+pkgver=0.0.19
+pkgrel=1
+pkgdesc="Python bindings for the LangChain agent streaming protocol"
+arch=('any')
+url="https://github.com/langchain-ai/agent-protocol"
+license=('MIT')
+depends=(
+  'python'
+  'python-typing_extensions'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+source=("git+https://github.com/langchain-ai/agent-protocol.git")
+sha512sums=('SKIP')
+
+prepare() {
+  cd agent-protocol
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "langchain-protocol==$pkgver"
+  # Arch has hatchling 1.30+, which still builds fine despite upstream's PyPI-only cap.
+  sed -i 's/,<1.30//' streaming/py/pyproject.toml
+}
+
+build() {
+  cd agent-protocol/streaming/py
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd agent-protocol/streaming/py
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

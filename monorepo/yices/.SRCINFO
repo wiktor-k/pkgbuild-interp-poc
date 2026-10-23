@@ -1,0 +1,16 @@
+pkgbase = yices
+	pkgdesc = A solver for Satisfiability Modulo Theories (SMT) problems
+	pkgver = 2.7.0
+	pkgrel = 1
+	url = https://yices.csl.sri.com/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = gperf
+	depends = cudd
+	depends = gmp
+	depends = libpoly
+	source = git+https://github.com/SRI-CSL/yices2.git#tag=yices-2.7.0
+	sha512sums = f371b4760a2214ea2f1a40c9b79e51eb2e721fab03d3449ee6842a72b2ada881eb8a58ee247fe29d9816bc70b64224142bc4152ce0ca1d558bf36debc933a0f0
+
+pkgname = yices

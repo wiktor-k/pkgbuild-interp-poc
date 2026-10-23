@@ -1,0 +1,41 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=stalwart-cli
+pkgver=1.0.13
+pkgrel=1
+pkgdesc='A schema-driven command line tool for administering Stalwart'
+arch=(x86_64)
+url='https://github.com/stalwartlabs/cli'
+license=(AGPL-3.0-only)
+depends=(
+  glibc
+  libgcc_s.so
+)
+makedepends=(
+  git
+  rust
+)
+options=(!lto) # aws_lc crates cause linking errors
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('31308feb798e526c9df14b73c7ca0a8ffa0e267c790cfbabd6734de16028b79334d1d797083724ae0c4fa071f29c55be9f7b38edb7cde6f66d14cb8ec4381da3')
+b2sums=('f09ca399acddfcb4425b0dbbd04c4619e117041697958afd977c6f19958bf2192663337a87b9601f5729a0af24a6a8d430f590960f3217dddeea3d131d6d3330')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+}

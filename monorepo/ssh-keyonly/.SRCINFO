@@ -1,0 +1,17 @@
+pkgbase = ssh-keyonly
+	pkgdesc = Audit an ssh server for supported authentication methods
+	pkgver = 0.1.3
+	pkgrel = 1
+	url = https://codeberg.org/kpcyrd/ssh-keyonly
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = git+https://codeberg.org/kpcyrd/ssh-keyonly.git#tag=v0.1.3
+	sha256sums = fc3de13e9219102e7acb7bbd88fdd5bd41adbdf63e8ba1a81ce885afdb9efa64
+	b2sums = d174df9d120ef6985390c4c165a48ae3eb39ec940978cbd4ea6ce19a9a878b373232895add2b626056c5d9f0538f5bd68e74fae0f91835cf726b4e79b1729e5b
+
+pkgname = ssh-keyonly

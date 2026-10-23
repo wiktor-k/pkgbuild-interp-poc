@@ -1,0 +1,25 @@
+pkgbase = wild
+	pkgdesc = A very fast linker for Linux written in Rust
+	pkgver = 0.10.0
+	pkgrel = 1
+	url = https://github.com/wild-linker/wild
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	checkdepends = clang
+	checkdepends = lld
+	checkdepends = rust-musl
+	checkdepends = taplo-cli
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = zstd
+	source = https://github.com/wild-linker/wild/archive/0.10.0/wild-0.10.0.tar.gz
+	source = test-config.toml
+	sha256sums = 99ec83404558d4d0cbde9dd44b8c6fa2a511a2f8bb04a31f54c0929ec4491990
+	sha256sums = f6d85c23f76bd8881c7e5d0e3de385aa130472bcef2f5d372d61e78774fa0248
+	b2sums = 66cb636f9f7d65f2aa739315db7382ace980b886f9cc38cc3d81c41f432874f6fb33b0d7957402b8b6febf722c0169e98f2c7c4c9156fa80cfb4e802c28e5463
+	b2sums = feea6dac7af3ff51d160dde9850da85013c63296ac16d1fa00e2a273bd18a9d9038ba2324209c0c064087e1e57acd83094332d9e71c5d195705c0021a001b63f
+
+pkgname = wild

@@ -1,0 +1,39 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-dock-hyprland
+pkgver=0.4.11
+pkgrel=1
+pkgdesc="GTK3-based dock for Hyprland Wayland compositor"
+url="https://github.com/nwg-piotr/nwg-dock-hyprland"
+arch=('x86_64')
+license=('MIT')
+depends=('gtk3' 'gtk-layer-shell')
+makedepends=('go' 'gobject-introspection')
+optdepends=('nwg-drawer: default application launcher')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('ee88452f1afb612fdb43c66eb62752f255d23c51eb35ce9657b35cff79eede8e')
+
+prepare(){
+        cd "${pkgname}-${pkgver}"
+        mkdir -p build/
+}
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        export CGO_CPPFLAGS="${CPPFLAGS}"
+        export CGO_CFLAGS="${CFLAGS}"
+        export CGO_CXXFLAGS="${CXXFLAGS}"
+        export CGO_LDFLAGS="${LDFLAGS}"
+        export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+        go build -ldflags="-s -w -linkmode=external -buildid=''" -o "build/${pkgname}" *.go
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+        install -Dm 755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+        install -Dm 644 config/* -t "${pkgdir}/usr/share/${pkgname}/"
+        install -Dm 644 images/* -t "${pkgdir}/usr/share/${pkgname}/images/"
+        install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+        install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

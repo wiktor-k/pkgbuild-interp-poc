@@ -1,0 +1,77 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=tidal-link
+pkgname=haskell-tidal-link
+pkgver=1.2.0
+pkgrel=10
+pkgdesc="Ableton Link integration for Tidal"
+url="http://tidalcycles.org/"
+license=(GPL-3.0-only)
+arch=(x86_64)
+depends=(
+  libgcc
+  libstdc++
+  ghc-libs
+  glibc
+  gmp
+  haskell-hosc
+)
+makedepends=(
+  ghc
+  libffi
+  numactl
+  uusi
+)
+optdepends=(
+  'libffi: for linktest'
+  'numactl: for linktest'
+)
+source=(https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz)
+sha512sums=('1e0f10fe7bf5257fffc404852686735c76bb21e717336cbf85292cf0b752ffeb348c13df8971d324e2512b1060492723eeec79bdad2bc0ff402278f5b1331e00')
+b2sums=('50f99a93736dab6ac9c2b475d8f4b5af4f4167709ebd81d805ccc29455d76c1b1218837b820ee8353b068347019cbc96932eb8f05e35e1931f539858fbfd5c11')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+}
+
+build() {
+  local configure_options=(
+    -O
+    --datasubdir=$pkgname
+    --disable-library-vanilla
+    --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname
+    --dynlibdir=/usr/lib
+    --enable-executable-dynamic
+    --enable-shared
+    --enable-tests
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now
+    --ghc-option=-pie
+    --libsubdir=\$compiler/site-local/\$pkgid
+    --prefix=/usr
+  )
+
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure "${configure_options[@]}"
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

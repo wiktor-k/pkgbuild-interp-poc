@@ -1,0 +1,50 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Rocket Aaron <i at rocka dot me>
+# Contributor: Manuel Gugger <mdgdot[at]tutanota[dot]com>
+
+pkgname=gitea-runner
+_pkgname=runner
+pkgver=5.2.0
+pkgrel=1
+pkgdesc="Official runner for Gitea"
+url="https://gitea.com/gitea/runner"
+arch=('x86_64')
+license=('MIT')
+depends=('glibc' 'git')
+makedepends=('go')
+optdepends=('docker: To run runners in containers')
+provides=('act_runner')
+replaces=('act_runner')
+backup=("etc/${pkgname}/config.yaml")
+install="${pkgname}.install"
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        "${pkgname}.service"
+        "${pkgname}.sysusers"
+        "${pkgname}.tmpfiles")
+sha256sums=('ebf3f24bad167b0e70af9a60b8e8d2fa343b59b588033c3a7040024117f22775'
+            '84f1d7c8f6311689b935ab16037d9b1bb6fae0155a54a6a19d3edabe8856e5cf'
+            'd7d0ec932b3efd2c5a98b2084d6f13baa74ec458ed244aaa48053cee6628c89d'
+            '476e49e002f64e996c1d7d5b0c46a1f850c52273e6f974496eaa71b4446d7f37')
+
+build() {
+	cd "${_pkgname}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+	go build -ldflags "-s -w -buildid='' -linkmode external -X gitea.com/gitea/runner/internal/pkg/ver.version=${pkgver}" -o "${pkgname}"
+
+	"./${pkgname}" generate-config > "${srcdir}/${pkgname}-config.yaml"
+}
+
+package() {
+	cd "${_pkgname}"
+	install -Dm 755 "${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+	install -Dm 644 "${srcdir}/${pkgname}-config.yaml" "${pkgdir}/etc/${pkgname}/config.yaml"
+	install -Dm 644 "${srcdir}/${pkgname}.sysusers" "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+	install -Dm 644 "${srcdir}/${pkgname}.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+	install -Dm 644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+}

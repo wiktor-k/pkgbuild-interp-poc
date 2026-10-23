@@ -1,0 +1,73 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+
+pkgname=csound-plugins
+pkgver=1.0.2
+pkgrel=18
+pkgdesc="Extra opcodes for Csound"
+arch=(x86_64)
+url="https://github.com/csound/plugins"
+license=('LGPL-2.1-or-later')
+groups=('pro-audio')
+depends=(
+	'csound'
+	'glibc'
+	'hdf5'
+	'libgcc'
+	'libstdc++'
+	'libx11'
+	'python'
+	'stk'
+)
+makedepends=(
+	'cmake'
+	'eigen'
+	'faust'
+	'fltk'
+	'fluidsynth'
+	'git'
+	'gmm'
+	'jack'
+	'lame'
+	'libpng'
+	'libwebsockets'
+	'wiiuse'
+)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/csound/plugins/archive/refs/tags/$pkgver.tar.gz"
+         hdf5-2.0.patch
+         eigen-5.patch)
+sha256sums=('8c2f0625ad1d38400030f414b92d82cfdec5c04b7dc178852f3e1935abf75d30'
+            'ea1bddc8fe921a7deed49756d91b8e0e7b4dd822617877520a36d0c42730ef27'
+            'a389aaaaa8f311371089ac6ee7041b0b4a3e90f11018288ed06818640eff491e')
+
+prepare() {
+  cd plugins-$pkgver
+# Fix build with HDF5 2.0
+  patch -p1 -i ../hdf5-2.0.patch
+# Fix build with eigen 5
+  patch -p1 -i ../eigen-5.patch
+}
+
+build() {
+	CFLAGS+=" -Wno-incompatible-pointer-types" \
+	cmake -B build -S "plugins-$pkgver" \
+		-DCMAKE_BUILD_TYPE='None' \
+		-DCMAKE_INSTALL_PREFIX='/usr' \
+		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+		-Wno-dev
+	make -C build
+}
+
+package() {
+	depends+=(
+		faust libfaust.so
+		fltk libfltk.so
+		fluidsynth libfluidsynth.so
+		jack libjack.so
+		lame libmp3lame.so
+		libpng libpng16.so
+		libwebsockets libwebsockets.so
+		wiiuse libwiiuse.so
+	)
+
+	make -C build DESTDIR="$pkgdir/" install
+}

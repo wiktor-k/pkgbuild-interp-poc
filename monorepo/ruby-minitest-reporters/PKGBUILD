@@ -1,0 +1,82 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+# Contributor: Mario Finelli <mario at finel dot li>
+
+_gemname='minitest-reporters'
+pkgname="ruby-${_gemname}"
+pkgver=1.8.0
+pkgrel=2
+pkgdesc='Extend Minitest through simple hooks'
+arch=('any')
+url="https://github.com/minitest-reporters/${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-ansi
+  ruby-builder
+  ruby-minitest
+  ruby-ruby-progressbar
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-maruku
+  ruby-minitest-mock
+  ruby-rake
+)
+options=('!emptydirs')
+source=("git+${url}#tag=v${pkgver}")
+sha512sums=('280aff66bda410cd35c92dbef7e239685c02ead9b705581f537087a1477b6f6d9827d31ed511f1bd7997c65f2cb4893248bd39463257f9e3eceb9592d0ed060c')
+b2sums=('5cf45def7cc030a885804063cad1787f2a9cf150fa3865f2df1aaded519fd00466fb8f5a73df03276f74cfe0414981c47b126558cb7b98f15d8ebd253e9c6abf')
+
+prepare() {
+  cd "${_gemname}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    --expression '/signing_key/d' \
+    "${_gemname}.gemspec"
+
+  # remove rubocop
+  sed --in-place '/Run RuboCop on the lib directory/,+7d' Rakefile
+  sed --in-place '/rubocop/d' Gemfile Rakefile "${_gemname}.gemspec"
+
+  # remove appraisal
+  sed --in-place '/appraisal/d' Gemfile
+  rm --verbose Appraisals
+}
+
+build() {
+  cd "${_gemname}"
+
+  gem build "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_gemname}-${pkgver}.gem"
+}
+
+check() {
+  cd "${_gemname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rake test
+}
+
+package() {
+  cd "${_gemname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: set ts=2 sw=2 et:

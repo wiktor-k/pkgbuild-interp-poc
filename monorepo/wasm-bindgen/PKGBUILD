@@ -1,0 +1,50 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Mohammadreza Abdollahzadeh <morealaz at gmail dot com>
+# Contributor: Grey Christoforo <first name at last name dot net>
+
+pkgname=wasm-bindgen
+pkgver=0.2.128
+pkgrel=1
+pkgdesc="Interoperating JS and Rust code"
+arch=('x86_64')
+url="https://github.com/rustwasm/wasm-bindgen"
+license=('Apache-2.0' 'MIT')
+replaces=('wasm-bindgen-cli')
+depends=('rust-wasm' 'nodejs' 'openssl')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz"
+        "Cargo.lock")
+sha256sums=('307bc35a4e2760dd083624e44f4ec4b133bf9808e89927bc46e481e1f927ffbb'
+            '03791a559300274fa40398d099ee806185b8afa1ad75fbf80efcc1917db422ee')
+options=('!lto')
+
+prepare() {
+  # https://github.com/rustwasm/wasm-bindgen/issues/1819
+  cp Cargo.lock "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver/crates/cli"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver/crates/cli"
+  export OPENSSL_NO_VENDOR=1
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$pkgname-$pkgver/crates/cli"
+  cargo test --frozen --all-features --lib
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  find target/release \
+    -maxdepth 1 \
+    -executable \
+    -type f \
+    -exec install -Dm0755 -t "$pkgdir/usr/bin/" {} \;
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

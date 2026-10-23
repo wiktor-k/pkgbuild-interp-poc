@@ -1,0 +1,25 @@
+pkgbase = python-marisa-trie
+	pkgdesc = Static memory-efficient and fast Trie-like structures for Python
+	pkgver = 1.4.1
+	pkgrel = 1
+	url = https://github.com/pytries/marisa-trie
+	arch = x86_64
+	license = MIT
+	checkdepends = python-hypothesis
+	checkdepends = python-pytest
+	checkdepends = python-pytest-run-parallel
+	checkdepends = python-readme-renderer
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = marisa
+	depends = python
+	source = git+https://github.com/pytries/marisa-trie.git#tag=1.4.1
+	source = devendor-system-marisa.patch
+	sha512sums = 211566c6a90394b9624160565cabf357a78e97d7d496f8a364600b90e506e6cc323bd48a1841e810e7e375a5e78f1221347848773d8c7f86b3766a74ff1481fa
+	sha512sums = b9ac3659eafbde51ccf8b3115ec5c6a628032fda02ad64fa4743878f21272ceae597579c35602e5a18d9917a3c9baca2073a7fe757759fe0285eef133818b1c2
+
+pkgname = python-marisa-trie

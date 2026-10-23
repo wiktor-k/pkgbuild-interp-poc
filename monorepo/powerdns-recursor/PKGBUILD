@@ -1,0 +1,88 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Remi Gacogne <rgacogne[at]archlinux[dot]org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Jan Steffens <heftig@archlinux.org>
+
+pkgname=powerdns-recursor
+pkgver=5.4.8
+pkgrel=1
+pkgdesc='Resolving DNS server'
+arch=('x86_64')
+url='https://www.powerdns.com/'
+license=('GPL-2.0-only')
+depends=(
+  'boost-libs'
+  'fstrm'
+  'glibc'
+  'gnutls'
+  'libboost_context.so'
+  'libcap'
+  'libcurl.so'
+  'libgcc'
+  'libsodium'
+  'libstdc++'
+  'luajit'
+  'net-snmp'
+  'openssl'
+  'systemd-libs'
+)
+makedepends=(
+  'boost'
+  'meson'
+  'pandoc'
+  'python'
+  'python-yaml'
+  'ragel'
+  'rust'
+  'systemd'
+)
+options=(!lto)
+provides=('pdns-recursor')
+conflicts=('pdns-recursor')
+backup=('etc/powerdns/recursor.conf')
+source=(https://downloads.powerdns.com/releases/pdns-recursor-${pkgver}.tar.xz{,.asc}
+        sysusers.conf)
+sha512sums=('92b79015316d48aff2bb55a664ad99013e0f31fa02ec686a8b7c8b1f7cfd59fc18f774962bd9ce9f5fe925cdcaa5aae7187dc8e2f525c279c8226528956ab7db'
+            'SKIP'
+            '7aada0f186bc1cd6af9a4af598511e7f517f0c103973397d260796c8e83c789d720990579d6ccba53e4aa4a8a6c5b2107f4d32d09ce9a72118ae5030b03bb6ab')
+validpgpkeys=('990C3D0EAC7C275DC6B18436EACAB90B1963EC2B'  # Moerbeek, Otto <otto.moerbeek@open-xchange.com>
+              'FBAE0323821C7706A5CA151BDCF513FA7EED19F3'  # van Dijk, Peter <peter.van.dijk@powerdns.com>
+              '16E12866B7738C73976A57436FFC33439B0D04DF') # Winkels, Erik <erik.winkels@open-xchange.com>
+
+build() {
+  meson setup "pdns-recursor-${pkgver}" build \
+    --prefix        /usr \
+    --libexecdir    lib \
+    --sbindir       bin \
+    --sysconfdir    /etc/powerdns \
+    --auto-features enabled \
+    --wrap-mode     nodownload \
+    -Ddebug=true \
+    -Dhardening-fortify-source=disabled \
+    -Doptimization=2 \
+    -Db_lto=true \
+    -Db_pie=true \
+    -Dauto-var-init=zero \
+    -Ddns-over-tls=enabled \
+    -Dreproducible=true \
+    -Dsigners-libsodium=enabled \
+    -Dsnmp=enabled \
+    -Dsystemd-service=enabled \
+    -Dunit-tests=true \
+    -Dsigners-libcrypto-path=/usr # workaround for https://github.com/PowerDNS/pdns/issues/14084
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  mv "${pkgdir}/etc/powerdns/recursor.yml-dist" "${pkgdir}/etc/powerdns/recursor.conf"
+  install -Dm 644 "${srcdir}/sysusers.conf" "${pkgdir}/usr/lib/sysusers.d/powerdns-recursor.conf"
+}
+
+# vim: ts=2 sw=2 et:

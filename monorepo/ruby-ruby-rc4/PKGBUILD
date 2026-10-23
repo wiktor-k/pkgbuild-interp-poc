@@ -1,0 +1,76 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Dmitry Kharitonov <arch[at]nano-model[dot]com>
+# Contributor: kusakata <shohei atmark kusakata period com>
+
+pkgname=ruby-ruby-rc4
+_pkgname=${pkgname#ruby-}
+pkgver=0.1.5
+_commit=d653eba9597349b80e4d491aa4191afd3cecda38
+pkgrel=6
+pkgdesc="Implementation of the RC4 algorithm"
+arch=(any)
+url="https://github.com/caiges/Ruby-RC4"
+license=(MIT)
+depends=(ruby)
+makedepends=(rubygems)
+checkdepends=(ruby-rspec)
+options=(!emptydirs)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$_commit.tar.gz")
+sha256sums=('36f47794e81176417c83e7d40fe9ff8bc3cfa64c5e5244517c9c342ac663dd83')
+
+prepare() {
+  cd "Ruby-RC4-$_commit"
+  sed -i -E 's|~>|>=|g' "$_pkgname.gemspec"
+}
+
+build() {
+  cd "Ruby-RC4-$_commit"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "Ruby-RC4-$_commit"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd "Ruby-RC4-$_commit"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

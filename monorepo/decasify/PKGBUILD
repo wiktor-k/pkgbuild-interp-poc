@@ -1,0 +1,118 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgbase=decasify
+pkgname=("$pkgbase" "lua-$pkgbase" "lua54-$pkgbase" "lua53-$pkgbase" "lua52-$pkgbase" "lua51-$pkgbase" "neovim-$pkgbase" "python-$pkgbase" "sile-$pkgbase")
+pkgver=0.11.4
+_rockrel=1
+pkgrel=1
+pkgdesc='cast strings to title-case according to locale specific style guides including Turkish'
+arch=(x86_64)
+url="https://github.com/alerque/$pkgbase"
+license=(LGPL-3.0-only)
+depends=(glibc
+         libgcc)
+makedepends=(cargo
+             jq
+             lua{,-luarocks-build-rust-mlua}
+             lua51{,-luarocks-build-rust-mlua}
+             lua52{,-luarocks-build-rust-mlua}
+             lua53{,-luarocks-build-rust-mlua}
+             lua54{,-luarocks-build-rust-mlua}
+             luarocks
+             python-{build,installer,wheel}
+             python-maturin)
+_archive="$pkgbase-$pkgver"
+source=("$url/releases/download/v$pkgver/$_archive.tar.zst"{,.asc})
+sha256sums=('37e56750c7ccbe725f44dd065c6dbc170f92afa950c335e7f8256f21ba3b8fcc'
+            'SKIP')
+validpgpkeys=('9F377DDB6D3153A48EB3EB1E63CC496475267693') # Caleb Maclennan <caleb@alerque.com> (@alerque)
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	export CARGO_FEATURE_FLAGS==--offline
+	./configure --prefix /usr
+	make
+	python -m build -wn
+}
+
+check() {
+	_srcenv
+	./$pkgbase -l tr -c title 'ılIk ilkİ' | grep -Fx 'Ilık İlki'
+	# check requires lua & python developer tooling, needs to be reworked for a simple selfcheck
+	# _srcenv
+	# export CARGO_FEATURE_FLAGS==--offline
+	# make check
+}
+
+package_decasify() {
+	_srcenv
+	pkgdesc+=' (CLI tool)'
+	make DESTDIR="$pkgdir" install
+}
+
+_package() {
+	pkgdesc+=" (Rock for Lua $1)"
+	_srcenv
+	luarocks --lua-version "$1" --tree "$pkgdir/usr/" \
+		make --deps-mode none --no-manifest "rockspecs/$_archive-$_rockrel.rockspec"
+}
+
+package_lua-decasify() {
+	_package 5.5
+}
+
+package_lua54-decasify() {
+	_package 5.4
+}
+
+package_lua51-decasify() {
+	_package 5.1
+}
+
+package_lua52-decasify() {
+	_package 5.2
+}
+
+package_lua53-decasify() {
+	_package 5.3
+}
+
+package_neovim-decasify() {
+	cd "$_archive"
+	pkgdesc+=' (Neovim plugin)'
+	depends=("lua51-$pkgbase=$pkgver"
+	         neovim)
+	find plugin -type f -exec \
+		install -Dm0644 {} "$pkgdir/usr/share/nvim/site/pack/dist/start/$pkgbase/{}" \;
+}
+
+package_python-decasify() {
+	cd "$_archive"
+	pkgdesc+=' (Python module)'
+	depends=(python)
+	python -m installer -d "$pkgdir" dist/*.whl
+}
+
+package_sile-decasify() {
+	cd "$_archive"
+	pkgdesc+=' (SILE package)'
+	depends=("lua51-$pkgbase=$pkgver"
+	         sile)
+	luarocks --lua-version 5.1 --tree "$pkgdir/usr/" \
+		make --deps-mode none --no-manifest "rockspecs/$pkgbase.sile-$pkgver-$_rockrel.rockspec"
+}

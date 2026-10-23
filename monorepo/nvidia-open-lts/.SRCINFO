@@ -1,0 +1,22 @@
+pkgbase = nvidia-open-lts
+	pkgdesc = NVIDIA open kernel modules
+	pkgver = 615.78.08
+	pkgrel = 5
+	epoch = 1
+	url = https://github.com/NVIDIA/open-gpu-kernel-modules
+	arch = x86_64
+	license = MIT AND GPL-2.0-only
+	makedepends = linux-lts-headers
+	makedepends = nvidia-open-dkms=615.78.08
+	depends = nvidia-utils=615.78.08
+	depends = libglvnd
+	provides = NVIDIA-MODULE
+	conflicts = nvidia-lts
+	replaces = nvidia-lts<=1:580.119.02-3
+	options = !strip
+	options = !debug
+
+pkgname = nvidia-open-lts
+	depends = linux-lts
+	depends = nvidia-utils=615.78.08
+	depends = libglvnd

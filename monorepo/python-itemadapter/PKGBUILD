@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-itemadapter
+pkgver=0.13.1
+pkgrel=1
+pkgdesc="Common interface for data container classes"
+url="https://github.com/scrapy/itemadapter"
+license=('BSD-3-Clause')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-hatchling' 'python-wheel')
+checkdepends=('python-attrs' 'python-pydantic' 'python-pytest' 'scrapy')
+source=("git+https://github.com/scrapy/itemadapter.git#tag=v$pkgver")
+sha512sums=('49f359eea11d51c92faaffdf6bc1dfb552433869240000abdcc961461f1f8304f084b7c38d68f507ca0178bef1a1ff18c31b39ba8a650cf7033f80daeed6c4c5')
+
+build() {
+  cd itemadapter
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd itemadapter
+  pytest
+}
+
+package() {
+  cd itemadapter
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

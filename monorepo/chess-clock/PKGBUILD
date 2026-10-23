@@ -1,0 +1,48 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=chess-clock
+pkgver=0.6.3
+pkgrel=1
+pkgdesc='Simple application to provide time control for over-the-board chess games'
+arch=(any)
+url='https://apps.gnome.org/Chessclock/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  gsound
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  python
+  python-gobject
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=("git+https://gitlab.gnome.org/World/chess-clock.git#tag=v$pkgver-currently-unsigned")
+b2sums=('151d92da5eca85725cdaadb55815a0d1fe0f419316a7eee6ec54b6ce10b030717d8db2ff91b07cdf84a902ffc2a94ab8d26b9ddcc1710b817990105754718831')
+validpgpkeys=(B9386554B7DD266BCB8E29A990F0C9B18A6B4A19) # Evangelos Ribeiro Tzaras <devrtz@fortysixandtwo.eu>
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

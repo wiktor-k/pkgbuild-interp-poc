@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=dhall-lsp-server
+pkgver=1.1.4
+pkgrel=216
+pkgdesc="Language Server Protocol (LSP) server for Dhall"
+url="https://github.com/dhall-lang/dhall-haskell/tree/master/dhall-lsp-server#readme"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-pretty' 'haskell-co-log-core'
+         'haskell-data-default' 'dhall' 'dhall-json' 'haskell-lsp' 'haskell-lens'
+         'haskell-lens-family-core' 'haskell-megaparsec' 'haskell-network-uri'
+         'haskell-optparse-applicative' 'haskell-prettyprinter' 'haskell-text-rope'
+         'haskell-unordered-containers' 'haskell-uri-encode')
+makedepends=('ghc' 'haskell-quickcheck' 'haskell-doctest' 'haskell-hspec'
+             'haskell-lsp-test' 'haskell-lsp-types' 'haskell-tasty' 'haskell-tasty-hspec')
+source=("https://hackage.haskell.org/packages/archive/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz"
+        "$pkgname-lsp-2.2.patch::https://github.com/dhall-lang/dhall-haskell/commit/a621e1438df5865d966597e2e1b0bb37e8311447.patch")
+sha512sums=('110e78147dba830f8178e46aab71c975cd777a113a6b3a254acfee1ace0610ad1ac978b7373955785ed061f4e2d03cb0a2ac6dace16bd673027f968259b6e1f2'
+            'e8ed7a19cbb4ebe48574637545888771a9465345127b5867841d8ff3ef07abc613298da2afc2949bfabdc0e51f1f1f26781859a2b5d0d3f336c6de464afeb45d')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p2 -i ../$pkgname-lsp-2.2.patch
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $pkgname-$pkgver
+  LD_LIBRARY_PATH="$PWD/dist/build" PATH="$PWD/dist/build/dhall-lsp-server:$PATH" runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

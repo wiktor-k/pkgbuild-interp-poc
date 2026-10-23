@@ -1,0 +1,128 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=rocm-openmp
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='Radeon Open Compute - OpenMP host runtime and GPU target offloading'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/en/latest/reference/rocmcc.html'
+license=('Apache-2.0 WITH LLVM-exception')
+depends=('rocm-core' 'rocm-llvm' 'rocm-device-libs' 'hsa-rocr'
+         'glibc' 'gcc-libs' 'zlib' 'zstd' 'libffi' 'libxml2' 'ncurses')
+makedepends=('git' 'cmake' 'ninja' 'python' 'perl' 'rocm-cmake')
+source=("$pkgname::git+https://github.com/ROCm/llvm-project#tag=rocm-$pkgver")
+sha256sums=('SKIP')
+options=(staticlibs !lto)
+
+_prefix=/opt/rocm/lib/llvm
+
+build() {
+    # flang errors out on the C-only flags makepkg exports in FFLAGS (see
+    # /usr/share/makepkg/buildenv/fortran.sh) instead of ignoring them, which
+    # breaks the omp_lib.mod build. Drop exactly those and keep the rest.
+    local _unsupported='-(pipe|fno-plt|fexceptions|fstack-clash-protection)\b'
+    _unsupported+='|-(mno-omit-leaf-frame-pointer|Wformat|Werror=format-security)\b'
+    _unsupported+='|-fcf-protection(=[^ ]*)?|-ffile-prefix-map=[^ ]*|-Wp,[^ ]*'
+    FFLAGS=$(sed -E "s@($_unsupported)@@g" <<<"$FFLAGS")
+    FCFLAGS=$(sed -E "s@($_unsupported)@@g" <<<"$FCFLAGS")
+    export FFLAGS FCFLAGS
+
+    # Derived from the installed rocm-llvm so this does not hardcode an LLVM
+    # major version; clang -print-resource-dir ends in .../lib/clang/<major>.
+    local _clang_major
+    _clang_major=$(basename "$("$_prefix/bin/clang" -print-resource-dir)")
+
+    # PluginCommon/EmissaryFortrt.cpp calls the Fortran I/O runtime so that
+    # Fortran code can print from inside a target region, so libomptarget needs
+    # to link flang_rt.runtime. The plugin CMakeLists only adds
+    # -L$CMAKE_INSTALL_PREFIX/lib, but in an installed rocm-llvm the library
+    # lives under the clang resource directory, so point the linker at it.
+    local _flangrt_dir
+    _flangrt_dir=$(dirname "$("$_prefix/bin/clang" -print-file-name=libflang_rt.runtime.a)")
+    LDFLAGS+=" -L$_flangrt_dir"
+    export LDFLAGS
+
+    # The runtimes have to be built by the matching ROCm compiler, not by gcc:
+    # the device runtime is emitted as bitcode that is later linked into user
+    # code by this very clang, so the versions must agree.
+    local cmake_args=(
+        -G Ninja
+        -S "$pkgname/runtimes"
+        -D CMAKE_BUILD_TYPE=Release
+        -D CMAKE_INSTALL_PREFIX="$_prefix"
+        -D CMAKE_C_COMPILER="$_prefix/bin/clang"
+        -D CMAKE_CXX_COMPILER="$_prefix/bin/clang++"
+        -D CMAKE_ASM_COMPILER="$_prefix/bin/clang"
+        # find_package(LLVM) in offload/, and the LLVM headers libomptarget
+        # includes, both come from the installed rocm-llvm.
+        -D LLVM_INSTALL_PREFIX="$_prefix"
+        -D LIBOMPTARGET_LLVM_INCLUDE_DIRS="$_prefix/include"
+        -D LLVM_INCLUDE_TESTS=OFF
+        -D OPENMP_ENABLE_LIBOMPTARGET=ON
+        # Building under runtimes/ counts as an in-tree build, so openmp and
+        # offload place their headers with get_clang_resource_dir(), which parses
+        # CLANG_VERSION_MAJOR out of PACKAGE_VERSION. PACKAGE_VERSION is only set
+        # by the top-level llvm project, so pass the version directly instead.
+        # Do not set OPENMP_STANDALONE_BUILD here: that makes offload look for an
+        # already-installed libomp via find_library(... REQUIRED) rather than
+        # using the omp target built alongside it.
+        -D CLANG_VERSION_MAJOR="$_clang_major"
+        # Gates target_link_libraries(PluginCommon PRIVATE flang_rt.runtime) in
+        # offload/plugins-nextgen/common/CMakeLists.txt, without which
+        # libomptarget.so fails to link on undefined _FortranAio* symbols.
+        -D LIBOMPTARGET_BUILD_DEVICE_FORTRT=ON
+        # Only the AMDGPU plugin is useful here; cuda would drag in the NVIDIA
+        # toolchain and host is only a fallback for testing.
+        -D LIBOMPTARGET_PLUGINS_TO_BUILD='amdgpu'
+        -D CMAKE_PREFIX_PATH=/opt/rocm
+    )
+
+    # Host runtime: libomp.so plus libomptarget.so with the AMDGPU plugin linked
+    # in. hsa-rocr provides the real HSA headers, so the incomplete dynamic_hsa
+    # stubs in the ROCm fork are not used.
+    # LIBOMP_FORTRAN_MODULES builds omp_lib.mod, without which `use omp_lib`
+    # does not resolve and no Fortran program can use OpenMP at all.
+    cmake "${cmake_args[@]}" \
+        -B build \
+        -D LLVM_ENABLE_RUNTIMES='openmp;offload' \
+        -D OPENMP_INSTALL_LIBDIR=lib \
+        -D LIBOMP_FORTRAN_MODULES=ON \
+        -D CMAKE_Fortran_COMPILER="$_prefix/bin/flang"
+    cmake --build build
+
+    # Device runtime: openmp/CMakeLists.txt only descends into device/ when the
+    # default triple is a GPU one, which is what produces libomptarget-amdgpu.bc
+    # and libompdevice.a. Without them nothing can be offloaded.
+    #
+    # makepkg's host CFLAGS (-march=x86-64, _FORTIFY_SOURCE, ...) are meaningless
+    # for amdgcn and make the device compile fail, so they are dropped here.
+    cmake "${cmake_args[@]}" \
+        -B build-device \
+        -D LLVM_ENABLE_RUNTIMES='openmp' \
+        -D LLVM_DEFAULT_TARGET_TRIPLE=amdgcn-amd-amdhsa \
+        -D OPENMP_INSTALL_LIBDIR=lib/amdgcn-amd-amdhsa \
+        -D CMAKE_C_FLAGS='' \
+        -D CMAKE_CXX_FLAGS='' \
+        -D CMAKE_ASM_FLAGS=''
+    cmake --build build-device
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    DESTDIR="$pkgdir" cmake --install build-device
+
+    # The runtimes build drops the Fortran modules in $prefix/include, which is
+    # not searched by flang. Its intrinsic module directory is $prefix/include/flang
+    # (that is where rocm-llvm puts its own .mod files), so `use omp_lib` only
+    # resolves without -I once they live there.
+    local _mod
+    for _mod in omp_lib.mod omp_lib_kinds.mod; do
+        install -Dm644 "$pkgdir$_prefix/include/$_mod" "$pkgdir$_prefix/include/flang/$_mod"
+        rm "$pkgdir$_prefix/include/$_mod"
+    done
+
+    cd "$pkgname"
+    install -Dm644 openmp/LICENSE.TXT "$pkgdir/usr/share/licenses/$pkgname/openmp-LICENSE"
+    install -Dm644 llvm/LICENSE.TXT "$pkgdir/usr/share/licenses/$pkgname/llvm-LICENSE"
+}

@@ -1,0 +1,51 @@
+# Maintainer: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com> 
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=mousetweaks
+pkgver=3.32.0
+pkgrel=3
+pkgdesc="Mouse accessibility enhancements"
+url="https://wiki.gnome.org/Projects/Mousetweaks"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gsettings-desktop-schemas
+  gtk3
+  libx11
+  libxcursor
+  libxfixes
+  libxtst
+  pango
+)
+makedepends=(
+  git
+  glib2-devel
+  python
+)
+source=("git+https://gitlab.gnome.org/Archive/mousetweaks.git#tag=3.32.0")
+b2sums=('d6cb7ac019e6becdbc218dbeee0d0d90d997778576644850a03ff18ec39ca04253f17e7db9224321039be48681dfcf767a7938aa0a6bab19e6eb2472bcc0de0e')
+
+prepare() {
+  cd $pkgname
+  NOCONFIGURE=1 ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+  make
+}
+
+check() {
+  make -C $pkgname check
+}
+
+package() {
+  make install -C $pkgname DESTDIR="$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

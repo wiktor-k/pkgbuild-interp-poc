@@ -1,0 +1,24 @@
+pkgbase = uboot-tools
+	pkgdesc = U-Boot bootloader utility tools
+	pkgver = 2026.07
+	pkgrel = 2
+	url = https://www.denx.de/wiki/U-Boot/WebHome
+	arch = x86_64
+	license = GPL-2.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND LGPL-2.1-or-later AND LGPL-2.0-or-later
+	makedepends = python
+	makedepends = python-setuptools
+	makedepends = swig
+	depends = openssl
+	options = !lto
+	source = https://ftp.denx.de/pub/u-boot/u-boot-2026.07.tar.bz2
+	source = https://ftp.denx.de/pub/u-boot/u-boot-2026.07.tar.bz2.sig
+	source = 0001-pylibfdt-python-3.14.patch
+	validpgpkeys = F3CEA8743D60E0192F9B4C7A2BE2A0F50ABFE40A
+	sha1sums = 829b14b2398917d345d0fa7fbf1c2e344ef34aae
+	sha1sums = SKIP
+	sha1sums = 717610872ba26cf3e80b4808af0c4e6e09df1e0c
+	sha256sums = 78e8bfc382fe388f9b55aa1daf8c563522a037779b5d4c349d1415e381f1243e
+	sha256sums = SKIP
+	sha256sums = 6d5cfe797df2019a621f209b81bd6ea8318913614ba4630cfa91990f7ec3cfbe
+
+pkgname = uboot-tools

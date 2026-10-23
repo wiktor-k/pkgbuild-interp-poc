@@ -1,0 +1,23 @@
+pkgbase = mailutils
+	pkgdesc = MUA command line tool (mailx)
+	pkgver = 3.21
+	pkgrel = 1
+	url = https://www.gnu.org/software/mailutils/
+	arch = x86_64
+	license = GPL
+	makedepends = emacs
+	depends = libldap
+	depends = pam
+	depends = gnutls
+	depends = gsasl
+	options = !emptydirs
+	source = https://ftp.gnu.org/gnu/mailutils/mailutils-3.21.tar.bz2
+	source = https://ftp.gnu.org/gnu/mailutils/mailutils-3.21.tar.bz2.sig
+	source = fix-build.patch
+	validpgpkeys = 325F650C4C2B6AD58807327A3602B07F55D0C732
+	validpgpkeys = 4BE4E62655488EB92ABB468F79FFD94BFCE230B1
+	sha512sums = 61e8e0a4582f5689656a6beca62aa2ee78f74c5cf01cf80530a6cc5912e73e6483528676a297d1adcf42eb9a43b0f1cfc415657629917fd8b64978707fad9492
+	sha512sums = SKIP
+	sha512sums = f9e5333a02aa1f55fe94c442ebecfa0a665a2d7ceb9e8c1aa5e566db13891390ad2cd823c8b9701024e991f54ed97377f95264cb36f9bea6ebe2801ca4519013
+
+pkgname = mailutils

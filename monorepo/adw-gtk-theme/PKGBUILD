@@ -1,0 +1,35 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Max Harmathy <harmathy@mailbox.org>
+# Contributor: Dušan Simić <dusan.simic1810@gmail.com>
+
+pkgname=adw-gtk-theme
+pkgver=6.5
+pkgrel=1
+pkgdesc='Unofficial GTK 3 port of the libadwaita theme'
+arch=(any)
+url=https://github.com/lassekongo83/adw-gtk3
+license=(LGPL-2.1-only)
+makedepends=(
+  dart-sass
+  git
+  meson
+)
+_tag=34a69db97369475e931b10ce699d0be2307a5def
+source=(git+https://github.com/lassekongo83/adw-gtk3.git#tag=${_tag})
+b2sums=('03b50cf016e0f0c0c1f31d0d794b7b78d668d18e1b2d826cb4149c459eed51e278c19c478130bb9e04ce9ba1c304230c4a3e790ae057af5cf165aed258ca772a')
+
+pkgver() {
+  cd adw-gtk3
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  arch-meson adw-gtk3 build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

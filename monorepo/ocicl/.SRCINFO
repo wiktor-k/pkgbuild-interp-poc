@@ -1,0 +1,19 @@
+pkgbase = ocicl
+	pkgdesc = An OCI-based ASDF system distribution and management tool for Common Lisp
+	pkgver = 2.20.0
+	pkgrel = 2
+	url = https://github.com/ocicl/ocicl
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = libfixposix
+	depends = glibc
+	depends = zstd
+	depends = sbcl
+	options = !debug
+	options = !strip
+	source = ocicl::git+https://github.com/ocicl/ocicl#tag=v2.20.0
+	sha512sums = 45ee835a72d8d8bf4eb8d1abfd3b32b410bb8cf47a9d43ec656d2bba1fc9ed50cf2f586ddb146556f6c665307dfc3b1a60d3d70184c41e81b033eebed23f8452
+	b2sums = 9afbe60beaf113571fdc49e6eb03f04f62d1e408c8cc40c02adbf1c633e5d8030f95a3167f638e7a73fdb24ddc2f9081dea83a432d3446778c844d9551c24d38
+
+pkgname = ocicl

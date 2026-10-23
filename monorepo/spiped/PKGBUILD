@@ -1,0 +1,52 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Simon Perry <aur [at] sanxion [dot] net>
+# Contributor: Nicolas Pouillard http://nicolaspouillard.fr
+
+pkgname=spiped
+pkgver=1.6.4
+pkgrel=2
+pkgdesc='Secure pipe daemon'
+arch=(x86_64)
+url='https://www.tarsnap.com/spiped.html'
+license=(BSD-2-Clause)
+depends=(
+  glibc
+  libgcc
+  openssl
+)
+makedepends=(git)
+checkdepends=(procps-ng)
+source=("$pkgname::git+https://github.com/Tarsnap/spiped#tag=$pkgver")
+sha512sums=('0672d3072ea7a451293a2550ec008cacbfca86277078d67834d86aa9c519919c9e8109db195bac6eee3543b3f463f734fe9d517c9c556ef4cc36ec843a5f79a2')
+b2sums=('880d289ffeb50a5472bebcc986504a4e208e1e2179f186d6802e4d8fe3ac8545666e0ca87a625b6fbb71314832c8babac978f8fdf367d47aea6996bd6c25bb4c')
+
+build() {
+  cd "$pkgname"
+
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  # valgrind fails ...
+  #Running tests
+  #-------------
+  #01-connection-open-close-single... nc-client: network_read received: Connection reset by peer
+  #nc-client: Error running event loop
+  #FAILED!
+  #make: *** [Makefile:129: test] Error 1
+  make test USE_VALGRIND=0
+}
+
+package() {
+  cd "$pkgname"
+
+  make \
+    MAN1DIR="$pkgdir/usr/share/man/man1" \
+    BINDIR="$pkgdir/usr/bin" \
+    install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYRIGHT
+}

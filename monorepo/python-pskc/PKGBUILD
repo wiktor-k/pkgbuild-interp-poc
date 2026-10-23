@@ -1,0 +1,52 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-pskc
+pkgver=1.4
+pkgrel=1
+pkgdesc='Python module for handling PSKC files'
+arch=(x86_64)
+url=https://arthurdejong.org/python-pskc/
+license=(LGPL-2.1-only)
+depends=(
+  python
+  python-cryptography
+  python-dateutil
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+optdepends=(
+  'python-lxml: faster and more feature-rich XML parsing'
+  'python-defusedxml: secure XML parsing when lxml is not installed'
+  # 'python-signxml: XML signature support'
+)
+source=("https://github.com/arthurdejong/python-pskc/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('2b89ae59efcf30963013abbd1c5698c877cebcaa38b564dd436cea7a7da55808d158fdabe9e13253b4d3389abc95f318271c65210a8ac59f28c67548285526ff')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname-$pkgver
+  pytest --override-ini="addopts=" pskc tests \
+    --doctest-modules \
+    --doctest-glob="*.doctest" \
+    --deselect tests/test_draft_ietf_keyprov_pskc_02.doctest::test_draft_ietf_keyprov_pskc_02.doctest \
+    --deselect tests/test_draft_keyprov.doctest::test_draft_keyprov.doctest \
+    --deselect tests/test_feitian.doctest::test_feitian.doctest \
+    --deselect tests/test_misc.doctest::test_misc.doctest \
+    --deselect tests/test_rfc6030.doctest::test_rfc6030.doctest \
+    --deselect tests/test_signature.doctest::test_signature.doctest \
+    --deselect tests/test_yubico.doctest::test_yubico.doctest
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

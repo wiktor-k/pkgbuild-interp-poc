@@ -1,0 +1,82 @@
+# Maintainer: Maxime Gauduin <alucryd@gmail.com>
+# Contributor: Guilherme Nogueira <guilherme@nirev.org>
+
+_gemname=polyglot
+pkgname=ruby-polyglot
+pkgver=0.3.5
+pkgrel=13
+pkgdesc='Allows custom language loaders to be hooked into require'
+arch=('any')
+url='https://github.com/cjheath/polyglot'
+license=('MIT')
+depends=(
+  ruby
+)
+makedepends=(
+  ruby-rdoc
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+        "${_gemname}.gemspec")
+sha512sums=('88ba0e4779ae2180271c9b51354b608352d9ae13cd16e17416412bf509dfd7fb1c748a10f00e7a5c00e3b4c7ca1ac78160deb91b5fae43caa19d7a872cd32c15'
+            '3bb2d7ea834405def7c5a617e06e0c3fd28604cd295b32689f07081c490947b715ca224357b1f65e872e3939ee2150aeb726e5d6992f4b7659896d64810ff07e')
+b2sums=('cf030bfb509bade504889df354b6491d74544c05faa9902fb3c769d4b6a89af0d78052d53369e347c900fec59fea7eb4e0a03d99d357fa9d260d6c70e2b9ed37'
+        'ea736151803932e05e9ebc6892f3c7f045e099a59082420ad5e7e1f0a2436bcfef5ea87e67c1fb6e464969ba87697810a960896c930db098226b04c2a57da3b6')
+
+prepare() {
+  cp "${_gemname}.gemspec" "${_gemname}-${pkgver}/${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 License.txt --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.txt --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

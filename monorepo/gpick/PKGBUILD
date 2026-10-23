@@ -1,0 +1,63 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Robin Broda <coderobe@archlinux.org>
+# Contributor: Alad Wenter <alad@mailbox.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=gpick
+pkgver=0.4
+pkgrel=5
+pkgdesc="Advanced color picker written in C++ using GTK+ toolkit"
+arch=('x86_64')
+url="http://www.gpick.org/"
+license=('BSD-3-Clause')
+depends=(
+  'cairo'
+  'expat'
+  'gdk-pixbuf2'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'hicolor-icon-theme'
+  'libgcc'
+  'libstdc++'
+  'lua'
+  'pango'
+)
+makedepends=(
+  'boost'
+  'boost-libs'
+  'cmake'
+  'git'
+  'ragel'
+)
+source=("git+https://github.com/thezbyg/gpick.git#tag=v$pkgver")
+b2sums=('08d293ee6f5412f3cf80acd659c4eb941ef46c95d3b9260e92210dbf108d33256e06800a2fc4b9254d3bd11e33c9dc3c5aec594aa79bfea85fa0dbcc1a669163')
+
+prepare() {
+  cd $pkgname
+  git cherry-pick -n 480f9ef15bb657aed0d320d67e30197fe02bcad4
+}
+
+build() {
+  cd $pkgname
+  cmake -B build -S . \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DLUA_TYPE=C
+  cmake --build build
+}
+
+check() {
+  cd $pkgname
+  # Deselect failing tests
+  ./build/tests -t '*' \
+    -t '!script/errorHandling' \
+    -t '!fileFormat/save'
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" installer/License.txt
+}

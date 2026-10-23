@@ -1,0 +1,20 @@
+pkgbase = firefox-extension-mailvelope
+	pkgdesc = Browser extension for OpenPGP encryption with Webmail
+	pkgver = 6.1.0
+	pkgrel = 2
+	url = https://www.mailvelope.com
+	arch = any
+	groups = firefox-addons
+	license = AGPL-3.0-only
+	depends = firefox
+	depends = gpgme
+	noextract = mailvelope-6.1.0.xpi
+	source = mailvelope-6.1.0.xpi::https://github.com/mailvelope/mailvelope/releases/download/v6.1.0/mailvelope.firefox.xpi
+	source = mailvelope-6.1.0.xpi.sig::https://github.com/mailvelope/mailvelope/releases/download/v6.1.0/mailvelope.firefox.xpi.sig
+	source = gpgmejson.json
+	validpgpkeys = 16F45CCC184812B4AC930EF360DD1F16B3390CD1
+	sha256sums = b3f1808425085fb0cc7978de7d600c8890f5ed01171ef0772d4d546a2a6a22b3
+	sha256sums = SKIP
+	sha256sums = 1f8d0cdef00aad2291772931da99968167b8c40ff48ce244084f381cea6a333f
+
+pkgname = firefox-extension-mailvelope

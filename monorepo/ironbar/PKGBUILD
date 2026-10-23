@@ -1,0 +1,71 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=ironbar
+pkgver=0.19.1
+pkgrel=1
+pkgdesc="Customisable Wayland GTK4 bar written in Rust"
+arch=(x86_64)
+url="https://github.com/JakeStanger/ironbar"
+license=(MIT)
+depends=(
+  cairo
+  dbus
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk4
+  gtk4-layer-shell
+  libevdev
+  libgcc
+  libinput
+  libpulse
+  luajit
+  lua51-lgi
+  pango
+  systemd-libs
+)
+makedepends=(rust)
+optdepends=(
+  'networkmanager: for network_manager module'
+  'swaync: for notifications module'
+  'ttf-font-nerd: for displaying text-based icons'
+)
+options=(!lto)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+)
+sha512sums=('c7fc285f98c2c3f343205c96476a62560bac52a94936d5f651ffad27c119ca794b6b44a4971be1c715924a4275aa7af60b4c21ba4513e7e436d88ffbfc9b4ad7')
+b2sums=('f73a4a43b5c97d95899c0bb597dc16521f7f5f2cb1a646a8d70cab2d13f0e3f4db8659d663f1d32d3b8920840fb6f41141863ac3bbb7307ba73bdb7030ed7a5c')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  cargo build --frozen --release
+
+  local _shell
+  for _shell in bash fish zsh; do
+    ./target/release/$pkgname --print-completions "$_shell" > $pkgname.$_shell
+  done
+}
+
+check() {
+  cd $pkgname-$pkgver
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {README,CHANGELOG}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 $pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 $pkgname.zsh "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+  install -vDm 644 $pkgname.service -t "$pkgdir/usr/lib/systemd/user/"
+  cp -rv examples "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,71 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=androidqf
+pkgver=1.8.3
+pkgrel=1
+pkgdesc="Android Quick Forensics - helps quickly gathering forensic evidence from Android devices"
+arch=('x86_64')
+url="https://github.com/mvt-project/androidqf"
+license=('MVT-1.1')
+depends=(
+  'android-tools'
+  'glibc'
+)
+makedepends=(
+  'go'
+)
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mvt-project/${pkgname}/archive/v${pkgver}.tar.gz"
+        unbundle.patch)
+sha512sums=('2f40faf7bbfbe165a71c76e7356e1d16b009cdffb3aa927f4f0775f05503a1acb86c433088d3cfb2cd6afd2fcf9bb27bc2d2ef48bd6c4e8ba4d8da8211ca59b8'
+            'fd273b979ec7cebaf2185082476df5914f1ab6f10c22f3ae604bc27a47b230b7293b3816505ce795cf7d8c95c298130ed04f6d09d198080e241fbfd4c9c29f14')
+b2sums=('69d7dddd9d30ab50a3c68c9cac87539fedfa99d9306b1ef2afd2c382afec8206699874dfd2ba94f7c66dfa1376c5f8d4998a469b3d0cdb47c8593c97d9688c06'
+        '535d347e94d0b29d089c8d4b113d6db08155f3ccf17f6dd8b33bfb62b9031a09100a0fd4823cb0f49eb7968045e35692e69a5ded677395772c4bb7d7409043cb')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  patch -Np1 -i ../unbundle.patch
+  # remove any pre-built executables
+  rm -r assets/
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -o build/ \
+    -buildmode=pie \
+    -mod=readonly \
+    -ldflags "-compressdwarf=false -linkmode=external -X github.com/mvt-project/androidqf/utils.Version=${pkgver}" \
+    ./...
+
+  cd android-collector/
+  GOOS=linux GOARCH=arm GOARM=6 CGO_ENABLED=0 go build -ldflags="-s -w" -o build/collector_arm
+  GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go build -ldflags="-s -w" -o build/collector_arm64
+  GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="-s -w" -o build/collector_amd64
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  build/androidqf --help
+  build/androidqf --list
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/androidqf "${pkgdir}/usr/bin/${pkgname}"
+
+  for collector in android-collector/build/collector_*; do
+    install -Dm644 "$collector" -t "${pkgdir}/usr/lib/${pkgname}/android-collector"
+  done
+
+  # install license
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

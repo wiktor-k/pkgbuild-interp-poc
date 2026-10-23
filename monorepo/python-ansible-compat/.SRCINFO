@@ -1,0 +1,28 @@
+pkgbase = python-ansible-compat
+	pkgdesc = Functions that help interacting with various versions of Ansible
+	pkgver = 26.10.0
+	pkgrel = 1
+	url = https://github.com/ansible/ansible-compat
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-instafail
+	checkdepends = python-pytest-mock
+	checkdepends = python-uv
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = ansible-core
+	depends = python
+	depends = python-jsonschema
+	depends = python-packaging
+	depends = python-pyyaml
+	depends = python-subprocess-tee
+	source = git+https://github.com/ansible/ansible-compat.git#tag=v26.10.0
+	sha256sums = d9fe5634c7739e28276ff0619c559b18b28f544cd807db09d237950fab22d177
+	b2sums = 33492507771370ba1a1ecff8cf660f233fb3902902247aa21e0549c6a73b2b4e1da33fcdbe6c515bae2b18b69cc3964ad207a4749308d85e3a01cc50109650cf
+
+pkgname = python-ansible-compat

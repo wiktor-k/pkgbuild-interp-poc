@@ -1,0 +1,77 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=pigment64
+pkgname=(pigment64 python-pigment64)
+pkgver=0.6.3
+pkgrel=1
+pkgdesc='A library for handling conversion between N64 texture formats and modern image formats'
+arch=(x86_64)
+url='https://github.com/decompals/pigment64'
+license=(MIT)
+depends=(glibc libgcc)
+makedepends=(
+  git
+  rust
+  python
+  python-build
+  python-installer
+  python-maturin
+)
+checkdepends=(python-pytest)
+source=("$pkgbase::git+$url#tag=$pkgver")
+sha512sums=('616ce5dd120d54faec91d7b0d3ae605989295e68f4c68cd45551c2ac6e4a787f0eec417934e26630f00bee6020daedf46019690cbdf4d19992ffa9b77a4bd7a9')
+b2sums=('5c35a6256c303c3caf8b3045798eac1d5966c44eb56827446cbfeb48e2c8e1eb138de4d1e7074b01e07339176b91c927c830781bc25e4183659672cb612c4c27')
+
+prepare() {
+  cd "$pkgbase"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgbase"
+
+  # rust cli
+  cargo build --frozen --release --all-features
+
+  # python bindings
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgbase"
+
+  # test rust code
+  cargo test --frozen --all-features
+  
+  # install to temporary directory
+  python -m installer --destdir="$PWD/tmp_install" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$PWD/tmp_install$site_packages"
+
+  # test python bindings
+  pytest -vv
+}
+
+package_pigment64() {
+  cd "$pkgbase"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgbase"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+package_python-pigment64() {
+  pkgdesc+=' (Python bindings)'
+  depends+=(python)
+
+  cd "$pkgbase"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

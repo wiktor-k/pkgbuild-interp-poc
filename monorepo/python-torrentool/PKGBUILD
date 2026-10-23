@@ -1,0 +1,54 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-torrentool
+_name="${pkgname#python-}"
+pkgver=1.2.0
+pkgrel=4
+pkgdesc="The tool to work with torrent files"
+arch=(any)
+url="https://github.com/idlesign/torrentool"
+license=(BSD-3-Clause)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytest-datafixtures
+  python-pytest-responsemock
+)
+optdepends=(
+  'python-click: for torrentool'
+  'python-requests: for some torrentool subcommands'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('9f90b9c899befd829e489260e8c62814c8a0e9a9933394d780a80c6cb501a084dfba529a0daa8a028ec2f79f0b3c16127e71fc4f5fd750ee334751eef80b3872')
+b2sums=('d50fb009e54731774a012d6d3ec39e431c67ff82c2adbe178b14ebd1d22ab242d6b11b69a014c160e255eca0c4cb7a8617a313655bf0d28042e493c2efebc4c9')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  # install to temporary location, as importlib is used
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {AUTHORS,CHANGELOG,README.rst} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,61 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Dominic Meiser [git at msrd0 dot de]
+
+pkgname="probe-rs"
+pkgver=0.32.0
+pkgrel=1
+pkgdesc='A collection of on chip debugging tools to communicate with microchips.'
+url='https://probe.rs'
+license=('Apache-2.0' 'MIT')
+arch=('x86_64')
+depends=(
+  'libgcc'
+  'systemd-libs'
+)
+makedepends=('cargo' 'cargo-auditable' 'cmake')
+conflicts=('cargo-embed' 'cargo-flash')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/probe-rs/probe-rs/archive/v$pkgver.tar.gz"
+  "69-probe-rs.rules")
+sha512sums=('60db3ce291f0070d1ac3b70d3e5d21bba7ee1ef8b3482f613547270c6cd8e29abaef0451265cc6d87fd602b1a5ee401d7ee13ee7e033a9f66a1fde4cb76ea951'
+            'a0cec0ed8459be43647dc653008e947466d7220e74a17681c1858220df1246dd518bce0567fa1fce6c70e107cbb547bbac60a4a50388109b19247a3d15bdc83e')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  cargo auditable build \
+    --frozen \
+    --release \
+    --features remote
+
+  SHELL=zsh  target/release/probe-rs complete --shell zsh install --manual > _probe-rs
+  SHELL=bash target/release/probe-rs complete --shell bash install --manual > probe-rs.bash
+  SHELL=fish target/release/probe-rs complete --shell fish install --manual > probe-rs.fish
+}
+
+# TODO: Figure out how to run tests
+# check() {
+#   cd "$pkgname-$pkgver"
+#
+#   cargo test --frozen
+# }
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm755 "target/release/cargo-embed" -t "$pkgdir/usr/bin"
+  install -Dm755 "target/release/cargo-flash" -t "$pkgdir/usr/bin"
+  install -Dm755 "target/release/probe-rs" -t "$pkgdir/usr/bin"
+  install -Dm644 _probe-rs -t "$pkgdir/usr/share/zsh/site-functions"
+  install -Dm644 probe-rs.bash -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm644 probe-rs.fish -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm644 "$srcdir/69-probe-rs.rules" -t "$pkgdir//usr/lib/udev/rules.d/"
+  install -Dm644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,45 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: larchunix <larchunix@gmail.com>
+
+pkgname=drpm
+pkgver=0.5.3
+pkgrel=1
+pkgdesc="A small library for fetching information from deltarpm packages"
+url="https://github.com/rpm-software-management/drpm"
+arch=('x86_64')
+license=('LGPL-2.1-or-later' 'BSD-3-Clause')
+depends=('bzip2' 'glibc' 'openssl' 'rpm-tools' 'xz' 'zlib' 'zstd')
+makedepends=('cmake' 'doxygen')
+checkdepends=('cmocka')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
+sha256sums=('33b6337a07af2874835321d802c62cca0e6bd8ae18c4534ce1fe68f7bcf762bc')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+
+	cmake -B build \
+		-DCMAKE_BUILD_TYPE='None' \
+		-DCMAKE_INSTALL_PREFIX='/usr' \
+		-DCMAKE_C_FLAGS_RELEASE='-DNDEBUG' \
+		-DCMAKE_INSTALL_LIBDIR='lib' \
+		-DWITH_ZSTD='ON' \
+		-Wno-dev
+
+	cmake --build build
+	cmake --build build --target doc
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+
+	ctest --test-dir build --output-on-failure
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+
+	DESTDIR="${pkgdir}" cmake --install build
+	install -d "${pkgdir}/usr/share/doc/${pkgname}"
+	cp -R build/doc/html "${pkgdir}/usr/share/doc/${pkgname}/html"
+	install -Dm 644 LICENSE.BSD "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.BSD"
+}

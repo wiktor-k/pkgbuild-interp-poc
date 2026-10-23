@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-construct
+pkgver=2.10.70
+pkgrel=6
+pkgdesc='A powerful declarative parser/builder for binary data'
+arch=(any)
+url='https://construct.readthedocs.org'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-arrow
+  python-cloudpickle
+  python-lz4
+  python-numpy
+  python-pytest
+  python-pytest-benchmark
+  python-ruamel-yaml
+  python-cryptography
+)
+optdepends=(
+  'python-arrow: for Timestamp'
+  'python-numpy: for array serialization with Numpy protocol'
+  'python-ruamel-yaml: for KaitaiStruct (KSY) exporter'
+  'python-cloudpickle: for extended pickling'
+  'python-lz4: for compressed LZ4'
+  'python-cryptography: for encrypting/decrypting cryptography primitives'
+)
+source=("$pkgname::git+https://github.com/construct/construct#tag=v$pkgver")
+sha512sums=('0534830fff897f76f3443a248628ac4711e41aa88d25ec21ee04dff783fe9a32bf291b7d40855f2ced6e0680a6e0d53e608c11c39c7cca2e2b81ce175df71b28')
+b2sums=('668211d91ec4524bed53bbbd3c1f5cff87ac48c70c10ab32b3f8fc96d853d39c07ac9436abd5481037e86d9968fc8e2ff9df2e5ce8935b39083a645a7b667932')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  PYTHONPATH=. pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-icon-theme
+pkgver=2026.02.27
+pkgrel=1
+pkgdesc="Deepin Icons"
+arch=('any')
+url="https://github.com/linuxdeepin/deepin-icon-theme"
+license=('GPL-3.0-or-later')
+optdepends=('papirus-icon-theme: fallback icon theme')
+makedepends=('git')
+replaces=('deepin-cursor-theme')
+conflicts=('deepin-cursor-theme')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-icon-theme.git#tag=$pkgver")
+sha512sums=('2f45f1e1b0978fce4ef7bffec4bc0f87469d5d8a1e6ebe7e33a59cd3e23ed02d927d9e361dae4d227530d5863581adb43ce47f0fa075f5fa8d729a84685e8d14')
+
+build() {
+  cd $pkgname
+  make hicolor-links
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+
+  cp -a ./Sea ./usr/share/icons/hicolor "$pkgdir"/usr/share/icons/
+}

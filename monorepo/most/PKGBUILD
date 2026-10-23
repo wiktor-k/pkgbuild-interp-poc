@@ -1,0 +1,40 @@
+# Maintainer: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: juergen <juergen@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=most
+pkgver=5.2.0
+pkgrel=3
+pkgdesc="A terminal pager similar to 'more' and 'less'"
+arch=('x86_64')
+depends=('slang')
+license=('GPL-2.0-or-later')
+url="https://www.jedsoft.org/most/index.html"
+source=(https://www.jedsoft.org/releases/most/most-$pkgver.tar.gz{,.asc}
+        most-5.2.0-no-strip.patch
+        most-5.2.0-most_message-buffer-overlow.patch)
+validpgpkeys=('64083373E9E1DE997EBBE7784B82D0B82930237D')  # John E. Davis <davis@space.mit.edu>
+sha512sums=('3aa3cb46ddd456532a009fb9cfcd746971396be33e03e52a15b754a6d7683f4efd020edb0ec4eb36d22ba20f050aaac4ba6cdd3b69bb5701ea58ddb9a903c59d'
+            'SKIP'
+            '25125854d82533cdb02fbcaf3ec2c04d8fb644a23ac601e9f59a4fd4c8617e897a88268398a44ba02c1e80562f51af64eabe52a9fc35c4fc94867858f9d851c2'
+            '55034ad42fc0df79850967ae36c141ba5857150c590c063e54afb1a56c56ebee7baabc1aebd2e6e37ba69451f45dbdfca6ca99c4acf1d121fb28ed6c611fcd45')
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  # Remove -s option to install to prevent executable from being stripped
+  patch -Np1 -i ../most-5.2.0-no-strip.patch
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/most/-/issues/1
+  # Avoid a buffer overflow in most_message.
+  patch -Np1 -i ../most-5.2.0-most_message-buffer-overlow.patch
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  ./configure --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make DESTDIR="${pkgdir}" install
+}

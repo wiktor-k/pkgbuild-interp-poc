@@ -1,0 +1,54 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+
+pkgname=cage
+pkgver=0.3.1
+pkgrel=1
+pkgdesc="A kiosk compositor for Wayland"
+arch=(x86_64)
+url="https://www.hjdskes.nl/projects/cage/"
+license=(MIT)
+depends=(
+  'glibc'
+  'wayland'
+  'wlroots0.20'
+)
+makedepends=(
+  'git'
+  'libxkbcommon'
+  'meson'
+  'scdoc'
+  'wayland-protocols'
+  'xorg-server-xwayland'
+)
+provides=('wayland-compositor')
+optdepends=(
+  'polkit: System privilege control. Required if not using seatd service'
+  'xorg-server-xwayland: X11 support'
+)
+# It's not uncommon to need to update to the latest commit so we use git-based
+# fetching.
+source=("git+https://github.com/cage-kiosk/cage.git#tag=v$pkgver?signed")
+install=cage.install
+sha512sums=('8ec49b256c82b0ad548e389b89ae251365c4df4a2fbf417f33ba68a2ecab50833e8c2dd58bed65b2b38a31318926e126c13d20ff081c11c63d2b50bc1072e88b')
+validpgpkeys=(
+    '13B6A35E9FD677D02CD68DBE37C445296EBC43B1' # Jente Hidskes <dev@hjdskes.nl>
+    '34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48' # Simon Ser <contact@emersion.fr>
+)
+
+build() {
+  arch-meson "$pkgname" build
+  ninja -C build
+}
+
+check() {
+  ninja -C build test
+}
+
+package() {
+  depends+=(libwlroots-0.20.so libxkbcommon.so)
+
+  DESTDIR="${pkgdir}" ninja -C build install
+  install -vDm 644 "$pkgname/README.md" -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm 644 "$pkgname/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

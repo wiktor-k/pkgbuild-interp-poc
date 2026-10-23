@@ -1,0 +1,27 @@
+pkgbase = manuals
+	pkgdesc = Developer documentation browser for GNOME
+	pkgver = 50.1
+	pkgrel = 2
+	url = https://apps.gnome.org/Manuals/
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = foundry
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libdex
+	depends = libgcc
+	depends = libpanel
+	depends = pango
+	depends = webkitgtk-6.0
+	source = git+https://gitlab.gnome.org/GNOME/manuals.git#tag=50.1
+	b2sums = 01c1aeb3235a7c08e8f7b5043150535ccb40c6ec68f5713b69e095232a8042a99d22eb03250a27b1ba162fc93b6e392411ce56af6d6f8c52a47f689d073e2589
+
+pkgname = manuals

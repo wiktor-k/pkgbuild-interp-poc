@@ -1,0 +1,43 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Conrad Hoffmann <ch@bitfehler.net>
+
+pkgname=harec
+pkgver=0.26.0
+pkgrel=2
+pkgdesc='The Hare programming language - bootstrapped compiler'
+arch=(x86_64 aarch64)
+url='https://harelang.org'
+license=(GPL-3.0-only)
+depends=(glibc qbe)
+makedepends=(git)
+source=("$pkgname::git+https://git.sr.ht/~sircmpwn/harec#tag=$pkgver")
+sha512sums=('37105f4779c5f7150c31526efc34bbb046445f495bf5d93d175c23b880359025e4d718fdbeb5c7b9ab758c4c49cece97a50da1e640bba4c4e1381a642d7310ff')
+b2sums=('a882c2aeaaa399774ea1fe0c7a0207f966a2061c4edde58402fd879bb99d1ce009dab30a04a53c397601652fd4107fa3ce80dc3e2c5c1885e91abfb723fd1814')
+
+prepare() {
+  cd "$pkgname"
+
+  # configure prefix directory & architecture
+  sed \
+    -e 's:/usr/local:/usr:' \
+    -e "s/^ARCH = .*/ARCH = $CARCH/" \
+    configs/linux.mk > config.mk
+}
+
+build() {
+  cd "$pkgname"
+
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  make check
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,32 @@
+pkgbase = simutrans
+	pkgdesc = Transportation simulation game
+	pkgver = 125.0.1
+	pkgrel = 1
+	url = https://www.simutrans.com/
+	arch = x86_64
+	license = Artistic-1.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = bash
+	depends = bzip2
+	depends = fontconfig
+	depends = freetype2
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libpng
+	depends = libstdc++
+	depends = sdl2
+	depends = simutrans-pak
+	depends = zlib
+	depends = zstd
+	optdepends = timidity++: Play MIDI music
+	source = git+https://github.com/simutrans/simutrans#tag=125.0.1
+	source = simutrans-settings-folder.patch
+	sha512sums = 29332539607cd0f3a9c52aa5a2cb6f14ec73b1a2f1a3a196fcbe0e79c3dacdb41375e07becaeccf367e4b7b55414fb356f64283099faaded55dcc2c479b32e86
+	sha512sums = e6883ff8c83521e1dd9c8b3dfcdbeeacae487dd8c958b6323d4a2f12fba3fad672202438bfe7a05255513b21320613000108f5ccce81ee8860e92a2a551c8208
+	b2sums = 6897b203568da5f456b068864586790cc206530f24cd2c79a10275e21f9d0335455f2cf7b5a770e558aefd8f5983a41a384c983a7308e7612a1a56f9a54a6d2f
+	b2sums = 771342609e9f1ae50c2703b649db6e41bd07dadab176171c3713cc6854be608430a4b55c64be37b5e2b2009e4e0a31b87098b897b95647d9258dc781fa527e7e
+
+pkgname = simutrans

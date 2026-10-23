@@ -1,0 +1,27 @@
+pkgbase = qxmpp
+	pkgdesc = Cross-platform C++ XMPP client and server library
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://invent.kde.org/libraries/qxmpp
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = git
+	makedepends = libomemo-c
+	makedepends = qt6-tools
+	depends = glib2
+	depends = glibc
+	depends = gstreamer
+	depends = libgcc
+	depends = libstdc++
+	depends = openssl
+	depends = qt6-base
+	optdepends = libomemo-c: OMEMO support
+	provides = qxmpp-qt6
+	conflicts = qxmpp-qt6
+	replaces = qxmpp-qt6
+	source = git+https://invent.kde.org/libraries/qxmpp#tag=v1.17.0
+	sha256sums = c03d323cc0be1b788df28de8fd8fbb57f18971d4866033550c5ede08827d5407
+
+pkgname = qxmpp

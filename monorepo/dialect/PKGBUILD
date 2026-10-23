@@ -1,0 +1,74 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=dialect
+pkgver=2.6.1
+pkgrel=3
+pkgdesc='Translation app for GNOME based on Google Translate and other online services'
+arch=(any)
+url='https://apps.gnome.org/Dialect/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  gst-plugins-base
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libsecret
+  libsoup3
+  libspelling
+  python
+  python-beautifulsoup4
+  python-gobject
+  python-gtts
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://github.com/dialect-app/dialect.git#tag=$pkgver"
+  dialect-po::git+https://github.com/dialect-app/po
+  dialect-dbus-activatable.patch
+)
+b2sums=(
+  d881f7e7427b0feb6eae0eeb6ba3455bee56034391d4b50ce6ef3b3bef95f50c1766b265265c9511654e197fc016f6ed8166f9f62f83a734994d4fae9023ebd6
+  SKIP
+  24dd584e65474dcee062b3bcef06141288f6d85e8951f6fafa1f2fadd895b477ce94b1f59b8abcbd0ece1b0c0c8407b6bf8e557f338587bb223163deccd165c5
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url po "$srcdir/dialect-po"
+  git -c protocol.file.allow=always submodule update
+
+  # https://github.com/dialect-app/dialect/pull/431
+  git apply -3 ../dialect-dbus-activatable.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  find "$pkgdir/usr/share/" -type f -name "*.blp" -delete
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

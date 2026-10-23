@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-xml-twig
+pkgver=3.55
+pkgrel=1
+pkgdesc="A module for easy processing of XML"
+arch=('any')
+url="https://search.cpan.org/dist/XML-Twig/"
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=('perl-xml-parser' 'perl-text-iconv' 'perl')
+checkdepends=('perl-libwww' 'perl-test-pod' 'perl-xml-simple' 'perl-html-tree' 'perl-xml-xpath' 'perl-tie-ixhash')
+options=('!emptydirs')
+source=("https://www.cpan.org/authors/id/M/MI/MIROD/XML-Twig-${pkgver}.tar.gz")
+sha256sums=('69326e5edc05c759ccc78fbe05ca63759a035fe7a5337b8ddba6c3dd42f64f6c')
+
+build() {
+  cd XML-Twig-${pkgver}
+  perl Makefile.PL -y INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd XML-Twig-${pkgver}
+  make test || warning "Tests failed"
+}
+
+package() {
+  cd XML-Twig-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}

@@ -1,0 +1,55 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Specter119 <spcter119 AT gmail.com>
+# Contributor: Erich Eckner <arch at eckner dot net>
+# Contributor: Philip Goto <philip.goto@gmail.com>
+
+_pyname=ipympl
+pkgname=python-$_pyname
+pkgver=0.10.0
+pkgrel=1
+pkgdesc='Matplotlib Jupyter Extension'
+url='https://pypi.org/project/ipympl/'
+depends=(ipython
+         python
+         python-ipywidgets
+         python-matplotlib
+         python-numpy
+         python-pillow
+         python-traitlets)
+makedepends=(git
+             jupyterlab
+             nodejs
+             python-build
+             python-hatch-jupyter-builder
+             python-hatchling
+             python-installer)
+checkdepends=(python-numpy
+              python-nbval
+              python-pytest)
+license=(BSD-3-Clause)
+arch=(any)
+source=(git+https://github.com/matplotlib/ipympl#tag=v$pkgver)
+sha256sums=('9110a75a9da22307707d57cf907dd553a1c07ce2ca95ebe301a6c636c0dbad7c')
+
+prepare() {
+  sed -e 's|>=.*\"|\"|g' -e 's|~=.*\"|\"|g' -i $_pyname/pyproject.toml
+}
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd $_pyname
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest -v
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  mv "$pkgdir"/{usr/,}etc
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

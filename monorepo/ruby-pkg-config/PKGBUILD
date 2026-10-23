@@ -1,0 +1,49 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Alexander Rødseth <rodseth@gmail.com>
+# Contributor: Brad Fanella <bradfanella@archlinux.us>
+# Contributor: gem2arch 0.1
+# Contributor: theapodan
+
+pkgname=ruby-pkg-config
+_pkgname="${pkgname#ruby-}"
+pkgver=1.6.6
+pkgrel=1
+pkgdesc='Implementation of pkg-config in Ruby'
+arch=(any)
+url='https://github.com/ruby-gnome/pkg-config'
+license=(LGPL-2.1-only)
+depends=(ruby)
+makedepends=(
+  git
+  ruby-rdoc
+)
+provides=(ruby-pkgconfig)
+replaces=(ruby-pkgconfig)
+conflicts=(ruby-pkgconfig)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('0c75dbf2ea7f23f7560e037b6022a315fa70ece91bb728f33572fc70bfeeaa63245ddd133f9cf3be148bf3e27025bac8d3675db1247f034819bcfb10004a15da')
+b2sums=('2ab8e40415b4b4c75f7e395c2148d5e635cfac2c5eb1fe0bc1b0359c8566f41b58ff6ea5f569a647581ff48ae3afa00ce357b979e49e054455f3572f37408f4a')
+
+build() {
+  cd "$pkgname"
+
+  gem build "$_pkgname.gemspec"
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LGPL-2.1
+}

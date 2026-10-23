@@ -1,0 +1,37 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov at gmail>
+
+pkgname=libelfin
+pkgver=0.3.r7.ge017276
+pkgrel=2
+_commit=e0172767b79b76373044118ef0272b49b02a0894
+pkgdesc='C++11 ELF/DWARF parser'
+arch=(x86_64)
+url='https://github.com/aclements/libelfin'
+license=(MIT)
+depends=(gcc-libs)
+makedepends=(python git)
+source=(git+https://github.com/aclements/libelfin#commit=$_commit
+        reproducible.patch)
+sha256sums=('47e9f778b93f5ed22f753fc47cc5adfd7c1dfb462ade641ee33223c49a44b115'
+            '152a7eab55b4de3cefa0020066ff82bdbc307a695bfe8362d4d8055cbbf654d8')
+
+pkgver() {
+  cd $pkgname
+  git describe --tag --long --abbrev=7 | sed 's/^v//;s/-/.r/;s/-/./'
+}
+
+
+prepare() {
+  cd libelfin
+  patch -p1 < ../reproducible.patch
+}
+
+build() {
+  cd libelfin
+  VER=$pkgver make
+}
+
+package() {
+  cd libelfin
+  VER=$pkgver PREFIX=/usr DESTDIR="$pkgdir" make install
+}

@@ -1,0 +1,32 @@
+pkgbase = cartridges
+	pkgdesc = Simple game launcher written in Python using GTK4 and Libadwaita
+	pkgver = 2.13.1
+	pkgrel = 2
+	url = https://codeberg.org/kramo/cartridges
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = pango
+	depends = python
+	depends = python-gobject
+	depends = python-pillow
+	depends = python-requests
+	depends = python-urllib3
+	depends = python-yaml
+	source = git+https://codeberg.org/kramo/cartridges.git#tag=v2.13.1
+	source = cartridges-save-cover.patch
+	source = cartridges-dbus-activatable.patch
+	b2sums = bcf1452524d58755503fe48d18906f7f6d44235006c8bddafd718b0dfdaf37ea043e0d3090429908b5ce847ed027aa62fb651a95f5ed9eb4fc243e0f63edcdc2
+	b2sums = c5e201f051b5257d6332537a04fd15fbf7699a5740d643b48031a9c0dc4ca3ee3081e511aa93514beff55fab2dab210e84ae24e23eb630cbcfeb7d0fb0c84b68
+	b2sums = 71e83a7e0d7da0263c25811d2bf737ae9c51403cea62cb3de76fa4f98a551c97b6b06f02c56fabd064b6e9f8f513d0f28784b68a2fe4705c1d78b961ac95c453
+
+pkgname = cartridges

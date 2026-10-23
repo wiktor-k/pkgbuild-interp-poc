@@ -1,0 +1,69 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=giac
+_pkgver=2.1.0-1
+pkgver=${_pkgver//-/.}
+pkgrel=1
+pkgdesc='A free computer algebra system'
+arch=(x86_64)
+url='https://www-fourier.univ-grenoble-alpes.fr/~parisse/giac.html'
+license=(GPL-3.0-only)
+depends=(blas
+         curl
+         fltk
+         glibc
+         glpk
+         gmp
+         gmp-ecm
+         gsl
+         hicolor-icon-theme
+         lapack
+         libao
+         libgcc
+         libglvnd
+         libpng
+         libsamplerate
+         libstdc++
+         mpfi
+         mpfr
+         nauty
+         ntl
+         pari
+         readline
+         zlib)
+makedepends=(hevea
+             libjpeg-turbo
+             python
+             texlive-latexrecommended
+             texlive-mathscience)
+optdepends=('perl: for pgiac')
+source=(https://www-fourier.univ-grenoble-alpes.fr/~parisse/debian/dists/stable/main/source/${pkgname}_$_pkgver.tar.gz
+        pari-2.19.patch)
+sha256sums=('cdec29897d6a55f9e53f82285ffd85cd82bcaba0bd90a494f710be002bd73f57'
+            'e0d697566ddacee9f2f36beb268efa3ca433f289874fe01592e156552682271e')
+
+prepare() {
+  cd $pkgname-${pkgver%.*}
+  patch -p1 -i ../pari-2.19.patch
+#  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-${pkgver%.*}
+
+  # this uses malloc_usable_size, which is incompatible with fortification level 3
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+
+  CXXFLAGS+=" -Wp,-U_GLIBCXX_ASSERTIONS" # Fix crashes
+  CXXFLAGS+=" -I/usr/include/cairo"
+  ./configure --prefix=/usr
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $pkgbase-${pkgver%.*}
+  make DESTDIR="$pkgdir" install
+}

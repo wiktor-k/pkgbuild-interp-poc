@@ -1,0 +1,95 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Filipe Laíns (ffy00) <lains@archlinux.org>
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+
+_pkgname=coreutils
+pkgname=uutils-$_pkgname
+pkgver=0.12.0
+_l10nver=0.12.0
+pkgrel=1
+pkgdesc='Cross-platform Rust rewrite of the GNU coreutils'
+arch=('x86_64')
+url='https://uutils.github.io/'
+_url='https://github.com/uutils/coreutils'
+license=('MIT')
+depends=(
+  glibc
+  libgcc
+  openssl
+  systemd-libs
+)
+makedepends=(
+  git
+  rust
+)
+source=(
+  $pkgname::git+$_url.git#tag=${pkgver}
+  $pkgname-l10n::git+https://github.com/uutils/coreutils-l10n.git#tag=${_l10nver}
+)
+b2sums=('0b14eab9d359cd1c79032ec3d8cadf9b51d51d0c7e2cf6f27a07b66ddb0614d64a15a25717e6bd67ee786b18832c6f90a549f567c2801be9dea649ca2cd51867'
+        '8a027f39cedf44e3a5f880b693fb78747f9c44620bf75c89e0c4a8557e67e5ec42e34df1ced3244630061a40e287c671185d2d5d92e7eafc74890cb522e488cd')
+
+# This line inside prepare does not work without chean build
+export OPENSSL_NO_VENDOR=1
+export RUSTONIG_DYNAMIC_LIBONIG=1
+export CARGOFLAGS="--features openssl,feat_systemd_logind"
+
+prepare() {
+  cd $srcdir
+  # HACK: src/uu/hashsum no longer exists in uutils/coreutils,
+  # but l10n files for it still exist in uutils/coreutils-l10n.
+  rm -rf $pkgname-l10n/src/uu/hashsum
+  # uutils/coreutils is the canonical source for English and
+  # French translations, don't overwrite them.
+  cp -nr $pkgname-l10n/src/* $pkgname/src/
+}
+
+check() {
+  cd $pkgname
+  make test \
+    TEST_NO_FAIL_FAST="-- \
+    --skip test_chgrp::test_from_with_invalid_group \
+    --skip test_chmod::test_chmod_colored_output \
+    --skip test_env::test_env_french \
+    --skip test_error_messages_french_translation \
+    --skip test_french_colored_error_messages \
+    --skip test_help_messages_french_translation \
+    --skip test_ls::test_localized_possible_values \
+    --skip test_sort::test_argument_suggestion \
+    --skip test_sort::test_clap_localization_help_message \
+    --skip test_sort::test_clap_localization_invalid_value \
+    --skip test_sort::test_clap_localization_unknown_argument \
+    --skip test_sort::test_error_colors_disabled \
+    --skip test_sort::test_error_colors_enabled \
+    --skip test_sort::test_french_translations \
+    --skip test_sort::test_help_colors_disabled \
+    --skip test_sort::test_help_colors_enabled \
+    --skip test_df::test_type_option_with_file \
+    --skip test_cat::test_cat_broken_pipe_nonzero_and_message \
+    --skip test_logname::test_normal \
+    --skip test_who::test_boot \
+    --skip test_cp::test_cp_debug_reflink_auto_sparse_always_non_sparse_file_with_long_zero_sequence \
+    --skip test_cp::test_cp_debug_reflink_never_sparse_always_non_sparse_file_with_long_zero_sequence \
+    --skip test_cp::test_cp_debug_reflink_never_sparse_always_with_hole \
+    --skip test_cp::test_cp_debug_reflink_never_sparse_always_without_hole \
+    --skip test_cp::test_cp_debug_reflink_never_with_hole \
+    --skip test_cp::test_cp_sparse_always_non_empty \
+    --skip test_logname::test_output_format \
+    --skip test_stdbuf \
+    --skip test_head::test_zero_bytes_with_suffix"
+}
+
+package() {
+  cd $pkgname
+  make install \
+    DESTDIR="$pkgdir" \
+    PREFIX=/usr \
+    LIBSTDBUF_DIR=/usr/lib/$pkgname \
+    PROG_PREFIX=uu- \
+    PROFILE=release \
+    MULTICALL=y
+  install -Dm 644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim: ts=2 sw=2 et:

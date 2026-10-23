@@ -1,0 +1,32 @@
+pkgbase = loadtracker
+	pkgdesc = A modernised fork of GoatTracker2
+	pkgver = 1.99.6
+	pkgrel = 1
+	url = https://github.com/libsidplayfp/loadtracker
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libstdc++
+	depends = libstdc++.so
+	depends = libexsid
+	depends = libexsid.so
+	depends = libresidfp
+	depends = libresidfp.so
+	depends = jack
+	depends = libjack.so
+	depends = rtmidi
+	depends = librtmidi.so
+	depends = sdl3
+	source = loadtracker::git+https://github.com/libsidplayfp/loadtracker#tag=v1.99.6
+	source = use-system-rtmidi.patch
+	sha512sums = cb1a37e221b331edf59ae2c35360e668b6b62df423e59973a17800e2d796fe4273aa6f227a019e131284444369f13f7f77fd1a58d8b8ee3caa72287b6f371bde
+	sha512sums = 474408484ae33efbed783e674f963843b0aa97ffbd620eb48acf30c4df1eb8fbc302786f45f5147c15ee38cd1a3194c0ccf4f06ce5b3667275bc661e5e8b361e
+	b2sums = d15c366c6d05fecc67987709233a3215f10f4c085af00926d0b445acf298a4dea487194cc652958f8947f53b3df89063fe8fbf9b84a1551c3d021c554bca0328
+	b2sums = d0991fa99008b1dc7bfd62d2213115f046d2e4f4012dfed29aa1079391f5e001d28a95c7ee4b51c6801981f6d827a1b6b1d288bf0f4dd831483fd9306fabec02
+
+pkgname = loadtracker

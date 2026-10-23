@@ -1,0 +1,28 @@
+pkgbase = release-plz
+	pkgdesc = Release Rust packages without using the command line
+	pkgver = 0.4.0
+	pkgrel = 1
+	url = https://github.com/MarcoIeni/release-plz
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	makedepends = git
+	depends = curl
+	depends = libcurl.so
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libgit2
+	depends = libgit2.so
+	depends = openssl
+	depends = libssl.so
+	depends = sqlite
+	depends = libsqlite3.so
+	depends = zstd
+	depends = libzstd.so
+	optdepends = cargo-semver-checks: check for API breaking changes
+	source = git+https://github.com/MarcoIeni/release-plz.git#tag=release-plz-v0.4.0
+	sha256sums = 0843a94c72e2fc4bafc2e61e38ae28ee1429a5c5d3df648ccd7ae4f4e5e68774
+
+pkgname = release-plz

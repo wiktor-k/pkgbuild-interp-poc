@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-secrets-aws
+	pkgdesc = OpenBao Plugin - Generate AWS access credentials based on IAM policies
+	pkgver = 0.3.1
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-secrets-aws::git+https://github.com/openbao/openbao-plugins.git#tag=secrets-aws-v0.3.1
+	sha256sums = 48ba538b1a25d26dd8b9ce9462ae9360a2375ddc219b5357e41c51026f0a3513
+
+pkgname = openbao-plugin-secrets-aws

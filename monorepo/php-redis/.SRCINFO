@@ -1,0 +1,32 @@
+pkgbase = php-redis
+	pkgdesc = An API for communicating with the Redis key-value store
+	pkgver = 6.3.0
+	pkgrel = 2
+	url = https://github.com/phpredis/phpredis/
+	arch = x86_64
+	license = PHP-3.01
+	checkdepends = lsof
+	checkdepends = valkey
+	makedepends = liblzf
+	makedepends = zstd
+	makedepends = php-igbinary
+	makedepends = php-legacy-igbinary
+	depends = glibc
+	optdepends = valkey: use a local redis instance
+	source = php-redis-6.3.0.tar.gz::https://github.com/phpredis/phpredis//archive/6.3.0.tar.gz
+	sha512sums = 44050095de7815547ca6f0ae263ea3a71eb7d1db9164cbc1df496ac25698546ae8fd3b9bd98863039b8ea5116f36f2d0fb3063370ab427b15472628939d8c7c5
+	b2sums = c35bb8b5d487c9350e4e988de48ba25dfdaf094d66fd390fc09959635cc78ae70860a3e3d617acea24f33e1f72886d39465df362eea72b0f322e058926333c41
+
+pkgname = php-redis
+	depends = glibc
+	depends = liblzf.so
+	depends = libzstd.so
+	depends = php-igbinary
+	backup = etc/php/conf.d/redis.ini
+
+pkgname = php-legacy-redis
+	depends = glibc
+	depends = liblzf.so
+	depends = libzstd.so
+	depends = php-legacy-igbinary
+	backup = etc/php-legacy/conf.d/redis.ini

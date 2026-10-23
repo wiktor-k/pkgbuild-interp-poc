@@ -1,0 +1,34 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=qsopt-ex
+pkgver=2.5.10.3
+pkgrel=2
+pkgdesc='Exact linear programming solver'
+arch=(x86_64)
+url='https://github.com/jonls/qsopt-ex'
+license=(GPL-3.0-or-later)
+depends=(bzip2
+         glibc
+         gmp
+         zlib)
+makedepends=(git)
+source=(git+https://github.com/jonls/qsopt-ex#tag=v$pkgver)
+sha256sums=('b963557f0a15efd843eff155b1b8962f60339834a2d90d1439fb2d3a6c25e0b9')
+
+prepare() {
+  cd qsopt-ex
+  autoreconf -vi
+}
+
+build() {
+  cd qsopt-ex
+  ./configure \
+    --prefix=/usr \
+    --disable-static
+  make
+}
+
+package() {
+  cd qsopt-ex
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,43 @@
+# Maintainer:  Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Maintainer:  Christian Hesse <mail@eworm.de>
+# Contributor: Jon Eyolfson <jon@eyolfson.com>
+
+pkgname=gitolite
+pkgver=3.6.15
+pkgrel=1
+pkgdesc='An access control layer on top of git'
+url='https://github.com/sitaramc/gitolite'
+arch=('any')
+license=('GPL-2.0-or-later')
+depends=('git' 'perl' 'openssh')
+optdepends=('perl-json: json output')
+install=gitolite.install
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        '0001-perl-sys-hostname.patch'
+        'gitolite-sysusers.conf'
+        'gitolite-tmpfiles.conf')
+sha256sums=('9c354234446680d3a890c5cf754679541fe6e41419ab02fbf4fe8cc3989a6b33'
+            '60775fcf967599ba2d48cdb21591a3150c7314f74e50579b040fc6bc05f0325f'
+            'ba1b125fc8541aab6884559450e0f7121734112bfb4bec6646819b94da17efb9'
+            '5682190c639618cd4744d3ae193425df1044dde4fb36acf03fc4d20423eeb10c')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  echo "${pkgver}" > src/VERSION
+
+  patch -Np1 < ../0001-perl-sys-hostname.patch
+}
+
+package() {
+  # create directories
+  install -d "${pkgdir}"/usr/{bin,lib/gitolite}
+
+  # install files and create symlink
+  cp -a "${pkgname}-${pkgver}"/src/* "${pkgdir}"/usr/lib/gitolite
+  ln -s /usr/lib/gitolite/gitolite "${pkgdir}"/usr/bin/
+
+  # sysusers and tmpfiles files
+  install -D -m 0644 "${srcdir}"/gitolite-sysusers.conf "${pkgdir}"/usr/lib/sysusers.d/gitolite.conf
+  install -D -m 0644 "${srcdir}"/gitolite-tmpfiles.conf "${pkgdir}"/usr/lib/tmpfiles.d/gitolite.conf
+}

@@ -1,0 +1,78 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-console
+pkgver=1.38.0
+pkgrel=1
+pkgdesc='Beautiful logging for Ruby'
+arch=(any)
+url='https://github.com/socketry/console'
+license=(MIT)
+depends=(
+  ruby
+  ruby-fiber-annotation
+  ruby-fiber-local
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-sus
+  ruby-sus-fixtures-console
+)
+options=(!emptydirs)
+source=("git+${url}.git#tag=v$pkgver")
+sha512sums=('dcec4c7b923ebe79965631977524cba76875f602078b698a1dfe0bca1942d1877ccfc95f4f750d6861dd5387735fd24089e91d8585a2aa3d87417efc7e0e5c25')
+b2sums=('b17273c56bd94b505bb8eaf284ad7d0252e169ea981e74f1af7df340ed0cea4a883e35cd60b65fa0115ee096b10a896941120313a818a036d80139583af13df4')
+
+prepare() {
+  cd console
+
+  sed -r -e 's|~>|>=|g' -e '/signing_key/d' -i console.gemspec
+  sed -i \
+    -e '/group :maintenance/,/end/d' \
+    -e '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd console
+  gem build console.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    console-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd console
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd console
+  cp -a tmp_install/* "$pkgdir"/
+}

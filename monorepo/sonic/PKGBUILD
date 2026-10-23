@@ -1,0 +1,86 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Bruce Zhang
+
+pkgname=sonic
+pkgver=1.10.2
+pkgrel=1
+pkgdesc='Fast, lightweight & schema-less search backend'
+arch=(x86_64)
+url='https://github.com/valeriansaliou/sonic'
+license=(MPL-2.0)
+depends=(
+  rocksdb
+  zstd
+)
+makedepends=(
+  git
+  rust
+  clang
+  llvm
+)
+backup=(etc/sonic.cfg)
+conflicts=(libsonic)
+options=(!lto)
+source=(
+  "$pkgname::git+$url.git#tag=v$pkgver"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+)
+sha512sums=('0990a6e6b019d3fd24382516c805b78a9225dcdac89497118abb69bc91b791ce0cedc48d286e37aefcaefeb9231ebbcc77c514e76e7cb1f439dd4b2edfa718c0'
+            'f623f4076210f5387d3b3b6e61e0d45323a5d9fbc139a3a658d3f8c317cbf863976e0e9c604eb1f03ca42f2f339d733382961b2b73d33464ec8154d8a9e18475'
+            '93ab53db89436c0e2e9550c35872a470e7aa63b3fdbd969f4ecaa7a1c18f5270049165800e770d1db2d34fc729d34af825e7f14e0d6118dfe340c421cc62148f'
+            '62b0bb63ba2eda59d530b38aeaf581f5b5fc5187c4615694be9e4a7e38dcb5ed55367b461ac483ab3d6c931d1754b980c8e48b5518388b8476437d988956883b')
+b2sums=('e51d92eb23fb9275d6673beaf9b8e1938ea7f4efd4a94339b3e17ef987e1a45060e767216fbef39c562e9aaba66403b76a1d6d229b7fa680e9b39da1fa40bcce'
+        'f4e605968aa9cc8a5dccf98c60bbce77502e7bcba74f7d3d7ffbe6fedd7e7ac21006837d7c99cba0bf2dfc50a58fc78744861d16aa902dadbbb367ec26d7e0be'
+        'b3b30518c32a0caf2b605595535ab8c39f3077b93525f5db6f17f5d8951bd5d5f088a0bb21bab44891736e17936291d5153a846533a6d65eb34cfd6a24e41c7f'
+        'ea9795c42003660522d89156eced726bc7db686ef8545bc57504e55341982be2e2336e9d872ce17d5c1607e0cd98e9a2f28f5836bd60b56e510ec5fd59c77143')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  # link with system rocksdb
+  # https://github.com/rust-rocksdb/rust-rocksdb/issues/310#issuecomment-1537137868
+  export ROCKSDB_LIB_DIR="/usr/lib/"
+
+  # link with system zstd
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname"
+
+  cargo test --frozen -- --skip test_buffering
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+  )
+
+  # systemd integration
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/sonic.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/sonic.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/sonic.conf"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/sonic
+
+  # configuration
+  install -vDm644  config.cfg "$pkgdir/etc/sonic.cfg"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+}

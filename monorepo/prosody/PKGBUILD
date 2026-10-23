@@ -1,0 +1,86 @@
+# Maintainer: Daurnimator  <daurnimator@archlinux.org>
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Dwayne Bent <dbb@dbb.io>
+# Contributor: Tilman Vatteroth <tilman.vatteroth@uni-dortmund.de>
+# Contributor: Paul-Sebastian Manole <brokenthorn@gmail.com>
+# Contributor: Timothée Ravier <tim@siosm.fr>
+# Contributor: Christoph Stahl <christoph.stahl@uni-dortmund.de>
+
+pkgname=prosody
+epoch=1
+pkgver=13.0.7
+pkgrel=2
+pkgdesc="Lightweight and extensible Jabber/XMPP server written in Lua"
+arch=('x86_64')
+url="https://prosody.im/"
+license=('MIT')
+depends=('lua54'
+         'lua54-sec'
+         'lua54-socket'
+         'lua54-expat'
+         'lua54-filesystem'
+         'icu'
+         'openssl')
+optdepends=(#'lua-event: libevent support'
+            'lua54-dbi: SQL storage support'
+            'luarocks: plugin manager')
+install=prosody.install
+backup=('etc/prosody/prosody.cfg.lua')
+validpgpkeys=('32A9EDDE3609931EB98CEAC315907E8E7BDD6BFE'
+              '3E52119EF853C59678DBBF6BADED9A77B67AD329'
+              'C01A477A8F69E6E57F5C54CDE7AB958013F1F1D5')
+source=("https://prosody.im/downloads/source/prosody-$pkgver.tar.gz"{,.asc}
+        'prosody.tmpfiles'
+        'prosody.logrotated'
+        'sysuser.conf'
+        'prosody.service')
+sha256sums=('f671df3c7535c7269afc89579ea26fc13d1006b40ef5df4ccb71a560197f151b'
+            'SKIP'
+            '0753bd9260f1cfdce6e18e01a61e320b396acfe9fca8ccf3250653bfa6af997e'
+            '5a2466b73bd069fb73be97a4e23b24e4c8dd1adb7db871cb8f5ab4094c1f967f'
+            '211295ad5fe71742a8ec4a4420da31720e3bb407c6653250f9c6c7574e44f14e'
+            'ff3c5517a143b5572908a9b085e03567294a03e7ca34b02bb20ba142edcc6334')
+
+prepare() {
+  cd prosody-$pkgver
+
+  # disable logging to output and activate syslog
+  sed -i s/"info = "/"-- info = "/g prosody.cfg.lua.dist
+  sed -i s/"error = "/"-- error = "/g prosody.cfg.lua.dist
+  sed -i s/"--\ \"\*syslog\"\;"/"info = \"*syslog\"\;"/g prosody.cfg.lua.dist
+}
+
+build() {
+  cd "prosody-${pkgver}"
+
+  ./configure \
+    --ostype=linux \
+    --prefix=/usr \
+    --sysconfdir=/etc/prosody \
+    --datadir=/var/lib/prosody \
+    --cflags="${CPPFLAGS} ${CFLAGS} -fPIC -D_GNU_SOURCE" \
+    --ldflags="${LDFLAGS} -shared" \
+    --no-example-certs \
+    --with-random=getrandom \
+    --with-lua-include=/usr/include/lua5.4/
+  make
+}
+
+package() {
+  cd "prosody-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+  make DESTDIR="${pkgdir}" install -C tools/migration
+
+  install -Dm644 "${srcdir}"/prosody.tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/prosody.conf
+  install -Dm644 "${srcdir}"/prosody.service "${pkgdir}"/usr/lib/systemd/system/prosody.service
+  install -Dm644 "${srcdir}"/sysuser.conf "${pkgdir}"/usr/lib/sysusers.d/prosody.conf
+
+  for i in tools/*.lua; do
+    install -Dm644 "${i}" "${pkgdir}/usr/share/prosody/${i}"
+  done
+
+  install -Dm644 COPYING "${pkgdir}"/usr/share/licenses/prosody/COPYING
+  install -Dm644 "${srcdir}"/prosody.logrotated "${pkgdir}"/etc/logrotate.d/prosody
+  rm -- "${pkgdir}"/etc/prosody/certs/*
+}

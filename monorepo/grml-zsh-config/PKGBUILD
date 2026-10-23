@@ -1,0 +1,31 @@
+# Maintainer: Pierre Schmitz <pierre@archlinux.de>
+
+pkgname=grml-zsh-config
+pkgver=0.20.2
+pkgrel=1
+pkgdesc="grml's zsh setup"
+arch=('any')
+url='https://grml.org/zsh/'
+license=('GPL2')
+provides=('grmlzshrc')
+depends=('zsh' 'coreutils' 'grep' 'sed' 'procps')
+makedepends=('git' 'asciidoctor')
+validpgpkeys=('7D1ACFFAD9E0806C9C4CD3925C13D6DB93052E03'  # Christian Hofstaedtler <christian@hofstaedtler.name>
+              '33CCB136401AFEC843A3876396A87872B7EA3737') # Michael Prokop <mail@michael-prokop.at>
+source=("git+https://github.com/grml/grml-etc-core.git?signed#tag=v${pkgver}")
+sha256sums=('881b8fab0585eb2575a192d04e82e5f4bfef9305c35caaa94a61ca8393eb8871')
+
+build() {
+	cd "${srcdir}/grml-etc-core/doc"
+	make
+}
+
+package() {
+	cd "${srcdir}/grml-etc-core"
+	install -D -m644 etc/skel/.zshrc "${pkgdir}/etc/skel/.zshrc"
+	install -D -m644 etc/zsh/keephack "${pkgdir}/etc/zsh/keephack"
+	install -D -m644 etc/zsh/zshrc "${pkgdir}/etc/zsh/zshrc"
+
+	install -D -m644 doc/grmlzshrc.5 "${pkgdir}/usr/share/man/man5/grmlzshrc.5"
+	ln -sf grmlzshrc.5.gz "${pkgdir}/usr/share/man/man5/grml-zsh-config.5.gz"
+}

@@ -1,0 +1,43 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_name='inwx-domrobot'
+pkgname="python-${_name}"
+pkgver=3.2.0
+pkgrel=3
+pkgdesc='INWX API Python Client'
+arch=('any')
+url='https://github.com/inwx/python-client'
+license=('MIT')
+depends=(
+  python
+  python-requests
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('73cdf09e010a56cdbeebd67b4bc340770b1f092c84262e0df23a5777d9932b6270667b5f1bf82bf387cc9b8311130788a17f8ee2571ecc45a0fcc8097a85164e')
+b2sums=('b9e36b5f89849f93c9cbb8d6585175a4da5ad5e9819c3cc8901b7a3cf472258f1c475d3f8e31a753ccfb2cd08d8af593f8180b1178176bf2954767e3eebe2316')
+
+build() {
+  cd  "python-client-${pkgver}"
+
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+package() {
+  cd  "python-client-${pkgver}"
+
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+
+  install --verbose -D --mode=0644 LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

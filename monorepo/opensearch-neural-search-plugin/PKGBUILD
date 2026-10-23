@@ -1,0 +1,33 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=opensearch-neural-search-plugin
+pkgver=3.9.0.0
+pkgrel=1
+_opensearchver=3.9.0
+_jdkver=21
+pkgdesc="OpenSearch Neural Search Plugin"
+arch=('x86_64')
+# No docs website available yet
+url="https://github.com/opensearch-project/neural-search"
+license=('Apache-2.0')
+depends=("opensearch=${_opensearchver}")
+makedepends=("java-environment=${_jdkver}" 'unzip')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/opensearch-project/neural-search/archive/${pkgver}.tar.gz")
+sha256sums=('a05fb4763a8b8a215e89ddc5a02f39a7de5156e34f228b3e95dc9905c6b790cb')
+
+build() {
+  cd "neural-search-${pkgver}"
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  export GRADLE_OPTS="-Dbuild.snapshot=false -Dopensearch.version=${_opensearchver}"
+  # test and integTest require the native sparse engine (cmake, git submodule)
+  ./gradlew assemble
+}
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/opensearch/plugins/opensearch-neural-search"
+  cd "${pkgdir}/usr/share/opensearch/plugins/opensearch-neural-search"
+  unzip "${srcdir}/neural-search-${pkgver}/build/distributions/opensearch-neural-search-${pkgver}.zip"
+
+  install -Dm644 "${srcdir}/neural-search-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,81 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: Luca Weiss <luca (at) z3ntu (dot) xyz>
+# Contributor: Konstantinos Sideris <siderisk at auth dot gr>
+
+pkgname=nheko
+pkgver=0.12.1
+pkgrel=7
+pkgdesc="Desktop client for the Matrix protocol"
+arch=('x86_64')
+url="https://nheko.im/nheko-reborn/nheko"
+license=(GPL-3.0-or-later)
+depends=(qt6-base qt6-svg qt6-multimedia qtkeychain-qt6 \
+         qt6-declarative qt6-imageformats coeurl mtxclient lmdb cmark libolm hicolor-icon-theme \
+         kdsingleapplication gst-plugins-bad-libs 'org.freedesktop.secrets')
+optdepends=('qt6-jdenticon: Auto-generated profile pictures (identicons)'
+            'kimageformats: Extends the formats nheko supports for image attachments'
+            'gst-plugins-base-libs: VoIP/Video calls' 
+            'gst-plugins-good: VoIP/Video calls'
+            'gst-plugins-bad: VoIP/Video calls'
+            'libnice: VoIP/Video calls'
+            'gst-libav: Video messages'
+            'gst-plugin-qml6: Video calls support')
+makedepends=(git cmake ninja qt6-tools fontconfig nlohmann-json asciidoc lmdbxx spdlog)
+source=("git+https://github.com/Nheko-Reborn/nheko.git?signed#tag=v${pkgver}")
+sha512sums=('c2d002e463b9bc3cb7fe52f156959b30c3adb1c0726f9b596302b5cebca724f25e2e33feaa361aaa9952687446d16c11d8bf19b3181df1fba354de405fb8e158')
+b2sums=('55697e5b306826c5ff20b332aa9bbb21bfbe7fd973fec7eb35830e0b5030e298d1c9f4c497da75fbcc5c4a5a116e9816a500fc8c4164fafd186dfaca4c6d2406')
+validpgpkeys=('D58B462425A6A37125C6FEDB9206AE1B231E05BB') # Nicolas Werner @deepbluev7 https://nheko.im/deepbluev7.gpg
+
+_backports=(
+  '2769642d3c7bd3c0d830b2f18ef6b3bf6a710bf4' # https://github.com/Nheko-Reborn/nheko/issues/1944
+  'af2ca72030deb14a920a888e807dc732d93e3714' # Fix build with Qt 6.10
+)
+
+_reverts=(
+)
+
+prepare() {
+  cd "$pkgbase"
+
+  local _c
+  for _c in "${_backports[@]}"; do
+    if [[ $_c == *..* ]]; then
+      git log --oneline --reverse "${_c}"
+    else
+      git log --oneline -1 "${_c}"
+    fi
+    git cherry-pick -n -m1 "${_c}"
+  done
+  for _c in "${_reverts[@]}"; do
+    git log --oneline -1 "${_c}"
+    git revert -n "${_c}"
+  done
+}
+
+build() {
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -S "$pkgname" \
+    -DCMAKE_BUILD_TYPE='None' \
+    -DCMAKE_INSTALL_PREFIX='/usr' \
+    -DCMAKE_INSTALL_LIBDIR='lib' \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_LIB_TESTS=OFF \
+    -DBUILD_LIB_EXAMPLES=OFF \
+    -Wno-dev
+  cmake --build build --verbose
+}
+
+package() {
+  depends+=(
+    mtxclient libmatrix_client.so
+    # lmdb liblmdb.so # https://bugs.archlinux.org/task/77537
+    spdlog libspdlog.so
+    # cmark libcmark.so # https://bugs.archlinux.org/task/77538
+    libolm libolm.so
+  )
+  DESTDIR="${pkgdir}" cmake --install build
+}
+

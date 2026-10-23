@@ -1,0 +1,29 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-clipman
+pkgver=0.2.8
+pkgrel=2
+pkgdesc="nwg-shell clipboard manager, a GTK3-based GUI for cliphist"
+url="https://github.com/nwg-piotr/nwg-clipman"
+arch=('any')
+license=('MIT')
+depends=('python' 'python-gobject' 'gtk3' 'gtk-layer-shell' 'cliphist' 'xdg-utils')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('61d98d605d5125f0dfc9804117908f110e3300b82ed97657cd9556df8b79b315')
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 644 "${pkgname}.svg" "${pkgdir}/usr/share/pixmaps/${pkgname}.svg"
+	install -Dm 644 "${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

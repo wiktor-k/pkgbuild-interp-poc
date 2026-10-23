@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cargo-bundle-licenses
+pkgver=4.2.0
+pkgrel=2
+pkgdesc="Bundle licensing of Rust dependencies"
+url="https://github.com/sstadick/cargo-bundle-licenses"
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=('cargo' 'glibc' 'libgcc')
+source=("${pkgname}-${pkgver}.tar.gz::https://crates.io/api/v1/crates/${pkgname}/${pkgver}/download")
+sha256sums=('250a2335d1c5ef791cfc90bee35c87cc7893e826e5b2342138f56bee44f3b4b5')
+b2sums=('06d3197f675eb21e7aed50248671569a038e824881d7bcdc45760fc3d15e7073555c362cd12a307c45846e6a7dce8bd84ef8ae77318449885cf213f4d5a7e83d')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 LICENSE-MIT -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

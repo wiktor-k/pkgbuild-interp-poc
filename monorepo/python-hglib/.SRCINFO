@@ -1,0 +1,22 @@
+pkgbase = python-hglib
+	pkgdesc = A library with a fast, convenient interface to Mercurial. It uses Mercurial's command server for communication with hg.
+	pkgver = 2.6.2
+	pkgrel = 9
+	url = https://pypi.python.org/pypi/python-hglib
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = mercurial
+	source = https://files.pythonhosted.org/packages/fb/11/1cfa47d5e2aa45f6a803fcdf4484f8255383221ccb2f521d9010afca0d8d/python-hglib-2.6.2.tar.gz
+	source = 0001-hglib-tests-migrate-away-from-unmaintained-nose.patch
+	source = 0002-hglib-tests-remove-deprecated-constructions.patch
+	sha256sums = b18bd1ed53c90ee57d5714d66ad6bb72b64e930d4aeca9830892c08bb28da608
+	sha256sums = 5b69740740cfae360b6b937ea69d32869ce4497ad791007eaf14a7cc94fa026f
+	sha256sums = f1f192046e36a1e1ae90742108d57d9d670a3a1482d731a6c5d86ab10c43411c
+
+pkgname = python-hglib

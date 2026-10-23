@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-keyboard
+pkgver=8.1.1
+pkgrel=1
+pkgdesc='Switchboard Keyboard Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-keyboard
+license=(GPL-2.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  libibus
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+  libxml2
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+source=(git+https://github.com/elementary/switchboard-plug-keyboard.git#tag=${pkgver})
+b2sums=('92f3dea6d500fe04fb8e64bc566d3638212b70351cfb138ae3ade37a8f0f4fac2e763e496191c04016b0db2bc773b02039ca49bd3cb508f4f09c2bb93774a622')
+
+build() {
+  arch-meson switchboard-plug-keyboard build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

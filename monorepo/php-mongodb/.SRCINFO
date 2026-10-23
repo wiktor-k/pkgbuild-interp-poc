@@ -1,0 +1,24 @@
+pkgbase = php-mongodb
+	pkgdesc = MongoDB driver for PHP
+	pkgver = 2.5.5
+	pkgrel = 1
+	url = https://pecl.php.net/package/mongodb
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = php-legacy
+	makedepends = php
+	makedepends = re2c
+	source = https://pecl.php.net/get/mongodb-2.5.5.tgz
+	source = mongodb.ini
+	sha512sums = 0d3821c8e1560e011ecfa3bfe97b4b041fdc0ffffc3d68a7f03afb7dd300d248121ed40e0a6a2f8e92a025fe7b9308f3c6eed9411a21eea76a13404357490bd9
+	sha512sums = 47b167ab4d761f4cf8351fef14e46c714dacae6d9a1b6d281bb87129499ee520f55f35f47c16b55ea2ecf41c67aad12439a99d3363d381b2511659b01f0b6ef0
+
+pkgname = php-mongodb
+	pkgdesc = MongoDB driver for PHP
+	depends = php
+	backup = etc/php/conf.d/mongodb.ini
+
+pkgname = php-legacy-mongodb
+	pkgdesc = MongoDB driver for PHP Legacy
+	depends = php-legacy
+	backup = etc/php-legacy/conf.d/mongodb.ini

@@ -1,0 +1,49 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=xcffib
+pkgname=haskell-xcffib
+pkgver=1.7.1
+pkgrel=5
+pkgdesc="A cffi-based python binding for X"
+url="https://github.com/tych0/xcffib"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-attoparsec' 'haskell-either' 'haskell-filemanip'
+         'haskell-optparse-applicative' 'haskell-split' 'haskell-xcb-types')
+makedepends=('ghc' 'uusi' 'haskell-hunit' 'haskell-test-framework'
+             'haskell-test-framework-hunit')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('4273a5622722981d50d0fee710f7d99e4d36e0a9de81a90c8fdee5cc6105ee728b0e5c51d74b8edd4a054d88937f2078d9a46941a1b2728e63da7b072922a012')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

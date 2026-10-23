@@ -1,0 +1,24 @@
+pkgbase = ueberzug
+	pkgdesc = Command line util which allows to display images in combination with X11
+	pkgver = 18.3.2
+	pkgrel = 1
+	url = https://github.com/ueber-devel/ueberzug
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = libxext
+	depends = libxres
+	depends = python-attrs
+	depends = python-docopt
+	depends = python-pillow
+	provides = python-ueberzug
+	replaces = python-ueberzug
+	options = !lto
+	source = https://github.com/ueber-devel/ueberzug/archive/18.3.2/ueberzug-18.3.2.tar.gz
+	sha256sums = c30c672611f1d5661916166ff6bf21c348354600d6662cb13823162b28cf9e78
+	b2sums = 530a33054b8d5c39ba7c553e9aac319ba4947212ebd88a913115fb23ec62cc9bc7cd8da9e87cf2c22ccb7fdf9173e7be4d827668232305e3112136b49d66c255
+
+pkgname = ueberzug

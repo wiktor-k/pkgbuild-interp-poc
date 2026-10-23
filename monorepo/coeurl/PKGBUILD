@@ -1,0 +1,44 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+# Contributor: Luca Weiss <luca (at) z3ntu (dot) xyz>
+
+pkgname=coeurl
+pkgver=0.3.2
+pkgrel=1
+pkgdesc="A simple async wrapper around CURL for C++"
+arch=("x86_64")
+url="https://nheko.im/nheko-reborn/coeurl"
+license=('MIT')
+depends=(glibc libgcc libstdc++)
+makedepends=(curl fmt libevent meson spdlog)
+provides=(libcoeurl.so)
+source=("https://nheko.im/nheko-reborn/coeurl/-/archive/v$pkgver/coeurl-v$pkgver.tar.gz")
+sha256sums=('84c1d76116bd118ee2c3a1c7913e2f2f7b20fff34628d09bd86eb349bfdaf1a7')
+b2sums=('ee453945ae9e700d288d88aa13f3455ede14d9d5e450f2750cee4b0210381d858934776740687fa42e59d9500361cbee0435db93e98dbea1a5c6af3d4eacb9e0')
+
+build() {
+  arch-meson $pkgname-v$pkgver build
+  meson compile -C build
+}
+
+# Tests fail 
+# - Needs cmake to properly detect doctest dependency https://github.com/doctest/doctest/issues/742
+# - Needs to enable them with `-D tests=true`
+# - Needs to execute ./scripts/run_testserver.sh and ./scripts/run_tls_testserver.sh prior to tests
+# check() {
+#   ninja test -C build
+# }
+
+package() {
+  depends+=(
+    curl libcurl.so
+    fmt libfmt.so
+    libevent libevent_{core,pthreads}-2.1.so
+    spdlog libspdlog.so
+  )
+
+  meson install -C build --destdir "$pkgdir"
+  install -vDm 644 $pkgname-v$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}
+
+# vim:set ft=sh sw=2 sts=2 et:

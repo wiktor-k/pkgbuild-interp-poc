@@ -1,0 +1,19 @@
+pkgbase = libre
+	pkgdesc = Portable library for real-time communications
+	pkgver = 4.6.0
+	pkgrel = 1
+	url = https://github.com/baresip/re
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cmake
+	depends = openssl
+	depends = zlib
+	provides = libre.so
+	conflicts = re
+	conflicts = librem
+	replaces = re
+	replaces = librem
+	source = libre-4.6.0.tar.gz::https://github.com/baresip/re/archive/v4.6.0.tar.gz
+	sha256sums = 811f19ed3df60f75070c07fc0eb5f767574e5b6dc2f12a679df04df381a43d88
+
+pkgname = libre

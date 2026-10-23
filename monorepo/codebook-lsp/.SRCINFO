@@ -1,0 +1,16 @@
+pkgbase = codebook-lsp
+	pkgdesc = Code-aware spell checker with language server implementation
+	pkgver = 0.3.42
+	pkgrel = 1
+	url = https://github.com/blopker/codebook
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = git+https://github.com/blopker/codebook.git#tag=v0.3.42
+	b2sums = e1e77bbe0793ce013cb9f3ff2c2cfc7fdc07fd9e01098ca296202a53d02bdd748eec999b1229d3f7ded616ad253bde2003ad93878819719bc19a11feb9d6c630
+
+pkgname = codebook-lsp

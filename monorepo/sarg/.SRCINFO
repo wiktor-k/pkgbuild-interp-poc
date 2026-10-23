@@ -1,0 +1,20 @@
+pkgbase = sarg
+	pkgdesc = Squid Analysis Report Generator
+	pkgver = 2.4.0
+	pkgrel = 4
+	url = http://sarg.sourceforge.net
+	arch = x86_64
+	license = GPL
+	makedepends = cmake
+	depends = gd
+	depends = libldap
+	backup = etc/sarg/css.tpl
+	backup = etc/sarg/exclude_codes
+	backup = etc/sarg/sarg.conf
+	backup = etc/sarg/user_limit_block
+	source = https://downloads.sourceforge.net/sourceforge/sarg/sarg-2.4.0.tar.gz
+	source = build-fix.patch
+	sha256sums = b4ca0f41f6467673b4c65c6798b44a8886f08180c055eb11c37a96dfc28cb5c3
+	sha256sums = a243156aed182fe8f0db1032d585b4966f56ab432085f581b91b8faf9ac0e973
+
+pkgname = sarg

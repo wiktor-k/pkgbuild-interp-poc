@@ -1,0 +1,20 @@
+pkgbase = snixembed
+	pkgdesc = proxy StatusNotifierItems as XEmbedded systemtray-spec icons
+	pkgver = 0.3.3
+	pkgrel = 2
+	url = https://git.sr.ht/~steef/snixembed
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = vala
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libdbusmenu-gtk3
+	source = git+https://git.sr.ht/~steef/snixembed#tag=0.3.3
+	source = avoid-massive-overlinking-by-using-gcc.patch
+	b2sums = 52d6990c0c57e67ad0a07f7ef725b185bd0de969210c077659779bdef82b800bc5c582b530dfe9f3be2d8d76697c3f020a4d436364f89feee56010a966e9e2d5
+	b2sums = b872b06388dedfe78fb1569b8ebf9e9d830873b9066592a085d687ab0d32cec65d2bd61df84cc63035e42a7be25f84bc64c418a6024d5c95c84089b66b3fe196
+
+pkgname = snixembed

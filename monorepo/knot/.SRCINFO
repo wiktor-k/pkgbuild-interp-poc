@@ -1,0 +1,32 @@
+pkgbase = knot
+	pkgdesc = High-performance authoritative-only DNS server
+	pkgver = 3.6.0
+	pkgrel = 1
+	url = https://www.knot-dns.cz/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = python-sphinx
+	depends = fstrm
+	depends = glibc
+	depends = gnutls
+	depends = libbpf
+	depends = libcap-ng
+	depends = libedit
+	depends = libgcc
+	depends = libidn2
+	depends = libmaxminddb
+	depends = libmnl
+	depends = libnghttp2
+	depends = libngtcp2
+	depends = liburcu
+	depends = libxdp
+	depends = lmdb
+	depends = protobuf-c
+	depends = systemd-libs
+	backup = etc/knot/knot.conf
+	source = git+https://gitlab.nic.cz/knot/knot-dns.git#tag=v3.6.0?signed
+	validpgpkeys = 742FA4E95829B6C5EAC6B85710BB7AF6FEBBD6AB
+	b2sums = f54978708189fdeb687ccbc9d864727c764970ed2ebd633a9d36b8c9ece8fa50f3e83a3f23f87f3704175385c0c6787240e0b2ffae43014de4d20e45a5687888
+
+pkgname = knot

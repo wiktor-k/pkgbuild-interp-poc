@@ -1,0 +1,31 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Johan Rehnberg <cleanrock@gmail.com>
+
+pkgname=naev
+pkgver=0.13.5
+pkgrel=2
+pkgdesc='2D action/rpg space game'
+arch=('x86_64')
+url="https://codeberg.org/naev/naev"
+license=('GPL3')
+depends=('glu' 'openal' 'libvorbis' 'sdl3' 'libgl' 'libxml2' 'freetype2' 'libpng' 'libzip'
+         'luajit' 'glpk' 'physfs' 'libunibreak' 'suitesparse' 'openblas' 'cmark' 'enet'
+         'opus' 'dav1d' 'libgit2')
+makedepends=('freeglut' 'zip' 'meson' 'git' 'python-yaml' 'rust' 'rust-bindgen')
+source=("https://codeberg.org/naev/naev/releases/download/v${pkgver}/naev-${pkgver}-source.tar.xz")
+sha512sums=('2431df5184767c6349d0db9d3e2f7fdd7873422a5d9251e95d0065ce7e26f5cacb0bf26d9e9cbdd7cfae10987c77063f617cf4e2565a35832c2818b1b84289b1')
+options=('!lto')
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  meson setup --buildtype=release -Dprefix=/usr -Dndata_path=/usr/share/naev/ndata build .
+  cd build
+  meson compile
+}
+
+package() {
+  cd "$pkgname-$pkgver/build"
+
+  DESTDIR="$pkgdir" meson install
+}

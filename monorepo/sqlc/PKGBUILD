@@ -1,0 +1,77 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Alkindi42
+
+pkgname=sqlc
+pkgver=1.31.1
+pkgrel=1
+pkgdesc='Compile SQL to type-safe Go'
+arch=(x86_64)
+url='https://sqlc.dev'
+license=(MIT)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+https://github.com/sqlc-dev/sqlc.git#tag=v$pkgver")
+sha512sums=('266faa6cd947893d39729b0a806f4035c8a32c411b1113acc0fa02bd017437844bc37fae3c903fcb70f0785b4d5fd38911625c1d58201108df35498394180a2e')
+b2sums=('3280ace5da831be3a9b222d1bb7a3f857cc2dc5c78b0c662b57a91285f3d5495b7ca97302ab48bf7d798982eee1cbaee7a5f7a456af228a35c1856f2ba18e766')
+
+prepare() {
+  cd "$pkgname"
+
+  # create folder for build output
+  mkdir -p build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  # build binary
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    -o build \
+    ./cmd/...
+
+  # generate shell completions
+  for sh in bash fish zsh; do
+    ./build/sqlc completion "$sh" > "build/$sh"
+  done
+}
+
+check() {
+  cd "$pkgname"
+
+  # skip internal/endtoend
+  rm -f internal/endtoend/endtoend_test.go
+
+  go test -v ./...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/sqlc
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # shell completions
+  install -vDm644 build/bash "$pkgdir/usr/share/bash-completion/completions/sqlc"
+  install -vDm644 build/fish "$pkgdir/usr/share/fish/vendor_completions.d/sqlc.fish"
+  install -vDm644 build/zsh "$pkgdir/usr/share/zsh/site-functions/_sqlc"
+}

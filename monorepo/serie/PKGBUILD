@@ -1,0 +1,49 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=serie
+pkgver=0.10.0
+pkgrel=1
+pkgdesc='A rich git commit graph in your terminal'
+url="https://github.com/lusingander/$pkgname"
+depends=(glibc # libc.so
+         libgcc)
+makedepends=(cargo
+             git)
+arch=(x86_64)
+license=(MIT)
+source=("git+$url#tag=v$pkgver")
+sha256sums=('5bb0ac7f23ee0c647c522ff96f5161f013dab35ba9ee84671b034e8a1d3babf2')
+
+_srcenv() {
+	cd "$pkgname"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --release --frozen
+}
+
+check() {
+	_srcenv
+	cargo test --frozen
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$pkgname"
+	install -Dm0755 "target/release/$pkgname" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/${pkgname}/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

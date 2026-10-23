@@ -1,0 +1,54 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Anthony25 <Anthony Ruhier>
+
+_pkgname=Flask-Migrate
+pkgname=python-flask-migrate
+pkgver=4.1.0
+pkgrel=2
+pkgdesc='SQLAlchemy database migrations for Flask applications using Alembic..'
+url='https://github.com/miguelgrinberg/Flask-Migrate/'
+arch=('any')
+license=('MIT')
+depends=(
+  python
+  python-alembic
+  python-click
+  python-flask
+  python-flask-sqlalchemy
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('253b7f6d27c9da82246507456d5e4eea0d6ae0b88f2b27a6748a2cb3e11e1ee5')
+sha512sums=('683842e3e5832cf3eaf6b7ee5e194c1eb2fe1b096d3360a64f2f0de5024e1fa4ebd8e0b6659a1c87ded47efd0e07cecf9d82807e1e64af99a18bb9b596261963')
+
+build() {
+  cd ${_pkgname}-${pkgver}
+  python -m build --wheel --no-isolation
+  make -j1 -C docs man text SPHINXBUILD=sphinx-build
+}
+
+check() {
+  cd ${_pkgname}-${pkgver}
+  python -m installer --destdir=tmp_install dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  PYTHONPATH="$PWD/tmp_install/$site_packages" pytest
+}
+
+package() {
+  cd ${_pkgname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" README.md CHANGES.md
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" docs/_build/text/*
+  install -vDm 644 docs/_build/man/flask-migrate.1 "$pkgdir/usr/share/man/man1/$pkgname.1"
+}
+
+# vim: ts=2 sw=2 et:

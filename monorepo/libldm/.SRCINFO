@@ -1,0 +1,26 @@
+pkgbase = libldm
+	pkgdesc = A tool and library for managing Microsoft Windows Dynamic Disks
+	pkgver = 0.2.5
+	pkgrel = 3
+	url = https://github.com/mdbooth/libldm
+	arch = x86_64
+	license = GPL3
+	license = LGPL3
+	makedepends = git
+	makedepends = systemd
+	makedepends = gtk-doc
+	depends = device-mapper
+	depends = glib2
+	depends = json-glib
+	depends = libreadline.so
+	depends = libuuid.so
+	depends = zlib
+	provides = ldmtool
+	provides = libldm-1.0.so
+	conflicts = ldmtool
+	source = git+https://github.com/mdbooth/libldm.git#tag=aa60557dc59b7aeeda5aaf694c71b7649340ab2f
+	source = ldmtool.service
+	b2sums = SKIP
+	b2sums = fa03762f3642959b8abd50e62f79cc23e0dfca49c7c7d661c38d49fd5282d5bd95ccf5b66562a7b005657312b4f4f72e92c4e75365f007ca09e8199b7ba9802a
+
+pkgname = libldm

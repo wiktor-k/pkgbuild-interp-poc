@@ -1,0 +1,15 @@
+pkgbase = lib32-lcms2
+	pkgdesc = Small-footprint color management engine, version 2 (32-bit)
+	pkgver = 2.17
+	pkgrel = 1
+	url = https://www.littlecms.com
+	arch = x86_64
+	license = MIT
+	makedepends = gcc-multilib
+	depends = lib32-libtiff
+	depends = lcms2
+	provides = liblcms2.so
+	source = https://github.com/mm2/Little-CMS/releases/download/lcms2.17/lcms2-2.17.tar.gz
+	sha512sums = 81885c70fb26a9b7d37a398f43ccb0d1d3ab8f43de7da8f760b26d053a0d7e0543e7d3b0cdcaf9b3b681a1b88f032134c5a3c1a6774a9abc66a8a3f10ba64398
+
+pkgname = lib32-lcms2

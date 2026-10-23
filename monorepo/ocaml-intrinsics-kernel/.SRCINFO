@@ -1,0 +1,17 @@
+pkgbase = ocaml-intrinsics-kernel
+	pkgdesc = OCaml interface to operations that have dedicated hardware instructions on some micro-architectures
+	pkgver = 0.17.2
+	pkgrel = 2
+	url = https://github.com/janestreet/ocaml_intrinsics_kernel
+	arch = x86_64
+	license = MIT
+	makedepends = dune
+	makedepends = git
+	depends = glibc
+	depends = ocaml
+	options = !debug
+	options = !strip
+	source = git+https://github.com/janestreet/ocaml_intrinsics_kernel#tag=v0.17.2
+	b2sums = 302c846b56387e43a567cee8eff8660270ec47d44f86721b3a00189e7c482e789d6f97605e5ea1ff2e862cda450ce63f990083932406e844449e8dc20b2e0f09
+
+pkgname = ocaml-intrinsics-kernel

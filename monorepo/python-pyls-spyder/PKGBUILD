@@ -1,0 +1,41 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-pyls-spyder
+pkgver=0.4.0
+pkgrel=8
+pkgdesc="Spyder extensions for the Python Language Server"
+arch=(any)
+url="https://github.com/spyder-ide/pyls-spyder"
+license=(MIT)
+depends=(
+  python
+  python-lsp-server
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('d14a78be98c1db0a37a2fffe2e6bd8955687a95af8524c852d434e57cdd157dda8f5ecceb19ad34527dedede4497c59fb7949a709d266803c2d8cd67c60380ce')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  pytest -v
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  rm -vr "$pkgdir/usr/lib/python$python_version/site-packages/pyls_spyder/tests"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

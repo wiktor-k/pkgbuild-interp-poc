@@ -1,0 +1,22 @@
+pkgbase = haskell-hadrian
+	pkgdesc = GHC build system
+	pkgver = 0.1.0.0+9.6.7
+	pkgrel = 30
+	url = https://gitlab.haskell.org/ghc/ghc
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ghc
+	makedepends = uusi
+	depends = ghc-libs
+	depends = haskell-base16-bytestring
+	depends = haskell-cryptohash-sha256
+	depends = haskell-extra
+	depends = haskell-quickcheck
+	depends = haskell-shake
+	depends = haskell-unordered-containers
+	source = https://downloads.haskell.org/~ghc/9.6.7/ghc-9.6.7-src.tar.xz
+	source = ghc-enable-ghci-for-riscv64.patch::https://gitlab.haskell.org/ghc/ghc/-/commit/dd38aca95ac25adc9888083669b32ff551151259.patch
+	sha256sums = d053bf6ce1d588a75cfe8c9316269486e9d8fb89dcdf6fd92836fa2e3df61305
+	sha256sums = 705c79d713e7344b5300c1b87eeb7faad31fa6bf65d5c164eb588606d58e803e
+
+pkgname = haskell-hadrian

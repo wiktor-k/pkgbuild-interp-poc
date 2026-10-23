@@ -1,0 +1,35 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Hugo Ideler <hugoideler@dse.nl>
+
+pkgname=pystatgrab
+pkgver=0.7.3
+pkgrel=2
+pkgdesc="Python bindings for libstatgrab"
+arch=('x86_64')
+url="https://www.i-scream.org/pystatgrab"
+license=('LGPL-2.1-or-later')
+depends=('python' 'libstatgrab')
+makedepends=('cython' 'python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+validpgpkeys=('4BD95F908A5040E8D26CD6816C226B37FDF38D55') # Tim Bishop <tim@bishnet.net>
+source=(https://ftp.i-scream.org/pub/i-scream/$pkgname/$pkgname-$pkgver.tar.gz{,.asc})
+sha256sums=('0d6572fb7f778467740f3fe72dfa3d0e65909d53db922891d6478f18e27bb56c'
+            'SKIP')
+
+prepare() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  # Remove shipped copy of statgrab.c so it is regenerated with
+  # newer Cython (>= 0.27.3) that is compatible with Python 3.7
+  rm statgrab.c
+}
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

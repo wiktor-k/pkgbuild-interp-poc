@@ -1,0 +1,51 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Adam Griffiths <adam_griffithsAATTdart.net.au>
+
+pkgname=ode
+pkgver=0.16.6
+pkgrel=2
+pkgdesc='High performance library for simulating rigid body dynamics'
+arch=('x86_64')
+url='https://bitbucket.org/odedevs/ode/'
+license=('LGPL-2.1-or-later OR BSD-3-Clause')
+depends=(
+  'bash'
+  'glibc'
+  'libgcc'
+  'libstdc++'
+)
+source=("$url/downloads/$pkgname-$pkgver.tar.gz")
+b2sums=('86a324feebe17aa889e3c0b2fa5d79fddb3736fa2b4306dc68ac18a3990d5c70c133f5f337d7b1c2283829e53dd9354791a3df002a59f4429b1f7798cfcbbcf6')
+
+prepare() {
+  cd $pkgname-$pkgver
+  ./bootstrap
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --enable-shared \
+    --enable-double-precision \
+    --enable-libccd \
+    --enable-ou \
+    --enable-silent-rules
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  DESTDIR="$pkgdir" make install
+  install -vDm644 ou/LICENSE-BSD.TXT "$pkgdir/usr/share/licenses/$pkgname/LICENSE-BSD.TXT"
+  install -vDm644 GIMPACT/GIMPACT-LICENSE-BSD.TXT "$pkgdir/usr/share/licenses/$pkgname/GIMPACT-LICENSE-BSD.TXT"
+  install -vDm644 libccd/BSD-LICENSE "$pkgdir/usr/share/licenses/$pkgname/BSD-LICENSE"
+}

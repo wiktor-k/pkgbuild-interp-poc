@@ -1,0 +1,48 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=mdbook-mermaid
+pkgver=0.17.1
+pkgrel=1
+pkgdesc="A preprocessor for mdbook to add mermaid support"
+arch=(x86_64)
+url="https://github.com/badboy/mdbook-mermaid"
+license=(
+  MPL-2.0
+  MIT
+)
+depends=(
+  libgcc
+  glibc
+  mdbook
+)
+makedepends=(rust)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  mermaid.LICENSE.txt::https://raw.githubusercontent.com/mermaid-js/mermaid/becadf0a7de509b6cc81e99a04abfa6cba8e7bfd/LICENSE
+)
+sha512sums=('f1b69d29031e45722fc9d88cd4537b6176784522d247d978c2ed5623146663a3e613358f432fc13c3631d2421de24f5b34594e01796e9f18a2e4636c8d716764'
+            '8f59d58fe107b318fd7e13e76b3f9aa36eff5257f04eed98b87d0da5f9db9dad832e26f7050af5c88b6634bb69ea60e6390ec5554865c016ca8e98580a0d4e53')
+b2sums=('b7e69b5fef6e7dcd7ef3e176aa7081803fa94dc3629d7344ba3c2e590a6183228e6cab26d138b9f7001cbd3a08310917dd4daad3bc054fc1907f2d70064c5b39'
+        '518f19395b9e2a99d0f8a063aad97abd6b54640ec6a89dd654978cff0a46116af4f46066d593b83376a3d50077e7a0297cf81cf2742e59d721cff552af0ab9b3')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname-$pkgver
+  cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname-$pkgver
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 ../mermaid.LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

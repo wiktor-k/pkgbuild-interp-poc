@@ -1,0 +1,22 @@
+pkgbase = vint
+	pkgdesc = Lint tool for Vim script Language
+	pkgver = 0.3.21
+	pkgrel = 6
+	url = https://github.com/Vimjas/vint
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-ansicolor
+	depends = python-chardet
+	depends = python-setuptools
+	depends = python-yaml
+	source = git+https://github.com/Vimjas/vint.git#tag=v0.3.21
+	source = vint-0.3.21-remove-pkg_resources.patch
+	b2sums = 0bf6770ecbf60d148c9ee269de4ca5a3b84e44e517b8a7001c06096c7acd902e686d3afe88d4d1a5ebe5d99a8b9186a394669b543af601a208e543f31d29c7d9
+	b2sums = 020066ddf7ef5d5fb29c8a42ae85c2dbfe109f6e1d0b94b065287fa86988b5bba728ab40233835c4306df4ca06a5f437f207b5806550f3ec0fcde82d63d0fe6e
+
+pkgname = vint

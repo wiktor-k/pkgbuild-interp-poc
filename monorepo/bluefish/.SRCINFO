@@ -1,0 +1,21 @@
+pkgbase = bluefish
+	pkgdesc = A powerful HTML editor for experienced web designers and programmers
+	pkgver = 2.2.19
+	pkgrel = 2
+	url = http://bluefish.openoffice.nl/
+	install = bluefish.install
+	arch = x86_64
+	license = GPL3
+	makedepends = gucharmap
+	makedepends = intltool
+	depends = gtk3
+	depends = enchant
+	depends = python
+	optdepends = gucharmap: for using the charmap plugin
+	source = https://www.bennewitz.com/bluefish/stable/source/bluefish-2.2.19.tar.bz2
+	source = https://www.bennewitz.com/bluefish/stable/source/bluefish-2.2.19.tar.bz2.sig
+	validpgpkeys = 64979277BAFF2D4CB637AC3B291C63A6B78DFBA1
+	sha512sums = e66de6b0a7181b824d50a7765f045754e57d9039df08b874b0abc0a3bab43210162ff495ac778dbd8f3a707f70f16d44dbaa62c62b6d0aad3c8d110082fe36bd
+	sha512sums = SKIP
+
+pkgname = bluefish

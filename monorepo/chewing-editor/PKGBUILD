@@ -1,0 +1,39 @@
+# Maintainer: Chih-Hsuan Yen <yan12125@archlinux.org>
+# Contributor: Chocobo1 <chocobo1 AT archlinux DOT net>
+
+pkgname=chewing-editor
+pkgver=0.1.2
+pkgrel=1
+pkgdesc="Cross platform chewing user phrase editor"
+arch=('x86_64')
+url='https://chewing.im/'
+# https://github.com/chewing/chewing-editor/blob/0.1.1/README.md?plain=1#L98
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libchewing' 'qt5-base')
+makedepends=('cmake' 'qt5-tools' 'help2man' 'gtest' 'gmock')
+checkdepends=('valgrind')
+source=("https://github.com/chewing/$pkgname/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('3b228268325dc7d0e78063ee89ec6c505b9ab5e7b674df7723d7a1a100651dc0')
+
+build() {
+    cmake -S $pkgname-$pkgver -B build \
+      -DCMAKE_INSTALL_PREFIX="/usr" \
+      -DCMAKE_BUILD_TYPE=None
+
+    # Building the man page needs running `chewing-editor --version`, so
+    # preparing an environment for Qt
+    export XDG_RUNTIME_DIR="$PWD""$(mktemp -d runtimer_dir_XXXXXX)"
+    QT_QPA_PLATFORM=offscreen make -C build
+}
+
+check() {
+    cd build
+
+    make test
+}
+
+package() {
+    cd build
+
+    make DESTDIR="$pkgdir" install
+}

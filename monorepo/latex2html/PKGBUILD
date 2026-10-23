@@ -1,0 +1,39 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Jochem Kossen <j.kossen@home.nl>
+# Contributor: Jason Chu <jason.archlinux.org>
+
+pkgname=latex2html
+pkgver=2026
+pkgrel=1
+pkgdesc='a convertor written in Perl that converts LaTeX documents to HTML'
+arch=(any)
+url="https://www.ctan.org/pkg/$pkgname"
+_url="https://github.com/$pkgname/$pkgname"
+depends=(ghostscript
+         giflib
+         libpng
+         netpbm
+         perl
+         texlive-basic)
+license=(GPL2)
+_archive="$pkgname-$pkgver"
+source=("$_url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('f91c0c9bc8dbcadbba883f912f9d1cd2382b563fd754456488a95c120f24331e')
+
+build() {
+	cd $pkgname-$pkgver
+	./configure \
+		--prefix=/usr \
+		--shlibdir="/usr/lib/$pkgname" \
+		--with-texpath=/usr/share/texmf/tex/latex/html \
+		--enable-gif \
+		--enable-png
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+	make DESTDIR="$pkgdir" install
+}

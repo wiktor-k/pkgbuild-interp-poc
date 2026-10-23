@@ -1,0 +1,51 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: ml <ml-aur@ransomware.download>
+
+pkgname=kind
+pkgver=0.33.0
+pkgrel=1
+pkgdesc='Kubernetes IN Docker - local clusters for testing Kubernetes'
+arch=('aarch64' 'x86_64')
+url='https://kind.sigs.k8s.io/'
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=(
+    'git'
+    'go'
+)
+optdepends=(
+    'docker: docker node provider'
+    'podman: podman node provider'
+    'nerdctl: nerdctl node provider'
+)
+source=("git+https://github.com/kubernetes-sigs/kind.git#tag=v$pkgver")
+sha256sums=('3a212279237dd300c8369debc7a5fd91fe58087570e76fc9dd39556930560362')
+
+build() {
+    cd "$pkgname"
+    export CGO_ENABLED=1
+    export CGO_CFLAGS="$CFLAGS"
+    export CGO_CPPFLAGS="$CPPFLAGS"
+    export CGO_CXXFLAGS="$CXXFLAGS"
+    export CGO_LDFLAGS="$LDFLAGS"
+    export GOFLAGS='-buildmode=pie -modcacherw -trimpath'
+
+    # Defined but not used in tagged release.
+    # -X=sigs.k8s.io/kind/pkg/cmd/kind/version.gitCommit=
+    # -X=sigs.k8s.io/kind/pkg/cmd/kind/version.gitCommitCount=
+    # https://github.com/kubernetes-sigs/kind/blob/v0.27.0/Makefile#L61
+    go build -o "$pkgname" -ldflags="-buildid= -linkmode=external"
+
+    ./"$pkgname" completion bash >completion.bash
+    ./"$pkgname" completion fish >completion.fish
+    ./"$pkgname" completion zsh >completion.zsh
+}
+
+package() {
+    cd "$pkgname"
+
+    install -Dm755 "$pkgname" -t "$pkgdir"/usr/bin
+    install -Dm644 completion.bash "$pkgdir"/usr/share/bash-completion/completions/"$pkgname"
+    install -Dm644 completion.fish "$pkgdir"/usr/share/fish/vendor_completions.d/"$pkgname".fish
+    install -Dm644 completion.zsh "$pkgdir"/usr/share/zsh/site-functions/_"$pkgname"
+}

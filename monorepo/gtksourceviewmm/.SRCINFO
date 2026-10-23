@@ -1,0 +1,31 @@
+pkgbase = gtksourceviewmm
+	pkgdesc = C++ bindings for the gtksourceview library
+	pkgver = 3.91.1
+	pkgrel = 2
+	epoch = 1
+	url = https://gitlab.gnome.org/GNOME/gtksourceviewmm
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = gtkmm3-docs
+	makedepends = mm-common
+	depends = atkmm
+	depends = cairomm
+	depends = glib2
+	depends = glibc
+	depends = glibmm
+	depends = gtk3
+	depends = gtkmm3
+	depends = gtksourceview4
+	depends = libgcc
+	depends = libsigc++
+	depends = libstdc++
+	depends = pangomm
+	source = git+https://gitlab.gnome.org/GNOME/gtksourceviewmm.git#tag=3.91.1
+	b2sums = 25f6fc2f05b947153fd69f6d20c45261c15c453d74b4609d04d97dad6731fd6d754f4244879137b6399206c79e7db33a328764faa669413b974ba92703206e76
+
+pkgname = gtksourceviewmm
+
+pkgname = gtksourceviewmm-docs
+	pkgdesc = Developer documentation for gtksourceviewmm
+	depends = gtkmm3-docs

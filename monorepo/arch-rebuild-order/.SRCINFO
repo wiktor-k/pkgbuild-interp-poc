@@ -1,0 +1,19 @@
+pkgbase = arch-rebuild-order
+	pkgdesc = CLI tool to determine the rebuild order of provided package(s)
+	pkgver = 0.4.5
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/archlinux/arch-rebuild-order
+	arch = x86_64
+	groups = archlinux-tools
+	license = MIT
+	makedepends = cargo
+	makedepends = mandown
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libalpm.so
+	source = git+https://gitlab.archlinux.org/archlinux/arch-rebuild-order.git?signed#tag=v0.4.5
+	validpgpkeys = E499C79F53C96A54E572FEE1C06086337C50773E
+	sha512sums = c591949598c0736b84e18742b084d1eb9c460f6d09eadb0fa3f69be2bcb89f4af9e478ed0cc5fc8fbe1db41a6544f386f87e3e30d16ef47860caa03934869af0
+
+pkgname = arch-rebuild-order

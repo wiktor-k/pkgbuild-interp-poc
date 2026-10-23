@@ -1,0 +1,70 @@
+# Maintainer: Leonidas Spyropoulos (artafinde@archlinux.org)
+# Contributor: scrawler@gmail.com
+
+pkgname=freeplane
+pkgver=1.13.3
+pkgrel=1
+pkgdesc="A Java mindmapping tool"
+arch=('any')
+url="http://freeplane.sourceforge.net"
+license=('GPL-2.0-only')
+_jdkver=17
+makedepends=(git 'gradle' "java-environment-openjdk=${_jdkver}" 'gnu-free-fonts' 'fontconfig' 'unzip')
+depends=("java-runtime>=11" "java-runtime<=21")
+source=("git+https://github.com/freeplane/freeplane.git#tag=release-${pkgver}"
+        "freeplane.run")
+b2sums=('10734e9cc9ace2199d7633aeaf48a54ef743a6ad7c842d513507504fb3c23512de80ddd2abc9325196eb7811833afdae0162663a1c67ae57d77898402ef94e8d'
+        '24ca56b7c7894b9bb38600b4d37973769243e1bdb221f33125b60bf4f878a3b630775710fab9dee97fa45a69319455037e294860ba7fbd608529982c6b0b1538')
+
+build() {
+  cd ${pkgname}
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  /usr/bin/gradle \
+    -Dorg.gradle.java.home="/usr/lib/jvm/java-${_jdkver}-openjdk" \
+    -Dorg.gradle.daemon=false \
+    binZip
+}
+
+check() {
+  cd ${pkgname}
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  /usr/bin/gradle \
+    -Dorg.gradle.java.home="/usr/lib/jvm/java-${_jdkver}-openjdk" \
+    -Dorg.gradle.daemon=false \
+    check
+}
+
+package() {
+  install -dm755 "$srcdir/${pkgname}/dist"
+  unzip -d "$srcdir/${pkgname}/dist" \
+    "${srcdir}/${pkgname}/DIST/${pkgname}_bin-${pkgver}.zip"
+
+  install -dm755 "${pkgdir}/usr/share/freeplane/"
+  cd "$srcdir/${pkgname}/dist/${pkgname}-${pkgver}"
+  cp -dr --no-preserve='ownership' core doc plugins resources scripts framework.jar freeplane.l4j.ini \
+    freeplane.png freeplane.policy freeplane.sh freeplaneConsole.l4j.ini freeplaneIcons.dll \
+    freeplanelauncher.jar init.xargs license.txt props.xargs \
+    "${pkgdir}/usr/share/freeplane/"
+
+  # Install license
+  install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
+  mv license.txt "${pkgdir}/usr/share/licenses/${pkgname}/license.txt"
+
+  # Install icons
+  install -Dm644 freeplane.png "${pkgdir}"/usr/share/icons/hicolor/32x32/apps/${pkgname}.png
+  install -Dm644 freeplane256.png "${pkgdir}"/usr/share/icons/hicolor/256x256/apps/${pkgname}.png
+  install -Dm644 freeplane.svg "${pkgdir}"/usr/share/icons/hicolor/scalable/apps/${pkgname}.svg
+
+  # Install the desktop entry
+  cd "$srcdir/${pkgname}/debian-meta-data"
+  install -Dm644 freeplane.desktop "${pkgdir}"/usr/share/applications/org.freeplane.App.desktop
+  install -Dm644 org.freeplane.App.metainfo.xml "${pkgdir}"/usr/share/metainfo/org.freeplane.App.metainfo.xml
+  install -Dm644 freeplane.sharedmimeinfo "${pkgdir}"/usr/share/mime/packages/freeplane.xml
+
+  # Install the executable script
+  install -Dm755 "${srcdir}/freeplane.run" "${pkgdir}"/usr/bin/freeplane
+}
+
+# vim:set ft=sh sw=2 sts=2 et:

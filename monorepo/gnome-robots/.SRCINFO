@@ -1,0 +1,27 @@
+pkgbase = gnome-robots
+	pkgdesc = Avoid the robots and make them crash into each other
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-robots
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = glycin
+	depends = glycin-gtk4
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/GNOME/gnome-robots.git#tag=50.0
+	b2sums = 8bc7f9004f1ddbafe9e556adf850a718eac9d03bbbe2155e7a590711321b3b3b408ce300f0e57998f94824994365e0383300c4f5a7d6bcb3b05f8b8abe64bbbc
+
+pkgname = gnome-robots

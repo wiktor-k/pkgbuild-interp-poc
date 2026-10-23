@@ -1,0 +1,20 @@
+pkgbase = signstar-configure
+	pkgdesc = Runtime configuration for Signstar hosts
+	pkgver = 0.1.1
+	pkgrel = 1
+	url = https://signstar.archlinux.page/signstar-configure
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = git
+	makedepends = just
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	depends = libusb
+	source = signstar::git+https://gitlab.archlinux.org/archlinux/signstar.git?signed#tag=signstar-configure/0.1.1
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 8b982962472ed85e9363c2224bf95092a4053313dd1258a25c71684e280a882e4eb3747a321a69ffada09eb50ac23a3a72c1b0c290ce51868a5da62ce28615b8
+	b2sums = cbb1411c31f18ca75a7bcddd92c0c3325aa67843a9a66b3ee1dfacd5386e8d1dc56b7acf3ba33a4b489629ab02b34b9df897471422c48866e1ac13130d84fc9a
+
+pkgname = signstar-configure

@@ -1,0 +1,28 @@
+pkgbase = hoel
+	pkgdesc = C Database abstraction library with json based language
+	pkgver = 1.4.29
+	pkgrel = 2
+	url = https://github.com/babelouest/hoel
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = git
+	makedepends = graphviz
+	makedepends = mariadb-libs
+	makedepends = ninja
+	makedepends = postgresql-libs
+	makedepends = sqlite
+	depends = glibc
+	depends = jansson
+	depends = liborcania.so
+	depends = libyder.so
+	optdepends = postgresql-libs: PostgreSQL support
+	optdepends = mariadb-libs: MariaDB support
+	optdepends = sqlite: SQLite support
+	provides = libhoel.so
+	source = git+https://github.com/babelouest/hoel.git#tag=33598d2c8defc4eeff208249b5bed67c7ed62e48
+	validpgpkeys = 8405B02FCC28EF9744C8F253FE82139440BD22B9
+	b2sums = SKIP
+
+pkgname = hoel

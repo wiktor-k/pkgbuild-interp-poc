@@ -1,0 +1,26 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+
+pkgname=python-icmplib
+_name=${pkgname#python-}
+pkgver=3.0.4
+pkgrel=5
+pkgdesc='Easily forge ICMP packets and make your own ping and traceroute'
+arch=(any)
+url='https://github.com/ValentinBELYN/icmplib'
+license=(LGPL-3.0-only)
+depends=(python)
+makedepends=(python-build python-installer python-setuptools python-wheel git)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('b0c2abf75424c9db4b59459d8284c81a23260580f9ccd357983e65382bd8f860c6798bf17ad4d3a597dedbf467d29a45d5509fb8a61fc74c8d2057455c332a28')
+
+build() {
+	cd $_name
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

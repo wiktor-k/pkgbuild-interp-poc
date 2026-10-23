@@ -1,0 +1,60 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=adljack
+pkgver=1.3.1
+pkgrel=3
+pkgdesc="A standalone synthesizer for ADLMIDI and OPNMIDI on the text console"
+arch=(x86_64)
+url="https://github.com/jpcima/adljack"
+license=(BSL-1.0)
+groups=(pro-audio)
+depends=(
+  bash
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  cmake
+  jack
+  liblo
+  ncurses
+  rtaudio
+  rtmidi
+)
+source=(
+  $url/releases/download/v$pkgver/$pkgname-$pkgver-src.tar.gz
+)
+sha512sums=('106d73396574fb161e02e3d67b4fc21188f3258abbea8ab1c68b366f9f7521470fe248a0b1fb7f76932cd872c904d0fe9aa2f700f99308a83e985b488fdac92e')
+b2sums=('f7b85570461e40f35e93379559abf071e21fbddfd84b88136ada88553f9f1002c0d869de3259e4840f9056e2e1784e758620a9c5e167506c77b80ed5e97664d3')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D USE_SYSTEM_RTAUDIO=ON
+    -D USE_SYSTEM_RTMIDI=ON
+    -S $pkgname-$pkgver-src
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    jack libjack.so
+    liblo liblo.so
+    ncurses libncursesw.so
+    rtaudio librtaudio.so
+    rtmidi librtmidi.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+}

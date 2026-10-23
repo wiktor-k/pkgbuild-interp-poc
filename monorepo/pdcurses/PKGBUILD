@@ -1,0 +1,27 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Felix Yan
+# Contributor: Serge Ziryukin <ftrvxmtrx@gmail.com>
+
+pkgname=pdcurses
+pkgver=3.9
+pkgrel=3
+pkgdesc='Cross-platform curses implementation (SDL2)'
+arch=(x86_64)
+url='https://pdcurses.org/'
+license=(GPL-2.0-or-later)
+makedepends=(git sdl2)
+source=("git+https://github.com/wmcbrine/PDCurses#commit=6c1f95c4fa9f9f105879c2d99dd72a5bf335c046") # tag: 3.9
+b2sums=('01efcf42f280669828deedd458ccf0c7f799cf848bbb39cce7f1c95ef4e1d8271c0e949eac67cdc1501bd90f02670b49e3698608b883476764cac3ccad75db38')
+
+build() {
+  cd PDCurses/sdl2
+  make
+  gcc $CFLAGS $LDFLAGS -shared -o pdcurses2.so *.o
+}
+
+package() {
+  cd PDCurses
+  install -Dm644 curspriv.h "$pkgdir/usr/include/curspriv.h"
+  install -Dm644 sdl2/pdcsdl.h "$pkgdir/usr/include/pdcsdl2.h"
+  install -Dm644 sdl2/pdcurses2.so "$pkgdir/usr/lib/libpdcurses2.so"
+}

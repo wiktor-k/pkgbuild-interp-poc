@@ -1,0 +1,18 @@
+pkgbase = osdbattery
+	pkgdesc = Displays battery information in the OSD style
+	pkgver = 1.4
+	pkgrel = 9
+	url = http://osdbattery.sourceforge.net/
+	install = osdbattery.install
+	arch = x86_64
+	license = GPL2
+	makedepends = patch
+	depends = xosd
+	source = https://downloads.sourceforge.net/sourceforge/osdbattery/osdbattery_1.4.tar.gz
+	source = sysfs.patch
+	source = showbatt
+	sha256sums = b1f775c746cd78b6aa7fc9ee75ecf2806ef3da93a42dd806c0414dcae55aed9f
+	sha256sums = d7a00e918929d36aaf3eb398649ea070ed6c4840e3da2407226fc5d9ae15d776
+	sha256sums = 69969053235642315b49fe6ea5df7f8c391befbf492fd4ff71afbf4d438333b2
+
+pkgname = osdbattery

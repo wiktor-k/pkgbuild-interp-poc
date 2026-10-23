@@ -1,0 +1,16 @@
+pkgbase = kompose
+	pkgdesc = Docker compose to Kubernetes transformation tool
+	pkgver = 1.38.0
+	pkgrel = 1
+	url = https://github.com/kubernetes/kompose
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	makedepends = jq
+	depends = glibc
+	options = !lto
+	source = https://github.com/kubernetes/kompose/archive/v1.38.0/kompose-1.38.0.tar.gz
+	b2sums = 67f5ef32d97b43d45b3ec0b459e13396b97ee26446361cfaea65a66345831d4c239a53db021601a50c170c25479abdd17d0978f59a62c89c2012dd3664e9b6e3
+
+pkgname = kompose

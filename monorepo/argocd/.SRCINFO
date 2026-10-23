@@ -1,0 +1,17 @@
+pkgbase = argocd
+	pkgdesc = Declarative continuous deployment for Kubernetes
+	pkgver = 3.5.5
+	pkgrel = 1
+	url = https://argo-cd.readthedocs.io/en/stable/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	makedepends = python
+	makedepends = corepack
+	depends = glibc
+	provides = argocd-cli
+	replaces = argocd-cli
+	source = argo-cd-3.5.5.tar.gz::https://github.com/argoproj/argo-cd/archive/v3.5.5.tar.gz
+	sha512sums = 5e7575643ca00baf90889c20543ae43a04fb050162ccd6fb2a409c9f8dad3d3f9a3506a638047fbf4fceef79c598ab948b5b53bb37ed08d952f2d536d8711fa2
+
+pkgname = argocd

@@ -1,0 +1,31 @@
+pkgbase = nsd
+	pkgdesc = Authoritative only, high performance and simple DNS server
+	pkgver = 4.15.3
+	pkgrel = 1
+	url = https://www.nlnetlabs.nl/nsd/
+	install = nsd.install
+	arch = x86_64
+	license = BSD
+	makedepends = git
+	makedepends = systemd
+	depends = openssl
+	depends = libevent
+	depends = fstrm
+	depends = protobuf-c
+	depends = systemd-libs
+	source = git+https://github.com/NLnetLabs/nsd.git#tag=NSD_4_15_3_REL
+	source = git+https://github.com/NLnetLabs/simdzone.git
+	source = nsd.service
+	source = nsd.sysusers
+	source = nsd.tmpfiles
+	validpgpkeys = EDFAA3F2CA4E6EB05681AF8E9F6F1C2D7E045F8D
+	validpgpkeys = C3E356788FAD0179D872D092BA811E62E7194568
+	validpgpkeys = 9E32AFD129E3AB1DC5AB34DE7DE08345DE34009F
+	validpgpkeys = DC34EE5DB2417BCC151E5100E5F8F8212F77A498
+	sha256sums = b487973a500550f887f693c40755a0fdaa7825831aefb5e35cb0d924c16fbef9
+	sha256sums = SKIP
+	sha256sums = 0f67e8cf910325107eeb9b455fc67ea4604f8e86c368fe25c42fcc93ac67ae9b
+	sha256sums = 12ce2a05fbb23bb38c31933530a7773f796e250691843b9da76f178f5e7c94f5
+	sha256sums = 07a31cecdc787c7ef44018dfc696115bd7b5d44b6e93f56c6c08ed0887d51579
+
+pkgname = nsd

@@ -1,0 +1,50 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-spimdisasm
+pkgver=1.42.4
+pkgrel=1
+pkgdesc='A matching MIPS disassembler API and front-ends with built-in instruction analysis'
+arch=(any)
+url='https://github.com/Decompollaborate/spimdisasm'
+license=(MIT)
+depends=(
+  python
+  python-rabbitizer
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  remove-twine.patch
+)
+sha512sums=('5a49a2e7ae00ee8fd1647fe10a6bb6b4b673f47ebfa341e201339e373cd3ad240e4efb3672ca13bc3e16c34314ca84d83864e4af2c0aaa745c7b5fb4ce4b002c'
+            'f6d0090433d7c91d857086eb8298ced06d1754e9fd4834e512f0d15f9f2ebe7a1f7414fa591adde8b89c08358e35fd057a592c448e2e728f4285f1a29523e388')
+b2sums=('dceb26366bea4b0aeafde59f2dc1c9c28d6176037b24b51f2af77beefa99cc387cd226cd84e20b9b18d4f03da02af9bfbeefa7fee5db7ed48428592b3a2753f0'
+        '81f8f913b9d489d037352760d1e625d6f43813ab76253ec583cbbe54f85907d9c879871ab9a81dae1b741d551ae8f7560443d89766116c43e6b1c54b60f4d7e2')
+
+prepare() {
+  cd "$pkgname"
+
+  # remove unnecessary dependency on twine
+  patch -p1 -i "$srcdir/remove-twine.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,114 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+pkgname=ruby-cucumber
+pkgver=11.1.1
+pkgrel=1
+pkgdesc="Behaviour Driven Development with elegance and joy"
+arch=(any)
+url='https://github.com/cucumber/cucumber-ruby'
+license=(MIT)
+depends=(
+  ruby
+  ruby-base64
+  ruby-builder
+  ruby-cucumber-ci-environment
+  ruby-cucumber-core
+  ruby-cucumber-cucumber-expressions
+  ruby-cucumber-gherkin
+  ruby-cucumber-html-formatter
+  ruby-cucumber-messages
+  ruby-diff-lcs
+  ruby-logger
+  ruby-mime-types
+  ruby-mini_mime
+  ruby-multi_test
+  ruby-sys-uname
+  ruby-rake
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-nokogiri
+  ruby-rspec
+  ruby-webrick
+)
+options=(!emptydirs)
+source=(
+  "git+https://github.com/cucumber/cucumber-ruby.git#tag=v$pkgver"
+)
+sha512sums=('f2f5d80a83486433343dbb527351f32fe2ce87cf83fad28ec3761aaf9029376db3be08cfd71188526a646ff10c31d2ce62908cb98a12f759663b687f4a038c5b')
+b2sums=('092336b8bd2cd899148f4a7d844b02ce44a44a8fdd04eaa3d48bb30435d25da97a5fbb05f10f2cdb894086f759cc962607570e4f4bc4240256854e51068068f0')
+
+prepare() {
+  cd cucumber-ruby
+
+  # Remove strict-mode code no longer provided by cucumber-core 19.
+  # https://github.com/cucumber/cucumber-ruby/pull/1848
+  git cherry-pick -n -X theirs d597b819714534d2b691096e149e3d7ce6795ccb
+
+  # Match the newer cucumber component dependency bounds used in Arch.
+  # https://github.com/cucumber/cucumber-ruby/pull/1897
+  git cherry-pick -n -X theirs 3d02a342e50333730e2ed9bb13ccd76993943994
+
+  # Backport compatibility with cucumber-core 19.
+  # https://github.com/cucumber/cucumber-ruby/pull/1904
+  git cherry-pick -n -X theirs 433b4aa1b092e0a46dd74b18210cb7680e84df48
+
+  # Let cucumber-core 19 generate message formatter lifecycle envelopes.
+  # https://github.com/cucumber/cucumber-ruby/pull/1882
+  git cherry-pick -n -X theirs f50e7e2c97df4b13c72f95077a6cdcf67dd63669
+
+  sed -i \
+    -e '/capybara/d' \
+    -e 's|~>|>=|' \
+    -e "s/, '< [0-9]\+'//" \
+    cucumber.gemspec
+  sed -i '/[rR]ubo[cC]op/d' Rakefile
+
+  rm Gemfile
+
+  sed -i -e 's/bundle exec //' gem_tasks/cck.rake compatibility/cck_spec.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd cucumber-ruby
+  gem build cucumber.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    cucumber-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd cucumber-ruby
+  # cck disabled: "ci" is not supported in latest cucumber-messages
+  PATH="$PWD/tmp_install/usr/bin:$PATH" GEM_HOME="tmp_install/$_gemdir" rake spec cucumber
+}
+
+package() {
+  cd cucumber-ruby
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

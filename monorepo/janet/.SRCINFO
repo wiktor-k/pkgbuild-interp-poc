@@ -1,0 +1,21 @@
+pkgbase = janet
+	pkgdesc = A dynamic language and bytecode vm
+	pkgver = 1.42.1
+	pkgrel = 1
+	url = https://janet-lang.org
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = meson
+	optdepends = jpm: janet project manager
+	optdepends = janet-spork: various Janet utility modules
+	options = staticlibs
+	source = janet::git+https://github.com/janet-lang/janet#tag=v1.42.1
+	source = tmpfiles.conf
+	sha512sums = 4e9be629f2c2cccd55683d17035b0eb7c47cbb5b67e9041a5d7927d542b5a249dfd7d9390b833d21627901d64f72b3cfe7927cbbba2ff0ca81cc3009dbf90342
+	sha512sums = ea9a756509f989dc3a8250040027a9460be2569a6d7a1bd49c2d94db939605a1976815b4856cb1d5bed0c707216bdeb257e16294c09bb63d8e9ca9272f834e5b
+	b2sums = 8be94705f37d3fa454a331d2ed78f6bcdcb0b998c80054b7835943fbd9e7290aa2126444f3ef91f591db8d283ec99df5a5e7addd6295a52d8af398c4a0abd2c8
+	b2sums = c375e10b953377cb61d67aba571ac8b5959ea6cccbb7b5cdf9c800befc260e39d8d43615f487b64c729ad0bc0c0757f8c212a38276eab03d4f38bce48e09fa2e
+
+pkgname = janet
+	depends = glibc

@@ -1,0 +1,57 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: "Amhairghin" Oscar Garcia Amor (https://ogarcia.me)
+# Contributor: Jef Roosens
+
+pkgname=cinny-desktop
+pkgver=4.12.7
+pkgrel=1
+pkgdesc='Matrix client focusing primarily on a simple, elegant and secure interface.'
+arch=('x86_64')
+url='https://cinny.in/'
+license=('AGPL-3.0-only')
+depends=(
+	'dbus' 'glibc' 'gst-plugins-good' 'libgcc' 'openssl' 'sqlite'
+
+	# tauri
+	'cairo' 'desktop-file-utils' 'gdk-pixbuf2' 'glib2' 'gtk3'
+	'hicolor-icon-theme' 'libsoup3' 'pango' 'webkit2gtk-4.1'
+)
+makedepends=('nodejs' 'npm' 'rust')
+source=(
+	"https://github.com/cinnyapp/$pkgname/releases/download/v$pkgver/$pkgname-v$pkgver.zip"
+	"disable-updater.patch"
+)
+sha256sums=('6d8fcebf96d0c798507cdb93d356d7815e7ed2a8776c0c19673198b85aeb44d5'
+            '6e22ff3aeb9ccb9f9a68511187ea2d461060d3d2772715905fed6d0c102839ae')
+options=('!lto') # 'ring' crate does not compile with LTO enabled
+
+prepare() {
+	cd $pkgname
+
+	# Don’t try to sign the Appimage that we don’t build.
+	patch -Np1 -i ../disable-updater.patch
+
+	npm ci
+
+	cd src-tauri
+	cargo fetch --locked --target host-tuple
+
+	cd ../cinny
+	npm ci
+}
+
+build() {
+	cd $pkgname
+	npm run tauri build -- --bundles deb -- --frozen --no-default-features --features custom-protocol
+}
+
+package() {
+	cd $pkgname
+
+	case "$CARCH" in
+	aarch64) pkgarch="arm64" ;;
+	x86_64) pkgarch="amd64" ;;
+	esac
+
+	cp -a src-tauri/target/release/bundle/deb/Cinny_${pkgver}_$pkgarch/data/* "$pkgdir"
+}

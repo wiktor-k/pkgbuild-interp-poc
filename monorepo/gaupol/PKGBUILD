@@ -1,0 +1,57 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Evangelos Foutras <foutrelis@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: FJ <joostef@gmail.com>
+# Contributor: Sebastien Piccand <sebcactus gmail com>
+
+pkgname=gaupol
+pkgver=2.0.1
+pkgrel=1
+pkgdesc='Editor for text-based subtitles'
+arch=(any)
+url='https://otsaloma.io/gaupol/'
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  graphene
+  gst-plugin-gtk4
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  iso-codes
+  libspelling
+  pango
+  python
+  python-charset-normalizer
+  python-gobject
+)
+makedepends=(git)
+optdepends=(
+  'gst-libav: Extra media codecs'
+  'gst-plugins-bad: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+)
+source=("git+https://github.com/otsaloma/gaupol.git?signed#tag=$pkgver")
+b2sums=(4832ec57b97d0f07afef3e182efe8b5b33922888679788bb9cd89cf2a4f0de6024dfab9bb6ccde8b2d349f662caa6420483c03ee8a5682fd82afab2065055b25)
+validpgpkeys=(8DD6B3FCDAB33C91EA915B913A584A9504CACA67) # Osmo Salomaa <otsaloma@iki.fi>
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+
+  # Remove bundled iso-codes
+  rm -r "$pkgdir/usr/share/gaupol/aeidon/data/iso-codes"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

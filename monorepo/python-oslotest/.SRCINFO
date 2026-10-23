@@ -1,0 +1,21 @@
+pkgbase = python-oslotest
+	pkgdesc = Oslo test framework
+	pkgver = 6.1.1
+	pkgrel = 1
+	url = https://github.com/openstack/oslotest
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-oslo-config
+	checkdepends = python-stestr
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-pbr
+	depends = python-fixtures
+	depends = python-subunit
+	depends = python-testtools
+	source = git+https://github.com/openstack/oslotest.git#tag=6.1.1
+	sha512sums = 28765888f59178d6a9546ff3cd22a19f04eadd27c3d0d4800455d4049519e304518308d5e456cfe4cb75b9d4320769c7b812016afa1f053c5b5a5baa0f7e616a
+
+pkgname = python-oslotest

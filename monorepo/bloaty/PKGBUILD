@@ -1,0 +1,55 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=bloaty
+pkgver=1.1
+pkgrel=29
+pkgdesc='Size profiler for binaries'
+arch=(x86_64)
+url='https://github.com/google/bloaty'
+license=('Apache-2.0')
+depends=(abseil-cpp capstone protobuf re2)
+makedepends=(cmake git ninja)
+source=("git+$url#commit=379d5305670c00c36a57e608079fd253f13bde63" # v1.1 + patches
+        "$pkgname-demumble::git+https://github.com/nico/demumble.git"
+        "$pkgname-googletest::git+https://github.com/google/googletest")
+b2sums=('211837ca607b8599275929f61f41005dbab6801cc66db529394ffe80392ffe6b5ab221e49e0d95d34e4d947f795ab41320d30cb3ac4e529b8254756518094399'
+         'SKIP'
+         'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  git submodule init
+
+  # Only need a some submodules, the rest is pulled from official packages
+  git config submodule.third_party/demumble.url "${srcdir}/${pkgname}"-demumble
+  git config submodule.third_party/googletest.url "${srcdir}/${pkgname}"-googletest
+  git -c protocol.file.allow=always submodule update third_party/{demumble,googletest}
+
+  # The presence of this file causes CMake to download the other submodules even if not needed.
+  rm --verbose ".gitmodules"
+}
+
+build() {
+  cmake \
+    -B build \
+    -D BLOATY_ENABLE_CMAKETARGETS=OFF \
+    -D BUILD_TESTING=On \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_EXE_LINKER_FLAGS_RELEASE="$LDFLAGS" \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -G Ninja \
+    -S $pkgname \
+    -W no-dev
+  ninja -C build
+}
+
+check() {
+  ninja -C build test
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+}

@@ -1,0 +1,72 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-regexp_parser
+pkgver=2.13.1
+pkgrel=1
+pkgdesc='A library for tokenizing, lexing, and parsing Ruby regular expressions'
+arch=(any)
+url='https://github.com/ammar/regexp_parser'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ragel6
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+)
+checkdepends=(
+  ruby-benchmark-ips
+  ruby-ice_nine
+  ruby-leto
+  ruby-regexp_property_values
+)
+options=(!emptydirs)
+source=(git+https://github.com/ammar/regexp_parser.git#tag=v$pkgver)
+sha256sums=('6bed4cb074ec86624484cc2efd4839ffbbfd1a7fda7af34750f06fbd3516e267')
+
+prepare() {
+  cd regexp_parser
+  sed -i -e '/gouteur/d' -e '/rubocop/d' Gemfile
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd regexp_parser
+  CI="true" rake build
+  gem build regexp_parser.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    regexp_parser-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd regexp_parser
+  GEM_HOME="tmp_install/$_gemdir" rake spec
+}
+
+package() {
+  cd regexp_parser
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

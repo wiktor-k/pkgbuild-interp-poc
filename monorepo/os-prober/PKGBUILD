@@ -1,0 +1,48 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Timothy Redaelli <timothy.redaelli@gmail.com>
+# Contributor: darkcoder <mario_vazq@hotmail.com>
+
+pkgname=os-prober
+pkgver=1.85
+pkgrel=1
+pkgdesc='Utility to detect other OSes on a set of drives'
+url='https://joeyh.name/code/os-prober/'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  sh
+)
+source=(https://deb.debian.org/debian/pool/main/o/${pkgname}/${pkgname}_${pkgver}.tar.xz)
+sha512sums=('f54cea1c9683aa2ca9239076f892044c7895185ce74367bbb32851ff9d2df027180da0c48408bc7c6f26747c55207a8828d958f7a53226f1e276002aed8de2bb')
+b2sums=('59e8d29a1731d527ef021a290a7bc7690170e64d40ac2e99b3e73b50504ba07f9abe61deb6f3463aec7daf2b170feb02ddb285a9c60ac51ecc3670f21957d58e')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  # adjust lib dir to allow detection of 64-bit distros
+  sed -i -e "s:/lib/ld\*\.so\*:/lib*/ld*.so*:g" os-probes/mounted/common/90linux-distro
+  rm -f Makefile
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make newns
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -Dm 755 os-prober linux-boot-prober -t "${pkgdir}/usr/bin"
+  install -Dm 755 newns -t "${pkgdir}/usr/lib/os-prober"
+  install -Dm 755 common.sh -t "${pkgdir}/usr/share/os-prober"
+
+  for dir in os-probes os-probes/mounted os-probes/init linux-boot-probes linux-boot-probes/mounted; do
+    install -dm 755 "${pkgdir}/usr/lib/${dir}"
+    install -m 755 -t "${pkgdir}/usr/lib/${dir}" "${dir}"/common/*
+    [[ -d "${dir}"/x86 ]] && cp -r "${dir}"/x86/* "${pkgdir}/usr/lib/${dir}"
+  done
+
+  install -Dm 755 os-probes/mounted/powerpc/20macosx "${pkgdir}"/usr/lib/os-probes/mounted/20macosx
+  install -dm 755 "${pkgdir}"/var/lib/os-prober
+}
+
+# vim: ts=2 sw=2 et:

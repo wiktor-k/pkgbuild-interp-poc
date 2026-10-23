@@ -1,0 +1,56 @@
+pkgbase = libgda6
+	pkgdesc = Database access library
+	pkgver = 6.0.0+r172+g97fec3090
+	pkgrel = 2
+	url = https://gitlab.gnome.org/GNOME/libgda
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = intltool
+	makedepends = iso-codes
+	makedepends = json-glib
+	makedepends = meson
+	makedepends = vala
+	makedepends = valgrind
+	depends = glib2
+	depends = glibc
+	depends = libsecret
+	depends = libxml2
+	depends = mariadb-libs
+	depends = postgresql-libs
+	depends = sqlcipher
+	depends = sqlite
+	source = git+https://gitlab.gnome.org/GNOME/libgda.git#commit=97fec3090dc86d4b69f62f09d87db9dbcc864fa2
+	b2sums = 6b35342dbd54af4963f0c8116a70dbde29c448373f793a98916445fdb4be5abea5fbcb794a1352b730b3aad5f5a4229ac2f398f22e9a77d8eac1533efaeac4c9
+
+pkgname = libgda6
+	depends = glib2
+	depends = glibc
+	depends = libsecret
+	depends = libxml2
+	depends = sqlite
+	optdepends = libgda6-mysql: provider for MySQL
+	optdepends = libgda6-postgres: provider for PostgreSQL
+	optdepends = libgda6-sqlcipher: provider for SQLCipher
+
+pkgname = libgda6-mysql
+	pkgdesc = libgda6 provider for MySQL
+	depends = glib2
+	depends = glibc
+	depends = libgda6
+	depends = mariadb-libs
+
+pkgname = libgda6-postgres
+	pkgdesc = libgda6 provider for PostgreSQL
+	depends = glib2
+	depends = glibc
+	depends = libgda6
+	depends = postgresql-libs
+
+pkgname = libgda6-sqlcipher
+	pkgdesc = libgda6 provider for SQLCipher
+	depends = glib2
+	depends = libgda6
+	depends = sqlcipher

@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@gmail.com>
+# Contributor: Dale Blount <dale@archlinux.org>
+
+pkgname=perl-net-cidr-lite
+_realname=Net-CIDR-Lite
+pkgver=0.24
+pkgrel=1
+pkgdesc="Perl extension for merging IPv4 or IPv6 CIDR addresses"
+arch=('any')
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+url="https://search.cpan.org/dist/${_realname}/"
+depends=('perl')
+options=(!emptydirs)
+source=(https://cpan.metacpan.org/authors/id/S/ST/STIGTSP/${_realname}-${pkgver}.tar.gz)
+sha512sums=('ef93d8c9ca4beadb033a19df7e26438120a2070dd408cefe1313e3d251b54f90987c7a8fbd172ead8ded3e5ef8fb3b01c5186671c25c832a9cc70155934543b4')
+
+build() {
+  cd ${_realname}-${pkgver}
+  # install module in vendor directories.
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd ${_realname}-${pkgver}
+  make install DESTDIR="${pkgdir}"
+}

@@ -1,0 +1,17 @@
+pkgbase = lib32-libgusb
+	pkgdesc = GObject wrapper for libusb1
+	pkgver = 0.4.9
+	pkgrel = 1
+	url = https://github.com/hughsie/libgusb
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = git
+	makedepends = meson
+	depends = lib32-glib2
+	depends = lib32-json-glib
+	depends = lib32-libusb
+	depends = libgusb
+	source = git+https://github.com/hughsie/libgusb.git#tag=ed31c8134d80d006bd45450e84180be2a7c0742e
+	sha256sums = 27ac4dd41aa0279416bc74f8d195339d439bd9fc0a9f6a0dc9745a07d251c942
+
+pkgname = lib32-libgusb

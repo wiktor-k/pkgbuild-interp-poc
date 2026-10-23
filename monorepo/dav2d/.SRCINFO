@@ -1,0 +1,17 @@
+pkgbase = dav2d
+	pkgdesc = AV2 decoder from VideoLAN
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://code.videolan.org/videolan/dav2d
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = git
+	makedepends = meson
+	makedepends = ninja
+	makedepends = nasm
+	depends = glibc
+	provides = libdav2d.so
+	source = dav2d::git+https://code.videolan.org/videolan/dav2d.git#tag=0.0.1
+	b2sums = dd6ed7208703f7eb10287d66a902bdc049b381e89c0fcb916edd72e6dd96624713858f98ce618a261f95fc1eba75fd06c4ce91a9ff876701b654c197b9ea88a5
+
+pkgname = dav2d

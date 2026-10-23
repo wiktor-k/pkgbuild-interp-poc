@@ -1,0 +1,41 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+_gemname=minitest-sprint
+pkgname=ruby-${_gemname}
+pkgver=1.5.0
+pkgrel=1
+pkgdesc="Runs (Get it? It's fast!) your tests and makes it easier to rerun individual failures"
+url='https://github.com/seattlerb/minitest-sprint'
+arch=('any')
+license=('MIT')
+depends=('ruby' 'ruby-minitest' 'ruby-path_expander')
+makedepends=('ruby-rdoc' 'ruby-rake' 'ruby-hoe')
+options=('!emptydirs')
+source=(${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('c488e839a32c6ffdbb9949b502cefbc2b0a086548c691dbb87d67a46420602414a912e406c49abfdefe753867d7917d67a3dd2aad6d5429015eeaec9cb654ff4')
+b2sums=('777d8480e9217b6166a036f55fea1294fd9dc8c5e0955f3a27ec9765e918bbf8ca45836e56cd2e035870c3401a3bdf74c94910608129992de6ec56eaacce1274')
+
+build() {
+  cd ${_gemname}-${pkgver}
+  sed -r 's|~>|>=|g' -i Rakefile
+  rake gem
+}
+
+check() {
+  cd ${_gemname}-${pkgver}
+  rake test
+}
+
+package() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}${_gemdir}" \
+    -n "${pkgdir}/usr/bin" pkg/${_gemname}-${pkgver}.gem
+
+  install -Dm 644 README.rdoc History.rdoc -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 README.rdoc -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  rm -r "${pkgdir}/${_gemdir}/"{cache,gems/${_gemname}-${pkgver}/test}
+}
+
+# vim: ts=2 sw=2 et:

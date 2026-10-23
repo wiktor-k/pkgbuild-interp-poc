@@ -1,0 +1,22 @@
+pkgbase = xf86-input-void
+	pkgdesc = X.org void input driver
+	pkgver = 1.4.2
+	pkgrel = 2
+	url = https://xorg.freedesktop.org/
+	arch = x86_64
+	groups = xorg-drivers
+	license = custom
+	makedepends = xorg-server-devel
+	makedepends = X-ABI-XINPUT_VERSION=24.4
+	makedepends = xorgproto
+	depends = glibc
+	conflicts = xorg-server<21.1.1
+	conflicts = X-ABI-XINPUT_VERSION<24
+	conflicts = X-ABI-XINPUT_VERSION>=25
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-input-void-1.4.2.tar.xz
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-input-void-1.4.2.tar.xz.sig
+	validpgpkeys = 4A193C06D35E7C670FA4EF0BA2FB9E081F2D130E
+	sha512sums = f266494bd0ab62d2e20048d5557cb4724cc704be06b7f04f55970aad070887ca8940341c4a4929bb48a46b4d040e03c4d09ce3ae85b94ce23c70faf28486005d
+	sha512sums = SKIP
+
+pkgname = xf86-input-void

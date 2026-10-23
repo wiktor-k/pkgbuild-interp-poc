@@ -1,0 +1,36 @@
+pkgbase = deja-dup
+	pkgdesc = Easy to use backup tool based on Restic
+	pkgver = 50.2
+	pkgrel = 1
+	url = https://apps.gnome.org/DejaDup/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	checkdepends = xdg-user-dirs
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = itstool
+	makedepends = meson
+	makedepends = vala
+	depends = bash
+	depends = dconf
+	depends = duplicity
+	depends = fuse3
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gvfs
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libadwaita
+	depends = libsecret
+	depends = libsoup3
+	depends = pango
+	depends = restic
+	optdepends = rclone: Backup into Google Drive or Microsoft OneDrive
+	source = git+https://gitlab.gnome.org/World/deja-dup.git#tag=50.2
+	validpgpkeys = A3A5C2FC56AE7341D308D8571B50ECA373F3F233
+	b2sums = 58a8e9b98cb03dbcb6c8bc88f2f99de5e008ba43523af5881334244e1fe4d40d1bfa1a8fa16aeb430a609d323e7dcd60f6ed5e32037d9065e782c58e06358843
+
+pkgname = deja-dup

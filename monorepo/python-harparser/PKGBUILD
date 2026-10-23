@@ -1,0 +1,36 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-harparser
+pkgver=0.4
+pkgrel=13
+pkgdesc="Python HAR Parser Utility"
+arch=('any')
+license=('MIT')
+url="https://github.com/JustusW/harparser"
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/JustusW/harparser.git#tag=$pkgver"
+        python310.patch)
+sha512sums=('836315d5ff10e48e63ac3a7cc5debaa280be01d8bc58c627c4dce31101716a84bebf66cbbe676b54663ebdc55db7297325b4760b3f5fe8fe225537e840c0f384'
+            '140b50cd901f952b11caefc3d002a82e75f958da7ba2e782e53c7d0e32b40c23750686954aa7e5554443a602191d4b0fade559e9633226e64dbc5ae267d725c5')
+
+prepare() {
+  cd harparser
+  patch -Np1 -i ../python310.patch
+}
+
+build() {
+  cd harparser
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd harparser
+  python -m unittest test.log
+}
+
+package() {
+  cd harparser
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 'LICENSE' -t "$pkgdir/usr/share/licenses/$pkgname"
+}

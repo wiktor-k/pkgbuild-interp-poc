@@ -1,0 +1,21 @@
+pkgbase = xf86-input-elographics
+	pkgdesc = X.org Elographics TouchScreen input driver
+	pkgver = 1.4.4
+	pkgrel = 1
+	url = https://gitlab.freedesktop.org/xorg/driver/xf86-input-elographics
+	arch = x86_64
+	license = MIT
+	makedepends = xorg-server-devel
+	makedepends = X-ABI-XINPUT_VERSION=24.4
+	makedepends = xorgproto
+	depends = glibc
+	conflicts = xorg-server<21.1.1
+	conflicts = X-ABI-XINPUT_VERSION<24
+	conflicts = X-ABI-XINPUT_VERSION>=25
+	source = https://xorg.freedesktop.org/releases/individual/driver/xf86-input-elographics-1.4.4.tar.xz
+	source = https://xorg.freedesktop.org/releases/individual/driver/xf86-input-elographics-1.4.4.tar.xz.sig
+	validpgpkeys = 4A193C06D35E7C670FA4EF0BA2FB9E081F2D130E
+	sha512sums = 6e3d43d020a0805aca626b1f86027f5b76abf1c7aa8c062715e81dc35d3ac61a079c0f9d8c36a74babafdd64b81bebf453e1d11bfda07d436538b7664aa23ae6
+	sha512sums = SKIP
+
+pkgname = xf86-input-elographics

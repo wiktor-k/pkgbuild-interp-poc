@@ -1,0 +1,30 @@
+pkgbase = distro-info
+	pkgdesc = Information about all releases of Debian and Ubuntu
+	pkgver = 1.20
+	pkgrel = 1
+	url = https://salsa.debian.org/debian/distro-info
+	arch = x86_64
+	license = ISC
+	checkdepends = flake8
+	checkdepends = python-black
+	checkdepends = python-isort
+	checkdepends = python-pylint
+	checkdepends = shunit2
+	makedepends = git
+	makedepends = dpkg
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = distro-info-data
+	depends = glibc
+	depends = python
+	provides = python-distro-info
+	provides = perl-distro-info
+	conflicts = python-distro-info
+	conflicts = perl-distro-info
+	options = !emptydirs
+	source = git+https://salsa.debian.org/debian/distro-info.git#tag=debian/1.20
+	sha256sums = d8e7270114f37e8b0deb4d8aba6e599c2e830817648c22cddca6745081fc8a0c
+
+pkgname = distro-info

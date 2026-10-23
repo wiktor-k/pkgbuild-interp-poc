@@ -1,0 +1,29 @@
+pkgbase = xrt-plugin-amdxdna
+	pkgdesc = Runtime for AIE and FPGA based platforms
+	pkgver = 2.21.75
+	pkgrel = 2
+	epoch = 1
+	url = https://github.com/amd/xdna-driver
+	arch = x86_64
+	license = LicenseRef-AMD-Proprietary AND Apache-2.0
+	makedepends = git
+	makedepends = awk
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = rapidjson
+	makedepends = boost
+	makedepends = python
+	makedepends = pybind11
+	makedepends = linux-headers
+	makedepends = rocm-opencl-runtime
+	depends = glibc
+	depends = gcc-libs
+	depends = libdrm
+	depends = xrt
+	depends = jq
+	source = xrt-plugin-amdxdna::git+https://github.com/amd/xdna-driver#tag=2.21.75
+	source = xrt-plugin-amdxdna-XRT::git+https://github.com/Xilinx/XRT.git
+	sha256sums = b62884cbf130f0bf486b044f17f88eedf00dd1b0311ecc7f1900e2d21845072a
+	sha256sums = SKIP
+
+pkgname = xrt-plugin-amdxdna

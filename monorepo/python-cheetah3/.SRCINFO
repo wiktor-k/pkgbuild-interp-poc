@@ -1,0 +1,36 @@
+pkgbase = python-cheetah3
+	pkgdesc = A Python powered template engine and code generator
+	pkgver = 3.4.0.post5
+	pkgrel = 1
+	url = https://cheetahtemplate.org
+	arch = x86_64
+	license = MIT
+	license = CC-PDDC
+	checkdepends = python-markdown
+	checkdepends = python-pygments
+	makedepends = git
+	makedepends = python
+	makedepends = python-legacy-cgi
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-sphinx
+	source = python-cheetah3::git+https://github.com/CheetahTemplate3/cheetah3#tag=3.4.0.post5
+	source = cheetah.1
+	sha512sums = f9402746c3fca7073c480e7030ecfcb655a910335eff529c7717e7e8a42991c8e4b55dab3a4b761361a6faa04a7ac3f5c81b61f39705c408f935a5195893b19b
+	sha512sums = ae100dee3893c120db8f6544b04db434b412bf0123f7feb40cca15e1866e0e6940a3d74d9baf87b04ebae7314f564929ebc7f34ae5eb72418200f7b01358235e
+	b2sums = e92eadf74e0521bd5f1e4f082ef6d02ced4e66ff4f1d0839c372454358d7b26dd5183cd7bbff749777d8da5cd94df740222aa91f5e72f25086f7607dd249231d
+	b2sums = 59c0689df18640aea8e671cd267741d1bff4b3954147a34ac71c67ec8399c08460976ecabdce7c7b866bd895c8963b6f03059e496eb7dfa2710d99deba78503d
+
+pkgname = python-cheetah3
+	depends = glibc
+	depends = python
+	depends = python-legacy-cgi
+	optdepends = python-markdown: for markdown filter
+	optdepends = python-memcache: for caching
+	optdepends = python-pygments: for code highlight filter
+	optdepends = python-cheetah3-docs: documentation
+
+pkgname = python-cheetah3-docs
+	pkgdesc = A Python powered template engine and code generator (documentation)

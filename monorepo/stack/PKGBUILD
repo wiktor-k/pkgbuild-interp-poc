@@ -1,0 +1,75 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=stack
+pkgver=2.15.1
+pkgrel=6
+pkgdesc="The Haskell Tool Stack"
+url="https://github.com/commercialhaskell/stack"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-warning-parser' 'haskell-ansi-terminal'
+         'haskell-async' 'haskell-attoparsec' 'haskell-base64-bytestring' 'haskell-casa-client'
+         'haskell-companion' 'haskell-conduit' 'haskell-conduit-extra' 'haskell-crypton'
+         'haskell-echo' 'haskell-extra' 'haskell-file-embed' 'haskell-filelock' 'haskell-fsnotify'
+         'haskell-generic-deriving' 'haskell-githash' 'haskell-hi-file-parser' 'haskell-hpack'
+         'haskell-http-client' 'haskell-http-client-tls' 'haskell-http-conduit'
+         'haskell-http-download' 'haskell-http-types' 'haskell-memory' 'haskell-microlens'
+         'haskell-mustache' 'haskell-neat-interpolation' 'haskell-open-browser'
+         'haskell-optparse-applicative' 'haskell-optparse-simple' 'haskell-pantry' 'haskell-path'
+         'haskell-path-io' 'haskell-persistent' 'haskell-persistent-sqlite'
+         'haskell-project-template' 'haskell-random' 'haskell-rio' 'haskell-rio-prettyprint'
+         'haskell-split' 'haskell-tar' 'haskell-unix-compat' 'haskell-unordered-containers'
+         'haskell-vector' 'haskell-yaml' 'haskell-zlib')
+makedepends=('ghc' 'git' 'haskell-quickcheck' 'haskell-hspec' 'haskell-hspec-discover'
+             'haskell-raw-strings-qq')
+checkdepends=('cabal-install')
+conflicts=('haskell-stack')
+replaces=('haskell-stack')
+install="stack.install"
+source=("git+https://github.com/commercialhaskell/stack.git#tag=v$pkgver"
+        stack-support-tar-0.6.2.0.patch)
+sha512sums=('4c442978b28f33ffe0f8f29b3e498aee0d8c5e331cf2de2ca9284d75b93e9c9509d2a9323b57fef6b0e4dcab42377aeb4d781a42f7efe73174884dee06492e29'
+            '689c964010d8b84759d5b20c5a4437bd2af7f3664d3e66742c57dbf0ec0ee2d9f98e2702a8427c54f695733b363dc64548d3ee4bbf9116923471bce7dd25ba45')
+
+prepare() {
+  cd $pkgname
+  patch -p1 -i ../stack-support-tar-0.6.2.0.patch
+  sed -i "s/      Codec.Archive.Tar.Utf8//" stack.cabal
+  rm src/Codec/Archive/Tar/Utf8.hs
+}
+
+build() {
+  cd $pkgname
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+      -f-disable-git-info -f-integration-tests -f-static -f-hide-dependency-versions -f-supported-build \
+      --ghc-option='-pie'
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $pkgname
+  # cabal update
+  LD_LIBRARY_PATH="$PWD"/dist/build PATH="$PWD"/dist/build/stack:"$PATH" runhaskell Setup test --show-details=direct
+  # Integration tests will result in 4 failures on Arch currently
+}
+
+package() {
+  cd $pkgname
+
+  install -D -m744 register.sh   "${pkgdir}/usr/share/haskell/register/${pkgname}.sh"
+  install -D -m744 unregister.sh "${pkgdir}/usr/share/haskell/unregister/${pkgname}.sh"
+  runhaskell Setup copy --destdir="${pkgdir}"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+
+  LD_PRELOAD=$(ls "$pkgdir"/usr/lib/libHSstack-*-ghc*.so) "${pkgdir}"/usr/bin/stack --bash-completion-script /usr/bin/stack > stack_completion_script
+  install -Dm644 stack_completion_script "${pkgdir}/usr/share/bash-completion/completions/stack"
+}

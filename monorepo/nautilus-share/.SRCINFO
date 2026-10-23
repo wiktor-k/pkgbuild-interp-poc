@@ -1,0 +1,19 @@
+pkgbase = nautilus-share
+	pkgdesc = Nautilus extension to share folder using Samba
+	pkgver = 0.7.5
+	pkgrel = 5
+	url = https://gitlab.gnome.org/coreyberla/nautilus-share
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libnautilus-extension
+	depends = nautilus
+	depends = samba
+	source = git+https://gitlab.gnome.org/coreyberla/nautilus-share.git#tag=0.7.5
+	b2sums = 0d4c8bdcdd8ae4eb41f40a4f0d25611e4a1a0fe6f9f65fd632f61b506f7e1c2a678c6f8705e3b9f6722f828fe2e8c70f66b383ebd221f570a23e3ac7b4b9eb5a
+
+pkgname = nautilus-share

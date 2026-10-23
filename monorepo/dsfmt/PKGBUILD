@@ -1,0 +1,24 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=dsfmt
+pkgver=2.2.5
+pkgrel=1
+pkgdesc='Double precision SIMD-oriented Fast Mersenne Twister'
+arch=(x86_64)
+url='https://github.com/MersenneTwister-Lab/dSFMT'
+license=(BSD-3-Clause)
+depends=(glibc)
+makedepends=(git)
+source=(git+https://github.com/MersenneTwister-Lab/dSFMT#tag=v$pkgver)
+sha256sums=('f2a6aa060c59cf91d3df5e3a52f434447757accc0294649db2ae83eac518a512')
+
+build() {
+  cd dSFMT
+  gcc $CFLAGS -fPIC -shared -DDSFMT_MEXP=19937 -DDSFMT_DO_NOT_USE_OLD_NAMES -DDSFMT_SHLIB $LDFLAGS dSFMT.c -o libdSFMT.so
+}
+
+package() {
+  cd dSFMT
+  install -Dm755 libdSFMT.so -t "$pkgdir"/usr/lib
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname
+}

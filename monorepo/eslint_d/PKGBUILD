@@ -1,0 +1,26 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+# Contributor: Sam A. Horvath-Hunt <hello@samhh.com>
+
+pkgname=eslint_d
+pkgver=15.0.3
+pkgrel=1
+pkgdesc="Makes eslint the fastest linter on the planet."
+url="https://github.com/mantoni/eslint_d.js"
+license=("MIT")
+arch=("any")
+depends=("nodejs")
+makedepends=("npm")
+source=("https://registry.npmjs.org/${pkgname}/-/${pkgname}-${pkgver}.tgz")
+noextract=("${pkgname}-${pkgver}.tgz")
+sha256sums=('2d635c2a6037f2840cfb07804b729555222bfaa642dfbd1d3823447ece593e85')
+
+prepare() {
+  tar xf "${pkgname}-${pkgver}.tgz" package/LICENSE
+}
+
+package() {
+  npm i -g --cache "${srcdir}/npm-cache" --prefix "$pkgdir/usr" "$srcdir/$pkgname-$pkgver.tgz"
+  install -Dm644 package/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  chown -R root:root "$pkgdir/usr"
+}
+

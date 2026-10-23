@@ -1,0 +1,33 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Lantald <lantald at Gmx dot com>
+# Contributor: Danilo <aur at dbrgn dot ch>
+
+pkgname=libspatialindex
+pkgver=2.1.0
+pkgrel=1
+pkgdesc='Extensible framework that supports robust spatial indexing methods and sophisticated spatial queries'
+arch=(x86_64)
+url="https://libspatialindex.github.io/"
+license=(MIT)
+depends=(gcc-libs)
+makedepends=(git cmake ninja)
+conflicts=(spatialindex)
+replaces=(spatialindex)
+provides=("spatialindex=$pkgver")
+source=("git+https://github.com/libspatialindex/libspatialindex#tag=$pkgver")
+sha256sums=('923fd741f770b2f07fd844fb540e7e5df0c2977b9d61530b5b69db1a8bb36d5a')
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -D -m644 "$srcdir"/libspatialindex/COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

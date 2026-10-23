@@ -1,0 +1,36 @@
+pkgbase = python-b2sdk
+	pkgdesc = Python module to access B2 cloud storage
+	pkgver = 2.13.1
+	pkgrel = 1
+	url = https://github.com/Backblaze/b2-sdk-python
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	checkdepends = python-pytest-lazy-fixtures
+	checkdepends = python-pytest-timeout
+	checkdepends = python-pytest-xdist
+	checkdepends = python-pyfakefs
+	checkdepends = python-tqdm
+	checkdepends = python-pydantic
+	checkdepends = python-responses
+	checkdepends = python-tenacity
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-hatch-vcs
+	makedepends = python-wheel
+	depends = python
+	depends = python-annotated-types
+	depends = python-logfury
+	depends = python-requests
+	depends = python-urllib3
+	depends = python-importlib-metadata
+	optdepends = python-tqdm: for TqdmProgressListener class
+	optdepends = python-pydantic: for improved type hints
+	source = python-b2sdk::git+https://github.com/Backblaze/b2-sdk-python#tag=v2.13.1
+	sha512sums = b3f7d37f550e5ad631b0007d3884c10380717032d5da72b28ea096f5abfc7f9a6e30dae683f28ae893321490eb8b19264072303fb03804d7f60712be1acbcf04
+	b2sums = 5b3ecf440bc9f888fe457d272001ad76de204d78657406dce541f2da8f0ecf746fd9f7353564b2736e0e4e0ab9b9a245a51832e78a88207004b95e153e9a47da
+
+pkgname = python-b2sdk

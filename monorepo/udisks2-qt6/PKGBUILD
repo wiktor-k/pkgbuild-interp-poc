@@ -1,0 +1,22 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=udisks2-qt6
+pkgver=6.0.1
+pkgrel=1
+pkgdesc='UDisks2 DBus interfaces binding for Qt6'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/udisks2-qt6"
+license=('GPL-3.0-or-later')
+depends=('qt6-base' 'udisks2' 'glibc' 'libgcc' 'libstdc++')
+makedepends=('git' 'cmake' 'ninja')
+source=("git+https://github.com/linuxdeepin/udisks2-qt6.git#tag=$pkgver")
+sha512sums=('30930c71546f0089ff6b27b88328abefde6bfe54f1ec09ebb60b939146697c9190eea8cda0c5b0ae27d0b403f0cadc15da08c652328f907046d3a4bd9ee53744')
+
+build() {
+  cmake -GNinja -B build -S udisks2-qt6 -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

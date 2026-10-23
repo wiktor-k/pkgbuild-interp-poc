@@ -1,0 +1,43 @@
+# Maintainer:
+
+pkgname=python-geodatasets
+pkgver=2026.5.1
+pkgrel=1
+pkgdesc='Spatial data examples'
+arch=(any)
+url='https://geodatasets.readthedocs.io/'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-pooch
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools-scm
+)
+checkdepends=(
+  python-geopandas
+  python-pytest
+)
+source=(git+https://github.com/geopandas/geodatasets#tag=$pkgver)
+sha256sums=('18a3dac7292312a5215fe69b9c28ab0e87c78b171ba9d5d7801ef7501cf3bfc0')
+
+build() {
+  cd geodatasets
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd geodatasets
+  pytest -v \
+    --deselect geodatasets/tests/test_data.py::test_data_exists[eurostat.nuts_rg_10m_2024_3035] \
+    --deselect geodatasets/tests/test_data.py::test_data_exists[eurostat.nuts_lb_2024_3035]
+}
+
+package() {
+  cd geodatasets
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

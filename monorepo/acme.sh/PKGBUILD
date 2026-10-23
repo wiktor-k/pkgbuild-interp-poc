@@ -1,0 +1,39 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Gavin Lloyd <gavinhungry@gmail.com>
+
+pkgname=acme.sh
+pkgver=3.1.6
+pkgrel=2
+pkgdesc='An ACME Shell script, an acme client alternative to certbot'
+arch=('any')
+url='https://github.com/acmesh-official/acme.sh'
+license=('GPL-3.0-only')
+depends=('bash')
+makedepends=('git')
+optdepends=('socat: for standalone mode'
+            'python: for standalone mode without socat'
+            'oath-toolkit: Used to compute the OTP for some DNS providers')
+source=("git+$url.git#tag=$pkgver")
+sha512sums=('1c84a40232f8f6013e61236829b4f1306831d939df9208ab53a7647d6f26ace1d285affb5317b4814495323fafda799f76a7d6b96c29100dd7223a08710f3d41')
+
+package() {
+  cd $pkgname
+
+  install -dm755 "$pkgdir"/usr/share/acme.sh/deploy
+  install -dm755 "$pkgdir"/usr/share/acme.sh/dnsapi
+  install -dm755 "$pkgdir"/usr/share/acme.sh/notify
+  install -dm755 "$pkgdir"/usr/share/bash-completion/completions
+  install -dm755 "$pkgdir"/usr/bin
+
+  install -m755 acme.sh "$pkgdir"/usr/share/acme.sh/
+  install -m644 acme.sh.completion "$pkgdir"/usr/share/bash-completion/completions/acme.sh
+  install -m644 deploy/*.sh "$pkgdir"/usr/share/acme.sh/deploy/
+  install -m644 dnsapi/*.sh "$pkgdir"/usr/share/acme.sh/dnsapi/
+  install -m644 notify/*.sh "$pkgdir"/usr/share/acme.sh/notify/
+
+  install -Dm755 /dev/stdin "$pkgdir"/usr/bin/acme.sh <<'EOF'
+#!/bin/sh
+export ACME_PACKAGED=1
+exec /usr/share/acme.sh/acme.sh "$@"
+EOF
+}

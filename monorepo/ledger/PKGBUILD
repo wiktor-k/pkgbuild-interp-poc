@@ -1,0 +1,63 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Ivy Foster <iff@archlinux.org>
+# Contributor: Abdelhakim Qbaich <abdelhakim@qbaich.com>
+# Contributor: korjjj <korjjj+aur@gmail.com>
+# Contributor: TDY <tdy@archlinux.info>
+# Contributor: Adam Ehlers Nyholm Thomsen <adament@gmail.com>
+# Contributor: Nathan Jones <nathanj@insightbb.com>
+# Contributor: Sergey Zolotorev <sergey.zolotorev@gmail.com>
+
+pkgname=ledger
+pkgver=3.4.1
+pkgrel=6
+pkgdesc='Double-entry accounting system with a command-line reporting interface'
+arch=(i686 x86_64)
+url='https://ledger-cli.org'
+license=(BSD-3-Clause)
+depends=(boost-libs libedit mpfr)
+makedepends=(boost cmake python texinfo)
+optdepends=(
+	'emacs: emacs interface'
+	'python: python library'
+)
+source=(
+  "https://github.com/ledger/ledger/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+  "$pkgname-python-3.14.patch"
+)
+sha256sums=('1cf012cdc8445cab0efc445064ef9b2d3f46ed0165dae803c40fe3d2b23fdaad'
+            '9b2c51327666dc60b572e544ff02a69a39011d849bcdaf72dc4fc9193a81b68e')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  patch -Np1 < ../$pkgname-python-3.14.patch
+}
+
+build() {
+	cd "$pkgname-$pkgver"
+
+	cmake -S . -B build \
+		-DCMAKE_BUILD_TYPE=None \
+		-DCMAKE_INSTALL_PREFIX=/usr \
+		-DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+		-Wno-dev \
+		-DUSE_PYTHON=ON \
+		-DBUILD_DOCS=ON
+
+	cmake --build build
+	cmake --build build --target doc
+}
+
+check() {
+	cd "$pkgname-$pkgver"
+
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+
+	DESTDIR="$pkgdir" cmake --install build
+	install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/ledger/LICENSE.md"
+	install -Dm644 contrib/ledger-completion.bash "$pkgdir/usr/share/bash-completion/completions/ledger"
+}

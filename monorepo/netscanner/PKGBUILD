@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=netscanner
+pkgver=0.6.43
+pkgrel=1
+pkgdesc="Network scanner"
+arch=('x86_64')
+url="https://github.com/Chleba/netscanner"
+license=('MIT')
+depends=('glibc' 'libgcc' 'iw')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('052284104d29347ab76eaf8d8bd30ecbec2ba37ee224b1910efa4160163ae00fd59d6d4fcc655bf1ccaf57de76335aea6308dd08bb06472f39ffb75d88392fed')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --target "$(rustc --print host-tuple)" # --locked
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

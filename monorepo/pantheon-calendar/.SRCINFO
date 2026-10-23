@@ -1,0 +1,34 @@
+pkgbase = pantheon-calendar
+	pkgdesc = The Pantheon Calendar
+	pkgver = 8.0.2
+	pkgrel = 2
+	url = https://github.com/elementary/calendar
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = cmake
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = evolution-data-server
+	depends = folks
+	depends = geocode-glib-2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libfolks.so
+	depends = libgee
+	depends = libgranite.so
+	depends = libhandy-1.so
+	depends = libical
+	depends = libportal
+	depends = libportal-gtk3
+	source = pantheon-calendar::git+https://github.com/elementary/calendar.git#tag=8.0.2
+	source = libical-4.patch
+	sha256sums = fe6988a6b3b21ceb5bce6975ed7b2d204889306323d30cf6bb14c48f6d0b8790
+	sha256sums = 306a1eea5716bcc09e677821350c420b576ee688596ec4b2232fa670b48127e6
+
+pkgname = pantheon-calendar

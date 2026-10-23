@@ -1,0 +1,27 @@
+pkgbase = python-python-pkcs11
+	pkgdesc = PKCS#11/Cryptoki support for Python
+	pkgver = 0.10.1
+	pkgrel = 1
+	url = https://github.com/pyauth/python-pkcs11
+	arch = x86_64
+	license = MIT
+	checkdepends = python-cryptography
+	checkdepends = python-oscrypto
+	checkdepends = python-parameterized
+	checkdepends = python-pytest
+	checkdepends = softhsm
+	makedepends = git
+	makedepends = cython
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = glibc
+	depends = python
+	depends = python-asn1crypto
+	source = python-python-pkcs11::git+https://github.com/pyauth/python-pkcs11#tag=v0.10.1
+	sha512sums = 1111415c2a09656e2fa5eb092d5bac0ce1344d12471b30af45bb4e630163fbd29e112e9883d49cf99ee5203786746933b7896442d530f2a85dc44e08ea95f29f
+	b2sums = add74bbee9dec22520ebed341958451471799f0b2a1edd47616982b312045d8021215954251afe5b1a50f2eb6894d2b86762e7108f9d0468449253c1e8cdd628
+
+pkgname = python-python-pkcs11

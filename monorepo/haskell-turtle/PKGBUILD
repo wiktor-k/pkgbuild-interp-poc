@@ -1,0 +1,51 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+
+_hkgname=turtle
+pkgname=haskell-turtle
+pkgver=1.6.2
+pkgrel=236
+pkgdesc="Shell programming, Haskell-style"
+url="https://github.com/Gabriel439/turtle"
+license=('BSD')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-ansi-wl-pprint' 'haskell-async' 'haskell-clock' 'haskell-foldl'
+         'haskell-hostname' 'haskell-managed' 'haskell-optparse-applicative' 'haskell-optional-args'
+         'haskell-streaming-commons' 'haskell-temporary' 'haskell-unix-compat')
+makedepends=('ghc' 'uusi' 'haskell-doctest' 'haskell-tasty' 'haskell-tasty-hunit')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('7d83a0fdd62768ddc2d07fceed68253591d7d996cc4e7518839fe51f15b64c50f588ec8bcb174b68807b9c5f7e62aaae1fa4ea03295083c57db60f460a482be1')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    uusi -u ansi-wl-pprint -u tasty
+    sed -i 's/]/, "-dynamic"]/' test/Main.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

@@ -1,0 +1,21 @@
+pkgbase = rkhunter
+	pkgdesc = Checks machines for the presence of rootkits and other unwanted tools.
+	pkgver = 1.4.6
+	pkgrel = 4
+	url = http://rkhunter.sourceforge.net/
+	arch = any
+	license = GPL
+	depends = bash
+	depends = perl
+	depends = wget
+	optdepends = unhide
+	backup = etc/rkhunter.conf
+	source = https://downloads.sourceforge.net/sourceforge/rkhunter/rkhunter-1.4.6.tar.gz
+	source = https://downloads.sourceforge.net/sourceforge/rkhunter/rkhunter-1.4.6.tar.gz.asc
+	validpgpkeys = 9713808A269FA0326356958BE9C5DC50D13AAA83
+	md5sums = 35bf1e2850343a4768e34a3fc260b8a1
+	md5sums = SKIP
+	sha256sums = f750aa3e22f839b637a073647510d7aa3adf7496e21f3c875b7a368c71d37487
+	sha256sums = SKIP
+
+pkgname = rkhunter

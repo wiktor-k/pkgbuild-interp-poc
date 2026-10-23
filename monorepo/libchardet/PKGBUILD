@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: robertfoster
+
+pkgname=libchardet
+pkgver=1.0.6
+pkgrel=4
+pkgdesc="Mozilla's Universal Charset Detector C/C++ API"
+arch=('x86_64')
+license=('MPL-1.1')
+url="http://ftp.oops.org/pub/oops/libchardet"
+depends=('bash' 'glibc' 'libgcc' 'libstdc++')
+makedepends=('git')
+source=("git+https://github.com/Joungkyun/libchardet.git#tag=$pkgver")
+b2sums=('558022aa6b25bd65e514439f9b81e439d201aecaa635f72834e1e56a58d4f937915420dcbde35bf1f44db87b4a57321be0b375c5907c4aa77f8eef33cc4e2009')
+
+prepare() {
+  cd $pkgname
+  # https://github.com/Joungkyun/libchardet/pull/22
+  git cherry-pick -n ac9c0f04d50453e4d8861fa45db6f259dad77e88
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --sysconfdir=/etc --mandir=/usr/share/man --disable-static
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

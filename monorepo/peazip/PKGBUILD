@@ -1,0 +1,60 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=peazip
+pkgver=11.4.0
+pkgrel=1
+pkgdesc='File and archive manager application features volume spanning, compression and authenticated encryption'
+arch=(x86_64)
+url='https://peazip.github.io/'
+license=(LGPL-3.0-only)
+depends=(
+  7zip
+  glibc
+  hicolor-icon-theme
+  libx11
+  qt6pas
+)
+makedepends=(
+  git
+  lazarus
+)
+source=(
+  "git+https://github.com/peazip/PeaZip.git#tag=$pkgver"
+  io.github.peazip.PeaZip.metainfo.xml
+)
+b2sums=(
+  782250cb744ecc2a7c41e1da2817d5c116797511a032d377dc2d7d4967870a9d2ea682356f99ac99b9b75f29af7ba5fcfcbe0a09d88ea26f4659bce37fab9039
+  a2514ad88bd6756ca416bc692e8bb73cb8b4726fbeeaf97d1b15d922aef52445ad8ae639dd6533595014fbff42848096f9f169f6b8eb2ee930e49556c6d525d3
+)
+
+prepare() {
+  cd PeaZip/peazip-sources
+  sed -i \
+    -e 's/^\s*HSYSBIN\s*=\s*0;/HSYSBIN = 2;/' \
+    -e "s|^\s*HSHAREPATH\s*=\s*'';|HSHAREPATH = '/usr/share/peazip/';|" \
+    dev/peach.pas
+}
+
+build() {
+  cd PeaZip/peazip-sources
+  lazbuild \
+    --lazarusdir=/usr/lib/lazarus \
+    --widgetset=qt6 \
+    --opt='-O2 -Cg -k-O1 -k--sort-common -k--as-needed -k-z -krelro -k-z -know -k-z -kpack-relative-relocs -g' \
+    dev/metadarkstyle/metadarkstyle.lpk \
+    dev/project_pea.lpi \
+    dev/project_peach.lpi
+}
+
+package() {
+  install -Dm644 -t "$pkgdir/usr/share/metainfo" io.github.peazip.PeaZip.metainfo.xml
+  cd PeaZip/peazip-sources
+  install -Dm755 -t "$pkgdir/usr/bin/" dev/pea{,zip}
+  install -dm755 "$pkgdir/usr/share/peazip"
+  cp -r res/share/{lang,themes,peazip_help.pdf} "$pkgdir/usr/share/peazip/"
+  install -Dm644 -t "$pkgdir/usr/share/applications/" res/share/batch/freedesktop_integration/peazip*.desktop
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/256x256/apps/" res/share/batch/freedesktop_integration/peazip*.png
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/48x48/apps/" res/share/batch/freedesktop_integration/alternative-icons/48px/peazip*.png
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" res/share/batch/freedesktop_integration/alternative-icons/svg/peazip*.svg
+  install -Dm755 -t "$pkgdir/usr/lib/xfce4/thunar-archive-plugin/" res/share/batch/freedesktop_integration/thunar-archive-plugin/peazip.tap
+}

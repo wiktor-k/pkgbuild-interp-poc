@@ -1,0 +1,33 @@
+# Maintainer : Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: napa3um <napa3um@gmail.com>
+# Contributor: Scott Furry <scott.wl.furry@gmail.com>
+
+pkgname=wxsqlite3
+pkgver=4.12.7
+pkgrel=1
+pkgdesc="wxWidgets wrapper for SQLite3"
+arch=('x86_64')
+url="https://utelle.github.io/wxsqlite3"
+license=('LicenseRef-LGPL-3.0+ WITH WxWindows-exception-3.1')
+depends=('wxwidgets-gtk3')
+source=($pkgname-$pkgver.tar.gz::https://github.com/utelle/$pkgname/archive/v$pkgver.tar.gz)
+sha256sums=('2be79e6ebdb1529545d818b31a5874b16a3060e4c53427d2ad384cc1a5077df4')
+
+build() {
+  cd $pkgname-$pkgver
+
+  autoreconf
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  make DESTDIR="${pkgdir}" install
+
+# licenses
+  install -Dm644 LICENCE.txt "${pkgdir}"/usr/share/licenses/$pkgname/LICENCE
+  install -Dm644 WxWindows-exception-3.1.txt "${pkgdir}"/usr/share/licenses/$pkgname/WxWindows-exception-3.1.txt
+}

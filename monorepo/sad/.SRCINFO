@@ -1,0 +1,21 @@
+pkgbase = sad
+	pkgdesc = Space Age seD
+	pkgver = 0.4.32
+	pkgrel = 3
+	url = https://github.com/ms-jpq/sad
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	makedepends = python
+	depends = glibc
+	depends = libgcc
+	optdepends = fzf: for tui usage
+	optdepends = diff-so-fancy: for diff colourizer
+	optdepends = git-delta: for diff colourizer
+	options = !lto
+	source = sad::git+https://github.com/ms-jpq/sad#tag=v0.4.32
+	sha512sums = 224150e979c3dab38e4ca8f39b1108a8828b79caee394d595ab112dc5d03270492e87065be09ba79380ccd3c1c648f2de20b8e2017d0c0ed721a51917b1d334c
+	b2sums = e4f3d04f63f4fb85e021046091e66754edc413552ea819fd6adf3ed74093c903fba169a5faa709af32c9f854aa25dd58be107205ce40bc1738da3acd332fccbf
+
+pkgname = sad

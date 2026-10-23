@@ -1,0 +1,20 @@
+pkgbase = tcplay
+	pkgdesc = Free and simple TrueCrypt implementation based on dm-crypt
+	pkgver = 3.3
+	pkgrel = 4
+	url = https://github.com/bwalex/tc-play
+	arch = x86_64
+	license = BSD
+	makedepends = cmake
+	makedepends = udev
+	depends = glibc
+	depends = device-mapper
+	depends = util-linux-libs
+	depends = libgcrypt
+	depends = libuuid.so
+	provides = libtcplay.so
+	source = https://github.com/bwalex/tc-play/archive/v3.3/tcplay-3.3.tar.gz
+	sha256sums = ad53cd814a23b4f61a1b2b6dc2539624ffb550504c400c45cbd8cd1da4c7d90a
+	b2sums = c02489d6e291dfc1425745af86506e72fda7f67dba0668b9250a85604ba301761b5bbbad6927238042a0f89da1035d9e3275006e34e895835a53cdc24974f419
+
+pkgname = tcplay

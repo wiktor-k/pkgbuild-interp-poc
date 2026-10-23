@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: GONG Chen <chen dot sst at gmail dot com>
+# Contributor: 網軍總司令
+
+pkgname=ibus-rime
+pkgver=1.6.1
+pkgrel=1
+pkgdesc="Rime input method engine for ibus"
+arch=('x86_64')
+url="https://rime.im"
+license=('GPL-3.0-or-later')
+depends=('ibus' 'libnotify' 'librime')
+makedepends=('git' 'cmake')
+install='ibus-rime.install'
+source=("git+https://github.com/lotem/ibus-rime.git#tag=$pkgver")
+sha512sums=('bfe1c3f4e78063086349b7a4b5dafb4a60a69a1c42d53573485406d20ccd75e9408dc3effcc75816fc4d803289ec7f39a9e181b305c909bc272071eda679d131')
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

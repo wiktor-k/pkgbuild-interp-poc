@@ -1,0 +1,31 @@
+pkgbase = cockatrice
+	pkgdesc = A cross-platform virtual tabletop for multiplayer card games
+	pkgver = 3.0.2
+	pkgrel = 3
+	url = https://cockatrice.github.io
+	arch = x86_64
+	license = GPL2
+	checkdepends = gtest
+	checkdepends = valgrind
+	makedepends = cmake
+	makedepends = git
+	makedepends = zlib
+	makedepends = mariadb-libs
+	depends = qt6-base
+	depends = protobuf
+	depends = qt6-tools
+	depends = qt6-svg
+	depends = qt6-multimedia
+	depends = qt6-websockets
+	depends = qt6-imageformats
+	depends = qt6-translations
+	optdepends = zlib: Load zipped files in Oracle
+	optdepends = mariadb-libs: MySQL/MariaDB connection
+	provides = cockatrice-client
+	provides = cockatrice-server
+	conflicts = cockatrice-client
+	conflicts = cockatrice-server
+	source = git+https://github.com/Cockatrice/Cockatrice.git#tag=2026-06-26-Release-3.0.2
+	sha512sums = c99f6e8852a055237dccd0370cf70e5da9170818fed7ca2d7e0f4d1e1c1ec6a58e148037badb3a62af3f87e5f36eaa7f3821463922718a9bbd48b35305358e90
+
+pkgname = cockatrice

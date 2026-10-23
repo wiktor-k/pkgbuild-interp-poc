@@ -1,0 +1,59 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: DuGi <dugi@irc.pl>
+
+pkgname=springlobby
+pkgver=0.274
+pkgrel=6
+pkgdesc="A free cross-platform lobby client for the Spring RTS project"
+arch=('x86_64')
+url="https://github.com/springlobby/springlobby"
+license=('GPL-2.0-only')
+depends=('hicolor-icon-theme' 'wxwidgets-gtk3' 'curl' 'jsoncpp' 'alure' 'openssl' 'libpng' 'wxwidgets-common'
+         'minizip' 'libstdc++' 'glibc' 'libgcc' 'glib2' 'libx11' 'zlib' 'openal' 'libnotify')
+makedepends=('boost' 'cmake' 'ninja')
+source=("https://sources.archlinux.org/other/packages/springlobby/springlobby-${pkgver}.tar.bz2"
+         wxwidgets-3.2.6.patch
+         cmake-4.0.patch
+         springlobby-boost1.90.patch
+         gcc-15.patch)
+sha512sums=('eef1a58ffbcf4c8aa3c4bf2c555775412649f5e8a589a47d004c605576570c2e441f35ea20a22bf618a2be6b3b104dbbec1f45d6cd221d3537eee7b0c4c754a0'
+            '20923ebaeef16419a8eb113c22d0ab8d0b5ce05910044e3a830c3e8ee44d345a1a7b8ad5c06fe6913bb47905896deee266a57bed13dc4c3f5ec6772c9a9d073e'
+            '0da4e9204e2623d747c127c5010d6ebadbd853286ea94b57cd3ecebb56a4f4f36bb7099555d683ef15bf6854e702119c6c166cd5a28caf6b88d07631b3ad75eb'
+            '09842b8c3aec6350df58d7643e79f0b993d7a53e80db5aad35a784fd1530e1ade3aa274d0a52cade4b871806a41d45f894621c550d5a1b87fda918750a87e027'
+            '5fa27a5957d293c588a6b4469d800c98cdd45164840b78db41e1e1ec7f1a26e0c85ec2d433b832dff0218b2e55f2a6841fcde12c08fbd029c9299ed13a678cb9')
+
+prepare() {
+  cd $pkgname-$pkgver
+  # remove bundled libraries
+  rm -r src/downloader/lib/src/lib/jsoncpp
+  rm -r src/downloader/lib/src/lib/minizip
+
+  patch -p1 -i ../wxwidgets-3.2.6.patch # Fix build with wxwidgets 3.2.6
+  sed -e '/CMP0004/d' -i CMakeLists.txt # Fix build with cmake 4
+  patch -p1 -i ../cmake-4.0.patch
+  patch -p1 -i ../gcc-15.patch
+  patch -p1 -i ../springlobby-boost1.90.patch
+
+  # Get rid of warnings of debug package
+  chmod -R o+r src
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  cmake \
+    -GNinja \
+    -Bbuild \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DPRD_JSONCPP_INTERNAL=OFF \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  ninja -C build
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  DESTDIR="$pkgdir" ninja -C build install
+}
+
+# vim: sw=2:ts=2 et:

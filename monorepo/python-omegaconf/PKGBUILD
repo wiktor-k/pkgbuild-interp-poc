@@ -1,0 +1,42 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Luis Martinez <luis dot martinez at disroot dot org>
+# Contributor: Harley Wiltzer <harleyw@hotmail.com>
+
+pkgname=python-omegaconf
+_pkg="${pkgname#python-}"
+pkgver=2.4.0
+pkgrel=1
+pkgdesc='Flexible Python configuration system'
+arch=('any')
+url='https://github.com/omry/omegaconf'
+license=('BSD-3-Clause')
+depends=('python-antlr4' 'python-yaml')
+makedepends=('antlr4' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+# checkdepends=('python-pytest' 'python-pytest-mock' 'python-pytest-lazy-fixture')
+source=("$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/source/o/$_pkg/$_pkg-$pkgver.tar.gz"
+        'antlr4-jar.patch')
+sha256sums=('7e219a70bea371da250285b9c01c7db027bc421722799c2cc4ff14bc4a2a753b'
+            '73ce12d45bf1b510461dc7799024f971e17daebf924645ec7048611d50393031')
+
+prepare() {
+	patch -p1 -d "$_pkg-$pkgver" < antlr4-jar.patch
+}
+
+build() {
+	cd "$_pkg-$pkgver"
+	python -m build --wheel --no-isolation
+}
+
+# check() {
+# 	cd "$_pkg-$pkgver"
+# 	PYTHONPATH="$PWD" pytest -x
+# }
+
+package() {
+	cd "$_pkg-$pkgver"
+	PYTHONHASHSEED=0 python -m installer --destdir="$pkgdir/" dist/*.whl
+
+	install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

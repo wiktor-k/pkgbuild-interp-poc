@@ -1,0 +1,90 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Harry Jeffery <harry|@|exec64|.|co|.|uk>
+# Contributor: Alex Jordan <alexander3223098@gmail.com>
+
+pkgbase=zerotier-one
+pkgname=(zerotier-one zerotier-one-full)
+pkgver=1.16.2
+pkgrel=1
+pkgdesc='Creates virtual Ethernet networks of almost unlimited size.'
+arch=('x86_64')
+url='https://www.zerotier.com/'
+license=('MPL-2.0')
+depends=('glibc'
+         'libgcc' 'libgcc_s.so'
+         'libnatpmp' #'libnatpmp.so'
+         'libstdc++' 'libstdc++.so'
+         'miniupnpc' 'libminiupnpc.so'
+         'openssl' 'libcrypto.so' 'libssl.so')
+makedepends=('rust')
+options=('!lto')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/zerotier/ZeroTierOne/archive/refs/tags/$pkgver.tar.gz"
+        '0001-miniupnpc.patch'
+        'zerotier-one.sysusers')
+sha512sums=('c955fe75930cdecb806b766aa3ae07f18dd2b4ee772d69f20375e043bdd3473d8e12fe530cfb8663f194fe63d5a66c545983be93b4c81b171fe4da930062ad7b'
+            '552526633470e8bf7b5464b1c4ffb3102c62d05c9370b042bfa8447ccae213678f156e88604e8b9b01f1ee2197f62a7b7e4263279bf028eaa6471443bf67bdf3'
+            '9499251dcd5cfb415e7cbfae33f17f40a1b9f94547df5edea9d94d6ecfa4b97e49eda1397d70968422e13b902ce0e591bd081bbec57c81465ff84bf5848851dd')
+
+prepare() {
+  cd "${srcdir}/ZeroTierOne-${pkgver}"
+
+  # remove bundled miniupnpc code, and build with package headers
+  # also fix for MINIUPNPC_API_VERSION 18
+  rm -rf ext/miniupnpc/
+  patch -Np1 < ../0001-miniupnpc.patch
+
+  sed \
+    -e 's/sbin/bin/' \
+    -e 's/LDFLAGS=/LDFLAGS?=/' \
+    -e 's/RUSTFLAGS=/RUSTFLAGS?=/' \
+    -e 's/cargo build $(RUSTFLAGS)/cargo build --release/' \
+    -i make-linux.mk debian/zerotier-one.service
+
+  cp -a "${srcdir}/ZeroTierOne-${pkgver}" "${srcdir}/ZeroTierOne-${pkgver}-full"
+}
+
+build() {
+  cd "${srcdir}/ZeroTierOne-${pkgver}"
+  make V=1
+
+  cd "${srcdir}/ZeroTierOne-${pkgver}-full"
+  make V=1 ZT_NONFREE=1
+}
+
+check() {
+  cd "${srcdir}/ZeroTierOne-${pkgver}"
+  make selftest
+  ./zerotier-selftest
+
+  cd "${srcdir}/ZeroTierOne-${pkgver}-full"
+  make selftest
+  ./zerotier-selftest
+}
+
+package_zerotier-one() {
+  pkgdesc='Creates virtual Ethernet networks of almost unlimited size.'
+  license=('MPL-2.0')
+  conflicts=('zerotier-one-full')
+
+  cd "${srcdir}/ZeroTierOne-${pkgver}"
+
+  make DESTDIR="${pkgdir}" install
+  install -D -m0644 debian/zerotier-one.service "${pkgdir}"/usr/lib/systemd/system/zerotier-one.service
+
+  install -D -m0644 "${srcdir}"/zerotier-one.sysusers "${pkgdir}"/usr/lib/sysusers.d/"${pkgname}".conf
+}
+
+package_zerotier-one-full() {
+  pkgdesc='Creates virtual Ethernet networks of almost unlimited size, with nonfree controller.'
+  license=('custom: ZeroTier SOURCE-AVAILABLE LICENSE')
+  conflicts=('zerotier-one')
+
+  cd "${srcdir}/ZeroTierOne-${pkgver}-full"
+
+  make DESTDIR="${pkgdir}" install
+  install -D -m0644 debian/zerotier-one.service "${pkgdir}"/usr/lib/systemd/system/zerotier-one.service
+
+  install -D -m0644 "${srcdir}"/zerotier-one.sysusers "${pkgdir}"/usr/lib/sysusers.d/"${pkgname}".conf
+
+  install -D -m0644 nonfree/LICENSE.md "${pkgdir}"/usr/share/licenses/"${pkgname}"/LICENSE.md
+}

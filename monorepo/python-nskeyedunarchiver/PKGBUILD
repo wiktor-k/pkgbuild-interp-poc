@@ -1,0 +1,30 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Joaquim Monteiro <joaquim.monteiro@protonmail.com>
+
+_pyname=NSKeyedUnArchiver
+pkgname=python-nskeyedunarchiver
+pkgver=1.5.2
+pkgrel=2
+pkgdesc="Library for decoding Apple's text or binary plist files"
+arch=(any)
+url='https://github.com/avibrazil/NSKeyedUnArchiver'
+license=('LGPL')
+depends=('python')
+makedepends=('python-'{build,installer,wheel}
+             'python-setuptools')
+_archive="${_pyname,,}-$pkgver"
+source=("https://files.pythonhosted.org/packages/source/${_pyname::1}/$_pyname/$_archive.tar.gz")
+sha512sums=('308ba33ad890a39f2f7419651cd4e14e01a274a81b83194d638e5a4a61fd76f846ccf7325ee49a7bbd8ca361fbe1e4868b310624f0ed97741a9df460a4057213')
+
+build() {
+  cd "$_archive"
+  python -m build -wn
+}
+
+package() {
+  cd "$_archive"
+  python -m installer -d "$pkgdir" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

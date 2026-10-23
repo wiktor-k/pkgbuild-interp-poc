@@ -1,0 +1,21 @@
+pkgbase = python-hatch-build-scripts
+	pkgdesc = A plugin for Hatch that runs build scripts and saves their artifacts
+	pkgver = 1.0.0
+	pkgrel = 2
+	url = https://github.com/rmorshea/hatch-build-scripts
+	arch = any
+	license = MIT
+	checkdepends = python-hatch
+	checkdepends = python-pytest
+	checkdepends = python-pip
+	checkdepends = python-toml
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	depends = python
+	depends = python-hatchling
+	depends = python-pathspec
+	source = git+https://github.com/rmorshea/hatch-build-scripts#tag=v1.0.0
+	sha256sums = daf97d99ecb8ff63f15662dcf603726a7430e532b19d907ed8e7a0110b6e8873
+
+pkgname = python-hatch-build-scripts

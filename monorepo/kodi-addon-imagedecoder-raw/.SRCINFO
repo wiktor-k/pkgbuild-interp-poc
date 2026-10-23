@@ -1,0 +1,19 @@
+pkgbase = kodi-addon-imagedecoder-raw
+	pkgdesc = Kodi raw imagedecoder addon
+	pkgver = 21.0.2
+	pkgrel = 6
+	url = https://github.com/xbmc/imagedecoder.raw
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-imagedecoder
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = kodi-dev
+	makedepends = libraw
+	options = !lto
+	source = kodi-addon-imagedecoder-raw-21.0.2.tar.gz::https://github.com/xbmc/imagedecoder.raw/archive/refs/tags/21.0.2-Omega.tar.gz
+	sha512sums = 17cb59ad5fe4141897e1991bf36e11f3ac797335f6757cbb2d05ef7b86ae9b65906af9d0b6a062c31cd66b25059e9502303906abdc5506594e0451b9a0f41659
+
+pkgname = kodi-addon-imagedecoder-raw
+	depends = kodi
+	depends = libraw

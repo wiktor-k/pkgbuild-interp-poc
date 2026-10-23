@@ -1,0 +1,64 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Ner0 <darkelfdarkelf666@yahoo.co.uk>
+# Contributor: dserban <dserban01@yahoo.com>
+
+pkgname=switchboard
+pkgver=8.0.3
+pkgrel=1
+pkgdesc='The Pantheon Control Center'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard
+license=(LGPL-2.1-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+)
+makedepends=(
+  cmake
+  git
+  intltool
+  meson
+  sassc
+  vala
+)
+optdepends=(
+  'switchboard-plug-about: About plug'
+  'switchboard-plug-applications: Applications plug'
+  'switchboard-plug-datetime: Date & Time plug'
+  'switchboard-plug-desktop: Desktop plug'
+  'switchboard-plug-display: Display plug'
+  'switchboard-plug-elementary-tweaks: Elementary Tweaks plug'
+  'switchboard-plug-keyboard: Keyboard plug'
+  'switchboard-plug-locale: Locale plug'
+  'switchboard-plug-network: Network plug'
+  'switchboard-plug-notifications: Notifications plug'
+  'switchboard-plug-power: Power plug'
+  'switchboard-plug-security-privacy: Security & Privacy plug'
+)
+provides=(libswitchboard-3.so)
+_tag=6714b3c8f6d0e6d386c3190e1c15b1d651faae2a
+source=(git+https://github.com/elementary/switchboard.git#tag=${_tag})
+b2sums=('7f245c45c291dbc01acdd8d2e341a2ade0ea5f9bb6128246bd3009412a7adcb468c1bb20a9afa202cb89b1e3f383ff5c22063266ede0355d1223ab3169ee173b')
+
+pkgver() {
+  cd switchboard
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+}
+
+# vim: ts=2 sw=2 et:

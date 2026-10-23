@@ -1,0 +1,57 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Stephan Springer <buzo+arch@Lini.de>
+# Contributor: Darren Wu <$(base64 --decode <<<'ZGFycmVuMTk5NzA4MTBAZ21haWwuY29tCg==')>
+# Contributor: Tarn Burton <twburton at gmail dot com>
+
+pkgname=pioneer
+pkgver=20250501
+pkgrel=3
+pkgdesc="A game of lonely space adventure"
+arch=('x86_64')
+url="https://github.com/pioneerspacesim/pioneer"
+license=('GPL3')
+depends=(
+  'assimp'
+  'freetype2'
+  'glew'
+  'hicolor-icon-theme'
+  'libsigc++'
+  'libvorbis'
+  'lua52'
+  'mesa'
+  'sdl2_image'
+)
+makedepends=('cmake' 'ninja')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/pioneerspacesim/pioneer/archive/$pkgver.tar.gz")
+sha256sums=('959902d98a79536bd44f25bd7b29e48da94aeac597228776b0f91635877f362e')
+
+prepare() {
+    cd "$pkgname-$pkgver"
+    # fix version string, don't use the build date
+    sed -i 's|PROJECT_VERSION "%Y%m%d"|PROJECT_VERSION "'$pkgver'"|' CMakeLists.txt
+}
+
+build() {
+    export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
+    cmake -S "$pkgname-$pkgver" -B build -G Ninja \
+          -D CMAKE_INSTALL_PREFIX:PATH=/usr \
+          -D PIONEER_DATA_DIR:PATH=/usr/share/pioneer/data \
+          -D USE_SYSTEM_LIBGLEW:BOOL=ON \
+          -D USE_SYSTEM_LIBLUA:BOOL=ON \
+          -D USE_SSE42:BOOL=OFF \
+          -D CMAKE_EXPORT_COMPILE_COMMANDS=1 \
+          -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+          -Wno-dev
+
+    cmake --build build --target all build-data
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+
+    # remove empty directories
+    rmdir "$pkgdir"/usr/share/pioneer/data/music/core/{{un,}docked,near-planet}
+}
+
+# vim: ts=2 sw=2 et:

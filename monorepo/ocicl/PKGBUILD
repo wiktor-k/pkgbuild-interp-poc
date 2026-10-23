@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=ocicl
+pkgver=2.20.0
+pkgrel=2
+pkgdesc='An OCI-based ASDF system distribution and management tool for Common Lisp'
+arch=(x86_64)
+url='https://github.com/ocicl/ocicl'
+license=(MIT)
+depends=(glibc zstd sbcl)
+makedepends=(git libfixposix)
+options=(!debug !strip)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('45ee835a72d8d8bf4eb8d1abfd3b32b410bb8cf47a9d43ec656d2bba1fc9ed50cf2f586ddb146556f6c665307dfc3b1a60d3d70184c41e81b033eebed23f8452')
+b2sums=('9afbe60beaf113571fdc49e6eb03f04f62d1e408c8cc40c02adbf1c633e5d8030f95a3167f638e7a73fdb24ddc2f9081dea83a432d3446778c844d9551c24d38')
+
+build() {
+  cd "$pkgname"
+
+  sbcl --load setup.lisp --eval "(sb-ext:quit)"
+
+  # generate licenses for vendored libraries
+  ./ocicl collect-licenses > VENDORED-LICENSES.txt
+
+  # generate SBOMs
+  ./ocicl create-sbom cyclonedx ocicl-sbom.json
+  ./ocicl create-sbom spdx ocicl-sbom.spdx.json
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" ocicl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # sboms
+  install -vDm644 ocicl-sbom.json "$pkgdir/usr/share/sbom/$pkgname-$pkgver.json"
+  install -vDm644 ocicl-sbom.spdx.json "$pkgdir/usr/share/sbom/$pkgname-$pkgver.spdx.json"
+
+  # licenses
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" \
+    LICENSE \
+    VENDORED-LICENSES.txt
+}

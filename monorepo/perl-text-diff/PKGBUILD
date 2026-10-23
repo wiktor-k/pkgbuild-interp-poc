@@ -1,0 +1,23 @@
+# Contributor: Firmicus <francois.archlinux.org>  
+
+pkgname=perl-text-diff
+pkgver=1.46
+pkgrel=1
+pkgdesc="Perform diffs on files and record sets "
+arch=('any')
+url="https://search.cpan.org/dist/Text-Diff"
+license=('GPL' 'PerlArtistic')
+depends=('perl-algorithm-diff>=1.1900')
+options=('!emptydirs')
+source=(https://search.cpan.org/CPAN/authors/id/N/NE/NEILB/Text-Diff-$pkgver.tar.gz)
+sha256sums=('3fc983e3140fa2580250bbcf2b52e2acbdbc5abda4374c3be78235905d8ca8eb')
+
+build() {
+  cd "$srcdir"/Text-Diff-${pkgver}
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor  
+  make 
+}
+package() {
+  cd "$srcdir"/Text-Diff-${pkgver}
+  make install DESTDIR="$pkgdir" 
+}

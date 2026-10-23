@@ -1,0 +1,22 @@
+pkgbase = python-hiredis
+	pkgdesc = Non-blocking redis client for python
+	pkgver = 3.4.2
+	pkgrel = 1
+	url = https://pypi.org/project/hiredis/
+	arch = x86_64
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = hiredis
+	depends = python
+	source = git+https://github.com/redis/hiredis-py.git#tag=v3.4.2
+	source = python-hiredis-use-system-hiredis.patch
+	b2sums = 7e3d0a67fa6d4c4630e1fc713782a3d043534d3cef4a60ddc0cc1db1c4d1202f6ec63287faed3079aa647fd96eb9c29e0b9c805926e6668d43d81f8534364e36
+	b2sums = 6a12a7237f742c02e852ac1823f7585c2246016c981b1b2b4436fa3859309cd2cb0efcb1c09f0d380d4f6430e61247d662922e53c690223a30138caa424f8e02
+
+pkgname = python-hiredis

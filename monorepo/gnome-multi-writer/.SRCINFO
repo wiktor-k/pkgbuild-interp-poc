@@ -1,0 +1,30 @@
+pkgbase = gnome-multi-writer
+	pkgdesc = Write an ISO file to multiple USB devices at once
+	pkgver = 3.35.90
+	pkgrel = 5
+	url = https://wiki.gnome.org/Apps/MultiWriter
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = docbook-sgml
+	makedepends = docbook-utils
+	makedepends = git
+	makedepends = meson
+	makedepends = perl-sgmls
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libcanberra
+	depends = libgcc
+	depends = libgudev
+	depends = libgusb
+	depends = polkit
+	depends = udisks2
+	source = git+https://gitlab.gnome.org/GNOME/gnome-multi-writer.git?signed#tag=GNOME_MULTI_WRITER_3_35_90
+	source = gnome-multi-writer-window-icon.patch
+	validpgpkeys = 163EB50119225DB3DF8F49EA17ACBA8DFA970E17
+	b2sums = 13663ec912e88e038626d2deac7538d15f80ebf57015e97a1db39a70fd8f371a5773256320be7a82ce6b6a7bd5b925c57e26c076b985f7d014b370358678b9fa
+	b2sums = da803f330ca427b23d3023f31b9ead72b5925e6796684acb8bb995c6a702bc7cc05fd852575bf784038bfb2b57111b93a6b3595f29ca6e67f86bf56506c94787
+
+pkgname = gnome-multi-writer

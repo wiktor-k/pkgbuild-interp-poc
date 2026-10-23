@@ -1,0 +1,38 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-octaviaclient
+pkgver=3.15.0
+pkgrel=1
+pkgdesc="Octavia client for OpenStack Load Balancing"
+arch=('any')
+url="https://docs.openstack.org/python-octaviaclient/latest/"
+license=('Apache-2.0')
+depends=('python-cliff' 'python-keystoneauth1' 'python-openstackclient'
+         'python-osc-lib' 'python-oslo-serialization' 'python-oslo-utils' 'python-pbr'
+         'python-requests')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-hacking' 'python-requests-mock' 'python-oslotest'
+              'python-stestr' 'python-testscenarios')
+source=("git+https://github.com/openstack/python-octaviaclient.git#tag=$pkgver")
+sha512sums=('2b125237424bcaf2dd34714fe4d4ab28d746255a6019f8f925b5e7fc27b1363d3f93cf89f599fddfd45f4ef284231f655076743ab9b3f1b595cdc8df1388b397')
+
+prepare() {
+  cd python-octaviaclient
+  sed -i '/self.app.client_manager.load_balancer = FakeOctaviaClient(/,/^        )$/ s/^        )$/        )\n        self.app.client_manager.sdk_connection = mock.MagicMock()\n        self.app.client_manager.sdk_connection.network = mock.MagicMock()/' octaviaclient/tests/unit/osc/v2/fakes.py
+}
+
+build() {
+  cd python-octaviaclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-octaviaclient
+  stestr run
+}
+
+package() {
+  cd python-octaviaclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

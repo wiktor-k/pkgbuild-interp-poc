@@ -1,0 +1,40 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+
+pkgname=python-pyproj
+pkgver=3.8.0
+pkgrel=1
+pkgdesc="Python interfaces to PROJ.4 library"
+arch=(x86_64)
+url="https://github.com/pyproj4/pyproj"
+license=(custom)
+depends=(proj python-certifi)
+makedepends=(python-setuptools python-wheel python-build python-installer cython)
+checkdepends=(python-pytest python-numpy python-pandas python-shapely python-xarray)
+source=(https://github.com/pyproj4/pyproj/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('e54d74babf5fed2d9a693670d0b782cd8c76080e509b82256fb5c97f80af5490')
+
+prepare() {
+  # Remove RPATH
+  sed -i 's/library_dirs if os.name.*/None/' pyproj-$pkgver/setup.py
+}
+
+build() {
+  export PROJ_DIR=/usr
+  cd pyproj-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+# Import issues, no time to investigate
+#check() {
+#  cd pyproj-$pkgver
+#  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+#  PYTHONPATH="${PWD}"/build/lib.linux-$CARCH-${python_version} pytest -vv --color=yes
+#}
+
+package() {
+  cd pyproj-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE_proj "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+}

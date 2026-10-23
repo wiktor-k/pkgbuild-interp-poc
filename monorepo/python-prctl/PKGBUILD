@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Co-Maintainer: Chih-Hsuan Yen <yan12125@archlinux.org>
+
+pkgname=python-prctl
+pkgver=1.8.1
+pkgrel=9
+pkgdesc='Python(ic) interface to the linux prctl syscall'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+url='https://github.com/seveas/python-prctl'
+depends=('python' 'libcap')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('iputils' 'procps-ng')
+source=("git+https://github.com/seveas/python-prctl.git#tag=v$pkgver"
+         "skip-tests.diff"
+         "setuptools-62.1.diff")
+sha512sums=('54f1a1bc20fb617e5b99c3d9058b79b380048329e4e256b00f7f351b4f3bd986ff4740dd198371dce520f35eb7ec28547acd524c2283f29cb0b610160d67e6d0'
+            'd7aa5bf2a1854892d2a62fd78f713e6a9df5ff7b6d44a676316970dba348590151d6db5e0583d039db816d361793c8d2f143836bd4113f881e823c741f462bed'
+            '7ad2c724860db6c8d3b4e767696e18cedd96a567a97ad14ac2dc29d0bb2f0dc01961775b6dac704dfcee6b00db89b9768f99dc0e68cdbf09ddc0ba4e1027a81a')
+
+prepare() {
+  cd python-prctl
+  # https://github.com/seveas/python-prctl/pull/33
+  git cherry-pick -n 03cefac668cf9732338e3257a4e7acd02b4dad59
+  patch -Np1 -i ../skip-tests.diff
+  # Adapt for https://github.com/pypa/distutils/pull/133
+  patch -Np1 -i ../setuptools-62.1.diff
+}
+
+build() {
+  cd python-prctl
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-prctl
+  PYTHONDONTWRITEBYTECODE=1 python -m unittest discover
+}
+
+package() {
+  cd python-prctl
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

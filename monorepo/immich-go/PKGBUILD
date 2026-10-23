@@ -1,0 +1,40 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=immich-go
+pkgver=0.32.0
+pkgrel=1
+epoch=1
+pkgdesc="Unofficial immich-cli alternative"
+arch=('x86_64')
+url="https://github.com/simulot/immich-go"
+license=('AGPL-3.0-only')
+makedepends=('go' 'git')
+source=("git+https://github.com/simulot/immich-go.git#tag=v$pkgver")
+sha512sums=('d729a49dcd9da3720e8257f7e540488e996a73c6217913332eb788864086728e4ab064f95749a4ce3fc90fcfe00e9fd787e8e0abe817234f4742b5fdb3759fc1')
+
+prepare() {
+  cd "$pkgname"
+  mkdir -p build
+}
+
+build() {
+  cd "$pkgname"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  go build \
+    -ldflags "-linkmode=external -X github.com/simulot/immich-go/app.Version=$pkgver-arch -X github.com/simulot/immich-go/app.Commit=$(git rev-parse HEAD)" \
+    -o build main.go
+}
+
+check() {
+  cd "$pkgname"
+  go test -v -x ./...
+}
+
+package() {
+  cd "$pkgname"
+  ls -lha build
+  install -Dsm755 build/main "$pkgdir/usr/bin/immich-go"
+}

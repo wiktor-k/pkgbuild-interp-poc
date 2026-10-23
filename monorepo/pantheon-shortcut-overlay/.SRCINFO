@@ -1,0 +1,19 @@
+pkgbase = pantheon-shortcut-overlay
+	pkgdesc = A native, OS-wide shortcut overlay
+	pkgver = 8.1.0
+	pkgrel = 1
+	url = https://github.com/elementary/shortcut-overlay
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = libgee
+	depends = libgranite-7.so
+	depends = pantheon-wayland
+	source = pantheon-shortcut-overlay::git+https://github.com/elementary/shortcut-overlay.git#tag=f831f994c36295fb236cf87c722cf733f43d32eb
+	b2sums = 66d8d2ab9ebf77906191e18d7f857c3771e6134437bba4874edef22025b45da54eea84b7c0824d9f03e981a80ec724f3372c39437e8fbbd5b0a842a07a91de3f
+
+pkgname = pantheon-shortcut-overlay

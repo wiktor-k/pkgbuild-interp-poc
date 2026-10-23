@@ -1,0 +1,22 @@
+pkgbase = python-lap
+	pkgdesc = Linear Assignment Problem solver using Jonker-Volgenant algorithm (LAPJV/LAPMOD)
+	pkgver = 0.5.13
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/gatagat/lap
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = python
+	depends = python-numpy
+	source = python-lap::git+https://github.com/gatagat/lap.git#tag=v0.5.13
+	sha512sums = 811880be016335fcf82d45183561243960cf3457e3ed88f0dadd589d2d5af02091687fe1df1601692b2547c95a22cac3b424369bcb6595bc76b4bf802a74cf0e
+	b2sums = 3a032257120cb8e6ae71de2f32f9057942b579f5993aebe7a457a929bb69cef5a32161414f19ee482419d964c04cb962ebc27c6afb71dcda1fcb7d9532ea7b7b
+
+pkgname = python-lap

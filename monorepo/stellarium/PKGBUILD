@@ -1,0 +1,77 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+# Contributor: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Damir Perisa <damir.perisa@bluewin.ch>
+
+pkgname=stellarium
+pkgver=26.3
+pkgrel=1
+pkgdesc="Software which renders realistic skies in real time with OpenGL"
+arch=(x86_64)
+url="https://stellarium.org"
+license=(GPL-2.0-or-later)
+depends=(
+  exiv2
+  libgcc
+  libstdc++
+  gpsd
+  libindi
+  md4c
+  nlopt
+  qt6-base
+  qt6-charts
+  qt6-declarative
+  qt6-multimedia
+  qt6-positioning
+  qt6-serialport
+  qt6-svg
+  qt6-webengine
+  qxlsx
+  zlib
+)
+makedepends=(
+  calcmysky
+  cmake
+  git
+  mesa
+  qt6-tools
+  vulkan-headers
+)
+optdepends=(
+    'calcmysky: alternative atmosphere renderer'
+    'man-db: manual pages for stellarium'
+)
+source=(git+https://github.com/Stellarium/stellarium?signed#tag=v$pkgver
+        qt-6.10.patch)
+validpgpkeys=('79151C2E6351E7278DA1A730BF38D4D02A328DFF') # Alexander Wolf <alex.v.wolf@gmail.com>
+sha256sums=('99c6db8a00a9f4296f789833399bb2fdb1dad85429501e9d0eed8281c6a3c625'
+            'ddef4435490c1aac4de5892386e93967b945c8e88f18fbe465c0c166c8a9d514')
+
+prepare() {
+  patch -d $pkgname -p1 < qt-6.10.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname
+    -W no-dev
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5 # Necessary for CMake 4+
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_C_EXTENSIONS=Yes
+    -D CMAKE_C_STANDARD=17
+    -D CMAKE_CXX_EXTENSIONS=Yes
+    -D CPM_LOCAL_PACKAGES_ONLY=ON
+    -D ENABLE_LTO=1
+    -D ENABLE_QT6=1
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build --target all
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --build build --target install
+  install -vDm 644 $pkgname/COPYING -t "$pkgdir/usr/share/licenses/$pkgname"
+}

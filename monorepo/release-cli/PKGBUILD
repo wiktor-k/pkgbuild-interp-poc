@@ -1,0 +1,39 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=release-cli
+pkgver=0.24.0
+pkgrel=1
+pkgdesc="Gitlab Release CLI"
+arch=(x86_64)
+url="https://gitlab.com/gitlab-org/release-cli"
+license=(MIT)
+depends=(glibc)
+makedepends=(go)
+options=(!lto)
+source=($pkgname-$pkgver.tar.gz::$url/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('1144f4379ed83edf4bcd249eb2c1eabc432b7cc5fa90e1a60303fb9d16ad7ac920ba396b04d0e5c1f4ecca319cdb5fe05dd8cc43550f9cfab11b80b1ccb894ef')
+b2sums=('413640963eefe354ebc9cf7a4b6347c4200fc21ce5d3d26c5e04718224b31e9fbb2cef6026377ff32c34ea676b9e0359bb944926bd7c6300ceeb92d879b70638')
+
+prepare() {
+  mkdir -vp $pkgname-v$pkgver/build
+}
+
+build() {
+  cd $pkgname-v$pkgver
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+  export GOFLAGS="-buildmode=pie  -mod=readonly -modcacherw"
+
+  go build -ldflags "-compressdwarf=false -linkmode=external" -o build/$pkgname ./cmd/$pkgname
+}
+
+package() {
+  install -vDm 755 $pkgname-v$pkgver/build/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $pkgname-v$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $pkgname-v$pkgver/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  cd $pkgname-v$pkgver/docs
+  find . -type f -iname "*.md" -exec install -vDm 644 {} "$pkgdir/usr/share/doc/$pkgname/"{} \;
+}

@@ -1,0 +1,71 @@
+# Contributor: larchunix
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgbase=libcomps
+pkgname=(
+  libcomps
+  libcomps-docs
+)
+pkgver=0.1.24
+pkgrel=1
+pkgdesc="Comps XML file manipulation library"
+arch=('x86_64')
+url="https://github.com/rpm-software-management/$pkgbase"
+license=('GPL-2.0-or-later')
+depends=('expat' 'glibc' 'libxml2' 'zlib')
+makedepends=('cmake' 'python' 'python-setuptools' 'doxygen' 'graphviz' 'python-sphinx')
+checkdepends=('check')
+source=(
+  "$url/archive/$pkgver/$pkgbase-$pkgver.tar.gz"
+)
+sha256sums=('c24a81dea8e9f7f3c877618d3812a5293df772abc6b90fad1d34fa62326141bc')
+
+prepare() {
+  cd "$pkgbase-$pkgver"
+}
+
+build() {
+  cd "$pkgbase-$pkgver"
+
+  cmake -B build -S libcomps \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_C_FLAGS_RELEASE='-DNDEBUG' \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_LIBDIR=lib \
+        -DENABLE_DOCS=ON \
+        -Wno-dev
+
+  make -C build
+
+  make -C build docs
+  make -C build pydocs
+}
+
+check() {
+  cd "$pkgbase-$pkgver"
+
+  make -C build test
+  make -C build pytest
+}
+
+package_libcomps() {
+  optdepends=('python: for python bindings')
+
+  cd "$pkgbase-$pkgver"
+
+  make -C build DESTDIR="$pkgdir/" install
+
+  install -Dp -m644 README.md  "$pkgdir/usr/share/doc/$pkgbase/README.md"
+}
+
+package_libcomps-docs() {
+  pkgdesc+=" - documentation"
+  depends=()
+
+  cd "$pkgbase-$pkgver"
+
+  mkdir -p "$pkgdir/usr/share/doc/$pkgbase"/{doxygen,sphinx}
+  cp -Rp build/docs/libcomps-doc/html/ "$pkgdir/usr/share/doc/$pkgbase/doxygen/"
+  rm -r build/src/python/docs/html/.doctrees
+  cp -Rp build/src/python/docs/html/   "$pkgdir/usr/share/doc/$pkgbase/sphinx/"
+}

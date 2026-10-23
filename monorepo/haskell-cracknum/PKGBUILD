@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=crackNum
+pkgname=haskell-cracknum
+pkgver=3.9
+pkgrel=8
+pkgdesc="Crack various integer and floating-point data formats"
+url="https://github.com/LeventErkok/crackNum"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-libbf' 'haskell-sbv' 'haskell-tasty' 'haskell-tasty-golden')
+makedepends=('ghc')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('9e7800948b6abaed3ae1908da5e63773b6df32e30c118f726aa2f4e1c18c72386a164316922599ebc65ba731aa36349cbaa321b2fc581562bba19d14abca44db')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

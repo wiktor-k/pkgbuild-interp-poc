@@ -1,0 +1,111 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='launchy'
+pkgname="ruby-${_gemname}"
+pkgver=3.1.1
+pkgrel=1
+pkgdesc='A helper for launching cross-platform applications in a fire and forget manner'
+arch=('any')
+url="https://github.com/copiousfreetime/${_gemname}"
+license=('ISC')
+depends=(
+  ruby
+  ruby-addressable
+  ruby-childprocess
+  ruby-logger
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-minitest
+  ruby-rake
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('a4d66b297ef66ccd13fd1e9e75dbba4536aaeb0bef65df17d8e087e7b142d2ec719483b98d93030f94d9519af71b90c612b695f93fa49691c426f33f28ba99fd')
+b2sums=('11d3552a029f2a791bacff9d6705c493eecef1405dc2dc04129f6eafbe273ef15f6872bfc917f769c21b4adbc8638749cf0677a526330dfcd9b6bab956accc20')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  sed --in-place --regexp-extended \
+    --expression '/rubocop/d' \
+    Gemfile
+
+  rm --verbose Gemfile.lock
+
+  sed --in-place --regexp-extended \
+    --expression '/it "asssumes we open a local file if we have an exception if we have an invalid scheme and a valid path" do/,/end/d' \
+    --expression '/it "opens a data url with a forced browser application" do/,/end/d' \
+    spec/launchy_spec.rb
+  sed --in-place --regexp-extended \
+    --expression '/it "prints the command on stdout when using --dry-run" do/,/end/d' \
+    spec/cli_spec.rb
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rake test
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

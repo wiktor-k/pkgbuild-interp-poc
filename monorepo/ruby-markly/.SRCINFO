@@ -1,0 +1,24 @@
+pkgbase = ruby-markly
+	pkgdesc = CommonMark parser and renderer. Written in C, wrapped in Ruby.
+	pkgver = 0.19.0
+	pkgrel = 1
+	url = https://github.com/socketry/markly
+	arch = x86_64
+	license = MIT
+	checkdepends = ruby-bake
+	checkdepends = ruby-bake-test
+	checkdepends = ruby-build-files
+	checkdepends = ruby-covered
+	checkdepends = ruby-kramdown
+	checkdepends = ruby-redcarpet
+	checkdepends = ruby-sus
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/socketry/markly.git#tag=v0.19.0
+	source = socketry-cmarkly::git+https://github.com/socketry/cmarkly.git
+	sha256sums = 4563d64e8721d3074c52c4bdead69f4e33759e532d3110bd0061420d327d042b
+	sha256sums = SKIP
+
+pkgname = ruby-markly

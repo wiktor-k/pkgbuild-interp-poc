@@ -1,0 +1,19 @@
+pkgbase = pngquant
+	pkgdesc = Command-line utility to quantize PNGs down to 8-bit paletted PNGs
+	pkgver = 3.0.3
+	pkgrel = 3
+	url = https://pngquant.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	license = ISC
+	license = BSD-2-Clause
+	makedepends = cargo
+	depends = libpng
+	depends = lcms2
+	options = !lto
+	source = https://github.com/kornelski/pngquant/archive/3.0.3/pngquant-3.0.3.tar.gz
+	source = pngquant-build.patch::https://github.com/kornelski/pngquant/commit/ed62a8b7720fb784b821766bf8d4a3c2a5f6d568.patch
+	sha256sums = ddd8889a9c269ba454d0c5e4f7167948d55d77c4570b23f671809fd3a68b6822
+	sha256sums = f8ff9531fc41c220569d4403c097f516c16f45897efbc3fe91ff3733feb26228
+
+pkgname = pngquant

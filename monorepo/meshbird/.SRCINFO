@@ -1,0 +1,20 @@
+pkgbase = meshbird
+	pkgdesc = Distributed private networking
+	pkgver = 2.3
+	pkgrel = 7
+	url = https://github.com/meshbird/meshbird
+	arch = x86_64
+	license = Apache
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	backup = etc/meshbird.conf
+	source = meshbird-2.3.tar.gz::https://github.com/meshbird/meshbird/archive/v2.3.tar.gz
+	source = meshbird.service
+	source = meshbird.conf
+	sha512sums = fa08e9fabd6101bc63e8a18baefee5537612a0fd3892737c1d1b16a87d4976d67aa14b3b589fa97f7816df00e9f032ff42716cdf5b43807e0759733c2dff5fe5
+	sha512sums = b9b552f09d9f98c4ff90ce3d31b15f7a5c2453c1535fa17454043826bf5f108510a7a7512ef79dfd7b4d53615d06c690fe8fdd878a6894f8dc75ee934c0328e7
+	sha512sums = 08a493f299549b9eea830e1201d2131314b2c0c931c9fdd06a30e849c90368c7809c6a42bfded33aec44403cd8f61caad168b54bad08f5b21867f2d562f0c872
+
+pkgname = meshbird

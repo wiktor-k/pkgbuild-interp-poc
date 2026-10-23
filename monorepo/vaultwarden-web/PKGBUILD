@@ -1,0 +1,58 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Markus Richter <mqus at disroot dot org>
+
+pkgname=vaultwarden-web
+# note: upstream has build scripts in dani-garcia/bw_web_builds, and
+# keeps all code in vaultwarden/vw_web_builds
+pkgver=2026.7.0
+pkgrel=1
+pkgdesc='Bitwarden web vault with the patches to make it work with Vaultwarden'
+arch=(any)
+url=https://github.com/vaultwarden/vw_web_builds
+license=(GPL-3.0-only)
+depends=(vaultwarden)
+makedepends=(
+  git
+  nodejs-lts
+  npm
+)
+install=$pkgname.install
+source=("$pkgname::git+$url#tag=v${pkgver}+0")
+sha512sums=('9787b7c3deafe6b715e6937ad75e1765a3ed25170e3a377d683dc7b4167713e791c145cc4aeef2dc7bbb8f4eb36c391a81ac8c3f5b2b0e678cf597f9a3e1036a')
+b2sums=('178dffbe529889b06133be3e3569c6078fa08f6639ddbc83717d93e51ab134aaa20a0a5a795ad1ec57af2055b56cf006c4d05da90cc0fb64ede80c2ac250cc30')
+
+prepare() {
+  cd "$pkgname"
+
+  # https://www.electronjs.org/docs/latest/api/environment-variables#electron_skip_binary_download
+  export ELECTRON_SKIP_BINARY_DOWNLOAD=1
+
+  # upstream does not keep lockfiles in sync
+  npm install
+
+  npm ci
+}
+
+build() {
+  cd "$pkgname/apps/web"
+
+  # https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
+  # Workaround for "JavaScript heap out of memory" on 32-bit systems
+  if [[ $(getconf LONG_BIT) -eq 32 ]]; then
+    npm pkg set scripts.build:oss='cross-env NODE_OPTIONS="--max-old-space-size=1536" webpack'
+  fi
+
+  npm run dist:oss:selfhost
+
+  # https://github.com/dani-garcia/bw_web_builds/blob/a84aca58170a60ac04a695851eeb6e70f577de09/scripts/build_web_vault.sh#L30-L33
+  printf '{"version":"%s"}' "$pkgver" > build/vw-version.json
+}
+
+package() {
+  cd "$pkgname"
+
+  install -d "$pkgdir/usr/share/webapps/$pkgname"
+
+  cp -R ./apps/web/build/* "$pkgdir/usr/share/webapps/$pkgname"
+}

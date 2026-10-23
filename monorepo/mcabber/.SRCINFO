@@ -1,0 +1,23 @@
+pkgbase = mcabber
+	pkgdesc = A small Jabber console client, includes features: SSL, PGP, MUC, UTF8
+	pkgver = 1.1.2
+	pkgrel = 3
+	url = https://www.lilotux.net/~mikael/mcabber/
+	arch = x86_64
+	license = GPL
+	makedepends = pkg-config
+	depends = ncurses
+	depends = glib2
+	depends = loudmouth
+	depends = gpgme
+	depends = libotr
+	depends = aspell
+	source = https://www.lilotux.net/~mikael/mcabber/files/mcabber-1.1.2.tar.bz2
+	source = https://www.lilotux.net/~mikael/mcabber/files/mcabber-1.1.2.tar.bz2.asc
+	source = format-security.patch
+	validpgpkeys = EACADFF156849BC89653139E3C2900DEACB7FC95
+	sha256sums = c4a1413be37434b6ba7d577d94afb362ce89e2dc5c6384b4fa55c3e7992a3160
+	sha256sums = SKIP
+	sha256sums = f075365bda322b9808f0ddf60390b243b54c7148cf01d261341f293cf7c46279
+
+pkgname = mcabber

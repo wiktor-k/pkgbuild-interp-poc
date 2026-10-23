@@ -1,0 +1,71 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+# Contributor: Gaute Hope <eg@gaute.vetsj.com>
+# Contributor: Johannes Heinz <heinzeljo@web.de>
+pkgname=astroid
+pkgver=0.17
+pkgrel=18
+pkgdesc="A graphical threads-with-tags style, lightweight and fast, e-mail client for Notmuch"
+arch=('x86_64')
+url="https://github.com/astroidmail/astroid"
+license=('GPL-3.0-or-later'
+         'LGPL-2.1-or-later')
+depends=('boost-libs'
+         'gmime3'
+         'gobject-introspection-runtime'
+         'gtkmm3'
+         'libpeas'
+         'libsass'
+         'notmuch'
+         'protobuf'
+         'vte3'
+         'webkit2gtk-4.1')
+makedepends=('boost'
+             'cmake'
+             'cmark'
+             'gobject-introspection'
+             'ruby-ronn'
+             'w3m')
+checkdepends=('notmuch-runtime'
+              'xorg-server-xvfb')
+optdepends=('cmark: for markdown to html composition'
+            'emacs: can be used as editor'
+            'gvim: default editor')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/astroidmail/astroid/archive/v${pkgver}.tar.gz"
+         boost-1.89.patch
+         girepository.patch
+         protobuf-36-log-macro.patch)
+sha256sums=('dd419d4e11d1efa95979472e17cca5066799a5c64a595d5cea2b9e8d9f60f9c8'
+            '6fd25423d82eaa9cd1ed6d8c9f6e8ee2f18da062de0ac909a46f793432bd1b8e'
+            '006cfbc7e20fdeb4e7b6c78d2a43b6cd2e3424c4fa7947bb19b13f91a4fbaa30'
+            'df72e08e03161e691496a5ef7332a66b09fb051c764fd903c89759c9c911de5c')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i ../boost-1.89.patch
+  patch -p1 -i ../girepository.patch
+  patch -p1 -i ../protobuf-36-log-macro.patch
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  cmake -B build \
+    -DCMAKE_BUILD_TYPE="None" \
+    -DCMAKE_INSTALL_PREFIX="/usr" \
+    -DCMAKE_CXX_STANDARD=17 \
+    -Wno-dev
+  cmake --build build
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  cd build
+  xvfb-run ctest --output-on-failure
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  DESTDIR="${pkgdir}" cmake --install build
+}

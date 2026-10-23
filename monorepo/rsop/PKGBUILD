@@ -1,0 +1,52 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=rsop
+pkgver=0.12.0
+pkgrel=1
+pkgdesc="Stateless OpenPGP (SOP) based on rpgp"
+arch=(x86_64)
+url="https://codeberg.org/heiko/rsop"
+license=(
+  'Apache-2.0 OR MIT'
+  CC0-1.0
+)
+groups=(stateless-openpgp)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  rust
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/$pkgname/v$pkgver.tar.gz
+)
+sha512sums=('5f292f2ddf8c54898a2f3228114dd2dd6b56e9e50fdd13c683bce480189e1b3fa3f6db451331dd14554fe145fc001825d7d4f216844109abf50eacc91d1006d0')
+b2sums=('26b97178b7c1e4a1a8cac6c5148794a02c981566822fb9802fc1d22bf555acd90f22b9f977d7113ca1dbf05a36d7c75249d1fc9ca924efa52a38aca091dad709')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  export CARGO_TARGET_DIR="$PWD/target"
+  cargo build --bin rsop -p $pkgname --frozen --release --features=cli
+  cargo build --bin rsopv -p $pkgname --frozen --release --features=cliv
+}
+
+check() {
+  cd $pkgname
+  cargo test -p $pkgname --frozen --all-features
+}
+
+package() {
+  cd $pkgname
+  install -vDm 0755 "target/release/$pkgname"{,v} -t "$pkgdir/usr/bin/"
+  install -vDm 0644 target/$pkgname*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 0644 target/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 0644 target/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 0644 target/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 0644 LICENSES/MIT.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

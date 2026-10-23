@@ -1,0 +1,28 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-editorconfig
+pkgver=0.17.1
+pkgrel=1
+pkgdesc='EditorConfig File Locator and Interpreter for Python'
+arch=('any')
+license=('PSF-2.0')
+url='https://github.com/editorconfig/editorconfig-core-py'
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/editorconfig/editorconfig-core-py.git#tag=v$pkgver")
+sha512sums=('db2bd0089cbc32e4ba5566c8811bd63b979e4870013365ee7b7d2285e1c47b434ab5e7aa791e2e05eed605bae42c3ded2b3ca57a660d178460b36c4f58cb2c66')
+
+build() {
+  cd editorconfig-core-py
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd editorconfig-core-py
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # FS#55201
+  mv "$pkgdir"/usr/bin/editorconfig{,3}
+}
+
+# vim:set ts=2 sw=2 et:

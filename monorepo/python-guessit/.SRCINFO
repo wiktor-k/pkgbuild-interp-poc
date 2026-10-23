@@ -1,0 +1,23 @@
+pkgbase = python-guessit
+	pkgdesc = A Python module that extracts as much information as possible from a video filename
+	pkgver = 4.4.0
+	pkgrel = 1
+	url = https://github.com/guessit-io/guessit
+	arch = any
+	license = LGPL-3.0-or-later
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	checkdepends = python-pyyaml
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	depends = python
+	depends = python-dateutil
+	depends = python-babelfish
+	depends = python-rebulk
+	source = python-guessit::git+https://github.com/guessit-io/guessit#tag=v4.4.0
+	sha512sums = 28ef37caa9ae83d71b409f161a9d19c2b2a971728f32aced26cf43bda453a53d60deff274125e0f984f40f99cb4335ab1dab841e8fb59676be78e4580bb7c57a
+	b2sums = 865af6356e9f2ac8916a4b82410149a1f2c687e70d0ec244ba97dea633b325bc892acdf0b003abdef3df62dd0b82ca41f87a1d702260259e3c099ba2b3b458b4
+
+pkgname = python-guessit

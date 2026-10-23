@@ -1,0 +1,18 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=pinyin-data
+pkgver=0.15.0
+pkgrel=1
+pkgdesc="Pinyin Data for Hanzi"
+arch=('any')
+license=('MIT')
+url="https://github.com/mozillazg/pinyin-data"
+depends=()
+source=("https://github.com/mozillazg/pinyin-data/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('4e523f93dc0bb317a2780ab34eea52bfd44b1736ae8a93b70274df1fc8c0eade5fa78f0c76d7d3f7165902174706f607d2477d60f7e1f1877206cf2aea6ac240')
+
+package() {
+  cd $pkgname-$pkgver
+  install -Dm644 pinyin.txt -t "$pkgdir"/usr/share/$pkgname/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

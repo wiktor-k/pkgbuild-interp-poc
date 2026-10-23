@@ -1,0 +1,19 @@
+pkgbase = tuicr
+	pkgdesc = A code review TUI with vim keybindings
+	pkgver = 0.27.0
+	pkgrel = 1
+	url = https://github.com/agavra/tuicr
+	arch = x86_64
+	arch = aarch64
+	arch = riscv64
+	license = MIT
+	makedepends = cargo
+	depends = libgit2
+	depends = glibc
+	depends = libgcc
+	depends = oniguruma
+	options = !lto
+	source = tuicr-0.27.0.tar.gz::https://github.com/agavra/tuicr/archive/refs/tags/v0.27.0.tar.gz
+	sha256sums = 420f72b7ffc6e40db50383719dbec162fa712130c7a7d83c21cd07d504dd59e7
+
+pkgname = tuicr

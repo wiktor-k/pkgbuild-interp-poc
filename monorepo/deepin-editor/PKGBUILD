@@ -1,0 +1,51 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-editor
+pkgver=6.7.0
+pkgrel=1
+pkgdesc='Simple editor for Deepin'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-editor"
+license=('GPL-2.0-or-later' 'GPL-3.0-or-later' 'MIT' 'CC-BY-4.0' 'CC0-1.0')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'dtk6declarative' 'glibc' 'libgcc' 'libstdc++'
+         'icu' 'qt6-5compat' 'qt6-base' 'qt6-svg' 'qt6-webchannel' 'qt6-webengine'
+         'kcodecs' 'syntax-highlighting' 'libchardet'
+         'uchardet' 'hicolor-icon-theme')
+makedepends=('git' 'cmake' 'gmock' 'gtest' 'ninja' 'polkit-qt6' 'qt6-tools')
+checkdepends=('noto-fonts')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-editor.git#tag=$pkgver")
+sha512sums=('f9b0f5bacaebd333c08ffe62fc934626df9161c255d808f30791d67bac4d1437a1efb03363d7ea5d6dddfe2b9e09197e01c18005d00f2a8c20ea62669e4adadb')
+
+prepare() {
+  cd deepin-editor
+  # Arch's noto-fonts ships the monospace family as Noto Sans Mono.
+  sed -i 's/Noto Mono/Noto Sans Mono/g' tests/common/test_settings.cpp
+  # Runtime function stubs require calls that optimization and LTO cannot remove.
+  sed -i '/^enable_testing()/a add_compile_options(-O0 -fno-inline -fno-lto)\nadd_link_options(-fno-lto)' tests/CMakeLists.txt
+  # The worker may delete itself while QSignalSpy::wait() processes events.
+  sed -i 's/t->wait(2000);/if (guard) guard->wait(2000);/' tests/common2/test_fileloadthread.cpp
+  # QTextCodec already emits the UTF-16/UTF-32 BOM; remove the duplicate insertion.
+  sed -i '/BOM+data/,+2d' src/encodes/detectcode.cpp
+}
+
+build() {
+  cd deepin-editor
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver -DBUILD_TESTS=ON .
+  ninja
+}
+
+check() {
+  cd deepin-editor
+  local _test
+  # Stateful suites require whole executables, as in upstream's test-prj-running.sh.
+  for _test in tests/*/test_*; do
+    [[ -f $_test && -x $_test ]] || continue
+    QT_QPA_PLATFORM=offscreen "$_test" || return
+  done
+}
+
+package() {
+  cd deepin-editor
+  DESTDIR="$pkgdir" ninja install
+}

@@ -1,0 +1,70 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Joris Steyn <jorissteyn@gmail.com>
+# Contributor: fnord0 <fnord0 AT riseup DOT net>
+
+pkgname=zaproxy
+pkgver=2.17.0
+pkgrel=4
+pkgdesc='Integrated penetration testing tool for finding vulnerabilities in web applications'
+url='https://www.zaproxy.org/'
+arch=('any')
+license=('Apache-2.0')
+_java=17
+depends=('bash' "java-runtime>=${_java}" 'ttf-font')
+makedepends=('git' 'gradle' "java-environment=${_java}")
+source=("git+https://github.com/zaproxy/zaproxy.git#tag=v${pkgver}")
+sha512sums=('e3820263db27c5a0ccc9b4801dcd531fe05aac58cdf7b6f56f9d1eaef5b2d3898cb038f17cab029de960e0661dff9899d8a4afa48df4049a2d4eead7ee5a0151')
+b2sums=('ce88b980a6f8aea412d8ed5712fd137f5d6ad58609b696351ae7923e798e1092f75b7a2d4a610093707f7eaae3cab0a93fad767a89966ef64fbec361abf8fb7a')
+
+_backports=(
+    'dc25a7002e38c1868e022cc16c1fd6fbb67d15dc'
+)
+
+prepare() {
+  cd "$pkgname"
+
+  local _c
+  for _c in "${_backports[@]}"; do
+    if [[ $_c == *..* ]]; then
+      git log --oneline --reverse "${_c}"
+    else
+      git log --oneline -1 "${_c}"
+    fi
+    git cherry-pick -n -m1 "${_c}"
+  done
+  for _c in "${_reverts[@]}"; do
+    git log --oneline -1 "${_c}"
+    git revert -n "${_c}"
+  done
+
+  cat > ${pkgname} <<EOF
+#!/bin/sh
+cd /usr/share/zaproxy
+./zap.sh
+cd -
+EOF
+}
+
+build() {
+  cd "$pkgname"
+  export PATH="/usr/lib/jvm/java-${_java}-openjdk/bin:$PATH"
+  export JAVA_HOME="/usr/lib/jvm/java-${_java}-openjdk"
+  ./gradlew :zap:distLinux
+}
+
+package() {
+  cd "$pkgname"
+  install -d "${pkgdir}/usr/share/${pkgname}"
+  tar zxf zap/build/distributions/ZAP_${pkgver}_Linux.tar.gz
+  cp -pR ZAP_${pkgver}/. "${pkgdir}/usr/share/${pkgname}"
+  install -Dm 755 ${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 'snap/snap/gui/icon.png' "${pkgdir}/usr/share/icons/hicolor/256x256/apps/zaproxy.png"
+  install -Dm 644 'snap/snap/gui/zaproxy.desktop' -t "${pkgdir}/usr/share/applications/"
+  # Fixing the path of the icon
+  sed -i 's|^Icon=.*|Icon=zaproxy|' "${pkgdir}/usr/share/applications/zaproxy.desktop"
+  # Set categories and StartupWMClass to match the main window with the desktop file
+  echo 'Categories=Network;Security;' >> "${pkgdir}/usr/share/applications/zaproxy.desktop"
+  echo 'StartupWMClass=org-zaproxy-zap-ZAP' >> "${pkgdir}/usr/share/applications/zaproxy.desktop"
+}
+
+# vim: ts=2 sw=2 et:

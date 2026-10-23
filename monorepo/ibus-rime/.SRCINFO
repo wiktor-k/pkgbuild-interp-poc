@@ -1,0 +1,17 @@
+pkgbase = ibus-rime
+	pkgdesc = Rime input method engine for ibus
+	pkgver = 1.6.1
+	pkgrel = 1
+	url = https://rime.im
+	install = ibus-rime.install
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	depends = ibus
+	depends = libnotify
+	depends = librime
+	source = git+https://github.com/lotem/ibus-rime.git#tag=1.6.1
+	sha512sums = bfe1c3f4e78063086349b7a4b5dafb4a60a69a1c42d53573485406d20ccd75e9408dc3effcc75816fc4d803289ec7f39a9e181b305c909bc272071eda679d131
+
+pkgname = ibus-rime

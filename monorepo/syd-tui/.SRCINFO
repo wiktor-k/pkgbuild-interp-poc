@@ -1,0 +1,17 @@
+pkgbase = syd-tui
+	pkgdesc = Syd's Terminal User Interface
+	pkgver = 0.2.2
+	pkgrel = 3
+	url = https://gitlab.exherbo.org/sydbox/sydbox/-/tree/main/tui
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = syd
+	source = git+https://gitlab.exherbo.org/sydbox/sydbox.git#tag=syd-tui-0.2.2?signed
+	validpgpkeys = 5DF763560390A149AC6C14C7D076A377FB27DE70
+	sha256sums = 34950b5626fc54e13946aee15f8933f6e68725e9a262396b64c42a64264135c7
+
+pkgname = syd-tui

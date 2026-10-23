@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_hkgname=citeproc
+pkgname=haskell-citeproc
+pkgver=0.14.1
+pkgrel=15
+pkgdesc="Generates citations and bibliography from CSL styles."
+url="https://github.com/jgm/citeproc"
+license=('BSD-2-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-attoparsec' 'haskell-case-insensitive'
+         'haskell-data-default' 'haskell-file-embed' 'haskell-pandoc-types' 'haskell-safe'
+         'haskell-scientific' 'haskell-unicode-collation' 'haskell-uniplate' 'haskell-vector'
+         'haskell-xml-conduit' 'haskell-aeson-pretty' 'haskell-text-icu')
+makedepends=('ghc' 'haskell-diff' 'haskell-timeit' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('a69e45f11e0493a08c8b0e21a048c5efadd102cc1fdc6d9f3116b22c67c02be992b284efdade9f88cf05c6c47544915b38faf0b3d9c422586b7795cddf7d98de')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' -fexecutable -ficu
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  LANG=en_US.UTF-8 runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

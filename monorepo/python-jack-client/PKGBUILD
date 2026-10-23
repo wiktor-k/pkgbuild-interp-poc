@@ -1,0 +1,58 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-jack-client
+_name=jackclient-python
+pkgver=0.5.7
+pkgrel=1
+pkgdesc="JACK Audio Connection Kit (JACK) Client for Python"
+arch=(any)
+url="https://github.com/spatialaudio/jackclient-python/"
+license=(MIT)
+depends=(
+  jack
+  python
+  python-cffi
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(
+  jack2
+  procps-ng
+  python-pytest
+  util-linux
+)
+optdepends=('python-numpy: Access input/output buffers as numpy arrays')
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+sha512sums=('2d6461b2ef5d3203e3189e343b822a91c1be496ac3be8f346ba645bd56ae0779fe5416cb7d59b897885d86a1329b6f88db4de82d3a2459b39c12483ac2a4100f')
+b2sums=('dbf126d09264478516a577a46d733b6644c45e6b90b3449a8b99847fe647f290405b12074782928bb0969680bf3243f757802a650212e9aa1b7b90f6f8632d98')
+
+build() {
+  cd $_name-$pkgver
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  # install to temporary location
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH"
+  # start dummy jack server
+  jackd -d dummy &
+  pytest -vv
+  kill -9 $(pgrep jackd)
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {CONTRIBUTING,NEWS,README}.rst -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 755 examples/*.py -t "$pkgdir/usr/share/doc/$pkgname/examples/"
+}

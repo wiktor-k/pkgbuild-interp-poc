@@ -1,0 +1,17 @@
+pkgbase = zathura-ps
+	pkgdesc = Adds ps support to zathura by using the libspectre library
+	pkgver = 2026.07.18
+	pkgrel = 2
+	url = https://pwmt.org/projects/zathura-ps
+	arch = x86_64
+	license = Zlib
+	makedepends = meson
+	makedepends = ninja
+	makedepends = appstream
+	makedepends = desktop-file-utils
+	depends = libspectre
+	depends = zathura
+	source = zathura-ps-2026.07.18.tar.gz::https://github.com/pwmt/zathura-ps/archive/refs/tags/2026.07.18.tar.gz
+	sha512sums = 6d823b2ad1dee7ffd9c74c77610f871a71e8a1e911ba5fea50650287afdb5c25c63fb1bd65df9a73e6bb469579e91fd6577fb39dde8513bfbaf0b8763a346aec
+
+pkgname = zathura-ps

@@ -1,0 +1,23 @@
+pkgbase = tint2
+	pkgdesc = Basic, good-looking task manager for WMs
+	pkgver = 17.0.2
+	pkgrel = 7
+	url = https://gitlab.com/o9000/tint2
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = cmake
+	makedepends = git
+	makedepends = setconf
+	depends = gtk3
+	depends = imlib2
+	depends = startup-notification
+	source = git+https://gitlab.com/o9000/tint2.git#tag=17.0.2
+	source = fix_segfault.patch
+	source = fix_fortify_source_crash.patch
+	source = tint2.patch
+	b2sums = 5bd28d0799822b3d93d6a0526cc829bcb0555590d842acef1569c862076cff5a858f49f29300e70a7eb89172f4f7aa31f38bf098488f1676f1c689ad5c96bad7
+	b2sums = 545be728efbd92565f064659b57ae797834271fb45e3908aee6fff26c7ce2bc0db734c2e907fbc92f1827d2ed1719b46cb830141d5e8756ba1c8ee62da2c33bb
+	b2sums = 8314d3eff52dcf9884cbf57c3a0e333c6ab8adeff42f235b59e19193fc6717f64b0f642edc0e69c716124cd5cce13388ea6b1d3bac461c45b084d8c979246892
+	b2sums = 2bf2340d012eb96da3fcef51750c367f5529276a6b0fcefba001f57cb23f15cbb645015d81e48f51a3c7505186c6b40a3fa8bcb8102530454f782a852834e29d
+
+pkgname = tint2

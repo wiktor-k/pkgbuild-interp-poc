@@ -1,0 +1,15 @@
+pkgbase = arduino-fwuploader
+	pkgdesc = Update the firmware or add SSL certificates for any Arduino with WINC or NINA Wi-Fi
+	pkgver = 2.4.1
+	pkgrel = 3
+	url = https://github.com/arduino/arduino-fwuploader
+	arch = x86_64
+	license = AGPL-3.0-or-later
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	optdepends = arduino-cli: Arduino command line interface
+	source = git+https://github.com/arduino/arduino-fwuploader.git#tag=d945078fb1beffcb762070b756b388b4b08f0004
+	b2sums = c0801b65e6afd902b3d2627e5db4d8546c549d5284a6d4800515dd1108ce5a8d745fbfe8340e357a1d6ed8b3a2e1d807e470e1ace55222e6fd735657966da50b
+
+pkgname = arduino-fwuploader

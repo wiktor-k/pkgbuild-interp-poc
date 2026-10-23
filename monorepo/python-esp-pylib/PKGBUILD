@@ -1,0 +1,52 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+
+_name=esp-pylib
+pkgname=python-esp-pylib
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Logging, utilities and constants shared by Espressif's Python tools"
+arch=(any)
+url='https://github.com/espressif/esp-pylib'
+license=(Apache-2.0)
+depends=(
+  python
+  python-rich
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-click
+  python-pyserial
+  python-pytest
+  python-rich-click
+  python-websockets
+)
+optdepends=(
+  'python-click: CLI option types and helpers'
+  'python-rich-click: CLI option types and helpers'
+  'python-pyserial: serial port discovery and reset'
+  'python-websockets: IDE integration'
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('9dcbe35e572a3b868bf52d557a1406bafdea69204d42a2b81ba4d06bde9fe4e57db4b1739238d9e177a92ca43fcb16707c6f26a0f77f463410cd7be0517e0666')
+
+build() {
+  cd $_name
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name
+  # test_highlight_enables_auto_highlighting fails when TERM=dumb
+  TERM=xterm-256color python -m pytest
+}
+
+package() {
+  cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

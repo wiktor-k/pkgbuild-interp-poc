@@ -1,0 +1,33 @@
+pkgbase = cataclysm-dda
+	pkgdesc = A post-apocalyptic roguelike
+	pkgver = 0.I1
+	pkgrel = 1
+	url = https://cataclysmdda.org/
+	arch = x86_64
+	license = CC-BY-NC-SA-3.0
+	makedepends = freetype2
+	makedepends = astyle
+	depends = sdl2
+	depends = sdl2_image
+	depends = sdl2_ttf
+	depends = sdl2_mixer
+	depends = ncurses
+	depends = hicolor-icon-theme
+	depends = gettext
+	depends = libbacktrace
+	depends = libgcc
+	depends = libstdc++
+	depends = zlib
+	depends = glibc
+	source = cataclysm-dda-0.I-1.tar.gz::https://github.com/CleverRaven/Cataclysm-DDA/archive/0.I-1.tar.gz
+	sha256sums = 27e35a0a5181f88f0929bef180ca0465d00e606e569911cb02d97b59b8b5768a
+
+pkgname = cataclysm-dda
+
+pkgname = cataclysm-dda-tiles
+	pkgdesc = A graphical post-apocalyptic roguelike.
+	depends = cataclysm-dda
+	depends = sdl2_image
+	depends = sdl2_ttf
+	depends = freetype2
+	depends = sdl2_mixer

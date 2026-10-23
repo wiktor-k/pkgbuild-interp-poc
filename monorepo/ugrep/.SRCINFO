@@ -1,0 +1,24 @@
+pkgbase = ugrep
+	pkgdesc = ultra fast grep with interactive TUI, fuzzy search, boolean queries, hexdumps and more
+	pkgver = 7.8.5
+	pkgrel = 1
+	url = https://github.com/Genivia/ugrep
+	arch = x86_64
+	license = BSD-3-Clause
+	depends = bzip2
+	depends = lz4
+	depends = pcre2
+	depends = xz
+	depends = zlib
+	depends = zstd
+	optdepends = python-pdftotext: to search pdf
+	optdepends = antiword: to search doc
+	optdepends = pandoc-cli: to search .docx, .epub, and other document formats
+	optdepends = perl-image-exiftool: to search meta information embedded in image and video media formats
+	optdepends = libreoffice: to search office documents
+	optdepends = csvkit: to search spreadsheets
+	optdepends = openssl: to search certificates and key files
+	source = https://github.com/Genivia/ugrep/archive/v7.8.5/ugrep-7.8.5.tar.gz
+	sha256sums = f080ab6cd9d96a5357570cb60a99e09ebe5eef11cf322c35373dbe815378a1f2
+
+pkgname = ugrep

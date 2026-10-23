@@ -1,0 +1,58 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Marcin Kulik <marcin@asciinema.org>
+
+pkgname=asciinema
+pkgver=3.2.1
+pkgrel=1
+pkgdesc='Record and share terminal sessions'
+arch=(x86_64)
+url='https://asciinema.org'
+license=(GPL-3.0-only)
+makedepends=(cargo git)
+depends=(glibc libgcc)
+options=(!lto)
+source=("git+https://github.com/$pkgname/$pkgname#tag=v$pkgver")
+b2sums=('0b6889a027a88a64bc807f712f74995a9e9e4536290663279d60e6b8f427228d2a64bd93a5fe953ce5954b721300023b47c740b977b2e600689f6ec6f57681c5')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  env \
+    ASCIINEMA_GEN_DIR="$PWD" \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_LTO=true \
+    cargo build --frozen --release
+  mv completion/asciinema{.bash,}
+}
+
+check() {
+  cd $pkgname
+  local skipped=(
+    pty::tests::exec_basic # PTY interaction
+    pty::tests::exec_extra_env
+    pty::tests::exec_no_output
+    pty::tests::exec_quick # PTY interaction
+    pty::tests::exec_winsize_override
+    pty::tests::spawn_basic # PTY interaction
+  )
+  cargo test --frozen -- ${skipped[@]/#/--skip }
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 -t "$pkgdir/usr/bin/" target/release/$pkgname
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+  install -Dm644 -t "$pkgdir/usr/share/man/man1/" man/*.1
+  cd completion
+  install -Dm644 -t "$pkgdir/usr/share/bash-completion/completions/" $pkgname
+  install -Dm644 -t "$pkgdir/usr/share/elvish/lib/" $pkgname.elv
+  install -Dm644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" $pkgname.fish
+  install -Dm644 -t "$pkgdir/usr/share/zsh/site-functions/" _$pkgname
+}

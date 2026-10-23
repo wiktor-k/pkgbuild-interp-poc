@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Alain Kalker <a.c.kalker@gmail.com>
+# Contributor: Marti Raudsepp <marti@juffo.org>
+
+pkgname=libdwarf
+epoch=1
+pkgver=2.3.3
+pkgrel=1
+pkgdesc='A library for handling DWARF Debugging Information Format'
+arch=(x86_64)
+url='https://www.prevanders.net/dwarf.html'
+license=(LGPL-2.1-only GPL-2.0-only BSD-2-Clause BSD-3-Clause LicenseRef-libdwarf-public-domain)
+depends=(glibc elfutils zlib zstd)
+makedepends=(git meson)
+checkdepends=(python)
+provides=(libdwarf.so)
+options=(staticlibs)
+source=("$pkgname::git+https://github.com/davea42/libdwarf-code#tag=libdwarf-$pkgver")
+sha512sums=('a73193fc0e225f62f30fc14578529388dcc9164acebfaf521b0772d627b2124d2be43f586d784b4929692007d3a3581bc0bac0f5080de78066a7d65facdf6953')
+b2sums=('1a51014b55373ab5b9add5afa8c9faba448a20731ce81607cb2daef47bcde1257ce58e5dc56da99ccbce70efb787b38f7694e7b87b44660e3aff096a7f12d7d1')
+
+build() {
+  CFLAGS+=' -ffat-lto-objects'
+
+  arch-meson "$pkgname" build -Ddwarfexample=true
+
+  meson compile -C build
+}
+
+check() {
+  meson test -C build -j1
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  cd "$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README NEWS
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" \
+    COPYING src/lib/libdwarf/LIBDWARFCOPYRIGHT \
+    src/bin/dwarfdump/DWARFDUMPCOPYRIGHT
+}

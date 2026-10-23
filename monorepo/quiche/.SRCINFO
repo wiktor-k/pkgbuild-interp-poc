@@ -1,0 +1,18 @@
+pkgbase = quiche
+	pkgdesc = An implementation of the QUIC transport protocol and HTTP/3 as specified by the IETF
+	pkgver = 0.29.3
+	pkgrel = 1
+	url = https://github.com/cloudflare/quiche
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = cmake
+	makedepends = rust
+	makedepends = git
+	makedepends = clang
+	depends = libgcc
+	options = !lto
+	source = quiche-0.29.3.tar.gz::https://github.com/cloudflare/quiche/archive/0.29.3.tar.gz
+	validpgpkeys = 8657ABB260F056B1E5190839D9C4D26D0E604491
+	sha256sums = c840a0d04e2406d0989a5238f6d6054aa0139872ed49a6c48395fca0cfcad75c
+
+pkgname = quiche

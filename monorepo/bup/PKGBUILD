@@ -1,0 +1,47 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: João Figueiredo <jf.mundox@gmail.com> (11/07/2020)
+# Contributor: freggel.doe (Fixed i18n problem with make test,  13/07/2020)
+# Contributor: Christian Rebischke <chris.rebischke@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Jakob Matthes <jakob.matthes@gmail.com>
+# Contributor: Bram Schoenmakers <me@bramschoenmakers.nl>
+# Contributor: henning mueller <henning@orgizm.net>
+# Contributor: rakoo (AUR)
+# Contributor: SanskritFritz (gmail)
+
+pkgname=bup
+pkgver=0.34
+pkgrel=1
+pkgdesc='Efficient backup system based on the git packfile format'
+arch=(x86_64)
+url='https://bup.github.io/'
+license=(GPL-2.0-only)
+depends=(acl
+         glibc
+         par2cmdline
+         python
+         python-fuse
+         python-pyxattr
+         readline
+         sh)
+optdepends=('python-tornado: for bup web')
+makedepends=(git
+             pandoc)
+source=(git+https://github.com/bup/bup#tag=$pkgver)
+sha256sums=('7cc7fb180ac5bd0c05bca6852da1773e1150a5f589a2837508494b317a11e4df')
+
+prepare() {
+  cd $pkgname
+  sed -e 's|-Werror||' -i configure GNUmakefile
+}
+
+build() {
+  cd $pkgname
+  ./configure
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" PREFIX=/usr install
+}

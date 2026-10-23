@@ -1,0 +1,46 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Arkham <arkham at archlinux dot us>
+# Contributor: Ivan Bobrov <ibobrik at gmail dot com>
+# Contributor: Black_Mage <vleon1 at gmail dot com>
+
+pkgname=astromenace
+pkgver=1.4.3
+pkgrel=3
+pkgdesc="Hardcore 3D space shooter with spaceship upgrade possibilities"
+arch=('x86_64')
+url="http://www.viewizard.com/astromenace/index_linux.php"
+license=('GPL-3.0-only')
+options=('!lto')
+depends=('sdl2' 'freealut' 'libjpeg-turbo' 'libvorbis' 'glu' 'freetype2' 'libxinerama')
+makedepends=('cmake' 'mesa' 'ninja')
+source=("$pkgname-$pkgver".tar.gz::https://github.com/viewizard/astromenace/archive/v${pkgver}.tar.gz)
+sha512sums=('10c1bbd330ee76dfa3c340582b5462bcb03b4c73732ae73af9b2126ddff7de85bfe9320d7fdd1cd9ec2e27f27d2664a63ed3db5424a9841c5d954b4a50a4be9a')
+
+prepare() {
+  cd astromenace-$pkgver
+  # Fix launchable ID in metainfo file
+  sed -i 's/com.viewizard.AstroMenace.desktop/astromenace.desktop/' share/astromenace.appdata.xml
+}
+
+build() {
+  cd astromenace-$pkgver
+
+  cmake \
+      -GNinja \
+      -Bbuild \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      -DDATADIR=/usr/share/astromenace
+  ninja -C build
+}
+
+package() {
+  cd astromenace-$pkgver
+
+  install -Dm755 build/astromenace "$pkgdir"/usr/bin/astromenace
+  install -Dm644 build/gamedata.vfs "$pkgdir"/usr/share/astromenace/gamedata.vfs
+  install -Dm644 share/astromenace_64.png "$pkgdir"/usr/share/icons/hicolor/64x64/apps/astromenace.png
+  install -Dm644 share/astromenace_128.png "$pkgdir"/usr/share/icons/hicolor/128x128/apps/astromenace.png
+  install -Dm644 share/astromenace.desktop "$pkgdir"/usr/share/applications/astromenace.desktop
+  install -Dm644 share/astromenace.appdata.xml "$pkgdir"/usr/share/metainfo/astromenace.appdata.xml
+}

@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Štěpán Němec <stepnem@gmail.com>
+
+pkgname=pypinyin
+pkgver=0.55.0
+pkgrel=2
+pkgdesc='Chinese characters transliteration module and tool'
+arch=('any')
+url='https://github.com/mozillazg/python-pinyin'
+license=('MIT')
+depends=('python')
+makedepends=('git' 'python-setuptools' 'python-build' 'python-installer' 'python-wheel'
+             'phrase-pinyin-data' 'pinyin-data')
+checkdepends=('python-pytest')
+source=("git+https://github.com/mozillazg/python-pinyin.git#tag=v$pkgver")
+sha256sums=('f8dbf8eaddb355c365aacdb09412604ad1c2185d4ce5ab4554e1a221eaa79d68')
+
+prepare() {
+  cd python-pinyin
+  sed -i 's/: sync_submodule/:/' Makefile
+  ln -s /usr/share/pinyin-data/pinyin.txt pinyin-data/
+  ln -s /usr/share/phrase-pinyin-data/pinyin.txt phrase-pinyin-data/
+}
+
+build() {
+  cd python-pinyin
+  make gen_data
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-pinyin
+  pytest --override-ini="addopts=-slv" pypinyin tests
+}
+
+package() {
+  cd python-pinyin
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

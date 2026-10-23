@@ -1,0 +1,19 @@
+pkgbase = prometheus-mysqld-exporter
+	pkgdesc = Prometheus exporter for MySQL server metrics
+	pkgver = 0.19.0
+	pkgrel = 1
+	url = https://github.com/prometheus/mysqld_exporter
+	arch = x86_64
+	license = Apache
+	makedepends = go
+	depends = glibc
+	options = !lto
+	backup = etc/conf.d/prometheus-mysqld-exporter
+	source = mysql_exporter-0.19.0.tar.gz::https://github.com/prometheus/mysqld_exporter/archive/v0.19.0.tar.gz
+	source = prometheus-mysqld-exporter.service
+	source = prometheus-mysqld-exporter.conf
+	sha512sums = 92fa65fb94938b56c78bff013bddd03ceb9703cc12916bf9365880a369ed818e5c158e30a846e3f9271945e6d8a0ddeb348b844d88584bb62981365f0a6c95f2
+	sha512sums = 50619f4fa62c97c9c3533dc6a18024e2f2548e72b79e4cabae766d8b2135b4a5fdc9a6af87a279ecbae9101feac642851f2e239333a181b0db8d48af75eeac6c
+	sha512sums = 6e4fa86980897e92161cf6143b27a72db8b0f1366d842c55340da56bd325bfdbb29a1d8043d26477bf161f723d164b0337a12ffb74057f0e14de4172d027762c
+
+pkgname = prometheus-mysqld-exporter

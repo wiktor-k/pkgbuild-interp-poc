@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Simon Sapin <simon dot sapin at exyr dot org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+
+pkgname=python-tailer
+pkgver=0.4.1
+pkgrel=11
+pkgdesc="A simple implementation of GNU tail and head"
+url="https://github.com/six8/pytailer"
+license=('MIT')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+source=("git+https://github.com/six8/pytailer.git#tag=$pkgver")
+sha512sums=('168d06bb45eb1484b8dd61232f9d7374a8178aacb0c1a617d891a7d012147960025eec464a3df6bec60acc6f247d7bf9dac4fffefdfe606b7e0934d5b1897e0e')
+
+build() {
+  cd pytailer
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pytailer
+  python -m doctest -v src/tailer/__init__.py
+}
+
+package() {
+  cd pytailer
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

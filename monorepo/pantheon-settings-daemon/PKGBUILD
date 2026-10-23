@@ -1,0 +1,42 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-settings-daemon
+pkgver=8.5.0
+pkgrel=1
+pkgdesc='Default settings for Pantheon'
+arch=(x86_64)
+url=https://github.com/elementary/settings-daemon.git
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  accountsservice
+  dbus
+  fwupd
+  gdk-pixbuf2
+  geoclue
+  glib2
+  glibc
+  granite
+  gtk3
+  libgexiv2
+  libpackagekit-glib2.so
+)
+makedepends=(
+  cmake
+  git
+  meson
+  vala
+)
+source=(pantheon-settings-daemon::git+https://github.com/elementary/settings-daemon.git#tag=${pkgver})
+
+build() {
+  arch-meson pantheon-settings-daemon build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:
+b2sums=('e63cac04468851603d1df74c7c2cd206495195c2e92cbb2d1c64f1460b40baccdf8a0892ce712ca3e3a025d052834e74d610369a3b61dcd63474bf295ff806af')

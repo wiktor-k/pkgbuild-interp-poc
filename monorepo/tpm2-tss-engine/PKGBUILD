@@ -1,0 +1,63 @@
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: Jonas Witschel <diabonas@archlinux.org>
+pkgname=tpm2-tss-engine
+pkgver=1.2.0
+pkgrel=2
+pkgdesc='OpenSSL engine for Trusted Platform Module 2.0 devices'
+arch=('x86_64')
+url='https://github.com/tpm2-software/tpm2-tss-engine'
+license=('BSD-3-Clause')
+depends=(
+  glibc
+  openssl
+  tpm2-tss
+)
+makedepends=(
+  git
+  autoconf-archive
+  pandoc
+)
+checkdepends=(
+  cmocka
+  expect
+  iproute2
+  swtpm
+  tpm2-tools
+)
+source=(
+  git+https://github.com/tpm2-software/tpm2-tss-engine#tag=${pkgver}
+  https://github.com/tpm2-software/tpm2-tss-engine/commit/766505bf5c943c614fd246d27d1e5cd66543250b.patch
+)
+options=(!lto)
+b2sums=('18200630f4687f1c8bff3052d1587c00cdb3bdf69067ea066fdd38eb431166f3c40965745d5675a9bd382e080ee39de8cea80ebcc28a008c1857c78d37d23037'
+        'b769ad6dfb566a26b457f5c170715d5024aba657ff64fcb3e2a63befc68648c2e2358f198d2d22bf3a61a7916d80bbcd8e1b35f431f78e3899c12b8b03c4b9cc')
+
+prepare() {
+  cd "${pkgname}"
+  ./bootstrap
+  # fix gcc 14 building
+  patch -Np1 -i ../766505bf5c943c614fd246d27d1e5cd66543250b.patch
+}
+
+build() {
+  cd "${pkgname}"
+  ./configure --prefix=/usr --enable-unit --enable-integration
+  make
+}
+
+check() {
+  cd "${pkgname}"
+  # Disabled check due to several failing tests: https://github.com/tpm2-software/tpm2-tss-engine/issues/298
+  make check || return 0
+}
+
+package() {
+  depends+=(
+    libcrypto.so
+    libtss2-{esys,mu,tctildr}.so
+  )
+
+  cd "${pkgname}"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

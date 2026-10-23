@@ -1,0 +1,53 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hls-retrie-plugin
+pkgname=haskell-hls-retrie-plugin
+pkgver=2.4.0.0
+pkgrel=30
+pkgdesc="Retrie integration plugin for Haskell Language Server"
+url="https://hackage.haskell.org/package/hls-retrie-plugin"
+license=('Apache-2.0')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-extra' 'haskell-ghc' 'haskell-ghcide'
+         'haskell-hashable' 'haskell-hls-plugin-api' 'haskell-hls-refactor-plugin' 'haskell-lens'
+         'haskell-lsp' 'haskell-lsp-types' 'haskell-retrie' 'haskell-safe-exceptions'
+         'haskell-unordered-containers')
+makedepends=('ghc' 'uusi' 'haskell-hls-test-utils')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('be17c7a73cf303b11db6a8037b21e5f0a664ec56f7b6dbfb496ebad81839828c3de46f015d0fe1275892b6e4004271a05035749e9b62bd2d39cbd97b45977a9e')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+}
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct || echo "Tests failed"
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

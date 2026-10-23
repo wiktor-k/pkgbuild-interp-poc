@@ -1,0 +1,23 @@
+pkgbase = oculante
+	pkgdesc = A minimalistic image viewer with analysis and editing tools
+	pkgver = 0.9.6
+	pkgrel = 1
+	url = https://github.com/woelper/oculante
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = yasm
+	makedepends = rust
+	depends = cairo
+	depends = expat
+	depends = freetype2
+	depends = gtk3
+	depends = libheif
+	depends = libwebp
+	depends = libjpeg-turbo
+	options = !lto
+	source = git+https://github.com/woelper/oculante.git#tag=0.9.6
+	b2sums = 7b735cb99fbfb44d9b16c3e7cceff62dfb42d3fe4e92701ec445eede963f648f72bcedba95e73e7f815adfe53140fab482ec17267c6d24ee83a44d84b297737c
+
+pkgname = oculante

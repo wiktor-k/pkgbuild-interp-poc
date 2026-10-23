@@ -1,0 +1,64 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: larchunix <larchunix@gmail.com>
+# Contributor: Patrick McCarty <pnorcks at gmail dot com>
+
+pkgname=createrepo_c
+pkgver=1.2.5
+pkgrel=1
+pkgdesc="A C implementation of createrepo, a tool to create yum repositories"
+url="http://rpm-software-management.github.io/createrepo_c"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('bzip2' 'curl' 'drpm' 'glib2' 'libmodulemd' 'libxml2' 'openssl' 'rpm-tools' 'sqlite' 'xz' 'zchunk' 'zlib' 'zstd')
+makedepends=('bash-completion' 'cmake' 'doxygen' 'pkg-config' 'python' 'python-setuptools' 'python-sphinx')
+optdepends=('python: for python bindings')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/rpm-software-management/createrepo_c/archive/${pkgver}.tar.gz"
+        "add-missing-shebang-to-test-script.patch::https://github.com/rpm-software-management/createrepo_c/commit/6c68080d522d1254aa792f84c5f5220aa3a081dc.patch?full_index=1")
+sha256sums=('06e8db0362576c91c664886b9229a95692adc72cdb00269bf99eb15b230087ad'
+            '9dab1f10e224e741856637f065c67b4d1796af343166de0c650d6c382eecd667')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+
+	# Fix tests by adding missing shebang in to the run_unittests.sh
+	# See https://github.com/rpm-software-management/createrepo_c/pull/504
+	# and https://github.com/rpm-software-management/createrepo_c/commit/6c68080d522d1254aa792f84c5f5220aa3a081dc
+	patch -Np1 -i "${srcdir}/add-missing-shebang-to-test-script.patch"
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+
+	cmake -B build \
+	      -DCMAKE_BUILD_TYPE='None' \
+	      -DCMAKE_INSTALL_PREFIX='/usr' \
+	      -DCMAKE_C_FLAGS_RELEASE='-DNDEBUG' \
+	      -DCMAKE_INSTALL_LIBDIR='lib' \
+	      -DENABLE_BASHCOMP='ON' \
+	      -DENABLE_DRPM='ON' \
+	      -DENABLE_PYTHON='ON' \
+	      -DWITH_LEGACY_HASHES='ON' \
+	      -DWITH_LIBMODULEMD='ON' \
+	      -DWITH_ZCHUNK='ON' \
+	      -DCMAKE_POLICY_VERSION_MINIMUM='3.5' \
+	      -Wno-dev
+
+	cmake --build build
+	cmake --build build --target doc
+	cmake --build build --target tests
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+
+	ctest --test-dir build --output-on-failure
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+
+	DESTDIR="${pkgdir}" cmake --install build
+	install -d "${pkgdir}/usr/share/doc/${pkgname}"
+	cp -R examples "${pkgdir}/usr/share/doc/${pkgname}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

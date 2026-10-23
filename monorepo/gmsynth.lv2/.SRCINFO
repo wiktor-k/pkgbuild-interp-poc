@@ -1,0 +1,24 @@
+pkgbase = gmsynth.lv2
+	pkgdesc = General MIDI LV2 Synth
+	pkgver = 0.6.4
+	pkgrel = 1
+	url = https://x42-plugins.com/x42/x42-gmsynth
+	arch = x86_64
+	groups = pro-audio
+	groups = lv2-plugins
+	license = GPL-2.0-or-later
+	checkdepends = lv2lint
+	makedepends = fluidsynth
+	makedepends = lv2
+	depends = glibc
+	source = gmsynth.lv2-0.6.4.tar.gz::https://github.com/x42/gmsynth.lv2/archive/v0.6.4.tar.gz
+	source = gmsynth.lv2-0.5.1-use_system_fluidsynth.patch
+	sha512sums = 3448a161df42d183986efe8668ff5bc6bda7bb2427a4c5c929ebcac5d90d7b2c52aa1c08160b276a36e650ff27c5e2731d3ac7ac20e62040fc7aa5a5039f9ebb
+	sha512sums = a0f2a09a6a839c38dc3234a719a633eb221f2afca2a97bbecf17b7d0c8dc71befec3768b882deb20357d55186e81e342cad73eb5e08426a1e2108949d11b3cf2
+	b2sums = 52534fbfa9fc6b4ae3ff04ef46888f8a7135dd0d6ae35e7a5d056d7d0eb19d4fedfc86c0f4ca6b496894e548202d0ffc93785ec8e4f321ded3bb9203fc7fbd05
+	b2sums = cb327b55536006a862540e769497d138a6815bbee83f9365f97778adf8c542f3ce49e83d07dd532e66c39ce57a4c1eedc79c982b8ac350f22311f9443f682954
+
+pkgname = gmsynth.lv2
+	depends = glibc
+	depends = fluidsynth
+	depends = libfluidsynth.so

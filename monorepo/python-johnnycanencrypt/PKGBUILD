@@ -1,0 +1,68 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-johnnycanencrypt
+_name="${pkgname#python-}"
+pkgver=0.18.0
+pkgrel=3
+pkgdesc="Python module for OpenPGP written in Rust"
+arch=(x86_64)
+url="https://github.com/kushaldas/johnnycanencrypt"
+license=(LGPL-3.0-or-later)
+depends=(
+  bzip2
+  glibc
+  gmp
+  libgcc
+  nettle3
+  pcsclite
+  python
+  python-httpx
+)
+makedepends=(
+  clang
+  git
+  python-build
+  python-installer
+  python-maturin
+  rust
+)
+checkdepends=(
+  python-pytest
+  python-vcrpy
+)
+source=(git+$url.git?signed#tag=v$pkgver)
+sha512sums=('8ecdac8631a8dea77d12fe1a69546b01856d5be9b17f7538258b7a3268d071b27f38b798494510c0fe57db0c5e4668f64294cdfa8a972d41959fbb740d815873')
+b2sums=('7aa94e573615568dfe4ead0244c0723d292b9b1b42be7ad110d260064a414ce6282b17ed4aeb12f8c127281dec9804fc352e1a3be6e0ad1051d33639ed5b12cb')
+validpgpkeys=(A85FF376759C994A8A1168D8D8219C8C43F6C5E1)  # Kushal Das <kushal@freedom.press>
+
+prepare() {
+  cd $_name
+# Update nettle-sys to fix build with clang 22
+  cargo update -p nettle-sys --precise 2.3.2
+}
+
+build() {
+  cd $_name
+  PKG_CONFIG_PATH=/usr/lib/nettle3/pkgconfig \
+  RUSTFLAGS+=" -L/usr/lib/nettle3" \
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name
+  # install to temporary location and copy tests in place because test imports are relative :(
+  python -m installer --destdir=test_dir dist/*.whl
+  cp -av -- tests "test_dir/$site_packages/"
+  export PYTHONPATH="$PWD/test_dir/$site_packages"
+  pytest "${pytest_options[@]}" test_dir/$site_packages/tests/
+}
+
+package() {
+  cd $_name
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,31 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=xtl
+pkgver=0.8.2
+pkgrel=1
+pkgdesc="The x template library"
+arch=(any)
+url="https://github.com/xtensor-stack/xtl/"
+license=(BSD-3-Clause)
+makedepends=(cmake)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/$pkgver.tar.gz")
+sha512sums=('d7155d5fbaaeb54caf799823e2020f1bcbb6eaeaa2be3b22625f9056faf001847c6ef749bc14f68feccec924a1faf551f27c4ee7f6f33da5d2dcfbc112824069')
+b2sums=('5d39f73f9d462d0e8cccc64eaefcc26031cbf556540fb611d0a0488f9605e17b9d58f4692cf647b11391e82ec7a8b38a191842f49ffc87cd194cdc3aecf7f721')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S "$pkgname-$pkgver"
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 "$pkgname-$pkgver/LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

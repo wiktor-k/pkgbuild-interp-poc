@@ -1,0 +1,122 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Jonas Witschel <diabonas@archlinux.org>
+
+pkgbase=tpm2-pkcs11
+pkgname=(
+  tpm2-pkcs11
+  tpm2-pkcs11-tools
+)
+pkgver=1.10.1
+pkgrel=1
+pkgdesc='PKCS#11 interface for Trusted Platform Module 2.0 hardware'
+arch=(x86_64)
+url='https://github.com/tpm2-software/tpm2-pkcs11'
+license=(
+  Apache-2.0  # no license file available yet: https://github.com/tpm2-software/tpm2-pkcs11/issues/942
+  BSD-2-Clause
+)
+makedepends=(
+  autoconf-archive
+  cmocka
+  git
+  glibc
+  libyaml
+  openssl
+  python
+  python-bcrypt
+  python-build
+  python-cryptography
+  python-installer
+  python-pyasn1
+  python-pyasn1-modules
+  python-setuptools
+  python-tpm2-pytss
+  python-wheel
+  python-yaml
+  sqlite
+  tpm2-tools
+  tpm2-tss
+)
+checkdepends=(
+  expect
+  iproute2
+  java-hamcrest
+  junit
+  libp11
+  opensc
+  openssh
+  python-python-pkcs11
+  swtpm
+  tpm2-abrmd
+  tpm2-openssl
+  wget
+  xxd
+)
+source=(
+  git+$url.git?signed#tag=$pkgver
+)
+sha512sums=('6526e59e3a14640fddf87aa2be897a241f49022b6482be46db9d47488ed09273cfbbc4755155690de5123c82c147fdd6c0226b83a040387865ad5b46e7024700')
+b2sums=('069239c9d4c6e03fb7e101495ff4d6767f306c82cfeca9426ae9456308e0a7efc900625770af1b406bfd5fe4cfe54e4e37d4d3033dd5ad64393894af5af0a631')
+validpgpkeys=(
+  '5B482B8E3E19DA7C978E1D016DE2E9078E1F50C1'  # William Roberts (Bill Roberts) <william.c.roberts@intel.com>
+  'D91A82DB310E8E07519C298A9877C26A3CD36409'  # Bill Roberts (Bills Personal Dev Key) <bill.c.roberts@gmail.com>
+)
+
+prepare() {
+  cd "$pkgbase"
+
+  # NOTE: Set the VERSION file manually, so that configure.ac uses a release version and does not add `-Werror`
+  sed '/VERSION/d' -i bootstrap
+  printf '%s\n' "$pkgver" > VERSION
+  ./bootstrap
+}
+
+build() {
+  local configure_options=(
+    --enable-integration
+    --enable-unit
+    --prefix=/usr
+  )
+
+  cd "$pkgbase"
+  export CLASSPATH="/usr/share/java/junit.jar:/usr/share/java/hamcrest-core.jar:$CLASSPATH"
+  ./configure "${configure_options[@]}"
+  make
+
+  cd tools
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  make -k check -C "$pkgbase"
+}
+
+package_tpm2-pkcs11() {
+  depends=(
+    glibc
+    libyaml
+    openssl
+    sqlite
+    tpm2-tools
+    tpm2-tss libtss2-esys.so libtss2-fapi.so libtss2-mu.so libtss2-rc.so libtss2-tctildr.so
+  )
+
+  make DESTDIR="$pkgdir" install -C "$pkgbase"
+  install -vDm 644 "$pkgbase"/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+package_tpm2-pkcs11-tools() {
+  pkgdesc="Configure and manipulate stores for the tpm2-pkcs11 cryptographic library"
+  depends+=(
+    python
+    python-bcrypt
+    python-cryptography
+    python-pyasn1
+    python-pyasn1-modules
+    python-tpm2-pytss
+    python-yaml
+  )
+
+  python -m installer --destdir="$pkgdir" $pkgbase/tools/dist/*.whl
+  install -vDm 644 $pkgbase/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

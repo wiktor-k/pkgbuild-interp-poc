@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-ansicolors
+pkgver=1.1.8
+pkgrel=10
+pkgdesc="ANSI colors for Python"
+url="https://github.com/jonathaneunice/colors"
+license=('ISC')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+source=("git+https://github.com/jonathaneunice/colors.git#commit=c965f5b9103c5bd32a1572adb8024ebe83278fb0")
+sha512sums=('6873688dc59676ae6276fd8549b319062fdbb1cde805bdbaa5997990896bf661b7c6afb75a5cc85c349904995bab5b4cc1162105d5142df19d0788200226f610')
+
+build() {
+  cd colors
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd colors
+  python -m pytest
+}
+
+package() {
+  cd colors
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

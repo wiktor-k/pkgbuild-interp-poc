@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Nagy <danielnagy at gmx de>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+
+_hkgname=path-io
+pkgname=haskell-path-io
+pkgver=1.8.2
+pkgrel=226
+pkgdesc="Interface to ‘directory’ package for users of ‘path’"
+url="https://github.com/mrkkrp/path-io"
+license=("BSD")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-dlist' 'haskell-path' 'haskell-temporary'
+         'haskell-unix-compat')
+makedepends=('ghc' 'uusi' 'haskell-hspec')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-${pkgver}.tar.gz")
+sha512sums=('9a6872a7e441812a3fd69d5984e4197519d2fa5598eab8a83ca21e317e9b26d42c0f4c12a670b84ee850a2198f83571f7cf2b9d4b93b11123418b652020a0dfe')
+
+prepare() {
+  cd $_hkgname-$pkgver
+  gen-setup
+}
+
+build() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-dev
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+  
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.md
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.md
+}

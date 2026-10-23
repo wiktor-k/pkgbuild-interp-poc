@@ -1,0 +1,119 @@
+pkgbase = dpf-plugins
+	pkgdesc = Collection of DPF-based plugins
+	pkgver = 1.7
+	pkgrel = 3
+	url = https://github.com/DISTRHO/DPF-Plugins
+	arch = x86_64
+	license = ISC
+	license = GPL-2.0-or-later
+	license = GPL-3.0-or-later
+	license = LGPL-3.0-only
+	license = MIT
+	checkdepends = lv2lint
+	checkdepends = kxstudio-lv2-extensions
+	makedepends = dssi
+	makedepends = gendesk
+	makedepends = jack
+	makedepends = ladspa
+	makedepends = libgcc
+	makedepends = libglvnd
+	makedepends = libstdc++
+	makedepends = lv2
+	makedepends = projectm
+	source = dpf-plugins-1.7.tar.gz::https://github.com/DISTRHO/dpf-plugins/archive/v1.7.tar.gz
+	sha512sums = 7d84be61f5c173bd80ee2f94e41384fc08a18a651d995aec20345d19a80e7a2e771b6f9eb5de9c03acb4368a2a071f915373f6cca89b2075f1f096f4000c3147
+	b2sums = fa60ae8aa75065c97fbb56ca02e084d4077021ba9953d593af50636f7a8ec8f3a9dce901a0746f0e33963d7c58bae2cbad47c892e2f491147f41cff7b4eecb53
+
+pkgname = dpf-plugins
+	depends = dpf-plugins-clap=1.7
+	depends = dpf-plugins-dssi=1.7
+	depends = dpf-plugins-ladspa=1.7
+	depends = dpf-plugins-lv2=1.7
+	depends = dpf-plugins-standalone=1.7
+	depends = dpf-plugins-vst=1.7
+	depends = dpf-plugins-vst3=1.7
+
+pkgname = dpf-plugins-clap
+	pkgdesc = Collection of DPF-based plugins - CLAP plugins
+	groups = clap-plugins
+	groups = pro-audio
+	depends = clap-host
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = projectm
+
+pkgname = dpf-plugins-dssi
+	pkgdesc = Collection of DPF-based plugins - DSSI plugins
+	groups = dssi-plugins
+	groups = pro-audio
+	depends = dssi-host
+	depends = glibc
+	depends = libglvnd
+	depends = libgcc
+	depends = liblo
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+
+pkgname = dpf-plugins-ladspa
+	pkgdesc = Collection of DPF-based plugins - LADSPA plugins
+	groups = ladspa-plugins
+	groups = pro-audio
+	depends = glibc
+	depends = ladspa-host
+	depends = libgcc
+	depends = libstdc++
+
+pkgname = dpf-plugins-lv2
+	pkgdesc = Collection of DPF-based plugins - LV2 plugins
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = glibc
+	depends = lv2-host
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = projectm
+
+pkgname = dpf-plugins-standalone
+	pkgdesc = Collection of DPF-based plugins - standalones
+	depends = alsa-lib
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	optdepends = jack: for using JACK as backend
+
+pkgname = dpf-plugins-vst
+	pkgdesc = Collection of DPF-based plugins - VST2 plugins
+	groups = pro-audio
+	groups = vst-plugins
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = projectm
+	depends = vst-host
+
+pkgname = dpf-plugins-vst3
+	pkgdesc = Collection of DPF-based plugins - VST3 plugins
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = projectm
+	depends = vst3-host

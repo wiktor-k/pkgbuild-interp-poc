@@ -1,0 +1,46 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=taskwarrior-tui
+pkgver=0.27.0
+pkgrel=1
+pkgdesc="A terminal user interface for taskwarrior"
+arch=('x86_64')
+url="https://github.com/kdheepak/taskwarrior-tui"
+license=('MIT')
+depends=('task')
+makedepends=('cargo' 'git' 'desktop-file-utils')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+  "git+https://github.com/kdheepak/taskwarrior-testdata")
+sha256sums=('e4f5d10428dc1917b6084b5b0ed502ffe691cb14908cedd04ffff3940f9ffceb'
+            'SKIP')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen --all-features
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export TASKRC="../taskwarrior-testdata/.taskrc"
+  export TASKDATA="../taskwarrior-testdata/.task"
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "packaging/man/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+  install -Dm 644 "completions/$pkgname.bash" "${pkgdir}/usr/share/bash-completion/completions/$pkgname"
+  install -Dm 644 "completions/$pkgname.fish" -t "${pkgdir}/usr/share/fish/vendor_completions.d"
+  install -Dm 644 "completions/_$pkgname" -t "${pkgdir}/usr/share/zsh/site-functions"
+  desktop-file-install -m 644 --dir "$pkgdir/usr/share/applications/" "packaging/linux/$pkgname.desktop"
+}
+
+# vim: ts=2 sw=2 et:

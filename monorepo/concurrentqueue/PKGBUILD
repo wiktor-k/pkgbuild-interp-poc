@@ -1,0 +1,37 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=concurrentqueue
+pkgver=1.0.5
+pkgrel=2
+pkgdesc="A fast multi-producer, multi-consumer lock-free concurrent queue for C++11"
+arch=(any)
+url="https://github.com/cameron314/concurrentqueue/"
+license=('(BSL-1.0 AND Zlib) OR (BSD-2-Clause AND Zlib)')
+makedepends=(cmake)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('7a58f237a38b3faed778fbe8508eadd9e5b282bd38ef4a0f40118498cf578fe96f1d4272c0b839bd290150e6ff25c6d44fe7362e3fc046b04d44ade8edd091ea')
+b2sums=('167b338638c133b10a365b0b70160b301eb19ab18eee4e7dadb2c4672d468a43996b296d0ed8066a4499904f71daa0f1deaa3ac8b3e345175de74960ef94cd89')
+
+prepare() {
+  sed -n '60,72p' "$pkgname-$pkgver/lightweightsemaphore.h" > Zlib.txt
+  sed -n '13,33p' "$pkgname-$pkgver/LICENSE.md" > BSD-2-Clause.txt
+  sed -n '40,62p' "$pkgname-$pkgver/LICENSE.md" > BSL-1.0.txt
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname-$pkgver"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 ./*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

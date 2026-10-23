@@ -1,0 +1,42 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Jerome Leclanche <jerome@leclan.ch>
+
+pkgname=git-filter-repo
+pkgver=2.47.0
+pkgrel=3
+pkgdesc='Quickly rewrite git repository history (filter-branch replacement)'
+arch=(any)
+url="https://github.com/newren/$pkgname"
+license=('MIT OR GLP-2.0-or-later')
+depends=(git
+         python)
+makedepends=(python-{build,installer,wheel}
+             python-setuptools-scm)
+checkdepends=(rsync)
+_archive="$pkgname-$pkgver"
+source=("$url/releases/download/v$pkgver/$_archive.tar.xz"
+         https://github.com/newren/git-filter-repo/commit/c1d8461e.patch)
+sha256sums=('4662cbe5918196a9f1b5b3e1211a32e61cff1812419c21df4f47c5439f09e902'
+            '2e3f83e2df7db421634b2b3561ee87b326d205835cb05721b4e26b106e7869f2')
+
+prepare() {
+  patch -d $_archive -p1 < c1d8461e.patch # Fix tests with python 3.14
+}
+
+build() {
+  cd "$_archive"
+  export SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver
+  python -m build -wn
+}
+
+check() {
+  cd "$_archive"
+  ./t/run_tests
+}
+
+package() {
+  cd "$_archive"
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir/usr/share/man/man1/" Documentation/man1/$pkgname.1
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING{,.gpl,.mit}
+}

@@ -1,0 +1,50 @@
+# Maintainer : David Runge <dvzrv@archlinux.org>
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: Pierre Schmitz <pierre@archlinux.de>
+# Contributor: Gerardo Exequiel Pozzi <djgera@archlinux.org>
+
+pkgname=archiso
+pkgver=91
+pkgrel=1
+pkgdesc="Tools for creating Arch Linux live and install iso images"
+arch=(any)
+url="https://gitlab.archlinux.org/archlinux/archiso"
+license=(GPL-3.0-or-later)
+depends=(
+  arch-install-scripts
+  bash
+  dosfstools
+  e2fsprogs
+  erofs-utils
+  libarchive
+  libisoburn
+  mtools
+  squashfs-tools
+)
+makedepends=(
+  git
+  python-docutils
+)
+checkdepends=(shellcheck)
+optdepends=(
+  'edk2-ovmf: for emulating UEFI with run_archiso'
+  'gnupg: for OpenPGP signature verification of rootfs over PXE'
+  'grub: for grub support in the ISO'
+  'openssl: for CMS signature verification of PXE artifacts and rootfs over PXE'
+  'qemu-desktop: for run_archiso'
+)
+source=(git+$url.git?signed#tag=v$pkgver)
+sha512sums=('d68404464696be5278089c8b8594094e12ef8fc1b19082bb3cfade216d1828750163461ea8849d6ac7c5fa15786e3ee0613fd676bf34d7144c87709eb4f40ad3')
+b2sums=('de5def19780d9330e68c51e47d500ce2399cd3432777eb9c5df8d20f158816e6c0e762b1a494d6407605b3bfbde89c8e07941135040e3bc3aba6e4aa3a0e7336')
+validpgpkeys=(
+  '991F6E3F0765CF6295888586139B09DA5BF0D338' # David Runge <dvzrv@archlinux.org>
+  'BB8E6F1B81CF0BB301D74D1CBF425A01E68B38EF' # nl6720 <nl6720@archlinux.org>
+)
+
+check() {
+  make -k check -C $pkgbase
+}
+
+package() {
+  make DESTDIR="$pkgdir" PREFIX=/usr install -C $pkgbase
+}

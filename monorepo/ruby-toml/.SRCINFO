@@ -1,0 +1,23 @@
+pkgbase = ruby-toml
+	pkgdesc = Parser construction library with great error reporting in Ruby
+	pkgver = 0.3.0
+	pkgrel = 5
+	url = https://github.com/jm/toml
+	arch = any
+	license = MIT
+	checkdepends = ruby-multi_json
+	checkdepends = ruby-minitest
+	makedepends = ruby-rake
+	makedepends = ruby-rdoc
+	makedepends = ruby-bundler
+	depends = ruby
+	depends = ruby-parslet
+	options = !emptydirs
+	source = https://github.com/jm/toml/archive/v0.3.0/vruby-toml-0.3.0.tar.gz
+	source = disable_simplecov.patch
+	source = toml.gemspec.patch
+	sha512sums = 5b09fdb1ca54ea06637e5aaf76b5232dcc39318c048090b3bc8bae659b39e386057ab3758fb647b65c752af7996295902517962cf5bec765fe74d70bd6ffbc7b
+	sha512sums = c363263059cad44c3faa10553f1d8760c6f3cc072efa1f1cbdcf0a715da4173e9fac98dabdf72144d796c2ebc1496554438096018a1e41c088f8e513e0d8efdb
+	sha512sums = 1e2fb6c1758fc8e4c76193896d838380648e123e851640872198ef3192a9bcf5e2e0044a3ba55091475380e3339f32d9a80a199072687cc573d8a5ba1c13ffbe
+
+pkgname = ruby-toml

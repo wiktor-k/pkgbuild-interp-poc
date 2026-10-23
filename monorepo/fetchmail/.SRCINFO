@@ -1,0 +1,28 @@
+pkgbase = fetchmail
+	pkgdesc = A remote-mail retrieval utility
+	pkgver = 6.6.9
+	pkgrel = 1
+	url = https://www.fetchmail.info
+	arch = x86_64
+	license = GPL
+	makedepends = asciidoc
+	makedepends = git
+	makedepends = htmldoc
+	makedepends = meson
+	makedepends = pandoc
+	makedepends = python
+	makedepends = python-docutils
+	depends = openssl
+	optdepends = tk: for using fetchmailconf
+	source = git+https://gitlab.com/fetchmail/fetchmail.git?tag=6.6.9
+	source = fetchmail.tmpfiles
+	source = fetchmail.sysusers
+	source = fetchmail@.service
+	source = fetchmail.service
+	b2sums = SKIP
+	b2sums = b4ffb99efe4ab24a5a9ed3a27ad5a4645ef8611d66ca380e6acd36e81b34d2619142d62854fa7bd7716b8013d3ccf75ea3e1e18151ae95ff6c37c839631a5733
+	b2sums = 0f413bcc148ce342036d780d321cd6303928903f22f819a9920ab5ec66304241f4ed340338042e625dc7c03b845e35b9c06aac566b46d64dfe614af3a9cdb2dc
+	b2sums = b8740cab8a59cc6c3082973e60d3eb262e3a76aa2b0517336d8f95fd4214a5ccbb2e292301d9112ede0747335f7f8d2815eb38b958085f702c01be30aa107f72
+	b2sums = a86822f27f5f4c7b97f24baebcd383b5cc2a4fa7810226139e2c588368637417dbfa52f884a8fcc04b904fc1ac865189feb2070a215a8abf9c0192584c2dbbef
+
+pkgname = fetchmail

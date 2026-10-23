@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-terminal
+pkgver=8.1.0
+pkgrel=2
+pkgdesc='The Pantheon Terminal Emulator'
+arch=(x86_64)
+url=https://github.com/elementary/terminal
+license=(GPL-3.0-only)
+depends=(
+  dconf
+  glib2
+  glibc
+  granite7
+  gtk4
+  libadwaita
+  libgee
+  pango
+  vte4
+)
+makedepends=(
+  appstream
+  git
+  intltool
+  meson
+  vala
+  xorg-server-xvfb
+)
+groups=(pantheon)
+source=(pantheon-terminal::git+https://github.com/elementary/terminal.git#tag=${pkgver})
+b2sums=('60a4b2bc951ebfffb85a3d7fd4b5f08714eca9523d3a0a9d14b6a5bfe3a6167e6ddeab518f4561221c6f7938d4848bcb6d70ddafcfed70507fafbd21d82fbbf5')
+
+build() {
+  arch-meson pantheon-terminal build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}

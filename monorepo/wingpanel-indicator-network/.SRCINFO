@@ -1,0 +1,27 @@
+pkgbase = wingpanel-indicator-network
+	pkgdesc = Wingpanel Network Indicator
+	pkgver = 8.0.1
+	pkgrel = 2
+	url = https://launchpad.net/wingpanel-indicator-network
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = granite7
+	depends = gtk4
+	depends = libgee
+	depends = libnm
+	depends = libnma-gtk4
+	depends = networkmanager
+	depends = nm-connection-editor
+	depends = polkit
+	depends = wingpanel
+	source = wingpanel-indicator-network::git+https://github.com/elementary/wingpanel-indicator-network.git#commit=6b1ba43c17033bb73bc6dd03e4fe57a2ca54b2bd
+	b2sums = 34db583cfecd08eb921cab56796af990ad5aaf2976df2f6ec38f44e1f86f7d8cb85b7036aef278dfd2627076e1d3a89a525641c4a568bdf7732c9c43c4cb7508
+
+pkgname = wingpanel-indicator-network

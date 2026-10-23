@@ -1,0 +1,43 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Chih-Hsuan Yen <yan12125@archlinux.org>
+# Contributor: Jonathan Steel <jsteel at archlinux.org>
+# Contributor: Chris Severance aur.severach AatT spamgourmet.com
+
+pkgname=python-s3transfer
+pkgver=0.19.2
+pkgrel=1
+pkgdesc='Amazon S3 Transfer Manager for Python'
+arch=('any')
+url="https://github.com/boto/s3transfer"
+license=('Apache-2.0')
+depends=(
+  'python'
+  'python-botocore'
+)
+makedepends=(
+  'python-awscrt'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=('python-pytest')
+optdepends=('python-awscrt: use AWS Common Runtime')
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('7ce32ee00f340e336d767bc36d9ca3089e6bb25c38ba65431d9609fcb22ec86a')
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  # Many integration tests need real credentials
+  pytest tests --ignore=tests/integration
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,69 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Mosra <mosra@centrum.cz>
+
+pkgname=magnum-plugins
+pkgver=2020.06
+_basis_pkgver=2f43afcc97d0a5dafdb73b4e24e123cf9687a418
+_meshoptimizer_pkgver=0.14
+pkgrel=6
+pkgdesc='Plugins for the Magnum C++11/C++14 graphics engine'
+arch=(x86_64)
+url='https://magnum.graphics'
+license=(MIT)
+depends=(assimp devil faad2 freetype2 libjpeg-turbo libpng magnum)
+makedepends=(cmake git glfw ninja)
+source=("git+https://github.com/mosra/magnum-plugins#commit=b0f2818b781eb0fb6a8a76095a6529fc85d442f3"
+        "basis_universal.tar.gz::https://github.com/BinomialLLC/basis_universal/archive/${_basis_pkgver}.tar.gz"
+        "meshoptimizer.tar.gz::https://github.com/zeux/meshoptimizer/archive/v${_meshoptimizer_pkgver}.tar.gz")
+b2sums=('66e897ff6e13b70ae10598a0754d16819f7e6278ca3cc5c9ffd920c0713c2c50e89c8c25200db1a49f79a0d40f9ad427e00b934ee49efc892220aa87ff15a392'
+        '5867dd59392aa3d9fa73d8d293bb81f6906746a1378101ed09418c28b9952eee3917bae1ceb3288f5765efda88aa767a6cc94b584e78f19c443c97acc015a185'
+        '7b849d5de79aa303a4af363500aab2a3de4ee0d86903ee72fed74f1679b71c5d11949ecbbd9c2316b77ab7f975c5bbae71c0c03a826be00f9c2c7eb5d762c046')
+
+build() {
+  mkdir -p build
+  cd build
+
+  # Bundle Basis Universal and meshoptimizer
+  ln -sf "$srcdir"/basis_universal-${_basis_pkgver}/ "$srcdir/${pkgname%-git}/src/external/basis-universal"
+  ln -sf "$srcdir"/meshoptimizer-${_meshoptimizer_pkgver}/ "$srcdir/${pkgname%-git}/src/external/meshoptimizer"
+
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+
+  cmake "$srcdir/magnum-plugins" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_ASSIMPIMPORTER=ON \
+    -DWITH_BASISIMAGECONVERTER=ON \
+    -DWITH_BASISIMPORTER=ON \
+    -DWITH_DDSIMPORTER=ON \
+    -DWITH_DEVILIMAGEIMPORTER=ON \
+    -DWITH_DRFLACAUDIOIMPORTER=ON \
+    -DWITH_DRMP3AUDIOIMPORTER=ON \
+    -DWITH_DRWAVAUDIOIMPORTER=ON \
+    -DWITH_FAAD2AUDIOIMPORTER=ON \
+    -DWITH_FREETYPEFONT=ON \
+    -DWITH_ICOIMPORTER=ON \
+    -DWITH_JPEGIMAGECONVERTER=ON \
+    -DWITH_JPEGIMPORTER=ON \
+    -DWITH_MESHOPTIMIZERSCENECONVERTER=ON \
+    -DWITH_MINIEXRIMAGECONVERTER=ON \
+    -DWITH_OPENGEXIMPORTER=ON \
+    -DWITH_PNGIMAGECONVERTER=ON \
+    -DWITH_PNGIMPORTER=ON \
+    -DWITH_PRIMITIVEIMPORTER=ON \
+    -DWITH_STANFORDIMPORTER=ON \
+    -DWITH_STANFORDSCENECONVERTER=ON \
+    -DWITH_STBIMAGECONVERTER=ON \
+    -DWITH_STBIMAGEIMPORTER=ON \
+    -DWITH_STBTRUETYPEFONT=ON \
+    -DWITH_STBVORBISAUDIOIMPORTER=ON \
+    -DWITH_STLIMPORTER=ON \
+    -DWITH_TINYGLTFIMPORTER=ON \
+    -GNinja
+  ninja
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" $pkgname/COPYING
+}

@@ -1,0 +1,44 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=tokio-console
+pkgver=0.1.14
+pkgrel=2
+pkgdesc='A debugger for async rust!'
+url='https://github.com/tokio-rs/console'
+license=("MIT")
+arch=('x86_64')
+makedepends=('cargo' 'git')
+checkdepends=('protobuf')
+depends=('glibc' 'libgcc')
+source=("$pkgname::git+${url}.git#tag=tokio-console-v${pkgver}")
+sha256sums=('05e2067e1b1cdfac8d32a3904ba6952c5dad74e0874905d0efa14048c208b101')
+
+prepare() {
+    cd $pkgname
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+    cd $pkgname
+    export RUSTFLAGS="$RUSTFLAGS --cfg tokio_unstable"
+    cargo build --frozen --release --all-features
+}
+
+check() {
+    cd $pkgname
+    cargo test --frozen --all-features
+}
+
+package() {
+    cd $pkgname
+    install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+    # for custom license, e.g. MIT
+    install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    # completions
+    install -d "${pkgdir}/usr/share/bash-completion/completions"
+    "${pkgdir}/usr/bin/tokio-console" gen-completion bash > "${pkgdir}/usr/share/bash-completion/completions/tokio-console"
+    install -d "${pkgdir}/usr/share/zsh/site-functions"
+    "${pkgdir}/usr/bin/tokio-console" gen-completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_tokio-console"
+    install -d "${pkgdir}/usr/share/fish/vendor_completions.d"
+    "${pkgdir}/usr/bin/tokio-console" gen-completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/tokio-console.fish"
+}

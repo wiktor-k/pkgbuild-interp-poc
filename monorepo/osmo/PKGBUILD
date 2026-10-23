@@ -1,0 +1,52 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Geoffroy Carrier <geoffroy.carrier@koon.fr>
+# Contributor: Benzo <mb_benzo@yahoo.es>
+
+pkgname=osmo
+pkgver=0.4.4
+pkgrel=7
+pkgdesc="A handy personal organizer"
+arch=('x86_64')
+url="https://clayo.org/osmo/"
+license=('GPL-2.0-or-later')
+depends=('gspell' 'libarchive' 'libgringotts' 'libical' 'libnotify' 'libxml2' 'webkit2gtk-4.1')
+optdepends=('sox: to play sounds')
+changelog=$pkgname.changelog
+source=(https://sourceforge.net/projects/osmo-pim/files/osmo-pim/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.gz
+        osmo-0.4.4-webkit2-4.1.patch
+        fix-delete-event-callback-return-type.patch
+        fix-incompatible-pointer-types.patch
+        libical-4.patch)
+sha256sums=('1e8b11bd1baa0f6756326b58f87eb95a56b38a25d7336fdfb65c2dfca46d03a6'
+            'c18c93537a149a28d64870a12f9552b3993b7a0804ebdbff8a1447d1f9a5d621'
+            'bcfdcf0ca28692759075497156929bbdd7b3cbc53c829505a044f3a9be7e3ff5'
+            'e9dd61e0526c321d70c5e8aaafce6e4de2a1132e4b6b851973a3f2f57266ab20'
+            '39f0ec7f04e1cf7b644d356cbc8de65b2cd6366b687a0268a30e755de50e02ac')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  # Switch to webkit2gtk 4.1
+  # https://sourceforge.net/p/osmo-pim/osmo/ci/2dd4439d685b66a4ed711ab9608e5c1b27ef88ce/
+  patch -Np1 -i ../osmo-0.4.4-webkit2-4.1.patch
+  # Fix delete-event callback return type
+  # https://sourceforge.net/p/osmo-pim/patches/28/
+  patch -Np1 -i ../fix-delete-event-callback-return-type.patch
+  # Fix build with GCC 15 (Fedora)
+  patch -p1 -i ../fix-incompatible-pointer-types.patch
+  # Fix build with libical 4
+  patch -p1 -i ../libical-4.patch
+  autoreconf -fiv
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  ./configure --prefix=/usr
+  make 
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  make DESTDIR="${pkgdir}" install
+}

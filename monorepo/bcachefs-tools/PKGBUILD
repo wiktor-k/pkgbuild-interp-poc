@@ -1,0 +1,127 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+
+pkgbase=bcachefs-tools
+pkgname=(bcachefs-tools bcachefs-dkms)
+epoch=3
+pkgver=1.39.7
+pkgrel=1
+pkgdesc='BCacheFS filesystem utilities'
+arch=('x86_64')
+url='https://bcachefs.org/'
+license=('GPL-2.0-only')
+_tools_depends=(
+    fuse3
+    glibc
+    keyutils libkeyutils.so
+    libaio libaio.so
+    libgcc
+    libsodium libsodium.so
+    libunwind libunwind.so
+    liburcu
+    lz4
+    systemd-libs libudev.so
+    udev
+    util-linux-libs libblkid.so libuuid.so
+    zlib libz.so
+    zstd libzstd.so
+)
+makedepends=(
+  ${_tools_depends[@]}
+  rust
+  rust-bindgen
+  rust-src
+  clang
+  git
+  jq
+  llvm
+  pkgconf
+  valgrind
+)
+options=(!lto)
+source=(
+  git+https://github.com/koverstreet/bcachefs-tools.git#tag=v${pkgver}
+  0001-do-not-load-binary-modules-for-dkms-package.patch
+)
+b2sums=('856ae84e9eb347d4be9d8c824a7049353df8bfa5f96136889503e2d2c42fb5ecc6cbd3836a736b219884dbe75e90d8001bbfc5d4b5e932123df37b068338ecdc'
+        '55cc2148c23a18f1d286fb77941a03b41ee4b3748728e517e5af06ec88fab41262c67b603907b0da8319bc5f08ff1667edc1480284bd4d3aca72c5412cb68e9f')
+
+prepare() {
+  cd ${pkgname}
+  patch -Np1 < ../0001-do-not-load-binary-modules-for-dkms-package.patch
+}
+
+build() {
+  cd ${pkgname}
+
+  # this uses malloc_usable_size, which is incompatible with fortification level 3
+  # https://github.com/koverstreet/bcachefs-tools/issues/237
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+
+  make \
+    LIBEXECDIR=/usr/lib \
+    DESTDIR="${pkgdir}" \
+    ROOT_SBINDIR="/usr/bin" \
+    INITRAMFS_DIR="/usr/lib/initcpio/"
+}
+
+check() {
+  cd ${pkgname}
+  cargo test --profile release -- --no-capture
+}
+
+package_bcachefs-tools() {
+  depends=(
+    ${_tools_depends[@]}
+    bash
+  )
+  cd ${pkgname}
+
+  # this uses malloc_usable_size, which is incompatible with fortification level 3
+  # https://github.com/koverstreet/bcachefs-tools/issues/237
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+
+  make \
+    PREFIX="/usr" \
+    LIBEXECDIR=/usr/lib \
+    DESTDIR="${pkgdir}" \
+    ROOT_SBINDIR="/usr/bin" \
+    INITRAMFS_DIR="/usr/lib/initcpio/" \
+    install
+
+  # replace incompatible initcpio hooks
+  rm -rf "${pkgdir}"/usr/lib/initcpio/*
+  install -dm755 "${pkgdir}"/usr/lib/initcpio/{hooks,install}
+  install -Dm644 arch/etc/initcpio/hooks/bcachefs "${pkgdir}"/usr/lib/initcpio/hooks/
+  install -Dm644 arch/etc/initcpio/install/bcachefs "${pkgdir}"/usr/lib/initcpio/install/
+
+  # remove dkms module from the main package
+  rm -rf "${pkgdir}"/usr/src
+
+  # package completions
+  install -dm755 "${pkgdir}"/usr/share/{bash-completion/completions,fish/vendor_completions.d,zsh/site-functions}
+  "${pkgdir}"/usr/bin/bcachefs completions bash > "${pkgdir}"/usr/share/bash-completion/completions/bcachefs
+  "${pkgdir}"/usr/bin/bcachefs completions fish > "${pkgdir}"/usr/share/fish/vendor_completions.d/bcachefs.fish
+  "${pkgdir}"/usr/bin/bcachefs completions zsh > "${pkgdir}"/usr/share/zsh/site-functions/_bcachefs
+}
+
+package_bcachefs-dkms() {
+  depends=(
+    bash
+    dkms
+    rust
+    rust-bindgen
+    rust-src
+  )
+  cd ${pkgbase}
+
+  make \
+    PREFIX="/usr" \
+    LIBEXECDIR=/usr/lib \
+    DESTDIR="${pkgdir}" \
+    ROOT_SBINDIR="/usr/bin" \
+    INITRAMFS_DIR="/usr/lib/initcpio/" \
+    install_dkms
+}

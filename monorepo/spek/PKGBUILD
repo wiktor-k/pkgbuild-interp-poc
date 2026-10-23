@@ -1,0 +1,58 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Michał Przybyś <michal@przybys.eu>
+
+pkgname=spek
+pkgver=0.8.5
+pkgrel=4
+pkgdesc='Acoustic spectrum analyser'
+arch=('x86_64')
+url='https://www.spek.cc/'
+license=('GPL-3.0-only')
+depends=(
+    'ffmpeg'
+    'glibc'
+    'hicolor-icon-theme'
+    'libgcc'
+    'libstdc++'
+    'wxwidgets-common'
+    'wxwidgets-gtk3'
+)
+source=("https://github.com/alexkay/spek/releases/download/v${pkgver}/${pkgname}-${pkgver}.tar.xz"
+        "0001-Fix-compatibility-with-FFmpeg-8.patch"
+        "0002-tests-Include-cstdint-for-GCC-13-compatibility.patch")
+sha256sums=('1bccf85a14a01af8f2f30476cbad004e8bf6031f500e562bbe5bbd1e5eb16c59'
+            'caa031f430b5016ebb47d8e77c4311857dd5da431246ae76566da0cd95cb8816'
+            'cf5a7b9000232c173f664944325e0124f9294ce3bd04a77fcb37dcf94b266777')
+
+prepare() {
+    cd "${pkgname}-${pkgver}"
+    
+    # Apply upstream patch for FFmpeg 8 compatibility
+    # Taken from <https://github.com/alexkay/spek/pull/338>
+    patch -Np1 -i "${srcdir}/0001-Fix-compatibility-with-FFmpeg-8.patch"
+
+    # Fix errors caused by missing header files during testing
+    patch -Np1 -i "${srcdir}/0002-tests-Include-cstdint-for-GCC-13-compatibility.patch"
+
+    # Disable audio tests due to incompatible hardcoded durations with modern FFmpeg
+    sed -i 's/test_audio();/\/\/ test_audio();/' tests/test.cc
+}
+
+build() {
+    cd "${pkgname}-${pkgver}"
+
+    ./configure --prefix=/usr --mandir=/usr/share/man
+    make
+}
+
+check() {
+    cd "${pkgname}-${pkgver}"
+
+    make check
+}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+
+    make DESTDIR="${pkgdir}" install
+}

@@ -1,0 +1,82 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Adrián Pérez de Castro <aperez@igalia.com>
+
+pkgname=sile
+pkgdesc='a modern typesetting engine inspired by LaTeX, fully customizable in Lua'
+pkgver=0.15.13
+pkgrel=3
+arch=(x86_64)
+url=https://www.sile-typesetter.org
+_url="https://github.com/sile-typesetter/$pkgname"
+license=(MIT)
+_luadeps=(cassowary
+          cldr
+          cliargs
+          expat
+          filesystem
+          fluent
+          linenoise
+          loadkit
+          lpeg
+          luaepnf
+          luarepl
+          luautf8
+          penlight
+          sec
+          socket
+          vstruct
+          zlib)
+depends=("${_luadeps[@]/#/lua51-}"
+         fontconfig libfontconfig.so
+         freetype2 libfreetype.so
+         glibc
+         harfbuzz libharfbuzz.so libharfbuzz-subset.so
+         icu libicudata.so libicui18n.so libicuio.so libicuuc.so
+         libpng libpng16.so # this goes with libtexpdf if ever split out to a library package
+         luajit
+         ttf-gentium-plus
+         zlib libz.so)
+optdepends=('otf-libertinus: default math font'
+            'luarocks: manage addon packages'
+            'noto-fonts-cjk: default font for tate enabled classes'
+            'ttf-hack: default mono font')
+makedepends=(cargo
+             lua51-compat53 # Not needed at runtime for for Lua 5.3+ or LuaJIT, but checked for in build
+             jq
+             luarocks)
+checkdepends=(poppler)
+provides=(libtexpdf.so)
+replaces=("$pkgname-luajit")
+_archive="$pkgname-$pkgver"
+source=("$_url/releases/download/v$pkgver/$_archive.tar.zst"{,.asc})
+sha256sums=('5e97c19651aff710687b93292d5361cb411652094bcc8c62c811c19f7a81464b'
+            'SKIP')
+validpgpkeys=('9F377DDB6D3153A48EB3EB1E63CC496475267693') # Caleb Maclennan <caleb@alerque.com> (@alerque)
+
+
+prepare () {
+	cd "$_archive"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build () {
+	cd "$_archive"
+	export CARGO_FEATURE_FLAGS==--offline
+	./configure \
+		--prefix /usr \
+		--disable-embeded-resources \
+		--disable-static \
+		--with-system-lua-sources \
+		--with-system-luarocks
+	make all
+}
+
+check () {
+	cd "$_archive"
+	make check
+}
+
+package () {
+	cd "$_archive"
+	make install DESTDIR="$pkgdir"
+}

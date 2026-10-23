@@ -1,0 +1,33 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+
+pkgname=endless-sky-high-dpi
+pkgver=0.11.3
+pkgrel=1
+pkgdesc='High DPI sprites for Endless Sky'
+arch=(any)
+url='https://github.com/endless-sky/endless-sky-high-dpi'
+license=(
+  GPL-3.0-only
+  CC-BY-4.0
+  CC-BY-SA-3.0
+  CC-BY-SA-4.0
+  LicenseRef-public-domain
+)
+depends=(endless-sky)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('e2eb72f0cc276f0286c9650e61b8cba82dae69dd2efea5385ff58037c3a23c41ff7fa0f7be3a11982a3f30b601bf3f5d7cbdb711e3338d8e69fb1bc7ceab35ab')
+b2sums=('572f4455c824fba8ff01883af4c3f8532008dcc3e9eeffb4a6d1897f88f1e97be09be7ca269a49af9cde19d83db2d41adefe5a092af5a86a223bf4a499178f76')
+
+package() {
+  cd "$pkgname"
+
+  # create plugin directory
+  install -d "$pkgdir/usr/share/games/endless-sky/plugins/$pkgname"
+
+  # install plugin
+  cp -r * "$pkgdir/usr/share/games/endless-sky/plugins/$pkgname"
+
+  # license
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" copyright
+}

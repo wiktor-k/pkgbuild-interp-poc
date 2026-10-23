@@ -1,0 +1,14 @@
+pkgbase = acpi_call-lts
+	pkgdesc = A linux kernel module that enables calls to ACPI methods through /proc/acpi/call
+	pkgver = 1.2.2
+	pkgrel = 370
+	url = https://github.com/mkottman/acpi_call
+	arch = x86_64
+	license = GPL
+	makedepends = linux-lts-headers
+	makedepends = acpi_call-dkms=1.2.2
+	provides = acpi_call
+	conflicts = acpi_call-dkms
+
+pkgname = acpi_call-lts
+	depends = linux-lts

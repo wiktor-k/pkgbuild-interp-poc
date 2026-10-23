@@ -1,0 +1,28 @@
+pkgbase = gnome-chess
+	pkgdesc = Play the classic two-player boardgame of chess
+	pkgver = 50.1
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Chess
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = librsvg
+	depends = pango
+	optdepends = gnuchess: Play against computer
+	source = git+https://gitlab.gnome.org/GNOME/gnome-chess.git#tag=50.1
+	validpgpkeys = EF033B6B1044EEE7F743A1737F71B64279363298
+	b2sums = f1dfe86a3cc6bd274b644ece297348e90007f002f333e2ec0b0672a442aef9d2224e2508440130d4c148424c6fa8b5b28159c137bed743049ec9e3628e530afa
+
+pkgname = gnome-chess

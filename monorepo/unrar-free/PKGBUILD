@@ -1,0 +1,35 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Bastian Germann <bastian.germann[at]gmx[dot]de>
+# Contributor: hcartiaux
+# Contributor: Chris Mann <cshclm[at]gmail[dot]com>
+
+pkgname=unrar-free
+pkgver=0.3.4
+pkgrel=1
+epoch=1
+pkgdesc="Free utility to extract files from RAR archives"
+url="https://gitlab.com/bgermann/unrar-free"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libarchive')
+source=("${url}/-/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('c02a07501e38251e42d42395cd35080b36570e16f857f7688f374c20c878c62c')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	autoreconf -fvi
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CFLAGS="${CFLAGS} -Wno-format-security"
+	./configure --prefix=/usr
+	make
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	make DESTDIR="${pkgdir}" install
+
+	install -Dm 644 README "${pkgdir}/usr/share/doc/${pkgname}/README"
+}

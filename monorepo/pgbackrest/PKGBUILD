@@ -1,0 +1,31 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Shalygin Konstantin <k0ste@k0ste.ru>
+# Contributor: xiretza <xiretza+aur@xiretza.xyz>
+
+pkgname=pgbackrest
+pkgver=2.60.0
+pkgrel=1
+pkgdesc='Reliable PostgreSQL backup and restore'
+arch=(x86_64)
+url="https://github.com/pgbackrest/pgbackrest"
+license=(MIT)
+depends=(bzip2 glibc libbacktrace libssh2 libxml2 lz4 openssl postgresql-libs python-yaml zlib zstd)
+makedepends=(git libyaml meson)
+source=("git+$url#tag=release/$pkgver")
+b2sums=('e20c36a39882f1ae2c18b18117c0748455cab9bc61f452d350fa6cfc6db85e9bcc1a1ff578b76d159af0403205d88e61794dcdbc9feae486e3d67b92c23d6915')
+backup=(etc/$pkgname/$pkgname.conf)
+
+prepare() {
+  echo '# Placeholder config. See https://pgbackrest.org/configuration.html for options.' > example.conf
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 example.conf "$pkgdir/etc/$pkgname/$pkgname.conf"
+  install -Dm644 $pkgname/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

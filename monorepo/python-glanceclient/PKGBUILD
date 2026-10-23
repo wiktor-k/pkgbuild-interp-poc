@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-glanceclient
+pkgver=4.13.0
+pkgrel=1
+pkgdesc="OpenStack Image API Client Library"
+arch=('any')
+url="https://docs.openstack.org/developer/python-glanceclient"
+license=('Apache-2.0')
+depends=('python-pbr' 'python-prettytable' 'python-keystoneauth1' 'python-requests' 'python-warlock'
+         'python-oslo-utils' 'python-oslo-i18n' 'python-wrapt' 'python-pyopenssl')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-stestr' 'python-ddt' 'python-requests-mock' 'python-testscenarios')
+options=('!emptydirs')
+source=("git+https://github.com/openstack/python-glanceclient.git#tag=$pkgver")
+sha512sums=('7f03b1c4e21e150c583865aefd033630ccc5e9033179d4090332ffc229301697eb29f0ec8b49b8099d0575a7449df7689c32b9ced44c30bfd1ce84636440b843')
+
+build() {
+  cd python-glanceclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-glanceclient
+  stestr run
+}
+
+package() {
+  cd python-glanceclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

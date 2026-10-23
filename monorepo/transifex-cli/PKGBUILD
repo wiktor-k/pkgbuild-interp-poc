@@ -1,0 +1,51 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+
+pkgname=transifex-cli
+pkgver=1.6.17
+pkgrel=4
+pkgdesc="The Transifex command-line tool to download and upload translations from Transifex"
+arch=('x86_64')
+url="https://github.com/transifex/cli"
+license=('Apache-2.0')
+provides=('transifex-client')
+replaces=('transifex-client')
+install=transifex-cli.install
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/transifex/cli.git#tag=v${pkgver}")
+sha256sums=('bed54ecb65bca557db1aadc00eae87f5b200989808e0954f63a6dcf13d553c14')
+validpgpkeys=(
+  51490B6D56A16C54FD8A38F0D051365FF68E4255
+  BC65ADA855CDB6C6F52DBB3B8B25FBA10829BD0B
+  )
+
+prepare() {
+  cd ${pkgname#*-}
+  mkdir -p dist/
+}
+
+build() {
+  cd ${pkgname#*-}
+  local _BUILDINFO="-X github.com/transifex/cli/internal/txlib.Version=${pkgver}"
+                    
+  GOPATH="${srcdir}"
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode external -extldflags \"${LDFLAGS}\" ${_BUILDINFO}" \
+    -o dist
+}
+
+check() {
+  cd ${pkgname#*-}
+  go test ./...
+}
+
+package() {
+  cd ${pkgname#*-}
+  install -Dm755 dist/cli "${pkgdir}/usr/bin/tx-cli"
+  install -D -m644 LICENSE  "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

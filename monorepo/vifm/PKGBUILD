@@ -1,0 +1,43 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=vifm
+pkgver=0.14.4
+pkgrel=1
+pkgdesc="A file manager with curses interface, which provides Vi[m]-like environment"
+arch=('x86_64')
+url="https://vifm.info/"
+license=('GPL-2.0-or-later')
+depends=(
+  'file'
+  'glib2'
+  'glibc'
+  'hicolor-icon-theme'
+  'ncurses'
+)
+makedepends=('perl')
+source=("https://github.com/vifm/vifm/releases/download/v$pkgver/$pkgname-$pkgver.tar.bz2"{,.asc})
+b2sums=('1c46ffcfa110210dc3accbede54f01444ffecb0fbad5ba50b003299c725cff1c3d9cb4f813f07be0eafdec3ab862205296c12515b00c52582963b29e07f8c250'
+        'SKIP')
+validpgpkeys=('22349CDBE5227D2108A5667799DC5E4DB05F6BE2') # xaizek <xaizek@posteo.net>
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --sysconfdir=/etc
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

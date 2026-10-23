@@ -1,0 +1,63 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=objdiff
+pkgver=3.8.3
+pkgrel=1
+pkgdesc='A local diffing tool for decompilation projects'
+arch=(x86_64)
+url='https://github.com/encounter/objdiff'
+license=('Apache-2.0 OR MIT')
+depends=(
+  fontconfig
+  freetype2
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  rust
+)
+options=(!lto)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  objdiff.desktop
+)
+sha512sums=('b6b7c67548cbf3c9364d26227ab24bb81d9a27a3e1342fb1216c45d096a2ec809c8fe95416b0a38d9db9811ded7e9e735203f9aae287c6d045b7d67ef946858d'
+            '481c738997aa5963be4e240dd20a711e84f50ab4b0cc0bfb26c96da981cac0e0918e527301e72831e34593ff67c917c33208fa5574adadea2ed6eaab8fda00d8')
+b2sums=('5a8523d8b4eaf51e478ce9cdc3c03b30b0802760371d90bf2373819fcc42e76be3414f2c3b096286130f1a38732b72a06de8c22de2d238aab721c55276240e34'
+        'e6317bd0ce38552b47a6d716f4df4f1e1ba3719448f3d9aedcd8aab4b30d86b95fba6cd293cc350ea9f0d2d5c87795a4f334fd5730bd1143b99bd910cdcb4840')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release --all-features
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+  )
+
+  cd "$pkgname"
+
+  # binaries
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/objdiff{,-cli}
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr assets "$pkgdir/usr/share/doc/$pkgname"
+
+  # desktop files
+  install -vDm644 -t "$pkgdir/usr/share/applications" "$srcdir/$pkgname.desktop"
+  install -vDm644 objdiff-gui/assets/icon.png "$pkgdir/usr/share/icons/hicolor/512x512/objdiff.png"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+}

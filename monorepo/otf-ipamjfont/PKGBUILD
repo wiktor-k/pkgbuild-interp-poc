@@ -1,0 +1,25 @@
+# Maintainer: Jiachen YANG <farseerfc@archlinux.org>
+# Contributor: ponsfoot <cabezon dot hashimoto at gmail dot com>
+
+pkgname=otf-ipamjfont
+pkgver=006.01
+_pkgver=${pkgver/./}
+pkgrel=3
+pkgdesc="Japanese outline Mincho fonts implementing IVS compliant with Hanyo-Denshi collection (based on IPAex Mincho fonts)"
+arch=('any')
+url="https://moji.or.jp/mojikiban/font/"
+license=('custom')
+groups=('ipa-fonts')
+source=("https://dforest.watch.impress.co.jp/library/i/ipamjfont/10750/ipamjm${_pkgver}.zip")
+sha256sums=('35494e0f2896f38b3f7369a8421a895cea6440a42c0a66ac95eab47d6ed25b68')
+
+package() {
+  cd "$srcdir"
+
+  install -d "${pkgdir}/usr/share/fonts/OTF"
+  install -m644 *.ttf "${pkgdir}/usr/share/fonts/OTF/"
+
+  install -d "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -m644 IPA_Font_License_Agreement_v1.0.txt Readme.txt \
+                "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

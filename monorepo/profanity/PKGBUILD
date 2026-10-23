@@ -1,0 +1,105 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: jason ryan <jasonwryan@gmail.com>
+# Contributor: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgbase=profanity
+pkgname=('profanity' 'profanity-gtk')
+pkgver=0.19.0
+pkgrel=1
+epoch=1
+pkgdesc='Console based XMPP client'
+url='https://profanity-im.github.io'
+arch=('x86_64')
+license=('GPL3')
+_clidepends=(
+  expat
+  glib2
+  glibc
+  libassuan
+  libcurl.so
+  libgcrypt
+  libgpg-error
+  libgpgme.so
+  libncursesw.so
+  libnotify.so
+  libotr
+  libreadline.so
+  libsignal-protocol-c
+  libstrophe.so
+  python
+)
+_gtkdepends=(
+  cairo
+  gdk-pixbuf2
+  libgtk-3.so
+  libx11
+  libxss
+)
+makedepends=(
+  meson ${_clidepends[@]} ${_gtkdepends[@]}
+)
+checkdepends=('cmocka')
+source=(https://github.com/profanity-im/profanity/archive/${pkgver}/${pkgbase}-${pkgver}.tar.gz)
+sha256sums=('a7b42d9b547f93e4161904b4ac48f53946930c15b6679c917352605501083275')
+sha512sums=('5f9c23a0895a06e91bb256c46c0491ed67b8abbe82eba4ff7199a7a0dfad076237f631d3b2ad5109e72d11f3ca62288f2fda5249fa0d8ac31cc1e04792b1d245')
+b2sums=('aad08530b8892b9892b90d928de49efb01d9192c28a151789ee2031ec5b17cf7f32f51186bfa37db64ddade8fca91ffc9a959ec2c091190d6d52c382d2825d8b')
+
+prepare() {
+  cp -a "${srcdir}"/${pkgname}-${pkgver}{,-gtk}
+}
+
+build() {
+  echo "Building non-gtk variant..."
+  (
+    local meson_options=(
+      -D c-plugins=enabled
+      -D icons-and-clipboard=disabled
+      -D notifications=enabled
+      -D omemo=enabled
+      -D otr=enabled
+      -D pgp=enabled
+      -D python-plugins=enabled
+      -D xscreensaver=disabled
+    )
+
+    arch-meson ${pkgname}-${pkgver} build "${meson_options[@]}"
+    meson compile -C build
+  )
+  echo "Building gtk variant..."
+  (
+    local meson_options=(
+      -D c-plugins=enabled
+      -D gdk-pixbuf=enabled
+      -D icons-and-clipboard=enabled
+      -D notifications=enabled
+      -D omemo=enabled
+      -D otr=enabled
+      -D pgp=enabled
+      -D python-plugins=enabled
+      -D xscreensaver=enabled
+    )
+
+    arch-meson ${pkgname}-${pkgver} build-gtk "${meson_options[@]}"
+    meson compile -C build-gtk
+  )
+}
+
+package_profanity() {
+  depends=(
+    ${_clidepends[@]}
+  )
+  meson install -C build --destdir "${pkgdir}"
+}
+
+package_profanity-gtk() {
+  pkgdesc+=' (gtk support)'
+  depends=(
+    ${_clidepends[@]} ${_gtkdepends[@]}
+  )
+  provides=('profanity')
+  conflicts=('profanity')
+  meson install -C build-gtk --destdir "${pkgdir}"
+}
+
+# vim: ts=2 sw=2 et:

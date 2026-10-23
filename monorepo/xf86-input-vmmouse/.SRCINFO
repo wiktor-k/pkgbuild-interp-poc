@@ -1,0 +1,22 @@
+pkgbase = xf86-input-vmmouse
+	pkgdesc = X.org VMWare Mouse input driver
+	pkgver = 13.2.0
+	pkgrel = 2
+	url = https://xorg.freedesktop.org/
+	arch = x86_64
+	groups = xorg-drivers
+	license = custom
+	makedepends = xorg-server-devel
+	makedepends = X-ABI-XINPUT_VERSION=24.4
+	makedepends = xorgproto
+	depends = systemd-libs
+	conflicts = xorg-server<21.1.1
+	conflicts = X-ABI-XINPUT_VERSION<24
+	conflicts = X-ABI-XINPUT_VERSION>=25
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-input-vmmouse-13.2.0.tar.xz
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-input-vmmouse-13.2.0.tar.xz.sig
+	validpgpkeys = 3BB639E56F861FA2E86505690FDD682D974CA72A
+	sha512sums = 26a01347a679db058abdc7cbd9a363bb4fccd1a727dc18e279d15b8a0dce71f67af5ff54df28b908391da8d2fc311d8c1813f26dcded4e9a2668db7b55ca5687
+	sha512sums = SKIP
+
+pkgname = xf86-input-vmmouse

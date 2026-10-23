@@ -1,0 +1,76 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=clamui
+pkgver=0.4.1
+pkgrel=1
+pkgdesc='Modern GUI for ClamAV antivirus'
+arch=(any)
+url='https://clamui.com/'
+license=(MIT)
+depends=(
+  clamav
+  gdk-pixbuf2
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libdbusmenu-glib
+  pango
+  python
+  python-cairo
+  python-certifi
+  python-gobject
+  python-keyring
+  python-matplotlib
+  python-pillow
+  python-psutil
+  python-requests
+)
+makedepends=(
+  git
+  python-build
+  python-hatchling
+  python-installer
+  python-wheel
+)
+checkdepends=(
+  python-hypothesis
+  python-pytest
+  xorg-server-xvfb
+)
+source=("git+https://github.com/linx-systems/clamui.git#tag=v$pkgver")
+b2sums=(3121fbb842cf6a2d55f8bc7f41c099ffa2cabb94e75f3266910dbeb7eabc12fb3b721f7f7f2340d944936189282bab303ecd1d1d60452497aaa4978e807b5c58)
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+
+  for po in po/*.po; do
+    msgfmt "$po" -o "${po%.po}.mo"
+  done
+}
+
+check() {
+  cd $pkgname
+  PYTHONPATH="$PWD/dist/clamui-$pkgver-py3-none-any.whl" \
+    dbus-run-session xvfb-run \
+    -s '-screen 0 1920x1080x24 -nolisten local' \
+    pytest
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 -t "$pkgdir/usr/share/applications/" data/io.github.linx_systems.ClamUI.desktop
+  install -Dm644 -t "$pkgdir/usr/share/metainfo/" data/io.github.linx_systems.ClamUI.metainfo.xml
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" icons/io.github.linx_systems.ClamUI.svg
+  install -Dm644 -t "$pkgdir/usr/share/icons/hicolor/128x128/apps/" icons/io.github.linx_systems.ClamUI.png
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  for mo in po/*.mo; do
+    lang="${mo##*/}"
+    lang="${lang%.mo}"
+    install -Dm644 "$mo" "$pkgdir/usr/share/locale/$lang/LC_MESSAGES/clamui.mo"
+  done
+}

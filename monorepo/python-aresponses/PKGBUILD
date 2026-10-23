@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-aresponses
+pkgver=3.0.0
+pkgrel=7
+pkgdesc="Asyncio http mocking. Similar to the responses library used for 'requests'"
+url="https://github.com/aresponses/aresponses"
+license=('MIT')
+arch=('any')
+depends=('python-aiohttp' 'python-pytest-asyncio')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+source=("git+https://github.com/aresponses/aresponses.git#tag=$pkgver")
+sha512sums=('acf60278b6848a7af88c2bbd62450fc4892da8f8d7e2f7c08c1831d18252e7fb0623ae753a934b14ee88b83a04012f60adcebf63ac2f9a3329ee7f6e656f88c5')
+
+prepare() {
+  cd aresponses
+  # Replace remaining uses of event_loop fixture
+  # https://github.com/aresponses/aresponses/pull/85
+  git cherry-pick -n 7fdbc59b85f0a52f627a08d96acc4b63c0eaa49d
+}
+
+build() {
+  cd aresponses
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    # skip tests failing due to internal server error
+    --deselect tests/test_server.py::test_foo
+    --deselect tests/test_server.py::test_passthrough
+  )
+  cd aresponses
+  python -m pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd aresponses
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

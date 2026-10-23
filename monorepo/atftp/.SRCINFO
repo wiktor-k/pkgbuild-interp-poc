@@ -1,0 +1,24 @@
+pkgbase = atftp
+	pkgdesc = Client/server implementation of the TFTP protocol that implements RFCs 1350, 2090, 2347, 2348, and 2349
+	pkgver = 0.8.1
+	pkgrel = 1
+	url = https://sourceforge.net/projects/atftp/
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	depends = pcre2
+	depends = readline
+	options = !lto
+	backup = etc/conf.d/atftpd
+	source = atftp::git+https://git.code.sf.net/p/atftp/code#tag=v0.8.1
+	source = atftpd.service
+	source = atftpd.conf
+	source = atftp.sysusers
+	source = atftp.tmpfiles
+	sha256sums = a1737bc19f876ed4fdaf1a321d4b932fb850d7b4129b5818112c89c280ae645e
+	sha256sums = 74a030f0fb48e97470d59d767039e44d28cbd6c4722621207684220210b8fa65
+	sha256sums = 0b28125099ffdd6869c6fbcb3167e93ccd71a0c6e465b1b62c7dedf9f628dd4e
+	sha256sums = 9a0f81ed10ffa35466e3ff35b82dad181aadacb4a05917f580681ffbb5a597e6
+	sha256sums = 2096272445c736ba05529af628cc2d46d0236c8f1ecbd50bb1db6dc6c4a972c5
+
+pkgname = atftp

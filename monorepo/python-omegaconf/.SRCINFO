@@ -1,0 +1,20 @@
+pkgbase = python-omegaconf
+	pkgdesc = Flexible Python configuration system
+	pkgver = 2.4.0
+	pkgrel = 1
+	url = https://github.com/omry/omegaconf
+	arch = any
+	license = BSD-3-Clause
+	makedepends = antlr4
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-antlr4
+	depends = python-yaml
+	source = python-omegaconf-2.4.0.tar.gz::https://files.pythonhosted.org/packages/source/o/omegaconf/omegaconf-2.4.0.tar.gz
+	source = antlr4-jar.patch
+	sha256sums = 7e219a70bea371da250285b9c01c7db027bc421722799c2cc4ff14bc4a2a753b
+	sha256sums = 73ce12d45bf1b510461dc7799024f971e17daebf924645ec7048611d50393031
+
+pkgname = python-omegaconf

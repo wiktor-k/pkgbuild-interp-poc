@@ -1,0 +1,136 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Alexander Bocken <alexander@bocken.org>
+# Contributor: Posi <posi1981@gmail.com>
+# Contributor: Johannes Löthberg <johannes@kyriasis.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Timm Preetz <timm@preetz.us>
+# Contributor: Michael 'manveru' Fellinger <m.fellinger@gmail.com>
+# Contributor: Dave Pretty <david dot pretty at gmail dot com>
+
+pkgname=anki
+pkgver=26.09.3
+pkgrel=1
+pkgdesc="A smart spaced repetition flashcard program"
+arch=('x86_64')
+url="https://apps.ankiweb.net/"
+license=('AGPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+  'python'
+  'python-beautifulsoup4'
+  'python-decorator'
+  'python-distro'
+  'python-flask'
+  'python-flask-cors'
+  'python-jsonschema'
+  'python-markdown'
+  'python-orjson'
+  'python-protobuf'
+  'python-pyqt6'
+  'python-pyqt6-webengine'
+  'python-pysocks'
+  'python-requests'
+  'python-send2trash'
+  'python-waitress'
+  'qt6-multimedia' # plugin loaded at runtime for voice recording
+  'qt6-svg'        # plugin loaded at runtime for SVG icon rendering
+  'sqlite'
+  'zstd'
+)
+makedepends=(
+  'cargo'
+  'git'
+  'ninja'
+  'protobuf'
+  'python-installer'
+  'python-wheel'
+  'rsync'
+  'uv'
+  'yarn'
+)
+optdepends=(
+  'lame: record sound'
+  'mpv: play sound. prefered over mplayer'
+  'mplayer: play sound'
+  'texlive-most: render LaTex in cards'
+)
+source=(
+  "git+https://github.com/ankitects/anki.git#tag=$pkgver"
+  "git+https://github.com/ankitects/anki-core-i18n.git"
+  "git+https://github.com/ankitects/anki-desktop-ftl.git"
+  "no-update.patch"
+  "strip-formatter-deps.patch"
+  "strip-type-checking-deps.patch"
+  "no-corepack.patch"
+  "reproducible-sveltekit.patch"
+)
+b2sums=('01fdb1ce1e5fc7dcbc4fb687d6548528df661171c8c2a0f278a2a1ba8f2125ffb8372bc205120edb088fd81e2e41ed31352e0ab03a11cb61fe5407bcc72bc3c4'
+        'SKIP'
+        'SKIP'
+        '0f3ce855e9eaea67ef461668c296ae08cad0d31a7a2bf9ea7006220b44c2cb2e132dfb656140828141fbf21dde2b686a4a3248b92bb3fa46217f1a987425ffa3'
+        '18a8fefd5995ba83ebdb3e0c7d9a5c821a19b51616f6eebd7980e30bab4ab3c12573f5a8e59d7db03492a9df22245275da74a4594c2b652d772fbbb17984ff96'
+        '4ea648cec8b784b7586605ddc97633b9471ab8e1f75b5f38c0459f839625cdc3e28419cf34f8d8e453283707a17a090a48287140573c96599d83baa56d114a4a'
+        '551a6585356989ced5f32a62e34f8446273b7648458afbc79e0fd21d4038c2c3d28175b679399b27ae22ce505f5b909adac448482bd7f2a234f8b44a05627f4e'
+        '1dede904fbc5c0b499251d3d11a39ad2f467d644ad742d6d162dc4cd60a120f445e0b5f0fb9758ace1d95372ad48a86bbd6cad3200d97f19f4c62bb0620dc8c4')
+
+prepare() {
+  cd $pkgname
+  patch -Np1 < ../no-update.patch
+  patch -Np1 < ../strip-formatter-deps.patch
+  patch -Np1 < ../strip-type-checking-deps.patch
+  patch -Np1 < ../no-corepack.patch
+  patch -Np1 < ../reproducible-sveltekit.patch
+
+  git submodule init
+  git config submodule.ftl/core-repo.url ../anki-core-i18n
+  git config submodule.ftl/qt-repo.url ../anki-desktop-ftl
+  git -c protocol.file.allow=always submodule update ftl/core-repo ftl/qt-repo
+
+  cargo fetch --locked --target host-tuple
+
+  rm yarn.lock # Lock-file not compatible with system yarn
+
+  # Build requires these
+  yarn install --immutable --modules-folder out/node_modules --ignore-scripts
+  ln -s out/node_modules ./
+  python -m venv --system-site-packages --without-pip out/pyenv/
+}
+
+build() {
+  cd $pkgname
+  # Necessary for LTO + Rust crate "ring", see
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/pacman/-/issues/20
+  # https://github.com/briansmith/ring/issues/1444
+  export CFLAGS+=' -ffat-lto-objects'
+
+  # Use local binaries instead of downloading them
+  export PYTHON_BINARY=/usr/bin/python
+  export PROTOC_BINARY=/usr/bin/protoc
+  export NODE_BINARY=/usr/bin/node
+  export YARN_BINARY=/usr/bin/yarn
+  export UV_BINARY=/usr/bin/uv
+
+  export RELEASE=2       # Optimized build
+  export OFFLINE_BUILD=1 # Do not download anything, disables git checks
+  export CARGO_TARGET_DIR=$PWD/out/rust
+
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  cargo build -p runner --release
+  ./out/rust/release/runner build -- wheels -v
+}
+
+package() {
+  cd $pkgname
+  for file in out/wheels/*.whl; do
+    python -m installer --destdir="$pkgdir" "$file"
+  done
+
+  install -vDm644 -t "$pkgdir/usr/share/applications" "qt/installer/linux-template/{{ cookiecutter.format }}/{{ cookiecutter.app_name }}/anki.desktop"
+  install -vDm644 -t "$pkgdir/usr/share/pixmaps" "qt/installer/linux-template/{{ cookiecutter.format }}/{{ cookiecutter.app_name }}/anki.png" "qt/installer/linux-template/{{ cookiecutter.format }}/{{ cookiecutter.app_name }}/anki.xpm"
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" "qt/installer/linux-template/{{ cookiecutter.format }}/{{ cookiecutter.app_name }}/anki.1"
+  install -vDm644 -t "$pkgdir/usr/share/mime/packages" "qt/installer/linux-template/{{ cookiecutter.format }}/{{ cookiecutter.app_name }}/anki.xml"
+}

@@ -1,0 +1,122 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=hyperqueue
+pkgname=(hyperqueue python-hyperqueue)
+pkgver=0.26.2
+pkgrel=1
+pkgdesc="Scheduler for sub-node tasks for HPC systems with batch scheduling"
+arch=(x86_64)
+url="https://github.com/It4innovations/hyperqueue/"
+license=(MIT)
+makedepends=(
+  cargo
+  maturin
+  python-installer
+  python-cloudpickle
+  python-tqdm
+  python-pydot
+)
+checkdepends=(
+  # https://github.com/It4innovations/hyperqueue/blob/main/tests/requirements.txt
+  python-pytest
+  python-pytest-xdist
+  python-iso8601
+  python-schema
+  python-maturin
+  python-psutil
+  python-requests
+  python-aiohttp
+  python-inline-snapshot
+  python-typing_extensions
+  python-ruff
+)
+source=($pkgbase-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('673ccb5ff81cbd97f5eb66ee2e092aefc706fbc140c68dc48bdc2637784859f0a9f9d78c261d3245248925b27074ea133ed6d84bda4b33f904b6c655a65d0cf9')
+
+# deselect highs from default features
+# https://github.com/It4innovations/hyperqueue/issues/1066#issuecomment-3968989734
+_cargo_features_flags=(--no-default-features --features dashboard,jemalloc,microlp)
+_maturin_features_flags=(--no-default-features --features microlp)
+
+prepare() {
+  cd $pkgbase-$pkgver
+  cargo fetch --locked --target host-tuple
+
+  # run Python tests with the release binary
+  sed -i 's|"target", directory, "hq"|"target", "release", "hq"|' tests/conftest.py
+}
+
+build() {
+  # fix building with LTO
+  CFLAGS+=' -ffat-lto-objects'
+
+  # prevent HyperQueue from adding '-dev' suffix to the version string
+  export HQ_BUILD_VERSION=$pkgver
+
+  cd $pkgbase-$pkgver
+  cargo build --frozen --release "${_cargo_features_flags[@]}"
+
+  # build Python bindings
+  cd crates/pyhq
+  maturin build --locked --release --target "$(rustc --print host-tuple)" --strip "${_maturin_features_flags[@]}"
+}
+
+check() {
+  cd $pkgbase-$pkgver
+  cargo test --frozen --release "${_cargo_features_flags[@]}"
+
+  # test Python bindings
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    -n16
+  )
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer target/wheels/*.whl
+  # the tests use Python subprocess module to start hq which needs the same env in order for
+  # submitted tasks to work, so we must actually activate the venv
+  (
+    source test-env/bin/activate
+    python -m pytest "${pytest_options[@]}" tests
+  )
+}
+
+package_hyperqueue() {
+  depends=(
+    glibc
+    libgcc
+  )
+
+  cd $pkgbase-$pkgver
+  local _target="target/release/hq"
+
+  # install the binary and license
+  install -vDm 755 "$_target" -t "$pkgdir"/usr/bin/
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # generate shell completions
+  $_target generate-completion bash   | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/bash-completion/completions/hq.bash
+  $_target generate-completion elvish | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/elvish/lib/hq.elv
+  $_target generate-completion fish   | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/fish/vendor_completions.d/hq.fish
+  $_target generate-completion zsh    | install -vDm 644 /dev/stdin "$pkgdir"/usr/share/zsh/site-functions/_hq
+}
+
+package_python-hyperqueue() {
+  pkgdesc+=" - Python bindings"
+  depends=(
+    glibc
+    hyperqueue
+    libgcc
+    # https://github.com/It4innovations/hyperqueue/blob/main/crates/pyhq/pyproject.toml
+    python
+    python-cloudpickle
+    python-tqdm
+  )
+  optdepends=(
+    'python-pydot: task graph visualization'
+  )
+
+  cd $pkgbase-$pkgver
+  python -m installer --destdir "$pkgdir" target/wheels/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

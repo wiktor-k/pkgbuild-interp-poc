@@ -1,0 +1,28 @@
+# Maintainer: Santiago Torres-Arias <santiago@archlinux.org>
+# Contributor: Aleksandar Trifunović <akstrfn at gmail dot com>
+# Contributor: Matt Spaulding <matt at mattops dot io>
+# Contributor: pyjano <pyjano at protonmail dot com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Adrià Arrufat <swiftscythe@gmail.com>
+# Contributor: Utkarsh Singh <utkarsh190601@gmail.com>
+
+pkgname=ttf-ibm-plex
+pkgver=6.4.0
+pkgrel=1
+pkgdesc="IBM Plex Mono, Sans, and Serif"
+arch=('any')
+url='https://github.com/IBM/plex'
+license=('custom:OFL')
+source=("${pkgname}-${pkgver}.zip::${url}/releases/download/v${pkgver}/TrueType.zip")
+provides=('ttf-font')
+sha256sums=('7e4f80047782fe9eb74cd0b63019da283a15db98942da476fee46098633a083c')
+conflicts=('ibm-plex-fonts')
+
+package() {
+    cd TrueType
+    find -name *.ttf ! -path "*/unhinted/*" \
+         -exec install -Dm644 {} -t "${pkgdir}/usr/share/fonts/TTF" \;
+
+    # All the other licenses are the same as the one here...
+    install -Dm644 IBM-Plex-Mono/license.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

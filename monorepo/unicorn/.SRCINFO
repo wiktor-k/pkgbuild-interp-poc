@@ -1,0 +1,39 @@
+pkgbase = unicorn
+	pkgdesc = Lightweight, multi-platform, multi-architecture CPU emulator framework based on QEMU
+	pkgver = 2.1.4
+	pkgrel = 2
+	url = https://www.unicorn-engine.org
+	arch = x86_64
+	license = GPL-2.0-only
+	checkdepends = cmocka
+	checkdepends = python-pytest
+	makedepends = cmake
+	makedepends = git
+	makedepends = python
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-versioningit
+	makedepends = python-wheel
+	makedepends = ruby
+	makedepends = ruby-rdoc
+	options = !emptydirs
+	source = git+https://github.com/unicorn-engine/unicorn.git#tag=v2.1.4
+	sha512sums = 4472ae44de5631a3babfd966b0d84910dd512b9e6b3ea8c079eb76b3370c4d13daef5d51741d5cdff6727ee7d1949762999681e83d803df48b37770dff44cd10
+	b2sums = f9b20fa1beb88bd58ea36b417c8f23568cded70952a1cd5bbf7860ca73f3ed1220a038313730c8f48a11a8110c034e2651a15bc870791b35972d8c5618a2caa6
+
+pkgname = unicorn
+	depends = glibc
+	provides = libunicorn.so
+
+pkgname = python-unicorn
+	depends = unicorn
+	depends = python
+	depends = python-setuptools
+
+pkgname = ruby-unicorn-engine
+	depends = glibc
+	depends = unicorn
+	depends = ruby
+	replaces = ruby-unicorn

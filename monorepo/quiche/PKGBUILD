@@ -1,0 +1,57 @@
+# Maintainer: Remi Gacogne <rgacogne[at]archlinux[dot]org>
+# Previous Maintainer: Ning Sun <n@sunng.info>
+# Previous Maintainer: Kasei Wang <kasei@kasei.im>
+
+pkgname=quiche
+pkgver=0.29.3
+pkgrel=1
+pkgdesc='An implementation of the QUIC transport protocol and HTTP/3 as specified by the IETF'
+arch=('x86_64')
+url='https://github.com/cloudflare/quiche'
+license=('BSD-2-Clause')
+depends=('libgcc')
+makedepends=('cmake' 'rust' 'git' 'clang')
+options=(!'lto')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/cloudflare/$pkgname/archive/$pkgver.tar.gz")
+sha256sums=('c840a0d04e2406d0989a5238f6d6054aa0139872ed49a6c48395fca0cfcad75c')
+validpgpkeys=('8657ABB260F056B1E5190839D9C4D26D0E604491')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver/quiche"
+  cargo update
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver/quiche"
+  # fix "ELF file ('usr/lib/libquiche.so') lacks GNU_PROPERTY_X86_FEATURE_1_SHSTK" warning
+  export RUSTFLAGS='-C link-args=-Wl,-z,shstk'
+  cargo build --frozen --release --no-default-features --features ffi,pkg-config-meta,qlog,boringssl-boring-crate
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver/quiche"
+  cargo test --frozen --no-default-features --features ffi,pkg-config-meta,qlog,boringssl-boring-crate
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  mkdir -p $pkgdir/usr/include
+  mkdir -p $pkgdir/usr/lib
+  mkdir -p $pkgdir/usr/lib/pkgconfig
+  mkdir -p $pkgdir/usr/share/licenses/quiche
+
+  install -Dm644 quiche/include/quiche.h $pkgdir/usr/include
+  install -Dm755 target/release/libquiche.so $pkgdir/usr/lib
+  install -Dm644 /dev/stdin $pkgdir/usr/lib/pkgconfig/quiche.pc <<PC
+# quiche
+
+Name: quiche
+Description: quiche library
+URL: https://github.com/cloudflare/quiche
+Version: $pkgver
+Libs: -lquiche
+PC
+
+  install COPYING $pkgdir/usr/share/licenses/quiche
+}

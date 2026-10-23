@@ -1,0 +1,23 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=describeimage
+pkgver=1.5.1
+pkgrel=1
+pkgdesc='Describe images using Ollama'
+arch=(x86_64)
+url='https://github.com/xyproto/describeimage'
+license=(BSD-3-Clause)
+depends=(ollama-environment)
+makedepends=(git go)
+source=("git+$url#tag=v$pkgver")
+b2sums=('f7439e4002eb25f45d02699dcd102734025e096d8351172ce4397346de0cdc946561cc337567c34671be0f571d422f17c0f654eff21f58ec26d1e2a7dbe6e74e')
+
+build() {
+  cd $pkgname
+  go build -buildmode=pie -trimpath -mod=readonly -modcacherw -ldflags="-s -w -linkmode=external -extldflags '$LDFLAGS'"
+}
+
+package() {
+  install -Dm755 $pkgname/$pkgname "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 $pkgname/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

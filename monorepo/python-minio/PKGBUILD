@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-minio
+pkgver=7.2.20
+pkgrel=2
+pkgdesc='MinIO Python Library for Amazon S3 Compatible Cloud Storage'
+arch=('any')
+url='https://github.com/minio/minio-py'
+license=('Apache-2.0')
+depends=(
+  'python'
+  'python-argon2_cffi'
+  'python-certifi'
+  'python-pycryptodome'
+  'python-typing_extensions'
+  'python-urllib3'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  # 'minio'
+  'python-pytest'
+)
+source=("$pkgname::git+$url.git#tag=$pkgver")
+b2sums=('f7c8ddd806d6c3826c0919d5511e0e81bee2eda19812c12ca15228fb7f1dba4ff4937a536223e66b7397621a7e4668195143e85e5e7979c7e3e29673afe13994')
+
+prepare() {
+  cd "$pkgname"
+  # ln -sf /usr/bin/minio tests/functional/minio
+}
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+  pytest
+  # TODO: Functional tests fail as of 7.2.10 with:
+  #       [Errno 111] Connection refused
+  # ./run_functional_tests.sh
+}
+
+package() {
+  cd "$pkgname"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-whelk
+pkgver=3.0
+pkgrel=8
+pkgdesc="Easy access to shell commands from python"
+arch=('any')
+license=('custom:zlib')
+url="https://pypi.python.org/pypi/whelk"
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/seveas/whelk.git#tag=$pkgver")
+sha512sums=('9c2b3ce4258e95408631acbaccb242299f433c8bf413cdc57ba5cfb69aae74976342f0dec3bc7f856c0c4a66c360aa0c08c2673a329a572af6dc0b06fab44f0c')
+
+build() {
+  cd whelk
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd whelk
+  python -munittest discover
+}
+
+package() {
+  cd whelk
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+}

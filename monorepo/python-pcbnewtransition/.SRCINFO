@@ -1,0 +1,22 @@
+pkgbase = python-pcbnewtransition
+	pkgdesc = Library that allows you to support KiCAD 6/7/8 in your KiCAD plugins
+	pkgver = 0.5.2
+	pkgrel = 3
+	url = https://github.com/yaqwsx/pcbnewTransition
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = kicad
+	source = python-pcbnewtransition::git+https://github.com/yaqwsx/pcbnewTransition#tag=v0.5.2
+	source = remove-versioneer.patch
+	sha512sums = 400bf3296e692f9d7797fb43e54a2d668cc862b24e705864c1ab06493108fb4e006f44d8ebbb065f7e88f7286d7a7462ecdc61ebad15d4f8d2e0fe20a59d6309
+	sha512sums = f6a7d61f4ba3ab44ee5bbd2b85a8eb0689c8845a5b3f7bb7570467f45037b66b2c019528113506342057d003182dcc6f90fe3c80e039d67af99286a517be08fa
+	b2sums = dfcc9d32f8b9058a3b5b5a74bedf1c4bfd8e25ca011cd8a033c28351e69db855b74fc8683c28397e844214446b5440bb0ad1371809030ccf47c4fa9b75132951
+	b2sums = d845d6b50289fbc7a160dc699a0c08a185f7e394f30d469ac929dea73b3b15190bf8c07e0d0acc73c890efdbfb2ac4383465a7b784d910e90c94aa9acbef5e35
+
+pkgname = python-pcbnewtransition

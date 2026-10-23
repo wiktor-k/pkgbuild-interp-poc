@@ -1,0 +1,80 @@
+# Maintainer: Santiago Torres-Arias <santiago -> a.o >
+# Maintainer: Nick Black <dankamongmen@gmail.com>
+
+pkgname=notcurses
+pkgver=3.0.17
+pkgrel=3
+pkgdesc="Blingful TUI/character graphics library"
+url="https://nick-black.com/dankwiki/index.php/Notcurses"
+license=('Apache')
+arch=('x86_64')
+# TODO: package qrcodegen
+depends=(
+  'libgcc'
+  'libstdc++'
+  'glibc'
+)
+makedepends=(
+  'cmake'
+  'doctest'
+  'ffmpeg'
+  'gpm'
+  'libdeflate'
+  'libunistring'
+  'ncurses'
+  'ninja'
+  'pandoc'
+  'python-build'
+  'python-cffi'
+  'python-installer'
+  'python-pypandoc'
+  'python-setuptools'
+  'python-wheel'
+  'readline'
+  'zlib'
+)
+provides=(libnotcurses++.so libnotcurses.so libnotcurses-core.so)
+source=("https://github.com/dankamongmen/notcurses/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('b0fbe824984fe25b5a16770dbd00b85d44db5d09cc35bd881b95335d0db53128')
+b2sums=('2ad3d4770de3a864952ef0b97b7dd5421ff3e53e135d328a37a93747f2a9ff8890a70f18a65965871e583a4efdb0a5c73a7154d4de36ef10ff2ece6340393483')
+
+prepare() {
+  cd $pkgname-$pkgver
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_BUILD_TYPE=None
+    -DUSE_GPM=on
+    -DUSE_QRCODEGEN=off
+    -GNinja
+    -S $pkgname-$pkgver
+    -Wno-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+  cd $pkgname-$pkgver/cffi
+  CFLAGS+=" -I$srcdir/$pkgname-$pkgver/include -L$srcdir/build" python -m build --wheel --no-isolation
+}
+
+check() {
+  echo 'skip'
+  #ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    'ffmpeg' 'libavcodec.so' 'libavformat.so' 'libavutil.so' 'libswscale.so'
+    'gpm' 'libgpm.so'
+    'libdeflate' 'libdeflate.so'
+    'libunistring' 'libunistring.so'
+    'ncurses' 'libncursesw.so'
+    'python-cffi'
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  python -m installer --destdir="$pkgdir" $pkgname-$pkgver/cffi/dist/*.whl
+}

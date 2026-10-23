@@ -1,0 +1,26 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-snappy-manifolds
+pkgver=1.9
+pkgrel=1
+pkgdesc='The SnapPy manifold database'
+url='https://snappy.computop.org/'
+depends=(python)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools)
+license=(GPL-2.0-or-later)
+arch=(any)
+source=(git+https://github.com/3-manifolds/snappy_manifolds#tag=${pkgver}_as_released)
+sha256sums=('c4041c34dfa87ef9c9ef5b09ed0b991ca5ca3116d7f85a3e4c5d214d65e2d5a1')
+
+build() {
+  cd snappy_manifolds
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd snappy_manifolds
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

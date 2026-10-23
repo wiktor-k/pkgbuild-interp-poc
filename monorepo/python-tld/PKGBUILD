@@ -1,0 +1,28 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+_pyname=tld
+pkgname=python-${_pyname}
+pkgver=0.13.2
+pkgrel=1
+pkgdesc="Extracts the top level domain (TLD) from the URL given"
+arch=(any)
+url="https://github.com/barseghyanartur/tld"
+license=('MPL' 'GPL' 'LGPL')
+depends=('python')
+makedepends=('python-'{build,installer,wheel}
+             'python-setuptools-scm')
+source=("${url}/archive/${pkgver}/${_pyname}-${pkgver}.tar.gz")
+b2sums=('5bd5f3f6d01a0417868b4e25f6f87efe8a8da85a3efe7e2d064189eaf8206f03aa44a263cc233a9221ee3dd038fcd754a05ebcba17aad5518429947de425f889')
+
+build() {
+  cd "${_pyname}-${pkgver}"
+  python -m build -wn
+}
+
+package() {
+  cd "${_pyname}-${pkgver}"
+  python -m installer -d "${pkgdir}" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

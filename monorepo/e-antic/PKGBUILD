@@ -1,0 +1,49 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=e-antic
+pkgver=2.1.1
+pkgrel=2
+pkgdesc='Embedded algebraic number fields (on top of antic)'
+arch=(x86_64)
+url='https://github.com/flatsurf/e-antic/'
+license=(LGPL-3.0-or-later)
+depends=(flint
+         glibc
+         gmp
+         libgcc
+         libstdc++)
+makedepends=(boost
+             python-setuptools)
+source=(https://github.com/flatsurf/e-antic/releases/download/$pkgver/$pkgname-$pkgver.tar.gz
+        flint-3.6.patch)
+sha256sums=('e3287fa603b44d9a43c4cac5d883e65e90aedc35821061c1dc5b8d9c94a01cd8'
+            'b6d322a3d9273fec3c65f1706de5e18e9b05ad12946853268f203f7d8452d181')
+
+prepare() {
+  patch -d $pkgname-$pkgver -p1 < flint-3.6.patch # Drop code merged in flint 3.6
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --without-benchmark \
+    --without-byexample \
+    --without-pytest \
+    --without-doc
+# https://bugzilla.gnome.org/show_bug.cgi?id=655517
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libeantic/libtool
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

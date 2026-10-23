@@ -1,0 +1,35 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=kubeconform
+pkgver=0.7.0
+pkgrel=2
+pkgdesc="FAST Kubernetes manifests validator, with support for Custom Resources!"
+url="https://github.com/yannh/kubeconform"
+arch=("x86_64")
+license=("Apache")
+depends=('glibc')
+makedepends=("go" "git")
+source=("${pkgname}-${pkgver}::https://github.com/yannh/kubeconform/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('cac90761cc68d0297c5ed5ee2311449c453b71c19501a7172a5460bde1520f1e428ee737e27849b8c94390b77782185676f3f8c90c61ddd395bd72bb00ec4302')
+b2sums=('ffbc36ff05151282e57a955b631f4b91c5143ff7806279faf2e6f116d7b3d7bdcc31f0a0d64bbbf6a665a20c2332c22aaa829261045e973af2da1961ce830960')
+options=('!lto')
+
+build() {
+  cd "${pkgname}-${pkgver}/cmd/kubeconform"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  go build -ldflags="-w -s -linkmode=external" .
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  go test ./...
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 "cmd/kubeconform/kubeconform" "${pkgdir}/usr/bin/${pkgname}"
+}

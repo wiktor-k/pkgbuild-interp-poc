@@ -1,0 +1,129 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Contributor: Christian Rebischke <chris.rebischke at archlinux.org>
+# Contributor: Jonathan Steel <jsteel at archlinux.org>
+# Contributor: Greg Sutcliffe <facter_aur (at) emeraldreverie.orgr>
+# Contributor: Hyacinthe Cartiaux <hyacinthe.cartiaux@free.fr>
+# Contributor: Thomas S Hatch <thatch45 (at) Gmail.com>
+# Contributor: Dave Simons <miouhpi (at) Gmail (dot) com>
+# Contributor: Niels Abspoel <aboe76 (at) Gmail (dot) com>
+
+pkgname=facter
+pkgver=4.10.0
+pkgrel=3
+pkgdesc="Collect and display system facts"
+arch=('x86_64')
+url="https://github.com/puppetlabs/${pkgname}"
+license=('Apache-2.0')
+depends=(
+  dmidecode
+  pciutils
+  ruby
+  ruby-base64
+  ruby-hocon
+  ruby-sys-filesystem
+  ruby-thor
+  virt-what
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+  ruby-webmock
+  ruby-yard
+)
+optdepends=('puppet: retrieve puppet facts')
+conflicts=(
+  cpp-hocon
+  leatherman
+  libwhereami
+)
+replaces=(
+  cpp-hocon
+  leatherman
+  libwhereami
+)
+source=(
+  "git+${url}.git#tag=${pkgver}"
+  "${pkgname}_fix_dependencies.patch"
+  "${pkgname}_fix_tests.patch"
+)
+sha512sums=('316710cc78935f87758332bbc47333bf2439603f9153e4332a56371ef12f342380e3bae6475bae83d0a16ab2f4e4af834abe86f7791dfc8ef5f5ecde7e89080f'
+            'e4542e950848eb58dee97673b4e78fb58dce493e82dc695d5fa1ff8dc6aae949caca31db280de30d5dba7f53762683de2cb7886de3957e04fddab0db65b2b5a2'
+            '11fba5746523d4bded73c6ce254c7e70179616690f342d9b136f5335764c47967f32a40e4f9006f4a3631e53b870a8cfe1708f623f9aa1e989411a4c3cae8334')
+b2sums=('eed921cefe35e7bf1525ef8c8aed5d2a3c5527efafd8cdfd80797b34f5e4a92116954bcaf4a456ae1b7529d39be900c51b4bcadb5ae3d1af12e1fea2f245a9ac'
+        'e3b869d8d71e6bcdc21365653fe1c2faa26b2a234055b26cabe2bc78b6b0ec0445b9264029ba582b9b8af335f01ffe5cef2f88c8acc16e618b3fbf0e9500b75f'
+        'cd712b81f4b7d118dd94b26370fb331216888ef9849c57b6292d750fc4c4852822c27ea0a29a05d60d9cc522f667059fedc3df19060222d10487cc4259b8f9b7')
+
+prepare() {
+  cd "${pkgname}"
+
+  patch --verbose --strip=1 --input="../${pkgname}_fix_dependencies.patch"
+  patch --verbose --strip=1 --input="../${pkgname}_fix_tests.patch"
+}
+
+build() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${pkgname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${pkgname}-${pkgver}.gem"
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${pkgname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${pkgname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${pkgname}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rake spec
+}
+
+package() {
+  cd "${pkgname}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

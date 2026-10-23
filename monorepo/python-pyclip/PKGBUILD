@@ -1,0 +1,34 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Imperator Storm <ImperatorStorm11@protonmail.com>
+# Contributor: Philip Goto <philip.goto@gmail.com>
+
+_pkgname=pyclip
+pkgname="python-${_pkgname}"
+pkgver=0.7.0
+pkgrel=9
+pkgdesc="Cross-platform clipboard utilities supporting both binary and text data"
+arch=('any')
+url="https://pypi.org/project/${_pkgname}/"
+license=('Apache-2.0')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-setuptools')
+checkdepends=('xorg-server-xvfb' 'xclip' 'python-pytest')
+optdepends=('xclip: Support for X11'
+            'wl-clipboard: Support for Wayland')
+source=("${_pkgname}-${pkgver}.tar.gz::https://github.com/spyoungtech/${_pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('6fd5e0eaa40ff349959d1cee2872eee90ae32065cc5df9714b1066981535acde')
+
+build() {
+	cd "${_pkgname}-${pkgver}/"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd "${_pkgname}-${pkgver}/"
+	xvfb-run pytest
+}
+
+package() {
+	cd "${_pkgname}-${pkgver}/"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+}

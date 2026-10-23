@@ -1,0 +1,42 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Johnathan Jenkins <twodopeshaggy@gmail.com>
+# Contributor: prettyvanilla <prettyvanilla@posteo.at>
+# Contributor: almostalive <almostalive2003@gmail.com>
+
+pkgname=libretro-genesis-plus-gx
+pkgver=20260605.160836.gf2b40ca6c97b
+pkgrel=1
+pkgdesc='Sega MS/GG/MD/CD core'
+arch=(x86_64)
+url=https://github.com/libretro/Genesis-Plus-GX
+license=(
+  BSD-3-Clause
+  LGPL-2.1-only
+)
+groups=(libretro)
+depends=(
+  glibc
+  libretro-core-info
+  libvorbis
+)
+makedepends=(
+  clang
+  git
+)
+source=(libretro-genesis-plus-gx::git+https://github.com/libretro/Genesis-Plus-GX.git#commit=${pkgver##*.g})
+b2sums=('3f2cf3368ab19681988519b2811123f6304288314cb865c18f24d1ebdd9702dc275e66330560319025f5871d5912c4cb6878b25c61de4f92322ab7b52d2f21ec')
+
+build() {
+  export CC=clang # FS#71188 - [libretro-genesis-plus-gx] segfaults when compiled with -O2
+  make \
+    SHARED_LIBVORBIS=1 \
+    -C libretro-genesis-plus-gx \
+    -f Makefile.libretro
+}
+
+package() {
+  install -Dm 644 libretro-genesis-plus-gx/genesis_plus_gx_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+  install -Dm 644 libretro-genesis-plus-gx/LICENSE.txt -t "${pkgdir}"/usr/share/licenses/libretro-genesis-plus-gx/
+}
+
+# vim: ts=2 sw=2 et:

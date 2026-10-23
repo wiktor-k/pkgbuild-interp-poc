@@ -1,0 +1,73 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Mark Wagie <mark dot wagie at proton dot me>
+# Contributor: Aburady <accounts@aburady.com>
+
+pkgname=plezy
+pkgver=2.23.0
+pkgrel=1
+_flutter_ver=3.47.6
+pkgdesc="A modern Plex and Jellyfin client"
+arch=('x86_64')
+url="https://plezy.app"
+license=('GPL-3.0-or-later')
+depends=(
+	'at-spi2-core' 'cairo' 'fontconfig' 'glib2' 'glibc' 'gtk3'
+	'hicolor-icon-theme' 'libepoxy' 'libevdev' 'libgcc' 'libstdc++' 'mpv'
+	'pango' 'curl' 'zlib' 'libglvnd' 'wayland'
+)
+makedepends=(
+	'chrpath' 'clang' 'fvm' 'git' 'cmake' 'ninja' 'java-environment'
+)
+source=(
+	"git+https://github.com/edde746/plezy.git#tag=$pkgver"
+	"set-flutter-paths.patch")
+sha256sums=('acabb23dc6bbb9c68b6751bec99ffded945abe3701d5ed5b9e21255f11e121d3'
+            '9dfa1088e6401cbaf7a7e925dd6f73428968faa13781cedc621b84820b8245d6')
+
+prepare() {
+	cd $pkgname
+
+	# Install flutter_data to /usr/share/
+	patch -Np1 -i "$srcdir/set-flutter-paths.patch"
+
+	export FVM_CACHE_PATH="$srcdir/fvm"
+	fvm install $_flutter_ver
+	fvm global $_flutter_ver
+	fvm flutter --disable-analytics
+}
+
+build() {
+	cd $pkgname
+	export FVM_CACHE_PATH="$srcdir/fvm"
+	fvm flutter build linux --release --dart-define=ENABLE_UPDATE_CHECK=false
+}
+
+package() {
+	cd $pkgname
+
+	if [ "$CARCH" == "aarch64" ]; then
+		local flutter_arch=arm64
+	elif [ "$CARCH" == "x86_64" ]; then
+		local flutter_arch=x64
+	fi
+
+	# Not required at runtime as it's only used on Android
+	rm -fv "build/linux/$flutter_arch/release/bundle/lib/libdartjni.so"
+
+	install -Dm755 "build/linux/$flutter_arch/release/bundle/$pkgname" -t "$pkgdir/usr/bin/"
+
+	mkdir -p "$pkgdir"/usr/{lib,share}/$pkgname
+	cp -a build/linux/$flutter_arch/release/bundle/data/* "$pkgdir/usr/share/$pkgname/"
+	cp -a build/linux/$flutter_arch/release/bundle/lib/* "$pkgdir/usr/lib/$pkgname/"
+	chmod 0755 "$pkgdir/usr/lib/$pkgname/crashpad_handler"
+
+	install -Dm644 "linux/packaging/com.edde746.$pkgname.desktop" -t "$pkgdir/usr/share/applications/"
+
+	# icons
+	install -Dm644 "assets/$pkgname.svg" -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/"
+	install -Dm644 "assets/$pkgname.png" -t "$pkgdir/usr/share/icons/hicolor/1024x1024/apps/"
+
+	# Set RPATH
+	chrpath -r "/usr/lib/$pkgname" "$pkgdir/usr/bin/$pkgname"
+	chrpath -d "$pkgdir/usr/lib/$pkgname"/*
+}

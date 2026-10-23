@@ -1,0 +1,182 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=aida-x
+_name="${pkgbase^^}"
+pkgname=(
+  aida-x
+  aida-x-{clap,lv2,standalone,vst,vst3}
+)
+pkgver=1.1.0
+pkgrel=2
+pkgdesc="An Amp Model Player leveraging AI"
+arch=(x86_64)
+url="https://github.com/AidaDSP/AIDA-X"
+license=(GPL-3.0-or-later)
+makedepends=(
+  alsa-lib
+  cmake
+  dbus
+  libglvnd
+  libx11
+  libxext
+  python
+)
+checkdepends=(
+  lv2lint
+)
+source=($url/releases/download/$pkgver/$_name-$pkgver-src.tar.xz)
+sha512sums=('6725501a9335bac0829550289509d2ef22bcc8f70fb65ba5ac845c430c4bfef47000e47162427ff0699a28468f1988fdc6cf0bc6a8ffbe7f53daaaead8433478')
+b2sums=('86a4ddd9b37519ca6ed9ad6a36c2916c473e22eacfd724e6c95f301df2e03ca507ae0a247c4e0026478d79a5cd69a7793f52f05e0ebec1b41d7f94a6e8fd8711')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=NONE
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -W no-dev
+    -S $_name-$pkgver
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+  lv2lint -t "Plugin Symbols" -Mpack -I build/bin/$_name.lv2 "http://aidadsp.cc/plugins/aidadsp-bundle/rt-neural-loader"
+}
+
+package_aida-x() {
+  depends=(
+    $pkgbase-{clap,lv2,standalone,vst,vst3}=$pkgver
+  )
+  # there is no install target :(
+  # https://github.com/AidaDSP/AIDA-X/issues/26
+  # DESTDIR="$pkgdir" cmake --install build
+
+  # (
+  #   cd "$pkgdir"
+  #   # have find-libdeps resolve dependencies properly:
+  #   # https://gitlab.archlinux.org/archlinux/devtools/-/issues/102
+  #   find usr/lib -type f \( -iname "*.clap" -or -iname "*.so" \) -exec chmod +x {} \;
+
+  #   _pick $pkgbase-clap usr/lib/clap
+  #   _pick $pkgbase-lv2 usr/lib/lv2
+  #   _pick $pkgbase-standalone usr/bin
+  #   _pick $pkgbase-vst usr/lib/vst
+  #   _pick $pkgbase-vst3 usr/lib/vst3
+  # )
+}
+
+package_aida-x-clap() {
+  pkgdesc+=" - CLAP plugin"
+  groups=(
+    clap-plugins
+    pro-audio
+  )
+  depends=(
+    dbus
+    glibc
+    libgcc
+    clap-host
+    libglvnd
+    libstdc++
+    libx11
+    libxext
+  )
+
+  # mv -v $pkgname/* "$pkgdir"
+  install -vDm 755 build/bin/*.clap -t "$pkgdir/usr/lib/clap/"
+}
+
+package_aida-x-lv2() {
+  pkgdesc+=" - LV2 plugin"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  depends=(
+    dbus
+    glibc
+    libgcc
+    libglvnd
+    libstdc++
+    libx11
+    libxext
+    lv2-host
+  )
+
+  # mv -v $pkgname/* "$pkgdir"
+  install -vDm 755 build/bin/$_name.lv2/*.so -t "$pkgdir/usr/lib/lv2/$_name.lv2/"
+  install -vDm 644 build/bin/$_name.lv2/*.ttl -t "$pkgdir/usr/lib/lv2/$_name.lv2/"
+}
+
+package_aida-x-standalone() {
+  pkgdesc+=" - standalone"
+  depends=(
+    alsa-lib
+    dbus
+    glibc
+    libgcc
+    libglvnd
+    libstdc++
+    libx11
+    libxext
+  )
+
+  # mv -v $pkgname/* "$pkgdir"
+  install -vDm 755 build/bin/$_name -t "$pkgdir/usr/bin/"
+}
+
+package_aida-x-vst() {
+  pkgdesc+=" - VST plugin"
+  groups=(
+    pro-audio
+    vst-plugins
+  )
+  depends=(
+    dbus
+    glibc
+    libgcc
+    libglvnd
+    libstdc++
+    libx11
+    libxext
+    vst-host
+  )
+
+  # mv -v $pkgname/* "$pkgdir"
+  install -vDm 755 build/bin/$_name-vst2.so -t "$pkgdir/usr/lib/vst/"
+}
+
+package_aida-x-vst3() {
+  pkgdesc+=" - VST3 plugin"
+  groups=(
+    pro-audio
+    vst3-plugins
+  )
+  depends=(
+    dbus
+    glibc
+    libgcc
+    libglvnd
+    libstdc++
+    libx11
+    libxext
+    vst3-host
+  )
+
+  # mv -v $pkgname/* "$pkgdir"
+  install -vDm 755 build/bin/$_name.vst3/Contents/$CARCH-linux/*.so -t "$pkgdir/usr/lib/vst3/$_name.vst3/Contents/$CARCH-linux/"
+}

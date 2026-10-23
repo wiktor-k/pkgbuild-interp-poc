@@ -1,0 +1,43 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Contributor: Raphael Isemann <teemperor at gmail dot com>
+
+pkgname=cern-vdt
+_pkgname=vdt
+pkgver=0.4.6
+pkgrel=1
+pkgdesc='A vectorised math library from CERN'
+arch=('x86_64')
+url='https://github.com/dpiparo/vdt'
+license=('LGPL-3.0-or-later')
+depends=('glibc')
+makedepends=('cmake' 'python')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/dpiparo/${_pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('1820feae446780763ec8bbb60a0dbcf3ae1ee548bdd01415b1fb905fd4f90c54')
+
+prepare() {
+  # remove scripts incompatible with Python 3.12: https://github.com/dpiparo/vdt/issues/18
+  rm -v $_pkgname-$pkgver/src/vdt.py
+  rm -v $_pkgname-$pkgver/progs/{{vdtNumpytest,vdtNumpyTime,testExp}.py,{vdtTiming,vdtTest}.ipynb}
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+    -S $_pkgname-$pkgver
+    -W no-dev
+  )
+
+  # SSE is on by default, but it only applies to x86_64
+  # See https://github.com/dpiparo/vdt/issues/21
+  [[ $CARCH != "x86_64" ]] && cmake_options+=(-D SSE=OFF)
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

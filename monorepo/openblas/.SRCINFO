@@ -1,0 +1,49 @@
+pkgbase = openblas
+	pkgdesc = An optimized BLAS library based on GotoBLAS2 1.13 BSD
+	pkgver = 0.3.34
+	pkgrel = 1
+	url = https://www.openblas.net/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = cmake
+	makedepends = perl
+	makedepends = gcc-fortran
+	depends = glibc
+	depends = libgcc
+	depends = libgfortran
+	depends = libgomp
+	source = git+https://github.com/OpenMathLib/OpenBLAS.git#tag=v0.3.34
+	sha512sums = c89c35a615a51bd3602562215ea6e8cb0f185bfa2ae1ac0051d5760074bc05931c82d979e5e63cac3eb5c5616a0494fd0f15b66f9d9d062508da1d8853ca58c8
+
+pkgname = openblas
+
+pkgname = openblas64
+	pkgdesc = An optimized BLAS library based on GotoBLAS2 1.13 BSD (64-bit integers)
+
+pkgname = blas-openblas
+	pkgdesc = An optimized BLAS library based on GotoBLAS2 1.13 BSD (Provides BLAS/CBLAS/LAPACK/LAPACKE system-wide)
+	depends = openblas
+	provides = blas=3.12.0
+	provides = cblas=3.12.0
+	provides = lapack=3.12.0
+	provides = lapacke=3.12.0
+	provides = openblas-lapack=0.3.34
+	conflicts = blas
+	conflicts = cblas
+	conflicts = lapack
+	conflicts = lapacke
+	conflicts = openblas-lapack
+	replaces = openblas-lapack
+
+pkgname = blas64-openblas
+	pkgdesc = An optimized BLAS library based on GotoBLAS2 1.13 BSD (64-bit integers, provides BLAS/CBLAS/LAPACK/LAPACKE system-wide)
+	depends = openblas64
+	provides = blas64=3.12.0
+	provides = cblas64=3.12.0
+	provides = lapack64=3.12.0
+	provides = lapacke64=3.12.0
+	conflicts = blas64
+	conflicts = cblas64
+	conflicts = lapack64
+	conflicts = lapacke64

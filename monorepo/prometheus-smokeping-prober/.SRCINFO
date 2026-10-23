@@ -1,0 +1,17 @@
+pkgbase = prometheus-smokeping-prober
+	pkgdesc = Prometheus exporter style smokeping
+	pkgver = 0.12.0
+	pkgrel = 1
+	url = https://github.com/SuperQ/smokeping_prober
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	depends = glibc
+	options = !lto
+	backup = etc/prometheus/smokeping_prober.yml
+	source = prometheus-smokeping-prober-0.12.0.tar.gz::https://github.com/SuperQ/smokeping_prober/archive/v0.12.0.tar.gz
+	source = systemd.service
+	sha512sums = 90c3e085a9a0112ce51c05583234c55dee4ab21b45ee915083e8f976d60b3a39700b6f89100376116a95eb8c8beb08c0a13d455b01797ff9837247d7127a9451
+	sha512sums = c86d9608c27c81c0859227282791db9556a13e1dff32f2827495479268f34f97c3dac235ae8ae2e60963ed6cebaf5c47a56b90c194a22f0cfd63d35a92563f46
+
+pkgname = prometheus-smokeping-prober

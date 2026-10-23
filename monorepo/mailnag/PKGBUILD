@@ -1,0 +1,84 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Patrick Ulbrich <zulu99 at gmx . net>
+# Contributor: rasmus <rasmus . pank at gmail . com>
+
+pkgname=mailnag
+pkgver=2.2.0
+pkgrel=10
+pkgdesc='Extensible mail notification daemon'
+arch=(any)
+url='https://github.com/pulb/mailnag'
+license=(GPL-2.0-or-later)
+depends=(
+  dbus-python
+  glib2
+  gst-plugins-base
+  gst-python
+  gstreamer
+  gtk3
+  hicolor-icon-theme
+  libnotify
+  libsecret
+  org.freedesktop.secrets
+  python
+  python-gobject
+  python-pyxdg
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=('mailnag-goa-plugin: GNOME Online Accounts integration')
+source=(
+  "git+https://github.com/pulb/mailnag.git#tag=v$pkgver"
+  mailnag-python-3.12.patch
+  mailnag-fix-maildir.patch
+)
+b2sums=(
+  49d1c58de8abf8ada2cb7dfd11321d0738f2fa4e0304c7de30b7b5f0ee3e6ffef8f596b11e92e534762bbc2c774470e3d7135b97283081aad9a63c2bcd02972d
+  b3f322eaa876b544e5acc0dbd581edfd071c7dda86db60e3061336e5f4e40b484b79357e2dc6fd33a6abd77b629b14f28e5ca038262b09bdc3a338c0f9199a10
+  725bd8cf26805545384ce72eb813ca08388ee652d94e452300c4951480e13736c41fad53907be187e459310ca30d78fc4421fa0474bdc1fea9a7d1049d9e7a0e
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix compatibility with Python 3.12
+  # https://github.com/pulb/mailnag/pull/232
+  git apply -3 ../mailnag-python-3.12.patch
+
+  # Fix maildir support
+  # https://github.com/pulb/mailnag/pull/249
+  git apply -3 ../mailnag-fix-maildir.patch
+}
+
+build() {
+  cd $pkgname
+
+  for po in po/*.po; do
+    lang="${po##*/}"
+    lang="${lang%.po}"
+    mkdir -p "build/locale/$lang/LC_MESSAGES"
+    msgfmt -o "build/locale/$lang/LC_MESSAGES/mailnag.mo" "$po"
+  done
+
+  mkdir -p "build/patched"
+  cp -a Mailnag/common "build/patched"
+
+  sed -i \
+      -e "s|\./locale|/usr/share/locale|g" \
+      -e "s|\./data|/usr/share/applications|g" \
+      -e "s|\./Mailnag|/usr/lib/python3.*/site-packages/Mailnag|g" \
+      -e "s|'\.'|'/usr/bin'|g" \
+      "build/patched/common/dist_cfg.py"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

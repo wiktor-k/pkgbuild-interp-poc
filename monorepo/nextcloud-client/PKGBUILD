@@ -1,0 +1,124 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Chih-Hsuan Yen <yan12125@archlinux.org>
+# Contributor: Fabian Bornschein <fabiscafe@mailbox.org>
+# Contributor: Tyler Dence <tyzoid@archlinux32.org>
+# Contributor: Konstantin Shalygin <k0ste@k0ste.ru>
+# Contributor: Stefan Morgenthaler <dev@morgenthaler.at>
+
+pkgname=nextcloud-client
+pkgdesc='Nextcloud desktop client'
+epoch=2
+pkgver=35.0.0
+pkgrel=2
+arch=(x86_64)
+url='https://nextcloud.com/'
+_url=https://github.com/nextcloud/desktop
+license=(GPL-2.0-or-later)
+depends=(
+    hicolor-icon-theme
+    karchive
+    kdbusaddons
+    kdsingleapplication
+    kguiaddons
+    libcanberra
+    libcloudproviders
+    libp11
+    openssl
+    qt6-5compat
+    qt6-base
+    qt6-declarative
+    qt6-svg
+    qt6-websockets
+    qtkeychain-qt6
+    sqlite
+    xcb-util-cursor
+    xdg-utils
+ )
+makedepends=(
+    cmocka
+    doxygen
+    extra-cmake-modules
+    git
+    kio
+    librsvg
+    python-sphinx
+    qt6-tools
+)
+replaces=(nextcloud-client-cloudproviders)
+conflicts=(nextcloud-client-cloudproviders)
+provides=(nextcloud-client-cloudproviders)
+optdepends=('kio: integration with Dolphin'
+            'nemo-python: integration with Nemo'
+            'nautilus-python: integration with Nautilus'
+            'python-caja: integration with Caja')
+backup=('etc/Nextcloud/sync-exclude.lst')
+source=("$pkgname::git+$_url.git?signed#tag=v$pkgver")
+# nextcloud does not strive to establish trust paths
+# https://github.com/nextcloud/desktop/issues/8336
+validpgpkeys=(A26B951528EA1BA1678C7AE5D406C75CEE1A36D6  # https://github.com/camilasan
+              42E775EAA3E47F9E0D5CDB0E00819E3BF4177B28  # https://github.com/misch7
+              17166A5275C5FA6F1A48FD78074BBBCB8DECC9E2  # https://github.com/er-vin
+              0739B11EDA696A3616666F6AE04221E85C5BB816  # https://github.com/allexzander
+              267BF70F7905C2723B0243267D0F74F05C22F553  # https://github.com/mgallien
+              3A877D9A896A057948059DEDAD2C27357B2CB11D  # https://github.com/FlexW
+              F9A1527B9A2A709350A53ED72A6140D57BE5BB5A  # https://github.com/nilsding
+              9E316195095175B8F035EB4FA2C0CF9EBA674764) # https://github.com/Aiiaiiio
+sha256sums=('c6e945c5c7574a66c3cf10cf25429441edc9a7d6d3f0c5d909291a37990c06ee')
+
+prepare() {
+	# tmpdir for check()
+	mkdir -p tmpdir
+	cd $pkgname
+	# Monkey patch that disables bulk upload capability which causes infinite
+	# loops for many server/client combos. Feature is also disabled by default on
+	# server end in v23.0.3 because it was so problematic. This can abe re-enabled
+	# when underlying bug squashed:
+	# https://github.com/nextcloud/desktop/issues/5726
+	sed -i \
+		-e '/bulkupload/s/return _.*;$/return false;/' \
+		src/libsync/capabilities.cpp
+	# Disable tests that touch on disabled feature
+	sed -i \
+		-e '/SyncEngine/s/^/#/' \
+		-e '/Capabilities/s/^/#/' \
+		-e '/SecureFileDrop/s/^/#/' \
+		test/CMakeLists.txt
+}
+
+build() {
+	# TODO: fix installation of PDF and HTML documents
+	local cmake_options=(
+		-B build
+		-S $pkgname
+		-D CMAKE_BUILD_TYPE=None
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D WITH_CRASHREPORTER=ON
+		-D BUILD_UPDATER=OFF
+		-D UNIT_TESTING=ON
+		-D PLUGINDIR=lib/qt6/plugins
+	)
+
+	cmake "${cmake_options[@]}"
+	cmake --build build
+}
+
+check() {
+	cd build
+	# Tests fail if $TMPDIR is too small; specify an alternative for machines
+	# with a small /tmp partition.
+	# Use UTC as TestCookies is sensitive to the timezone
+	# https://github.com/nextcloud/desktop/blob/v3.2.2/test/testcookies.cpp#L24
+	env \
+	  QT_QPA_PLATFORM=offscreen \
+	  TMPDIR="$srcdir/tmpdir" \
+	  TZ=UTC \
+	  ARGS="--rerun-failed --output-on-failure" \
+	make test
+}
+
+package() {
+	cd build
+	make DESTDIR="$pkgdir" install
+}
+

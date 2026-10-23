@@ -1,0 +1,46 @@
+# Maintainer: Anatol Pomozov
+
+pkgname=easyjson
+pkgver=0.9.2
+pkgrel=1
+pkgdesc='Fast JSON serializer for golang'
+arch=(x86_64)
+url='https://github.com/mailru/easyjson'
+license=(MIT)
+depends=(glibc)
+makedepends=(go git)
+source=(easyjson-$pkgver.zip::https://github.com/mailru/easyjson/archive/v$pkgver.zip)
+sha512sums=('bcdaec8b6dc4a006523372d1e3b36028b4397be5c7c17ec7ec4ec7aa40702a3da90f4c76732c8212f54535914161b5e83b95fe7c3ba3aa4fd2b414e17596c354')
+
+prepare() {
+  cd $srcdir/easyjson-$pkgver
+  sed -i 's/golint /#golint /g' Makefile
+  sed -i 's/-i//g' Makefile
+}
+
+build() {
+  cd $srcdir/easyjson-$pkgver
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  make build
+}
+
+check() {
+  cd $srcdir/easyjson-$pkgver
+  # The tests rebuild the binary, this time without flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  # Foxboron: Allocation fails in a test. Not sure why.
+  #make test
+}
+
+package() {
+  cd $srcdir/easyjson-$pkgver
+  install -Dm755 bin/easyjson $pkgdir/usr/bin/easyjson
+}

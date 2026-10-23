@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=ducker
+pkgver=0.6.5
+pkgrel=2
+pkgdesc="A terminal app for managing docker containers"
+url="https://github.com/robertpsoane/ducker"
+depends=('glibc' 'libgcc')
+makedepends=('cargo')
+arch=('x86_64')
+license=('MIT')
+source=("${pkgname}-${pkgver}.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('110d06de6b138c224f1a750e0e158998b38a42dd011fcde50eec284bba2393f992d30094782e9402f93e55d6c564a825d0ce6ebb137fd27111b906b5e85eec9f')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 "target/release/$pkgname" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

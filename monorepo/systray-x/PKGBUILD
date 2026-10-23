@@ -1,0 +1,72 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgbase=systray-x
+_pkgbase=SysTray-X
+pkgname=('systray-x-common' 'systray-x-kde')
+pkgver=0.9.12
+pkgrel=1
+pkgdesc="A system tray extension for Thunderbird"
+url="https://github.com/Ximi1970/systray-x"
+arch=('x86_64')
+license=('MPL-2.0')
+depends=('qt6-base' 'thunderbird')
+makedepends=('git' 'zip' 'unzip' 'libx11' 'kstatusnotifieritem' 'strip-nondeterminism')
+source=("${pkgbase}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz"
+        'Makefile.patch'
+	'binary_path.patch')
+sha256sums=('d67f70251f6eadad45ebfe8b46b5a817405a2c0e6478a58ff55ae241ad5322cb'
+            '62affd86e6dbad6e9cf851768d99fd79f76f65ac2fd5e45ef5e89c5dcb63dbab'
+            'aa0a5a7e8b062452416ec9b4472ee4d1a9d7d17fd5ecf94698c557cd504514da')
+
+prepare() {
+	cd "${pkgbase}-${pkgver}"
+
+	# Add the correct path to the binary in the json file
+	patch -Np1 -i "${srcdir}/binary_path.patch"
+
+	# Patch the Makefile to build both versions of the app into separate directories
+	patch -Np1 -i "${srcdir}/Makefile.patch"
+}
+
+_build() {
+	if [ "${1}" == "systray-x-common" ]; then
+		make OPTIONS="DEFINES+=NO_KDE_INTEGRATION" APP="${1}"
+	else
+		make APP="${1}"
+	fi
+}
+
+build() {
+	cd "${pkgbase}-${pkgver}"
+	_build systray-x-common
+	_build systray-x-kde
+
+	# Strip non-deterministic information (e.g. timestamps) from zip archive for reproducible builds
+	strip-nondeterminism -t zip systray-x@Ximi1970.xpi
+}
+
+package_systray-x-common() {
+pkgdesc="${pkgdesc} - Common version"
+optdepends=('gnome-shell-extension-appindicator: Gnome integration')
+provides=("${pkgbase}")
+conflicts=("${pkgbase}")
+
+	cd "${pkgbase}-${pkgver}"
+	install -Dm 755 "app/systray-x-common-build/${_pkgbase}-app/${_pkgbase}" "${pkgdir}/usr/bin/${_pkgbase}"
+	install -Dm 644 "app/${_pkgbase//-/_}.json" "${pkgdir}/usr/lib/mozilla/native-messaging-hosts/${_pkgbase//-/_}.json"
+	install -Dm 644 "${pkgbase}@Ximi1970.xpi" "${pkgdir}/usr/lib/thunderbird/extensions/${pkgbase}@Ximi1970.xpi"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgbase}/README.md"
+}
+
+package_systray-x-kde() {
+pkgdesc="${pkgdesc} - KDE version"
+depends=('kstatusnotifieritem')
+provides=("${pkgbase}")
+conflicts=("${pkgbase}")
+
+	cd "${pkgbase}-${pkgver}"
+	install -Dm 755 "app/systray-x-kde-build/${_pkgbase}-app/${_pkgbase}" "${pkgdir}/usr/bin/${_pkgbase}"
+	install -Dm 644 "app/${_pkgbase//-/_}.json" "${pkgdir}/usr/lib/mozilla/native-messaging-hosts/${_pkgbase//-/_}.json"
+	install -Dm 644 "${pkgbase}@Ximi1970.xpi" "${pkgdir}/usr/lib/thunderbird/extensions/${pkgbase}@Ximi1970.xpi"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgbase}/README.md"
+}

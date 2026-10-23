@@ -1,0 +1,47 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Julius Michaelis <gitter@liftm.de>
+
+pkgname=wasmer
+pkgver=7.5.0
+pkgrel=1
+pkgdesc="Universal Binaries Powered by WebAssembly"
+arch=('x86_64')
+url="https://github.com/wasmerio/wasmer"
+license=('MIT')
+depends=('libgcc' 'libstdc++' 'zlib' 'ncurses' 'libffi' 'libxkbcommon' 'llvm' 'glibc')
+makedepends=('clang' 'git' 'rustup' 'cmake')
+source=("git+https://github.com/wasmerio/wasmer#tag=v${pkgver}"
+        "${pkgname}-napi::git+https://github.com/wasmerio/napi"
+        "${pkgname}-testsuite::git+https://github.com/WebAssembly/testsuite.git")
+
+sha512sums=('525a1e473946d900db2813124a77ad7c4a962bc838dbe9a8cde9125cf9acc237ab6e21492a10448db0d198e1a51b077b10ba6a41c87dc243833cc13e78add2b2'
+            'SKIP'
+            'SKIP')
+options=('staticlibs' '!lto')
+
+prepare() {
+  cd "$pkgname"
+  git submodule init
+
+  git config submodule."lib/napi".url "${srcdir}/${pkgname}"-napi
+  git config submodule."tests/wast/spec".url "${srcdir}/${pkgname}"-testsuite
+
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  cd "$pkgname"
+  make ENABLE_CRANELIFT=1 ENABLE_LLVM=1 WASMER_REPRODUCIBLE_BUILD=1 WASMER_INSTALL_PREFIX=/usr
+}
+
+check() {
+  cd "$pkgname"
+  make test-examples
+}
+
+package() {
+  cd "$pkgname"
+  make DESTDIR="$pkgdir"/usr install
+}
+
+# vim:set ts=2 sw=2 et:

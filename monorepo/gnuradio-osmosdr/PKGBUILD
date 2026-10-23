@@ -1,0 +1,89 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Dominik Heidler <dheidler@gmail.com>
+
+pkgname=gnuradio-osmosdr
+_pkgname=gr-osmosdr
+pkgver=0.2.6
+pkgrel=19
+pkgdesc="Source block for Funcube Dongle, RTL-SDR, USRP, OsmoSDR, BladeRF, HackRF and AirSpy devices"
+arch=(x86_64)
+url="https://osmocom.org/projects/gr-osmosdr"
+license=(GPL-3.0-or-later)
+depends=(
+  airspy
+  bladerf
+  boost-libs
+  glibc
+  gnuradio
+  gnuradio-iqbal
+  hackrf
+  libgcc
+  libstdc++
+  libuhd
+  libvolk
+  python
+  python-gnuradio
+  python-numpy
+  python-pyqt5
+  rtl-sdr
+  soapysdr
+)
+makedepends=(
+  boost
+  cmake
+  git
+  pybind11
+)
+optdepends=('python-opengl: for osmocom_fft')
+provides=(libgnuradio-osmosdr.so)
+replaces=(gr-osmosdr)
+source=(
+  "git+https://gitea.osmocom.org/sdr/gr-osmosdr.git#tag=v$pkgver"
+  "$pkgname-boost-1.89.0-compatibility.patch"
+)
+sha256sums=('4df6d9dc55431be207b393d1c88eb47637551fbddb63a1062fe072e97dc5ea83'
+            '234fb9178f54ab47b3bd58682866cf243eb751c974b41062f710db16ec5e7c62')
+
+prepare() {
+  cd $_pkgname
+  patch -Np1 < ../$pkgname-boost-1.89.0-compatibility.patch
+  # Multiple Airspy devices support, see:
+  # https://gitlab.archlinux.org/archlinux/packaging/packages/gnuradio-osmosdr/-/work_items/4
+  git cherry-pick -n 31f78c3d97bb092d03d3c5d4496c11ae617f0754
+}
+
+build() {
+  cd $_pkgname
+  local cmake_options=(
+    -S . -B build
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_BUILD_TYPE=None
+    -W no-dev
+    -D Boost_NO_BOOST_CMAKE=ON
+    -D ENABLE_AIRSPY=ON
+    # -D ENABLE_AIRSPYHF=ON  # TODO: package https://github.com/airspy/airspyhf
+    -D ENABLE_BLADERF=ON
+    # -D ENABLE_FCD=ON  # TODO: package https://github.com/dl1ksv/gr-funcube
+    -D ENABLE_FILE=ON
+    # -D ENABLE_FREESRP=ON  # TODO: package https://github.com/myriadrf/libfreesrp
+    -D ENABLE_HACKRF=ON
+    -D ENABLE_IQBALANCE=ON
+    # -D ENABLE_MIRI=ON  # TODO: package https://gitea.osmocom.org/sdr/libmirisdr
+    -D ENABLE_PYTHON=ON
+    -D ENABLE_REDPITAYA=ON
+    -D ENABLE_RFSPACE=ON
+    -D ENABLE_RTL=ON
+    -D ENABLE_RTL_TCP=ON
+    -D ENABLE_SOAPY=ON
+    -D ENABLE_UHD=ON
+    # -D ENABLE_XTRX=ON  # TODO: package https://github.com/xtrx-sdr/libxtrx
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  cd $_pkgname
+  DESTDIR="$pkgdir" cmake --install build
+}

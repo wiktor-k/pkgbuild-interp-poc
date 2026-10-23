@@ -1,0 +1,26 @@
+# Maintainer: George Hu <integral@archlinux.org>
+
+pkgname=fsearch
+pkgver=0.3.2
+pkgrel=3
+pkgdesc="A fast file search utility for Unix-like systems based on GTK3"
+arch=('x86_64')
+url="https://cboxdoerfer.github.io/${pkgname}/"
+license=('GPL-2.0-or-later')
+depends=('cairo' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk3' 'hicolor-icon-theme' 'icu' 'libgcc' 'pango' 'pcre2')
+makedepends=('glib2-devel' 'itstool' 'meson')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/cboxdoerfer/${pkgname}/archive/${pkgver}.tar.gz")
+sha256sums=('2c9bc7de9ac1ba72232cb4d66a750fe04210fdae96273f04316b6616fc098308')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+check() {
+	meson test -C build --print-errorlogs
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

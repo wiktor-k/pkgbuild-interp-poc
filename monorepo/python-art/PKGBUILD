@@ -1,0 +1,35 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=python-art
+_name=${pkgname#python-}
+pkgver=6.5
+pkgrel=3
+pkgdesc='ASCII art library for Python'
+arch=(any)
+url=https://github.com/sepandhaghighi/art
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('e92658146e59f647ff010fc6459664cf826796e628eace2b54b4dd71bac2a8f57ed7c653da26bd0e76f42cea408c7c3ff0ea854e7ef448ff9816fa513a12f507')
+
+build() {
+  cd "$_name"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/"$_name"-$pkgver.dist-info/licenses/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd "$_name"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

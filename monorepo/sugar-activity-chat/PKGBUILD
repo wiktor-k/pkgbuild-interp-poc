@@ -1,0 +1,32 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-chat
+_pkgname=chat
+pkgver=86
+pkgrel=5
+pkgdesc='Sugar activity for text chatting'
+arch=(any)
+url='https://github.com/sugarlabs/chat'
+license=(GPL-2.0-or-later)
+groups=(sugar-fructose)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gst-python
+  gstreamer
+  gtk3
+  pango
+  python
+  python-dbus
+  python-gobject
+  sugar-toolkit-gtk3
+  telepathy-glib
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(98ad84769988e025aa51ec16cdbd546fad7c0e13b34a3f2ca7cd446e47edfc0bfba6b1dec8679f16bfe4342ec583aca9509179124ebb910d82a6d36bbb2d869e)
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

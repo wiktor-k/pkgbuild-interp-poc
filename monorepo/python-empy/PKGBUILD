@@ -1,0 +1,30 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+_pkgname=empy
+pkgname=python-empy
+pkgver=4.2.1
+pkgrel=1
+pkgdesc='Powerful and robust templating system for Python'
+arch=(any)
+url='http://www.alcyone.com/software/empy/'
+license=(BSD-3-Clause)
+depends=(python)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("http://www.alcyone.com/software/empy/$_pkgname-$pkgver.tar.gz")
+b2sums=(07ec5ca48b1ba072462612a609316762e737be2c66a0f579b29fbe1691292ca30d89ef35c845b7b434aa1c2cfd2dd0e1055f0d246cea4c4087bed70c5652bcc3)
+
+build() {
+  cd $_pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.md
+}

@@ -1,0 +1,36 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=perl-compress-bzip2
+_dist=Compress-Bzip2
+pkgver=2.28
+pkgrel=9
+pkgdesc="Interface to Bzip2 compression library"
+url="https://metacpan.org/dist/$_dist"
+arch=(x86_64)
+license=('Artistic-1.0-Perl OR GPL-1.0-or-later')
+depends=(
+  bzip2
+  glibc
+  perl
+)
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/R/RU/RURBAN/$_dist-$pkgver.tar.gz")
+b2sums=('06fdbf3460fbd1b7f2f915095d9100ee69e3012d0cb0eecd63c7eeef67dcf1cf9f043e7c448688c9d5394efb195218d26efede48a15735000e1c44ee226eb47c')
+
+build() {
+  cd $_dist-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd $_dist-$pkgver
+  make test
+}
+
+package() {
+  cd $_dist-$pkgver
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set sw=2 sts=-1 et:

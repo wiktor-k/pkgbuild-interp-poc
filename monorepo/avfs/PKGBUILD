@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: Kevin Piche <kevin@archlinux.org>
+# Contributor: K. Piche <kpiche@rogers.com>
+
+pkgname=avfs
+pkgver=1.4.0
+pkgrel=1
+pkgdesc='Virtual filesystem that allows browsing compressed files'
+arch=('x86_64')
+license=('GPL-2.0-or-later' 'LGPL-2.0-or-later')
+url='http://avf.sourceforge.net/'
+depends=('fuse3' 'lzlib' 'perl' 'xz' 'zstd')
+makedepends=('git')
+options=('!emptydirs')
+source=("$pkgname::git+https://git.code.sf.net/p/avf/git#tag=v${pkgver//./_}")
+sha512sums=('e9ccef457526f5fe8c61d087181135cdffb876a9da558eb88f86131f442eb3ce5cd2c027f7332e1acf910871093790f06e9d59b5ebe709202d71e431a0d4bf0c')
+
+prepare() {
+  cd $pkgname
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+
+  ./configure --prefix=/usr --enable-library --enable-fuse --disable-static
+  make
+}
+
+package() {
+  make -C $pkgname DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,15 @@
+pkgbase = opensearch-security-plugin
+	pkgdesc = OpenSearch Security Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 1
+	url = https://opensearch.org/docs/latest/security-plugin
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = java-environment=21
+	makedepends = unzip
+	makedepends = git
+	depends = opensearch=3.9.0
+	source = git+https://github.com/opensearch-project/security.git#tag=3.9.0.0
+	sha256sums = 027b0e90d71a0cdccea6a2bd5dbc3540b836e85261a30e1afb8f498e9ee430b0
+
+pkgname = opensearch-security-plugin

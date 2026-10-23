@@ -1,0 +1,32 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Contributor: Alisa Dammer <alisa,dammer@gmail.com>
+# Contributor: Jaroslav Janukevic (janukevic <at> gmail <dot> com)
+# Contributor: Rick Rein <jeebusroxors@gmail.com>
+# Contributor: samuellittley <supersam.littley@gmail.com>
+
+pkgname=xprintidle
+pkgver=0.3.0
+pkgrel=1
+pkgdesc='Print the X server user idle time'
+arch=('x86_64')
+url='https://github.com/g0hl1n/xprintidle/'
+license=('GPL-2.0-only')
+depends=(
+    'glibc'
+    'libx11'
+    'libxext'
+    'libxss')
+makedepends=(
+    'meson')
+source=("https://github.com/g0hl1n/xprintidle/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('6bddd464c396530e1de4c1725c3c2935135cf9a5079e5805ae139f00f0c0316b')
+
+build() {
+    arch-meson build "${pkgname}-${pkgver}"
+    meson compile -C build
+}
+
+package() {
+    meson install -C build --destdir "$pkgdir"
+}

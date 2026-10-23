@@ -1,0 +1,26 @@
+pkgbase = python-jaraco.logging
+	pkgdesc = Quickly solicit log level info from command-line parameters
+	pkgver = 3.4.0
+	pkgrel = 2
+	url = https://github.com/jaraco/jaraco.logging
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-toml
+	makedepends = python-wheel
+	depends = python
+	depends = python-tempora
+	conflicts = python-jaraco
+	replaces = python-jaraco
+	source = python-jaraco.logging::git+https://github.com/jaraco/jaraco.logging#tag=v3.4.0
+	source = remove-pointless-crap.patch
+	sha512sums = 4427f2c312dc0aa94cfc51a4cbe96a7594df7e1dc205483a4a3cdf7e09e6baa8946cdcc191a5194bd88bba66564f212de076ea5d8dce818e20cbc5c143624908
+	sha512sums = caa08f462820e6d11a9286fd038d36161113b3896ba90b991aae6549dc38d2c8b7c90f76320a707cf2bb64544757801a007b05c1bb07403f4441e31d0bf560bc
+	b2sums = c41f70a8bd247203b5778121f6af1a1b72b11266ae7aa459ef0493cfca01de59923ef243afd1c402386794975d0af7246428891b0bd29b5fa1f0a4ea5fc2edc5
+	b2sums = 4684fd4824449f294a29530b88aa15c426e52ee745c39dfef8cf6997d0fb89adaba13371be92f5de39fa866e553088d86d8410da9f92e1486af8af194dabd713
+
+pkgname = python-jaraco.logging

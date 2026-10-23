@@ -1,0 +1,89 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: William Rea <sillywilly@gmail.com>
+
+pkgname=workrave
+pkgver=1.11.5
+pkgrel=1
+pkgdesc='Assist in the recovery and prevention of Repetitive Strain Injury (RSI)'
+arch=(x86_64)
+url='https://workrave.org/'
+license=(GPL-3.0-or-later)
+depends=(
+  atkmm
+  cairo
+  cairomm
+  dconf
+  fmt
+  gdk-pixbuf2
+  glib2
+  glibc
+  glibmm
+  gstreamer
+  gtk3
+  gtkmm3
+  hicolor-icon-theme
+  libappindicator
+  libdbusmenu-glib
+  libgcc
+  libpulse
+  libsigc++
+  libstdc++
+  libx11
+  libxss
+  libxtst
+  pango
+  pangomm
+  spdlog
+  wayland
+)
+makedepends=(
+  boost
+  cmake
+  git
+  gnome-panel
+  gobject-introspection
+  mate-panel
+  ninja
+  python-jinja
+  xfce4-panel
+)
+optdepends=(
+  'gnome-panel: Applet for GNOME Panel'
+  'gst-plugins-good: to play sound events'
+  'mate-panel: Applet for MATE Panel'
+  'xfce4-panel: Applet for Xfce4 Panel'
+)
+source=("git+https://github.com/rcaelers/workrave.git?signed#tag=v${pkgver//./_}")
+b2sums=(9e4b31416f8cd1fd5931a2fd9c10819ad5f666589e3357c48b5be91b5e10e8bcadb37c56989e60f839abbb0947a562997d441489e8b67cf3b37955aa71e2f366)
+validpgpkeys=(70C2550E285606E1A9484F5B2FB833343300F30F) # Rob Caelers <robc@krandor.org>
+
+prepare() {
+  cd $pkgname
+
+  # Don't set decorations on MainWindow
+  # https://github.com/rcaelers/workrave/pull/729
+  git cherry-pick -n 3ec01a3ffeb4c3cbf1b9d43f93839b349026572e
+
+  # Change HBox to VBox in TimerPreferencePanel
+  # https://github.com/rcaelers/workrave/pull/730
+  git cherry-pick -n bb16f4990911c0801641466c43151ac9cf1c821f
+
+  # Fix setting name on about dialog
+  # https://github.com/rcaelers/workrave/pull/731
+  git cherry-pick -n d5361bd869d4fc74826070b39a125484eb651336
+
+  # Use libappindicator
+  sed -i 's/ayatana-appindicator/appindicator/' CMakeLists.txt ui/app/toolkits/gtkmm/platforms/unix/AppIndicatorMenu.hh
+}
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_INSTALL_SYSCONFDIR=/etc
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

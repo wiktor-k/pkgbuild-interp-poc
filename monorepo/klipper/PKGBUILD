@@ -1,0 +1,69 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=klipper
+pkgver=0.13.0
+pkgrel=4
+pkgdesc='3D printer firmware with motion planning on the host'
+arch=(x86_64)
+url=https://www.klipper3d.org/
+license=(GPL-3.0-only)
+depends=(
+  bash
+  glibc
+  python
+  python-can
+  python-cffi
+  python-greenlet
+  python-jinja
+  python-markupsafe
+  python-pyserial
+  libusb
+)
+optdepends=(
+  'ncurses: for choosing compilation config'
+  'avrdude: for flashing firmware on AVR MCU'
+  'stm32flash: for flashing firmware on STM32 MCUs'
+  'avr-gcc: for AVR MCU firmware compilation'
+  'avr-binutils: for AVR MCU firmware compilation'
+  'avr-libc: for AVR MCU firmware compilation'
+  'python-numpy: for resonance measurement'
+  'python-matplotlib: for resonance measurement'
+  'dfu-util: for flashing firmware on STM32 MCUs'
+  'arm-none-eabi-gcc: for RPi firmware compilation'
+  'arm-none-eabi-newlib: for RPi firmware compilation'
+)
+makedepends=(git)
+source=(
+  git+https://github.com/Klipper3d/klipper.git#tag=v${pkgver}
+  klipper.service
+  klipper.sysusers
+  klipper.tmpfiles
+  # data dictionary from https://github.com/Klipper3d/klipper/issues/1438
+  klipper-dict-20260523.tar.gz
+)
+b2sums=('06718519b209bb3a8ae91e123c181a0e4b81991487e18a66170b6943fab518911c09810ec838003746b16f1c55ce703705aa115101b38f2a3888bc22c2debed4'
+        '6163736c66e8f8711bf004d3b8b3a072269dd1a2959b5b32cd092c904af778c75b280c8dfb0fce44fd20f6b4beb8e95bb96c8daa49658bf654794fa1e77fe8c4'
+        '1a5cc194d940752b568b4d30e2da4f5a1cefed5503180d845d31867c57ae5b970beeeb4c5f1723e3ecaa73ae9d3f516712f47f5f193656406e086e89e563fad9'
+        'c41b0d0f0d473684aabc55ce76944473e1edf272d05a301f07e2a1978b7d3e7f8bad05e87295eee489163158fb6809b0ce9be62feee7399cc08451825cb85b81'
+        '39f692064bfdff2289797ebad648f78dd2dfc72c8f7942c7bb32b773962d79386a40587330920baddd0eb472893931df031a800e6d82ff1232f2560798898c4b')
+
+build() {
+  cd klipper
+  python -m compileall klippy
+  python klippy/chelper/__init__.py
+}
+
+#check() {
+#  cd klipper
+#  python scripts/test_klippy.py -d "${srcdir}/dict" -t test/ test/klippy/*.test
+#}
+
+package() {
+  install -dm 755 "${pkgdir}"/opt/klipper
+  cp -dr --no-preserve=ownership klipper/{config,docs,klippy,lib,scripts,src,Makefile} "${pkgdir}"/opt/klipper/
+  python klipper/scripts/make_version.py arch > "${pkgdir}"/opt/klipper/klippy/.version
+
+  install -Dm 644 klipper.service -t "${pkgdir}"/usr/lib/systemd/system/
+  install -Dm 644 klipper.sysusers "${pkgdir}"/usr/lib/sysusers.d/klipper.conf
+  install -Dm 644 klipper.tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/klipper.conf
+}

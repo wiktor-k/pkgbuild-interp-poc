@@ -1,0 +1,37 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Changaco <changaco ατ changaco δοτ net>
+
+pkgname=slowhttptest
+pkgver=1.10.0
+pkgrel=1
+pkgdesc='Highly configurable tool that simulates some Application Layer Denial of Service (DoS) attacks'
+url='https://github.com/shekyan/slowhttptest'
+arch=('x86_64')
+license=('Apache')
+depends=(
+  'glibc'
+  'openssl'
+  'libgcc'
+  'libstdc++'
+)
+source=(https://github.com/shekyan/slowhttptest/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('b35e94a26e248749da197754d2c7a62031f1d897e18239ce012bf19b9b7a71ee4ea226a2e4e8b122e2c9bba583ae1cc53b743bacba05dc7e589cbbc66d488682')
+b2sums=('3d3cd35355c388e12f89c713ca7870292425c4bb0c68aee688af8011590e5e50aaccff5f3e19612653b4892efd93f100661fb6cbe546d379788eea1b6f43fa02')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  autoreconf -fiv
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

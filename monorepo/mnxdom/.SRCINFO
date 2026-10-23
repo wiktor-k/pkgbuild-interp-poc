@@ -1,0 +1,24 @@
+pkgbase = mnxdom
+	pkgdesc = Document object model for the MNX music interchange format
+	pkgver = 3.0.1
+	pkgrel = 1
+	url = https://github.com/rpatters1/mnxdom
+	arch = x86_64
+	license = MIT
+	checkdepends = gtest
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = tinyxxd
+	depends = glibc
+	depends = libgcc_s.so
+	depends = libstdc++.so
+	depends = libnlohmann_json_schema_validator.so
+	depends = nlohmann-json
+	provides = libmnxdom.so
+	options = !emptydirs
+	source = mnxdom::git+https://github.com/rpatters1/mnxdom#tag=v3.0.1
+	sha512sums = 5bc808fd855eba71258a08c92a7ef81a3f5488f310090391bf045c24d0aed2af400919c13b6acfe12c22cdd68234c3813c031e485c67757965817ad6646ace00
+	b2sums = 49864578145999cf1ba45ef354338e272eecb9c7a2346c0ce8e4338645b51e7b3c5c2af9dff20c814b7a499c235636ce2723a13e11492aca0c0115d6e94ccfe6
+
+pkgname = mnxdom

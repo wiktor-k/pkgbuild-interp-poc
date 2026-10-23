@@ -1,0 +1,41 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=blackmagic
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='In application debugger for ARM Cortex microcontrollers'
+arch=('x86_64')
+url='https://codeberg.org/blackmagic-debug/blackmagic'
+license=('GPL')
+depends=('libusb' 'libftdi' 'libhidapi-hidraw.so')
+makedepends=('git' 'hidapi' 'python' 'meson')
+#             'arm-none-eabi-gcc')
+source=("git+$url#tag=v$pkgver")
+#        'git+https://github.com/libopencm3/libopencm3.git')
+sha512sums=('638cd5b0b78ce47b568092766de2a54893e82769aefd12c156b3cf4d2fb814ac6c9199dafc49c920015226a2c4c439d8f97e15edf6f6926fba20169e2a6ec82b')
+
+#prepare() {
+#  cd $pkgname
+#
+#  git submodule init
+#  git config submodule.libopencm3.url "$srcdir"/libopencm3
+#  git submodule update
+#}
+
+
+build() {
+  cd $pkgname
+
+  #make PROBE_HOST=hosted
+  mkdir build && cd build
+  meson ..
+  ninja 
+}
+
+package() {
+  cd $pkgname
+
+  install -Dm 755 build/blackmagic "$pkgdir"/usr/bin/blackmagic
+
+  install -Dm 644 driver/99-blackmagic-uucp.rules -t "$pkgdir"/usr/lib/udev/rules.d/
+}

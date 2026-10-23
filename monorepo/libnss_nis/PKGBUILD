@@ -1,0 +1,35 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+
+pkgname=libnss_nis
+pkgver=3.4
+pkgrel=1
+pkgdesc='NSS NIS plugin for glibc'
+arch=(x86_64)
+url='https://github.com/thkukuk/libnss_nis'
+license=(LGPL-2.1-only)
+depends=(libnsl libtirpc)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('24db046b23914c49d803a13ec28ffe7dfbc1edff5efd85f56880a1a3120739261ae6e999b520be5c21ecb719aa9ab66beef6eaf02837ee3b5f1417c2d666e941')
+b2sums=('baf94b8e97079031fa7a256ae956e1b0dfadb8c92420a1475af1e42ab898d5531528799f99f1543ebe4a9d7efeafb64ebc3bd34dc376550a6c49c794c54c36b1')
+
+prepare() {
+  cd "$pkgname"
+
+  ./autogen.sh
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+}

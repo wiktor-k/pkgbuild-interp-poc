@@ -1,0 +1,128 @@
+# Maintainer: Xyne <ca dot archlinux at xyne, backwards>
+# Contributor: Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Aaron Griffin <aaron@archlinux.org>
+# Contributor: dorphell <dorphell@archlinux.org>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=cmus
+pkgver=2.12.0
+pkgrel=7
+pkgdesc='Feature-rich ncurses-based music player'
+arch=(x86_64)
+url='https://cmus.github.io/'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  libdiscid
+  ncurses
+  systemd-libs
+)
+makedepends=(
+  git
+  faad2
+  ffmpeg
+  flac
+  jack
+  libao
+  libcdio-paranoia
+  libmad
+  libmodplug
+  libmp4v2
+  libmpcdec
+  libpulse
+  libsamplerate
+  libvorbis
+  'opusfile>=0.12'
+  wavpack
+)
+optdepends=(
+  'alsa-lib: for ALSA output plugin support'
+  'libao: for AO output plugin support'
+  'libpulse: for PulseAudio output plugin support'
+  'faad2: for AAC input plugin support'
+  'ffmpeg: for ffmpeg input plugin support'
+  'flac: for flac input plugin support'
+  'jack: for jack plugin support'
+  'libmad: for mp3 input plugin support'
+  'libmodplug: for modplug input plugin support'
+  'libmp4v2: for mp4 input plugin support'
+  'libmpcdec: for musepack input plugin support'
+  'libsamplerate: for sampe rate converter support'
+  'libvorbis: for vorbis input plugin support'
+  'libcdio-paranoia: for cdio support'
+  'opusfile: for opus input plugin support'
+  'wavpack: for wavpack input plugin support'
+)
+source=(
+  "$pkgname::git+https://github.com/cmus/cmus#tag=v$pkgver"
+  0003-ip-ffmpeg-more-precise-seeking.patch
+  0004-ip-ffmpeg-skip-samples-only-when-needed.patch
+  0005-ip-ffmpeg-remove-excessive-version-checks.patch
+  0006-ip-ffmpeg-major-refactor.patch
+  0007-Validate-sample-format-in-ip_open.patch
+  0008-ip-ffmpeg-flush-swresample-buffer-when-seeking.patch
+  0009-ip-ffmpeg-remember-swr_frame-s-capacity.patch
+  0010-ip-ffmpeg-reset-swr_frame_start-when-seeking.patch
+  0011-ip-ffmpeg-better-frame-skipping-logic.patch
+  0012-ip-ffmpeg-don-t-process-empty-frames.patch
+  0013-ip-ffmpeg-improve-readability.patch
+  0014-ip-ffmpeg-fix-building-for-ffmpeg-8.0.patch
+  0015-ip-ffmpeg-change-sample-format-conversions.patch
+)
+sha512sums=('03e660ab7f6aabf86cfdcce3f6d277463eba4502b8c967df968af3e3062e596c07fb21287801c390e76ea73d4f7a19dffc8dd84a7253806a6a376b9d89496e93'
+            '0163e9a2628e65e6a191c81042405bf25a43943d852882a20a9d5f1127cafb76bab6ed5e231859bc7d870826a569d759c7cdcf82dc5c0f96a070fb3072553006'
+            '2b4bf529d7772c1ce35edc6c36042d6caf8aac1e50b14fba338771988ab8ed59af58197faa35af6a33d367e2930f0952db9a7559a2077874ada8bba7ef8ddd20'
+            '5aac2efc12dade70143de3b9b38158da0ed8948c1f7bf32e2af13e8d4d49a8c18cd8cb62307c5713be9679463d3e9ff1522ab2b1926d77beeb832598f6d63bec'
+            'fc47c97f8c2e123eeca189e92f2967358a545a4c054f9ec7653df47bd9acd2fae480e4c025528f5124baed359a25274806cc4dbd46690eb7d97bea5dad0d2328'
+            '0db393544f674e1767c8ebe100a5680ca2547fde6915b0a5d27b6284173757dda531fca56e4ffcfef1d6015a151d70eb164152c74a5e696b8df8689a921836a6'
+            '3b91f5908f4190b3f2cd25bd3c80851202f777476383028ae7652740eb1776c1bb4e5e4d0d65446a599d1ea8650f88bae31b171f71a964ddf69d06605b733b2d'
+            'db0a52e2a714649842bd248dfd5a639963abb7faefa6250cb3e8d1b9b33dc87926a5dc4c2b8985fc9d67d13a576d60b7b3c2f030a2cf165cdda034126c10b8fb'
+            'c0ee5b70a53ff4f10b8eb5f3aff68cedf4a23adfaf1320fb148712508f676862c893c45c9431afa791b0c3a4af47dbb32e61def4a61bb7fc96f9a9d5f544cbd8'
+            '5415f979266a16f3bb3151578f6e6f07fc63b2fbf1de422dab33662b0e701f8803a340a72c45d95b0275a6e86c7ed56a13b896b23a76718b4261e4615a23a1d8'
+            'c898fc1cc1e2ad4ff631c6710ba9aca98c4dd9e304df7a129e37b96269af0155a90dfb34b42b4168041ad92d3ba502e6e2aafeafb4b903f5c83067c96466ff9c'
+            'b94e754de14a285e67fdc284cc2a11b21c61c7a5c257e50cb102e6487f3114375e28867fac51de12bd404e8fa346dda26b7f3bcd487cf35482dbc563d31fd35c'
+            '2b209008fd5356bcff3580c1bc4c8a88d4f50089141921ac0aa93047495057501995105caa193d1cb8cb0877e18ba927b654c4483162bad02ec6d5f79cafb557'
+            'edf2503717668e3dccb626c945718fe9c3e413af0402375756aa7ba35feb61c8c0dc478fd235d01cf810d8f500adafda5824c31cbde203e50e9ac94552515477')
+b2sums=('3839d1c30429b261c814f89f3e758204d983ab491f3f7cb1f7e83173394f7625661d6a8d44f759987edd11f53bbca2b3100b82bf5ff4a3229526082a06f8aa98'
+        '5be2e5c0e421e91669bae0b14d0d3f7fa73c98ff702a7218243c3695871c20c369670b88345f965fdcd9b749eee37a10ba937ad96fca0f26e4b31dcd40202d66'
+        'dfed2b3284795ac265fc76f220cf07ad892ce6831aac1a018f24f5a3065245f8c5bbc746eb55b412ef55253bccaac8026d161c63a796a81d24cde5f54cf189b2'
+        'd1ab83e006b6433380ca61c1b3cb70c4dbbf3ba9768dca680ccc9cd664cc89f032c9d9bed3ff6585f45f51cbb2efe271ae7933800ae3801612e49e37c9d6d307'
+        'd8cb275e7753a639087679437fbdca620509397fdb69fc6d0d3452668cb778423b396d6bf167a48acf962023b3daccc7b06b98281ef6dc7052eed40f2e59b9d0'
+        '1a84b1b9330cb971caf9119217a214de27f4c9cd2975caf7bbbee3c780b5fc93cfd95bd2e33ffa647c1adb68e925d41bda962c3095f280952ff0b9757d0d5183'
+        'f4bfdab16dcf63ff3f28bc0e82f02648c617ef8de3fb978bfa52bedf55e43f3260551da5b24949ea93db64f3ba958a8f76076b6cb2238146341fcafe6d9a47e5'
+        '6be80261e43fce2fba2c38210c8a551b7412f8505fc64c2e6cf1f8bb173adf1bcf6409bafd62d329f3f0871f710f3cab8848feca2441ba8e342620c5fb63d0ea'
+        'c0414c3292f198d68737d5d136a7ec7a27fdcb0672e92bd84e12b23736b7d5afe20305448ec6c5afc3ecd1775a439319e9053af3a4be9f4ad8684228087f6c8a'
+        '02f2a8fef91617d85ee035c0ff2458846b459b320944960a82000d8c89c0b78bba4cf1680631f2f5f0685cefb8cbf893bc557bbb6cd519248a5ea107d7460cae'
+        '024f375fda2768b453f796497fe47ac83fb205385612a8e73a514e099d7f7256cdb58bf7602995761d5382e56178c02d9d4bb4e18497514e38cdbb0046eaff8b'
+        '5d0e7c2d6620c1a02c05e7c508ab630e4d45a0781c92c56aedb8cbc4ff5836e9405d8ff43f9fc260f8962d6a13a761a0eb1a7339916c41174cd06172da05a5ea'
+        '77829f785b8debbb2e307ed8fbf749e4bc26330e11348ec0fa5cdfcea7c0b40576ca56eeeb738391999ed48816addac8ae4094bfd07e2c17db53207a026858e8'
+        '985b1bcfaeb76823fdd1c15c796e340606a77fba02cc29a5d558bf8ec85eb39305a2301a8b4468846c55e82e04b7e6edea9f4bf63803ac481641cb21a00acf08')
+
+prepare() {
+  cd "$pkgname"
+
+  # backport mp3 fixes from Debian
+  for s in "${source[@]}"; do 
+  if [[ "$s" == *".patch"* ]]; then
+    patch -p1 -i ${srcdir}/$s
+  fi
+  done
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure prefix=/usr
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  # shell completions
+  install -vDm644 contrib/_cmus "$pkgdir/usr/share/zsh/site-functions/_cmus"
+  install -vDm644 contrib/cmus.bash-completion "$pkgdir/usr/share/bash-completion/completions/cmus"
+}

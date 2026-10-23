@@ -1,0 +1,53 @@
+# Maintainer: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: Nathan Baum <n@p12a.org.uk>
+# Contributor: Judd Vinet <jvinet@zeroflux.org>
+# Contributor: Todd Musall <tmusall@comcast.net>
+
+pkgname=at
+pkgver=3.2.5
+pkgrel=5
+pkgdesc='AT and batch delayed command scheduling utility and daemon'
+arch=('x86_64')
+url='https://salsa.debian.org/debian/at'
+license=('GPL')
+depends=('pam' 'flex')
+makedepends=('smtp-forwarder' 'git' 'systemd')
+backup=('etc/at.deny'
+        'etc/pam.d/atd'
+        'var/spool/atd/.SEQ')
+options=('!makeflags')
+validpgpkeys=('464BC7CD439FEE5E8B4098A0348A778D6885EF8F') # Jose M Calhariz (Técnico) <jose.calhariz@tecnico.ulisboa.pt>
+source=("git+https://salsa.debian.org/debian/at.git?signed#tag=release/${pkgver}"
+        '80-atd.hook'
+        'atd.pam')
+sha256sums=('dc055b0afe2c60483525b7b7ea3ab4fb9fdbc7bb51070cb2705b598b5c69ebb2'
+            'f1fbe6740f82ec301fdf16d224eddb491ced1fa1aef6cdc86ee27b467f8e819f'
+            '663cd2f7c5abf56d1ea3f38dfac8d3e64896f1384ca5e97b7ec6d26fd6afafef')
+
+prepare() {
+  cd "$pkgname"
+
+  autoreconf -fvi
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --with-jobdir=/var/spool/atd \
+    --with-atspool=/var/spool/atd \
+    --with-systemdsystemunitdir=/usr/lib/systemd/system
+
+  CFLAGS="$CFLAGS -w" make
+}
+
+package() {
+  make -C "$pkgname" IROOT="$pkgdir" docdir=/usr/share/doc install
+
+  install -D -m0644 atd.pam "$pkgdir"/etc/pam.d/atd
+  install -D -m0644 80-atd.hook "$pkgdir"/usr/share/libalpm/hooks/80-atd.hook
+}
+
+# vim:set ts=2 sw=2 et:

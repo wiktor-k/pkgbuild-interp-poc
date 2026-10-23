@@ -1,0 +1,76 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Chocobo1 <chocobo1@archlinux.net>
+# Contributor: Jean Lucas <jean@4ray.co>
+
+pkgname=sccache
+pkgver=0.18.0
+pkgrel=1
+pkgdesc='Shared compilation cache'
+arch=(x86_64)
+url=https://github.com/mozilla/sccache
+license=(Apache-2.0)
+depends=(
+  libgcc
+  glibc
+  openssl
+  zstd
+)
+makedepends=(
+  git
+  rust
+)
+optdepends=(
+  'memcached: Memcached support'
+  'valkey: Redis support'
+)
+options=(!lto)
+backup=(
+  etc/sccache/scheduler.conf
+  etc/sccache/server.conf
+)
+source=(
+  git+https://github.com/mozilla/sccache.git#tag=v${pkgver}
+  sccache-scheduler.service
+  sccache-server.service
+  scheduler.conf
+  server.conf
+)
+b2sums=('05de72e0edc82b9ac5e1570a30e29f29a21bbf5cc152368e09227c8a4f06ae6363f8ad22fa554204157b4931b7ab39cd48bac302474603374f3e5c6b62b756bb'
+        '685f364fe13000aa752ebe18508c9900c7e9fd7d08a895ef5845d83c5cfe96e88a7d1ec93b29753e1c3aa24f1a7baaae50eebd40131ae9ca54d80bd47e7b3041'
+        '062943558844ac2e9f61727700b89365cce59b64b1348259aaa94c63d4314e6e96a225f7979753a1757cf2ee81f6fff3b4c7ddd1382559617a147a762817b78f'
+        '4851a2de38006a18fa3a4892113b3e583192fbdc960f5328872f93ce1cde81ace2b6ed498c1ef87d246c50a88641c7f7e2a8aa568486fc8c2fb2eada48d51f90'
+        '102e743566428cd3e1ad1ff98b4528fcaab7f217f737aa26af129d8ee12a5ed9d893b20e9deeca4440d9f420ae9e17833212e7b86767e6fc1fb3c5e380683fa5')
+
+prepare() {
+  cd sccache
+  cargo fetch --locked
+}
+
+build() {
+  cd sccache
+  # Use debug
+  export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+  # Use LTO
+  export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  # Dynamically link system libraries
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  cargo build --release --frozen --features all,dist-server
+}
+
+package() {
+  cd sccache
+  install -Dm 755 target/release/sccache{,-dist} -t "${pkgdir}/usr/bin/"
+  install -dm 755 "${pkgdir}/usr/share/doc/${pkgname}"
+  install -m 644 README.md docs/* -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  install -dm 755 "${pkgdir}/usr/lib/sccache/bin"
+  local _prog
+  for _prog in gcc g++ c++; do
+    ln -s /usr/bin/sccache "${pkgdir}/usr/lib/sccache/bin/$_prog"
+    ln -s /usr/bin/sccache "${pkgdir}/usr/lib/sccache/bin/${CHOST}-$_prog"
+  done
+  for _prog in cc clang clang++ rustc; do
+    ln -s /usr/bin/sccache "${pkgdir}/usr/lib/sccache/bin/$_prog"
+  done
+  install -Dm 644 ../sccache-{scheduler,server}.service -t "${pkgdir}/usr/lib/systemd/system/"
+  install -Dm 644 ../{scheduler,server}.conf -t "${pkgdir}/etc/sccache/"
+}

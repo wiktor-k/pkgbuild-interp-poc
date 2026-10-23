@@ -1,0 +1,105 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Ivy Foster <iff@archlinux.org>
+
+pkgbase=bemenu
+pkgname=(
+  bemenu
+  bemenu-ncurses
+  bemenu-wayland
+  bemenu-x11
+)
+pkgver=0.6.23
+pkgrel=1
+pkgdesc="Dynamic menu library and client program inspired by dmenu"
+url="https://github.com/Cloudef/bemenu"
+arch=(x86_64)
+license=(
+  GPL-3.0-or-later
+  LGPL-3.0-or-later
+)
+makedepends=(
+  libxinerama
+  libxkbcommon
+  ncurses
+  pango
+  scdoc
+  wayland
+  wayland-protocols
+)
+source=(
+  "$url/releases/download/$pkgver/$pkgbase-$pkgver.tar.gz"
+  "$url/releases/download/$pkgver/$pkgbase-$pkgver.tar.gz.asc"
+)
+sha256sums=('7cd336fb827b50a12c398a5daf6d2e6a07e291217116e725e7f1e021d9e0cdd9'
+            'SKIP')
+validpgpkeys=(16B6B7CACAF339DECE9F154729317348D687B86B) # Bemenu Upstream
+
+prepare() {
+  cd bemenu-$pkgver
+  sed -i 's/-D_FORTIFY_SOURCE=2//' GNUmakefile
+}
+
+build() {
+  cd bemenu-$pkgver
+  make PREFIX=/usr
+}
+
+package_bemenu() {
+  depends=(
+    bemenu-renderer
+    glibc
+  )
+  provides=(libbemenu.so)
+
+  cd bemenu-$pkgver
+  make DESTDIR="$pkgdir" PREFIX=/usr install-base install-docs
+}
+
+package_bemenu-ncurses() {
+  pkgdesc="ncurses renderer for bemenu"
+  provides=(bemenu-renderer)
+  depends=(
+    glibc
+    libbemenu.so
+    ncurses
+  )
+
+  cd bemenu-$pkgver
+  make DESTDIR="$pkgdir" PREFIX=/usr install-curses
+}
+
+package_bemenu-wayland() {
+  pkgdesc="Wayland (wlroots-based compositors) renderer for bemenu"
+  provides=(bemenu-renderer)
+  depends=(
+    glibc
+    cairo
+    glib2
+    libbemenu.so
+    libxkbcommon
+    pango
+    wayland
+  )
+  install=bemenu-wayland.install
+
+  cd bemenu-$pkgver
+  make DESTDIR="$pkgdir" PREFIX=/usr install-wayland
+}
+
+package_bemenu-x11() {
+  pkgdesc="X11 renderer for bemenu"
+  provides=(bemenu-renderer)
+  depends=(
+    glibc
+    cairo
+    glib2
+    libbemenu.so
+    libx11
+    libxinerama
+    pango
+  )
+
+  cd bemenu-$pkgver
+  make DESTDIR="$pkgdir" PREFIX=/usr install-x11
+}

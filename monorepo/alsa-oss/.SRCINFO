@@ -1,0 +1,24 @@
+pkgbase = alsa-oss
+	pkgdesc = OSS compatibility library
+	pkgver = 1.1.8
+	pkgrel = 6
+	url = https://www.alsa-project.org
+	arch = x86_64
+	license = GPL2
+	makedepends = alsa-lib
+	depends = glibc
+	optdepends = bash: for aoss
+	provides = libaoss.so
+	provides = libalsatoss.so
+	source = https://www.alsa-project.org/files/pub/oss-lib/alsa-oss-1.1.8.tar.bz2
+	source = https://www.alsa-project.org/files/pub/oss-lib/alsa-oss-1.1.8.tar.bz2.sig
+	validpgpkeys = F04DF50737AC1A884C4B3D718380596DA6E59C91
+	sha512sums = 42966af0ca1be33b4ab1e20b2e3320056ad6caf6ecc5ecde3ae19571809a2fa924dd91d9b2a5d5b6f345b29d937b079400d2a165dbe2b8a33b857cd406c4ac7c
+	sha512sums = SKIP
+	b2sums = 47124c4edd14878b202e6ff6866b5441ffa0991ac3011a3db1efcd1dd2a0c27c9f2b8b38c2a51e8b46cb5714a97393a462154cdfaf89f1238244f7b2635a7740
+	b2sums = SKIP
+
+pkgname = alsa-oss
+	depends = glibc
+	depends = alsa-lib
+	depends = libasound.so

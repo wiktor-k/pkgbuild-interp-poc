@@ -1,0 +1,18 @@
+pkgbase = turbo
+	pkgdesc = Incremental bundler and build system optimized for JavaScript and TypeScript
+	pkgver = 2.9.16
+	pkgrel = 2
+	url = https://turbo.build/
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = capnproto
+	makedepends = cargo
+	makedepends = protobuf
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = https://github.com/vercel/turborepo/archive/v2.9.16/turbo-2.9.16.tar.gz
+	sha256sums = 34b7f61dada86adb0c86a358d0586368c47031e69875ac4bf019bcdb474cf5dd
+	b2sums = f19018832aa9b61f8e3740224985f4024a8746c31385613d8baa43684ad48dc5f0394e60b7ab39c020d8eae1c0e488b51c0417be76823b3f49e02025252cb130
+
+pkgname = turbo

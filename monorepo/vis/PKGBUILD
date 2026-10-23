@@ -1,0 +1,103 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgbase=vis
+pkgname=(vis vis-lexers)
+_commit='254329d9f4f1df1158397080d403f3f112918aff'
+pkgver=0.9.r501.g254329d9
+pkgrel=1
+pkgdesc='modern, legacy free, simple yet efficient vim-like editor'
+arch=('x86_64')
+url='https://github.com/martanne/vis#vis-a-vim-like-text-editor'
+depends=(
+  'acl' 'libacl.so'
+  'bash'
+  'file'
+  'glibc'
+  'lua' #'liblua.so'
+  'ncurses' 'libncursesw.so'
+  'tre' #'libtre.so'
+)
+makedepends=('git')
+checkdepends=('vim' 'lua-lpeg')
+license=('custom:ISC')
+validpgpkeys=('54A47F12462D26A7D078A932C83A52CD1962562C') # Marc André Tanner <mat@brain-dump.org>
+# TODO: can we have signed tag back?
+source=("git+https://github.com/martanne/vis.git#commit=${_commit}")
+sha256sums=('b71c9ce483e6815b2bd3574c6fab178f4257b5031758beaac08f67960f277e91')
+
+_backports=(
+)
+
+_reverts=(
+)
+
+pkgver() {
+  cd vis/
+
+  git describe | sed 's|^v||; s|-|.r|; s|-|.|'
+}
+
+prepare() {
+  cd vis/
+
+  local _c _l
+  for _c in "${_backports[@]}"; do
+    if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
+    git log --oneline "${_l}" "${_c}"
+    git cherry-pick --mainline 1 --no-commit "${_c}"
+  done
+  for _c in "${_reverts[@]}"; do
+    if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
+    git log --oneline "${_l}" "${_c}"
+    git revert --mainline 1 --no-commit "${_c}"
+  done
+
+  sed -i '/^.PHONY/d' Makefile
+}
+
+build() {
+  cd vis/
+
+  ./configure \
+    --prefix=/usr
+
+  make
+}
+
+check() {
+  cd vis/
+
+  make -C test/
+}
+
+package_vis() {
+  optdepends=('wl-clipboard: wayland clipboard support'
+              'xclip: X11 clipboard support'
+              'xsel: X11 clipboard support'
+              'vis-lexers: syntax highlighting')
+  backup=('etc/vis/visrc.lua')
+
+  cd vis/
+
+  make DESTDIR="${pkgdir}" install
+
+  # move for vis-lexers, but keep 'lexer.lua'!
+  mkdir "${srcdir}"/lexers/
+  find "${pkgdir}"/usr/share/vis/lexers/ -type f -not -name lexer.lua -print0 | \
+    xargs -0 mv -t "${srcdir}"/lexers/
+
+  install -D -m0644 lua/visrc.lua "${pkgdir}"/etc/vis/visrc.lua
+
+  install -D -m0644 'LICENSE' "${pkgdir}/usr/share/licenses/vis/LICENSE"
+}
+
+package_vis-lexers() {
+  pkgdesc='syntax highlighting for vis editor'
+  depends=('vis' 'lua-lpeg')
+  provides=('vis-syntax-highlighting')
+  conflicts=('vis-syntax-highlighting')
+  replaces=('vis-syntax-highlighting')
+
+  install -d -m0755 "${pkgdir}"/usr/share/vis/
+  mv "${srcdir}"/lexers/ "${pkgdir}"/usr/share/vis/
+}

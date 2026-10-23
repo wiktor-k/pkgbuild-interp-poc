@@ -1,0 +1,61 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Fredy García <frealgagu at gmail dot com>
+# Contributor: Randy Ramos <rramos1295 at gmail dot com>
+# Contributor: Peter Vasil <mail@petervasil.net>
+# Contributor: Lucas De Marchi <lucas.de.marchi@gmail.com>
+# Contributor: Matthias Meulien <orontee@gmail.com>
+
+pkgname=global
+pkgver=6.7
+pkgrel=1
+pkgdesc='Source code tagging system'
+arch=(x86_64)
+url='https://www.gnu.org/software/global/'
+license=(BSD-3-Clause GPL-2.0-only GPL-3.0-or-later LGPL-2.0-or-later LicenseRef-CALDERA LicenseRef-PD MIT)
+depends=(glibc libltdl ncurses perl python sqlite)
+optdepends=(ctags emacs idutils python-pygments vim)
+options=(!emptydirs !libtool)
+validpgpkeys=("26F631B43D624A927E6F1C33969C3BE389DDA6EB")
+source=("https://ftp.gnu.org/pub/gnu/$pkgname/$pkgname-$pkgver.tar.gz"{,.sig})
+b2sums=('6be722d00809c8640456e27ce2fc637c65640c29bc4b74cd369a3d77ac51862e659c1a7aba909d1cd8160c8659fa3b44d4afc1f8ef2a025ba4b14882439421bf'
+        'SKIP')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  sed -i 's/\.la/.so/g' gtags.conf.in
+
+  # Rename lid to lid-idutils to avoid a name collision with idutils
+  sed -i 's/usable("lid")/usable("lid-idutils")/g' "$pkgname/$pkgname.c"
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  autoreconf -fi
+  ./configure \
+    --prefix=/usr \
+    --with-exuberant-ctags=/usr/bin/etags \
+    --with-sqlite3 \
+    --with-universal-ctags=/usr/bin/ctags
+  make
+}
+
+check() {
+  make -C $pkgname-$pkgver -k check
+}
+
+package() {
+  local _s="$pkgdir/usr/share"
+
+  make -C $pkgname-$pkgver DESTDIR="$pkgdir" install
+
+  install -d "$_s/vim/vimfiles/plugin"
+  mv "$_s/gtags/gtags.vim" "$_s/vim/vimfiles/plugin/gtags.vim"
+  mv "$_s/gtags/gtags-cscope.vim" "$_s/vim/vimfiles/plugin/gtags-cscope.vim"
+
+  install -d "$_s/emacs/site-lisp"
+  mv "$_s/gtags/gtags.el" "$_s/emacs/site-lisp/gtags.el"
+
+  install -Dm644 $pkgname-$pkgver/LICENSE "$_s/licenses/$pkgname/LICENSE"
+}

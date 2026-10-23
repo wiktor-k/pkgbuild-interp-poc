@@ -1,0 +1,20 @@
+pkgbase = kodi-addon-audioencoder-lame
+	pkgdesc = LAME Audio Encoder add-on for Kodi
+	pkgver = 21.0.2
+	pkgrel = 6
+	epoch = 1
+	url = https://github.com/xbmc/audioencoder.lame
+	arch = x86_64
+	groups = kodi-addons
+	groups = kodi-addons-audioencoder
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = lame
+	makedepends = kodi-dev
+	options = !lto
+	source = kodi-addon-audioencoder-lame-21.0.2.tar.gz::https://github.com/xbmc/audioencoder.lame/archive/21.0.2-Omega.tar.gz
+	sha512sums = b93f88e1e9c0c874fdcbfbe464a8047cc8aaa965dba88bcbe7615b78653eb1eec952f0117fd1a38bb31fb48d8f9355e97993755e268cb71d9979439b3b25b041
+
+pkgname = kodi-addon-audioencoder-lame
+	depends = kodi
+	depends = lame

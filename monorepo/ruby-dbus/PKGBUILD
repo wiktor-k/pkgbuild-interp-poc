@@ -1,0 +1,44 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Jan Alexander Steffens (heftig) <jan.steffens@gmail.com>
+
+pkgname=ruby-dbus
+pkgver=0.25.0
+pkgrel=1
+pkgdesc='Ruby module for interaction with D-Bus'
+arch=('any')
+url='https://github.com/mvidner/ruby-dbus'
+license=('LGPL-2.1-only')
+depends=('ruby')
+makedepends=('git')
+options=('!emptydirs')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('13700470b88f7e9494122446e305234595287af4023c7bf1b8cd29948a227a79743e9c1567b0a58cf123eb44267573f6f64ee3efa5a6a402f0b6389ac96d05cc')
+b2sums=('128b7c718d8fc073364f71fc8be4149bd328443f9320ecc770aa56a8db105eb26011c1fe71660fabcf9232cb97c96baac97bb357698f12267631f505d47fe2f8')
+
+build() {
+  cd "$pkgname"
+
+  gem build "$pkgname.gemspec"
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$pkgname-$pkgver.gem"
+
+  # delete cache
+  rm -rf "$pkgdir/$_gemdir/cache"
+
+  # license
+  install -vd "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "$_gemdir/gems/$pkgname-$pkgver/COPYING" "$pkgdir/usr/share/licenses/$pkgname"
+}

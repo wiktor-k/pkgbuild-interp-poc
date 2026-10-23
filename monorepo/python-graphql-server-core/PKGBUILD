@@ -1,0 +1,35 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-graphql-server-core
+pkgver=2.0.0
+pkgrel=8
+pkgdesc='Core package for using GraphQL in a custom server easily'
+url=https://github.com/graphql-python/graphql-server-core
+arch=(any)
+license=(MIT)
+depends=(
+  python
+  python-graphql-core
+  python-promise
+  python-six
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(git+https://github.com/graphql-python/graphql-server-core.git#tag=v${pkgver})
+b2sums=('f3ba811b99c0f24496422bd5afd9b4fde9ce7a19419c5fd4d90586e70dcad0ae4af03903da819c1583fce0ad313f6508ca7384ea0a0189394b1d992f7a4c7c29')
+
+build() {
+  cd graphql-server-core
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd graphql-server-core
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm 644 LICENSE -t "${pkgdir}"/usr/share/licenses/python-graphql-server-core/
+}

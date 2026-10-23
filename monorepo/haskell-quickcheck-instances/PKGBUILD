@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=quickcheck-instances
+pkgname=haskell-quickcheck-instances
+pkgver=0.3.33
+pkgrel=384
+pkgdesc="Common quickcheck instances"
+url="https://github.com/haskellari/qc-instances"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-onetuple' 'haskell-quickcheck' 'haskell-case-insensitive'
+         'haskell-data-fix' 'haskell-hashable' 'haskell-integer-logarithms' 'haskell-old-time'
+         'haskell-primitive' 'haskell-scientific' 'haskell-splitmix' 'haskell-strict'
+         'haskell-tagged' 'haskell-text-short' 'haskell-these' 'haskell-time-compat'
+         'haskell-unordered-containers' 'haskell-uuid-types' 'haskell-vector')
+makedepends=('ghc')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('57267cd1f28f63652bfcd7b85fdb28e89eb63401e0875176c64a464bdba88494d14e5bd0c13d382ef01f9066f90e40f316a90a4ab1564f875e0c49ac7b966a04')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

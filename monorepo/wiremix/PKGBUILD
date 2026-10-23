@@ -1,0 +1,39 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=wiremix
+pkgver=0.11.0
+pkgrel=1
+pkgdesc="A simple TUI audio mixer for PipeWire"
+arch=('x86_64')
+url="https://github.com/tsowell/wiremix"
+license=('MIT' 'Apache-2.0')
+depends=('gcc-libs' 'libpipewire')
+makedepends=('cargo' 'clang')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('62a7cace79c9af537e0917a6d4e5da66b2efe2b4abc5f08c0fbaed727acc8c9f')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  VERGEN_GIT_DESCRIBE="$pkgver-$pkgrel (Arch Linux)" cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "$pkgname.desktop" -t "$pkgdir/usr/share/applications"
+}
+
+# vim: ts=2 sw=2 et:

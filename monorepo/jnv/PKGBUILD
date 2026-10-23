@@ -1,0 +1,42 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=jnv
+pkgver=0.7.1
+pkgrel=1
+pkgdesc="Interactive JSON filter using jq"
+arch=(x86_64)
+url="https://github.com/ynqa/jnv"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  cargo
+  clang
+)
+options=(!lto)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('93daeb93f87007e2a44af86c71b95b933d72537aaf9c49b1d68a7abe3a61065f45119129932041ccc4fdfba75850189c7c777a1bef9603c70ea51869d76c7f82')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname-$pkgver
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/$pkgname
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

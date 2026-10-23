@@ -1,0 +1,24 @@
+pkgbase = python-fire
+	pkgdesc = A library for automatically generating command line interfaces
+	pkgver = 0.7.1
+	pkgrel = 2
+	url = https://github.com/google/python-fire
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-hypothesis
+	checkdepends = python-levenshtein
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-termcolor
+	source = python-fire-0.7.1.tar.gz::https://github.com/google/python-fire/archive/refs/tags/v0.7.1.tar.gz
+	source = fix-missing-eventloop.patch
+	sha512sums = 5a54cb86b4a75560132b36507047530aab95666102095410f0e26d4341799d2809c1959f3edb963cf7f78d774c8be097cc2d4761e845fe101e9a369677c1e84c
+	sha512sums = d79bf73c1f50342e20e28a15e48268ad5106db1b89288fe8b7561f494b177b78595ea4a9811a9503183eeaaf7b271d0bdcf1d083af5c7d5e3acee5ddd7e07b22
+	b2sums = 207afbb87a838d9def4f88f8e030d39b7f457018f8ff13ff661763d6bc8b70d62a95ba8ca2cf149e95e9b1134adfd7367b356bd63fc3b4012682961184df0f2e
+	b2sums = 824f6f835e3dd9cca5dda6eb87b6bc77ea7095f56655c1375cb6080df3f3ed9d5782420782ce9653720c2c6e349ac268738ece673337b92539337da5a3c88495
+
+pkgname = python-fire

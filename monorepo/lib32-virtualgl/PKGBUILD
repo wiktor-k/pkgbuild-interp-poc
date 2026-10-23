@@ -1,0 +1,61 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: FigoDaPaura <ffigoDaPaura>
+
+pkgname=lib32-virtualgl
+pkgver=3.1.5
+pkgrel=1
+pkgdesc="32-bit serverside components for 64-bit VirtualGL servers"
+arch=('x86_64')
+url="https://virtualgl.org"
+license=('LGPL')
+depends=('virtualgl' 'lib32-libxv' 'lib32-glu' 'lib32-libjpeg-turbo' 'lib32-opencl-driver' 'lib32-ocl-icd')
+makedepends=('lib32-libxv' 'lib32-glu' 'virtualgl' 'cmake' 'gcc-multilib' 'lib32-mesa' 'lib32-mesa-libgl' 'lib32-libxtst' 'opencl-headers' 'ninja')
+source=("https://github.com/VirtualGL/virtualgl/releases/download/${pkgver}/VirtualGL-${pkgver}.tar.gz"{,.sig})
+sha512sums=('c9b138b1c7f979548f07c66025cbde7592d21ea23da2415ed6a715708d44fc290c052fe484cd521b3a277e7c6d0fcadecff0cea3ec7716b6f65cff6c3c1ba5d0'
+            'SKIP')
+b2sums=('2f7288282a3da115ccf132fc995aa0031e93b36b4f8990f3c2985554590fe3fce7be069a8de642dc673496fd365c18a7a648c977bc04ae866f11dab7f8a43b14'
+        'SKIP')
+validpgpkeys=('AE1A7BA4EFFF9A9987E1474C4BACCAB36E7FE9A1') # The VirtualGL Project (Signing key for official binaries) <information@VirtualGL.org>
+
+prepare() {
+  cd "VirtualGL-$pkgver"
+
+  # FS#48403
+  export LDFLAGS="${LDFLAGS/--as-needed,}"
+}
+
+build() {
+  cd "VirtualGL-$pkgver"
+
+  export CC="gcc -m32"
+  export CXX="g++ -m32"
+  export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+
+  cmake \
+      -GNinja \
+      -Bbuild \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_INSTALL_LIBDIR=/usr/lib32 \
+      -DCMAKE_INSTALL_BINDIR=/usr/bin \
+      -DCMAKE_BUILD_TYPE='None' \
+      -DTJPEG_INCLUDE_DIR=/usr/include \
+      -DTJPEG_LIBRARY=/usr/lib32/libturbojpeg.so \
+      -DX11_X11_LIB=/usr/lib32/libX11.so \
+      -DX11_Xext_LIB=/usr/lib32/libXext.so \
+      -DOPENGL_gl_LIBRARY=/usr/lib32/libGL.so
+  ninja -C build
+}
+
+package() {
+  cd "VirtualGL-$pkgver"
+  DESTDIR="$pkgdir" ninja install -C build
+
+  cd "$pkgdir/usr"
+  mv bin/glxspheres glxspheres32
+  rm -rf bin
+  mkdir -p bin
+  mv glxspheres32 bin/
+
+  rm -rf "$pkgdir/usr/share"
+  rm -rf "$pkgdir/usr/include"
+}

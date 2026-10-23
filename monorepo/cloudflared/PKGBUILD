@@ -1,0 +1,76 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+
+pkgname=cloudflared
+pkgver=2026.10.2
+pkgrel=1
+pkgdesc='Command-line client for Cloudflare Tunnel'
+arch=('x86_64')
+url='https://github.com/cloudflare/cloudflared'
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go')
+options=('!lto')
+source=("$pkgname::git+$url.git#tag=$pkgver")
+sha512sums=('9fbac46d441084d2147b1641c6f96f9d440b6b2bf2857022a9aa40c62bc89d46335725c3c4bc5b33da1faed350eb852781f8c8fa8ad4b6cb29ec25d329d87dab')
+b2sums=('360f988df92eb8304a73b3b6b8fb9bb88e0d933554015d5da304840d4cd84afbd738eb95ea8c48f09b98d29b57a4faa7bba8103f449df54b9be4ed47ae768d87')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+}
+
+build() {
+  cd "$pkgname"
+
+  # define buildtime for use in man page & binary
+  local build_time="$(date -d@"$SOURCE_DATE_EPOCH" +%Y%m%d-%H:%M:%S)"
+
+  # generate man page
+  sed -e "s/\${VERSION}/${pkgver}/" \
+      -e "s/\${DATE}/${build_time}/" \
+    cloudflared_man_template > "build/$pkgname.1"
+
+  # verify go modules
+  go mod verify
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  # build cloudflared
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+      -X main.Version=${pkgver} \
+      -X main.BuildTime=${build_time} \
+      -X github.com/cloudflare/cloudflared/cmd/cloudflared/updater.BuiltForPackageManager=pacman" \
+    -o build \
+    ./cmd/...
+}
+
+# tests hang ._.
+#check() {
+#  cd "$pkgname"
+#
+#  go test -v -mod=vendor -race ./...
+#}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "build/$pkgname"
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" "build/$pkgname.1"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,54 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: mexus <gilaldpellaeon@gmail.com>
+
+pkgname=dua-cli
+pkgver=2.46.0
+pkgrel=1
+pkgdesc="A tool to conveniently learn about the disk usage of directories, fast!"
+arch=(x86_64)
+url="https://github.com/Byron/dua-cli"
+license=(MIT)
+depends=(glibc # libc.so libm.so
+         libgcc)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha512sums=('2bee1b591cd8ce8fdae0f315d309bb4c2e7f75700487398ca711cd9a9a24cccc8c20da517381705303ba53b24953b4ad4c5955f5af6148096d5982939c101049')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --release --frozen
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		interactive
+	)
+	cargo test --frozen -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0755 -t "$pkgdir/usr/bin/" target/release/dua
+}

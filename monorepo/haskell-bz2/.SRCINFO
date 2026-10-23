@@ -1,0 +1,21 @@
+pkgbase = haskell-bz2
+	pkgdesc = Bindings to libbz2
+	pkgver = 1.0.1.2
+	pkgrel = 30
+	url = https://hub.darcs.net/vmchale/bz2
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ghc
+	makedepends = uusi
+	makedepends = c2hs
+	makedepends = haskell-tasty
+	makedepends = haskell-tasty-golden
+	makedepends = haskell-tasty-hunit
+	depends = ghc-libs
+	depends = bzip2
+	source = https://hackage.haskell.org/packages/archive/bz2/1.0.1.2/bz2-1.0.1.2.tar.gz
+	source = system-bzip2.patch
+	sha512sums = f7bba41e78ac69360cbeadda974d229b151eafb69c7bf9772484dff8996affc519704374e872c721c26bdb2422984ecce867d8c4a443ef3eb9aa44b84634eb32
+	sha512sums = 64af5c1530b955e1f2007b58d5a3c608d58277bef2489fbb5507bd28af4282b078715e0f94293f97591f417b4829751cf4faec339155a60a66f1833ff2708142
+
+pkgname = haskell-bz2

@@ -1,0 +1,21 @@
+pkgbase = python-oyaml
+	pkgdesc = A drop-in replacement for PyYAML which preserves dict ordering
+	pkgver = 1.1
+	pkgrel = 4
+	url = https://github.com/wimglenn/oyaml
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-yaml
+	source = python-oyaml::git+https://github.com/wimglenn/oyaml.git#commit=d0195070d26bd982f1e4e604bded5510dd035cd7
+	source = update-version.patch
+	b2sums = SKIP
+	b2sums = 4412e680fa64152410b92eaa4b3cc590e4c2359e8134efecfc89e2e0de0a065570fcf7d0ed701b4ed8974106662894f8cc4785a8d9f3aa4f01e471b6199c6342
+
+pkgname = python-oyaml

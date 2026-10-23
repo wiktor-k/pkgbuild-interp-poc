@@ -1,0 +1,76 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Martchus <martchus@gmx.net>
+
+pkgbase=qtforkawesome
+pkgname=("${pkgbase}" "${pkgbase}-doc")
+pkgver=0.3.4
+pkgrel=3
+_pkgver_fork_awesome=1.2.0
+pkgdesc='Library that bundles ForkAwesome for use within Qt applications'
+arch=('x86_64')
+url="https://github.com/Martchus/${pkgbase}"
+license=('GPL-2.0-or-later')
+depends=(
+    'glibc'
+    'libgcc'
+    'libstdc++'
+    'qt6-base'
+    'qt6-declarative'
+)
+makedepends=(
+    'cmake'
+    'doxygen'
+    'graphviz'
+    'ninja'
+    'perl-yaml-libyaml'
+    'qt6-tools'
+    'qtutilities'
+)
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/Martchus/${pkgbase}/archive/v${pkgver}.tar.gz"
+        "Fork-Awesome-${_pkgver_fork_awesome}.tar.gz::https://github.com/ForkAwesome/Fork-Awesome/archive/refs/tags/${_pkgver_fork_awesome}.tar.gz")
+sha256sums=('001324d008b44a136ec296733d5ef9bd519ea93ec820d5144163b98dc888f23b'
+            '23fba5f191f204e0414c547bf4c9b10fd7ca42c151260e8f64698449a75fbdb3')
+
+build() {
+    local cmake_options=(
+        -B build
+        -S ${pkgbase}-${pkgver}
+        -G Ninja
+        -D QT_PACKAGE_PREFIX=Qt6
+        -D CMAKE_BUILD_TYPE=None
+        -D CMAKE_INSTALL_PREFIX=/usr
+        -D BUILD_SHARED_LIBS=ON
+        -D FORK_AWESOME_FONT_FILE="${srcdir}/Fork-Awesome-${_pkgver_fork_awesome}/fonts/forkawesome-webfont.woff2"
+        -D FORK_AWESOME_ICON_DEFINITIONS="${srcdir}/Fork-Awesome-${_pkgver_fork_awesome}/src/icons/icons.yml"
+    )
+    cmake "${cmake_options[@]}"
+    cmake --build build --target all apidoc
+}
+
+check() {
+    cmake --build build --target tests
+
+    local ctest_flags=(
+        --test-dir build
+        --output-on-failure
+        --parallel $(nproc)
+    )
+    QT_QPA_PLATFORM=offscreen ctest "${ctest_flags[@]}"
+}
+
+package_qtforkawesome() {
+    optdepends=("${pkgbase}-doc: for API documentation")
+    provides=('libqtforkawesome.so' 'libqtquickforkawesome.so' "${pkgbase}-qt6")
+    conflicts=("${pkgbase}-qt6")
+    replaces=("${pkgbase}-qt6")
+
+    DESTDIR="${pkgdir}" cmake --install build
+    rm -rf "${pkgdir}/usr/share/"{${pkgbase},qtquickforkawesome}/api-doc
+}
+
+package_qtforkawesome-doc() {
+    pkgdesc+=" - API documentation"
+    depends=()
+
+    DESTDIR="${pkgdir}" cmake --build build --target install-api-doc
+}

@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Evert Vorster <superchief AT evertvorster DOT com>
+
+_pyname=srt_equalizer
+pkgname=python-$_pyname
+pkgver=0.1.13
+pkgrel=1
+pkgdesc='A tool to transform subtitle lengths, splitting into multiple fragments if necessary'
+arch=(any)
+url='https://github.com/peterk/srt_equalizer'
+license=(MIT)
+depends=(python
+         python-srt)
+makedepends=(git
+             python-build
+             python-installer
+             python-poetry-core)
+checkdepends=(python-pytest)
+source=(git+https://github.com/peterk/srt_equalizer#tag=v$pkgver)
+sha256sums=('f520c6d9cf65a3aedf569ac622dbf8e2d24f6c25a7e712ed46cc30c2c9b5009e')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pyname
+  PYTHONPATH="$PWD"/src \
+  pytest -v
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

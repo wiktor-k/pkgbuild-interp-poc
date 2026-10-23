@@ -1,0 +1,57 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-flask-marshmallow
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='Flask + marshmallow for beautiful APIs'
+url=https://flask-marshmallow.readthedocs.io/
+arch=(any)
+license=(MIT)
+depends=(
+  python
+  python-flask
+  python-marshmallow
+  python-werkzeug
+)
+makedepends=(
+  git
+  python-build
+  python-flit-core
+  python-installer
+)
+checkdepends=(
+  python-flask-sqlalchemy
+  python-marshmallow-sqlalchemy
+  python-pytest
+)
+optdepends=(
+  'python-flask-sqlalchemy: SQLAlchemy integration'
+  'python-marshmallow-sqlalchemy: SQLAlchemy integration'
+)
+source=(git+https://github.com/marshmallow-code/flask-marshmallow.git#tag=${pkgver})
+b2sums=('9bd0240aa3a83a9ff8a9484e1768e8e0561e8f69a7192dcb62a66a6049897b85033b96f5e46391b9d3cecf76a7dc3c9c9b4fcab0f4f633375b2190a7525e29ae')
+
+prepare() {
+  cd flask-marshmallow
+  # flit-core 4 dropped compat; bump constraint
+  sed -i 's/flit_core<4/flit_core>=3.2/' pyproject.toml
+}
+
+build() {
+  cd flask-marshmallow
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd flask-marshmallow
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" flask-marshmallow/dist/*.whl
+  install -Dm 644 flask-marshmallow/LICENSE -t "${pkgdir}"/usr/share/licenses/python-flask-marshmallow/
+}
+
+# vim: ts=2 sw=2 et:

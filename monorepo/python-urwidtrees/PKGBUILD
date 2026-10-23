@@ -1,0 +1,28 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Ian Denhardt <ian@zenhack.net>
+
+_pkgname=urwidtrees
+pkgname=python-urwidtrees
+pkgver=1.0.4
+pkgrel=3
+pkgdesc="Tree widgets for urwid."
+arch=(any)
+url="https://github.com/pazz/$_pkgname"
+license=('GPL-3.0-or-later')
+makedepends=(python-build python-installer python-setuptools python-wheel python-sphinx)
+depends=(python 'python-urwid>=1.1.0')
+source=("$_pkgname-$pkgver.tar.gz::https://github.com/pazz/$_pkgname/archive/$pkgver.tar.gz")
+sha256sums=('db7344de2c03257698c9fc12f140d46cee505241b0df378e6f76925d22c32eaa')
+
+build() {
+	cd "$srcdir/$_pkgname-$pkgver"
+	python -m build --wheel --no-isolation
+	make SPHINXBUILD=sphinx-build -C docs man html
+}
+
+package() {
+	cd "$srcdir/$_pkgname-$pkgver"
+	python -m installer --destdir="$pkgdir" dist/*.whl
+	install -dm755 "$pkgdir/usr/share/doc/$pkgname"
+	cp -a docs/build/html/* "$pkgdir/usr/share/doc/$pkgname"
+}

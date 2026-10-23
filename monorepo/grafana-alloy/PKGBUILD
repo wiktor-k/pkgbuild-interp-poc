@@ -1,0 +1,71 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Contributor: Benjamin Schneider <ben at bens dot haus>
+
+_srcname=alloy
+pkgname=grafana-${_srcname}
+pkgver=1.21.1
+pkgrel=1
+pkgdesc='OpenTelemetry Collector distribution with programmable pipelines'
+arch=('x86_64' 'aarch64')
+url='https://grafana.com/oss/alloy-opentelemetry-collector/'
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go' 'npm' 'systemd' 'yarn')
+backup=("etc/default/${pkgname}" "etc/${pkgname}/config.alloy")
+options=('!lto')
+source=(git+https://github.com/grafana/alloy.git#tag=v${pkgver}
+        ${pkgname}.service ${pkgname}.sysusers ${pkgname}.tmpfiles)
+b2sums=('6c0b5e3825bb5bd1326563f5e012732b56b2c19b98d45d7d10345a67760401921e95873842c8a7efaffaf9aa7129c3e48baccebb10d712325422255a1fad65e0'
+        '5a7e4d4f327b56a35e699b6066224b90fb128d108d51753e36259a4bc2f28e12275375f16035d1f3de437bc9da9c44769a4ad60e6d9505b61d0e0f253e1928f0'
+        '61efc7363478e841bf91466520def6353a467080e011c5d452f48e171306c82b8d0725e182e5037b544ab814988902844dc2ba76925e8ab63f0eec0148bcd0cd'
+        'a7219797bedadc3669ec21e12693e366d440720e6cc9c9ae9cf7ed019d0c93858e1fa605455977f0fc210d3228b2419fc22931c9d2af7dc9836ecdd65a8a7b13')
+
+build() {
+  # Upstream's Makefile insists on different standards than we use so we
+  # instead reproduce the individual steps
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+  export GOPATH="${srcdir}"
+  export GO_TAGS="promtail_journal_enabled,builtinassets"
+
+  # alloy -> generate-ui
+  cd ${_srcname}/internal/web/ui
+  npm ci --no-audit --no-fund
+  npm run build
+
+  # alloy -> generate-source-code -> generate-otel-collector-distro
+  cd ${srcdir}/${_srcname}
+  go run -C tools ./cmd sync-replaces --builder-config ../collector/builder-config.yaml --go-mod ../go.mod
+
+  # alloy
+  local _vprefix _vprefixsyntax _date
+  _vprefix="github.com/grafana/alloy/internal/build"
+  _vprefixsyntax="github.com/grafana/alloy/syntax/internal/stdlib"
+  _date=$(date --utc --date @$SOURCE_DATE_EPOCH +"%Y-%m-%dT%H:%M:%SZ")
+  go build -C collector \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" -X $_vprefix.Version=$pkgver -X $_vprefixsyntax.Version=$pkgver -X $_vprefix.BuildUser=archlinux -X $_vprefix.BuildDate=$_date" \
+    -o ../build/alloy .
+}
+
+check() {
+  cd ${_srcname}
+  ./build/alloy --version
+}
+
+package() {
+  cd ${_srcname}
+
+  install -Dm755 -T build/alloy "$pkgdir/usr/bin/${pkgname}"
+  install -Dm755 -d "$pkgdir/etc/${pkgname}"
+  install -Dm644 packaging/config.alloy "$pkgdir/etc/${pkgname}"
+  sed "s|^CONFIG_FILE=.*$|CONFIG_FILE=\"/etc/${pkgname}\"|g" packaging/environment-file |
+    install -Dm644 -T /dev/stdin "$pkgdir/etc/default/${pkgname}"
+
+  install -Dm644 "$srcdir/${pkgname}.sysusers" "$pkgdir/usr/lib/sysusers.d/${pkgname}.conf"
+  install -Dm644 "$srcdir/${pkgname}.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/${pkgname}.conf"
+  install -Dm644 "$srcdir/${pkgname}.service" "$pkgdir/usr/lib/systemd/system/${pkgname}.service"
+}

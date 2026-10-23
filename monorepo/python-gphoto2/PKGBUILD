@@ -1,0 +1,34 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Francois Boulogne <fboulogne at april dot org>
+
+pkgname=python-gphoto2
+pkgver=2.6.0
+pkgrel=1
+pkgdesc="Python interface to libgphoto2"
+arch=('x86_64')
+url="https://github.com/jim-easterbrook/python-gphoto2"
+license=('LGPL-3.0-or-later')
+depends=(
+  'libgphoto2'
+  'python'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-toml'
+  'python-wheel'
+  'swig'
+)
+source=($pkgname-$pkgver.tar.gz::https://github.com/jim-easterbrook/$pkgname/archive/v$pkgver.tar.gz)
+sha256sums=('736eb75ad59afca4e0241e281c34d3167f7ed5c8d1a7d6c5d2ddfb66d6bdbc2e')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package(){
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

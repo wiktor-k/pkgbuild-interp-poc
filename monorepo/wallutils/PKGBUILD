@@ -1,0 +1,31 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgname=wallutils
+pkgver=5.14.4
+pkgrel=1
+pkgdesc='Utilities for handling resolutions, wallpapers and timed wallpapers'
+arch=(x86_64)
+url='https://github.com/xyproto/wallutils'
+license=(BSD-3-Clause)
+options=(!strip !lto)
+depends=(bash glibc libheif libx11 wayland)
+makedepends=(git go libxcursor libxmu libxpm upx xbitmaps xorgproto)
+optdepends=('feh: for setting the wallpaper for some window managers that runs under X'
+            'imagemagick: for supporting HEIF/HEIC (macOS wallpaper) files'
+            'nvidia-utils: for the vram utility'
+            'procps-ng: for the Labwc window manager'
+            'swaybg: for the Sway and Labwc window managers')
+source=("git+$url#tag=v$pkgver")
+b2sums=('8111510eb83c3c1005e8a3538a065a228ee9a1b730935cf7ead1dcbe7cb13bb5d8f595884e402666f245d8dbd09911deeea5f56aeb4dbe2107f2b89f24dab71a')
+
+build() {
+  export CGO_CFLAGS="$CFLAGS"
+  make -C $pkgname
+}
+
+package() {
+  DESTDIR="$pkgdir" make -C $pkgname install install-man
+  find "$pkgdir/usr/bin/" -executable -type f -not -name heic-install -exec \
+    upx --best --lzma --no-progress --no-time -q {} >/dev/null \;
+  install -Dm644 $pkgname/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

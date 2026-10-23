@@ -1,0 +1,24 @@
+pkgbase = python-pycrdt
+	pkgdesc = CRDTs based on Yrs
+	pkgver = 0.14.10
+	pkgrel = 1
+	url = https://github.com/jupyter-server/pycrdt
+	arch = x86_64
+	license = MIT
+	checkdepends = python-anyio
+	checkdepends = python-pydantic
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mypy-testing
+	checkdepends = python-trio
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	depends = glibc
+	depends = libgcc
+	depends = python
+	depends = python-anyio
+	source = git+https://github.com/jupyter-server/pycrdt#tag=0.14.10
+	sha256sums = 888a055345d2f6c3698e00aff42f6cfcbeecbfb4d1716eab738bf4fac953a63e
+
+pkgname = python-pycrdt

@@ -1,0 +1,27 @@
+pkgbase = maplibre-native-qt
+	pkgdesc = MapLibre Native Qt Bindings and Qt Location Plugin
+	pkgver = 3.0.0
+	pkgrel = 2
+	url = https://maplibre.org/maplibre-native-qt/docs/
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = cmake
+	depends = icu
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-location
+	depends = qt6-positioning
+	depends = zlib
+	source = https://github.com/maplibre/maplibre-native-qt/releases/download/v3.0.0/maplibre-native-qt_v3.0.0_Source.tar.bz2
+	source = qt-6.10.patch
+	source = https://github.com/maplibre/maplibre-native/commit/dde3fdd3.patch
+	source = fix-install-paths.patch
+	sha256sums = 9689fb0630adc33a34ea476bdf53a3ef7dc76cb3c95da9de056081f9330a9355
+	sha256sums = 686cf847b33490812f675cbb2b81d77d59e1460039c1be33a77adfe56f699279
+	sha256sums = 559747c0a84292b37ca639fb0d90ef0b347a7c24c277053973f00f4736210a52
+	sha256sums = 88264f17856a9cde90b2c8dd6610528f6df35fff4bbf03c185dece44c3458df7
+
+pkgname = maplibre-native-qt

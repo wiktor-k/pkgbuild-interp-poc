@@ -1,0 +1,25 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=rankwidth
+pkgver=0.10
+pkgrel=1
+pkgdesc='A program that calculates rank-width and rank-decompositions'
+arch=(x86_64)
+url='https://sourceforge.net/projects/rankwidth/'
+license=(GPL-2.0-or-later)
+depends=(igraph
+         glibc)
+makedepends=()
+source=(https://master.dl.sourceforge.net/project/rankwidth/rw-$pkgver.tar.gz)
+sha256sums=('89a8ed364893ac1b70ab70a152e3e7db3cf348bb69098aa6dbb969639df927db')
+
+build() {
+  cd rw-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd rw-$pkgver
+  make install DESTDIR="$pkgdir"
+}

@@ -1,0 +1,26 @@
+pkgbase = python-fast-zip-decryption
+	pkgdesc = Read password-protected zip files 100x faster
+	pkgver = 3.0.0
+	pkgrel = 2
+	url = https://github.com/mxmlnkn/fast-zip-decryption
+	arch = x86_64
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = zip
+	source = python-fast-zip-decryption::git+https://github.com/mxmlnkn/fast-zip-decryption#tag=v3.0.0
+	source = remove-version-constraints.patch
+	sha512sums = c55e273c54a8ee8246b47125d38540b85db68baa6d93c5d20396cec45fe2a77c9171fadfe35ca79fd70196ae13f92c474bf8b8f302fff1938aeaa8f49270e1fb
+	sha512sums = 15fda57c286f99db24b4d17f2eda7e119cad292b55e9a7e5131650fad7ff5994889e6b9cfeada05287555abf9af363b25fb360027847a3f009f0a1409631b1e7
+	b2sums = 3cf41bdd6fe79a104a0e84cbcbebfe9522f57d7899efd274ab64aad5a40fbf7fad2de1cf33ab76fcc25fd5147535cf7c1e72208ce21953ab329b08956fd293af
+	b2sums = cf1aa31b328208601da67e5276af6ff45b939a1b59d14a4b5b1dba2421a157c6b2e9ff8c6df3341d2ad27212f20343c27fb5939c69a362d36dfb6cca4f39344d
+
+pkgname = python-fast-zip-decryption
+	depends = python
+	depends = zip
+	depends = glibc

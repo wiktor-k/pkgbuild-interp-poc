@@ -1,0 +1,425 @@
+pkgbase = thunderbird
+	pkgdesc = Standalone mail and news reader from mozilla.org
+	pkgver = 158.0
+	pkgrel = 1
+	url = https://www.thunderbird.net/
+	arch = x86_64
+	license = MPL-2.0
+	license = GPL-2.0-only
+	license = LGPL-2.1-only
+	makedepends = unzip
+	makedepends = zip
+	makedepends = diffutils
+	makedepends = python
+	makedepends = nasm
+	makedepends = mesa
+	makedepends = libpulse
+	makedepends = libice
+	makedepends = libsm
+	makedepends = rust
+	makedepends = clang
+	makedepends = llvm
+	makedepends = cbindgen
+	makedepends = nodejs
+	makedepends = lld
+	makedepends = gawk
+	makedepends = perl
+	makedepends = findutils
+	makedepends = libotr
+	makedepends = wasi-compiler-rt
+	makedepends = wasi-libc
+	makedepends = wasi-libc++
+	makedepends = wasi-libc++abi
+	depends = glibc
+	depends = gtk3
+	depends = libgdk-3.so
+	depends = libgtk-3.so
+	depends = mime-types
+	depends = dbus
+	depends = libdbus-1.so
+	depends = dbus-glib
+	depends = alsa-lib
+	depends = nss
+	depends = hunspell
+	depends = sqlite
+	depends = ttf-font
+	depends = libvpx
+	depends = libvpx.so
+	depends = zlib
+	depends = bzip2
+	depends = libbz2.so
+	depends = botan
+	depends = libwebp
+	depends = libwebp.so
+	depends = libwebpdemux.so
+	depends = libevent
+	depends = libjpeg-turbo
+	depends = libffi
+	depends = libffi.so
+	depends = nspr
+	depends = libgcc
+	depends = libstdc++
+	depends = libx11
+	depends = libxrender
+	depends = libxfixes
+	depends = libxext
+	depends = libxcomposite
+	depends = libxdamage
+	depends = pango
+	depends = libpango-1.0.so
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = freetype2
+	depends = libfreetype.so
+	depends = fontconfig
+	depends = libfontconfig.so
+	depends = glib2
+	depends = libglib-2.0.so
+	depends = pixman
+	depends = libpixman-1.so
+	depends = gnupg
+	depends = json-c
+	depends = libcanberra
+	depends = ffmpeg
+	noextract = thunderbird-i18n-158.0-af.xpi
+	noextract = thunderbird-i18n-158.0-ar.xpi
+	noextract = thunderbird-i18n-158.0-ast.xpi
+	noextract = thunderbird-i18n-158.0-be.xpi
+	noextract = thunderbird-i18n-158.0-bg.xpi
+	noextract = thunderbird-i18n-158.0-br.xpi
+	noextract = thunderbird-i18n-158.0-ca.xpi
+	noextract = thunderbird-i18n-158.0-cak.xpi
+	noextract = thunderbird-i18n-158.0-cs.xpi
+	noextract = thunderbird-i18n-158.0-cy.xpi
+	noextract = thunderbird-i18n-158.0-da.xpi
+	noextract = thunderbird-i18n-158.0-de.xpi
+	noextract = thunderbird-i18n-158.0-dsb.xpi
+	noextract = thunderbird-i18n-158.0-el.xpi
+	noextract = thunderbird-i18n-158.0-en-GB.xpi
+	noextract = thunderbird-i18n-158.0-en-US.xpi
+	noextract = thunderbird-i18n-158.0-es-AR.xpi
+	noextract = thunderbird-i18n-158.0-es-ES.xpi
+	noextract = thunderbird-i18n-158.0-et.xpi
+	noextract = thunderbird-i18n-158.0-eu.xpi
+	noextract = thunderbird-i18n-158.0-fi.xpi
+	noextract = thunderbird-i18n-158.0-fr.xpi
+	noextract = thunderbird-i18n-158.0-fy-NL.xpi
+	noextract = thunderbird-i18n-158.0-ga-IE.xpi
+	noextract = thunderbird-i18n-158.0-gd.xpi
+	noextract = thunderbird-i18n-158.0-gl.xpi
+	noextract = thunderbird-i18n-158.0-he.xpi
+	noextract = thunderbird-i18n-158.0-hr.xpi
+	noextract = thunderbird-i18n-158.0-hsb.xpi
+	noextract = thunderbird-i18n-158.0-hu.xpi
+	noextract = thunderbird-i18n-158.0-hy-AM.xpi
+	noextract = thunderbird-i18n-158.0-id.xpi
+	noextract = thunderbird-i18n-158.0-is.xpi
+	noextract = thunderbird-i18n-158.0-it.xpi
+	noextract = thunderbird-i18n-158.0-ja.xpi
+	noextract = thunderbird-i18n-158.0-ka.xpi
+	noextract = thunderbird-i18n-158.0-kab.xpi
+	noextract = thunderbird-i18n-158.0-kk.xpi
+	noextract = thunderbird-i18n-158.0-ko.xpi
+	noextract = thunderbird-i18n-158.0-lt.xpi
+	noextract = thunderbird-i18n-158.0-ms.xpi
+	noextract = thunderbird-i18n-158.0-nb-NO.xpi
+	noextract = thunderbird-i18n-158.0-nl.xpi
+	noextract = thunderbird-i18n-158.0-nn-NO.xpi
+	noextract = thunderbird-i18n-158.0-pa-IN.xpi
+	noextract = thunderbird-i18n-158.0-pl.xpi
+	noextract = thunderbird-i18n-158.0-pt-BR.xpi
+	noextract = thunderbird-i18n-158.0-pt-PT.xpi
+	noextract = thunderbird-i18n-158.0-rm.xpi
+	noextract = thunderbird-i18n-158.0-ro.xpi
+	noextract = thunderbird-i18n-158.0-ru.xpi
+	noextract = thunderbird-i18n-158.0-sk.xpi
+	noextract = thunderbird-i18n-158.0-sl.xpi
+	noextract = thunderbird-i18n-158.0-sq.xpi
+	noextract = thunderbird-i18n-158.0-sr.xpi
+	noextract = thunderbird-i18n-158.0-sv-SE.xpi
+	noextract = thunderbird-i18n-158.0-th.xpi
+	noextract = thunderbird-i18n-158.0-tr.xpi
+	noextract = thunderbird-i18n-158.0-uk.xpi
+	noextract = thunderbird-i18n-158.0-uz.xpi
+	noextract = thunderbird-i18n-158.0-vi.xpi
+	noextract = thunderbird-i18n-158.0-zh-CN.xpi
+	noextract = thunderbird-i18n-158.0-zh-TW.xpi
+	options = !emptydirs
+	options = !makeflags
+	options = !lto
+	source = https://archive.mozilla.org/pub/thunderbird/releases/158.0/source/thunderbird-158.0.source.tar.xz
+	source = https://archive.mozilla.org/pub/thunderbird/releases/158.0/source/thunderbird-158.0.source.tar.xz.asc
+	source = clang22-wasm32-wasip1.patch
+	source = vendor-prefs.js
+	source = distribution.ini
+	source = mozconfig.cfg
+	source = metainfo.patch
+	source = mozpkix-x11-success-macro.patch
+	source = org.mozilla.Thunderbird.desktop
+	source = thunderbird-i18n-158.0-af.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/af.xpi
+	source = thunderbird-i18n-158.0-ar.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ar.xpi
+	source = thunderbird-i18n-158.0-ast.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ast.xpi
+	source = thunderbird-i18n-158.0-be.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/be.xpi
+	source = thunderbird-i18n-158.0-bg.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/bg.xpi
+	source = thunderbird-i18n-158.0-br.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/br.xpi
+	source = thunderbird-i18n-158.0-ca.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ca.xpi
+	source = thunderbird-i18n-158.0-cak.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/cak.xpi
+	source = thunderbird-i18n-158.0-cs.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/cs.xpi
+	source = thunderbird-i18n-158.0-cy.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/cy.xpi
+	source = thunderbird-i18n-158.0-da.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/da.xpi
+	source = thunderbird-i18n-158.0-de.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/de.xpi
+	source = thunderbird-i18n-158.0-dsb.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/dsb.xpi
+	source = thunderbird-i18n-158.0-el.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/el.xpi
+	source = thunderbird-i18n-158.0-en-GB.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/en-GB.xpi
+	source = thunderbird-i18n-158.0-en-US.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/en-US.xpi
+	source = thunderbird-i18n-158.0-es-AR.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/es-AR.xpi
+	source = thunderbird-i18n-158.0-es-ES.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/es-ES.xpi
+	source = thunderbird-i18n-158.0-et.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/et.xpi
+	source = thunderbird-i18n-158.0-eu.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/eu.xpi
+	source = thunderbird-i18n-158.0-fi.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/fi.xpi
+	source = thunderbird-i18n-158.0-fr.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/fr.xpi
+	source = thunderbird-i18n-158.0-fy-NL.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/fy-NL.xpi
+	source = thunderbird-i18n-158.0-ga-IE.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ga-IE.xpi
+	source = thunderbird-i18n-158.0-gd.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/gd.xpi
+	source = thunderbird-i18n-158.0-gl.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/gl.xpi
+	source = thunderbird-i18n-158.0-he.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/he.xpi
+	source = thunderbird-i18n-158.0-hr.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/hr.xpi
+	source = thunderbird-i18n-158.0-hsb.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/hsb.xpi
+	source = thunderbird-i18n-158.0-hu.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/hu.xpi
+	source = thunderbird-i18n-158.0-hy-AM.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/hy-AM.xpi
+	source = thunderbird-i18n-158.0-id.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/id.xpi
+	source = thunderbird-i18n-158.0-is.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/is.xpi
+	source = thunderbird-i18n-158.0-it.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/it.xpi
+	source = thunderbird-i18n-158.0-ja.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ja.xpi
+	source = thunderbird-i18n-158.0-ka.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ka.xpi
+	source = thunderbird-i18n-158.0-kab.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/kab.xpi
+	source = thunderbird-i18n-158.0-kk.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/kk.xpi
+	source = thunderbird-i18n-158.0-ko.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ko.xpi
+	source = thunderbird-i18n-158.0-lt.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/lt.xpi
+	source = thunderbird-i18n-158.0-ms.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ms.xpi
+	source = thunderbird-i18n-158.0-nb-NO.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/nb-NO.xpi
+	source = thunderbird-i18n-158.0-nl.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/nl.xpi
+	source = thunderbird-i18n-158.0-nn-NO.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/nn-NO.xpi
+	source = thunderbird-i18n-158.0-pa-IN.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/pa-IN.xpi
+	source = thunderbird-i18n-158.0-pl.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/pl.xpi
+	source = thunderbird-i18n-158.0-pt-BR.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/pt-BR.xpi
+	source = thunderbird-i18n-158.0-pt-PT.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/pt-PT.xpi
+	source = thunderbird-i18n-158.0-rm.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/rm.xpi
+	source = thunderbird-i18n-158.0-ro.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ro.xpi
+	source = thunderbird-i18n-158.0-ru.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/ru.xpi
+	source = thunderbird-i18n-158.0-sk.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/sk.xpi
+	source = thunderbird-i18n-158.0-sl.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/sl.xpi
+	source = thunderbird-i18n-158.0-sq.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/sq.xpi
+	source = thunderbird-i18n-158.0-sr.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/sr.xpi
+	source = thunderbird-i18n-158.0-sv-SE.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/sv-SE.xpi
+	source = thunderbird-i18n-158.0-th.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/th.xpi
+	source = thunderbird-i18n-158.0-tr.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/tr.xpi
+	source = thunderbird-i18n-158.0-uk.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/uk.xpi
+	source = thunderbird-i18n-158.0-uz.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/uz.xpi
+	source = thunderbird-i18n-158.0-vi.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/vi.xpi
+	source = thunderbird-i18n-158.0-zh-CN.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/zh-CN.xpi
+	source = thunderbird-i18n-158.0-zh-TW.xpi::https://archive.mozilla.org/pub/thunderbird/releases/158.0/linux-x86_64/xpi/zh-TW.xpi
+	validpgpkeys = 14F26682D0916CDD81E37B6D61B7B526D98F0353
+	sha512sums = fe19e0e7540ef27af0bdb730963a9b4ad91472a9ab8b0c5eddd291c2d234ab7ac68ddf71c8595090b87cfd0deeaebc66dbce15c65c90fd09183b05db4bdce263
+	sha512sums = SKIP
+	sha512sums = b7097f0d620be87047f6f11f152bd096dc144b1745fe30dc75db7d7050242c4178382f7e504cc10ad3545a3455174ca17a83fa3113443dffe660f28de006cb0e
+	sha512sums = 6918c0de63deeddc6f53b9ba331390556c12e0d649cf54587dfaabb98b32d6a597b63cf02809c7c58b15501720455a724d527375a8fb9d757ccca57460320734
+	sha512sums = 5cd3ac4c94ef6dcce72fba02bc18b771a2f67906ff795e0e3d71ce7db6d8a41165bd5443908470915bdbdb98dddd9cf3f837c4ba3a36413f55ec570e6efdbb9f
+	sha512sums = f528f2645c44648a8a42015923e51b8626616e2c66cc3ff870c27223002c802c15616e570d639f9c79b3affa4b7f9e9f2c42c780bbcb42a55bd87edafa8352c5
+	sha512sums = 8373d45b594edea2aafd00151468e5c9491b1baa078882fea76669352d64843d5bdaa8ad87b0a9549e452aef7f246a5919b4b1e4c0c1deaf6ea65bc2dd120a32
+	sha512sums = 06334e2ec70d56bea8ad2690cba23769758892c543b26a7108ee05771c431bae784e526ae1e62728879fd8037c6d12b66c65994f8029286724cf6235b80a9ac0
+	sha512sums = fffeb73e2055408c5598439b0214b3cb3bb4e53dac3090b880a55f64afcbc56ba5d32d1187829a08ef06d592513d158ced1fde2f20e2f01e967b5fbd3b2fafd4
+	sha512sums = 26ac94e6efd2110c544449af9e7189e231f7d32f523d6a9327bd1e72bf9b8d6d631b6678551a975321284750e64c4c674a6fe4d325fc0d3c63645b26c476b0da
+	sha512sums = 0965bfa46dc3a931ba15619a81cecffbba9cba88fbda418c23b92b3aae1d4dc607895db668c912c05e81bbb282710da1b0fa86d1b4c7f8cd9da674224bbee507
+	sha512sums = a4b64eee5e50a31e2ece7f62d5c66379c6dfb6c93c6a9744e1cd0d02a8d04d9122c4151b2223f64e40c5ebbafa1b24abc1e5ba527a8b338633054867cf787916
+	sha512sums = 4eb49daf195cefb41306620a912baaa02c9b1ff2adc37323a4e05e85d9ed71b3aca5736cb9a6087db4f7fa8c750a9fae72e229f2907f5abe54ca6b39232b010e
+	sha512sums = 269d4a690c37b63f024d34cc42c7ecf7ec9bde503d255afc8252635280e2ad58a4407f51f65a697386495b813caf6c04599068999ea1cde6bfe47551cc770ef5
+	sha512sums = 549af183bb6817596dd95f3499fa1f0651412df8ad2346210bc2809818eae8c7872c0b606f29e3a8583c5a057faa8ceef97955de281a91bfe1a3aa7347802d9c
+	sha512sums = 195cd3b9fb4f4845c2df4101e02c5adb1831305695492e7d78c8d6b4e141af7d3071cf565ff4892a3e7bed765fb5ece171201983aac1a28cd52a7281fbc1b056
+	sha512sums = 2f9a91b0e90cb1bf07acdfdc95a968334933c5f1f062630a31174ebbb94c8f8885ce3026fbc84898c7010abb4876732a5093aea539aa140d91512c95dc29fd50
+	sha512sums = c7665f951089911ca803abaee295b8908d36e392cad8c5e2cb8aacc7531d75440c4508b63422438f10763f59eec3c26aa4e3293e39b841eab06e7cc7ce6736fa
+	sha512sums = 74630a68fd5ed0a74c21ecbe27aefefd890bc449efc6d63490df71615c98086a9992f270938330827e0a8168033aac906bc6328c09e52ff87e93ce8bde717eba
+	sha512sums = f8e6495ae2b4645f9f38946ecb16b9e8c0e062a97fec7834c1c579ca3350390361fdd7742f4e5d9e82841dfc817f18c9c737ef495c9ebe89787a229de083cf3d
+	sha512sums = cab7320d1c5e45fdb2f09efce0239946a0ed1d3b996bf2b4c9508b945069a739ccb3c3e25dbf19035e3357f3267c86bbca1a5945632ba9e3974ae25423f54e62
+	sha512sums = 0791564cb73b7e390aebd888ac995a10edfbd66a958a67dab135f71526c3b104dae6c58c8721f3b8947beaef5b201c1c09804eac8278266821aa98da1de91351
+	sha512sums = b6b652a532a4e66b3ac636d2a45fff507d7a3fa9b30d10069f23f757dc4061aa4efed78511f8adaa82c1ad3ce8debdb4253c70d73700a7fdfb61e43249bb8b72
+	sha512sums = 251dbf513d7d8ec29e364d2df8573f2be4fd6205b961172165a485b17011f6471bcde61492b29fc6f2c96d5e51d96c7e7570e0de1a6bfc13563206f50c6157f4
+	sha512sums = db3c82f7f0722cee59c53ed1cfd4cc17cf1482818340b705b096fbfbc8b5f2352555b88b32b9a674645c57ed051f06e205b1ef35ea35525b66ae273ea7e17eac
+	sha512sums = ff8c6941a16347823eee5386d055e020df603b493a31ea7d5b6e84d4db41db4e98c359a4d753d3e797d64ef5e431029c842ef1350fc9958db21739c50ee02083
+	sha512sums = 8d2ac836f8254c0761eaf805e366d9d10c669beb764f059ba390488ec04fb79206a4c8ff758264cfccbc421038402fd35e0efb71651aa09811d2974dd4eefed2
+	sha512sums = df167bc5601b552b12d88dc72ef365b13e7387cdde2d6727fcb16bdf16f311d5f784165dbd09f0f582035dd779e7f69285a8449e0283c103c17aceb28cffb98b
+	sha512sums = 1afdb8e66355ee113aa31986d539610e7e487cc84519cb50c5eb7faeefac329e5080020aebf0baea9d0982e45f1c0c8202f54bf4160608cc5f23ef94dbb1b60b
+	sha512sums = 1b14e0fcc30ebc982f1ed28fd1d5b3678b4614c1d466b0f639fe0ddf89191eed10231658b5de7daf03dd1bc4985d97418bb3df104d3587ffdf7df90730e2fb51
+	sha512sums = 537620a14c24ffdbd202d4181bde978dc19d72d1f87bbd5648bcb0e5705af6ab6309a6de576c750823cfd90267d8a93963ba44f6ac7de11db50e03dff5754f33
+	sha512sums = 2ae1fcbc28bc9cd80e3855ea4bd25ed35ae27cc06464fa62156d1e006b20d802d48dc9af7d02039de92fdcce5867f78897c135b78bc775ba413ac5fd084c84c7
+	sha512sums = 3619fe628e67ebe4a9c549e76cbf064b683b1f05d4bd3ece491e59e6c3a7309fd9c712312a8d49a89942cced8e9ee5d511d88c8a565e103c1e8ac8804c9ef331
+	sha512sums = 898375879545537e74df126c0e91718f7ac3664da4adafa8ba32445bacb61c275738da7aa5608f99611879a129354b467348491acbed5c9047a6cc1179c12aa8
+	sha512sums = 95d6fd6694e61a26fd2a71014570c03ed40ec21308e7dff29aa29bcd18f50849efbfa380a6c9502a89ad21458b755d54e29fdaa576ea66161e85993fb0d546c1
+	sha512sums = 5a604bbae8a83e1593cca6570747125210429ed9c2ee6b580f598f1a6e57e64abef197c47b12d7ba808e3c38ab4be58476848f1684b2ce61336d5f6614ee5eb3
+	sha512sums = a8b851b57f3bf65dfbd5b23415e2d2143235b0a6f39d7bc4a4a5f9d61fc479d7122d4965dcc1c9ae4512b862385cfd7a78e38f307208adba7febc6871791433e
+	sha512sums = 85091049e1a84f378926580a7358aafddce54adb6fa46254947629343283f89510e9db68be46ceafd2ce982fe0b61b046d90a728eab44cd64a594bdf12c796e8
+	sha512sums = c05d403396da64ca1f51bddc9410970da99643bef74bd996d485c1b28918a2e64551c5a1cf8225cb0bd42e97942181609ff1135045c4655c39ce514f01848497
+	sha512sums = 732b0d617979afc2836b4067164b40cefdf4568cc01c8e5fe9ae9c57b6094ee0ebc3327771671df8cf7f213abf676073405d65b838c4f521a59bd00f19f71743
+	sha512sums = 548b15e6481e69c7ff2a39912a464830446bd903bbe8b17626f82f5d6404b6d440dc4914602aeb3963e57b95c40b379e1de4dd3f9cf350c1c14f0b538d2589b7
+	sha512sums = 8e3f88a11c08a20c91b35081877e7cd6c8853809a346ac0ff9b38cb31f2598a842019359f1d60b213015f716921e50799d56d1835464c5a57348cf83a6f01a3c
+	sha512sums = 1558537712eb6d005a4a0e167fbc19bc093196ce25c82006f2ce167a30aae8d2b15b0617d7b84f5b992fbaed6276ae7b992070743cf60dbdd44e52b6abd95df5
+	sha512sums = ea3a23834a082f2ddc4c98c87985b25541213a82e4d5ef1cd9a76786cc38bab7e0cf1ec5e609b41edc02a71d548e3084dd167573de288d696d05ff49dd00e133
+	sha512sums = b08fb96c26bbc8925824e50468bd8c8dc77284af4e3c26f98e6d3d791386f710c2d1b7e99f7afd5b4d3058a9ab21b656ea84d9d21728f0332cb9adc7d62e3804
+	sha512sums = f14995a609a6b0a7b498c90c3319ec25c305b5813c75010fb426acfb2779e849356f2627374510e880847340cf783a1043b8a142f6169d28103ee0a81098610b
+	sha512sums = 8f14172a8bc7b0b45d5baa9f33724f8c6f942a0f870b8e832661caf62eea8ee4481b095364a3607d3dedc5fe757638c054bd5ae0a289f6c2fff0e74fdff33387
+	sha512sums = 69929179e5e6df276962dd208f263ae17d1c57b7101908e25c544177e2487b490eb921d567ae6a64df96e81e4de3e4709ff17a30289c036d0bc5616ea00ec42b
+	sha512sums = b0fadae5ce0624784252f8ed8ae2fee1c062738da80db69c5952f3345c3c0e5b63f369e62337733ef6c154b24c9c6329175a41da21291a5f3f924f8b331f0c53
+	sha512sums = db3c422b5e5f0be03c67b9653bfaf608a0db80495df71c1996f015e6f08efc6153fb133a51dfac611161f383f6f37f44e0ca5316cc58d40c1759fb99ed61bbd3
+	sha512sums = 76644d3f6ea22da7eaadc3de42f6b8a5988865c6b4d60828e3fe9cb666632e3315620c7685f8d1d59087c3d42b8464c3e1b198d459482ff0a48a67a47964fa96
+	sha512sums = 1745dbdcbb02eeadd797dfc148ecf175222aaa29277cd7cc8c9d57a3b378c72dfc8966e53ab1ed65f69412425974a8b360ff4a252991541723a4f0dcc67beb7d
+	sha512sums = 3bded4946c8ae756fd3d5b0a3d977f682deec764179225575e97852b13a4189cc4ebbb1a7ed66a65327ae5b87f7d1a1877de257aa5ec869de5b350fa017f6d7f
+	sha512sums = ad0a820ad73507378017fe7aa44276a488c9f763876b8505c31b8730eb2cb4e3f9c5e298c660f409a3a9539522196d76fd9a7b9ca9777c4f233f431cbcdce1f0
+	sha512sums = 75f83ddc8014500199ef048254af6f546292bd8afde8c32875115826069647609da1eb42c487fd9af3ce8abfb7eb1e77823127cfed09f73520bedeba8e41197c
+	sha512sums = 40dc0f5a52f9f6283290937915fafef3b6d85f2b3845ab7213bbe112d7c841d82dbee2eebc9f8fa1d579dca9b83f1548492c0d950a250785335c0131132fea05
+	sha512sums = 31a1ef8510a6a67588cd463a0511493b0329f6b35e0e687179d516f383488b2ca0510e2030eb77778905de8f00c365d57fc09650d3911a9ce88b3b312bb1a771
+	sha512sums = fde4b666651bad98d06f145e611569f16afb98e9b5035769cb942c6b591735822316de9fec8a8aad9a825cc7f7f79c83a7e786d9800427f181563f285492eedc
+	sha512sums = 2184579883f816e731677ccba0353a3f3fa62cbf9e08631ee46358a3dbda71b31cbf176543856a52af938166e14902b073bf6d01c6bcae8d98a377c537c782bc
+	sha512sums = afd629e47d98af3ae0c5725b94fe7ff3ce9314506d4b649c2a857fbb19b2bbb60be7323fac4ed2e8323e460bca2d2ea24f396c90c66c9c0bad778440bb1891a9
+	sha512sums = f53f58713c8f5623a912f12c70b7f3b12089f14710dfb2f79b863d865a2de018c00bf31e71a82e27a59a73125fe340d8ff7f83f62258d3f4541a216321da362c
+	sha512sums = 061509ba8d63ade30a02865a8e75a7d02de65cb2e137303163b3244d4a7b7de13d065ff8e9809dfa9bc3a8f74e7a6babc55c42b495f2b86707a249bd50478a20
+	sha512sums = a1047fd27dca0f35a84184584442961475513435f6ebd93c483918ae73ac850672ed0a73af5b594150369978f3018d6851ffcdcb99c757a4bb06cfdea0037920
+	sha512sums = 1dbf1e9dcef3b33acc588f633aec812de2f369e1e9012d2db8561ef5673299fd0a0788f80fada938ea91d72a13f472294abc71808cd59f9ce5008b7bcd7e88ae
+	sha512sums = f450116009b250a2003abbe24711210559a9497fe61543091875a0fcfc6dca6ebdecbae1aa12184e91712c195aee53fe7028f81b94a31b1c1ee57fed5dae2f57
+	sha512sums = bbf0855f66ad80c09adf6685521d18c62fbfe2b1d222e5af13e47cd2fb40c8e6fb67cabe790bb4d17d6e228fe64dcc8e2b5692a1137822d05ad28532e9afec3a
+	sha512sums = a8304089493640f472f57bf105194bda3299439293a974cb98f62814347a21614792e04d7de894eee0c0af3eb70c5ffb97a70b15bafbffaf3be9c1d7ca04f1ad
+	sha512sums = 26ab6e9423e47ae952145cfd2b7965fb109e209cc4cdd879f81bf2a5daca01ac28dc0ccc7d635622e9e1ebe4d696fddef631dd96c44a1297656c8fcd64527d13
+	sha512sums = 0eb4538a93561784b18617ebf0502da1a27123c57ba1aebf53b67f7f462c734f1f8d5efbf4e2b2492e6d1d61e6dd2fb9cdfa065a227aded667f26f2f35d2a712
+	sha512sums = 72c2081ba455cd6fb371845e6cd3ca4aa5eeac511c04400e2b53fae7ae49acf867a5895f427cf6576e2d4f96908b45bab86bcfa5cfb462ae1527ddd413d9944d
+	sha512sums = 6df85be0a545fc7bc142fd79a96faa33b7af3155db1f2e1d5e29a9b82136c822475e91c430a3c527708d1640242488d5d2f9957b05e304f153eab26d1b799e41
+	sha512sums = 0ec863e32d01912775938ca2de3e6021f7fe9a2c44b06bd23c7e2a26b640231ac5b98b4ab4e2ebd7d849a3aaad4f12c20fd749dbeff71eab2917c1ea0c6331f1
+
+pkgname = thunderbird
+	optdepends = hunspell-en_us: Spell checking, American English
+	optdepends = libotr: OTR support for active one-to-one chats
+	optdepends = libnotify: Notification integration
+
+pkgname = thunderbird-i18n-af
+
+pkgname = thunderbird-i18n-ar
+
+pkgname = thunderbird-i18n-ast
+
+pkgname = thunderbird-i18n-be
+
+pkgname = thunderbird-i18n-bg
+
+pkgname = thunderbird-i18n-br
+
+pkgname = thunderbird-i18n-ca
+
+pkgname = thunderbird-i18n-cak
+
+pkgname = thunderbird-i18n-cs
+
+pkgname = thunderbird-i18n-cy
+
+pkgname = thunderbird-i18n-da
+
+pkgname = thunderbird-i18n-de
+
+pkgname = thunderbird-i18n-dsb
+
+pkgname = thunderbird-i18n-el
+
+pkgname = thunderbird-i18n-en-gb
+
+pkgname = thunderbird-i18n-en-us
+
+pkgname = thunderbird-i18n-es-ar
+
+pkgname = thunderbird-i18n-es-es
+
+pkgname = thunderbird-i18n-et
+
+pkgname = thunderbird-i18n-eu
+
+pkgname = thunderbird-i18n-fi
+
+pkgname = thunderbird-i18n-fr
+
+pkgname = thunderbird-i18n-fy-nl
+
+pkgname = thunderbird-i18n-ga-ie
+
+pkgname = thunderbird-i18n-gd
+
+pkgname = thunderbird-i18n-gl
+
+pkgname = thunderbird-i18n-he
+
+pkgname = thunderbird-i18n-hr
+
+pkgname = thunderbird-i18n-hsb
+
+pkgname = thunderbird-i18n-hu
+
+pkgname = thunderbird-i18n-hy-am
+
+pkgname = thunderbird-i18n-id
+
+pkgname = thunderbird-i18n-is
+
+pkgname = thunderbird-i18n-it
+
+pkgname = thunderbird-i18n-ja
+
+pkgname = thunderbird-i18n-ka
+
+pkgname = thunderbird-i18n-kab
+
+pkgname = thunderbird-i18n-kk
+
+pkgname = thunderbird-i18n-ko
+
+pkgname = thunderbird-i18n-lt
+
+pkgname = thunderbird-i18n-ms
+
+pkgname = thunderbird-i18n-nb-no
+
+pkgname = thunderbird-i18n-nl
+
+pkgname = thunderbird-i18n-nn-no
+
+pkgname = thunderbird-i18n-pa-in
+
+pkgname = thunderbird-i18n-pl
+
+pkgname = thunderbird-i18n-pt-br
+
+pkgname = thunderbird-i18n-pt-pt
+
+pkgname = thunderbird-i18n-rm
+
+pkgname = thunderbird-i18n-ro
+
+pkgname = thunderbird-i18n-ru
+
+pkgname = thunderbird-i18n-sk
+
+pkgname = thunderbird-i18n-sl
+
+pkgname = thunderbird-i18n-sq
+
+pkgname = thunderbird-i18n-sr
+
+pkgname = thunderbird-i18n-sv-se
+
+pkgname = thunderbird-i18n-th
+
+pkgname = thunderbird-i18n-tr
+
+pkgname = thunderbird-i18n-uk
+
+pkgname = thunderbird-i18n-uz
+
+pkgname = thunderbird-i18n-vi
+
+pkgname = thunderbird-i18n-zh-cn
+
+pkgname = thunderbird-i18n-zh-tw

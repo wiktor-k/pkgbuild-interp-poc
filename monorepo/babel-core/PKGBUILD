@@ -1,0 +1,28 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=babel-core
+pkgver=8.0.7
+pkgrel=1
+pkgdesc="A compiler for writing next generation JavaScript"
+arch=('any')
+url="https://babeljs.io/"
+license=('MIT')
+depends=('nodejs')
+makedepends=('npm')
+source=("$pkgname-$pkgver.tgz::https://registry.npmjs.org/@babel/core/-/core-$pkgver.tgz")
+noextract=($pkgname-$pkgver.tgz)
+sha512sums=('648b195811ba635a1afbc7e4415a74c5e09d8c21c19171420885ab9a0f52bde8d5bdf71542028a4661ab04359f33bae2961be746812e6aa6b97642bb281de91c')
+
+package() {
+  npm install -g --prefix "$pkgdir"/usr "$srcdir"/$pkgname-$pkgver.tgz
+  tar xf $pkgname-$pkgver.tgz package/LICENSE
+  install -Dm644 package/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  # Non-deterministic race in npm gives 777 permissions to random directories.
+  # See https://github.com/npm/npm/issues/9359 for details.
+  chmod -R u=rwX,go=rX "$pkgdir"
+
+  # npm installs package.json owned by build user
+  # https://bugs.archlinux.org/task/63396
+  chown -R root:root "$pkgdir"
+}

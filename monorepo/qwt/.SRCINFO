@@ -1,0 +1,29 @@
+pkgbase = qwt
+	pkgdesc = Qt Widgets for Technical Applications
+	pkgver = 6.3.0
+	pkgrel = 2
+	url = https://qwt.sourceforge.io/
+	arch = x86_64
+	license = custom:qwt-qt5
+	makedepends = qt6-tools
+	makedepends = qt6-svg
+	makedepends = qt5-tools
+	makedepends = qt5-svg
+	source = https://downloads.sourceforge.net/qwt/qwt-6.3.0.tar.bz2
+	source = rename-qt5-library.patch
+	sha512sums = fa90686058f5008f6d0365d24a74481bd642e9126d82291f27a5218b684bdcf008ef5e9293b52c5c7d85e9b42027459527be373726e8376a3f707ec85e483064
+	sha512sums = a8c175cba24d3eb3fc015cb779f4c9bf015dd4d60af342065fa862907c7edfe1f5b42d603ea465310ee5fbc3d9be09747eb10dd20ed6fa2e23ff810fe39540f5
+
+pkgname = qwt-qt5
+	depends = qt5-base
+	depends = qt5-svg
+	depends = qwt-common
+	optdepends = qt5-tools: for the Designer plugin
+
+pkgname = qwt
+	depends = qt6-base
+	depends = qt6-svg
+	depends = qwt-common
+	optdepends = qt6-tools: for the Designer plugin
+
+pkgname = qwt-common

@@ -1,0 +1,17 @@
+pkgbase = nginx-mod-redis
+	pkgdesc = Nginx module for redis caching
+	pkgver = 0.3.9
+	pkgrel = 33
+	url = https://www.nginx.com/resources/wiki/modules/redis/
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = nginx
+	makedepends = nginx-src
+	backup = etc/nginx/modules.d/20-redis.conf
+	source = https://people.freebsd.org/~osa/ngx_http_redis-0.3.9.tar.gz
+	source = nginx-1.23.patch
+	sha256sums = 21f87540f0a44b23ffa5df16fb3d788bc90803b255ef14f9c26e3847a6f26f46
+	sha256sums = d2720b51c5292037d5780e05d47568b93125f10ca205275ca99b300390499637
+
+pkgname = nginx-mod-redis
+	depends = nginx

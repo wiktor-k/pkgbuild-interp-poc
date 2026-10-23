@@ -1,0 +1,23 @@
+pkgbase = lorem
+	pkgdesc = Simple app to generate the Lorem Ipsum placeholder text
+	pkgver = 1.7
+	pkgrel = 1
+	url = https://apps.gnome.org/Lorem/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/World/design/lorem.git#tag=1.7
+	b2sums = ef3b3259215f2c8f33f97128c479d9c2c0c71446e5fbd2b5f6ead45e81f3e0d8aa0304a4828bf9fb7a68bc46302e47fa9ecd1419c60a4b4f966beb990d3c6b82
+
+pkgname = lorem

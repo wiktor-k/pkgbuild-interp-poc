@@ -1,0 +1,71 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=gnome-connections
+pkgver=51.0
+pkgrel=1
+pkgdesc='Remote desktop client for the GNOME desktop environment'
+arch=(x86_64)
+url='https://apps.gnome.org/Connections/'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  freerdp
+  fuse3
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk-vnc
+  gtk3
+  hicolor-icon-theme
+  libhandy
+  libsecret
+  libxml2
+  spice-gtk
+)
+makedepends=(
+  appstream
+  git
+  gobject-introspection
+  itstool
+  meson
+  vala
+)
+groups=(gnome)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-connections.git?signed#tag=${pkgver/[a-z]/.&}"
+  git+https://gitlab.gnome.org/GNOME/gtk-frdp.git
+  0001-Use-GApplication-to-parse-command-line-options.patch
+)
+b2sums=('0cf61f7e82dec11cb3d923dfea83fe9dd5379ae2a962896c4e2e8402b508fb7daa247e09fbe4fd909845970dc935120d153f2f6db145407aded86bb4333d08cc'
+        'SKIP'
+        '5c4026d67d6f5771b7ace9d2c5b4a73d5f4980dcf8ca1b50f9266fe3c110f53d6d08a32373611eae81f2b3fbfd56a91a47445bccb4700e757ddd852d61f2e8e7')
+validpgpkeys=(F55CDAB508C3ACBCB1C8B930C910F152653B1688) # Marek Kasik <mkasik@redhat.com>
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url subprojects/gtk-frdp "$srcdir/gtk-frdp"
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update
+
+  # Use GApplication to parse command line options
+  # https://gitlab.gnome.org/GNOME/gnome-connections/-/merge_requests/168
+  git apply -3 ../0001-Use-GApplication-to-parse-command-line-options.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

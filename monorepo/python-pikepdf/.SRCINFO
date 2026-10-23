@@ -1,0 +1,31 @@
+pkgbase = python-pikepdf
+	pkgdesc = Read and write PDFs with Python, powered by qpdf
+	pkgver = 10.17.0
+	pkgrel = 1
+	url = https://github.com/pikepdf/pikepdf
+	arch = x86_64
+	license = MPL-2.0
+	checkdepends = python-hypothesis
+	checkdepends = python-psutil
+	checkdepends = python-pytest-xdist
+	makedepends = git
+	makedepends = nanobind
+	makedepends = pybind11
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-scikit-build-core
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-fonttools
+	depends = python-jsonschema
+	depends = python-lxml
+	depends = python-packaging
+	depends = python-pillow
+	depends = python-referencing
+	depends = qpdf
+	source = git+https://github.com/pikepdf/pikepdf#tag=v10.17.0
+	sha256sums = 988c012a4aa37e96255ccd6b5bc470d6bde51af28214813d4cdba6ec38b4cc0f
+
+pkgname = python-pikepdf

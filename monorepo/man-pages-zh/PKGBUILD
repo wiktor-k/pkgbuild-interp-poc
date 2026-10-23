@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: dickeny@gmail.com
+# Contributor: cuihao <cuihao dot leo at gmail dot com>
+
+pkgbase=man-pages-zh
+pkgname=(man-pages-zh_cn man-pages-zh_tw)
+pkgver=1.6.4.5
+pkgrel=1
+arch=('any')
+url='https://github.com/man-pages-zh/manpages-zh'
+license=('GFDL-1.2-or-later'
+         'GPL-2.0-only'
+         'GPL-2.0-or-later'
+         'GPL-3.0-or-later'
+         'GPL-3.0-or-later WITH Autoconf-exception-generic-3.0'
+         'BSD-3-Clause'
+         'LicenseRef-permissive-gzip'
+         'LicenseRef-GPLv2+_DOC_FULL')
+depends=('man')
+makedepends=('cmake' 'opencc' 'python' 'git')
+source=("git+https://github.com/man-pages-zh/manpages-zh.git#tag=v$pkgver")
+sha512sums=('ef9e74d348040f10667b5b0b31bbf05dfdbbaea6060f417a78af0df40e59674d3260f3e842f6a29368a89484fb986661657e776372448eb7a2750808952886c3')
+
+build() {
+  cmake -B build-cn -S manpages-zh \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_ZHCN=ON \
+    -DENABLE_ZHTW=OFF
+  cmake --build build-cn
+
+  cmake -B build-tw -S manpages-zh \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_ZHCN=OFF \
+    -DENABLE_ZHTW=ON
+  cmake --build build-tw
+}
+
+package_man-pages-zh_cn() {
+  pkgdesc='Simplified Chinese Linux man pages'
+
+  DESTDIR="$pkgdir" cmake --install build-cn
+
+  install -Dm644 manpages-zh/COPYRIGHT -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+package_man-pages-zh_tw() {
+  pkgdesc='Traditional Chinese Linux man pages'
+
+  DESTDIR="$pkgdir" cmake --install build-tw
+
+  install -Dm644 manpages-zh/COPYRIGHT -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

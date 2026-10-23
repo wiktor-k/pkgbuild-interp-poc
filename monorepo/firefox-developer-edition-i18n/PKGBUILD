@@ -1,0 +1,262 @@
+# Maintainer: Andrew Crerar <crerar@archlinux.org>
+# Contributor: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgbase=firefox-developer-edition-i18n
+pkgver=159.0b5
+pkgrel=1
+pkgdesc="Language pack for Firefox Developer Edition"
+url="https://www.mozilla.org/firefox/developer"
+arch=(any)
+license=(MPL-2.0)
+
+_url=https://archive.mozilla.org/pub/firefox/releases/$pkgver
+source=(
+  "firefox-$pkgver-SHA512SUMS::$_url/SHA512SUMS"
+  "firefox-$pkgver-SHA512SUMS.asc::$_url/SHA512SUMS.asc"
+)
+validpgpkeys=(
+  # Mozilla Software Releases <release@mozilla.com>
+  # https://blog.mozilla.org/security/2026/08/10/updated-gpg-key-for-signing-firefox-and-thunderbird-releases/
+  14F26682D0916CDD81E37B6D61B7B526D98F0353
+)
+
+_languages=(
+  'ach         "Acholi"'
+  'af          "Afrikaans"'
+  'an          "Aragonese"'
+  'ar          "Arabic"'
+  'ast         "Asturian"'
+  'az          "Azerbaijani"'
+  'be          "Belarusian"'
+  'bg          "Bulgarian"'
+  'bn          "Bengali"'
+  'br          "Breton"'
+  'bs          "Bosnian"'
+  'ca          "Catalan"'
+  'ca-valencia "Catalan (Valencian)"'
+  'cak         "Maya Kaqchikel"'
+  'cs          "Czech"'
+  'cy          "Welsh"'
+  'da          "Danish"'
+  'de          "German"'
+  'dsb         "Lower Sorbian"'
+  'el          "Greek"'
+  'en-CA       "English (Canadian)"'
+  'en-GB       "English (British)"'
+  'en-US       "English (US)"'
+  'eo          "Esperanto"'
+  'es-AR       "Spanish (Argentina)"'
+  'es-CL       "Spanish (Chile)"'
+  'es-ES       "Spanish (Spain)"'
+  'es-MX       "Spanish (Mexico)"'
+  'et          "Estonian"'
+  'eu          "Basque"'
+  'fa          "Persian"'
+  'ff          "Fulah"'
+  'fi          "Finnish"'
+  'fr          "French"'
+  'fur         "Friulian"'
+  'fy-NL       "Frisian"'
+  'ga-IE       "Irish"'
+  'gd          "Gaelic (Scotland)"'
+  'gl          "Galician"'
+  'gn          "Guarani"'
+  'gu-IN       "Gujarati (India)"'
+  'he          "Hebrew"'
+  'hi-IN       "Hindi (India)"'
+  'hr          "Croatian"'
+  'hsb         "Upper Sorbian"'
+  'hu          "Hungarian"'
+  'hy-AM       "Armenian"'
+  'ia          "Interlingua"'
+  'id          "Indonesian"'
+  'is          "Icelandic"'
+  'it          "Italian"'
+  'ja          "Japanese"'
+  'ka          "Georgian"'
+  'kab         "Kabyle"'
+  'kk          "Kazakh"'
+  'km          "Khmer"'
+  'kn          "Kannada"'
+  'ko          "Korean"'
+  'lij         "Ligurian"'
+  'lt          "Lithuanian"'
+  'lv          "Latvian"'
+  'mk          "Macedonian"'
+  'mr          "Marathi"'
+  'ms          "Malay"'
+  'my          "Burmese"'
+  'nb-NO       "Norwegian (Bokmål)"'
+  'ne-NP       "Nepali"'
+  'nl          "Dutch"'
+  'nn-NO       "Norwegian (Nynorsk)"'
+  'oc          "Occitan"'
+  'pa-IN       "Punjabi (India)"'
+  'pl          "Polish"'
+  'pt-BR       "Portuguese (Brazilian)"'
+  'pt-PT       "Portuguese (Portugal)"'
+  'rm          "Romansh"'
+  'ro          "Romanian"'
+  'ru          "Russian"'
+  'sat         "Santali"'
+  'sc          "Sardinian"'
+  'sco         "Scots"'
+  'si          "Sinhala"'
+  'sk          "Slovak"'
+  'skr         "Saraiki"'
+  'sl          "Slovenian"'
+  'son         "Songhai"'
+  'sq          "Albanian"'
+  'sr          "Serbian"'
+  'sv-SE       "Swedish"'
+  'szl         "Silesian"'
+  'ta          "Tamil"'
+  'te          "Telugu"'
+  'tg          "Tajik"'
+  'th          "Thai"'
+  'tl          "Tagalog"'
+  'tr          "Turkish"'
+  'trs         "Chicahuaxtla Triqui"'
+  'uk          "Ukrainian"'
+  'ur          "Urdu"'
+  'uz          "Uzbek"'
+  'vi          "Vietnamese"'
+  'xh          "Xhosa"'
+  'zh-CN       "Chinese (Simplified)"'
+  'zh-TW       "Chinese (Traditional)"'
+)
+
+pkgname=()
+noextract=()
+
+for _lang in "${_languages[@]}"; do
+  _locale=${_lang%% *}
+  _pkgname=firefox-developer-edition-i18n-${_locale,,}
+  _pkg=firefox-developer-edition-i18n-$pkgver-$_locale.xpi
+
+  pkgname+=($_pkgname)
+  source+=("$_pkg::$_url/linux-x86_64/xpi/$_locale.xpi")
+  noextract+=($_pkg)
+  eval "package_$_pkgname() {
+    _package $_lang
+  }"
+done
+
+verify() {
+  cd "$SRCDEST"
+  sed -n "s|  linux-x86_64/xpi/|  firefox-developer-edition-i18n-$pkgver-|p" \
+    firefox-$pkgver-SHA512SUMS | sha512sum -c -
+}
+
+_package() {
+  pkgdesc="$2 language pack for Firefox Developer Edition"
+  depends=("firefox-developer-edition>=$pkgver")
+  install -Dm644 firefox-developer-edition-i18n-$pkgver-$1.xpi \
+    "$pkgdir/usr/lib/firefox-developer-edition/browser/extensions/langpack-$1@firefox.mozilla.org.xpi"
+}
+
+b2sums=('d734654adb2c1c07c75d9b08eb9bf0583d5a3ad2f39d7b811d9b97440fd5441f1ab1ce93d8162cd82e6d6ae1a8f1ff0e4a989856f9a0f593a43252aaaf6b19e0'
+        'SKIP'
+        '2eeeda65d44abe9e7e392fad506286eab97a5a5e47d2d2645f98be7f5d2f97044191170d8c4f09e6966536de107c9662b027419f3788616115ba741bc2ad4660'
+        'b921eb4ccfba5e042fde832bef6ec05cdfe89b0f03a9d9d3e1fe4a695394a136f531eafcf5ee2acb1642525185445d03c469bbc9e08dba1df74b71008cbb6195'
+        'b6f5eacb48b50cfc3b28311e69df046f58437e4389df14fe6143954107d414b63e6e71cd418f1b6c303e8e9be2f8197690a6b0b1fea2852a10be2a1dac6da89a'
+        '7a2d96fef084590fb002e07aae3567e81505d16ca27c25151c391d1d7e724075f700582b129720d9fe2cb37849b956fff4c05270740196733c1db793ff740d11'
+        '9a5f1d0529358f0be1bdc3d7cd31691e280d719a02bf71d47587ffe1f5495b3f9626c788312ae71161e828d24357fe07660e2b0a5fe56108f18468497c326337'
+        'cfc5975f8987e8c9b3ccc594f309589a273674f14602091b1ad7be5478699aa3b8a7e7c6c59170d7a4e59786b63ffa2aa5248ba8326a900ececd03951b5126ff'
+        'edfab9363580d838ebe1b7cd7edd13827ebdc5dc54b17381217ac5b704e2d5f91bfbbfa82806912bd041ad70036cc7c0adc5d1bdd7cd7689996cd1b2345adcde'
+        'caead6c34791700362c816b1be9112e5fe45d3ffd6c34dde4e8c1bf836e4fd44a6d6072e72c99dca45a481c534898613a6b7c7523ad314a5bd2c1cbe40274eec'
+        'e1f3d2b7d262e98ad00f5b14e7e040fda7f289daaa721416c2826c708d72a11115511be8b756e68740a7be647118a742ca034fac0ff543de7607ab1ce7d04102'
+        '5cff88ae6505ccd4637228eee4a3e1b00964e36b1a632d5eb3bb802c1a6ec1a697c44d3fb019b4becec039a3a9673ba24ec40d625e13c4e6c8387100373b5114'
+        '1866d7e4f9a5ae6c90f8d7dc60862b8bf7305942f1d93839347027e9f3f5a7acf738cd4d501e05f605b6a5a2f2647ddefe4e724493d07eca0498e8d74cde9aa3'
+        '51bdc7bd4c46bd539c4ffab397c28e4f3291ab15ff8398b332c6c26d962104c1b9ca311b28b0e41d6a48d6f0dfef451cdf7d327dfbef882234c26e8b1c17661f'
+        '390f1c1b6fe5e45e7b1102ce4fab94714616ec019e743d81014413b2fb89872c9cef073d03e1fc297f2eb8447d6003ca5aa7ef2d75b3704421a72e375dee91a8'
+        'b069ea51165c1ad29b0745e1c9244de2ecc4d6898e29f6b56612ac9b6015ed36ee5861f776189d4d31bd634c8cbc09fd94a07c843e9b53fc52955e2029fefb10'
+        '8803c5247e7d05b0952b617c6ec78806b51acc48e61b43afaed268b96ccc080678177f9e0c6ea89cf6c498f3c1da8f216e3bf22b19e53532892ba8b26d24788e'
+        '727e83aa1a5b3e33c1b5bef91c4a29c4fb5384dc6bd83e38a96004894f911f832911a5c492c1ae9240ea03dd87f074556750961efa887b4e02ed2ff1b79f6257'
+        '56ff845070f110282672b7dbc47e8cf470e2db50afc1fbe3fd20eb80c455982da65a23f44d910c52fece421ca7e3492ce806b4f56cb02b950ba1034aa444ac5c'
+        'b61475b49eb421c1626b8e2ef068be569c932b4e7f72dc077ab6dd32baf53fa5bc1b7e0015221b6c040f1a89fb88965d3a0a073ab035d224484f55baed2b649e'
+        '0608b165c97a52f2a47b63c660159aaca164a5f52aa8437bd4e744fb11e4bb8ee245f6dec9535971d9cee0b5a9753d9b71668d8fe2893a423a59eec8c8fcdd80'
+        '71d77a4b6618a6723b30af6372b9f0fc5199a7c607f0b00e4960987dd0ff7a1e837c2fb64b09f7e19394bb627fba1323c02b42f396cdd5ae091a14a87b72c99b'
+        'c4a36919d83cad7940459fa2e9afce4e88d94a4b00f6ab7b48d7159d58e519b31b9fe71a049e296ed521105a656a33fe68fcd38addfa5c41cce0b8b9335ec57b'
+        '42fac1c9eda0d0a6a57492d7650c6ee282958462cf54c99d62404fc781b2d4b936c67da46bbf219b1979a8dd34e44fd04964218d4c952f7b97d9271b29c92144'
+        '5c794d3e7b9d1496a89e59bf69775e120cf1c0744d68aae8c6ad4d9406084cde285e1571452f2637f31260d5928e397465989b7f154bb65b2b16d0894eaf59c6'
+        '21bf3a5d7b24b4aef267e074ea30a265565ef7c3190bc5c638cb19590f21883d0ad4330d81054a88df4f79f68477700f8961ad16b2ba26c3d4c6ff17c07fd5e4'
+        '730b286492e7318dca2de2054b0d72232669a4c85c979069bfa2c5029a049525ab4d580facf92a9831e208a779240f290eafce0b2fd6e401ebe11b3f66246710'
+        '8297c73aba632aebfb9a87ef304b6772f145f973ec825289dd828e6a8fc4dcf6a59bd7d0553a94743fc15aac2112108a07b1395d28646d38e8758ba92067aad9'
+        'd15f8c09c84a7e98d7be4802adcc891c338e22ac1e3be40de0671de3421492f58afe12261b9846afb7329a9d19bd9f03a907bb68f7df501dafaac7d97194bb68'
+        '8ce8eb39aeaad43a7f42da7717df6bbda41ccd0bc4109e633c040cae0dca405bbf26fcbedea830dc562c46f754a33d689e60d0e51344085cf99a3d68fd6ce6bb'
+        'ff333cebf7c79de1c9f17863cac8e4c940dd0614eb4f61cd3fc99013df68a31556417c024895d44432f6b25194570112c57519ce359d81e09c393d5d41ac4253'
+        'abb6688fcb560ea70d2fc11a5911ae269e5d911c5cae2ae3c1e1a0fd1755ccd5b8d52a77d1d5cf7424909b702c618143be3a1fd06a285010424f734e75ade201'
+        '4240652c357a61ed656ce648b71ddba7b231c1a963819353eee8658c7cbba6462d1fb495bc260212df22299524d9c39f9bce6190295fd752c4872edd60a55967'
+        '67a8d4839e5720a8886be66b8f1284f32c184e9cf63a7427c6a10dc858ea68616fb1e8f4acc8bc22faf5958bf925d525a3b0fad3d6936019d63735df9a91fbf7'
+        '1661c8ab86471143d2d578871beae4a65d52bada7443ecfbfd36120b4f1840efea2326241ccb2703d82b4a0f4df751418d19b36b5ca8b8e4ec83a926b777b3f5'
+        '176ded8bf0c9f999e58375f4a637ff020aa3ef30924e6657ccd8ab0c6a42746cfa0ed612d2dbe106ff702714b5783c51ca0c3c139aa2a173c2e3732a0de2e312'
+        '721df5aeae5a778a5f2655ad073621fec99bdba0ea4ba5acdfd54fdf91e5382a559994b53be87de857a27deb06698693a370b057a621b21abee83ce6ad37fd3c'
+        '5b3c384264a1a2518a51216305f573ae6666a1e37d89457730a78d48e8d3bbccd0039899292ede7d25d19e2e385e215425849d0309de520e03a12e28f30478cf'
+        '169d4d125efa0a266e51df05452191cb025c197828b2485ff40958108d7f058660c39358a514b7721b8026db23f733a484ad496e7d9627d9e2e16204fb1f7977'
+        '9b51921c99e92a8505dfdbd19e1d14c06fbe1f95feba64998533b32d097340775c8a0efb004a2506d3b53ff8443b8621d668dd7a5ad53773de5ded31c1503022'
+        '381cded736fcb3f53e3fdacd0985db7f33a80a45fd30809c8474226556cbece2dfdab18254ebda88959dbc852d311cb154297d1c03250960048eb3a910f94a43'
+        '14a7fb2416f0256aafafbadc9e8746b5c28fbe21f42bb0b9a41f058d93316cdb403dc6b4485be9afbdb64842fdce4e4ce83dff98543a734edf6abed439ab4b40'
+        '9afe58f1257651525c4d88946794c0cc2ac9f55e02be19d94dd55135cc6a26596f4a3fdbc3e8753caca1e53b39231f7382f7e22766249fcf93ea86be92116097'
+        'b0d0bed50776d0fa5151017d209dd6da1fe5ea24bd6455b2d54124e48674a7b1f72965f548b99689670bfac5b71cc20cbaecfd8bfcaf7ad6d4d979c62fde93d1'
+        'c0c586df015302f06db59bcd9e83937cd69f5b097dd2efe2a41e8da3b2eeabc00a8307f8e77ced0e2d5f520ea102853ac8e0938c669ebb5fed7b692820d73929'
+        'bd3057024f51ccebf7c1bdf576568807b78995ef043c1dab4f1da97de5470f5901b65bf10aa896ba5ca47b52e321055db6cdeded08cb6469bf2bba446c6de7f7'
+        '34ac87823cbfad0c4b434345d89c7127e030cd0c071fa212f506feba0109ba45704c83ab7f096099e255b0a1b801ec0aa38ad28f109c0fe8e8e280ed6269a1b7'
+        '433e5f21f27260384bd5b1a9fe3cb732100e2ecb18f257fc74ed1fd5b96181aaf9aa3e5e0ae1b2df352c8506dd5a724bfd35d225b0429955c781b0e8fab06e00'
+        '249ae7eb3b914c34313295392a7f2fa0b744d1feca84b2c717e7c7673c2e2962a0574d12a2346dad098c6ffeac4169d33a35f37fd046f3266b5ca8afba398023'
+        '6a58a765037f54a4a2ea94836567e89deef6b8ba4ef21a4e1c810e9bb75cb046f55c65558e383b41bc8f2c8f013329ee45511bbd411fa2a2b3112427c9574c15'
+        '9fb8af21bd959f3f291857bb73f74042cc7a7a0c144b375b74476599a1515a508d7e98d834ca4559a85dc822a63b6b27cdeffb61cbe50cf58d9dece1018f7155'
+        '7d38cf22c200f1a7e333953e02ff567d36731ebbf9902a8e03b656483d3b6ca59710ac5f33e17da01fb9db1072bf931bc70a5e172fc1a63a81f577e9b878d360'
+        '88fc6022b0418793425b822d70adb02db07e88add710fbf8e01044c42e57ea1ad18c4cf149c3bf5e8a3e36bb90a5c88452824da8f078b5fe372a75eb51df8d6f'
+        'c531408bc46f93b1853bce8cfb3577e870e89e58b1f06fe1f79591f405124d7edab850eedd4e0c8d67f4c79f4656f2e3cf0ef3d9c75b016452ce077099928f72'
+        'a0ce187a48361183269b88d9966a070702f0656de39c96d017afe71965585b17f3b4006a1e126aeae317a4b73af1354bd0ab3dc23f5a0f7795eff0a65f79760b'
+        'f276dd182627f290153c18d3d45992ebdd595ed6a112f96c424b2c855c2c54f47517fa20babc7e04e2ee5453e288cd0c68d7b216ad401d561b599f5b35808ae9'
+        'caf118954faeb9f81f38a089bb431a4b6537ac5b5c43cfe74a61b661230d796b212359031e14f1dc7707de3f19b31ee5f37977361245955694943744090a416b'
+        'a475afcb77d4c293cb1424fec9ddc324517201c78b4693b6f8c00fb9235803cc19ec9d42c4a8d5ca699036bd336c1ba877151d43d101bcc5ac0cef0c301b5487'
+        '790ff1bb8d95b79ec4dd195bd82cb74deaa09c2e41527dedd49bf5f34940352c257911bb682c93509f20603394a3257112e684ac62e2822bd3d292bffebe4b9a'
+        'c0d1e40c20255b04da555575a0ac60854f20e08ff4d8e6a0eae723152e3e3a7ef5f21b3acb35b381b6c0132b3bfc94e53f376fd6993dda0a0a723e7e3b52fd9b'
+        '12224f94d3f4508d08142a15a8a56a6cc491de04c2ad7eb4094aa9423f8b044df1e277b5ced0d8aabc3a5a0b4462d857f676f8d3489b2bcb1b239cb67c0298ad'
+        'dde27734859b3321bb3e36e54dd8a3826d1b4c2e3bf317bd2d25740fe1aa639f992ca56910ff9756202bc98183233ec7f34aa032c056ae26761bd09ee4a0ea64'
+        'f6f1fc0a7cd685fb67b5fe4c22d07aa133746bcc75938d779dc4b7571cdb5635aec7a49d6febced0dfdee7e2404cbe806d6a474ddacf3c4b66fa212da260b982'
+        '5785e5825faebf6d39bde30d0a9760eb2a176c832e3d67e25d1b9873b4a5e10836a258e2c96ae880ca142741ab973e0253367da094733ed94281233d782fa682'
+        '89ab499c6377dc2bcbab59c437bd77907789a4766d1526431d6a646336bfa959c24044d540cb06f3d475cba35e6bb7d11ef482fe2fea241551e6aa79c2de5306'
+        'ba295de743c841a87129deb876bc1d8058ab56131a5c9d0acd4bf7a2aef4795af122a75f903fd982160eab37401e67a836a9ccf9978cca1c8130311819ea0cc6'
+        'dff77860d64c4da313d4bd521ba85b8cbc0560b248c58053e6fbf81d7fe34eb8e9e7ca771a8e7ec3af6aded87f4fe50c19aea7dd1c923fafd7130db3e2c077d0'
+        'b3f6829ea28dbd0156867ea99a5f63bd3f3e685c334b2fb7a6b66696a27d1f8682f93bf6cf01fc6cbf23b98b384f80f454f15644cd8ac365660db7f9e0507861'
+        'c961f6bb7b6b912e984f3000f2ea906fc9aa60d09bb61c3a014d6dd07986fbf7ab20ec7b5f6eccaa3f52769518c2ff5e805139e6ae4323dae42ccbd1dd2ededf'
+        'ed025b609dfa9d0b5fa0d5a27e06ab71b37d4cf3a90bdc2a42191d5895039f6646f54e13955c4aa8b42a01e36bcc63a2c96cc92bceabcd47e385caffad6f0aab'
+        '4264bb661c8641930647e5ec9c61f66a62b00700e15bd2ace190a1e0181e0bd7bee25c52a64cc32bbf30f7060f58a75c00abd995aef88ef3381c68629e9729f9'
+        '53c030910b52d13a5d42e44f4b440b09dc73de1a8270fb911425dd7ce62cba6e7831abe7f5d8dda610b857064aa0bad85ad7286f449a9d8f3d005baf8df91a9b'
+        '12fe183953e340384a53924596a79403000c7645a0c773464d58e609ee54d2c3770ebb606baab19a608fc52565c3b917b9e5507c49c160e60dc31377172bbf84'
+        '2e7dc522dc469f1701cc0e5cfad47b82015fa37de1de6229697eab797d30087dcf1a94067ac260c9b2aa247118080ed2adef3ad67cad090fd5a4551014831f07'
+        'f064241eaa0950afcc8c728adccd62d7e29c58898b16314b1300a8700af2edf7b8b60631cd46a7309082bd1576491692fe204f91de5e83292fd0b589a8b31191'
+        'cb516ac3c22fad40357c427afdfa0bbad4c48d448d9a4ac4451daded34a5154696da47ee3672097f81e589f6d01ebe755e7401ec76acbccda58ac14de6fc3d4c'
+        '2cf4653ef16e12d4ac5c4dc4b30d455313ae191f85d732d74dbcf2c78e071e1f6b2a591736338023ce9c8ea3d81c542e5434c8dfacb0072a37c3932047f85866'
+        '0a3362c72e938d33256f4f2bbac9a51ef997db441653da394974a613dfa33ba86e70c3313f2bce5431b46b40de1e92246e2236e294d7379ab86a08c63df05701'
+        'c8374ce491feb4d049ef1269c54425e9d1f9b3653f520bc0bdd2bbba732a1cc898fa56a26481066d48f8b84608ec11655b8529137bb0abf1a0cbb071617548df'
+        '80ebf38d117cb7da7afa87a1a4fcfc10ee2c621d35b4c1f95e62362a5aa8140f4c7df095ba13c5a8dd06d285ad3be39e68d6e9a994d6ee0576d1b1e254bf401c'
+        'e2c6385e39dd7800fb745d9e42a15bca22555a33c43999c8ae63f867135e0ea6fe52f050284f9751ce0a3c9fd418bc20e07934ea4de27c1c386243f338b2ab63'
+        'a4bce305e267ce344ec40dc99f7244f118f439d2dd2a1d210bc7f6a4fc5e266848452b905c3eb4efcb8a56e1d42ed6c465be3183a7b03d739dbb75f930e0c6f0'
+        '45d7062d488b0be1138795b24492130a6b544c338f5a334e204d1b70691931e9a21420c536e65cbb89b64bb0ea945a4a65f2b30eb32d506e0ad8ae5a0040abd0'
+        '8d05eaec7f7e368bbfb69dd29b5de81e09212b70548d202e883840cd8a4c3526697254cb876266606a1a9d19da5e71584f5f0b8c6bd6705922e5c275119db2d4'
+        'd3a5ca1272a6bc45327d2198b394092e197e94bc858e52496b722b2f1a1a9b7cc505461bf3afb058ae0230cb9a71ab18f58551e39a033a665d8b7d4060f4d78d'
+        'ccc4ce6683635eeef566892e626148b7c58aea25ff047f8d9780ae4c88a3ca2eee49aff246a287ffa05d0b2bac3618b78a986d09f80e735c96d8f8de49e1d709'
+        '0d51f72ddfc396b3ac61de3aed340d0ca3e0d578ce6a8aec472b15f689c5759202312fe801fb40af63706d0759454d29e4f145814df29807aa052c9390f34d4b'
+        'b11ae337b941d7bc79de7145ce52094c12d84f6bc402dc2a42f2f42ffebe8bd5baa492e1ca8e61bf88c428b48c4c25a8da29ad06ebcb3384e3e7cf0805d356b5'
+        '82620d413b63091ed70d0522b776afd50cc358a996aef93070a0e457542ac423d4537228b1a491dca2a85d7844abbf22fa11528af1a0c90dee3eed96ea1935f1'
+        '5d175ed09d4588ed2654541f35d6c9cbf1882dbd60dc35f39aff662109ab053eb183db5307b07f929a7e57bd8281bc27e5f48cdc6b160347b71cdb68393a80f4'
+        'a292fdae8ab0a1c29b7da759df0480b78b6d95ae2621505bb39916b57eecc4d07b616153efefc9ec25372f67fdb880e0b110761e9c0ce6d24e7ae8b193bbf04d'
+        '6ccc6f5b72d99818fe11a6f1632bb49389ed79cbb2ce14e0c7498054dadf7ce7f73f1f7759544bcadd20bde7794da381b499d50e0b4f6c2daf3da0ab419020d1'
+        'b3c6116d16ccf3d2ad3663cecde42c44c03bd3e0ac0b7efab47fd06c9fd6d3a9e9198e78e593be764b4cec87621a90e1c047cf44a2d07a41c5a7bf9587139aca'
+        'ee57e279475d79b2eb069476b222d54ede9f91c48a160da25a35f6aff944942bfaca630010c4f37ed139d6cfeb32a537e0e6a4eb5f45fbe90b899881dfa6bc24'
+        'decb589be84f221a2bc09c182c8acc71be0eb491ab744d4ebe1568f338661a97355194a63985bdfcf1df3f0ebda2147340bbac9e4875f2dfee58dd0ac60b997c'
+        'a71d11263fd8f75bd800cf5c14c27e845ac761f6a3a2685caa53915eb9abecf8e4b99fc77c8e56bab988cec742b398a507c4c5afdaf3c59f6b8762d9601ba9d7'
+        '9c53df9707f8f4eccdbbfcdd1566b51c6bc3cd9a3d1a989014deecdb19976ab353fc44f9a7b5e516aabea82664f5a6f5413eba72406c8229a510647962059479'
+        '1020728c9b798db177088cab524c55601c56fe8f849b713b4863c036e0e4dd38a9db81e159af34291463009ebf7e1eeea37430626f4bbafb3128db0978a86944'
+        '8523743bb641c8264548c84e832ed6a5cb9360d04d4e30d0b03ff9b127c3c8d792b0deada49a5578e3d281dae6e7b5b2db3ba32babf3e1930e786347e5cf7a32'
+        'de2b4099b3cdb4ea5e245cdccee8964b4b4297bcc1c4d7b65ac66737d50632e3e1c911e8506bf57f6f288e853c39ab5853c1c18b42e4640664d4b1273ae31042'
+        '2a35d871269269411ff0671a692561b1023d7b8c4b410e99209e50d3fc107cae2d1649d0265f899e3a0f2e00eca3d772d9c0709e45e523c16b5a6eb2bd348549'
+        '75ce7c2fea7faf13001aa74bdcd88a92100c377d3ba2fcee1be8b0233d36235c454b31d08b99b9935dc925b189a90d65799ffb5a8dc8d2668c3b98047318502b'
+        'aa630eed972dc67111f06a3f71b3264ca9bc3b1a652f35173578e12bb9f98d283a25046f9cdd3e37e068f3c3dc264c3be3e539a06b26f87df3425ec1aa142575'
+        '7a5ae0b6a859f6b3446e78c9f70e05a8566b9b2fb1f57c0117489e75591254ec0458f3111ce6f77d681fc203cbfb008d113cf4ca7dfb441d67888db7b895f3bf'
+        '00e7c471c21c73acda6c899287e5645e8c465ea3439bcd29f76b388069a87bb2e46f3c8fe2592112fb3730a42e7f19533510b457ed24cfbd8c799f383a205a13')

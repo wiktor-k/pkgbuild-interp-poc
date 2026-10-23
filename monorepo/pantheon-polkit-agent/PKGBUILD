@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-polkit-agent
+pkgver=8.1.0
+pkgrel=1
+pkgdesc='Pantheon Polkit Agent'
+arch=(x86_64)
+url=https://github.com/elementary/pantheon-agent-polkit
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  gcr-4
+  glib2
+  glibc
+  gtk4
+  libadwaita-1.so
+  libgranite-7.so
+  pantheon-wayland
+  polkit
+)
+makedepends=(
+  cmake
+  git
+  meson
+  intltool
+  vala
+)
+source=(pantheon-polkit-agent::git+https://github.com/elementary/pantheon-agent-polkit.git#tag=${pkgver})
+b2sums=('be8931da419e8c5c978491db22ba876beac6f45728ea2e01919c46b17be8357632b7e02e4ca65083334f6781ce22108ef609d3bd7c01935fc5f6c24698e722b0')
+
+build() {
+  arch-meson pantheon-polkit-agent build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

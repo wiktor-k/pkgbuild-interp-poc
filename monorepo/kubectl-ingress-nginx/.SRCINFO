@@ -1,0 +1,16 @@
+pkgbase = kubectl-ingress-nginx
+	pkgdesc = kubectl plugin for managing NGINX Ingress Controller for Kubernetes
+	pkgver = 1.12.0
+	pkgrel = 2
+	url = https://github.com/kubernetes/ingress-nginx
+	arch = x86_64
+	groups = kubectl-plugins
+	license = Apache
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	source = kubectl-ingress-nginx-1.12.0.tar.gz::https://github.com/kubernetes/ingress-nginx/archive/refs/tags/controller-v1.12.0.tar.gz
+	sha512sums = 76bc3a010b8e83b22107f8d40a6a169d88756192fc5af3f06597af96b0cebdcf58fb5ebd1d10bdde9d4196558ba44caa082f83a17c3a787a8687935acc00f81b
+	b2sums = 1f43b17d5e0ee57456171ff0e4aff441795f80feea7b8549f5eef115a7beeac26de82716c29a358bbbf9667c05df43f1fe56596d47618ef8d7679f35dd0f137d
+
+pkgname = kubectl-ingress-nginx

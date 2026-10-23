@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: CupricReki
+# Contributor: feschber
+
+pkgname=lan-mouse
+pkgver=0.11.0
+_commit=0d2190e787db9e482e17d4c16fb7c00ef4841bcb
+pkgrel=1
+pkgdesc="Software KVM Switch / mouse & keyboard sharing software for Local Area Networks"
+arch=('x86_64')
+url="https://github.com/feschber/lan-mouse"
+license=("GPL-3.0-only")
+depends=('libadwaita' 'gtk4' 'libx11' 'libxtst' 'glib2' 'gcc-libs' 'hicolor-icon-theme')
+makedepends=('cargo' 'desktop-file-utils' 'git')
+source=("$pkgname-$pkgver::git+$url.git#commit=$_commit")
+sha256sums=('63fecab52a0939605d82cb0e48544d4e34c3edc19dcf118a5ea183b0edd90d92')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  desktop-file-install -m 644 --dir "$pkgdir/usr/share/applications/" "de.feschber.LanMouse.desktop"
+
+  install -Dm0644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps" "$pkgname-gtk/resources/de.feschber.LanMouse.svg"
+  install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

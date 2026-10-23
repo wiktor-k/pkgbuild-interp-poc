@@ -1,0 +1,16 @@
+pkgbase = gnome-info-collect
+	pkgdesc = GNOME system and user data collection tool
+	pkgver = 1.0.5
+	pkgrel = 2
+	url = https://gitlab.gnome.org/vstanek/gnome-info-collect
+	arch = any
+	license = GPL3
+	makedepends = git
+	depends = python-requests
+	depends = python-gobject
+	depends = gnome-online-accounts
+	depends = accountsservice
+	source = git+https://gitlab.gnome.org/vstanek/gnome-info-collect.git#commit=57f4b153c0dda53d76fd5976c62963855722af97
+	sha256sums = SKIP
+
+pkgname = gnome-info-collect

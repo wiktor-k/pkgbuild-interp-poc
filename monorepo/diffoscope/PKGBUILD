@@ -1,0 +1,125 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=diffoscope
+pkgver=331
+pkgrel=1
+pkgdesc='Tool for in-depth comparison of files, archives, and directories'
+url='https://diffoscope.org/'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'coreutils'
+  'diffutils'
+  'python-defusedxml'
+  'python-distro'
+  'python-libarchive-c'
+  'python-magic'
+  'python-tlsh'
+)
+optdepends=(
+  'acl: access control list utilities support'
+  'asar: electron archive support'
+  'binutils: binary utilities support'
+  'binwalk: binwalk support'
+  'bzip2: bzip2 utilities support'
+  'cdrtools: ISO utilities support'
+  'colord: ICC profiles support'
+  'cpio: cpio archive support'
+  'docx2txt: docx comparing support'
+  'dtc: device tree comparing support'
+  'e2fsprogs: Ext2/3/4 filesystem utilities support'
+  'enjarify: Android dex file support'
+  'hdf5: Hierarchical Data Format support'
+  'imagemagick: ImageMagick identify support'
+  'fpc: Free Pascal utilities support'
+  'java-environment: java utilities support'
+  'libcaca: image compare support'
+  'libxmlb: binary XML blobs support'
+  'llvm: LLVM bitcode files support'
+  'lz4: lz4 compression support'
+  'odt2txt: odt comparing support'
+  'fontforge: bitmap font utilities support'
+  'gettext: GNU internationalization utilities support'
+  'ghc: haskell utilities support'
+  'giflib: gifbuild utilities support'
+  'gnupg: GNU privacy guard support'
+  'gnumeric: GNOME Spreadsheet support'
+  'mono: mono support'
+  'openssh: OpenSSH key comparing support'
+  'openssl: .p7c and .p7b certificates. support'
+  'pgpdump: PGP files support'
+  'poppler: PDF utilities support'
+  'r: R language support'
+  'radare2: decompiler for executables'
+  'sqlite: SQLite support'
+  'squashfs-tools: squashfs filesystem support'
+  'python-guestfs: guestfs filesystem support'
+  'python-argcomplete: completion support'
+  'python-jsbeautifier: javascript beautifier support'
+  'python-progressbar: show progressbar support'
+  'tcpdump: pcap matching support'
+  'uboot-tools: FIT image support'
+  'unzip: zip utilities support'
+  'gzip: gzip utilities support'
+  'tar: tar utilities support'
+# 'wabt: webassembly support' unittest fails
+  'xxd: xxd utilities support'
+  'xz: XZ and LZMA utilities support'
+  'zstd: zst compression'
+  'p7zip: 7z compression'
+)
+makedepends=(
+  'git'
+  'help2man'
+  'python-build'
+  'python-docutils'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest' 'python-jsbeautifier' 'python-h5py' 'acl' 'binutils' 'bzip2' 'cdrtools' 'cpio' 'e2fsprogs' 'enjarify'
+  'hdf5' 'imagemagick' 'java-environment=11' 'fontforge' 'gettext' 'ghc' 'gnupg' 'mono' 'pgpdump' 'poppler' 'sqlite' 'squashfs-tools'
+  'libxmlb' 'lz4' 'unzip' 'gzip' 'tar' 'tcpdump' 'vim' 'xz' 'llvm' 'colord' 'fpc' 'openssh' 'openssl' 'odt2txt' 'docx2txt' 'r' 'dtc'
+  'giflib' 'gnumeric' 'python-progressbar' 'binwalk' 'python-argcomplete' 'zstd' 'uboot-tools' 'asar')
+source=(https://diffoscope.org/archive/diffoscope-${pkgver}.tar.bz2{,.asc})
+sha512sums=('f25a24eea820ee9a7a5bbd243f9f23cf6de542ba00d1e5dc249201805900657c66cfda7844c4fb0e40ea9ac701270f35ff46ce8ed8218d5e31c8bf958d0e25fd'
+            'SKIP')
+b2sums=('5fdd983a760122ca12edad586a5a17b779a89b2b6bf4fb82e87970e288aa1fbf58fe6fb483ab2ccbd69a55d7e86949168ad65908dc78272d9ad9695a625a93d1'
+        'SKIP')
+validpgpkeys=("C2FE4BD271C139B86C533E461E953E27D4311E58"
+              "66AE2B4AFCCF3F52DA184D184B043FCDB9444540")
+              # Mattia Rizzolo <mattia@mapreri.org>
+              # Chris Lamb <chris@chris-lamb.co.uk>
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  python -m build --wheel --no-isolation
+  make -C doc
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  # lcms2 causes cd-iccdump to segfault
+  rm tests/comparators/test_icc.py
+  # HACK test_dtb fails because our version of fdtdump outputs v1.7.2-1-ge1e5298
+  rm tests/comparators/test_dtb.py
+  PYTHONPATH=".:${PYTHONPATH}" PYTHONDONTWRITEBYTECODE=1 py.test \
+    -k 'not test_ppu and not test_superblock and not test_listing'
+    # unsquashfs output differs from fixture.
+    # ppu bug https://salsa.debian.org/reproducible-builds/diffoscope/issues/9
+    # skip test_listing due to a bug in binwalk comparison with test_listing
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 README.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 doc/diffoscope.1 -t "${pkgdir}/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

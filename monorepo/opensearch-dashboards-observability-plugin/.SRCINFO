@@ -1,0 +1,21 @@
+pkgbase = opensearch-dashboards-observability-plugin
+	pkgdesc = OpenSearch Dashboards Observability Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://docs.opensearch.org/latest/observing-your-data/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = python
+	makedepends = git
+	depends = opensearch-dashboards=3.9.0
+	depends = gnuplot
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/dashboards-observability.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = 00ca23bf38680fec3926eb63a4c4c03a76ce1e72b17221dade10a14165d4e85b
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-observability-plugin

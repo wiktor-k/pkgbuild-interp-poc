@@ -1,0 +1,30 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: Quentin Bouvet <qbouvet at outlook dot com>
+
+pkgname=bash-preexec
+pkgver=0.7.0
+pkgrel=1
+pkgdesc="preexec and precmd functions for Bash just like Zsh"
+arch=('any')
+url="https://github.com/rcaloras/bash-preexec"
+license=('MIT')
+makedepends=('bats' 'coreutils')
+checkdepends=('git')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+install=$pkgname.install
+sha256sums=('f3d5698bde8533e9622b2ee2dcb0dd12e772d85018f4770a8899887ef6cd36a0')
+
+check() {
+  cd "$pkgname-$pkgver/test"
+  bats --jobs "$(nproc)" .
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "${pkgname}.sh" -t "$pkgdir/usr/share/$pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE.md -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

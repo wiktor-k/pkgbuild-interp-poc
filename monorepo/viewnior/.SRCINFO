@@ -1,0 +1,19 @@
+pkgbase = viewnior
+	pkgdesc = A simple, fast and elegant image viewer program
+	pkgver = 1.8
+	pkgrel = 7
+	url = https://siyanpanayotov.com/project/viewnior
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = meson
+	makedepends = glib2-devel
+	depends = gtk3
+	depends = exiv2
+	source = https://github.com/hellosiyan/Viewnior/archive/viewnior-1.8.tar.gz
+	source = viewnior-gtk3.patch::https://github.com/BwackNinja/Viewnior/commit/420f08a5f47a2fc1ae476615bab93df3478ba078.patch
+	source = exiv2-0.28.patch
+	sha256sums = b9319171ebca23929e6ea8039c194b1595d92e764db5e3890836fb5c36e233b0
+	sha256sums = 36986570e2d48d0609550aba852707b8453d25bcf811dbb43056e9440a65434b
+	sha256sums = 307550f68decc1d2bd67bb0c5ec52205c654446fcd06c6ea14973406790535c3
+
+pkgname = viewnior

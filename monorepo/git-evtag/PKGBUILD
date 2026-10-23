@@ -1,0 +1,48 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=git-evtag
+pkgver=2022.1
+pkgrel=5
+pkgdesc="Extended verification for git tags"
+url='https://github.com/cgwalters/git-evtag'
+arch=('x86_64')
+license=('LGPL-2.0-or-later')
+depends=(
+  'glib2'
+  'glibc'
+  'libgit2'
+)
+makedepends=(
+  'docbook-xsl'
+  'meson'
+)
+checkdepends=(
+  'git'
+)
+source=(https://github.com/cgwalters/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('ce8b37638f1fb92f347200b419da074be8515be9b55791116e9cab22d9cd5a67')
+b2sums=('af7845486ef1cd5c614762bf9b2eea8686ee351e543853c3f4926c670fc6a1c01d6875c0f953064bda3a99a985288a218e34df1c46bfcda19ba5b28980470302')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+}
+
+build() {
+  arch-meson "${pkgname}-${pkgver}" build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(
+    'libgio-2.0.so'
+    'libgit2.so'
+    'libglib-2.0.so'
+  )
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim: ts=2 sw=2 et:

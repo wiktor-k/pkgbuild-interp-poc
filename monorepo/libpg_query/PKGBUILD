@@ -1,0 +1,59 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Jakub Jirutka <jakub@jirutka.cz>
+
+pkgname=libpg_query
+# All versions are tagged by the major Postgres version,
+# plus an individual semver for this library itself.
+pkgver=18.1.0
+pkgrel=1
+pkgdesc='C library for accessing the PostgreSQL parser outside of the server environment'
+arch=(x86_64)
+url='https://github.com/pganalyze/libpg_query'
+license=(BSD-3-Clause)
+depends=(glibc xxhash)
+makedepends=(git)
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  dont-override-opt-level.patch
+  unbundle-vendor-deps.patch
+)
+sha512sums=('cbecf86a571eb7265e95a4400342edc06d3b76ebe9df3b8f4f73bbff346fe00cf7fe9159a585370c8bd0999a563ee557430300b8473ed67f666a83d50760d96e'
+            '93b4c4c1d5761e4e14c1c748e9bf802b0b49a954afc7f59aff5b81833a8aa1df640b9b434b4e0162dae75f5faf7000d5bcf349cd80741f359663332d835f019d'
+            '8118224dfa9eec8647f6ac0eefd62227126631aa9acbea833437c9638396c281b040b31a6b37eb2ebfdf73f0c6ae2a11e34efdd8044f842b1fe9604999cdc9f4')
+b2sums=('3a1876a892a0b04839b3b7a1e113f8c8dcc112b178d38dcd920b7f6dc72230dd84dd56d305e6a2842e35321b4a524d58d059624d95d900069cb0d7d860ec1676'
+        '2988aded54800026b08b6b57d1b85f56aa577ea72c2d8db73f8fc766fc286b3d67d0781e586d3535cab9ca8d1a62e6f8143b797c458b19ca75230a1242390c3a'
+        '2854c2ac3df27497ed74e98bb5c49b33d9b110688959845994c0119e665b8e1eefb1112ffc9d894247f35082758cd25c0edf733401792dafa11208aca82135a3')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/dont-override-opt-level.patch"
+
+  # unbundle vendored libraries (xxhash)
+  patch -p1 -i "$srcdir/unbundle-vendor-deps.patch"
+  rm -rf vendor/xxhash
+}
+
+build() {
+  cd "$pkgname"
+
+  make build_shared
+}
+
+check() {
+  cd "$pkgname"
+
+  make test
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" prefix=/usr install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" *.md
+}

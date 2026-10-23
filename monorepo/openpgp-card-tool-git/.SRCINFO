@@ -1,0 +1,27 @@
+pkgbase = openpgp-card-tool-git
+	pkgdesc = A simple tool for Git signing and verification with a focus on OpenPGP cards
+	pkgver = 0.1.8
+	pkgrel = 1
+	url = https://codeberg.org/openpgp-card/oct-git
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = dbus
+	makedepends = pcsclite
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	depends = org.freedesktop.secrets
+	depends = sqlite
+	source = openpgp-card-tool-git-0.1.8.tar.gz::https://codeberg.org/openpgp-card/oct-git/archive/v0.1.8.tar.gz
+	sha512sums = d7b7d88516e705c71ffe9694f07ea3adfc237d303c30289781c745464b558b6c7e720483a21fbfdf30bed1c13e841fe1c6a29f7c8a03aed0fc732bb4aad9347b
+	b2sums = dd12ab00acba67ef10d3f6e88fcf7c0ae577e71b38f2c057dfba03b79399228b14507b6e751d6f0613b098bdbab3ba0b0cabd4bb43a4701f122150d15e1ac0fe
+
+pkgname = openpgp-card-tool-git
+	depends = glibc
+	depends = libgcc
+	depends = org.freedesktop.secrets
+	depends = sqlite
+	depends = dbus
+	depends = libdbus-1.so
+	depends = pcsclite
+	depends = libpcsclite.so

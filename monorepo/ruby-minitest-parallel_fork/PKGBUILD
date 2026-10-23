@@ -1,0 +1,64 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-minitest-parallel_fork
+pkgver=2.1.1
+pkgrel=1
+pkgdesc='Fork-based parallelization for minitest'
+arch=(any)
+url='https://github.com/jeremyevans/minitest-parallel_fork'
+license=(MIT)
+depends=(
+  ruby
+  ruby-minitest
+)
+makedepends=(
+  git
+  ruby-minitest-global_expectations
+  ruby-minitest-hooks
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-rake
+  ruby-rspec
+)
+options=(!emptydirs)
+source=(git+https://github.com/jeremyevans/minitest-parallel_fork.git#tag=$pkgver)
+sha256sums=('b2fec3c38b4889de1726af6b478bd1d71d20cc0097b200427a02373be0669415')
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd minitest-parallel_fork
+  gem build minitest-parallel_fork.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    minitest-parallel_fork-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd minitest-parallel_fork
+  GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd minitest-parallel_fork
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 MIT-LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

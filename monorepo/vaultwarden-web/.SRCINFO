@@ -1,0 +1,17 @@
+pkgbase = vaultwarden-web
+	pkgdesc = Bitwarden web vault with the patches to make it work with Vaultwarden
+	pkgver = 2026.7.0
+	pkgrel = 1
+	url = https://github.com/vaultwarden/vw_web_builds
+	install = vaultwarden-web.install
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = nodejs-lts
+	makedepends = npm
+	depends = vaultwarden
+	source = vaultwarden-web::git+https://github.com/vaultwarden/vw_web_builds#tag=v2026.7.0+0
+	sha512sums = 9787b7c3deafe6b715e6937ad75e1765a3ed25170e3a377d683dc7b4167713e791c145cc4aeef2dc7bbb8f4eb36c391a81ac8c3f5b2b0e678cf597f9a3e1036a
+	b2sums = 178dffbe529889b06133be3e3569c6078fa08f6639ddbc83717d93e51ab134aaa20a0a5a795ad1ec57af2055b56cf006c4d05da90cc0fb64ede80c2ac250cc30
+
+pkgname = vaultwarden-web

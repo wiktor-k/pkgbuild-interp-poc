@@ -1,0 +1,19 @@
+pkgbase = proj
+	pkgdesc = Cartographic Projections and Coordinate Transformations Library
+	pkgver = 9.9.0
+	pkgrel = 1
+	url = https://proj.org/
+	changelog = proj.changelog
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = gmock
+	makedepends = gtest
+	makedepends = git
+	depends = curl
+	depends = libtiff
+	depends = sqlite
+	source = git+https://github.com/OSGeo/PROJ#tag=9.9.0
+	sha256sums = cf1db3c5386638f2b40c8ff1135c6ef49cf80cff6db8e99c26297be1d783e432
+
+pkgname = proj

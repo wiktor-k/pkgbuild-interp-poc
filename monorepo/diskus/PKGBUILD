@@ -1,0 +1,38 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=diskus
+pkgver=0.9.0
+pkgrel=2
+pkgdesc="Minimal, fast alternative to 'du -sh'"
+arch=(x86_64)
+url=https://github.com/sharkdp/diskus
+license=('Apache-2.0 OR MIT')
+depends=(glibc libgcc)
+makedepends=(
+  git
+  rust
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('cce6328f89d6daabfdb36b554c7f686f11754fb5d4aedd06af81b1813e6cf08d48d7cf74efc863e6b63d8a9553f1c0b8919d25a7c11c5f3ab07978a3a877ae71')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --locked --offline
+}
+
+check() {
+  cd $pkgname
+  cargo test --locked --offline
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 doc/$pkgname.1
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE-MIT
+}

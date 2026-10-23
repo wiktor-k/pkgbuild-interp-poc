@@ -1,0 +1,43 @@
+# Contributor: Lars Boettcher <lars@newyew.de>
+# Maintainer: Aaron Ali <t0nedef@causal.ca>
+
+pkgname=klayout
+pkgver=0.30.12
+pkgrel=1
+pkgdesc="High Performance Layout Viewer And Editor. Support of GDS and OASIS files."
+arch=('x86_64')
+url="https://www.klayout.de"
+license=('GPL-3.0-or-later')
+depends=('libgit2' 'qt6-base' 'qt6-tools' 'qt6-multimedia' 'qt6-svg' 'qt6-5compat' 'python' 'ruby')
+source=("${url}/downloads/source/${pkgname}-${pkgver}.tar.bz2"
+        "klayoutEditor.desktop" "klayoutViewer.desktop")
+sha512sums=('81046416ff482d6681a71df0b75a3c02d2663814ec0c02262f6daca55d1f6df5c0f4f1f5b04083a24c5170fa27ae4194d3769d1564c475542a6acf246f6049dc'
+            'bc6c7621e5cda754509a86664fb3e7ecd15f577dec712f4b0c52c9a7455ba692043a67145f5bf143d8fdc502b84e4212303906d62107537eefb4bebe57b2ffe1'
+            '37a3bbb06ab155c1c22e3990cf160383570e8ea945dbf4964bc94b6fd4e6321627d31071a29d3dbeafc9e2fc406b6905761e299bfccdfe0a35663f2021624f4f')
+
+build() {
+  cd klayout-$pkgver
+  ./build.sh \
+    -rpath "/usr/lib/klayout" \
+    -qmake qmake6
+}
+
+package() {
+  install -D -m 644 klayoutEditor.desktop "$pkgdir"/usr/share/applications/klayoutEditor.desktop
+  install -D -m 644 klayoutViewer.desktop "$pkgdir"/usr/share/applications/klayoutViewer.desktop
+  cd klayout-$pkgver
+  install -D -m 644 etc/logo.png "$pkgdir"/usr/share/icons/hicolor/256x256/apps/klayout.png
+  install -D -m 755 bin-release/{klayout,strm*} -t "$pkgdir"/usr/bin/
+  install -d "$pkgdir"/usr/lib/"$pkgname"/
+  cp -a bin-release/* "$pkgdir"/usr/lib/"$pkgname"/
+
+  # Remove ELF executables and Python modules in /usr/lib/klayout
+  rm -r "$pkgdir"/usr/lib/"$pkgname"/{klayout,strm*,pymod}
+
+  local site="$(python -c 'import site; print(site.getsitepackages()[0])')"
+  install -d "$pkgdir/$site"
+
+  # pya is included for compatibility reasons, but will be deprecated in the future
+  # See upstream: https://github.com/KLayout/klayout/issues/2072
+  cp -a bin-release/pymod/{klayout,pya} "$pkgdir/$site/"
+}

@@ -1,0 +1,35 @@
+pkgbase = shotcut
+	pkgdesc = Cross-platform Qt based Video Editor
+	pkgver = 26.9.27
+	pkgrel = 1
+	url = https://www.shotcut.org
+	arch = x86_64
+	license = GPL3
+	makedepends = qt6-tools
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = clang
+	makedepends = vulkan-headers
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-imageformats
+	depends = qt6-multimedia
+	depends = qt6-translations
+	depends = mlt
+	depends = movit
+	depends = ffmpeg
+	depends = libx264
+	depends = libvpx
+	depends = lame
+	depends = frei0r-plugins
+	depends = ladspa
+	depends = qt6-charts
+	depends = qt6-websockets
+	depends = qt6-5compat
+	optdepends = swh-plugins: Several audio filters
+	optdepends = opencv: For motion tracking
+	source = git+https://github.com/mltframework/shotcut.git#tag=v26.9.27
+	sha512sums = 50d01f3d5218473118cf74316f6965ddbcaa466760f38215c25bd3fe94f353f3d355a8cba94807ff503c3d1062fc931746293b3ff8ad22ba0c3981fb62b00288
+
+pkgname = shotcut

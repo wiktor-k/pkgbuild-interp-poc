@@ -1,0 +1,55 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=nginx-mod-auth-pam
+pkgver=1.5.5
+pkgrel=21
+
+_modname=ngx_http_auth_pam_module
+
+pkgdesc='Nginx module to use PAM for simple http authentication'
+arch=('x86_64')
+depends=('pam')
+makedepends=("nginx" "nginx-src")
+url="https://github.com/sto/ngx_http_auth_pam_module"
+license=('BSD-2-Clause')
+
+source=(https://github.com/sto/$_modname/archive/v$pkgver/$_modname-$pkgver.tar.gz)
+sha256sums=('98a71617d9119ae784993e3789ce8766fdf2ff2479691f3dc6cf8d8763f8d364')
+backup=('etc/nginx/modules.d/20-auth-pam.conf')
+
+prepare() {
+  mkdir -p build
+  cd build
+  ln -sf /usr/src/nginx/auto
+  ln -sf /usr/src/nginx/src
+}
+
+build() {
+	cd build
+	auto/configure \
+		--with-ld-opt="$LDFLAGS" \
+		--with-compat \
+		--add-dynamic-module=../$_modname-$pkgver
+	make modules
+}
+
+package() {
+	if [[ "$BUILDTOOL" == devtools ]]; then
+		local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+		# this is added to PKGINFO data
+		depends+=($nginx_dep)
+	else
+		# this is added to SRCINFO data
+		depends+=(nginx)
+	fi
+
+	install -Dm644 "$srcdir"/$_modname-$pkgver/LICENSE \
+	               "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	install -dm0755 "$pkgdir"/etc/nginx/modules.d
+
+	cd build/objs
+	for mod in *.so; do
+		install -Dm755 $mod "$pkgdir"/usr/lib/nginx/modules/$mod
+		echo "load_module \"/usr/lib/nginx/modules/$mod\";" >> "$pkgdir/etc/nginx/modules.d/20-auth-pam.conf"
+	done
+}

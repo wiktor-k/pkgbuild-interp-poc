@@ -1,0 +1,40 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=cudss
+pkgver=0.8.0.10
+_cudaver=13
+pkgrel=1
+pkgdesc="A high-performance CUDA library for Direct Sparse Solvers"
+arch=(x86_64)
+url="https://docs.nvidia.com/cuda/cudss/"
+license=(LicenseRef-NVIDIA-cuDSS)
+depends=(
+  "cuda>=$_cudaver"
+  glibc
+  libgcc
+  libgomp
+  libstdc++
+)
+optdepends=(
+  'nccl: for the NCCL multi-GPU communication layer'
+  'openmpi: for the OpenMPI multi-GPU communication layer'
+)
+options=(!strip)
+source=(https://developer.download.nvidia.com/compute/$pkgname/redist/lib$pkgname/linux-x86_64/lib$pkgname-linux-x86_64-${pkgver}_cuda$_cudaver-archive.tar.xz)
+b2sums=('eaf2a46a2fe853dc546c4f4e61c20b2a6d50302d0b3538bc696993a56da1d6d00b61a636045627dae966b84827a3277d5c5bdcf34653c57e15835acd14b190bf')
+
+package() {
+  cd lib$pkgname-linux-x86_64-${pkgver}_cuda${_cudaver}-archive
+
+  install -vdm 755 "$pkgdir"/usr/
+  cp -r lib include "$pkgdir"/usr/
+
+  # remove static libs
+  rm "$pkgdir"/usr/lib/*.a
+  rm "$pkgdir"/usr/lib/cmake/cudss/cudss-static-targets*.cmake
+
+  install -vdm 755 "$pkgdir"/usr/share/doc/$pkgname/
+  cp -r examples src "$pkgdir"/usr/share/doc/$pkgname/
+
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

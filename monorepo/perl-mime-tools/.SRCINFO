@@ -1,0 +1,38 @@
+pkgbase = perl-mime-tools
+	pkgdesc = Parses streams to create MIME entities
+	pkgver = 5.518
+	pkgrel = 1
+	url = https://metacpan.org/pod/MIME::Tools
+	arch = any
+	license = GPL-1.0-or-later
+	license = Artistic-1.0-Perl
+	checkdepends = perl-test-deep
+	depends = perl-mailtools
+	depends = perl-io-stringy
+	depends = perl-convert-binhex
+	provides = perl-mime-body=5.428.0
+	provides = perl-mime-decoder
+	provides = perl-mime-decoder-base64
+	provides = perl-mime-decoder-binary
+	provides = perl-mime-decoder-binhex
+	provides = perl-mime-decoder-gzip64
+	provides = perl-mime-decoder-nbit
+	provides = perl-mime-decoder-quotedprint
+	provides = perl-mime-decoder-uu
+	provides = perl-mime-entity
+	provides = perl-mime-field-contdisp=5.428.0
+	provides = perl-mime-field-contraenc=5.428.0
+	provides = perl-mime-field-conttype=5.428.0
+	provides = perl-mime-field-paramval=5.428.0
+	provides = perl-mime-head=5.428.0
+	provides = perl-mime-parser
+	provides = perl-mime-parser-filer
+	provides = perl-mime-parser-reader
+	provides = perl-mime-parser-results
+	provides = perl-mime-worddecoder
+	provides = perl-mime-words=5.428.0
+	options = !emptydirs
+	source = https://www.cpan.org/authors/id/D/DS/DSKOLL/MIME-tools-5.518.tar.gz
+	sha512sums = c0dfc94f1ea64adba7dbbf56e272eef48b54c7761166a7adf8fbe4ba223133fe6a938df781df3b3e9020e0c14c31497f205c845ba32767e30d473d37851c9d12
+
+pkgname = perl-mime-tools

@@ -1,0 +1,25 @@
+pkgbase = rosenpass
+	pkgdesc = formally verified and post-quantum secure VPN over WireGuard
+	pkgver = 0.2.2
+	pkgrel = 2
+	url = https://rosenpass.eu
+	arch = x86_64
+	license = MIT
+	license = APACHE
+	makedepends = cargo
+	makedepends = git
+	makedepends = cmake
+	makedepends = pkg-config
+	makedepends = rust-bindgen
+	depends = libsodium
+	depends = gawk
+	depends = wireguard-tools
+	depends = findutils
+	provides = rp
+	provides = rosenpass
+	options = !lto
+	source = rosenpass-0.2.2::https://github.com/rosenpass/rosenpass/archive/refs/tags/v0.2.2.tar.gz
+	sha512sums = 5087914327b1339808f2c27d61ba77ce00fbb886d0c20450ba7c35040226edbcbf01c1c0317e8ce89f811595129171ff68a8c26a970043fae44ad2a2a717403f
+	b2sums = 5465515a609824527251a53810d50ac763c879b9992f7fbe99b89549511d689d5d7bf9c695081b4cdc125a098ac9a30f10731318a1c5ac86844af1d4f0f8cadb
+
+pkgname = rosenpass

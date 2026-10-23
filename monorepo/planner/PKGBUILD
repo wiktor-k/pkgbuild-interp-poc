@@ -1,0 +1,60 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: herb  <herb@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=planner
+pkgver=0.14.92
+pkgrel=4
+pkgdesc='Project management application for GNOME'
+arch=(x86_64)
+url='https://wiki.gnome.org/Apps/Planner'
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libxml2
+  libxslt
+  pango
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+source=(
+  "git+https://gitlab.gnome.org/World/planner.git?signed#tag=$pkgver"
+  app.drey.Planner.appdata.xml
+  planner-set-prgname.patch
+)
+b2sums=('9f8a422c00a618c959b8a0c51175d70587b5865acc346e826823f5202c1d15b228b23fdf82d2691982f6db296ac92e98da4bb6a236741d72bb428ccd669a4063'
+        '6f048d815d680f7d076de99280aa2985fdab39df20c175c63fbfed46d2d9246ee5a7a862bf1165c63df25cfaebc826ecde8c8b7597599fca6e51039a16019c7b'
+        '2e0a622b42b0703de1957923da14a3951e2acaeaa910abc9e0d798fc56238973d5b3c550d3fea8aa1e6f3300c316489c8c18cf702f6ce128616bac78053f55c5')
+validpgpkeys=(93A56F193C261368CD7F056904DA8079BE94C646) # Mart Raudsepp <leio@gentoo.org>
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/World/planner/-/merge_requests/67
+  git apply -3 ../planner-set-prgname.patch
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D database-gda=disabled
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/metainfo/" app.drey.Planner.appdata.xml
+}

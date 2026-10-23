@@ -1,0 +1,63 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: replydev <commoncargo@tutanota.com>
+
+pkgbase=cotp
+pkgname=(cotp cotp-converters)
+pkgver=1.11.0
+pkgrel=1
+pkgdesc='Trustworthy, encrypted, command-line TOTP/HOTP authenticator app with import functionality'
+arch=(x86_64)
+url="https://github.com/replydev/$pkgname"
+license=(GPL-3.0-only)
+makedepends=(cargo
+             python)
+optdepends=('cotp-converters: additional scripts import from other OTP apps')
+replaces=("$pkgname-bin")
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('8ef923c82397e1ce82b07cb1ac901a82c680d20cfd211d2f79b68a338006da08')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare(){
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		test_version_subcommand
+	)
+	cargo test --frozen --all-features -- ${skipped[@]/#/--skip }
+}
+
+package_cotp() {
+	cd "$_archive"
+	depends+=(glibc # libc.so libm.so
+	          libgcc libgcc_s.so
+	          libxcb
+	          libxkbcommon-x11)
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+}
+
+package_cotp-converters() {
+	cd "$_archive"
+	depends+=(cotp
+	          python)
+	install -Dm0755 -t "$pkgdir/usr/share/cotp/converters/" converters/*.py
+}

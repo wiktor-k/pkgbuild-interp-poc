@@ -1,0 +1,29 @@
+pkgbase = python-httpx-aiohttp
+	pkgdesc = aiohttp-powered httpx client
+	pkgver = 0.2.0
+	pkgrel = 1
+	url = https://github.com/karpetrosyan/httpx-aiohttp
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-brotli
+	checkdepends = python-brotlicffi
+	checkdepends = python-chardet
+	checkdepends = python-h2
+	checkdepends = python-pytest
+	checkdepends = python-trio
+	checkdepends = python-trustme
+	checkdepends = python-zstandard
+	checkdepends = uvicorn
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-fancy-pypi-readme
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-aiohttp
+	depends = python-httpx
+	source = git+https://github.com/karpetrosyan/httpx-aiohttp.git#tag=0.2.0
+	b2sums = 415fae3b385e7ee91744145e8d03315ae6430bc7c521d60a20cd9768abb19a1372e43eed123ad41789079f9b44fcca6c1df4646edfeb1116291208b0750b068f
+
+pkgname = python-httpx-aiohttp

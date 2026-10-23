@@ -1,0 +1,23 @@
+pkgbase = sstp-client
+	pkgdesc = SSTP client stable revision
+	pkgver = 1.0.20
+	pkgrel = 3
+	epoch = 1
+	url = http://sstp-client.sourceforge.net/
+	install = sstp-client.install
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = ppp
+	depends = glibc
+	depends = libevent
+	depends = openssl
+	optdepends = ppp
+	source = 50-sstp.PROFILE.sh.sample
+	source = sstp.options.sample
+	source = git+https://gitlab.com/sstp-project/sstp-client.git#tag=1.0.20
+	sha512sums = 56859f24a3599d3f68f432e36661f43e08aeb8cb3bf959ddede6028a426117c06f0221ffd91c852bf9f4f34069d8adc7a199db6679f75daf508713e12735484d
+	sha512sums = a817dbfc9038f240bf0cbed295b654587070226c71fbf89fee4cd6a6d7912629cb2e15e7ae2b74c9a5e42e756bc6819c95bbb493503ac6921b4b01a571bf5430
+	sha512sums = a2fb04221052e4d63b001c9e52ba6cf1335466098ee4c2d46a3260da2c053c5a8acf3a30765c51d4cef8df9d737e08d4a70a868344d86bdfab8601e6f86a657e
+
+pkgname = sstp-client

@@ -1,0 +1,35 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+pkgname=perl-locale-codes
+pkgver=3.91
+pkgrel=1
+pkgdesc='Distribution of modules to handle locale codes'
+_dist=Locale-Codes
+arch=('any')
+url="https://metacpan.org/release/${_dist}"
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=(perl)
+checkdepends=('perl-test-inter')
+options=('!emptydirs' purge)
+source=("https://search.cpan.org/CPAN/authors/id/SBECK/${_dist}-${pkgver}.tar.gz")
+b2sums=('7fec983c52a72aac981be790acbd609383af6cd1f12dce44ecc5ae293e8015e8629b00eb64c69fcc4d4da909fbd04740dffe269bf996ff4f313ff7601985d97a')
+
+build() {
+  cd "${srcdir}/${_dist}-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1 PERL_AUTOINSTALL=--skipdeps
+  /usr/bin/perl Makefile.PL
+  make
+}
+
+check() {
+  cd "${srcdir}/${_dist}-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1
+  make test
+}
+
+package() {
+  cd "${srcdir}/${_dist}-${pkgver}"
+  unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+  make install INSTALLDIRS=vendor DESTDIR="${pkgdir}"
+}

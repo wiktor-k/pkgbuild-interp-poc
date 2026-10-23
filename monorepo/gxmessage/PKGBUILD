@@ -1,0 +1,30 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Geoffroy Carrier <geoffroy.carrier@koon.fr>
+# Contributor: Jaroslav Lichtblau <tu@dragonlord.cz>
+
+pkgname=gxmessage
+pkgver=4.1.0
+pkgrel=1
+pkgdesc="A GTK3 based xmessage clone."
+arch=('x86_64')
+url="https://trmusson.dreamhosters.com/programs.html#gxmessage"
+license=('GPL')
+depends=('gtk4' 'desktop-file-utils')
+makedepends=('pkgconfig' 'intltool')
+source=(https://trmusson.dreamhosters.com/stuff/$pkgname-$pkgver.tar.gz
+        $pkgname.desktop)
+sha256sums=('f1702bedc696f27630f4005afef33933145c017ccab551ec59160ae003b6dd2b'
+            '000720db335fd742dd1d3cdc3fb3892fbf12c7604dfcc99fcada61b5dbd4e60a')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  ./configure --prefix=/usr --mandir=/usr/share/man
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+  install -D -m644 "$srcdir/$pkgname.desktop" \
+    "${pkgdir}/usr/share/applications/$pkgname.desktop"
+}

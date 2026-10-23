@@ -1,0 +1,19 @@
+pkgbase = fcgiwrap
+	pkgdesc = A simple server for running CGI applications over FastCGI.
+	pkgver = 1.1.0
+	pkgrel = 10
+	url = https://www.nginx.com/resources/wiki/start/topics/examples/fcgiwrap/
+	arch = x86_64
+	license = MIT
+	depends = fcgi
+	depends = systemd
+	source = fcgiwrap-1.1.0.tar.gz::https://github.com/gnosek/fcgiwrap/archive/1.1.0.tar.gz
+	source = link-with-libsystemd-instead-of-libsystemd-daemon.patch
+	source = dc0c3b14f0d7bb014a9a4c6c17eb55a123496365.patch
+	source = fcgiwrap-LICENSE::https://raw.githubusercontent.com/gnosek/fcgiwrap/refs/heads/master/COPYING
+	sha256sums = 4c7de0db2634c38297d5fcef61ab4a3e21856dd7247d49c33d9b19542bd1c61f
+	sha256sums = 9be1906005fbf3aefc4acb20432f1217e7611f49d840bc4559591e8dfae45ae3
+	sha256sums = 44342f94e21ba8cb1938c50d9a86bcfaeebb8802b4f5a77d126ddb2387ea2412
+	sha256sums = 1504c301f6d417f2626085337e5c3bb3dc0282265089396ab36bfe1942feef1c
+
+pkgname = fcgiwrap

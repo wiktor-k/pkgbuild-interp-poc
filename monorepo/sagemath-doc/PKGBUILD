@@ -1,0 +1,46 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=sagemath-doc
+pkgver=10.10
+pkgrel=1
+pkgdesc='HTML documentation for SageMath'
+arch=(any)
+url='http://www.sagemath.org'
+license=(GPL-2.0-or-later)
+depends=(mathjax
+         python-pplpy)
+makedepends=(boost
+             cython
+             git
+             meson
+             python-docutils
+             python-jupyter-client
+             python-jupyter-sphinx
+             python-pkgconfig
+             python-pyzmq
+             python-sphinx-copybutton
+             python-sphinx-furo
+             python-sphinx-inline-tabs
+             sagemath)
+source=(git+https://github.com/sagemath/sage#tag=$pkgver)
+sha256sums=('a940259a5fc00e3d6aae916176f346373026f151a8c4575c5711eb9316f9b058')
+options=(!strip) # nothing to strip, save packaging time
+
+build() {
+  meson setup sage build
+  meson compile -C build doc-html
+}
+
+package() {
+  mkdir -p "$pkgdir"/usr/share/doc/sage
+  cp -r build/src/doc/html "$pkgdir"/usr/share/doc/sage
+
+# Replace duplicated files by symlinks (Gentoo)
+  cd "$pkgdir"/usr/share/doc/sage
+  mv html/en/_static{,.tmp}
+  for _dir in `find -name _static` ; do
+    rm -r $_dir
+    ln -s /usr/share/doc/sage/html/en/_static $_dir
+  done
+  mv html/en/_static{.tmp,}
+}

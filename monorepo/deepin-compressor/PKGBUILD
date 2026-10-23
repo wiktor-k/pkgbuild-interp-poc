@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-compressor
+pkgver=6.5.36
+pkgrel=1
+pkgdesc='A fast and lightweight application for creating and extracting archives'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-compressor"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'glibc' 'libgcc' 'libstdc++' 'qt6-base' 'qt6-svg' 'qt6-5compat' 'glib2'
+         'karchive' 'kcodecs' 'libarchive' 'libzip' 'minizip' 'util-linux-libs' 'hicolor-icon-theme' 'deepin-picker' '7zip'
+         'deepin-shortcut-viewer')
+makedepends=('git' 'cmake' 'ninja' 'qt6-declarative' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-compressor.git#tag=$pkgver")
+sha512sums=('26161aeffffa150cc6afe6fd11c9c0ec530c4c6eb8451895e136cbc2318fd7d2746033c7451c169d25962bdc2f575bcf07060947547dc8d05aad869cfa6d999d')
+
+build() {
+  cd deepin-compressor
+  cmake . -GNinja -DCMAKE_INSTALL_LIBDIR=/usr/lib -DVERSION=$pkgver
+  ninja
+}
+
+package() {
+  cd deepin-compressor
+  DESTDIR="$pkgdir" ninja install
+}

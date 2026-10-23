@@ -1,0 +1,58 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnome-pie
+_pkgname=Gnome-Pie
+pkgver=0.7.3
+pkgrel=5
+pkgdesc='Circular application launcher'
+arch=(x86_64)
+url='https://simmesimme.github.io/gnome-pie.html'
+license=(MIT)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-menus
+  gtk3
+  hicolor-icon-theme
+  libappindicator
+  libarchive
+  libgee
+  libwnck3
+  libx11
+  libxml2
+  libxtst
+  pango
+)
+makedepends=(
+  cmake
+  git
+  ninja
+  vala
+)
+source=("git+https://github.com/Schneegans/Gnome-Pie.git#tag=v$pkgver")
+b2sums=(9e9dc1ddf1226b4d893113df52b4b08d5fba4d1237041e7ca5ef20f694c5cb4b036270406bee40d874be7c9d88361f420c027e3a5f22a5880c60146e5445c05b)
+
+prepare() {
+  cd $_pkgname
+
+  # Revert broken translation
+  git revert -n 0d766697fb71f60d53e328f8b306eee4930d7508
+}
+
+build() {
+  cmake -S $_pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake --build build
+
+  for d in $_pkgname/resources/locale/*/; do
+    msgfmt -v "$d/LC_MESSAGES/"*.po -o "$d/LC_MESSAGES/gnomepie.mo"
+  done
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" $_pkgname/COPYING
+}

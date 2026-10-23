@@ -1,0 +1,78 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Maxime Gauduin <alucryd@gmail.com>
+
+_gemname=iconv
+pkgname=ruby-$_gemname
+pkgver=1.1.1
+pkgrel=1
+pkgdesc='Wrapper library for iconv'
+arch=('x86_64')
+url='https://github.com/ruby/iconv'
+license=('BSD-2-Clause')
+depends=('ruby')
+makedepends=('git')
+checkdepends=(
+  'ruby-bundler'
+  'ruby-rake'
+  'ruby-test-unit'
+)
+options=('!emptydirs')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('49c14ec58f51918b115863efc72708488cf9c1bde39c74425e02fd0b2474f97eb5d5e8537583d389e6f26a2a17406bd26f08b52f18b1c8486b71bdd2b90d733c')
+b2sums=('40042f5099d78b4494e232582e9b6411eca9a42884c58f7a695e6a6a586061c70fbfeb0628d7486b257e31c15669329862ad3add520fd3945a733237eb222719')
+
+prepare() {
+  cd "$pkgname"
+
+  # stop the :test task depending on building the shared library
+  sed -i '/task :test => /d' Rakefile
+}
+
+build() {
+  cd "$pkgname"
+
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem build "$_gemname.gemspec"
+
+  gem install \
+    --verbose \
+    --ignore-dependencies \
+    --no-document \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "$_gemname-$pkgver.gem" \
+    -- --with-cflags="$(ruby -r rbconfig -e 'print RbConfig::CONFIG["CFLAGS"]') -Wno-error=incompatible-pointer-types"
+
+  # delete unnecessary files & folders
+  cd "tmp_install/$_gemdir"
+  rm -vrf cache
+  rm -vrf "extensions/$CARCH-linux/$(basename $_gemdir)/$_gemname-$pkgver/"{gem_make.out,mkmf.log}
+  cd "gems/$_gemname-$pkgver"
+  find . -type f -name ".*" -delete
+  rm -vrf Gemfile Rakefile "$_gemname.gemspec" ext test
+
+  # move documentation
+  install -vd "$srcdir/$pkgname/tmp_install/usr/share/doc/$pkgname"
+  mv -vt "$srcdir/$pkgname/tmp_install/usr/share/doc/$pkgname" README.md
+
+  # move license
+  install -vd "$srcdir/$pkgname/tmp_install/usr/share/licenses/$pkgname"
+  mv -vt "$srcdir/$pkgname/tmp_install/usr/share/licenses/$pkgname" BSDL COPYING
+}
+
+check() {
+  cd "$pkgname"
+
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  GEM_HOME="tmp_install${_gemdir}" rake test
+}
+
+package() {
+  cd "$pkgname"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+}
+# vim: ts=2 sw=2 et:

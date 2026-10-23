@@ -1,0 +1,49 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+# Contributor: Sergey Kostyuchenko <derfenix@gmail.com>
+
+pkgname=corectrl
+pkgver=1.5.2
+pkgrel=9
+pkgdesc="Core control application"
+url="https://gitlab.com/corectrl/corectrl"
+license=('GPL-3.0-or-later')
+arch=('x86_64')
+depends=(procps-ng hwdata quazip-qt6 qt6-charts qt6-base spdlog
+         botan qt6-svg dbus polkit fmt pugixml hicolor-icon-theme)
+makedepends=(cmake qt6-tools extra-cmake-modules ninja)
+checkdepends=(catch2 trompeloeil)
+optdepends=(
+	'vulkan-tools: For vulkaninfo'
+	'mesa-utils: For glxinfo'
+	'util-linux: For lscpu'
+)
+source=("https://gitlab.com/corectrl/corectrl/-/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.bz2")
+sha256sums=('c5269bab4dae8060699235f680e14c0e88804e092b540e6d0aac4b5665d0a5cd')
+b2sums=('c3bfe3eec081771efe4e384e847c43109abfa7a81716ffd3da9f4adf93fc96139a1f75145995bd71f5bb5825c24d547f64fe36e46ca8464b8bf157bd1657fb11')
+
+build() {
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -S "${pkgname}-v${pkgver}" \
+    -DCMAKE_BUILD_TYPE='None' \
+    -DCMAKE_INSTALL_PREFIX='/usr' \
+    -DCMAKE_INSTALL_LIBDIR='lib' \
+    -DCMAKE_INSTALL_LIBEXECDIR='lib' \
+    -DBUILD_TESTING=ON \
+    -Wno-dev
+  cmake --build build --verbose
+}
+
+check () {
+  CTEST_OUTPUT_ON_FAILURE=1 ninja -C build test
+}
+
+package() {
+  depends+=(
+    fmt libfmt.so
+  )
+  DESTDIR="${pkgdir}" cmake --install build
+}
+
+# vim:set ts=2 sw=2 et:

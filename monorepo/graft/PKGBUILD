@@ -1,0 +1,82 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Yakov Till <yakov.till@gmail.com>
+
+pkgname=graft
+pkgver=0.21.1
+pkgrel=1
+pkgdesc='Turbocharge Claude Code, Cursor, Codex, Gemini & every coding agent: faster, cheaper, with contextual understanding specific to your codebase'
+arch=(x86_64)
+url=https://github.com/trailhq/Graft
+license=(MIT)
+depends=(
+  bash
+  glibc
+  libgcc
+  libstdc++
+  nodejs
+)
+makedepends=(
+  gcc
+  git
+  node-gyp
+  npm
+  python
+)
+options=(!debug)
+source=(git+https://github.com/trailhq/Graft.git#tag=v${pkgver})
+b2sums=('a1b8aa7c62dda14e9232faa6cb54a562b1c870fcdde33592d314c2ff93dd3f6b1f4c0474e28718eda5e6c62c1bdb0df2f615f839fee35d35b95fe416fda157c8')
+
+prepare() {
+  cd Graft
+
+  npm ci \
+    --cache "${srcdir}/npm-cache" \
+    --ignore-scripts
+}
+
+build() {
+  cd Graft
+
+  export CXXFLAGS+=' -std=c++20'
+
+  npm run build
+  npm pack \
+    --ignore-scripts \
+    --pack-destination "${srcdir}"
+
+  npm install \
+    --global \
+    --install-strategy=hoisted \
+    --ignore-scripts \
+    --prefix "${srcdir}/staging/usr" \
+    --cache "${srcdir}/npm-cache" \
+    "${srcdir}/nanonets-graft-${pkgver}.tgz"
+
+  find "${srcdir}/staging" \
+    -type d \
+    -name prebuilds \
+    -prune \
+    -exec rm -rf {} +
+
+  local -a gypfiles
+  mapfile -t gypfiles < <(
+    find "${srcdir}/staging" \
+      \( -type d \( -name build -o -name deps \) -prune \) -o \
+      -name binding.gyp -print
+  )
+
+  local gypfile
+  for gypfile in "${gypfiles[@]}"; do
+    pushd "${gypfile%/binding.gyp}"
+    node-gyp rebuild --nodedir=/usr
+    # Keep the addon, drop the intermediates.
+    find build -mindepth 1 -maxdepth 1 ! -name Release -exec rm -rf {} +
+    find build/Release -mindepth 1 -maxdepth 1 ! -name '*.node' -exec rm -rf {} +
+    popd
+  done
+}
+
+package() {
+  cp -dr --no-preserve=ownership "${srcdir}/staging/usr" "${pkgdir}/"
+  install -Dm 644 Graft/LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

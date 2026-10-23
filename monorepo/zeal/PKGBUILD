@@ -1,0 +1,60 @@
+# Maintainer:  George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
+# Contributor: Oleg Shparber <trollixx+aur@gmail.com>
+# Contributor: Thomas Weißschuh <thomas t-8ch de>
+
+pkgname=zeal
+pkgver=0.9.1
+pkgrel=2
+pkgdesc='Offline API documentation browser'
+arch=(x86_64)
+url='https://zealdocs.org'
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  hicolor-icon-theme
+  qt6-webengine
+  qt6-base
+  qt6-webchannel
+  qt6-svg
+  sqlite
+  libarchive
+  libgcc
+  libstdc++
+  libxcb
+  libx11
+  libxkbcommon
+  tomlplusplus
+  xcb-util-keysyms
+  zlib
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  ninja
+  git
+  vulkan-headers
+)
+source=("$pkgname::git+https://github.com/zealdocs/zeal#tag=v$pkgver")
+sha512sums=('f76ba3b0ac5fa6c22f5fa96601ccc766c1af483dfb63287e9239ca08b34149dbcadb73d2a303502e7cf91e0691c4c212150950f46a2900dfb858e8ebf85eebd2')
+b2sums=('31a8afb8ecf03a4b93731c7026badccbf349a5115021b34c35fbace5c60fbd44c75ad8e59e45f4b35fdfd722b726953bf5c0c708607df9d5238718bc516aaef8')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-author
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D ZEAL_FEATURE_UPDATE_CHECK=OFF
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

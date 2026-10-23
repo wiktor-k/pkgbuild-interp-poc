@@ -1,0 +1,80 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: NicoHood <archlinux {cat} nicohood {dog} de>
+# Contributor: Matthew Sexton <wsdmatty (at) _gmail_ (dot) _com_>
+
+pkgname=notes-up
+pkgver=2.0.6
+pkgrel=4
+pkgdesc='Write beautiful notes fast and easy using Markdown'
+arch=(x86_64)
+url='https://github.com/Philip-Scott/Notes-up'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  discount
+  gdk-pixbuf2
+  glib2
+  glibc
+  granite
+  gtk3
+  gtksourceview4
+  gtkspell3
+  hicolor-icon-theme
+  libgee
+  pango
+  sqlite
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+source=(
+  "git+https://github.com/Philip-Scott/Notes-up.git#tag=$pkgver"
+  notes-up-markdown3.patch
+  notes-up-window-icon.patch
+  notes-up-window-title.patch
+  notes-up-fix-pdf-export.patch
+)
+b2sums=(
+  36a0e21877914e000114d2849e11c5d9f92278e4ed26bc96e34884c558a459fcf3816b80c06bad661be87a309787b1bbddd55359aa06a16b428dc14dd35af95d
+  f213f7e41e67c83717cf1e10882c0f11f05aff5ac3ef72a645c33bfc8848ef0e3bb8ca40c39bd292ae5ac79e4d6f803821b55ef8148b7f01d00a692bac9b71b6
+  8f539e22ea89e8f0b360f023c59242a34d9d898c7cfa49fc8004092e41b7b7603d6c143de2fdf8c048ef544f4673aee552370dd495eaaaec5a6120f7ace1a91d
+  6232f5d09bf1001dbbc95102e5d50b6ba545f22574fccefbd4b53102b2d4546661d77163d83e1c19eebdb120be8566999179c6e594e7b0899ba2bdd18dfcd904
+  e16271d8e719271e260aef5857f3152c9f4b3a942b2e7394747f0f160d814f2b6846c832e27d534f0a2d7e12ab4466988dcb65c17fad0084d9512c995b7001e2
+)
+
+prepare() {
+  cd Notes-up
+
+  # Support Markdown 3
+  # https://github.com/Philip-Scott/Notes-up/pull/404á
+  git apply -3 ../notes-up-markdown3.patch
+
+  # Set window icon
+  # https://github.com/Philip-Scott/Notes-up/pull/408
+  git apply -3 ../notes-up-window-icon.patch
+
+  # Set window title to null when nothing is selected
+  # https://github.com/Philip-Scott/Notes-up/pull/409
+  git apply -3 ../notes-up-window-title.patch
+
+  # Fix PDF export on non-English locales
+  # https://github.com/Philip-Scott/Notes-up/pull/410
+  git apply -3 ../notes-up-fix-pdf-export.patch
+
+  # Switch to webkit2gtk-4.1 to stop using end of life libsoup
+  sed -i 's/webkit2gtk-4.0/webkit2gtk-4.1/' meson.build
+}
+
+build() {
+  arch-meson Notes-up build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+  ln -s com.github.philip_scott.notes-up "$pkgdir/usr/bin/$pkgname"
+}

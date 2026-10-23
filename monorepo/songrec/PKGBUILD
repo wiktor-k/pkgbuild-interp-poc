@@ -1,0 +1,70 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+_pkgname=SongRec
+pkgname=songrec
+pkgver=0.7.5
+pkgrel=1
+pkgdesc='An open-source, unofficial Shazam client for Linux'
+arch=('x86_64')
+url='https://github.com/marin-m/SongRec'
+license=('GPL-3.0-only')
+depends=(
+  'gtk4'
+  'alsa-lib'
+  'openssl'
+  'ffmpeg'
+  'libpulse'
+  'pulse-native-provider'
+  'glib2'
+  'pango'
+  'cairo'
+  'glibc'
+  'dbus'
+  'libgcc'
+  'hicolor-icon-theme'
+  'gdk-pixbuf2'
+  'libadwaita'
+  'libpipewire'
+  'libsoup3'
+)
+makedepends=('cargo' 'pkgconf' 'git' 'clang')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha256sums=('90d64c27b1ba06caf2e1e162de98fa7fd5d044334d648be63956947fbd88bc9d')
+options=('!lto')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  install -Dm 755 "target/release/songrec" "$pkgdir/usr/bin/songrec"
+
+  install -Dm 644 "packaging/rootfs/usr/share/applications/re.fossplant.songrec.desktop" \
+                    "$pkgdir/usr/share/applications/re.fossplant.songrec.desktop"
+
+  install -Dm 644 "packaging/rootfs/usr/share/icons/hicolor/scalable/apps/re.fossplant.songrec.svg" \
+                    "$pkgdir/usr/share/icons/hicolor/scalable/apps/re.fossplant.songrec.svg"
+
+  install -Dm 644 "packaging/rootfs/usr/share/metainfo/re.fossplant.songrec.metainfo.xml" \
+                    "$pkgdir/usr/share/metainfo/re.fossplant.songrec.metainfo.xml"
+
+  cp -r translations/locale -t "$pkgdir/usr/share/"
+
+  cp -r packaging/rootfs/usr/share/man -t "$pkgdir/usr/share/"
+
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

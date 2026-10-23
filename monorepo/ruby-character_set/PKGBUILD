@@ -1,0 +1,93 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-character_set
+pkgver=1.8.0
+pkgrel=3
+pkgdesc='Build, read, write and compare sets of Unicode codepoints'
+arch=(x86_64)
+url='https://github.com/jaynetics/character_set'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-benchmark-ips
+  ruby-bundler
+  ruby-csv
+  ruby-get_process_mem
+  ruby-rake
+  ruby-rake-compiler
+  ruby-range_compressor
+  ruby-regexp_parser
+  ruby-regexp_property_values
+  ruby-rspec
+  ruby-warning
+)
+options=(!emptydirs)
+source=(git+https://github.com/jaynetics/character_set.git#tag=v$pkgver)
+sha256sums=('f5521012d9dadae5a05b575d4eb5b65c772a1b14d3f9712584e89e2d58fa57dd')
+
+prepare() {
+  cd character_set
+  sed -i -e 's|~>|>=|' character_set.gemspec
+  sed -i -e '/codecov/d' -e '/gouteur/d' Gemfile
+  # Don't recompile
+  sed -i '/compile/d' Rakefile
+  sed -i '/bundler/d' spec/spec_helper.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd character_set
+  gem build character_set.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    character_set-$pkgver.gem
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd character_set
+  GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd character_set
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

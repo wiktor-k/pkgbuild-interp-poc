@@ -1,0 +1,20 @@
+pkgbase = azure-cli
+	pkgdesc = Command-line tools for Microsoft Azure
+	pkgver = 2.90.0
+	pkgrel = 1
+	url = https://github.com/Azure/azure-cli
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libsecret
+	depends = python
+	options = !debug
+	options = !strip
+	source = git+https://github.com/Azure/azure-cli.git#tag=azure-cli-2.90.0
+	source = az
+	b2sums = 13feddd0c000f89650519fd836d3ae134d12c0110b3a5127324530148ee7fa710c9e005ebd9695a19380a681d05d1bebe084b433520c2988b0887707919fb9b0
+	b2sums = 302a9a7886d1ece779ae4d6182551cc68b0b498913911ff41004808c97e71e3f6f649046447d9844b72f6a4c30ee86c181fab252c7af11d36e1dcffec9ed6e16
+
+pkgname = azure-cli

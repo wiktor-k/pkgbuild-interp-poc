@@ -1,0 +1,38 @@
+# Contributor: ValHue <vhuelamo at gmail dot com>
+
+pkgname=bookworm
+pkgver=1.1.2
+pkgrel=7
+pkgdesc='A simple user centric eBook reader which displays multiple eBooks formats uniformly'
+url='https://babluboy.github.io/bookworm'
+arch=(x86_64)
+license=(GPL3)
+depends=(granite poppler-glib python unarchiver unzip webkit2gtk-4.1 python-html2text)
+makedepends=(meson vala ninja)
+source=(bookworm-$pkgver.tar.gz::https://github.com/babluboy/bookworm/archive/$pkgver.tar.gz
+	    html2text.patch
+	    bookworm-1.1.2-webkit4.1.patch)
+sha256sums=('6d27e55697debfa08f7cc15805413b74c94c55111cdf2d333b306228eccad824'
+            'a90f0753d54aa8f3b72816494928f8e9b72bf26fccd477adfa495e9e2c93dc42'
+            '2c2d070a89c36a4bbb6aaaa3c7ec1f445b7a4c547018a0acaead72db29a8b763')
+
+prepare() {
+  cd bookworm-$pkgver
+  patch -p1 < ../html2text.patch
+  patch -p1 < ../bookworm-1.1.2-webkit4.1.patch
+  mkdir build
+}
+
+build() {
+  cd bookworm-$pkgver
+  meson build --prefix=/usr
+  cd build
+  ninja
+}
+
+package() {
+  cd bookworm-$pkgver/build
+ 
+  DESTDIR="$pkgdir" ninja install
+  install -m644 -D ../COPYING "$pkgdir"/usr/share/licenses/bookworm/COPYING
+}

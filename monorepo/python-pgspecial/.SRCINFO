@@ -1,0 +1,24 @@
+pkgbase = python-pgspecial
+	pkgdesc = Meta-commands handler for PostgreSQL
+	pkgver = 2.3.0
+	pkgrel = 1
+	url = https://github.com/dbcli/pgspecial
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-configobj
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-click
+	depends = python-sqlparse
+	depends = python-psycopg
+	source = python-pgspecial::git+https://github.com/dbcli/pgspecial.git#tag=v2.3.0
+	sha512sums = 3248ccfcd9a8c697f2cdaf1338bf4210f5fc38694fcf06179ad3b90919b21dd5a6312afe90d72a1e78277b3b5a38e12773596c980539195208e9b5e8ec715d28
+	b2sums = db1b9cec9245f4540c9ead3e41bd49d859c109751256b3724622237b8cbc1dd996911600d267f51d7fbb09e201469145660c558e1a1af6cfbe460f5cb79d96a4
+
+pkgname = python-pgspecial

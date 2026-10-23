@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: zccrs <zhangjide@deepin.org>
+
+pkgname=treeland
+pkgver=0.11.0
+pkgrel=1
+pkgdesc='New wayland compositer for DDE'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/treeland"
+license=('Apache-2.0' 'CC-BY-4.0' 'CC0-1.0' 'GPL-2.0-only' 'GPL-3.0-only'
+         'HPND' 'LGPL-2.1-or-later' 'LGPL-3.0-only' 'MIT')
+# xwayland is needed for XWayland support (not optional)
+depends=('bash' 'ddm' 'dtk6core' 'dtk6declarative' 'dtk6systemsettings' 'glibc' 'libdisplay-info'
+         'libdrm' 'libgcc' 'libgl' 'libinput' 'libliftoff' 'libstdc++' 'libxau' 'libxcb' 'libxkbcommon'
+         'lcms2' 'mesa' 'mpv' 'pam' 'pixman' 'polkit' 'qt6-base' 'qt6-declarative' 'qt6-httpserver'
+         'qt6-remoteobjects' 'qt6-websockets' 'seatd' 'systemd-libs' 'vulkan-icd-loader' 'wayland'
+         'xcb-util-errors' 'xcb-util-renderutil' 'xcb-util-wm' 'xorg-xwayland' 'deepin-session')
+makedepends=('git' 'cmake' 'ninja' 'glslang' 'hwdata' 'qt6-tools' 'wayland-protocols' 'wlr-protocols'
+             'treeland-protocols' 'vulkan-headers')
+groups=('deepin')
+replaces=('waylib' 'qwlroots')
+conflicts=('waylib' 'qwlroots')
+source=("git+https://github.com/linuxdeepin/treeland.git#tag=$pkgver")
+sha256sums=('49b2c5a174baec0b4c8cc28a8fb3dcaa1fee5c0a4762642e08239ae630bbea30')
+
+prepare() {
+  cd treeland
+
+  # Fix wallpaper paths
+  sed -i 's|/usr/share/backgrounds/default_background.jpg|/usr/share/backgrounds/deepin/desktop.jpg|' misc/dconfig/org.deepin.dde.treeland{,.user}.json
+  sed -i 's|/usr/share/wallpapers/deepin/deepin-default.jpg|/usr/share/wallpapers/deepin/desktop.jpg|' src/wallpaper/wallpapermanager.cpp
+}
+
+build() {
+  cd treeland
+  # TODO: Fix RUNPATH issue
+  cmake . -B build -G Ninja \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
+    -DCMAKE_INSTALL_SYSCONFDIR=/etc \
+    -DTREELAND_INSTALL_DEV=ON \
+    -DCMAKE_INSTALL_PREFIX=/usr
+    # -DCMAKE_SKIP_RPATH=ON
+  cmake --build build
+}
+
+package() {
+  cd treeland
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 3rdparty/wlroots/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

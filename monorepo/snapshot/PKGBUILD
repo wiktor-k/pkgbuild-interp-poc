@@ -1,0 +1,67 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=snapshot
+pkgver=51.0
+pkgrel=1
+pkgdesc="Take pictures and videos"
+arch=(x86_64)
+url="https://apps.gnome.org/Snapshot"
+license=(GPL-3.0-or-later)
+groups=(gnome)
+depends=(
+  dconf
+  fontconfig
+  glib2
+  glibc
+  glycin
+  glycin-gtk4
+  graphene
+  gst-plugin-gtk4
+  gst-plugin-pipewire
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  lcms2
+  libadwaita
+  libgcc
+  libseccomp
+  pango
+)
+makedepends=(
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/snapshot.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('2914cf4ea20ef45140cede3ca3b9bd9e7c30b2a69d58cf73f42df1b6a218a173f4e368013e611604f6696f99198daf0bff3cf5944578d48126d05ceb1b755fa8')
+validpgpkeys=(
+  3475CBA8D3483594C889B470D64A8D747F6FE706 # Maximiliano Sandoval <msandova@gnome.org>
+  D25626D42D675B9C5EAF57DF7F3B4AADE28427AE # Jamie Murphy <hello@itsjamie.dev>
+)
+
+prepare() {
+  cd snapshot
+
+  # Match CARGO_HOME in src/meson.build
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson snapshot build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild ||:
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}

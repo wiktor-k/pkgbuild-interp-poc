@@ -1,0 +1,18 @@
+pkgbase = nvidia-container-toolkit
+	pkgdesc = NVIDIA container toolkit
+	pkgver = 1.20.1
+	pkgrel = 1
+	url = https://github.com/NVIDIA/nvidia-container-toolkit
+	install = nvidia-container-toolkit.install
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	depends = glibc
+	depends = libnvidia-container=1.20.1
+	options = !lto
+	backup = etc/nvidia-container-runtime/config.toml
+	backup = etc/nvidia-container-toolkit/nvidia-cdi-refresh.env
+	source = nvidia-container-toolkit-1.20.1.tar.gz::https://github.com/NVIDIA/nvidia-container-toolkit/archive/v1.20.1.tar.gz
+	b2sums = aa9d66374d1caea72dcd0f59291c81ba26e110367c02fd00acf8ec272e491c36b0e486238d9ce7a5312d1f3cdedefb09ca85ed5f60aa5fa173deba17d17af233
+
+pkgname = nvidia-container-toolkit

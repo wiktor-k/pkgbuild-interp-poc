@@ -1,0 +1,18 @@
+pkgbase = lib32-vkd3d
+	pkgdesc = Direct3D 12 to Vulkan translation library By WineHQ
+	pkgver = 1.19
+	pkgrel = 1
+	url = https://wiki.winehq.org/Vkd3d
+	arch = x86_64
+	license = LGPL
+	makedepends = spirv-headers
+	makedepends = vulkan-headers
+	makedepends = lib32-xcb-util-keysyms
+	makedepends = lib32-ncurses
+	makedepends = xorgproto
+	depends = lib32-vulkan-icd-loader
+	depends = perl-json
+	source = https://dl.winehq.org/vkd3d/source/vkd3d-1.19.tar.xz
+	sha512sums = 97502ee4340648feaf19919710310db5fe87909bb4e71150987595cd7fa85031d7eadfd5cb09285d2a41dd8a0e4664813631b636e4ccd561f4ed818ce9bc8682
+
+pkgname = lib32-vkd3d

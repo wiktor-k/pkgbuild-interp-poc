@@ -1,0 +1,168 @@
+# Maintainer: Anatol Pomozov
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=osquery
+pkgver=5.23.1
+pkgrel=1
+pkgdesc="SQL powered operating system instrumentation, monitoring, and analytics"
+arch=(x86_64)
+url="https://osquery.io"
+license=('Apache-2.0 OR GPL-2.0-only')
+depends=(
+  audit
+  augeas
+  aws-c-auth
+  aws-c-cal
+  aws-c-common
+  aws-c-compression
+  aws-c-event-stream
+  aws-c-http
+  aws-c-io
+  aws-c-mqtt
+  aws-c-s3
+  aws-c-sdkutils
+  aws-checksums
+  aws-crt-cpp
+  aws-sdk-cpp-core
+  aws-sdk-cpp-ec2
+  aws-sdk-cpp-firehose
+  aws-sdk-cpp-iam
+  aws-sdk-cpp-kinesis
+  bash
+  boost-libs
+  cryptsetup
+  dbus
+  device-mapper
+  file
+  gflags
+  glibc
+  google-glog
+  iptables
+  libarchive
+  libcap
+  libgcc
+  librdkafka
+  libstdc++
+  openssl
+  popt
+  rocksdb
+  rpm-tools
+  s2n-tls
+  sleuthkit
+  sqlite
+  systemd-libs
+  thrift
+  yara
+  zlib
+  zstd
+)
+makedepends=(
+  boost
+  clang
+  cmake
+  dpkg
+  git
+  gtest
+  libpcap
+  libunwind
+  python
+  rapidjson
+)
+backup=(
+  etc/osquery/osquery.conf
+  etc/sysconfig/osqueryd
+)
+_url=https://github.com/osquery/osquery
+source=(
+  "git+$_url.git#tag=$pkgver"
+  "git+https://github.com/arangodb/linenoise-ng.git"
+  "$pkgname-util-linux::git+https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git"
+  # Patchset maintained here:
+  # https://github.com/carlsmedstad/osquery/tree/build-on-archlinux
+  "$pkgname-0001-Use-system-libraries-where-possible.patch::$_url/commit/cfba4b8acdbb4ed805bcd07e473d5cccefa8e3e6.patch"
+  "$pkgname-0002-Disable-submodule-fetching.patch::$_url/commit/1613c65e69bdc69cff1aa6121f46200e533eba68.patch"
+  "$pkgname-0004-Fix-remaining-compilation-issues.patch::$_url/commit/fb198049d765f228f06f0feaa491e531bf1c0905.patch"
+  "$pkgname-0005-Do-not-build-system_controls-tables.patch::$_url/commit/db441c2c031dc61afcba1e903ed9a7f7161e7d64.patch"
+  "$pkgname-0007-Do-not-build-utils-requiring-libdpkg.patch::$_url/commit/4aae30a46a4a3744e308ab0a82653dba79ad79ff.patch"
+  "$pkgname-0008-Fix-systemd-service-and-systemctl-script.patch::$_url/commit/4904934ca19902146215f44a8f6d710f6060dbf3.patch"
+  "$pkgname-0009-Adapt-installation-to-using-system-packages.patch::$_url/commit/0777b63c0c2c2cee13f78ab2b6e3100ee1399dd3.patch"
+  "$pkgname-gcc-15.patch"
+  "$pkgname-boost-1.89.0-compatibility.patch"
+  "$pkgname-rocksdb-11-compatibility.patch"
+)
+b2sums=('0372fbb93a9c2c345ca74bf18bdee0b82ef66bcdd3f65a59941daff92323bf5a9318149cf6be4064fdca712bf0b4db2702eee41408069cbce7be481732252db1'
+        'SKIP'
+        'SKIP'
+        '152f44f88edff9d622de33fe6d21ffb518174e97092be306d6ac85537ae0f4aff97f27c31c7d0ac994ca4a11b49580163644fdcb5d37e2acfb5d4e16b3e72d4e'
+        '9373085154d444e70bf0f33f78ac923f1856f5d732d4d9dd06fb75540e6cf40629a2f98314a6ac892e1896196a7db4935325af1dce9e45b225f291570782c703'
+        '7cda003f658e572d9bbfb47ac4642015c42333a083fab9109cf03ceca6b248212fb7d3dbcc70af0d7c56448cb44913214cda918f6a22ea7482b37d0b6367c14f'
+        '6ed9024fcd3703e00ba723113b09c3d953013d684cf371e19041a48c094752f9e7dc3c053b2ada062158071a22d6b20879bd4c14c09633e2ae4424fc2e72162c'
+        'b8766dee86096cbeee70746b3f2fef152f4a4bb3ef641cb94920bc41712232e3eb8d116c7b2709d4093ca88940518b37faddba03954f7bb96df9a4a8f1f53d34'
+        'f61aa7c7f4660a9b21d645c5f3685a11307ff34378b9c8e7a8de4ff1368da5f4cde362ba8524d9c59e13f0a9367500db70490722ad5ebe371c0388de7fa1a3fe'
+        '7362f44f4da7b30bfdba5fc780363acbb04fda316024321e58c4de2d59ef673809233460936c67901102bacd38e71a3ac6965b0311f283548188732a8438d13f'
+        'a62e3dc663d80080a2452a08547a6f7e925c14554dccf4aab78ff582127fb65378d87ed6ec49e409be61791205ce709cf8fc5e204b1b9aa5c5cd756eabdcd748'
+        '6388f0dafa87cf54cb2b82662196424042af354b4eded070a6f0be33f4e701f8049c6671497b6663b26ef8a5782dd8477e21f742678ada14c6762cd83f32f522'
+        '00637b29831f9bf64ae93f2f93e6f133f75e7e1d9be3643d420a7882aec3bba98e8372be20db790cb2a741de5fd263cb3066c971535661d3b03451d39923b380')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.libraries/cmake/source/linenoise-ng/src.url ../linenoise-ng
+  git config submodule.libraries/cmake/source/util-linux/src.url ../$pkgname-util-linux
+  git -c protocol.file.allow=always submodule update \
+    libraries/cmake/source/linenoise-ng \
+    libraries/cmake/source/util-linux
+
+  for patch in ../*.patch; do
+    patch -Np1 -i "$patch"
+  done
+}
+
+build() {
+  cd $pkgname
+  # This flag causes a linker error:
+  # dns_resolvers.cpp:(...): undefined reference to `__res_close'
+  export LDFLAGS="${LDFLAGS/-Wl,--as-needed/}"
+  cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DOSQUERY_BUILD_TESTS=ON \
+    -DOSQUERY_BUILD_BPF=OFF \
+    -DOSQUERY_BUILD_EXPERIMENTS=OFF \
+    -DOSQUERY_BUILD_AWS=ON \
+    -DOSQUERY_BUILD_DPKG=OFF \
+    -DOSQUERY_USE_SYSTEM_LIBRARIES=ON \
+    -DOSQUERY_VERSION="$pkgver"
+  cmake --build build
+}
+
+check() {
+  cd $pkgname
+  local skipped_tests=(
+    osquery_remote_transports_remotetransportstlstests-test
+    osquery_tables_events_tests_seccompeventstests-test
+    osquery_tables_system_linux_tests-test
+    osquery_tables_system_tests_systemtablestests-test
+    osquery_utils_json_jsontests-test
+    tests_integration_tables-test
+    tools_tests_testfschangestable
+    tools_tests_testosqueryd
+    tools_tests_testosqueryi
+    tools_tests_testrelease
+  )
+  skipped_tests_pattern="${skipped_tests[0]}$(printf '|%s' "${skipped_tests[@]:1}")"
+  ctest --test-dir build --output-on-failure -E "${skipped_tests_pattern}"
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" cmake --install build
+  install -vdm755 "$pkgdir/var/log/osquery"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+  install -vDm644 tools/deployment/osquery.example.conf "$pkgdir/etc/osquery/osquery.conf"
+  install -vDm644 tools/deployment/linux_packaging/osqueryd.sysconfig "$pkgdir/etc/sysconfig/osqueryd"
+  install -vDm644 tools/deployment/linux_packaging/rpm/osqueryd.service "$pkgdir/usr/lib/systemd/system/osqueryd.service"
+}

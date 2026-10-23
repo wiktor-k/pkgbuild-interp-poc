@@ -1,0 +1,19 @@
+pkgbase = udisks2-qt6
+	pkgdesc = UDisks2 DBus interfaces binding for Qt6
+	pkgver = 6.0.1
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/udisks2-qt6
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = qt6-base
+	depends = udisks2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/linuxdeepin/udisks2-qt6.git#tag=6.0.1
+	sha512sums = 30930c71546f0089ff6b27b88328abefde6bfe54f1ec09ebb60b939146697c9190eea8cda0c5b0ae27d0b403f0cadc15da08c652328f907046d3a4bd9ee53744
+
+pkgname = udisks2-qt6

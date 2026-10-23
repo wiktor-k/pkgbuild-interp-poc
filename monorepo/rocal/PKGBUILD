@@ -1,0 +1,95 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=rocal
+pkgver=7.2.4
+pkgrel=7
+pkgdesc='A high-performance jpeg decode library for AMD’s GPUs'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/rocAL/en/latest/'
+license=('MIT')
+depends=(
+  'ffmpeg'
+  'glibc'
+  'hip-runtime-amd'
+  'libgcc'
+  'libva'
+  'lmdb'
+  'mesa'
+  'mivisionx'
+  'opencv'
+  'openmp'
+  'protobuf'
+  'python-setuptools'
+  'rocdecode'
+  'rocjpeg'
+  'rocm-core'
+  'rpp'
+)
+makedepends=(
+  'cmake'
+  'git'
+  'half'
+  'pybind11'
+  'rocm-cmake'
+  'rocm-llvm'
+)
+_git='https://github.com/ROCm/rocAL'
+_rapidjson='https://github.com/Tencent/rapidjson'
+# rocAL uses some unreleased features of rapidjson
+_commit=24b5e7a8b27f42fa16b96fc70aade9106cf7102f
+source=("$pkgname::git+$_git.git#tag=rocm-${pkgver}"
+        "$pkgname-rapidjson-$_commit.tar.gz::$_rapidjson/archive/$_commit.tar.gz"
+        "rocal-abseil-log-clash.patch")
+sha256sums=('5dd920f5110c6f60dfc35c3709dc30b203a2792ae8085156bbb1ff49e764f0f6'
+            '2d2601a82d2d3b7e143a3c8d43ef616671391034bc46891a9816b79cf2d3e7a8'
+            'd2685182aa423ac2657f2a263bba964b1857bd7d2f53a61455b68efcb01a5098')
+_dirname="$pkgname"
+_rapidjsondir="$(basename "$_rapidjson")-$(basename "${source[1]}" ".tar.gz")"
+
+prepare() {
+  cd "$_dirname"
+
+  # OpenCV - remove decoder option for image
+  git cherry-pick -n 83e8ac9a3c676dfd0c2b9d9799a9b716d3c2ba8d
+
+  # Rename LOG macro due to name conflict with abseil-provided one
+  git apply < "${srcdir}/rocal-abseil-log-clash.patch"
+}
+
+build() {
+  local rapidjson_args=(
+    -Wno-dev
+    -S "$_rapidjsondir"
+    -B build-rapidjson
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BUILD_SHARED_LIBS=OFF
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5
+  )
+  cmake "${rapidjson_args[@]}"
+  cmake --build build-rapidjson
+  DESTDIR="$srcdir/deps" cmake --install build-rapidjson
+
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_C_COMPILER=amdclang
+    -D CMAKE_CXX_COMPILER=amdclang++
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS} -fcf-protection=none -isystem $srcdir/deps/usr/include"
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+    -D CMAKE_PREFIX_PATH="$srcdir/deps/usr/lib/cmake"
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$_dirname/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,32 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Peter Mattern <pmattern at arcor dot de>
+# Contributor: Michael Straube <straubem at gmx dot de>
+# Contributor: Ofer Kashayov <oferkv at gmail dot com>
+
+pkgname=phototonic
+pkgver=3.2.0
+pkgrel=1
+pkgdesc="Image viewer and organizer built with Qt and Exiv2"
+arch=('x86_64')
+url="https://github.com/luebking/${pkgname}"
+license=('GPL-3.0-or-later')
+depends=('exiv2' 'glibc' 'hicolor-icon-theme' 'libgcc' 'libstdc++' 'qt6-base')
+optdepends=('qt6-imageformats: TIFF and TGA support'
+            'qt6-svg: SVG support')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('8351b9fdc3de94a0675068edd1e35d65ee8b73b554716381e5ba4e4938a2d307')
+
+prepare() {
+	sed -i '/INSTALLS +=/ s/ iconPixmaps//' "${pkgname}-${pkgver}/phototonic.pro"
+}
+
+build() {
+	cd "${pkgname}-${pkgver}/"
+	qmake6 PREFIX=/usr phototonic.pro
+	make
+}
+
+package() {
+	make -C "${pkgname}-${pkgver}" INSTALL_ROOT="${pkgdir}" install
+}

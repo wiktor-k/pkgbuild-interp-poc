@@ -1,0 +1,60 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <christian@heusel.eu>
+
+pkgname=rocjpeg
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='A high-performance jpeg decode library for AMD’s GPUs'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/rocJPEG/en/latest/'
+license=('MIT')
+depends=(
+  'glibc'
+  'hip-runtime-amd'
+  'libgcc'
+  'libstdc++'
+  'libva'
+  'mesa'
+  'rocm-core'
+  'rocprofiler-register'
+)
+makedepends=(
+  'cmake'
+  'rocm-cmake'
+  'rocm-llvm'
+)
+_git='https://github.com/ROCm/rocJPEG'
+source=("$pkgname-$pkgver.tar.gz::$_git/archive/refs/tags/rocm-$pkgver.tar.gz")
+sha256sums=('be739859bcbb0d678b22af4b4bee4aad37cbee8c838198bbe71b49cf43640ccf')
+_dirname="$(basename "$_git")-$(basename "${source[0]}" ".tar.gz")"
+
+prepare() {
+  cd "$_dirname"
+  # https://src.fedoraproject.org/rpms/rocjpeg/blob/rawhide/f/rocjpeg.spec
+  sed -i "s|\(llvm/bin/clang++\)|\1 CACHE STRING \"ROCm Compiler path\"|" CMakeLists.txt
+  sed -i "s|/opt/amdgpu/include NO_DEFAULT_PATH|/usr/include|" cmake/FindLibva.cmake
+  sed -i -e 's@${LINK_LIBRARY_LIST} ${LIBVA_DRM_LIBRARY}@${LINK_LIBRARY_LIST} ${LIBVA_DRM_LIBRARY} -ldrm_amdgpu@' CMakeLists.txt
+}
+
+build() {
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_C_COMPILER=amdclang
+    -D CMAKE_CXX_COMPILER=amdclang++
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS} -fcf-protection=none"
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$_dirname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

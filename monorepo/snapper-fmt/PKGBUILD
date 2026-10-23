@@ -1,0 +1,47 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=snapper
+pkgname=snapper-fmt
+pkgver=0.11.10
+pkgrel=1
+pkgdesc="Semantic line break formatter for Org, LaTeX, Markdown, and plaintext"
+arch=(x86_64)
+url="https://github.com/TurtleTech-ehf/snapper"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  cargo
+)
+checkdepends=(
+  git
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('4271a0a5b0212bb648d08409473c89a9a76518fb706b476683eea3d9423fcbba176a4c8ace71c718312942a8c7e42a521eff96d5c2ce8fcfec357bfb746f23de')
+
+prepare() {
+  cd $_name-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  # fix building with LTO
+  CFLAGS+=' -ffat-lto-objects'
+
+  cd $_name-$pkgver
+  cargo build --frozen --release
+}
+
+check() {
+  cd $_name-$pkgver
+  cargo test --frozen --release
+}
+
+package() {
+  cd $_name-$pkgver
+  install -vDm 755 target/release/snapper-fmt -t "$pkgdir"/usr/bin/
+  install -vDm 755 target/release/snapper-gen-docs -t "$pkgdir"/usr/bin/
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

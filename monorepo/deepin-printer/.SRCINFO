@@ -1,0 +1,27 @@
+pkgbase = deepin-printer
+	pkgdesc = Printer configuration project for DDE
+	pkgver = 1.0.20
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/dde-printer
+	arch = x86_64
+	groups = deepin-extra
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = qt5-tools
+	depends = cups
+	depends = deepin-service-manager
+	depends = dtkcore
+	depends = dtkgui
+	depends = dtkwidget
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libusb
+	depends = qt5-base
+	depends = hicolor-icon-theme
+	depends = xdg-utils
+	depends = smbclient
+	source = git+https://github.com/linuxdeepin/dde-printer.git#tag=1.0.20
+	sha512sums = 729a4a5ce8c412a9f87285f099b559fac4198e7ee0bcb1609d50cd7dc92b3a0a02d00297fd72400662b7b7d8a307b6754fcf7e2f13a5a5f0e480f06cce920de5
+
+pkgname = deepin-printer

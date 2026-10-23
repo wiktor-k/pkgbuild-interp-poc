@@ -1,0 +1,23 @@
+pkgbase = catfish
+	pkgdesc = Versatile file searching tool
+	pkgver = 4.20.1
+	pkgrel = 2
+	url = https://docs.xfce.org/apps/catfish/start
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = dbus-python
+	depends = gtk3
+	depends = python-cairo
+	depends = python-gobject
+	depends = python-pexpect
+	depends = xdg-utils
+	depends = xfconf
+	depends = which
+	optdepends = plocate: search in locate index
+	optdepends = zeitgeist: search in zeitgeist index
+	source = git+https://gitlab.xfce.org/apps/catfish.git#tag=catfish-4.20.1
+	sha256sums = 265ca6b2c4494b74bb41a2d642860d7f15982171e87a18978f7b2173763fc39d
+
+pkgname = catfish

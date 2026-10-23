@@ -1,0 +1,46 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: pallxk <aur@pallxk.com>
+# https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-linux
+
+pkgname=azure-cli
+pkgver=2.90.0
+pkgrel=1
+pkgdesc="Command-line tools for Microsoft Azure"
+arch=('any')
+url="https://github.com/Azure/azure-cli"
+license=('MIT')
+depends=(
+  "glibc"
+  "libgcc"
+  "libsecret"
+  "python"
+)
+makedepends=("git")
+options=(
+  '!debug'
+  '!strip'
+)
+source=("git+https://github.com/Azure/azure-cli.git#tag=azure-cli-${pkgver}"
+        "az")
+b2sums=('13feddd0c000f89650519fd836d3ae134d12c0110b3a5127324530148ee7fa710c9e005ebd9695a19380a681d05d1bebe084b433520c2988b0887707919fb9b0'
+        '302a9a7886d1ece779ae4d6182551cc68b0b498913911ff41004808c97e71e3f6f649046447d9844b72f6a4c30ee86c181fab252c7af11d36e1dcffec9ed6e16')
+
+package() {
+  cd $pkgname
+  mkdir -v "$pkgdir/opt"
+
+  # We're going to just slap all of this junk into /opt because it needs so much stuff
+  # with very specific versions that it's just not worth the hassle to try to fight it.
+  # Sometimes you just have to be like water, my friend.
+  python -m venv "$pkgdir/opt/azure-cli"
+  # shellcheck disable=SC1091
+  source "$pkgdir/opt/azure-cli/bin/activate"
+
+  scripts/install_full.sh
+
+  install -vDm755 "$srcdir/az" "$pkgdir/usr/bin/az"
+  install -vDm644 az.completion "$pkgdir/usr/share/bash-completion/completions/az"
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,30 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-write
+_pkgname=write-activity
+pkgver=101
+pkgrel=5
+pkgdesc='Sugar activity to edit texts'
+arch=(any)
+url='https://github.com/sugarlabs/write-activity'
+license=(GPL-2.0-or-later)
+groups=(sugar-fructose)
+depends=(
+  abiword
+  gdk-pixbuf2
+  glib2
+  gtk3
+  python
+  python-dbus
+  python-gobject
+  sugar-toolkit-gtk3
+  telepathy-glib
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(918786f3e15fcf9240394e038d68d39c9dbd0735ab0b7d1d04095455e5586b1cca6c18baab385d95ce1ea40b8a52975f6712b73c2d6f1a719d5126c9e4308e01)
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

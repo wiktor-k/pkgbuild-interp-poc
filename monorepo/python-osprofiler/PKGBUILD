@@ -1,0 +1,39 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-osprofiler
+pkgver=4.4.0
+pkgrel=1
+pkgdesc="OpenStack Profiler Library"
+arch=('any')
+url="https://docs.openstack.org/osprofiler/latest/"
+license=('Apache-2.0')
+depends=('python-netaddr' 'python-oslo-concurrency' 'python-oslo-serialization' 'python-oslo-utils'
+         'python-prettytable' 'python-requests' 'python-webob')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel' 'python-pbr')
+checkdepends=('python-ddt' 'python-stestr' 'python-testtools' 'python-docutils' 'python-pymongo'
+              'python-elasticsearch' 'python-redis' 'python-opentelemetry-exporter-otlp'
+              'python-opentelemetry-sdk')
+source=("git+https://github.com/openstack/osprofiler.git#tag=$pkgver"
+	"elasticsearch-url-fix.patch")
+sha512sums=('ea059f92694caf2146f3daaeecd90b66d75976caf5cc926e427eb624104fc6ff7a7c9ecdbd00753e32759b8bbadb917b4e35e057250ae12feb1ac5eb2d66439b'
+            'bed308388885765bd4f4cdea2835a045436c7bff70e78f66add21b5c46b4899a10fe6c5ef91dd6a807002c4994ed33a5e01f3c1f358bcf001926bcec2070ea59')
+
+prepare() {
+  cd osprofiler
+  patch -Np1 -i ${srcdir}/elasticsearch-url-fix.patch
+}
+
+build() {
+  cd osprofiler
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd osprofiler
+  stestr run
+}
+
+package() {
+  cd osprofiler
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

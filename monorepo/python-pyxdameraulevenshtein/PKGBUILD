@@ -1,0 +1,46 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=pyxDamerauLevenshtein
+pkgname=python-${_pkg,,}
+pkgver=1.10.1
+pkgrel=1
+pkgdesc="Implements the Damerau-Levenshtein (DL) edit distance algorithm"
+arch=(x86_64)
+url="https://github.com/gfairchild/pyxDamerauLevenshtein"
+license=(BSD-3-Clause)
+depends=(python)
+makedepends=(
+  cython
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+# No tests in PyPi tarballs
+#source=(https://files.pythonhosted.org/packages/source/${_pkg::1}/${_pkg,,}/${_pkg,,}-${pkgver}.tar.gz)
+source=(${url}/archive/${pkgver}/${_pkg}-${pkgver}.tar.gz)
+sha256sums=('9c506ab945610933558f6991cbf7675115119e8b7d8549fa5f899e3dd1ac9cc4')
+
+prepare() {
+  cd ${_pkg}-${pkgver}
+  sed -e '/--cov/d' -i pyproject.toml
+  cythonize3 pyxdameraulevenshtein/*.pyx
+}
+
+build() {
+  cd ${_pkg}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkg}-${pkgver}
+  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  PYTHONPATH="${PWD}"/build/lib.linux-${CARCH}-cpython-${python_version/./} pytest
+}
+
+package() {
+  cd ${_pkg}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+}

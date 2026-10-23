@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=gitit
+pkgver=0.16.0.2
+pkgrel=28
+pkgdesc="Wiki using happstack, git or darcs, and pandoc."
+url="https://github.com/jgm/gitit"
+license=('GPL-2.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-hstringtemplate' 'haskell-http' 'haskell-sha' 'haskell-aeson'
+         'haskell-base64-bytestring' 'haskell-blaze-html' 'haskell-doctemplates' 'haskell-feed'
+         'haskell-filestore' 'haskell-ghc' 'haskell-ghc-paths' 'haskell-happstack-server'
+         'haskell-hoauth2' 'haskell-hslogger' 'haskell-http-client-tls' 'haskell-http-conduit'
+         'haskell-json' 'haskell-network' 'haskell-network-bsd' 'haskell-network-uri'
+         'haskell-old-locale' 'haskell-old-time' 'haskell-pandoc' 'haskell-pandoc-types'
+         'haskell-random' 'haskell-recaptcha' 'haskell-safe' 'haskell-skylighting' 'haskell-split'
+         'haskell-syb' 'haskell-tagsoup' 'haskell-temporary' 'haskell-uri-bytestring' 'haskell-url'
+         'haskell-utf8-string' 'haskell-uuid' 'haskell-xml' 'haskell-xml-conduit'
+         'haskell-xml-types' 'haskell-xss-sanitize' 'haskell-zlib')
+makedepends=('ghc')
+source=("https://hackage.haskell.org/packages/archive/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('36e7cce98d62ba2c1c86312675116f257ae659702d6639aff1a4cb39ca258de3')
+
+build() {
+  cd $pkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' \
+    -fplugins
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $pkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

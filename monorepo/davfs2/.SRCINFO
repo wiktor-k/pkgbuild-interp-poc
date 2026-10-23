@@ -1,0 +1,20 @@
+pkgbase = davfs2
+	pkgdesc = File system driver that allows you to mount a WebDAV folder
+	pkgver = 1.7.3
+	pkgrel = 1
+	url = https://github.com/alisarctl/davfs2
+	arch = armv7h
+	arch = aarch64
+	arch = x86_64
+	license = GPL-3.0-only
+	depends = neon
+	depends = po4a
+	backup = etc/davfs2/davfs2.conf
+	backup = etc/davfs2/secrets
+	source = https://github.com/alisarctl/davfs2/releases/download/rel-1-7-3/davfs2-1.7.3.tar.gz
+	source = https://github.com/alisarctl/davfs2/releases/download/rel-1-7-3/davfs2-1.7.3.tar.gz.sig
+	validpgpkeys = 51A0F4A0C8CFC98F842EA9A8B94556F81C85D0D5
+	sha256sums = a5368161eb5055651d7e5e8180c1606da95e78c941b6bb8a9286df7923cfcba9
+	sha256sums = SKIP
+
+pkgname = davfs2

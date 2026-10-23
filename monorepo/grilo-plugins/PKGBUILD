@@ -1,0 +1,91 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=grilo-plugins
+pkgver=0.3.18
+pkgrel=3
+epoch=1
+pkgdesc="A collection of plugins for the Grilo framework"
+url="https://gitlab.gnome.org/GNOME/grilo-plugins"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  avahi
+  chromaprint
+  glib2
+  glibc
+  gom
+  grilo
+  gst-plugins-bad
+  gstreamer
+  json-glib
+  libarchive
+  libdmapsharing
+  libgcc
+  libgoa
+  libmediaart
+  liboauth
+  librest
+  libxml2
+  lua54
+  sqlite
+  tinysparql
+  totem-pl-parser
+)
+makedepends=(
+  git
+  glib2-devel
+  gperf
+  meson
+  yelp-tools
+)
+checkdepends=(
+  gst-plugins-base
+  gst-plugins-good
+  localsearch
+  python-gobject
+)
+optdepends=(
+  'dleyna-server: DLNA plugin'
+  'tracker3-miners: Tracker plugin'
+)
+groups=(gnome)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/grilo-plugins.git#tag=grilo-plugins-$pkgver"
+  0001-HACK-Disable-Tracker-tests.patch
+  0002-lua-xml-Fix-lua-tests.patch
+)
+b2sums=('0f1f453078c1122c5cf100ac0cd3e057b910de06fd4eccfd9698cd437879680076ac6a8a8d9b39730dea2cf6357d83350a2dd619ba1b055e8137f9190687a8df'
+        '2548c6f1077275d44b04637fcbb041157e6302ad0ab28a7d396176b73cdfffad318bdb9c7e924994586452c26776fc33ccf84fdc05f1ddfdd3c58f2408cf947f'
+        'f07b2d4438a9c750d45d6539cf7854f5d3681855e1cad36b15e2d802cd4ad10302598a0f3d2a8d19f1d405bbff9582987fcab75eab8f2da848b5f1103c42ec5d')
+
+prepare() {
+  cd $pkgname
+
+  # The tracker tests are broken in our containers because bubblewrap
+  # stopped working, also see https://bugs.archlinux.org/task/78033
+  git apply -3 ../0001-HACK-Disable-Tracker-tests.patch
+
+  # Fix LUA xml parser tests
+  git apply -3 ../0002-lua-xml-Fix-lua-tests.patch
+}
+
+build() {
+  local meson_options=(
+    -D enable-tracker=no
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  dbus-run-session meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(libgr{ilo,lnet,lpls}-0.3.so)
+
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

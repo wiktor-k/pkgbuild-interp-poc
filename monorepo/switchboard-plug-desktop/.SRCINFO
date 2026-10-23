@@ -1,0 +1,25 @@
+pkgbase = switchboard-plug-desktop
+	pkgdesc = Switchboard Desktop Plug
+	pkgver = 8.3.0
+	pkgrel = 1
+	url = https://github.com/elementary/switchboard-plug-pantheon-shell
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = ninja
+	makedepends = vala
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libgee
+	depends = libgexiv2
+	depends = libgranite-7.so
+	depends = libswitchboard-3.so
+	depends = pango
+	source = switchboard-plug-desktop::git+https://github.com/elementary/switchboard-plug-pantheon-shell.git#tag=8.3.0
+	b2sums = 61771d33f1badc6125672f511e1e53a1dc81f2bee1510db2f2500cb8e2ee67a96916bbd6c9f77f5ca8a8494b584cf316d8b842ae6eb25e83868b981390bac409
+
+pkgname = switchboard-plug-desktop

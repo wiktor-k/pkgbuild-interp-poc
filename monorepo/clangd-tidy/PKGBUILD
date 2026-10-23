@@ -1,0 +1,39 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=clangd-tidy
+pkgver=1.1.1
+pkgrel=1
+pkgdesc="A faster alternative to clang-tidy"
+arch=(any)
+url="https://github.com/lljbash/clangd-tidy"
+license=(MIT)
+depends=(
+  clang
+  python
+  python-attrs
+  python-cattrs
+  python-typing_extensions
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+)
+optdepends=(
+  'python-tqdm: for progress bar support'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('98ce32d44a2c511f461f656c410961cafb821b85d053161e8b5e3df30e6d17000ed9e558f8cff446dcf5e441590a36066fe26f9716f2f5a44e4e428220404341')
+
+build() {
+  cd $pkgname-$pkgver
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver \
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

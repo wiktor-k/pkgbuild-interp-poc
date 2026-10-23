@@ -1,0 +1,23 @@
+pkgbase = bupstash
+	pkgdesc = A tool for encrypted backups
+	pkgver = 0.12.0
+	pkgrel = 4
+	url = https://bupstash.io
+	arch = x86_64
+	license = MIT
+	checkdepends = bats
+	checkdepends = python
+	checkdepends = jq
+	makedepends = git
+	makedepends = rust
+	makedepends = ruby-ronn-ng
+	depends = glibc
+	depends = libgcc
+	depends = libsodium
+	options = !lto
+	source = bupstash::git+https://github.com/andrewchambers/bupstash.git#commit=edab7c3db03e20e557272ee6999ede216b7693d2
+	source = fix-bindgen-test-crash.patch::https://github.com/andrewchambers/bupstash/pull/413.patch
+	b2sums = 013f695eceb08c822c9c74fac68381e7cf438b89e03be553f5fe9da1c71818710de3ed9a5ab332b41f5c88e28d182a79c0c2308d2c09703de10af347916fc197
+	b2sums = 5f79b6a88fa5a94a5a9719aedd911171285eb5c58ccca6f938c899e83a5ad6fc7998f84e0a6435f66f4eefcca374592714685ef6f0d0dd1e6ab21c5fe76a3971
+
+pkgname = bupstash

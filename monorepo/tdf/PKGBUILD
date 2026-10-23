@@ -1,0 +1,54 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=tdf
+pkgver=0.5.0
+pkgrel=3
+pkgdesc='A TUI-based PDF viewer'
+arch=(x86_64)
+url="https://github.com/itsjunetime/tdf"
+license=(MPL-2.0)
+depends=(fontconfig libfontconfig.so
+         glib2
+         glibc # libc.so libm.so
+         libgcc libgcc_s.so
+         mupdf)
+makedepends=(cargo
+             clang
+             python
+             unzip)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('f9cdcc89e03efdb002938428905ff6cd9ef7ee9941f7b4fa1f473f9f6c49eb6e')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release
+}
+
+check() {
+	_srcenv
+	cargo test --frozen
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+}

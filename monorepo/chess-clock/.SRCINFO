@@ -1,0 +1,24 @@
+pkgbase = chess-clock
+	pkgdesc = Simple application to provide time control for over-the-board chess games
+	pkgver = 0.6.3
+	pkgrel = 1
+	url = https://apps.gnome.org/Chessclock/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gsound
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = python
+	depends = python-gobject
+	source = git+https://gitlab.gnome.org/World/chess-clock.git#tag=v0.6.3-currently-unsigned
+	validpgpkeys = B9386554B7DD266BCB8E29A990F0C9B18A6B4A19
+	b2sums = 151d92da5eca85725cdaadb55815a0d1fe0f419316a7eee6ec54b6ce10b030717d8db2ff91b07cdf84a902ffc2a94ab8d26b9ddcc1710b817990105754718831
+
+pkgname = chess-clock

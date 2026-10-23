@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-fluent.runtime
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="Localization library for expressive translations"
+arch=('any')
+url="https://github.com/projectfluent/python-fluent"
+license=('Apache-2.0')
+depends=(
+  'python'
+  'python-attrs'
+  'python-babel'
+  'python-fluent.syntax'
+  'python-pytz'
+  'python-typing_extensions'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("git+https://github.com/projectfluent/python-fluent.git#tag=fluent.runtime@$pkgver")
+sha512sums=('SKIP')
+
+build() {
+  cd python-fluent/fluent.runtime
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-fluent/fluent.runtime
+  python runtests.py
+}
+
+package() {
+  cd python-fluent/fluent.runtime
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

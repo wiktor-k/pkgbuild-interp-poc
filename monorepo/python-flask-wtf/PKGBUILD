@@ -1,0 +1,59 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Serge Victor <arch@random.re>
+
+pkgname=python-flask-wtf
+pkgver=1.3.0
+pkgrel=1
+pkgdesc='Simple integration of Flask and WTForms'
+url='https://github.com/pallets-eco/flask-wtf'
+arch=(any)
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-babel
+  python-flask
+  python-flask-babel
+  python-itsdangerous
+  python-markupsafe
+  python-werkzeug
+  python-wtforms
+)
+makedepends=(
+  python-build
+  python-hatchling
+  python-installer
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+)
+source=(
+  "$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz"
+)
+sha512sums=('9587fcd3a7e49c940d823502727aa4a40a8bc5a9fee885626644f16ee9d5452bf1e894b14b153f3660fab946e7249113d456fea081c9a89cc540b692fcccede6')
+
+prepare() {
+  cd ${pkgname#python-}-$pkgver
+  sed -i "s/^release, version =/& '$pkgver', '${pkgver%.*}.x' #/" docs/conf.py
+}
+
+build() {
+  cd ${pkgname#python-}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname#python-}-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest -v
+}
+
+package() {
+  cd ${pkgname#python-}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.rst
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,51 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=quic
+pkgname=haskell-quic
+pkgver=0.1.28
+pkgrel=95
+pkgdesc="Library for QUIC: A UDP-Based Multiplexed and Secure Transport"
+url="https://github.com/kazu-yamamoto/quic"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-base16-bytestring' 'haskell-crypto-token' 'haskell-crypton'
+         'haskell-crypton-x509' 'haskell-crypton-x509-system' 'haskell-data-default-class'
+         'haskell-fast-logger' 'haskell-iproute' 'haskell-memory' 'haskell-network'
+         'haskell-network-byte-order' 'haskell-network-control' 'haskell-network-udp'
+         'haskell-random' 'haskell-serialise' 'haskell-tls' 'haskell-unix-time' 'haskell-unliftio'
+         'haskell-unliftio-core')
+makedepends=('ghc' 'haskell-quickcheck' 'haskell-async' 'haskell-hspec' 'haskell-hspec-discover')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha256sums=('fdf3154213d411b06fdbc4a77ddd5fa0518ce44534247bdcc13a05a058f32126')
+
+build() {
+  cd $_hkgname-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie' \
+    -f-devel
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

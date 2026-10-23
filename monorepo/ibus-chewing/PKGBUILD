@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Chih-Hsuan Yen <yan12125@archlinux.org>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Rainy <rainylau(at)gmail(dot)com>
+# Contributor: Lee.MaRS <leemars@gmail.com>
+# Contributor: Hiroshi Yui <hiroshiyui@gmail.com>
+
+pkgname=ibus-chewing
+_pkgver=2.2.0
+pkgver=${_pkgver/-rc./rc}
+pkgrel=1
+pkgdesc='Chinese Chewing Engine for IBus Framework'
+arch=('x86_64')
+# "GPLv2+" in https://codeberg.org/chewing/ibus-chewing/src/tag/1.6.2/CMakeLists.txt#L90
+license=('GPL-2.0-or-later')
+url='https://codeberg.org/chewing/ibus-chewing'
+depends=('ibus' 'libchewing>=0.9.0' 'gtk4' 'libadwaita')
+makedepends=('cmake' 'glib2-devel')
+checkdepends=('dbus' 'xorg-server-xvfb')
+source=("https://codeberg.org/chewing/ibus-chewing/releases/download/v$_pkgver/$pkgname-$_pkgver.tar.xz"{,.asc})
+sha512sums=('7b0e9b9e7830f70b1e47ab08cb5bb02a6e5af63da640f534b48f6027041d907eb10dc5d474ef2dc7905c17a9d62cc1ffec9cac6ea266de00b10329f32aa3d61a'
+            'SKIP')
+# The key is mentioned on https://codeberg.org/chewing/libchewing
+validpgpkeys=(
+  '083B3CAB64267E5BAB7159673EF0C673DADCC30C' # Libchewing Signing Key
+)
+
+build() {
+  cd $pkgname-$_pkgver
+
+  cmake -B build -S . \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_LIBEXECDIR=/usr/lib/ibus
+
+  make -C build
+}
+
+check() {
+  cd $pkgname-$_pkgver/build
+
+  # glib-compile-schemas is needed for tests
+  # https://codeberg.org/chewing/ibus-chewing/src/tag/v2.0.0/.github/workflows/ci.yml#L33
+  export GSETTINGS_SCHEMA_DIR="$srcdir/$pkgname-$_pkgver/build/bin"
+  glib-compile-schemas ../src/setup --targetdir "$GSETTINGS_SCHEMA_DIR"
+  xvfb-run --auto-display dbus-run-session make test
+}
+
+package() {
+  cd $pkgname-$_pkgver/build
+  make DESTDIR="$pkgdir" install
+}

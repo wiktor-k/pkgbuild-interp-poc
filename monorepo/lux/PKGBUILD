@@ -1,0 +1,125 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgbase=lux
+pkgname=(lux-cli lua-lux lua54-lux lua53-lux lua52-lux lua51-lux)
+pkgver=0.48.0
+pkgrel=1
+pkgdesc='A luxurious package manager for Lua'
+arch=(x86_64 aarch64)
+url=https://lux.lumen-labs.org
+_url="https://github.com/lumen-oss/$pkgbase"
+license=(LGPL-3.0-only)
+depends=(glibc # libc.so libm.so
+         libgcc
+         libgit2
+         libstdc++
+         zlib)
+makedepends=(cargo
+             gpgme
+             libgpg-error
+             lua{,-luarocks-build-rust-mlua}
+             lua51{,-luarocks-build-rust-mlua}
+             lua52{,-luarocks-build-rust-mlua}
+             lua53{,-luarocks-build-rust-mlua}
+             lua54{,-luarocks-build-rust-mlua})
+_archive="$pkgbase-$pkgver"
+source=("$_url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('cb7880bc3dac2161179f94ccdbe5fd050a2de2fbe1bb7f411317a4671cc22683')
+
+_srcenv() {
+  cd "$_archive"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -fno-lto'
+  CXXFLAGS+=' -fno-lto'
+  export LIBGIT2_NO_VENDOR=1
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+	# avoid xtask jobs nuking dist dir so we can build everything at once
+	sed -i -e '/fs::remove_dir_all/d' xtask/src/main.rs xtask-lua/src/lib.rs
+}
+
+_build_so() {
+	export LUX_LIB_DIR=/usr/lib/lua/$1
+	cargo run --frozen --release --package xtask-lua --features lua${1/./} -- dist
+	unset LUX_LIB_DIR
+}
+
+build() {
+	_srcenv
+	export RUSTFLAGS+=" --remap-path-prefix $srcdir=src"
+	cargo run --frozen --release --package xtask -- build-release
+	cargo run --frozen --release --package xtask -- dist-man
+	cargo run --frozen --release --package xtask -- dist-completions
+	_build_so 5.5
+	_build_so 5.4
+	_build_so 5.3
+	_build_so 5.2
+	_build_so 5.1
+}
+
+package_lux-cli() {
+	replaces=(lux-cli-bin)
+	pkgdesc+=' (CLI)'
+	depends+=(libgit2.so
+	          libgcc_s.so
+	          libstdc++.so
+	          libz.so
+	          lua
+	          lua-lux)
+	optdepends+=({luajit,lua51-lux}': LuaJIT support')
+	optdepends+=(lua51{,-lux}': Lua 5.1 support')
+	optdepends+=(lua52{,-lux}': Lua 5.2 support')
+	optdepends+=(lua53{,-lux}': Lua 5.3 support')
+	optdepends+=(lua54{,-lux}': Lua 5.4 support')
+	cd "$_archive"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	pushd target/dist
+	install -Dm0755 -t "$pkgdir/usr/bin/" lx
+	install -Dm0644 -t "$pkgdir/usr/share/man/man1/" lx.1
+	install -Dm0644 lx.bash "$pkgdir/usr/share/bash-completion/completions/lx"
+	install -Dm0644 -t "$pkgdir/usr/share/zsh/site-functions" _lx
+	install -Dm0644 -t "$pkgdir/usr/share/fish/vendor_completions.d" lx.fish
+}
+
+_package_rock() {
+	depends+=(libgit2.so
+	          openssl libssl.so libcrypto.so)
+	pkgdesc+=" (Rock for Lua $1)"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	pushd target/dist
+	install -Dm0755 -t "$pkgdir/usr/lib/lua/$1/" "share/lux-lua/$1/lux.so"
+	install -Dm0644 -t "$pkgdir/usr/lib/pkgconfig/" "lib/pkgconfig/lux-lua$1.pc"
+}
+
+package_lua-lux() {
+	cd "$_archive"
+	_package_rock 5.5
+}
+
+package_lua54-lux() {
+	cd "$_archive"
+	_package_rock 5.4
+}
+
+package_lua53-lux() {
+	cd "$_archive"
+	_package_rock 5.3
+}
+
+package_lua52-lux() {
+	cd "$_archive"
+	_package_rock 5.2
+}
+
+package_lua51-lux() {
+	cd "$_archive"
+	_package_rock 5.1
+}

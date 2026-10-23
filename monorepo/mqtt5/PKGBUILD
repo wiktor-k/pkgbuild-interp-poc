@@ -1,0 +1,35 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=mqtt5
+pkgver=1.0.3
+pkgrel=1
+pkgdesc="A C++17 MQTT client based on Boost.Asio"
+arch=(any)
+url="https://github.com/boostorg/mqtt5/"
+license=(BSL-1.0)
+depends=(boost)
+makedepends=(cmake)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('184125f5e7f8178375d104f8dbef9e274af56e058e5418f7a5df215f8b880072f82b7ad7bda64e10ce29ea7ea61da6c655bd07f852ed95a19958f2335ca0e335')
+b2sums=('273ff238cfb8408631d713c421f14c12bb05bda6c2c3e52f32a1fc81fb82b051f111f6f2b941a58b9ed12d566d2dd9a62dc265798ae1f2ed56ec43a4a897ffc3')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname-$pkgver"
+    -W no-dev
+    # NOTE: In version <= 1.0.3, internally, the project is still called async-mqtt5.
+    -D "async-mqtt5_INSTALL_CMAKEDIR=/usr/lib/cmake/async-$pkgname"
+    -D CMAKE_INSTALL_INCLUDEDIR=/usr/include
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

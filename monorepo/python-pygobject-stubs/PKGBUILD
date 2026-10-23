@@ -1,0 +1,24 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=python-pygobject-stubs
+pkgver=2.19.0
+pkgrel=1
+pkgdesc="PEP 561 Typing Stubs for PyGObject"
+arch=("any")
+license=("LGPL-2.1-or-later")
+url="https://github.com/pygobject/pygobject-stubs"
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+source=($pkgname-$pkgver.tar.gz::https://github.com/pygobject/pygobject-stubs/archive/refs/tags/v${pkgver}.tar.gz)
+sha256sums=('91409f6ed628d2275fcfa8a0a7a521d83889383d28cd51b9a46efa55f2e37576')
+
+build() {
+  cd "pygobject-stubs-${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "pygobject-stubs-${pkgver}"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+

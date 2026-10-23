@@ -1,0 +1,17 @@
+pkgbase = gnome-shell-extension-dash-to-panel
+	pkgdesc = Extension for GNOME Shell to combine the dash and main panel
+	pkgver = 74
+	pkgrel = 1
+	url = https://github.com/home-sweet-gnome/dash-to-panel
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = gnome-shell
+	source = git+https://github.com/home-sweet-gnome/dash-to-panel.git#tag=v74
+	source = gnome-shell-extension-dash-to-panel-fix-crash-on-close.patch
+	source = gnome-shell-extension-dash-to-panel-fix-crash-on-shutdown.patch
+	b2sums = 7d16cf1e2ad0f0a54cdebab317c0df31997f8c701618053bfc16de1ee162df41622223a1931e07e58e39ecd2c14fea14dbc43a59b4aec990afdc967e723243c5
+	b2sums = 45ffabd2e1a44635ded780c99809202d423713b7977b6bf9f354214605944a4bb032cfd342601ed1578ed7e25c140fcc178cc3c4723fb0f5eb787454a1815149
+	b2sums = abdefe9de059329ffbb9ddcbc1064e63de47a89c732eb7537c9e4b16ec884bedb850a1b3e3ffbbf969b1d5891dcc095841a29c99cf8d6e00c1eb82dbb90dcfab
+
+pkgname = gnome-shell-extension-dash-to-panel

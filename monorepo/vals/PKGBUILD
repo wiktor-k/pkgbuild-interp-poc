@@ -1,0 +1,45 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=vals
+pkgver=0.43.2
+pkgrel=1
+pkgdesc="Helm-like configuration values loader with support for various sources"
+arch=('x86_64')
+url="https://github.com/helmfile/vals"
+license=('Apache-2.0')
+makedepends=('go')
+depends=('glibc')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/helmfile/vals/archive/v${pkgver}.tar.gz")
+sha512sums=('d10f3b6d7909c5619c205cd10c3816708a21533134d52f93f0391c5da4b6fcdbec0e8ea5f43f0d20a5cf8b9a4288b0dccfbf826a956cc8ba02b16c13cf82dfbb')
+options=(!lto)
+
+prepare() {
+  export GOPATH="${srcdir}"
+  mkdir -p src/github.com/helmfile "${GOPATH}/bin"
+  mv "${pkgname}-${pkgver}" "src/github.com/helmfile/${pkgname}"
+  export PACKAGE_ROOT="${GOPATH}/src/github.com/helmfile/${pkgname}"
+}
+
+build() {
+  cd "${PACKAGE_ROOT}"
+  export CGO_ENABLED=1
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+  export GOLDFLAGS="-linkmode=external"
+  go build -v ./cmd/vals
+  chmod +x ./vals
+}
+
+# Failing tests due to Google Cloud dependency
+#check() {
+#  cd "${PACKAGE_ROOT}"
+#  go test -v ./...
+#}
+
+package() {
+  cd "${PACKAGE_ROOT}"
+  install -Dsm755 ./vals "${pkgdir}/usr/bin/vals"
+}

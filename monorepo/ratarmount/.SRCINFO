@@ -1,0 +1,33 @@
+pkgbase = ratarmount
+	pkgdesc = Random access to archived resources
+	pkgver = 1.3.0
+	pkgrel = 2
+	url = https://github.com/mxmlnkn/ratarmount
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = fuse3
+	depends = python
+	depends = python-argcomplete
+	depends = python-mfusepy
+	depends = python-rich
+	depends = python-rich-argparse
+	depends = python-ratarmountcore
+	depends = python-fast-zip-decryption
+	depends = python-py7zr
+	optdepends = python-ext4: for EXT4 images
+	optdepends = python-fsspec: for remote files
+	optdepends = python-aiohttp: for http:// via fsspec
+	optdepends = python-requests: for various web backends such as github:// via fsspec
+	optdepends = python-s3fs: for s3:// via fsspec
+	optdepends = python-smbprotocol: for smb:// via fsspec
+	optdepends = python-webdav4: for webdav:// via fsspec
+	source = ratarmount::git+https://github.com/mxmlnkn/ratarmount#tag=v1.3.0
+	sha512sums = 32ecbfd5daa2e7db8c50e630cf8754d0518e93d3fe19e24a76d60e2c5c9adc256f3210987496077058b2278ee18b03064c9adccefa5ddc71f09f3f3aedb13baa
+	b2sums = 4ac17acb1aa2b29dbbfaf5a0bedb1349851f30fa074ea0d291034d533ef44cd4726e9d948898fb98b3aec3d3e92b90fc042c754032b56dfc041e827670f816f9
+
+pkgname = ratarmount

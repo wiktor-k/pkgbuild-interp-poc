@@ -1,0 +1,44 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-pytest-retry
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="Adds the ability to retry flaky tests in CI environments"
+arch=('any')
+url="https://github.com/str0zzapreti/pytest-retry"
+license=('MIT')
+depends=(
+  'python'
+  'python-pytest'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-pytest-xdist'
+)
+source=("git+https://github.com/str0zzapreti/pytest-retry.git#tag=$pkgver")
+sha512sums=('23db9f65251f0caa194c5bdbc6ee43ba3efba608f0ddaff5012624796eea46389b59984682115c3f8984694cd8f37c5cc9ce7693ce01a41d06c18a45a64ab3f0')
+
+build() {
+  cd pytest-retry
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pytest-retry
+
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest
+}
+
+package() {
+  cd pytest-retry
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

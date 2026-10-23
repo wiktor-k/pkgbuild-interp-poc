@@ -1,0 +1,116 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgbase=racket
+pkgname=(racket racket-minimal)
+pkgver=9.3
+pkgrel=1
+pkgdesc='A full-spectrum language with DrRacket IDE'
+arch=(x86_64)
+url='https://racket-lang.org/'
+license=(
+  MIT
+  Apache-2.0
+  'Apache-2.0 WITH LLVM-exception'
+  GPL-3.0-only
+  LGPL-3.0-only
+  Zlib
+  BSD-3-Clause
+)
+_common_depends=(
+  glibc
+  libgcc
+  ncurses
+  lz4
+  zlib
+  sh
+)
+makedepends=(
+  "${_common_depends[@]}"
+  gtk3
+  gsfonts
+  hicolor-icon-theme
+  sqlite
+)
+options=(!strip !emptydirs)
+conflicts=(racket-docs)
+replaces=(racket-docs)
+source=(
+  "https://download.racket-lang.org/installers/${pkgver}/${pkgname}-${pkgver}-src.tgz"
+  add-icon-to-desktop.patch
+)
+sha512sums=('595d517af9c27687d1c74dd5a9ec18efa9669dda6fb6908d6ae925a42e4e24ecefda1b7e894b26a00a80d6ec6b4489923356e63a933f3bad6fde4396fd388701'
+            '3e0117152db78f059f0c676b587a05c5705a1ee97cd28e7af85aed003e26febc31c1d665509b452c5f74dc50cb557260820041a23ad127c4787aefb44c54d2d8')
+b2sums=('2a83dbedb120915249d8adbb4cd70daf699bd3c322fe9281794e6b5a3805859b543a62440988d37693f2f987fb0e8851b456efd39bc6e9329ae353d3a341a7e8'
+        'e8ff6ec630d237a31a929338848b1519275dda252cd44cb6ea7de6ee9920340ca3ad3847538ba56800cf3711fcc56c206797d863b5abab7fd2954fd9bcd50e98')
+
+prepare() {
+  cd "$pkgbase-$pkgver"
+
+  patch -p1 -i "$srcdir/add-icon-to-desktop.patch"
+}
+
+build() {
+  cd "$pkgbase-$pkgver/src"
+
+  [ "$CARCH" == "x86_64" ] && export CFLAGS+=" -fPIC -ffat-lto-objects"
+
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --enable-shared \
+    --enable-libz \
+    --enable-liblz4 \
+    --enable-libffi
+
+  make
+}
+
+package_racket() {
+  depends=(
+    "${_common_depends[@]}"
+    hicolor-icon-theme
+    gtk3
+  )
+  cd "$pkgbase-$pkgver/src"
+
+  make DESTDIR="$pkgdir" install
+
+  # desktop files
+  install -Dm644 ../share/pkgs/drracket-core-lib/drracket/drracket.desktop "$pkgdir/usr/share/applications/drracket.desktop"
+  install -d "$pkgdir/usr/share/icons/hicolor/scalable/apps"
+  ln -s /usr/share/racket/pkgs/icons/racket-logo.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/drracket.svg"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+}
+
+package_racket-minimal() {
+  pkgdesc='Minimal Racket installation, without DrRacket/docs'
+  depends=(
+    "${_common_depends[@]}"
+    libffi
+  )
+  conflicts=(racket)
+  provides=(racket)
+  replaces=()
+
+  # The -minimal tarball uses the SAME extract path.
+  # 99% identical sources anyway, manually apply the difference.
+  # Thankfully these builds happen in the given order
+  # so we can save some time and reuse the previous build.
+  cd "$pkgbase-$pkgver"
+  echo '((root "pkgs/racket-lib"))' > share/links.rktd
+  _libhash=$(grep -oP '\("racket-lib".*?#f\)\)' share/pkgs/pkgs.rktd)
+  echo "#hash($_libhash)" > share/pkgs/pkgs.rktd
+  cd share/pkgs
+  find . -not -name '.' -not -name '*pkgs.rktd' -not -regex '.*/racket-lib.*' -delete
+  cd ../../src
+
+  make DESTDIR="${pkgdir}" install
+
+  find "$pkgdir/usr/share/doc/" -delete
+
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE*.txt
+}

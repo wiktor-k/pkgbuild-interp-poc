@@ -1,0 +1,19 @@
+pkgbase = haskell-hourglass
+	pkgdesc = simple performant time related library
+	pkgver = 0.2.12
+	pkgrel = 415
+	url = https://github.com/vincenthz/hs-hourglass
+	arch = x86_64
+	license = BSD
+	checkdepends = haskell-old-locale
+	checkdepends = haskell-tasty
+	checkdepends = haskell-tasty-hunit
+	checkdepends = haskell-tasty-quickcheck
+	makedepends = ghc
+	depends = ghc-libs
+	source = https://hackage.haskell.org/packages/archive/hourglass/0.2.12/hourglass-0.2.12.tar.gz
+	source = parseTimeM.patch::https://github.com/vincenthz/hs-hourglass/commit/cfc2a4b01f9993b1b51432f0a95fa6730d9a558a.patch
+	sha512sums = c748d7f875ca0b1ea9034dba1a5cfa3fc4e51613ce24c90b54856fdc385d9ccc5eda3559f1674abf3ea966cc7851891dfee86bad897062a97a79db8408574bdc
+	sha512sums = bea3f87a5d105a8dee6d33d4e94ae412eea4cfb44dd65c99a5e4974cecdffd5d935900668289d5c5c0d2f201f36dbac8160db13a0e1df5976b1e7aeb916520b3
+
+pkgname = haskell-hourglass

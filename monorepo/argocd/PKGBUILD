@@ -1,0 +1,80 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+
+pkgname=argocd
+pkgver=3.5.5
+pkgrel=1
+pkgdesc="Declarative continuous deployment for Kubernetes"
+arch=('x86_64')
+url='https://argo-cd.readthedocs.io/en/stable/'
+license=('Apache-2.0')
+makedepends=('go' 'python' 'corepack')
+depends=('glibc')
+provides=('argocd-cli')
+replaces=('argocd-cli')
+source=("argo-cd-${pkgver}.tar.gz::https://github.com/argoproj/argo-cd/archive/v${pkgver}.tar.gz")
+sha512sums=('5e7575643ca00baf90889c20543ae43a04fb050162ccd6fb2a409c9f8dad3d3f9a3506a638047fbf4fceef79c598ab948b5b53bb37ed08d952f2d536d8711fa2')
+
+prepare() {
+  cd "argo-cd-$pkgver"
+
+  (
+    cd ui
+    corepack install
+    corepack pnpm install --frozen-lockfile
+  )
+
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "argo-cd-$pkgver"
+
+  (
+    cd ui
+    ARGO_VERSION="$pkgver" NODE_ENV='production' NODE_ONLINE_ENV='online' corepack pnpm run build
+  )
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+  export GOPROXY=off
+  go build -o argocd \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-X github.com/argoproj/argo-cd/v3/common.version=${pkgver} \
+              -X github.com/argoproj/argo-cd/v3/common.buildDate=$(date -u +'%Y-%m-%dT%H:%M:%SZ' --date=@${SOURCE_DATE_EPOCH}) \
+              -X github.com/argoproj/argo-cd/v3/common.gitTag=${pkgver} \
+              -compressdwarf=false \
+              -linkmode=external \
+              -extldflags \"${LDFLAGS}\"" \
+    ./cmd
+
+  ./argocd completion bash > argocd.bash
+  ./argocd completion fish > argocd.fish
+  ./argocd completion zsh > argocd.zsh
+}
+
+package() {
+  cd "argo-cd-$pkgver"
+
+  install -D argocd "$pkgdir/usr/bin/argocd"
+  ln -s argocd "$pkgdir/usr/bin/argocd-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-repo-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-cmp-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-application-controller"
+  ln -s argocd "$pkgdir/usr/bin/argocd-dex"
+  ln -s argocd "$pkgdir/usr/bin/argocd-notifications"
+  ln -s argocd "$pkgdir/usr/bin/argocd-applicationset-controller"
+  ln -s argocd "$pkgdir/usr/bin/argocd-k8s-auth"
+  ln -s argocd "$pkgdir/usr/bin/argocd-commit-server"
+  ln -s argocd "$pkgdir/usr/bin/argocd-git-ask-pass"
+
+  install -Dm644 argocd.bash "$pkgdir/usr/share/bash-completion/completions/argocd"
+  install -Dm644 argocd.fish "$pkgdir/usr/share/fish/vendor_completions.d/argocd"
+  install -Dm644 argocd.zsh "$pkgdir/usr/share/zsh/site-functions/_argocd"
+}

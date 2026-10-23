@@ -1,0 +1,19 @@
+pkgbase = msedit
+	pkgdesc = A simple editor for simple needs (Microsoft Edit)
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/microsoft/edit
+	arch = x86_64
+	license = MIT
+	makedepends = rust
+	makedepends = git
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	optdepends = icu: for search and replace
+	provides = ms-edit
+	replaces = ms-edit
+	source = msedit::git+https://github.com/microsoft/edit.git#tag=v2.0.0
+	sha256sums = cab8aebba0c96dfc2362148d4c7ca1f1de72057614ac33b4d397bbe9d338547b
+
+pkgname = msedit

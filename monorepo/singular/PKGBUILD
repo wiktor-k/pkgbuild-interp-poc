@@ -1,0 +1,78 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <oudomphe@clipper.ens.fr>
+
+pkgname=singular
+_majver=4-4-1
+_patchver=p5
+_pkgver=${_majver}${_patchver}
+pkgver=${_majver//-/.}${_patchver/p/.p}
+pkgrel=11
+pkgdesc='Computer Algebra System for polynomial computations'
+arch=(x86_64)
+url='https://www.singular.uni-kl.de/'
+license=(GPL-2.0-only
+         GPL-3.0-only)
+depends=(bash
+         cddlib
+         flint
+         glibc
+         gmp
+         libgcc
+         libstdc++
+         ntl
+         readline)
+makedepends=(4ti2
+             git
+             latex2html
+             lrcalc
+             normaliz
+             sharutils
+             texlive-basic
+             texlive-bin
+             texlive-latex)
+optdepends=('normaliz: Normaliz interface')
+provides=(singular-factory)
+source=(git+https://github.com/Singular/Singular#tag=Release-$_pkgver)
+sha256sums=('77e0553ac6cfba06fccf1e9173e9a3a297e8a922a7017d5d6af237921485f1d3')
+options=(!zipman)
+#_srcdir=singular-${_majver//-/.}
+_srcdir=Singular
+
+prepare() {
+  cd $_srcdir
+  git cherry-pick -n 56681f1c0a4f6fd9f61fe6241c536aad592c8478 # Fix crashes
+  git cherry-pick -n ba465bea23a9cf9d51a33f034240da16bc2eedd3 \
+                     6e92ec8701c497ef08393e963d4ef2d2611ad758 \
+                     9590ad4ec1c4ffb76da0c93cb2c3d0f46d36db91 \
+                     ad2a92f35529b4227e5702417cbe996ff1eb780a # https://github.com/Singular/Singular/issues/1334
+  ./autogen.sh
+}
+
+build() {
+  cd $_srcdir
+
+  ./configure \
+    --prefix=/usr \
+    --libexecdir=/usr/lib \
+    --enable-bigintm-module \
+    --enable-bigintm-module \
+    --enable-Order-module \
+    --enable-python-module \
+    --enable-gfanlib-module \
+    --enable-polymake-module \
+    --enable-doc-build
+# https://bugzilla.gnome.org/show_bug.cgi?id=655517
+  sed -e 's/ -shared / -Wl,-O1,--as-needed\0/g' -i libtool -i */libtool
+  make
+  make -C doc doc.tbz2
+}
+
+check() {
+  cd $_srcdir
+  make check
+}
+  
+package() {
+  cd $_srcdir
+  make DESTDIR="$pkgdir" install
+}

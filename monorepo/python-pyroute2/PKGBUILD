@@ -1,0 +1,55 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Contributor: brent s. <bts[at]square-r00t[dot]net>
+# Contributor: Alexander Phinikarides <alexisph _AT_ gmail _DOT_ com>
+
+pkgbase='python-pyroute2'
+_pkgbase="${pkgbase//python-/}"
+pkgname=("python-${_pkgbase}")
+pkgdesc="A pure Python netlink and Linux network configuration library"
+pkgver=0.9.6
+pkgrel=1
+arch=('any')
+url="https://docs.pyroute2.org/"
+license=('GPL-2.0-or-later OR Apache-2.0')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('python-pytest' 'python-netaddr' 'python-pytest-asyncio')
+source=("${_pkgbase}-${pkgver}.tar.gz::https://github.com/svinota/${_pkgbase}/archive/${pkgver}.tar.gz")
+sha512sums=('71ce21e04e9596485db131add5d8b81294354d9fd8f98592f3d924fdb5070f3819fe070b6e654a7214e1b7da942a212cdd8106940e94dd73380bf8a4a858e0b5')
+
+prepare() {
+  cd "${srcdir}/${_pkgbase}-${pkgver}"
+
+  # Update the version manually. Otherwise it would look for a git tag which is not present in the distribution.
+  sed -i "s/version = get_project_version.*$/version = '${pkgver}'/" util/update_version.py
+}
+
+build() {
+  cd "${srcdir}/${_pkgbase}-${pkgver}"
+  python -m build --wheel --no-isolation
+
+  # TODO: building the manpages requires additional packages
+  # - python-sphinx (available in repo)
+  # - python-aafigure (available in repo)
+  # - python-sphinx-code-include (NOT available in repo yet)
+  # https://pypi.org/project/sphinx-code-include/
+
+  #export PYTHONPATH="${PWD}"
+  #cd docs
+  #make man
+}
+
+check() {
+  cd "${srcdir}/${_pkgbase}-${pkgver}"
+  export PYTHONPATH="${PWD}"
+  pytest -vv \
+    tests/test_minimal/*.py \
+    tests/test_unit/*.py
+}
+
+package() {
+  cd "${srcdir}/${_pkgbase}-${pkgver}"
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

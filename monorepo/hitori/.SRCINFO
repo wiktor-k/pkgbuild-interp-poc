@@ -1,0 +1,24 @@
+pkgbase = hitori
+	pkgdesc = Play the eponymous puzzle game
+	pkgver = 44.0
+	pkgrel = 5
+	url = https://wiki.gnome.org/Apps/Hitori
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	source = git+https://gitlab.gnome.org/GNOME/hitori.git?signed#tag=44.0
+	source = 0001-Add-D-Bus-service-file.patch
+	validpgpkeys = 923B7025EE03C1C59F42684CF0942E894B2EAFA0
+	b2sums = 57c5e93536d15f12a7b63013235a1644c8db1c899b3b68837f25f602374d79459af16b9b0ddf12972bc52933ff2faba48c4b179cededd1bd5ff9c6655bb16b1f
+	b2sums = 6f711b43d54738e2f85993b9054e20435163c4f33e39546d9a3c1a71d8644f2c90b655df4c994bcb42e92fc5b90523e25f30adfd25213aed1b75cfe1dfc9414f
+
+pkgname = hitori

@@ -1,0 +1,24 @@
+pkgbase = morphosis
+	pkgdesc = Document conversion app using Pandoc
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/World/morphosis
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = pandoc-cli
+	depends = python
+	depends = python-gobject
+	depends = python-weasyprint
+	source = git+https://gitlab.gnome.org/World/morphosis.git#tag=50.0
+	b2sums = fe573cb48f3d7cfabc53c3fec081ef300ff97d47d5905cb1ae9df0ef1bce72142900c21a8fdda825c8987ffaca24b06c2134f0ada18f515d2ed24c73f7819eef
+
+pkgname = morphosis

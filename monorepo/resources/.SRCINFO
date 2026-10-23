@@ -1,0 +1,27 @@
+pkgbase = resources
+	pkgdesc = Monitor for system resources and processes
+	pkgver = 51.0
+	pkgrel = 2
+	url = https://apps.gnome.org/Resources/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libsoup3
+	depends = polkit
+	source = git+https://gitlab.gnome.org/GNOME/Incubator/resources.git#tag=51.0
+	b2sums = 86ce9b5a1c93affe5e33ee2068142618cd9fa795dcac4e81c8959c63fa92725edfcb6bbc7a141138e626f4e7c76afe5e0931788a56db3536082751bc66217e51
+
+pkgname = resources

@@ -1,0 +1,35 @@
+pkgbase = xed
+	pkgdesc = A small and lightweight text editor
+	pkgver = 3.9.0
+	pkgrel = 1
+	url = https://github.com/linuxmint/xed
+	arch = x86_64
+	groups = x-apps
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = intltool
+	makedepends = itstool
+	makedepends = libgirepository
+	makedepends = meson
+	depends = at-spi2-core
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gspell
+	depends = gtk3
+	depends = gtksourceview4
+	depends = libpeas
+	depends = libx11
+	depends = libxml2
+	depends = pango
+	depends = python
+	depends = python-gobject
+	depends = xapp
+	source = git+https://github.com/linuxmint/xed.git#tag=3.9.0
+	b2sums = 8570b23a85e58a7d80cf8ac754a22a38e6cfb2276016d9ded65ee8fd3ace5f9b5ac18888b47b9751ac93e73da23240c146833f64549dc3bbc1758c10d9d5869e
+
+pkgname = xed

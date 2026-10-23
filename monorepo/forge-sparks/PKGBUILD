@@ -1,0 +1,58 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=forge-sparks
+pkgver=1.0.1
+pkgrel=1
+pkgdesc='Simple notifier app with support for Github, GitLab, Gitea and Forgejo'
+arch=(any)
+url='https://apps.gnome.org/ForgeSparks/'
+license=(MIT)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gjs
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libportal
+  libportal-gtk4
+  libsecret
+  libsoup3
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://github.com/rafaelmardojai/forge-sparks.git#tag=$pkgver"
+  git+https://github.com/sonnyp/troll.git
+)
+b2sums=(
+  fba161e0d84b8b2aeb57e9faa3d42f4ffd8ff6b856ff8a667f9bdfb2bb9ac059c351b41c0591c02877c13db1daeb23895b881799ab289a27c259c0d6709ad945
+  SKIP
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url troll "$srcdir/troll"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" $pkgname/LICENSE
+}

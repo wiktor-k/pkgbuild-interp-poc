@@ -1,0 +1,67 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=gpaste
+pkgver=51.1
+pkgrel=1
+pkgdesc="Clipboard management system"
+url="https://www.imagination-land.org/tags/GPaste.html"
+license=(BSD-2-Clause)
+arch=(x86_64)
+depends=(
+  dconf
+  gcr-4
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libpwquality
+  libsecret
+  libsodium
+  mutter
+  pango
+  sqlite
+)
+makedepends=(
+  dbus
+  git
+  gjs
+  glib2-devel
+  gnome-keybindings
+  gobject-introspection
+  meson
+  systemd
+  vala
+)
+optdepends=("curl: Upload clipboard contents")
+source=(
+  "git+https://github.com/keruspe/gpaste#tag=v${pkgver/[a-z]/.&}"
+  0001-tests-Disconnect-signal-handlers-in-history-tests.patch
+)
+b2sums=('c776e40bb1d32fa4fca4067335eb7b9c35004be2f9afed96e6da9458aca3a4c00ebbd0ec8ad39c89508670a7db6ea11c885debadcf94fa56b44163a83c155688'
+        'ddd7de50520c2abc81b9815252a02045f98b3fc1c6369e39c07915ca485dacae4289f8828587f36126ae88d852e861727c5c85f627300257cc460db11ef28179')
+
+prepare() {
+  cd gpaste
+
+  # Fix tests
+  # https://github.com/Keruspe/GPaste/pull/507
+  git apply -3 ../0001-tests-Disconnect-signal-handlers-in-history-tests.patch
+}
+
+build() {
+  arch-meson gpaste build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dt "$pkgdir/usr/share/licenses/$pkgname" -m644 gpaste/COPYING
+}
+
+# vim:set sw=2 sts=-1 et:

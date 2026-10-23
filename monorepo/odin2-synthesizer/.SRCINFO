@@ -1,0 +1,108 @@
+pkgbase = odin2-synthesizer
+	pkgdesc = 24 voice polyphonic synthesizer with modulation and FX
+	pkgver = 2.4.1
+	pkgrel = 2
+	url = https://www.thewavewarden.com/odin2
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-3.0-only
+	license = OFL-1.1
+	makedepends = glibc
+	makedepends = libgcc
+	makedepends = libstdc++
+	makedepends = alsa-lib
+	makedepends = libglvnd
+	makedepends = freetype2
+	makedepends = git
+	makedepends = cmake
+	makedepends = lv2
+	makedepends = libxrandr
+	makedepends = libxinerama
+	makedepends = libxcursor
+	makedepends = libx11
+	makedepends = nlohmann-json
+	makedepends = gendesk
+	makedepends = hicolor-icon-theme
+	source = odin2-synthesizer::git+https://github.com/TheWaveWarden/odin2#tag=v2.4.1
+	source = add-missing-include.patch
+	source = fix-lv2-include.patch
+	source = use-system-nlohmann-json.patch
+	source = github.com-surge-synthesizer-tuning-library::git+https://github.com/surge-synthesizer/tuning-library
+	source = github.com-juce-framework-JUCE::git+https://github.com/juce-framework/JUCE
+	source = github.com-free-audio-clap-juce-extensions::git+https://github.com/free-audio/clap-juce-extensions
+	source = github.com-lv2-porting-project-JUCE::git+https://github.com/lv2-porting-project/JUCE
+	source = github.com-free-audio-clap::git+https://github.com/free-audio/clap
+	source = github.com-free-audio-clap-helpers::git+https://github.com/free-audio/clap-helpers
+	b2sums = 47c169af4f2ca0c72d6544748dd1b673cae13ebb3ec050f82e8e9cc5cf2a343cdc568651ffd5a0c0e91b5ce3eda667f7d4d07bc8d213b90a593c3554571cfecd
+	b2sums = 6025efd0d3b66d7638ea3f9facbc29f9b06f0101dcff317ecab5b6fdea3d31bb48b29b9858d6e0025ae28b72415a7b6e98ab39d097e466b1e5d760743552c55c
+	b2sums = 3f90bce1520a648ccc0b46b54a7eaebfb6d2e669ffef545df9e80e8f1724a7ae0f1ae15e21c8e5fa29d667a78c8db40774e917ce1049ebcf90dae19f96ce1f24
+	b2sums = 892a1a5e5cd56cf5a7c56baf59bc6384ed33f67537244b6ca1ddedc8d61bced3924f26ef3449b4ddf38bcd1eeeec4e0eecade96a6c2f17d9e95a0b4b720f5d7c
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = odin2-synthesizer
+	install = odin2-synthesizer.install
+	depends = odin2-synthesizer-common=2.4.1
+	depends = odin2-synthesizer-standalone=2.4.1
+	depends = odin2-synthesizer-vst3=2.4.1
+	depends = odin2-synthesizer-clap=2.4.1
+	depends = odin2-synthesizer-lv2=2.4.1
+
+pkgname = odin2-synthesizer-common
+	pkgdesc = Common files for Odin2
+
+pkgname = odin2-synthesizer-standalone
+	pkgdesc = 24 voice polyphonic synthesizer with modulation and FX - standalone
+	depends = odin2-synthesizer-common=2.4.1
+	depends = hicolor-icon-theme
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = libglvnd
+	depends = freetype2
+	optdepends = jack: audio backend
+	optdepends = alsa-lib: audio backend
+
+pkgname = odin2-synthesizer-vst3
+	pkgdesc = 24 voice polyphonic synthesizer with modulation and FX - VST3 plugin
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = odin2-synthesizer-common=2.4.1
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = libglvnd
+	depends = freetype2
+	depends = vst3-host
+
+pkgname = odin2-synthesizer-lv2
+	pkgdesc = 24 voice polyphonic synthesizer with modulation and FX - LV2 plugin
+	groups = pro-audio
+	groups = lv2-plugins
+	depends = odin2-synthesizer-common=2.4.1
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = libglvnd
+	depends = freetype2
+	depends = lv2-host
+
+pkgname = odin2-synthesizer-clap
+	pkgdesc = 24 voice polyphonic synthesizer with modulation and FX - CLAP plugin
+	groups = pro-audio
+	groups = clap-plugins
+	depends = odin2-synthesizer-common=2.4.1
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = alsa-lib
+	depends = libglvnd
+	depends = freetype2
+	depends = clap-host

@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-database-mongodb
+	pkgdesc = OpenBao Plugin - MongoDB database secrets engine
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-database-mongodb::git+https://github.com/openbao/openbao-plugins.git#tag=database-mongodb-v0.0.1
+	sha256sums = e1301e53f46d097c8b34a3daabbed9c42b5c6ba5ac7d0d0e5f792218e86485b1
+
+pkgname = openbao-plugin-database-mongodb

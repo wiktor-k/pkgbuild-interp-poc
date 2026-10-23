@@ -1,0 +1,26 @@
+pkgbase = sc-controller
+	pkgdesc = User-mode driver, mapper, and GTK 4 based GUI for game controllers, including but not limited to Steam Controller (2015 & 2026)
+	pkgver = 1.0.7
+	pkgrel = 1
+	url = https://github.com/C0rn3j/sc-controller
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	depends = gtk4
+	depends = gtk4-layer-shell
+	depends = python-cairo
+	depends = python-evdev
+	depends = python-gobject
+	depends = python-ioctl-opt
+	depends = python-libusb1
+	depends = python-pylibacl
+	depends = python-setuptools
+	depends = python-vdf
+	depends = xorg-xinput
+	conflicts = scc
+	source = sc-controller-1.0.7::git+https://github.com/C0rn3j/sc-controller.git#tag=v1.0.7
+	sha256sums = 8268cdb0a983ab6432de4121e612481fc14efe949ae9fcfdadb2e02279715d2d
+
+pkgname = sc-controller

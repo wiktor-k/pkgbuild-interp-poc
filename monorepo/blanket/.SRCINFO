@@ -1,0 +1,30 @@
+pkgbase = blanket
+	pkgdesc = Improve focus and increase your productivity by listening to different sounds
+	pkgver = 0.8.0
+	pkgrel = 3
+	url = https://apps.gnome.org/Blanket/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gst-plugins-bad-libs
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gst-python
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = python
+	depends = python-gobject
+	source = git+https://github.com/rafaelmardojai/blanket.git#tag=0.8.0
+	source = blanket-dbus-activatable.patch
+	b2sums = f1aeab8d64b23098b57309f42d1822a31a0fef56c4ca43e515a99ab6cf65fe668af27e8d1c71b5f2646f164b94fb67756fad2b21d3695242dc50964227370843
+	b2sums = 8455f6a57d62ddba9cf9986e7bf30fc8bc24be2837fd2926c2a84de31f61f0d9c5b48d760dd3cea882e229dc98f8c0efe367e4c8303a735c62ecad34782af69c
+
+pkgname = blanket

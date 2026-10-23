@@ -1,0 +1,24 @@
+pkgbase = leocad
+	pkgdesc = A CAD program for creating virtual LEGO models
+	pkgver = 26.09
+	pkgrel = 1
+	url = http://leocad.org
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = qt6-tools
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libglvnd
+	depends = qt6-base
+	depends = hicolor-icon-theme
+	depends = zlib
+	optdepends = povray: required for rendering features
+	source = leocad-26.09.tar.gz::https://github.com/leozide/leocad/archive/v26.09.tar.gz
+	source = leocad-library-26.08.zip::https://github.com/leozide/leocad/releases/download/v26.09/Library-26.08.zip
+	sha512sums = 2b4c73b9793d7a51e8f7b6da9735db0185bec16e484c7990efeffab7de77454821ec126bf009bf77bce4d152386d38996c78551ecd0eb8db526a3ea0997e39a4
+	sha512sums = 8b03945b108cabfb804bd547a202c12a2f3961229ce8ef4a9316309cbedbb9b655b1aad177ad47def36c91436e058a524d54fad725d54bf1d05a00fd68f62b96
+	b2sums = ff5fd86d4bbb027bde65b7600347391937edb0bbc0cc6c50ece55ac6f1fdd212633f055fffd6b9627be3e9a52064425610bf57381c7fe2856159136c22338289
+	b2sums = f22da9ba9e419dcbb663dd22ccbd33a23fafc97dc3d94d49a22644aa27d15b71f87fff1b9c4d9cae766607917e11362a92279d845723a916d236cce38fde2e24
+
+pkgname = leocad

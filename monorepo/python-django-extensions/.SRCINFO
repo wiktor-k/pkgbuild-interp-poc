@@ -1,0 +1,20 @@
+pkgbase = python-django-extensions
+	pkgdesc = A collection of custom extensions for the Django Framework
+	pkgver = 4.1
+	pkgrel = 2
+	url = https://github.com/django-extensions/django-extensions
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-django
+	optdepends = graphviz: graph_models extension
+	optdepends = ipython: shell_plus extension
+	optdepends = python-werkzeug: runserver_plus extension
+	source = git+https://github.com/django-extensions/django-extensions.git#tag=ad015513e5d8e8ee6ad748fca5f32ccf3fb3d5c5
+	sha256sums = ca727cd17d56a70afe8e4e62654069e6ad325922b02c75538796e38ab97a7f75
+
+pkgname = python-django-extensions

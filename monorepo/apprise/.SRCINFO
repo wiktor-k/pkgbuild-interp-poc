@@ -1,0 +1,28 @@
+pkgbase = apprise
+	pkgdesc = Push Notifications that work with just about every platform
+	pkgver = 2.0.1
+	pkgrel = 1
+	url = https://github.com/caronc/apprise
+	arch = any
+	license = BSD-2-Clause
+	checkdepends = dbus-python
+	checkdepends = python-paho-mqtt
+	checkdepends = python-pytest-mock
+	makedepends = git
+	makedepends = python-babel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-certifi
+	depends = python-click
+	depends = python-markdown
+	depends = python-requests-oauthlib
+	depends = python-yaml
+	optdepends = dbus-python: for Linux DBus Notifications
+	optdepends = python-gobject: for Linux DBus Notifications
+	optdepends = python-paho-mqtt: for MQTT support
+	source = git+https://github.com/caronc/apprise.git#tag=v2.0.1
+	b2sums = 597a254941f43bdbe1e17db750a219c67e891bf435d5be5baf008636f847ec7efc2b46196b90dcabb2835b641b98e1c4ccf1ac073312fe341e1eefe52881ea17
+
+pkgname = apprise

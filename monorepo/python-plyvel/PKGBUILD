@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Andy Weidenbaum <archbaum@gmail.com>
+
+pkgname=python-plyvel
+pkgver=1.5.1
+pkgrel=3
+pkgdesc="A fast and feature-rich Python interface to LevelDB"
+arch=('x86_64')
+license=('BSD-3-Clause')
+url="https://github.com/wbolster/plyvel"
+depends=('leveldb' 'python')
+makedepends=('cython' 'python-setuptools')
+makedepends=('cython' 'python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-pytest')
+source=("plyvel-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('4445ff5db2c58c763a5698912307751766def76caa7f008970db3ff2cb38f76cf22be913f8247c00918d4808e7890f89972933755c0c380460a480aa6c6b052a')
+
+prepare() {
+  # Shipped egg-info has wrong permission etc
+  cd plyvel-$pkgver
+  make clean
+}
+
+build() {
+  cd plyvel-$pkgver
+  make cython
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd plyvel-$pkgver
+  local python_version=$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-$python_version" pytest --import-mode append
+}
+
+package() {
+  cd plyvel-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.rst "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.rst
+}

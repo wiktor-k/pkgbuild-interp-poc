@@ -1,0 +1,79 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=furnace
+pkgver=0.6.8.3
+pkgrel=3
+pkgdesc='A multi-system chiptune tracker compatible with DefleMask modules'
+arch=(x86_64)
+url='https://github.com/tildearrow/furnace'
+license=(GPL-2.0-or-later LicenseRef-OriginalAuthors)
+groups=(pro-audio)
+depends=(
+  fftw
+  fmt
+  freetype2
+  glibc
+  libgcc
+  libstdc++
+  hicolor-icon-theme
+  libglvnd
+  libsndfile
+  portaudio
+  rtmidi
+  sdl2
+  zlib
+)
+makedepends=(
+  cmake
+  git
+  jack
+)
+optdepends=('jack: JACK audio support')
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  'github.com-superctr-adpcm::git+https://github.com/superctr/adpcm'
+)
+sha512sums=('86de9b6a0a93068e17c17b3750a926a955cb25370711928f23c61855c7c6ecea84b6cb2d5ff44f9624c71edacb6ff559309c89da4f4953806f96e3d7cc81ed70'
+            'SKIP')
+b2sums=('67453cfef19a9842d0a371a415c440830fcf1be13432ee6f5e8e5d3c622f4ddca359fcd4ce446710809eff6a8acf3353f913032efbde461b79bd4a12dca61b80'
+        'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodules
+  git submodule init extern/adpcm
+  git config submodule.extern/adpcm.url "$srcdir/github.com-superctr-adpcm"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BUILD_GUI=ON
+    -D SYSTEM_FFTW=ON
+    -D SYSTEM_FMT=ON
+    -D SYSTEM_FREETYPE=ON
+    -D SYSTEM_LIBSNDFILE=ON
+    -D SYSTEM_PORTAUDIO=ON
+    -D SYSTEM_RTMIDI=ON
+    -D SYSTEM_SDL2=ON
+    -D SYSTEM_ZLIB=ON
+    -D WITH_JACK=ON
+    -D WITH_DEMOS=ON
+    -S "$pkgname"
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/demos/README.md"
+}

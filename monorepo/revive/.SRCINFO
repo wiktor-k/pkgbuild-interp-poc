@@ -1,0 +1,15 @@
+pkgbase = revive
+	pkgdesc = faster, stricter, configurable, extensible, and beautiful drop-in replacement for golint
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://revive.run
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = git+https://github.com/mgechev/revive.git#tag=v1.17.0
+	sha512sums = 62604f95bbcbc213088d27af6f317a885b0b9a67d55c01b383e40ed370e74a29b4c9ceb1ad6ac4ab61dedf279c968c3619bba21715cf0608c7aeb8b816f8c4ec
+
+pkgname = revive

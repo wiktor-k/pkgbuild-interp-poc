@@ -1,0 +1,20 @@
+pkgbase = e-antic
+	pkgdesc = Embedded algebraic number fields (on top of antic)
+	pkgver = 2.1.1
+	pkgrel = 2
+	url = https://github.com/flatsurf/e-antic/
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = boost
+	makedepends = python-setuptools
+	depends = flint
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	source = https://github.com/flatsurf/e-antic/releases/download/2.1.1/e-antic-2.1.1.tar.gz
+	source = flint-3.6.patch
+	sha256sums = e3287fa603b44d9a43c4cac5d883e65e90aedc35821061c1dc5b8d9c94a01cd8
+	sha256sums = b6d322a3d9273fec3c65f1706de5e18e9b05ad12946853268f203f7d8452d181
+
+pkgname = e-antic

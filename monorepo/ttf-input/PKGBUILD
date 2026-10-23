@@ -1,0 +1,37 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: javier dot tia at gmail dot com
+
+pkgname=ttf-input
+pkgver=20220502
+pkgrel=6
+pkgdesc='Fonts for code from DJR & Font Bureau'
+arch=('any')
+url='https://input.djr.com/'
+license=('custom')
+provides=('ttf-font')
+_url="${url}build/?fontSelection=whole&a=0&g=0&i=0&l=0&zero=0&asterisk=0&braces=0&preset=default&line-height=1.2&accept=I+do&email="
+# the content at $_url is dynamically generated every request, use a snapshot
+source=("https://sources.archlinux.org/other/packages/ttf-input/Input_Fonts_${pkgver}.zip"
+        66-input-sans.conf 66-input-serif.conf 66-input-mono.conf
+        46-input-sans.conf 46-input-serif.conf 46-input-mono.conf)
+sha256sums=('bc314ea9026fba5134cd2a7ba93a4ec48607f341d32e4eb3dfae20d141cb91b3'
+            '85dc045b719cecce7047273472b83be8a1135e708725f3d191ab3cdd74e757f2'
+            '8e74cf0a5739b57f7590ba8fdbc98fe1a630dd28bcf1eedbe14852c023148488'
+            '7d0bf214745797c4edc81624b08b480baa2331f94e91fec1a9b64ced340ffccc'
+            'd4c3442c0732f13ec191df3e546dc33c83c12cbc1f660d0eb93e4e8659303a4f'
+            'a518c5cbc0d9f993b1a36035151bd9995349e66f7cfa5dba9c174756a3a069b4'
+            'd2c7af5af2df5ae9eacb4672fe10704c02debc8c53c0f77737c8e5252f83c5c6')
+
+package() {
+  dest_dir="${pkgdir}/usr/share/fonts/${pkgname}"
+  mkdir -p "${dest_dir}"
+  cp -rt "${dest_dir}" "${srcdir}"/Input_Fonts/*
+  find "${dest_dir}" -type f -exec chmod 644 '{}' +
+
+  # Install fontconfig files
+  install -Dm644 "$srcdir"/*.conf -t "$pkgdir"/usr/share/fontconfig/conf.avail/
+  install -d "$pkgdir"/usr/share/fontconfig/conf.default
+  ln -rs "$pkgdir"/usr/share/fontconfig/conf.avail/* "$pkgdir"/usr/share/fontconfig/conf.default
+
+  install -Dm644 "${srcdir}/LICENSE.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+}

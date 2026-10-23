@@ -1,0 +1,37 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Eli schwartz <eschwartz@archlinux.org>
+
+pkgname=firefox-noscript
+pkgver=13.6.36
+pkgrel=1
+pkgdesc="Extension for firefox which disables javascript"
+arch=('any')
+url="https://noscript.net/"
+license=('GPL2')
+checkdepends=('jq')
+makedepends=('nodejs' 'git' 'npm')
+groups=('firefox-addons')
+source=("git+https://github.com/hackademix/noscript.git#tag=$pkgver"
+	"nscl.git::git+https://github.com/hackademix/nscl.git")
+sha256sums=('e24308966cabe536bd8ed125144a45624bf97e120a654a76466cc1cf4a011cda'
+            'SKIP')
+b2sums=('61fc9066111dbe0b633aeaec833430ec0f295caa7745e05ecffd21ce31edb2d84463a24eee589e1dd4f219ef95078b897d437b8170d4652cf080b64b017c57da'
+        'SKIP')
+
+prepare() {
+  cd noscript
+  git -c protocol.file.allow=always submodule update --init --recursive
+  sed -i "s|13.6.29.901|$pkgver|" src/manifest.json
+}
+
+build() {
+  cd noscript
+  npm install web-ext decomment
+  PATH=`pwd`/node_modules/.bin:$PATH bash ./build.sh
+}
+
+package() {
+  _extension_id="{73a6fe31-595d-460b-a920-fcc0f8843232}"
+  _extension_dest="${pkgdir}/usr/lib/firefox/browser/extensions/${_extension_id}"
+  install -Dm644 noscript/xpi/noscript-$pkgver.xpi "${_extension_dest}.xpi"
+}

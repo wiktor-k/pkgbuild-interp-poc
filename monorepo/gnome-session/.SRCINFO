@@ -1,0 +1,30 @@
+pkgbase = gnome-session
+	pkgdesc = The GNOME Session Handler
+	pkgver = 51.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-session
+	arch = x86_64
+	groups = gnome
+	license = GPL-2.0-or-later
+	makedepends = docbook-xsl
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = libxslt
+	makedepends = meson
+	makedepends = xmlto
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gnome-desktop-4
+	depends = gsettings-desktop-schemas
+	depends = libgcc
+	depends = systemd-libs
+	depends = xdg-desktop-portal-gnome
+	optdepends = gnome-keyring: Secrets service backend
+	provides = gnome-mimeapps
+	conflicts = gnome-mimeapps
+	replaces = gnome-mimeapps
+	source = git+https://gitlab.gnome.org/GNOME/gnome-session.git#tag=51.0
+	b2sums = 341be544f20ccb5b7e919fea5d62b2455772d64b9e20f7f26dbe98932e65fad59f350b70a28170fd8d1ee3bb9731dabefb2512d82f4eab4ca7a44f8030eb5fc2
+
+pkgname = gnome-session

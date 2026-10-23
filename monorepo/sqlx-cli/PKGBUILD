@@ -1,0 +1,52 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Dominic Meiser [git at msrd0 dot de]
+
+pkgname=sqlx-cli
+pkgver=0.9.0
+pkgrel=1
+pkgdesc='Command-line utility for SQLx, the Rust SQL toolkit'
+license=('Apache-2.0' 'MIT')
+arch=('x86_64')
+url="https://github.com/launchbadge/sqlx"
+depends=('libgcc' 'glibc' 'openssl' 'sqlite')
+makedepends=('rust')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/launchbadge/sqlx/archive/refs/tags/v${pkgver}.tar.gz"
+        Cargo.lock)
+sha512sums=('80f537b2cd3800d2d8f09eafdb6ed57fa84830d084b80734a2151c5452a3000030f2b31bcb5495f449b5c5d4792c6273323acc5c9da4c488568de3341706e9d8'
+            'fcf523106d914942dc55cdc2ca676650e9fe870da7a4c2552cc7477ede5417c2d88526f6c6f3f430383e88a3f12d89197af95f9d55f798296b832d5d2716f24c')
+
+prepare() {
+    # Upstream decided to get rid of the lockfile:
+    # https://github.com/launchbadge/sqlx/blob/75bc0487eb661da811bb7a3c5d158f1bd463fef4/CHANGELOG.md?plain=1#L20
+    # Sigh.
+    cp Cargo.lock "sqlx-$pkgver"
+}
+
+build() {
+    cd "sqlx-$pkgver/sqlx-cli"
+    LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo build --locked --release
+}
+
+check() {
+    cd "sqlx-$pkgver/sqlx-cli"
+    LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo test --locked
+}
+
+package() {
+    cd "sqlx-$pkgver"
+    install -Dm755 -t "$pkgdir/usr/bin" \
+        "target/release/cargo-sqlx" \
+        "target/release/sqlx"
+
+    # install completions
+    install -d "$pkgdir/usr/share/bash-completion/completions" \
+        "$pkgdir/usr/share/zsh/site-functions" \
+        "$pkgdir/usr/share/fish/vendor_completions.d"
+    "$pkgdir/usr/bin/sqlx" completions bash > "$pkgdir/usr/share/bash-completion/completions/sqlx"
+    "$pkgdir/usr/bin/sqlx" completions zsh > "$pkgdir/usr/share/zsh/site-functions/_sqlx"
+    "$pkgdir/usr/bin/sqlx" completions fish > "$pkgdir/usr/share/fish/vendor_completions.d/sqlx.fish"
+
+    # install license files
+    install -Dm644 LICENSE-APACHE "$pkgdir/usr/share/licenses/$pkgname/LICENSE-APACHE"
+    install -Dm644 LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/LICENSE-MIT"
+}

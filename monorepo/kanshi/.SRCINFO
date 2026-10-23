@@ -1,0 +1,20 @@
+pkgbase = kanshi
+	pkgdesc = Dynamic output configuration for Wayland WMs
+	pkgver = 1.9.0
+	pkgrel = 1
+	url = https://gitlab.freedesktop.org/emersion/kanshi
+	arch = x86_64
+	license = MIT
+	makedepends = meson
+	makedepends = scdoc
+	depends = glibc
+	depends = libscfg.so
+	depends = vali
+	depends = wayland
+	source = https://gitlab.freedesktop.org/emersion/kanshi/-/releases/v1.9.0/downloads/kanshi-1.9.0.tar.gz
+	source = https://gitlab.freedesktop.org/emersion/kanshi/-/releases/v1.9.0/downloads/kanshi-1.9.0.tar.gz.sig
+	validpgpkeys = 34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48
+	b2sums = 62906587ba6557e473efe4e2712709b321a90f5655dd5dea0d67db3a13b24e2bbcda8cbc05c3ac4f772ff4356f319f1a6b905446c76824329805dc705818f661
+	b2sums = SKIP
+
+pkgname = kanshi

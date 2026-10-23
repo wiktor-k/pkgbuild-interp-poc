@@ -1,0 +1,46 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=swaptop
+pkgver=1.0.6
+pkgrel=1
+pkgdesc='Swap usage monitor'
+url='https://github.com/luis-ota/swaptop'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+source=(https://github.com/luis-ota/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('9197ec8821c5705a972d763d9c5f715624f0a31a1dd72a88804306654b3a2c22')
+b2sums=('fa2bd3925836d0d5fb6bb43adc541a54cfdac4f1e76b87c1c91523351b44635aeacdb25459eb4963a8a54527f99967b4f086d3ba048ffb3d486cbb8dac4ec4b8')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --target host-tuple # --locked
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/swaptop
+
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=symposium
+pkgver=0.5.1
+pkgrel=1
+pkgdesc="Tool for extending AI coding agents with project-specific context"
+arch=('x86_64')
+url="https://github.com/symposium-dev/symposium"
+license=('MIT' 'Apache-2.0')
+depends=('cargo')
+provides=('cargo-agents')
+conflicts=('cargo-agents')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgname-v$pkgver.tar.gz")
+sha256sums=('e5e8ce87aa4c643bb5914bd60b4596d78dc1c9f84c6bdd02a1d6a280e63844bb')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgname-v$pkgver"
+  echo 'test-agents = []' > test-agents.toml
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgname-v$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgname-v$pkgver"
+  cargo test --frozen --lib
+}
+
+package() {
+  cd "$pkgname-$pkgname-v$pkgver"
+  install -Dm 755 target/release/cargo-agents -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

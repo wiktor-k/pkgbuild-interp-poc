@@ -1,0 +1,24 @@
+pkgbase = python-ext4
+	pkgdesc = Library for read-only interaction with EXT4 filesystems
+	pkgver = 1.4.1
+	pkgrel = 2
+	url = https://github.com/Eeems/python-ext4
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = xz
+	depends = python
+	depends = python-cachetools
+	depends = python-crcmod
+	source = python-ext4::git+https://github.com/Eeems/python-ext4#tag=v1.4.1
+	source = no-nuitka.patch
+	sha512sums = ca38c9ddaa75d4d7e620d6507aefb3fcab921a42511a5411130635a630fe45433eed15334ec44a3c02eb6db9119e36fe2d48f3fe2c0a8e44ab3e7faa2f90d466
+	sha512sums = 74fd87edaa06cd881cce0e826177a4de7c4758e628ffd028911de51c55381c9203f123aefe371ba45151f754c5071fcfb9f6d997dc81f89cd439985230025ad9
+	b2sums = 7b22df65701f628c4d8a3dfe9315fe429908c1693a242609d7100c9e621388996d8537370fa598857e4c0bd810dc316ce1439826bcc35c4de10ceaeb717ab392
+	b2sums = bb9545d55197bf14454824b78769cdb2dcb7c47f644429b39ab50f6255e7602c3aedd3763798a02487f6a9c873643ca15916c2965811008dcf72951b397a9ca9
+
+pkgname = python-ext4

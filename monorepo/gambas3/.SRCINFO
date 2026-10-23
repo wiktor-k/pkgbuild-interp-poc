@@ -1,0 +1,552 @@
+pkgbase = gambas3
+	pkgdesc = A free development environment based on a Basic interpreter.
+	pkgver = 3.22.2
+	pkgrel = 1
+	url = http://gambas.sourceforge.net/
+	arch = x86_64
+	groups = gambas3
+	license = GPL-2.0-or-later
+	makedepends = intltool
+	makedepends = postgresql
+	makedepends = libffi
+	makedepends = bzip2
+	makedepends = glib2
+	makedepends = v4l-utils
+	makedepends = zlib
+	makedepends = mesa
+	makedepends = glew
+	makedepends = xdg-utils
+	makedepends = imlib2
+	makedepends = gdk-pixbuf2
+	makedepends = gtk3
+	makedepends = webkit2gtk-4.1
+	makedepends = postgresql-libs
+	makedepends = mariadb-libs
+	makedepends = unixodbc
+	makedepends = mongo-c-driver
+	makedepends = sqlite
+	makedepends = librsvg
+	makedepends = curl
+	makedepends = poppler-glib
+	makedepends = sdl2
+	makedepends = sdl2_mixer
+	makedepends = sdl2_image
+	makedepends = sdl2_ttf
+	makedepends = libxtst
+	makedepends = pcre2
+	makedepends = qt5-x11extras
+	makedepends = qt5-svg
+	makedepends = qt6-webengine
+	makedepends = qt6-svg
+	makedepends = libxcursor
+	makedepends = libsm
+	makedepends = dbus
+	makedepends = libxml2
+	makedepends = libxslt
+	makedepends = gsl
+	makedepends = gst-plugins-base-libs
+	makedepends = alure
+	makedepends = ncurses
+	makedepends = gmime3
+	makedepends = libxcrypt
+	options = !emptydirs
+	options = libtool
+	source = https://gitlab.com/gambas/gambas/-/archive/3.22.2/gambas-3.22.2.tar.bz2
+	sha512sums = 9e6e2e88cbb93e2a91bfe79ccf803162b5d4393aa08ca1cc85ef67eca52df9baa7d2b074c61c78d4f3dbf21cdc7d3c88698f203abde775f7666694bae54db70c
+
+pkgname = gambas3-gb-args
+	pkgdesc = Command-line options analyzer component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-cairo
+	pkgdesc = Cairo component
+	depends = gambas3-runtime
+	depends = cairo
+
+pkgname = gambas3-gb-chart
+	pkgdesc = Chart component
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-clipper
+	pkgdesc = Polygon clipping component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-clipper2
+	pkgdesc = Polygon clipping component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-complex
+	pkgdesc = Complex numbers component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-compress
+	pkgdesc = Compression support component
+	depends = gambas3-runtime
+	depends = bzip2
+	depends = zlib
+	depends = zstd
+	provides = gambas3-gb-compress-bzlib2
+	provides = gambas3-gb-compress-zlib
+	provides = gambas3-gb-compress-zstd
+
+pkgname = gambas3-gb-crypt
+	pkgdesc = MD5/DES crypting component
+	depends = gambas3-runtime
+	depends = libxcrypt
+
+pkgname = gambas3-gb-dbus
+	pkgdesc = DBUS component
+	depends = gambas3-gb-image
+	depends = dbus
+	provides = gambas3-gb-dbus-trayicon
+
+pkgname = gambas3-gb-data
+	pkgdesc = Data containers component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-db-form
+	pkgdesc = Database form component
+	depends = gambas3-gb-db
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-db-mysql
+	pkgdesc = MySQL database access component
+	depends = gambas3-gb-db
+	depends = mariadb-libs
+
+pkgname = gambas3-gb-db-odbc
+	pkgdesc = ODBC database access component
+	depends = gambas3-gb-db
+	depends = unixodbc
+
+pkgname = gambas3-gb-db-postgresql
+	pkgdesc = PostgreSQL database access component
+	depends = gambas3-gb-db
+	depends = postgresql-libs
+
+pkgname = gambas3-gb-db-sqlite3
+	pkgdesc = Sqlite3 database access component
+	depends = gambas3-gb-db
+	depends = sqlite
+
+pkgname = gambas3-gb-db
+	pkgdesc = Database access component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-db2-form
+	pkgdesc = Database form component
+	depends = gambas3-gb-db2
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-db2-mysql
+	pkgdesc = MySQL database access component
+	depends = gambas3-gb-db2
+	depends = mariadb-libs
+
+pkgname = gambas3-gb-db2-odbc
+	pkgdesc = ODBC database access component
+	depends = gambas3-gb-db2
+	depends = unixodbc
+
+pkgname = gambas3-gb-db2-postgresql
+	pkgdesc = PostgreSQL database access component
+	depends = gambas3-gb-db2
+	depends = postgresql-libs
+
+pkgname = gambas3-gb-db2-sqlite3
+	pkgdesc = Sqlite3 database access component
+	depends = gambas3-gb-db2
+	depends = sqlite
+
+pkgname = gambas3-gb-db2
+	pkgdesc = Database access component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-desktop-x11
+	pkgdesc = X-Window library support component
+	depends = libsm
+	depends = libxtst
+
+pkgname = gambas3-gb-desktop
+	pkgdesc = Desktop component
+	depends = perl
+	depends = gambas3-gb-image
+
+pkgname = gambas3-gb-eval-highlight
+	pkgdesc = Expression evaluator highlight component (deprecated)
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-form-dialog
+	pkgdesc = Form dialog component
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-form-mdi
+	pkgdesc = Form MDI component
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-form-terminal
+	pkgdesc = Terminal component
+	depends = perl
+	depends = gambas3-runtime
+	depends = gambas3-gui
+
+pkgname = gambas3-gb-form-stock
+	pkgdesc = Default stock icons component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-form-editor
+	pkgdesc = Editor component
+	depends = gambas3-gb-form
+	depends = gambas3-gb-highlight
+
+pkgname = gambas3-gb-form-htmlview
+	pkgdesc = Htmlview component
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-form
+	pkgdesc = Form component
+	depends = gambas3-runtime
+	depends = gambas3-gui
+
+pkgname = gambas3-gb-gmp
+	pkgdesc = Arbitrary precision arithmetic component
+	depends = gambas3-runtime
+	depends = gmp
+
+pkgname = gambas3-gb-gsl
+	pkgdesc = The GNU Scientific Library component
+	depends = gambas3-runtime
+	depends = gsl
+
+pkgname = gambas3-gb-gtk3-opengl
+	pkgdesc = GTK3 toolkit OpenGL component
+	depends = gambas3-gb-gtk3
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-gtk3
+	pkgdesc = GTK3 toolkit component
+	depends = gambas3-gb-image
+	depends = gtk3
+	depends = webkit2gtk-4.1
+	provides = gambas3-gui
+
+pkgname = gambas3-gb-hash
+	pkgdesc = Hashing functions
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-highlight
+	pkgdesc = A syntax highlighter based on definition files
+	depends = gambas3-gb-image
+	depends = gambas3-gb-pcre
+
+pkgname = gambas3-gb-httpd
+	pkgdesc = Embedded HTTP server for the interpreter
+	depends = gambas3-runtime
+	depends = libxcrypt
+
+pkgname = gambas3-gb-image-effect
+	pkgdesc = Image effect component
+	depends = gambas3-gb-image
+
+pkgname = gambas3-gb-image-imlib
+	pkgdesc = Imlib component
+	depends = gambas3-gb-image
+	depends = imlib2
+
+pkgname = gambas3-gb-image-io
+	pkgdesc = Input/Output image component
+	depends = gambas3-gb-image
+	depends = gdk-pixbuf2
+
+pkgname = gambas3-gb-image
+	pkgdesc = Image component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-inotify
+	pkgdesc = Filesystem events monitoring component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-libxml
+	pkgdesc = libxml2 component
+	depends = gambas3-runtime
+	depends = libxml2
+
+pkgname = gambas3-gb-logging
+	pkgdesc = Flexible log message handling component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-map
+	pkgdesc = Display maps component
+	depends = gambas3-gb-image-io
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-markdown
+	pkgdesc = Convert the Gambas markdown syntax to HTML
+	depends = gambas3-gb-image-io
+	depends = gambas3-gb-form
+
+pkgname = gambas3-gb-media-form
+	pkgdesc = Media player control component
+	depends = gambas3-runtime
+	depends = gambas3-gb-media
+	depends = gambas3-gui
+
+pkgname = gambas3-gb-media
+	pkgdesc = Simplified interface to the GStreamer library component
+	depends = gambas3-runtime
+	depends = gst-plugins-base-libs
+
+pkgname = gambas3-gb-memcached
+	pkgdesc = Memcached client component
+	depends = gambas3-gb-net
+
+pkgname = gambas3-gb-mime
+	pkgdesc = MIME message component
+	depends = gambas3-runtime
+	depends = gmime3
+
+pkgname = gambas3-gb-mongodb
+	pkgdesc = MongoDB database access component
+	depends = gambas3-runtime
+	depends = mongo-c-driver
+
+pkgname = gambas3-gb-mysql
+	pkgdesc = Mysql extra component
+	depends = gambas3-runtime
+	depends = gambas3-gb-db-mysql
+
+pkgname = gambas3-gb-ncurses
+	pkgdesc = Ncurses component
+	depends = gambas3-runtime
+	depends = ncurses
+
+pkgname = gambas3-gb-net-curl
+	pkgdesc = Curl component
+	depends = gambas3-gb-net
+	depends = curl
+
+pkgname = gambas3-gb-net-pop3
+	pkgdesc = POP3 component
+	depends = gambas3-gb-net
+	depends = gambas3-gb-mime
+
+pkgname = gambas3-gb-net-smtp
+	pkgdesc = SMTP component
+	depends = gambas3-runtime
+	depends = glib2
+
+pkgname = gambas3-gb-net
+	pkgdesc = Network component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-openal
+	pkgdesc = OpenAL 3D audio component
+	depends = gambas3-runtime
+	depends = alure
+
+pkgname = gambas3-gb-opengl-glu
+	pkgdesc = GL Utility component
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-opengl-glsl
+	pkgdesc = GLSL component
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-opengl-sge
+	pkgdesc = Simple OpenGL game engine component
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-opengl
+	pkgdesc = OpenGL component
+	depends = gambas3-runtime
+	depends = glew
+
+pkgname = gambas3-gb-option
+	pkgdesc = Getopt component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-pcre
+	pkgdesc = PCRE component
+	depends = gambas3-runtime
+	depends = pcre2
+
+pkgname = gambas3-gb-poppler
+	pkgdesc = PDF component
+	depends = gambas3-runtime
+	depends = poppler-glib
+	replaces = gambas3-gb-pdf
+
+pkgname = gambas3-gb-qt5-opengl
+	pkgdesc = Qt5 toolkit OpenGL component
+	depends = gambas3-gb-qt5
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-qt5
+	pkgdesc = Qt5 toolkit component
+	depends = gambas3-gb-image
+	depends = qt5-base
+	depends = qt5-svg
+	depends = qt5-x11extras
+	provides = gambas3-gui
+
+pkgname = gambas3-gb-qt6-opengl
+	pkgdesc = Qt6 toolkit OpenGL component
+	depends = gambas3-gb-qt6
+	depends = gambas3-gb-opengl
+
+pkgname = gambas3-gb-qt6-webview
+	pkgdesc = Qt6 web browser component
+	depends = gambas3-gb-qt6
+	depends = qt6-webengine
+
+pkgname = gambas3-gb-qt6
+	pkgdesc = Qt6 toolkit component
+	depends = gambas3-gb-image
+	depends = qt6-base
+	depends = qt6-svg
+	depends = qt6-webengine
+	provides = gambas3-gui
+
+pkgname = gambas3-gb-openssl
+	pkgdesc = Openssl component
+	depends = gambas3-runtime
+	depends = openssl
+
+pkgname = gambas3-gb-report
+	pkgdesc = Report component
+	depends = gambas3-gb-form
+	depends = gambas3-gb-image-io
+	provides = gambas3-gb-report2=3.22.2
+
+pkgname = gambas3-gb-scanner
+	pkgdesc = Scanimage frontend component
+	depends = gambas3-gb-image
+	depends = gambas3-gb-settings
+	depends = sane
+
+pkgname = gambas3-gb-sdl2-audio
+	pkgdesc = SDL2 audio component
+	depends = gambas3-runtime
+	depends = sdl2_mixer
+
+pkgname = gambas3-gb-sdl2
+	pkgdesc = SDL2 component
+	depends = gambas3-gb-image-io
+	depends = sdl2_ttf
+	depends = sdl2_image
+	depends = glew
+
+pkgname = gambas3-gb-settings
+	pkgdesc = Setting component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-signal
+	pkgdesc = POSIX Signals component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-term
+	pkgdesc = Terminal management component
+	depends = gambas3-runtime
+	provides = gambas3-gb-term-form=3.22.2
+
+pkgname = gambas3-gb-util-web
+	pkgdesc = Miscellaneous web utility functions component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-util
+	pkgdesc = Miscellaneous utility functions component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-v4l
+	pkgdesc = Video4linux component
+	depends = gambas3-runtime
+	depends = v4l-utils
+	depends = libjpeg-turbo
+	depends = libpng
+
+pkgname = gambas3-gb-vb
+	pkgdesc = Visual Basic transitional component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-xml-html
+	pkgdesc = HTML generator component
+	depends = gambas3-gb-xml
+
+pkgname = gambas3-gb-xml-rpc
+	pkgdesc = XML-RPC component
+	depends = gambas3-gb-xml
+	depends = gambas3-gb-net-curl
+
+pkgname = gambas3-gb-xml-xslt
+	pkgdesc = XML-XSLT component
+	depends = gambas3-gb-xml
+	depends = libxslt
+
+pkgname = gambas3-gb-xml
+	pkgdesc = XML component
+	depends = gambas3-runtime
+
+pkgname = gambas3-gb-web-feed
+	pkgdesc = Web feed parser and generator component
+	depends = gambas3-gb-xml
+
+pkgname = gambas3-gb-web-form
+	pkgdesc = web form component
+	depends = gambas3-gb-web
+	depends = gambas3-gb-util-web
+
+pkgname = gambas3-gb-web-gui
+	pkgdesc = web gui component
+	depends = gambas3-gb-web
+	depends = gambas3-gb-util-web
+	depends = gambas3-gb-util
+	depends = gambas3-gb-signal
+
+pkgname = gambas3-gb-web
+	pkgdesc = CGI component
+	depends = gambas3-runtime
+
+pkgname = gambas3-runtime
+	pkgdesc = Runtime environment
+	depends = libffi
+	depends = xdg-utils
+	provides = gambas3-gb-jit
+
+pkgname = gambas3-dev-tools
+	pkgdesc = Development environment
+	depends = gambas3-runtime
+	conflicts = gambas3-devel
+	replaces = gambas3-devel
+
+pkgname = gambas3-ide
+	pkgdesc = Integrated Development Environment
+	depends = gambas3-dev-tools
+	depends = gambas3-gb-clipper
+	depends = gambas3-gb-db2-form
+	depends = gambas3-gb-desktop
+	depends = gambas3-gb-desktop-x11
+	depends = gambas3-gb-hash
+	depends = gambas3-gb-highlight
+	depends = gambas3-gb-form-dialog
+	depends = gambas3-gb-form-editor
+	depends = gambas3-gb-form-stock
+	depends = gambas3-gb-markdown
+	depends = gambas3-gb-settings
+	depends = gambas3-gb-form-mdi
+	depends = gambas3-gb-image-effect
+	depends = gambas3-gb-qt6
+	depends = gambas3-gb-qt6-webview
+	depends = gambas3-gb-net-curl
+	depends = gambas3-gb-form-terminal
+	depends = gambas3-gb-form-htmlview
+	depends = gambas3-gb-signal
+	depends = gambas3-gb-term
+	depends = gambas3-gb-pcre
+	depends = gambas3-gb-util
+	depends = gambas3-gb-util-web
+	conflicts = gambas3-examples
+	replaces = gambas3-examples
+
+pkgname = gambas3-script
+	pkgdesc = Scripter and server programs support
+	depends = gambas3-dev-tools

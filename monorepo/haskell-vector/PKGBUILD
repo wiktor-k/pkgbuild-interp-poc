@@ -1,0 +1,54 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=haskell-vector
+pkgver=0.13.2.0
+pkgrel=626
+pkgdesc="Efficient Arrays"
+url="https://hackage.haskell.org/package/vector"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-primitive' 'haskell-random' 'haskell-tasty' 'haskell-vector-stream')
+makedepends=('ghc' 'uusi')
+checkdepends=('haskell-base-orphans' 'haskell-quickcheck' 'haskell-doctest' 'haskell-tasty-hunit'
+              'haskell-tasty-inspection-testing' 'haskell-tasty-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/vector/${pkgver}/vector-${pkgver}.tar.gz")
+sha512sums=('d52ad78c8859284bce141254f6a29b0e0175a9db8c15505bc0e35fed1b9027736ad00a42f55d465c81b4738be67c6655cc11276ca85af3c740f55c86708e15a3')
+
+prepare() {
+  cd vector-$pkgver
+  # TODO
+  uusi -u QuickCheck --nb vector-doctest
+}
+
+build() {
+  cd vector-$pkgver
+
+  if (( CHECKFUNC )); then
+      _opts=('--enable-tests')
+  else
+      _opts=('--disable-tests')
+  fi
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+      --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+      --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd vector-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd vector-$pkgver
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/${pkgname}/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/${pkgname}/LICENSE
+}

@@ -1,0 +1,42 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Luca Weiss <luca (at) z3ntu (dot) xyz>
+# Contributor: Sam S. <smls75@gmail.com>
+# Contributor: Nuno Araujo <nuno.araujo@russo79.com>
+
+pkgname=pmbootstrap
+pkgver=3.12.1
+pkgrel=1
+pkgdesc='Sophisticated chroot/build/flash tool to develop and install postmarketOS'
+url='https://gitlab.postmarketos.org/postmarketOS/pmbootstrap'
+arch=('any')
+license=('GPL-3.0-only')
+depends=(
+  'git'
+  'multipath-tools'
+  'python'
+  'python-argcomplete'
+  'python-tomli'
+  'util-linux'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+source=("https://gitlab.postmarketos.org/postmarketOS/pmbootstrap/-/archive/${pkgver}/pmbootstrap-${pkgver}.tar.gz")
+sha256sums=('1a097b09eec2ceafe224fd2d76eda88e8a7280911b3d17497c096e521c4cdf7a')
+b2sums=('c84e6b730feb4a3d9d03c84aedd75a31277c24703e6f1b65dd495655be17e00f24d8e95d1c7d15758e47273c4db93d45352808e60856b58d9a94a1b60f7293ca')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}
+
+# vim: ts=2 sw=2 et:

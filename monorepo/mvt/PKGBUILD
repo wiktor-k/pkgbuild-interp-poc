@@ -1,0 +1,90 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Joaquim Monteiro <joaquim.monteiro@protonmail.com>
+
+pkgname=mvt
+pkgver=2026.10.12
+pkgrel=1
+pkgdesc="Mobile Verification Toolkit, a forensics tool looking for signs of device compromise"
+arch=(any)
+url="https://github.com/mvt-project/mvt"
+license=(MVT-1.1)
+depends=(
+  'androidqf'
+  'libusb'
+  'python'
+  'python-adb-shell'
+  'python-appdirs'
+  'python-betterproto2'
+  'python-click'
+  'python-cryptography'
+  'python-dateutil'
+  'python-fastpbkdf2'
+  'python-iphone-backup-decrypt'
+  'python-libusb1'
+  'python-packaging'
+  'python-pyahocorasick'
+  'python-pycryptodome'
+  'python-pydantic'
+  'python-pydantic-settings'
+  'python-requests'
+  'python-rich'
+  'python-simplejson'
+  'python-tld'
+  'python-tqdm'
+  'python-yaml'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-setuptools-scm'
+  'python-wheel'
+)
+source=("mvt-${pkgver}.tar.gz::https://github.com/mvt-project/mvt/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('c170459a06eea585f243cbf9339674809e37cb7c74d42e22584205824cb034bf163820ce0d8824a8a48c4f75e2c24532a1eb15ca3c107f34375dd79b812336f1')
+b2sums=('4da4c155df5bd6f629acb36fe41ae8cbd04299dfcc0beb4e5f9f8f085ce16a31a728c3025ee5374272a6838a66f0e1275bb2c9ff29ad8dd736fcaac058fb0ff5')
+
+build() {
+  cd "mvt-${pkgver}"
+  export SETUPTOOLS_SCM_PRETEND_VERSION_FOR_MVT="${pkgver}"
+  python -m build -wn
+
+  # setup test environment here, because we also need it to generate shell completions
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m installer --destdir=test_dir dist/*.whl
+
+  # generate shell completions
+  for shell in bash zsh fish; do
+    PATH="test_dir/usr/bin:$PATH" PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH" mvt completion "${shell}" > "mvt-complete.${shell}"
+  done
+}
+
+check() {
+  cd "mvt-${pkgver}"
+
+  # test_dir/ is already setup in build()
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  PATH="test_dir/usr/bin:$PATH" PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH" mvt --help
+  PATH="test_dir/usr/bin:$PATH" PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH" mvt-android --help
+  PATH="test_dir/usr/bin:$PATH" PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH" mvt-ios --help
+}
+
+package() {
+  cd "mvt-${pkgver}"
+  python -m installer -d "${pkgdir}" dist/*.whl
+
+  local _py3_ver=$(python --version | cut -d " " -f2)
+  rm -rf "${pkgdir}/usr/lib/python${_py3_ver%.*}/site-packages/tests"
+
+  # shell completions
+  install -vDm644 "mvt-complete.bash" "${pkgdir}/usr/share/bash-completion/completions/mvt"
+  install -vDm644 "mvt-complete.zsh" "${pkgdir}/usr/share/zsh/site-functions/_mvt"
+  install -vDm644 "mvt-complete.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/mvt.fish"
+
+  # license and docs
+  install -vDm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

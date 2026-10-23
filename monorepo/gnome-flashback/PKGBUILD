@@ -1,0 +1,129 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnome-flashback
+pkgver=3.58.0
+pkgrel=5
+pkgdesc='GNOME Flashback session'
+arch=(x86_64)
+url='https://wiki.gnome.org/Projects/GnomeFlashback'
+license=(GPL-3.0-or-later)
+depends=(
+  adwaita-icon-theme
+  adwaita-icon-theme-legacy
+  alsa-lib
+  at-spi2-core
+  bash
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-bluetooth-3.0
+  gnome-desktop
+  gnome-panel
+  gnome-session
+  gnome-settings-daemon
+  gsettings-desktop-schemas
+  gtk3
+  libcanberra
+  libgcc
+  libgdm
+  libibus
+  libpulse
+  libx11
+  libxcb
+  libxext
+  libxfixes
+  libxi
+  libxkbfile
+  libxrandr
+  libxxf86vm
+  metacity
+  nautilus
+  pam
+  pango
+  polkit
+  systemd-libs
+)
+makedepends=(
+  autoconf-archive
+  git
+  glib2-devel
+)
+optdepends=(
+  'gnome-backgrounds: Default background'
+  'gnome-control-center: System settings'
+  'network-manager-applet: Network management'
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/$pkgname.git?signed#tag=$pkgver"
+  git+https://gitlab.gnome.org/GNOME/libgnome-volume-control.git
+  gnome-flashback-69.patch
+  gnome-flashback.pam
+  gnome-flashback.theme
+  gnome-flashback-portals.conf
+)
+b2sums=(
+  ae22c2a4fb1d836a126e10922e0325454615e73928540b11b5f3d06c8cc5794364cece69545e421c157ce794942313eade99e04d2c43bfcdc5834828dc16852b
+  SKIP
+  16980e5d792458a75a3cf47b39ec67542669561c35f8e0978e97dbab07536cd2e75947a4784ab736ed5ca23082289b8c6a2778a5238850434a01e163d947b9b5
+  214a01d01d3bee526bf3d856758f56fc51e77dacc8feaefee27221924abacdb3828d4269e5fa6773abec728a563478588d705996da6afbd0693d456631f01eb5
+  ca447c74896fc89ce0b4cce8bf3771214a0bf292ffc9136147bb4c7247ff20d19894b4e29dcb60ba4d8865b21b7dca74ecc7c93053d7738bb9373af0740b1ba9
+  ab0f388ee846b7a60655bc2d0a2103d58c6b468c5919fc652fd489282ca8700b89f0afd8a116c830b7b5793396b067a8b30c6fe4998140b17f467948ee979d63
+)
+validpgpkeys=(7B44FD78E49334EC10B3B288A3D013EC303E1894) # Alberts Muktupāvels <alberts.muktupavels@gmail.com>
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git submodule set-url gvc/gvc "$srcdir/libgnome-volume-control"
+  git -c protocol.file.allow=always submodule update
+
+  # Try to launch Console first
+  # https://gitlab.gnome.org/GNOME/gnome-flashback/-/merge_requests/69
+  git cherry-pick -n 799c1d8c86da64d3ab0184e4f6362cd57e4f142b
+
+  # Disable window decoration for the desktop window
+  # https://gitlab.gnome.org/GNOME/gnome-flashback/-/merge_requests/71
+  git cherry-pick -n d2e06c31a11fb31df9c572dc65b17f2f3dd0689e
+
+  # Use the desktop background for the lock screen
+  sed -i 's/org.gnome.desktop.screensaver/org.gnome.desktop.background/' gnome-flashback/libscreensaver/gf-manager.c
+
+  # Customize style
+  sed -i '/gf-unlock-dialog frame border {/{n;s/border-radius: [0-9]\+px;/border-radius: 30px;/}
+          /gf-popup-window {/{n;s/border-radius: [0-9]\+px;/border-radius: 15px;/}' data/theme/common.css
+
+  # Set default icon theme to GnomeFlashback
+  sed -i '1i [org.gnome.desktop.interface:GNOME-Flashback]\nicon-theme='\''GnomeFlashback'\''\n' data/schemas/00_gnome-flashback.gschema.override
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --libexecdir=/usr/lib \
+    --disable-debug \
+    --enable-compile-warnings
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+
+  # Install PAM file for the screensaver
+  install -Dm644 ../gnome-flashback.pam "$pkgdir/etc/pam.d/gnome-flashback"
+
+  # Install custom icon theme to workaround the broken theme inheritance in GTK
+  install -Dm644 ../gnome-flashback.theme "$pkgdir/usr/share/icons/GnomeFlashback/index.theme"
+
+  # Add portal configuration
+  install -Dm644 ../gnome-flashback-portals.conf "$pkgdir/usr/share/xdg-desktop-portal/gnome-flashback-portals.conf"
+}

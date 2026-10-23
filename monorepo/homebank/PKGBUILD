@@ -1,0 +1,37 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+
+pkgname=homebank
+pkgver=5.10.3
+pkgrel=1
+pkgdesc="Free, easy, personal accounting for everyone"
+arch=('x86_64')
+url="https://www.gethomebank.org/"
+license=('GPL-2.0-or-later')
+depends=(
+  'cairo'
+  'gdk-pixbuf2'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'hicolor-icon-theme'
+  'libgcc'
+  'libofx'
+  'libsoup3'
+  'pango'
+)
+makedepends=('intltool')
+source=("https://www.gethomebank.org/public/sources/$pkgname-$pkgver.tar.gz")
+b2sums=('e27548786e26dc94d3e7eff00d583b9a25bd4d9a7f1f616efd588f3a348559d23067ea737975597cba6c173b40136c7c77b1a856b7989b5e5e902a97edf15168')
+
+build() {
+  cd "$pkgname-$pkgver"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}

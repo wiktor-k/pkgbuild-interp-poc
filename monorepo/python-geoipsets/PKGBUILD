@@ -1,0 +1,46 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=python-geoipsets
+pkgver=2.4.1
+pkgrel=2
+pkgdesc='Tool to generate country-specific IP ranges for iptables/ipset and nftables'
+arch=('any')
+license=('GPL-3.0-only')
+url='https://github.com/chr0mag/geoipsets/tree/main/python'
+depends=(
+  'python-requests'
+  'python-beautifulsoup4'
+)
+makedepends=(
+  'python-build'
+  'python-installer'
+  'python-wheel'
+  'python-setuptools'
+)
+checkdepends=('python-pytest')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/chr0mag/geoipsets/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('aba8223b564764dd93d10eee3a908efb7e7c155162c444c9a5c20143a14549d40d01889842554666559a52c922d4badaa4dc755755d9ef28e205d394e7c2d447')
+
+build() {
+  cd "geoipsets-$pkgver/python"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "geoipsets-$pkgver/python"
+
+  python -m pytest
+}
+
+package() {
+  cd "geoipsets-$pkgver/python"
+
+   python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README_python.md"
+  install -Dm644 ../LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 ../README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 ../systemd/update-geoipsets.service "${pkgdir}/usr/lib/systemd/system/update-geoipsets.service"
+  install -Dm644 ../systemd/update-geoipsets.timer "${pkgdir}/usr/lib/systemd/system/update-geoipsets.timer"
+}

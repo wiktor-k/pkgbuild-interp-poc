@@ -1,0 +1,18 @@
+pkgbase = ruby-pkg-config
+	pkgdesc = Implementation of pkg-config in Ruby
+	pkgver = 1.6.6
+	pkgrel = 1
+	url = https://github.com/ruby-gnome/pkg-config
+	arch = any
+	license = LGPL-2.1-only
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	provides = ruby-pkgconfig
+	conflicts = ruby-pkgconfig
+	replaces = ruby-pkgconfig
+	source = ruby-pkg-config::git+https://github.com/ruby-gnome/pkg-config#tag=1.6.6
+	sha512sums = 0c75dbf2ea7f23f7560e037b6022a315fa70ece91bb728f33572fc70bfeeaa63245ddd133f9cf3be148bf3e27025bac8d3675db1247f034819bcfb10004a15da
+	b2sums = 2ab8e40415b4b4c75f7e395c2148d5e635cfac2c5eb1fe0bc1b0359c8566f41b58ff6ea5f569a647581ff48ae3afa00ce357b979e49e054455f3572f37408f4a
+
+pkgname = ruby-pkg-config

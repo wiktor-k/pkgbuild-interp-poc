@@ -1,0 +1,22 @@
+pkgbase = haskell-crypto-enigma
+	pkgdesc = An Enigma machine simulator with display.
+	pkgver = 0.1.1.6
+	pkgrel = 270
+	url = https://github.com/orome/crypto-enigma-hs
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = ghc
+	makedepends = uusi
+	makedepends = haskell-hunit
+	makedepends = haskell-quickcheck
+	depends = ghc-libs
+	depends = haskell-ansi-terminal
+	depends = haskell-optparse-applicative
+	depends = haskell-prettyprinter
+	depends = haskell-split
+	source = https://hackage.haskell.org/packages/archive/crypto-enigma/0.1.1.6/crypto-enigma-0.1.1.6.tar.gz
+	source = haskell-crypto-enigma-optparse-applicative-0.18.patch::https://github.com/orome/crypto-enigma-hs/pull/37.patch
+	sha256sums = 5fec48245fd75d91ed1ac953fb21834eff3dc0b13b5bd100155ce4f4f8cd1d1f
+	sha256sums = f318083229d04b130da80bce2b0b3f124e52a5b4a7a37f5ecd46c9d9a6b0bfd0
+
+pkgname = haskell-crypto-enigma

@@ -1,0 +1,60 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+
+pkgname='ameba'
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='A static code analysis tool for Crystal'
+arch=(x86_64)
+url='https://github.com/crystal-ameba/ameba'
+license=(MIT)
+depends=(
+  'glibc'
+  'gc'
+  'pcre2'
+  'libgcc'
+  'libyaml'
+)
+makedepends=(
+  'crystal'
+  'shards'
+)
+checkdepends=(
+)
+optdepends=(
+)
+source=(
+  "${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+)
+sha256sums=('b4bc22946285befd1571dfadff78e258180e10e7912fb7a91af53f6896c5e512')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  # disable false positive check in specs
+  sed -i \
+    '\+log.should contain "      \\e\[33m^\\e\[0m"+d' \
+    spec/ameba/formatter/dot_formatter_spec.cr
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  shards build --production --release
+  crystal docs
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  crystal spec
+}
+
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm755 "bin/ameba" "${pkgdir}/usr/bin/ameba"
+
+  install -D -dm755 "${pkgdir}/usr/share/doc"
+  cp -r docs "${pkgdir}/usr/share/doc/${pkgname}"
+
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,20 @@
+pkgbase = dbmate
+	pkgdesc = A lightweight, framework-agnostic database migration tool
+	pkgver = 2.37.0
+	pkgrel = 1
+	url = https://github.com/amacneil/dbmate
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = sqlite
+	optdepends = mariadb: for local MariaDB instance
+	optdepends = postgresql: for local PostgreSQL instance
+	options = !lto
+	source = dbmate::git+https://github.com/amacneil/dbmate.git#tag=v2.37.0
+	sha512sums = abadaa6e85a62c1c1774607a9bd1a0e64ffe22d0ed534470156607c825b606c9e31f18e857bde3dbe117c027f97bc7cecb864b8857b1f4287ae741b5be25c768
+	b2sums = 1f5604acb2f9c77af117a6ac825ac12a045f7c92d39e06ec0fe989939ad6601e77f03b0f2ad198057f31dd850c9d2f5c60baf92fd12315665d5775a643a4a16c
+
+pkgname = dbmate
+	depends = sqlite
+	depends = glibc

@@ -1,0 +1,49 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Agustin <agustinballesteros04@gmail.com>
+
+pkgname=llmfit
+pkgver=1.1.17
+pkgrel=1
+pkgdesc='CLI tool to tell which LLM models will run best on your hardware'
+arch=(x86_64 aarch64)
+url="https://github.com/AlexsJones/$pkgname"
+license=(MIT)
+depends=(glibc # libc.so libm.so
+         libgcc)
+makedepends=(cargo
+             git)
+replaces=("$pkgname-bin")
+source=("git+$url.git#tag=v$pkgver")
+sha256sums=('5da7683ee6b7cb8dbd63cf163405d4c6fb00923895932a5b6094b97af37effa9')
+
+_srcenv() {
+	cd "$pkgname"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --release --locked
+}
+
+check() {
+	_srcenv
+	cargo test --release --locked
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$pkgname"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

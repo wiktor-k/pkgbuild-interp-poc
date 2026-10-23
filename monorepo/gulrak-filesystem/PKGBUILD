@@ -1,0 +1,38 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=filesystem
+pkgname=gulrak-filesystem
+pkgver=1.5.16
+pkgrel=1
+pkgdesc="Implementation of C++17 std::filesystem for C++11/C++14/C++17/C++20)"
+arch=(any)
+url="https://github.com/gulrak/filesystem"
+license=(MIT)
+makedepends=(cmake)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('50eb8e146501806f459873b87406cabfb4afdb92b774f83fcc2695ff03befbcfe6fd7459c42b54dfb175bd9e6e4833cda1647f36991b55db00f3c0402d30a16d')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $_name-$pkgver
+    -W no-dev
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_BUILD_TYPE=None
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  ctest --test-dir build --output-on-failure --parallel $(nproc)
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  cd "$_name-$pkgver"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}
+
+# vim: ts=2 sw=2 et:

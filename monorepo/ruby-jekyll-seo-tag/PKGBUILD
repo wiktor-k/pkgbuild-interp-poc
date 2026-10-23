@@ -1,0 +1,86 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_name=jekyll-seo-tag
+pkgname=ruby-$_name
+pkgver=2.9.1
+pkgrel=1
+pkgdesc='A Jekyll plugin to generate an Atom feed of your Jekyll posts'
+arch=('any')
+url='https://github.com/jekyll/jekyll-seo-tag'
+license=('MIT')
+depends=('ruby' 'ruby-jekyll')
+makedepends=(git)
+checkdepends=(
+  ruby-rspec
+)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha256sums=('e8120a6cf6d9b38f8340a41d73deb78665308c351401b649109a2439a4622aaa')
+
+prepare() {
+  cd "$pkgname"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_name}.gemspec"
+}
+
+build() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_name}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_name}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_name}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_name}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  # Running the tests proper requires the html-proofer gem which pulls in a
+  # kitchen sink of new dependencies so let's accept that if the gem imports,
+  # it probably runs.
+  GEM_HOME="tmp_install/${_gemdir}" ruby -e 'require "jekyll-seo-tag"; puts Jekyll::SeoTag::VERSION'
+}
+
+package() {
+  cd "$pkgname"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

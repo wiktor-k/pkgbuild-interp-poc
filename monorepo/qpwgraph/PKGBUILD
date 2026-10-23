@@ -1,0 +1,48 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Jonas Witschel <diabonas@archlinux.org>
+
+pkgname=qpwgraph
+pkgver=1.0.4
+pkgrel=1
+pkgdesc='PipeWire Graph Qt GUI Interface'
+arch=(x86_64)
+url="https://gitlab.freedesktop.org/rncbc/qpwgraph"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-base
+  qt6-svg
+)
+makedepends=(
+  alsa-lib
+  cmake
+  pipewire
+)
+source=($url/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('9cc753c41b81d7df9890ced15c94678895e70223d18cd15d20b796184c0c086025b435dea9ac5b42e34d729bd64a315b94be9bf55f1b89819cff9be8fa57c86f')
+b2sums=('deb6c8abce5ac95bedba4db506f4c1d58d7856a5a8d897cdd0728328b269fb10bea5daa2e79e642f6572b1c9efc97cc9eb5c1e79d060b75c1461073308d31d1d')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-v$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    libpipewire libpipewire-0.3.so
+  )
+  DESTDIR="$pkgdir" cmake --install build
+}

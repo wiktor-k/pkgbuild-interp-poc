@@ -1,0 +1,36 @@
+pkgbase = python-cloudflare
+	pkgdesc = The official Python library for the Cloudflare API
+	pkgver = 5.9.0
+	pkgrel = 1
+	url = https://github.com/cloudflare/cloudflare-python
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-time-machine
+	checkdepends = python-dirty-equals
+	checkdepends = python-importlib-metadata
+	checkdepends = python-rich
+	checkdepends = python-pytest-xdist
+	checkdepends = python-griffe
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	depends = python
+	depends = python-httpx
+	depends = python-pydantic
+	depends = python-typing_extensions
+	depends = python-anyio
+	depends = python-distro
+	depends = python-sniffio
+	optdepends = python-aiohttp
+	optdepends = python-httpx-aiohttp
+	source = python-cloudflare::git+https://github.com/cloudflare/cloudflare-python#tag=v5.9.0
+	source = remove-unnecessary-dependency.patch
+	sha512sums = ea1776e8062e2f34cc3a9efdce02505f01ee965f2b649f72ff0c843be77fe1100f2d072af08a233fb8ce606cc20ef339df07f4a01429ccd70819465ecfed6e83
+	sha512sums = 7d9ba9c4638b3c185c2be27485aafe24edc3c1ba76d2ab6addf3c8bef8dba892e5bec58f1f4262d2618c25517edaaca2ce5062b1cff6066acf59098533c6d74a
+	b2sums = 3652a8e90950f24f8cfecd91244a19c7ab09826910aca5ba18fcccc8168fc6a702fdfe1a7891a3515e5123d2223175addbcc1b196fc5be2499391ae212bac6cd
+	b2sums = 7157d2d353966d08fdfc602d4bc5c16b8da257c840572fcfa568736865cf8e92bc749e9bd3ada10f45a2f6d230a5f2b0c7b0a49d383fef4bf2574df78f67f334
+
+pkgname = python-cloudflare

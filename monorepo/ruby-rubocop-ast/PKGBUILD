@@ -1,0 +1,105 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+# Contributor: Mario Finelli <mario at finel dot li>
+
+_gemname='rubocop-ast'
+pkgname="ruby-${_gemname}"
+pkgver=1.48.0
+pkgrel=1
+pkgdesc="RuboCop's AST extensions and NodePattern functionality"
+arch=('any')
+url="https://github.com/rubocop/${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-parser
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-oedipus_lex
+  ruby-rake
+  ruby-rspec
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('d0651dae104ab6f4fec9b9751d4a3b41655997456463ccd8bfbc253525d3ee2bf5055705b54cc203031e64af68fb33e5fab912f75618cf3238a01acbac129820')
+b2sums=('5bbc05f3674e52e674e483c683a675cb24ffb28873159ae5a6edd8299c927e981b05c1b54111c65bc4ba238bca8247f0f054d6adb18daf29b2624be3fb7d5458')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec" Gemfile
+
+  # Remove dependency on bump and simplecov
+  sed --in-place --regexp-extended '/bump|simplecov/d' Gemfile
+  rm tasks/cut_release.rake
+
+  # we don't build from a git checkout
+  sed --in-place --regexp-extended 's|git ls-files|find|' "${_gemname}.gemspec"
+
+  sed --in-place --regexp-extended '/knows all current node types/,/end/d' spec/rubocop/ast/traversal_spec.rb
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  RUBOCOP_VERSION=none rake generate
+  gem build "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install/${_gemdir}" RUBOCOP_VERSION=none rake spec
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

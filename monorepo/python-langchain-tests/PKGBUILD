@@ -1,0 +1,55 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langchain-tests
+pkgver=1.1.9
+pkgrel=1
+pkgdesc="Standard tests for LangChain implementations"
+arch=('any')
+url="https://github.com/langchain-ai/langchain"
+license=('MIT')
+depends=(
+  'python'
+  'python-httpx'
+  'python-langchain-core'
+  'python-numpy'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-pytest-benchmark'
+  'python-pytest-codspeed'
+  'python-pytest-recording'
+  'python-pytest-socket'
+  'python-syrupy'
+  'python-vcrpy'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+source=("git+https://github.com/langchain-ai/langchain.git")
+sha512sums=('SKIP')
+
+prepare() {
+  cd langchain
+
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "langchain-tests==$pkgver"
+}
+
+build() {
+  cd langchain/libs/standard-tests
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langchain/libs/standard-tests
+  python -m pytest
+}
+
+package() {
+  cd langchain/libs/standard-tests
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 ../../LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

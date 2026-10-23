@@ -1,0 +1,57 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=pgp-wordlist
+pkgname=haskell-pgp-wordlist
+pkgver=0.1.0.3
+pkgrel=846
+pkgdesc="Translate between binary data and a human-readable collection of words."
+url="https://github.com/quchen/pgp-wordlist"
+license=('BSD')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-vector')
+makedepends=('ghc')
+checkdepends=('haskell-doctest' 'haskell-hunit' 'haskell-tasty' 'haskell-tasty-hunit'
+              'haskell-tasty-quickcheck')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz
+        "$pkgname-missing-functor.patch::https://github.com/quchen/pgp-wordlist/commit/214304abc2b9b1213e6ea0f4bcc6f0b8033ada22.patch")
+sha512sums=('b7c6db47c1f9a0b10c5c94ea46b8eee282988e5990ef3dafa2d07a5bfc0718572b04494d23ddab063811ef2452546d6b17010c6490a89031f4b071f1a43d989b'
+            'acb47b814ed793119c388694074c7d1f69dd7ba1001b614b238356e9a53b4b709f207444dba58214fec7acc621d448c3a6a0326f0b8060ca13f30651506db324')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    patch -Np1 -i ../$pkgname-missing-functor.patch
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

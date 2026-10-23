@@ -1,0 +1,18 @@
+pkgbase = tmate
+	pkgdesc = Instant terminal sharing
+	pkgver = 2.4.0
+	pkgrel = 6
+	url = https://github.com/tmate-io/tmate
+	arch = x86_64
+	license = BSD
+	depends = libevent
+	depends = libssh
+	depends = libutempter
+	depends = msgpack-c
+	depends = ncurses
+	source = https://github.com/tmate-io/tmate/archive/2.4.0/tmate-2.4.0.tar.gz
+	source = msgpack-v6.patch
+	sha256sums = 62b61eb12ab394012c861f6b48ba0bc04ac8765abca13bdde5a4d9105cb16138
+	sha256sums = a778da70f603bc76c47161e2aaf7eb13940d6e758b44d9b81343c535d0b8ae3c
+
+pkgname = tmate

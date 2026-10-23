@@ -1,0 +1,19 @@
+pkgbase = qrupdate
+	pkgdesc = Fortran library for fast updates of QR and Cholesky decompositions
+	pkgver = 1.3.1
+	pkgrel = 1
+	url = https://sourceforge.net/projects/qrupdate
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = gcc-fortran
+	makedepends = git
+	depends = blas
+	depends = glibc
+	depends = lapack
+	depends = libgcc
+	depends = libgfortran
+	source = git+https://github.com/mpimd-csc/qrupdate-ng#tag=v1.3.1
+	sha256sums = 03300aa4bfe4e0a3007ffa2bba1546ce6bb059f8863e05f66f73581fc40d8cd6
+
+pkgname = qrupdate

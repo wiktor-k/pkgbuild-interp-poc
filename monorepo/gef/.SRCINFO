@@ -1,0 +1,18 @@
+pkgbase = gef
+	pkgdesc = Multi-Architecture GDB Enhanced Features for Exploiters & Reverse-Engineers
+	pkgver = 2026.01
+	pkgrel = 1
+	url = https://github.com/hugsy/gef
+	arch = any
+	license = MIT
+	depends = gdb
+	depends = python
+	optdepends = python-capstone: extended disassemble support
+	optdepends = python-keystone: assembler support
+	optdepends = python-unicorn: emulation support
+	optdepends = ropgadget: ROP gadget support
+	source = https://github.com/hugsy/gef/archive/2026.01/gef-2026.01.tar.gz.tar.gz
+	sha512sums = 20e1bd398b1bc0345a7a637fe058a0aaee9f4c2b5a65ce67f3774d9fcf4a5c865f43fbe1ff9cb2d5e04091d025dded43e08f88b5333211084616955a3fc5eac6
+	b2sums = 5dffee69689aaa988dc35e56809f1a7775e872f12c20d047de9ee4f5b5bf1146c567549080e65cf98ae7310a1735263fdf525fd930099f694dc57f001c3660d0
+
+pkgname = gef

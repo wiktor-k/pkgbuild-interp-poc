@@ -1,0 +1,46 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=pgvector
+pkgver=0.8.7
+pkgrel=1
+pkgdesc="Open-source vector similarity search for Postgres"
+arch=('x86_64')
+url="https://github.com/pgvector/pgvector"
+license=('PostgreSQL')
+depends=('postgresql')
+makedepends=('clang' 'git' 'llvm')
+checkdepends=('perl' 'perl-ipc-run' 'pifpaf')
+source=("git+https://github.com/pgvector/pgvector.git#tag=v$pkgver")
+sha512sums=('9d94c69ea619bf6a612b87bf8a0116b76005bc43fe551acdf223e5c99a2b84af9bea9fcde4250b3dfba1c792746448980e994b35d80ab988985601697e76d83e')
+
+build() {
+  cd pgvector
+  make OPTFLAGS=""
+}
+
+check() {
+  cd pgvector
+  local _check_prefix="$srcdir"/test-prefix
+  local _test_config="$srcdir"/postgresql-test.conf
+
+  make OPTFLAGS="" \
+    datadir="$_check_prefix"/share/postgresql \
+    includedir_server="$_check_prefix"/include/postgresql/server \
+    pkglibdir="$_check_prefix"/lib/postgresql \
+    install
+
+  # TAP clusters start their own servers, and pgvector parallel workers load "vector" directly.
+  printf "extension_control_path = '%s:\$system'\ndynamic_library_path = '%s:\$libdir'\n" \
+    "$_check_prefix"/share/postgresql \
+    "$_check_prefix"/lib/postgresql > "$_test_config"
+
+  export PGOPTIONS="-c extension_control_path=$_check_prefix/share/postgresql:\$system -c dynamic_library_path=$_check_prefix/lib/postgresql:\$libdir"
+  pifpaf run postgresql -- make OPTFLAGS="" installcheck
+  TEMP_CONFIG="$_test_config" make OPTFLAGS="" prove_installcheck
+}
+
+package() {
+  cd pgvector
+  make OPTFLAGS="" DESTDIR="$pkgdir" install
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,28 @@
+pkgbase = mate-user-share
+	pkgdesc = User level public file sharing via WebDAV for MATE
+	pkgver = 1.28.0
+	pkgrel = 3
+	url = https://github.com/mate-desktop/mate-user-share
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = caja
+	makedepends = dbus-glib
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = libcanberra
+	makedepends = libnotify
+	makedepends = mate-common
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libx11
+	depends = mod_dnssd
+	optdepends = caja: File sharing extension
+	source = git+https://github.com/mate-desktop/mate-user-share.git#tag=v1.28.0
+	b2sums = 1a3c3adc09ca732eb25991433282ef16cdc0be1e27c628e6362694ac2ce50dbbaec200e5b431e58110f7088249fedf2ac13d1384c3207a48b2699c90216a4735
+
+pkgname = mate-user-share

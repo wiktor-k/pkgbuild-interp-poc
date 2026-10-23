@@ -1,0 +1,15 @@
+pkgbase = patchelf
+	pkgdesc = Small utility to modify the dynamic linker and RPATH of ELF executables
+	pkgver = 0.19.2
+	pkgrel = 1
+	url = https://nixos.org/patchelf.html
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/NixOS/patchelf.git#tag=0.19.2
+	sha512sums = fec37933ac07fc65ff2cbc61cfc9eef8a24aa77b47807c06bea44cceaa947118a8797f0968b3f0b6a86a498ea6df337c594484ef82fb0e70a3ed290bae7ab60f
+	b2sums = 43ee1ca21946b72ba2e2fe198477a8c5d97fd7c311c6be51b8585eb92d86c6437a800c80ed4d978db0329c864cc3206c805230bee511e9c1a4b40b970553b598
+
+pkgname = patchelf

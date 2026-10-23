@@ -1,0 +1,35 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=netcdf4-python
+pkgname=python-netcdf4-openmpi
+pkgver=1.7.2
+pkgrel=5
+pkgdesc="Python/NumPy interface to the netCDF C library (${_mpi} version)"
+arch=(x86_64)
+url="https://unidata.github.io/netcdf4-python"
+license=(MIT)
+depends=(python-numpy python-cftime python-mpi4py netcdf-openmpi python-certifi)
+makedepends=(cython git python-build python-installer python-wheel python-setuptools python-setuptools-scm)
+conflicts=(python-netcdf4)
+provides=(python-netcdf4)
+source=(git+https://github.com/Unidata/netcdf4-python#tag=v${pkgver}rel)
+sha256sums=('0c491ff44c2c2b42625b104b4276a3b0d8fbaea8971d967794e2722373651389')
+
+build() {
+  cd ${_pkg}
+  CFLAGS+=" -Wno-incompatible-pointer-types" \
+  USE_NCCONFIG=1 NETCDF_PLUGIN_DIR=/usr/lib/netcdf/plugin \
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${_pkg}/test
+  local python_version=$(python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  NO_NET=1 PYTHONPATH="../build/lib.linux-${CARCH}-cpython-${python_version/./}" python -B ./run_all.py
+}
+
+package() {
+  cd ${_pkg}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+}

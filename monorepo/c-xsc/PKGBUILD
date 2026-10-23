@@ -1,0 +1,35 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=c-xsc
+pkgver=2.5.4
+pkgrel=5
+pkgdesc='A C++ class library'
+arch=(x86_64)
+url='http://www2.math.uni-wuppertal.de/org/WRST/xsc-frame/index.html'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         libgcc
+         libstdc++)
+makedepends=()
+source=(http://www2.math.uni-wuppertal.de/wrswt/xsc/cxsc/cxsc-${pkgver//./-}.tar.gz
+        cxsc-complex.patch)
+sha256sums=('fd0d824fd94bef3aae55b95e5ef19342b653fe3ff4fb561364e942c809eb616b'
+            'b0decb69bfe94accae91cb7c8a51af816161264818a357e820eb34802b41b1d7')
+
+prepare() {
+  cd cxsc-${pkgver//./-}
+  patch -p0 -i ../cxsc-complex.patch # Fix build with GCC 15 (Fedora)
+  autoreconf -fiv
+}
+
+build() {
+  cd cxsc-${pkgver//./-}
+  CXXFLAGS+=" -std=c++11" \
+  ./configure --prefix=/usr --libexecdir=/usr/lib
+  make
+}
+
+package() {
+  cd cxsc-${pkgver//./-}
+  make install DESTDIR="$pkgdir"
+}

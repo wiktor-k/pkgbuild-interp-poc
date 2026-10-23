@@ -1,0 +1,51 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=ignore-python
+pkgname=python-ignore
+pkgver=0.4.1
+pkgrel=1
+pkgdesc="Python bindings for the Rust crate ignore"
+arch=(x86_64)
+url="https://github.com/borsattoz/ignore-python"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  python
+)
+makedepends=(
+  cargo
+  maturin
+  python-installer
+)
+checkdepends=(
+  python-pytest
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('03ded57a506f8c92e61fb4966e230664e91789fbf7c3a7ca74be8d39bdc6aac244106e65500748560a128341f843ddd8173b79961b2a909efe6646dd399b5b06')
+
+prepare() {
+  cd $_name-$pkgver
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $_name-$pkgver
+  maturin build --locked --release --target $(rustc --print host-tuple) --strip
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+  )
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer $_name-$pkgver/target/wheels/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" $_name-$pkgver/tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir "$pkgdir" target/wheels/*.whl
+  install -vDm 644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

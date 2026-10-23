@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Roger Duran <rogerduran@gmail.com>
+
+pkgname=python-xcffib
+pkgver=1.7.1
+pkgrel=1
+pkgdesc="xcffib is the XCB binding for python"
+arch=('any')
+url="https://pypi.python.org/pypi/xcffib"
+license=('Apache-2.0')
+depends=('python-cffi' 'libxcb')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-setuptools' 'haskell-xcffib')
+checkdepends=('python-pytest' 'xorg-server-xvfb' 'xorg-xeyes')
+source=("git+https://github.com/tych0/xcffib.git#tag=v$pkgver")
+sha512sums=('649ab1706aa4d5c402e91c56db41a8cdb5631e3919af4a62781e0ff940028517bb2277aa98b7e2eddbf8df825fd5b803d18d02dd029928dd1bef6c971d0b8315')
+
+build() {
+  cd xcffib
+  make xcffib GEN=xcffibgen CABAL=true
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd xcffib
+  xvfb-run pytest
+}
+
+package() {
+  cd xcffib
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

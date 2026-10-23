@@ -1,0 +1,58 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=tangram
+pkgver=3.6
+pkgrel=1
+pkgdesc='Browser for your pinned tabs'
+arch=(any)
+url='https://apps.gnome.org/Tangram/'
+license=(GPL-3.0-only)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gdk-pixbuf2
+  gjs
+  glib2
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libsoup3
+  webkitgtk-6.0
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://github.com/sonnyp/Tangram.git#tag=v$pkgver"
+  git+https://github.com/sonnyp/troll.git
+)
+b2sums=(
+  c261e47d2247de8e716044f40bbcae9004fe43de7a0b299f082383596a3e723d808e7203bcdee6522962bedd7ad3c732a2fca04490e5495b3167f8f690297603
+  SKIP
+)
+
+prepare() {
+  cd Tangram
+
+  git submodule init
+  git submodule set-url troll "$srcdir/troll"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  arch-meson Tangram build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  ln -s re.sonny.Tangram "$pkgdir/usr/bin/tangram"
+}

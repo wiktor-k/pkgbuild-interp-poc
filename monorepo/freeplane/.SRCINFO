@@ -1,0 +1,21 @@
+pkgbase = freeplane
+	pkgdesc = A Java mindmapping tool
+	pkgver = 1.13.3
+	pkgrel = 1
+	url = http://freeplane.sourceforge.net
+	arch = any
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = gradle
+	makedepends = java-environment-openjdk=17
+	makedepends = gnu-free-fonts
+	makedepends = fontconfig
+	makedepends = unzip
+	depends = java-runtime>=11
+	depends = java-runtime<=21
+	source = git+https://github.com/freeplane/freeplane.git#tag=release-1.13.3
+	source = freeplane.run
+	b2sums = 10734e9cc9ace2199d7633aeaf48a54ef743a6ad7c842d513507504fb3c23512de80ddd2abc9325196eb7811833afdae0162663a1c67ae57d77898402ef94e8d
+	b2sums = 24ca56b7c7894b9bb38600b4d37973769243e1bdb221f33125b60bf4f878a3b630775710fab9dee97fa45a69319455037e294860ba7fbd608529982c6b0b1538
+
+pkgname = freeplane

@@ -1,0 +1,50 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=vectorchord
+pkgver=1.1.1
+pkgrel=2
+pkgdesc='PostgreSQL extension for scalable, high-performance, and cost-effective vector search'
+arch=(x86_64)
+url='https://github.com/tensorchord/VectorChord'
+license=(AGPL-3.0-only)
+depends=(
+  postgresql
+  pgvector
+)
+makedepends=(
+  git
+  rust
+  clang
+  sqlite
+)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('2a98b84db3a2c91b9cd7a12581ac300a4485f740df337ced67f7354cda937a663942024f7bfc8faed2cdf10ad135801fe6156dd90bb54de6006b6fb6b98d5998')
+b2sums=('ce7630d6b24556bed9fd3cc01511507a4f0b674331db669f7aec45908dec7567258fd8a497e7642a37d309a81b45ef06cf2705112d67cce2fde65a3fa6202f3d')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  # use system sqlite
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+
+  CFLAGS+=' -ffat-lto-objects' make build
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+    sqlite libsqlite3.so
+  )
+
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+}

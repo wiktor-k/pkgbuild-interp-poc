@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-btrees
+pkgver=6.5
+pkgrel=1
+pkgdesc='Scalable persistent object containers'
+arch=('x86_64')
+license=('ZPL-2.1')
+url='https://github.com/zopefoundation/btrees'
+depends=('python-persistent' 'python-zope-interface')
+makedepends=('git' 'python-setuptools' 'python-build' 'python-wheel' 'python-installer')
+checkdepends=('python-transaction' 'python-zope-testrunner')
+source=("git+https://github.com/zopefoundation/btrees.git#tag=$pkgver")
+sha512sums=('0140b227fd78fd2b534fb2d090ed0078b0048e541e0f9db3721803e1d42927377264f237cec9f88ad4424bdc4d08479c06240a77b26d22208bcf825a99efd457')
+
+build() {
+  cd btrees
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd btrees
+  local python_version=$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-${python_version}" python -m zope.testrunner --test-path=src
+}
+
+package() {
+  cd btrees
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

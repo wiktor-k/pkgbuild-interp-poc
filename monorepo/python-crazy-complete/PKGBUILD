@@ -1,0 +1,34 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+
+pkgname=python-crazy-complete
+pkgver=0.3.9
+pkgrel=1
+pkgdesc="Generate shell auto completion files"
+arch=('any')
+url="https://github.com/crazy-complete/crazy-complete"
+license=('GPL-3.0-only')
+depends=(
+    'python'
+    'python-yaml'
+)
+makedepends=(
+    'python-build'
+    'python-installer'
+    'python-setuptools'
+)
+source=("https://github.com/crazy-complete/crazy-complete/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('c0a8febdce7aedbb50affcdc23ce26553c85fa2e1ec7ae3498f0365a5aed734001c363d13df9f8bbab2a1115e08fd5e47fce8019cf61bc3cc078a5162419b447')
+
+build() {
+    cd "crazy-complete-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "crazy-complete-$pkgver"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+
+    install -dm755 "$pkgdir/usr/share/doc/$pkgname/examples"
+    install -Dm644 *.md -t "$pkgdir/usr/share/doc/$pkgname"
+    cp -r --no-preserve=ownership examples/* "$pkgdir/usr/share/doc/$pkgname/examples"
+}

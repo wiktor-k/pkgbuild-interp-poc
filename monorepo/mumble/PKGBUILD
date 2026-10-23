@@ -1,0 +1,183 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Lauri Niskanen <ape@ape3000.com>
+# Contributor: Sebastian.Salich@gmx.de
+# Contributor: Doc Angelo
+
+# NOTE: needs to be built using multilib for mumble-overlay!
+pkgbase=mumble
+pkgname=(mumble mumble-server)
+pkgver=1.5.939
+pkgrel=1
+pkgdesc="An Open Source, low-latency, high quality voice chat software"
+arch=(x86_64)
+url="https://www.mumble.info/"
+license=(BSD-3-Clause)
+# shared depends
+depends=(
+  abseil-cpp
+  libgcc
+  libstdc++
+  glibc
+  qt5-base
+)
+# shared makedepends
+makedepends=(
+  avahi
+  boost
+  cmake
+  openssl
+  protobuf
+  python
+  qt5-tools
+)
+# mumble makedepends
+makedepends+=(
+  alsa-lib
+  hicolor-icon-theme
+  jack
+  lib32-gcc-libs
+  libpulse
+  libsndfile
+  libspeechd
+  libx11
+  libxi
+  mesa
+  nlohmann-json
+  opus
+  poco
+  qt5-svg
+  rnnoise
+  speech-dispatcher
+  speexdsp
+  xdg-utils
+)
+# mumble-server makedepends
+makedepends+=(
+  libcap
+  systemd
+  zeroc-ice
+)
+checkdepends=(
+  xorg-server-xvfb
+)
+source=(
+  https://github.com/mumble-voip/mumble/releases/download/v$pkgver/$pkgbase-$pkgver.tar.gz{,.sig}
+  $pkgbase-1.5.517-config_defaults.patch
+)
+sha512sums=('5b426715824ba7065ca86e58e798df77bdd84ec5bb8c7210299c8e8cdde3c0916ccb114ce6ba2697a328d25a2cf291ae9611a97420789ff06ca4480214451c06'
+            'SKIP'
+            'c12f6269c5745532031f09fba5b9e3118e6beaf387ae0aaba6ff8380a1452b47f9f0d1cae04472a5763b3da695e03467de152a98bf03c01ae59bd6d553ec7100')
+b2sums=('65b0e213bffabb34d3bb4fc0085bca7c8d3a0716aea06e9d3049f3bc7c16096f78b4505b76651f57fa7056bbd033ce09fa452cac20e26e5600d8a722b5d694fc'
+        'SKIP'
+        'c607246691e9701f54b8d133db7d424a46ab94781178d172ae8a35df8ca505da59734ddae00789b93af316de3344d7e177a1a988e1438121e1e921ff59724f24')
+# See https://github.com/mumble-voip/mumble-gpg-signatures
+validpgpkeys=(
+  F62408DEFB8603FBF45B02244FDC47DD5D6A6D14  # Mumble Automatic Build Infrastructure 2026 <mumble-auto-build-2026@mumble.info>
+)
+
+prepare() {
+  # add default configuration options
+  patch -Np1 -d $pkgbase-$pkgver -i ../$pkgbase-1.5.517-config_defaults.patch
+  # Ensure the _mumble-server user is fully locked.
+  printf 'u! _mumble-server - "Mumble server user" - -\n' > $pkgbase-$pkgver/auxiliary_files/config_files/mumble-server.sysusers
+  # ensure the default server directory is created
+  printf "d /var/lib/mumble-server 0750 _mumble-server _mumble-server -\n" >> $pkgbase-$pkgver/auxiliary_files/config_files/mumble-server.tmpfiles.in
+}
+
+build() {
+  local default_options=(
+    -D CMAKE_INSTALL_PREFIX=/usr
+    # protobuf 23 requires C++17
+    -D CMAKE_CXX_STANDARD=17
+    -D CMAKE_C_STANDARD=99
+    -D CMAKE_BUILD_TYPE=None
+    # upstream requires adding arbitrary build number specifically, as otherwise the version string is wrong:
+    # https://github.com/mumble-voip/mumble/issues/5538
+    -D BUILD_NUMBER="${pkgver/*./}"
+    -D tests=ON
+    -D warnings-as-errors=OFF
+    -S $pkgbase-$pkgver
+    -W no-dev
+  )
+  local cmake_options_client=(
+    -D update=OFF
+    -D server=OFF
+    -B build-client
+    -D bundled-json=OFF
+    -D bundled-rnnoise=OFF
+    -D bundled-speex=OFF
+    -D rnnoise=ON
+  )
+  local cmake_options_server=(
+    -D MUMBLE_INSTALL_ABS_SYSCONFDIR=/etc/mumble-server
+    -D CMAKE_INSTALL_SYSCONFDIR=/etc
+    -D use-pkgconf-install-paths=ON
+    -D client=OFF
+    -B build-server
+  )
+
+  cmake "${default_options[@]}" "${cmake_options_server[@]}"
+  cmake --build build-server --verbose
+
+  cmake "${default_options[@]}" "${cmake_options_client[@]}"
+  cmake --build build-client --verbose
+}
+
+check() {
+  xvfb-run ctest --test-dir build-client --output-on-failure
+  ctest --test-dir build-server --output-on-failure
+}
+
+package_mumble() {
+  pkgdesc+=" (client)"
+  # NOTE: jack, libpulse, and pipewire are dlopen'ed
+  depends+=(
+    alsa-lib libasound.so
+    avahi libdns_sd.so
+    hicolor-icon-theme
+    jack
+    protobuf libprotobuf.so
+    libpulse
+    libsndfile libsndfile.so
+    libspeechd
+    libx11
+    libxi
+    openssl libcrypto.so libssl.so
+    opus libopus.so
+    poco libPocoFoundation.so libPocoXML.so libPocoZip.so
+    qt5-svg
+    rnnoise
+    speexdsp libspeexdsp.so
+    xdg-utils
+  )
+  optdepends=(
+    'bash: for mumble-overlay'
+    'lib32-glibc: for mumble-overlay'
+    'espeak-ng: Text-to-speech support'
+    'speech-dispatcher: Text-to-speech support'
+  )
+
+  DESTDIR="$pkgdir" cmake --install build-client
+  install -vDm 644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}
+
+package_mumble-server() {
+  pkgdesc+=" (server)"
+  depends+=(
+    avahi libdns_sd.so
+    bash
+    libcap libcap.so
+    openssl libcrypto.so libssl.so
+    protobuf libprotobuf.so
+    zeroc-ice
+  )
+  conflicts=('murmur<1.5')
+  replaces=('murmur<1.5')
+  backup=(etc/$pkgbase/$pkgname.ini)
+  install=mumble-server.install
+
+  DESTDIR="$pkgdir" cmake --install build-server
+  install -vDm 644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}
+# vim: sw=2:ts=2 et:

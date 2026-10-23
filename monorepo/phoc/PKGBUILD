@@ -1,0 +1,66 @@
+# Maintainer: Dan Johansen <strit@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=phoc
+pkgver=0.57.0
+pkgrel=2
+pkgdesc='Display compositor designed for phones'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/Phosh/phoc'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  libgcc
+  glib2
+  glibc
+  gnome-desktop
+  gsettings-desktop-schemas
+  hicolor-icon-theme
+  libgmobile
+  libinput
+  libxcb
+  libxkbcommon
+  mutter
+  pango
+  pixman
+  systemd-libs
+  wayland
+  wlroots0.20
+  xorg-xwayland
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+  python-docutils
+  wayland-protocols
+)
+checkdepends=(xorg-server-xvfb)
+source=(
+  "git+https://gitlab.gnome.org/World/Phosh/phoc.git?signed#tag=v$pkgver"
+  git+https://gitlab.gnome.org/GNOME/gvdb.git
+)
+b2sums=('ddfd0cd92fd49df2227c2deb3b180ef3ea7ec0b921536c7a3aedf17aec680214114e00f406fefdc28dbbf0bee00d5b6d8191e6d84e830f7d3e76a75c6d41f84f'
+        'SKIP')
+validpgpkeys=(0DB3932762F78E592F6522AFBB5A2C77584122D3) # Guido Günther <guido@xcpu.ch>
+
+prepare() {
+  ln -s "$srcdir/gvdb" "$pkgname/subprojects/gvdb"
+  meson subprojects checkout --sourcedir $pkgname
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D embed-wlroots=disabled \
+    -D man=true
+  meson compile -C build
+}
+
+check() {
+  LC_ALL=C.UTF-8 WLR_RENDERER=pixman xvfb-run meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

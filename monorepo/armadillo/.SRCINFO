@@ -1,0 +1,34 @@
+pkgbase = armadillo
+	pkgdesc = Linear algebra library for C++
+	pkgver = 15.6.2
+	pkgrel = 1
+	url = https://arma.sourceforge.net/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = arpack
+	makedepends = blas
+	makedepends = cmake
+	makedepends = intel-oneapi-mkl
+	makedepends = lapack
+	makedepends = superlu
+	source = https://downloads.sourceforge.net/sourceforge/arma/armadillo-15.6.2.tar.xz
+	b2sums = 23ecf5e3e7a5febd3aa3575d74dca1f792622dd08c97f503c488286e66160bc253b133c69a14681f32146822ea1761b0b02045435a133161dcc246e9a72d3d84
+
+pkgname = armadillo
+	depends = arpack
+	depends = blas
+	depends = lapack
+	depends = superlu
+	optdepends = hdf5: for HDF5 I/O support
+	optdepends = hdf5-openmpi: for parallel HDF5 I/O support
+	conflicts = armadillo-intel
+
+pkgname = armadillo-intel
+	pkgdesc = Linear algebra library for C++ (Intel)
+	depends = arpack
+	depends = intel-oneapi-mkl
+	depends = superlu
+	optdepends = hdf5: for HDF5 I/O support
+	optdepends = hdf5-openmpi: for parallel HDF5 I/O support
+	provides = armadillo
+	conflicts = armadillo

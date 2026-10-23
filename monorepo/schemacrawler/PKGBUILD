@@ -1,0 +1,32 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=schemacrawler
+pkgver=17.16.0
+pkgrel=1
+pkgdesc="Free database schema discovery and comprehension tool"
+arch=('any')
+url="https://www.schemacrawler.com"
+license=('GPL-3.0-only')
+depends=('java-runtime' 'graphviz')
+makedepends=('maven' 'java-environment=17' 'unzip')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/schemacrawler/SchemaCrawler/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('8a2f2ee40f1f5d60246b81727b28620f1877cb047975c0ebb9de9d2791bfa25bccae259b79255edb1ceaacfa637b8731b5476c2ed88a76162783c8e196b17695')
+
+build() {
+  cd SchemaCrawler-$pkgver
+
+  export JAVA_HOME="/usr/lib/jvm/java-17-openjdk"
+  mvn -Ddistrib -DskipTests package
+}
+
+package() {
+  cd SchemaCrawler-$pkgver/schemacrawler-distrib/target
+  unzip schemacrawler-$pkgver-bin.zip
+
+  mkdir -p "$pkgdir"/{opt,usr/bin}
+  cp -r schemacrawler-$pkgver-bin "$pkgdir"/opt/schemacrawler
+  echo -e '#!/bin/bash\ncd /opt/schemacrawler/bin\n./schemacrawler.sh $@' > "$pkgdir"/usr/bin/schemacrawler
+  chmod -R +r "$pkgdir"/opt/schemacrawler
+  chmod +x "$pkgdir"/usr/bin/schemacrawler
+}
+
+# vim: ts=2 sw=2 et:

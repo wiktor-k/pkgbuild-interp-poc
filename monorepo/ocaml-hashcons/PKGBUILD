@@ -1,0 +1,24 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ocaml-hashcons
+pkgver=1.4.0
+pkgrel=3
+pkgdesc='OCaml hash-consing library'
+url="https://github.com/backtracking/ocaml-hashcons"
+arch=('x86_64')
+license=('LGPL2.1')
+depends=('ocaml')
+makedepends=('git' 'dune')
+options=('!strip' '!makeflags' 'staticlibs')
+source=("git+https://github.com/backtracking/ocaml-hashcons.git#tag=$pkgver")
+sha512sums=('3efec9d85d5f3a58bc5daf1c1a908846b1c3ea78f84ebcc860344626e35d11c56337fe1d4b4b22d9892a00779ccc7342649ab0d69fe3d5b9f3cc847cb98790e1')
+
+build() {
+  cd $pkgname
+  dune build --release
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" dune install --prefix /usr --libdir /usr/lib/ocaml --docdir /usr/share/doc/$pkgname
+}

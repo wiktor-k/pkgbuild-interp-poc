@@ -1,0 +1,32 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+
+pkgbase=lua-sdl2
+pkgname=(lua53-sdl2)
+pkgver=2.0.5.6.0
+pkgrel=7
+pkgdesc='Pure C binding of SDL 2.0 for Lua'
+arch=(x86_64)
+url='https://github.com/Tangent128/luasdl2'
+license=(MIT)
+depends=(lua53 sdl2_gfx sdl2_image sdl2_mixer sdl2_net sdl2_ttf)
+makedepends=(cmake git ninja)
+source=("git+$url#commit=01a749db3acf300dfd3eee3a6ba38dbe298d1081") # tag: v2.0.5-6.0
+b2sums=('016acffbd600e48e076a436b6af1bbd2b7679dfe82d789b9718d8288aaad7a1c0e3b3ad2babf862298a3bb87262412e5967b730c489adfb91ffb91136f457bd4')
+
+build() {
+  cmake \
+    -B build \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D WITH_DOCSDIR="share/doc/$pkgname" \
+    -D WITH_LUAVER=53 \
+    -G Ninja \
+    -S luasdl2
+  ninja -C build
+}
+
+package_lua53-sdl2() {
+  conflicts=(lua-sdl2)
+  replaces=(lua-sdl2)
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 luasdl2/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

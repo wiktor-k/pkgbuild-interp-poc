@@ -1,0 +1,96 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=kmail
+pkgver=26.08.2
+pkgrel=2
+pkgdesc='KDE mail client'
+arch=(x86_64)
+url='https://apps.kde.org/kmail2/'
+license=(GPL-2.0-or-later)
+depends=(akonadi
+         akonadi-contacts
+         akonadi-import-wizard
+         akonadi-mime
+         akonadi-search
+         glibc
+         gpgmepp
+         kbookmarks
+         kcalendarcore
+         kcalutils
+         kcmutils
+         kcodecs
+         kcolorscheme
+         kcompletion
+         kconfig
+         kconfigwidgets
+         kcontacts
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         kdepim-runtime
+         kguiaddons
+         ki18n
+         kiconthemes
+         kidentitymanagement
+         kio
+         kitemmodels
+         kitemviews
+         kjobwidgets
+         kldap
+         kmail-account-wizard
+         kmailtransport
+         kmime
+         knotifications
+         knotifyconfig
+         kontactinterface
+         kparts
+         kpimtextedit
+         kservice
+         kstatusnotifieritem
+         ktextaddons
+         ktnef
+         kuserfeedback
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libgcc
+         libgpg-error
+         libgravatar
+         libkdepim
+         libkleo
+         libksieve
+         libstdc++
+         mailcommon
+         mbox-importer
+         messagelib
+         pim-data-exporter
+         pim-sieve-editor
+         pimcommon
+         qgpgme
+         qt6-base
+         qt6-webengine
+         qtkeychain-qt6
+         sonnet)
+makedepends=(extra-cmake-modules
+             kdoctools)
+optdepends=('kdepim-addons: additional plugins'
+            'kleopatra: mail encryption support')
+groups=(kde-applications
+        kde-pim)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('107c5b3a4c605250f76073c01e0e8eb73cfac969bd853d2e1fddd011c94f4e78'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

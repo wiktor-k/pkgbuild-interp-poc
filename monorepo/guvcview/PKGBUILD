@@ -1,0 +1,132 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Maxwell Pray a.k.a. Synthead <synthead@gmail.com>
+
+pkgbase=guvcview
+pkgname=(
+  guvcview
+  guvcview-common
+  guvcview-qt
+)
+pkgver=2.2.2
+pkgrel=4
+pkgdesc='Simple interface for capturing and viewing video from V4L2 devices'
+arch=(x86_64)
+url='https://guvcview.sourceforge.net/'
+license=(GPL-2.0-or-later)
+depends=(
+  ffmpeg
+  glib2
+  glibc
+  gsl
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libpng
+  libpulse
+  libstdc++
+  libusb
+  portaudio
+  qt6-base
+  sdl2
+  systemd-libs
+  v4l-utils
+)
+makedepends=(
+  cmake
+  git
+)
+source=(
+  "$pkgbase::git+https://git.code.sf.net/p/guvcview/git-master#tag=v$pkgver"
+  0001-Use-themed-icon.patch
+)
+b2sums=(
+  a3458fe392c36ace90e6a19666a81786ebd0b17702e8387ad5ac9cdbab1e102a05fe6d9863ae0ab592552a6eb395365f481a243392b3936d2dde5ce2297d3073
+  16e750704cacd377ed5901434867dfe5a48a5421e44362fb8114e0c80b3ec5c83044f1753afbd6a7a0b32f070f79f1474f6d4c4cdd4db4ba992d30c63e5d53c3
+)
+
+prepare() {
+  cd $pkgbase
+
+  # Use themed icon
+  # https://sourceforge.net/p/guvcview/tickets/81/
+  git apply -3 ../0001-Use-themed-icon.patch
+
+  # Fix metainfo file
+  sed -i 's|<\([/]*\)_|<\1|g' data/guvcview.appdata.xml.in
+  sed -i 's|\/appdata|\/metainfo|' data/CMakeLists.txt
+
+  # Rename binary name for Qt
+  sed -i 's/process.startDetached("guvcview", args)/process.startDetached("guvcview-qt", args)/' guvcview/gui_qt6{,_callbacks}.cpp
+}
+
+build() {
+  # GTK version
+  cmake -B build-gtk -S $pkgbase \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D USE_SFML=ON
+  cmake --build build-gtk
+
+  # Qt version
+  cmake -B build-qt -S $pkgbase \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D USE_SFML=ON \
+    -D USE_QT6=ON \
+    -D USE_GTK3=OFF
+  cmake --build build-qt
+}
+
+package_guvcview-common() {
+  pkgdesc='Common files for guvcview'
+  depends=(
+    ffmpeg
+    glibc
+    gsl
+    hicolor-icon-theme
+    libpng
+    libpulse
+    libusb
+    portaudio
+    sdl2
+    systemd-libs
+    v4l-utils
+  )
+
+  DESTDIR="$pkgdir" cmake --install build-gtk
+  rm -r "$pkgdir"/usr/{bin,share/{man,metainfo,applications}}
+}
+
+package_guvcview() {
+  pkgdesc='Simple GTK interface for capturing and viewing video from V4L2 devices'
+  depends=(
+    glib2
+    glibc
+    gtk3
+    guvcview-common
+  )
+
+  DESTDIR="$pkgdir" cmake --install build-gtk
+  rm -r "$pkgdir"/usr/{lib,share/{icons,locale}}
+}
+
+package_guvcview-qt() {
+  pkgdesc='Simple Qt interface for capturing and viewing video from V4L2 devices'
+  depends=(
+    glibc
+    guvcview-common
+    libgcc
+    libstdc++
+    qt6-base
+  )
+
+  DESTDIR="$pkgdir" cmake --install build-qt
+  rm -r "$pkgdir"/usr/{lib,share/{icons,locale}}
+  mv "$pkgdir"/usr/bin/guvcview{,-qt}
+  mv "$pkgdir"/usr/share/man/man1/guvcview{,-qt}.1.gz
+  mv "$pkgdir"/usr/share/applications/guvcview{,-qt}.desktop
+  sed -i 's/GTK/Qt/
+          s/Exec=guvcview/Exec=guvcview-qt/' "$pkgdir"/usr/share/applications/guvcview-qt.desktop
+  mv "$pkgdir"/usr/share/metainfo/guvcview{,-qt}.appdata.xml
+  sed -i 's/net.sourceforge.guvcview/net.sourceforge.guvcview-qt/
+          s/guvcview.desktop/guvcview-qt.desktop/' "$pkgdir"/usr/share/metainfo/guvcview-qt.appdata.xml
+}

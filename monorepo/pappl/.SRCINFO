@@ -1,0 +1,25 @@
+pkgbase = pappl
+	pkgdesc = a simple C-based framework/library for developing CUPS Printer Applications
+	pkgver = 1.4.12
+	pkgrel = 1
+	url = https://www.msweet.org/pappl/
+	arch = x86_64
+	license = Apache-2.0 WITH LLVM-exception
+	makedepends = git
+	depends = libcups
+	depends = libjpeg-turbo
+	depends = libpng
+	depends = pam
+	depends = libusb
+	depends = openssl
+	depends = zlib
+	depends = avahi
+	depends = glibc
+	depends = sh
+	source = https://github.com/michaelrsweet/pappl/releases/download/v1.4.12/pappl-1.4.12.tar.gz
+	source = https://github.com/michaelrsweet/pappl/releases/download/v1.4.12/pappl-1.4.12.tar.gz.sig
+	validpgpkeys = 9086C3CDC66C3F563CF8F405BE67C75EC81F3244
+	sha256sums = 1684c4e06446e9f7d93a39729fa0ba56f07a4007560080fdad7d0e2076a3615f
+	sha256sums = SKIP
+
+pkgname = pappl

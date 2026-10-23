@@ -1,0 +1,15 @@
+pkgbase = pacoloco
+	pkgdesc = Pacman caching proxy server
+	pkgver = 1.9
+	pkgrel = 1
+	url = https://github.com/anatol/pacoloco
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	depends = glibc
+	depends = sqlite
+	backup = etc/pacoloco.yaml
+	source = pacoloco-1.9.tar.gz::https://github.com/anatol/pacoloco/archive/1.9.tar.gz
+	sha256sums = c53631ab25fc11006afc9a5510fdbbb574b03a92a86a7832c606b2047c19e5a7
+
+pkgname = pacoloco

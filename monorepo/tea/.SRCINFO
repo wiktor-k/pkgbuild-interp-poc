@@ -1,0 +1,17 @@
+pkgbase = tea
+	pkgdesc = A command line tool to interact with Gitea servers
+	pkgver = 0.16.0
+	pkgrel = 1
+	url = https://gitea.com/gitea/tea
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	replaces = gitea-tea
+	options = !lto
+	source = tea::git+https://gitea.com/gitea/tea#tag=v0.16.0
+	sha512sums = 669ddbedda1193e0802b9c4b685f90afd50d02495733060b67e57dab033bbf858ab5c0e925ed64a158daac0003501b91d0857d449a77b32b93127cc50487fba3
+	b2sums = 7a8cfe7ea8ef274158ba5631f201b580e0b0b60a109dbec5ecdaa20587223952adbb4fee83075dba0dbfeaf80463dfb33317e45e617bbcc4dab3637ad701c0fc
+
+pkgname = tea

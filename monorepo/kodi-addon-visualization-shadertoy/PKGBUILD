@@ -1,0 +1,34 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-visualization-shadertoy
+epoch=1
+pkgver=21.0.2
+_codename=Omega
+pkgrel=6
+pkgdesc="Shadertoy visualizer for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/visualization.shadertoy'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-visualization')
+makedepends=('cmake' 'glm' 'jsoncpp' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/visualization.shadertoy/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('01a5c1652ab501803331ed33a0449d43a33ac250a3ba4b806e37ec4110fefbba8f03fc62337f1d076e625fbd88201884380a73cad28c986c97c62dde9463f4af')
+
+build() {
+    cd "visualization.shadertoy-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi' 'glm' 'jsoncpp')
+    cd "visualization.shadertoy-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

@@ -1,0 +1,37 @@
+pkgbase = putty
+	pkgdesc = A terminal integrated SSH/Telnet client
+	pkgver = 0.85
+	pkgrel = 1
+	url = https://putty.software/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = halibut
+	depends = glibc
+	depends = gtk3
+	depends = libgdk-3.so
+	depends = libgtk-3.so
+	depends = glib2
+	depends = libglib-2.0.so
+	depends = libgobject-2.0.so
+	depends = cairo
+	depends = libcairo.so
+	depends = libpangocairo-1.0.so
+	depends = libpango-1.0.so
+	depends = gdk-pixbuf2
+	depends = libgdk_pixbuf-2.0.so
+	depends = pango
+	depends = libpangocairo-1.0.so
+	depends = libpango-1.0.so
+	source = git+https://git.tartarus.org/simon/putty.git#tag=0.85
+	source = putty.desktop
+	source = putty.png
+	source = putty.xpm
+	validpgpkeys = F412BA3AA30FDC0E77B4E3871993D21BCAD1AA77
+	sha256sums = 153b40fea84406073db3cbfcd2c4312227ee283cc692d4176e09fb33559ec518
+	sha256sums = 91b06cb4dcbe1beec68c6224296e41bbdcdf019c0c6de0c5b82259a816ea460a
+	sha256sums = 93ba8ea8abf942f4de1c6cd167d4b5c2d6246fb1aa39dc49571cc18d167460c1
+	sha256sums = d65139883171ed0119d9778ff4a89e6a8151a5ae97fcf8dc7cafb59df424377f
+
+pkgname = putty

@@ -1,0 +1,19 @@
+pkgbase = libdispatch
+	pkgdesc = Comprehensive support for concurrent code execution on multicore hardware
+	pkgver = 6.2.2
+	pkgrel = 1
+	url = https://apple.github.io/swift-corelibs-libdispatch
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = clang
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	provides = libblocksruntime
+	source = libdispatch::git+https://github.com/apple/swift-corelibs-libdispatch.git#tag=swift-6.2.2-RELEASE
+	source = libdispatch-remove-werror.patch
+	sha512sums = 595ad53e4fe97d1084881fe7917f92b96d2d9cfc1ad86d490f2e0ab27d0d9a9004d336bf50823f3186f0ac26eb81280f802fff8d4e424bc9b8da511f8299d4b5
+	sha512sums = 41f32b71b5f87c1395f11b716e2ffd706299c14302453850758b0d56a94bdc60d642d79d3f486cfebd71162644ab2f7e43f8bcc2fbed4262c9c78f3c1d46be73
+
+pkgname = libdispatch

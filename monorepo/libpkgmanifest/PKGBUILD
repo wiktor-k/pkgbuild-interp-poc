@@ -1,0 +1,49 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=libpkgmanifest
+pkgver=0.6.1
+# Sins copied from https://src.fedoraproject.org/rpms/libpkgmanifest/blob/rawhide/f/libpkgmanifest.spec#_5
+IFS='.' read -r major_version minor_version patch_version <<< "$pkgver"
+pkgrel=1
+pkgdesc="Library for working with RPM manifests system"
+arch=('x86_64')
+url="https://github.com/rpm-software-management/$pkgname"
+license=('LGPL-2.1-or-later')
+depends=(yaml-cpp)
+makedepends=(cmake swig python yaml-cpp rpm-tools)
+checkdepends=(gtest)
+source=($pkgname-$pkgver.tar.gz::"$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('e3c3fd26587604c85fde505e957006c5d4e5592cd14bf6a19490369d9915c75d')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  cmake -B build \
+      -DCMAKE_INSTALL_PREFIX='/usr' \
+      -DCMAKE_INSTALL_SBINDIR='bin' \
+      -DWITH_DOCS=OFF \
+      -DWITH_PYTHON=ON \
+      -DWITH_TESTS=ON \
+      -DWITH_CODE_COVERAGE=OFF \
+      -DVERSION_MAJOR="${major_version}" \
+      -DVERSION_MINOR="${minor_version}" \
+      -DVERSION_PATCH="${patch_version}"
+
+  cmake --build build
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+
+  LC_ALL=C.UTF-8 ctest --test-dir build --output-on-failure
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  DESTDIR="$pkgdir" cmake --install build
+}

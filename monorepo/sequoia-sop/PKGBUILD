@@ -1,0 +1,69 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=sequoia-sop
+pkgver=0.38.0
+pkgrel=1
+pkgdesc='Implementation of the Stateless OpenPGP Interface using Sequoia'
+url='https://gitlab.com/sequoia-pgp/sequoia-sop'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+groups=(
+  sequoia
+  stateless-openpgp
+)
+depends=(
+  glibc
+  gmp
+  libgcc
+  nettle3
+)
+makedepends=(
+  git
+  cargo
+  clang
+)
+source=(sequoia-sop::"git+$url#tag=v$pkgver?signed")
+sha512sums=('33d05dfc546b0e9c4dae4521977ccd72a5bd2eda59653cc575d31f6098823e7627611d440224d44e2b150f1f49b4c09606fa2acd3899b88c723197cd524dfc01')
+b2sums=('0bf0c1aa889d439b403166e5d5af5769936734c55ae2885909ef333450ebf1577479a9283d91961dd18345b696e7fbd4dfbf195fa0127d7bcaf0f20393f6098d')
+validpgpkeys=(
+  CBCD8F030588653EEDD7E2659B7DD433F254904A  # Justus Winter <justus@sequoia-pgp.org>
+  8F17777118A33DDA9BA48E62AACB3243630052D9  # Neal H. Walfield <neal@walfield.org>
+)
+
+prepare() {
+  cd ${pkgname}
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd ${pkgname}
+  export ASSET_OUT_DIR="$srcdir/${pkgname}"
+  PKG_CONFIG_LIBDIR=/usr/lib/nettle3/pkgconfig \
+  cargo build --release --frozen --features crypto-nettle,cli,cliv
+}
+
+check() {
+  cd ${pkgname}
+  PKG_CONFIG_LIBDIR=/usr/lib/nettle3/pkgconfig \
+  cargo test --frozen --features crypto-nettle,cli,cliv
+}
+
+package() {
+  depends+=(
+    nettle3 libnettle.so libhogweed.so
+  )
+
+  cd ${pkgname}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/sqop \
+    target/release/sqopv
+
+  install -Dm 644 man-pages/*.1 -t "${pkgdir}/usr/share/man/man1"
+  install -Dm 644 shell-completions/{sqop,sqopv}.bash -t "${pkgdir}/usr/share/bash-completion/completions"
+  install -Dm 644 shell-completions/_{sqop,sqopv} -t "${pkgdir}/usr/share/zsh/site-functions"
+  install -Dm 644 shell-completions/{sqop,sqopv}.fish -t "${pkgdir}/usr/share/fish/vendor_completions.d"
+
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

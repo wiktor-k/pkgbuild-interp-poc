@@ -1,0 +1,20 @@
+pkgbase = flashprog
+	pkgdesc = A utility which can be used to detect, read, erase, or write BIOS chips (DIP, PLCC, SPI)
+	pkgver = 1.6
+	pkgrel = 1
+	url = https://flashprog.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = libftdi
+	depends = libgpiod
+	depends = libjaylink
+	depends = libusb
+	depends = pciutils
+	optdepends = dmidecode: for SMBIOS/DMI table decoder support
+	source = git+https://review.sourcearcade.org/flashprog.git?signed#tag=v1.6
+	validpgpkeys = 2853079C9C66AB7E82C64966A5C163B7E557CAEB
+	b2sums = d104e104be481d773b8cdb7681d8c1aaa97dc56cadaf8e671d10d93138192c95283e57e7b847ebc664ce8908900a4525ea122fb71da70e41b72ed024bcecb3c5
+
+pkgname = flashprog

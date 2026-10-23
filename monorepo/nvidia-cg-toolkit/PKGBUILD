@@ -1,0 +1,26 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@gmail.com>
+# Contributor: Adam Griffiths
+# Contributor: Nick B <Shirakawasuna at gmail _dot_ com>
+pkgname=nvidia-cg-toolkit
+pkgver=3.1
+_date="April2012"
+pkgrel=8
+pkgdesc="NVIDIA Cg libraries"
+arch=('x86_64')
+url="https://developer.nvidia.com/cg-toolkit"
+license=('custom')
+depends=('glibc' 'libgl')
+source_x86_64=(https://developer.download.nvidia.com/cg/Cg_${pkgver}/Cg-${pkgver}_${_date}_x86_64.tgz)
+md5sums_x86_64=('88ba727cdbe0261fac465c4d84f44762')
+
+package() {
+  install -Dm755 "${srcdir}"/usr/bin/cgc "${pkgdir}"/usr/bin/cgc
+  install -Dm644 -t "${pkgdir}"/usr/include/Cg "${srcdir}"/usr/include/Cg/*
+  install -Dm644 -t "${pkgdir}"/usr/lib "${srcdir}"/usr/lib64/*
+  install -Dm644 "${srcdir}"/usr/local/Cg/docs/license.txt "${pkgdir}"/usr/share/licenses/nvidia-cg-toolkit/license.txt
+  cp -r "${srcdir}"/usr/local/Cg "${pkgdir}"/usr/share/
+  find "${pkgdir}"/usr/share/ -type d -exec chmod -R 755 '{}' ';'
+  find "${pkgdir}"/usr/share/ -type f -exec chmod -R 644 '{}' ';'
+}
+
+# vim: sw=2:ts=2 et:

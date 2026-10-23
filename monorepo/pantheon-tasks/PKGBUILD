@@ -1,0 +1,61 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-tasks
+pkgver=6.3.3
+pkgrel=5
+pkgdesc='The Pantheon tasks'
+arch=(x86_64)
+url=https://github.com/elementary/tasks
+license=(GPL-3.0-or-later)
+groups=(pantheon)
+depends=(
+  geoclue
+  geocode-glib-2
+  glib2
+  gtk4
+  libadwaita-1.so
+  libecal-2.0.so
+  libedataserver-1.2.so
+  libgranite-7.so
+  libical
+  libportal-gtk4
+  libshumate-1.0.so
+)
+makedepends=(
+  cmake
+  git
+  intltool
+  meson
+  vala
+)
+_tag=3c892ca846dba56d00d9febe07f4e78a2e66282f
+source=(pantheon-tasks::git+https://github.com/elementary/tasks.git#tag=${_tag}
+        libical-4.patch)
+b2sums=('a287f60596d0723b4ff76a037840878ed75127195e68ae6046fcc3a480fa36baa7314039d67dae8da8e254e544a4f20e7ef8abdd35bd112bce2668572f67da91'
+        '4001feaf0b23d0c48501867b103c9f65e77255419ea04bc0acceee9f96c5b3b34ef41788e2fd5b3fe5728265ba024ce3d48a4e8003584b28f875c21c6bd22378')
+
+pkgver() {
+  cd pantheon-tasks
+
+  git describe --tags
+}
+
+prepare() {
+  cd pantheon-tasks
+
+  # Update to git snapshot for GTK4 port (removes deprecated clutter dependency)
+  git cherry-pick -n 6.3.3..975f195dd0186d2f6ec9b5830b19ecec1bba2f3a
+
+  patch -p1 -i ../libical-4.patch
+}
+
+build() {
+  arch-meson pantheon-tasks build
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+}
+
+# vim: ts=2 sw=2 et:

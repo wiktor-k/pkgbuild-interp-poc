@@ -1,0 +1,27 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Bastien Dejean <nihilhill@gmail.com>
+
+pkgname=bspwm
+pkgver=0.9.12
+pkgrel=1
+pkgdesc='Tiling window manager based on binary space partitioning'
+arch=(x86_64)
+url='https://github.com/baskerville/bspwm'
+license=(BSD-2-Clause)
+makedepends=(git)
+depends=(glibc libxcb sh xcb-util xcb-util-keysyms xcb-util-wm)
+optdepends=('sxhkd: to define keyboard and pointer bindings'
+            'xdo: for the example panel')
+source=("git+$url#tag=$pkgver")
+b2sums=('374b7a2155d5992294fbb9a90c7303aa11e3bfa82ef039b5ff5e911d0890fa19ed291893312041f5194f89bba097be0b4b1772c1775124116f8660dcbafe1fd0')
+
+build() {
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+  make -C $pkgname PREFIX=/usr
+}
+
+package() {
+  cd $pkgname
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

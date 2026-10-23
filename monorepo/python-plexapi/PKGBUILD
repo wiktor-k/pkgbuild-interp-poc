@@ -1,0 +1,36 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+# Contributor: mutantmonkey <aur@mutantmonkey.mx>
+# Contributor: Kyle Sferrazza <kyle.sferrazza@gmail.com>
+# Contributor: Dimitrios Vogiatzis <me@dimtree.net>
+
+pkgname=python-plexapi
+_pkgname=plexapi
+pkgver=4.18.3
+pkgrel=1
+pkgdesc="Python bindings for the Plex API"
+arch=('any')
+url="https://github.com/pkkid/python-plexapi"
+license=('BSD-3-Clause')
+depends=(
+	'python-requests'
+	'python-tqdm'
+	'python-websocket-client'
+)
+makedepends=(
+	'python-build'
+	'python-installer'
+	'python-setuptools'
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/pkkid/python-plexapi/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('46c4b947f4eb9c91c22126eb4f4a1732664ed5cf9b38ed6a5222b5b534d112bc')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+	install -Dm644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

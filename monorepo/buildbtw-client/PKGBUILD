@@ -1,0 +1,48 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=buildbtw-client
+pkgver=0.0.7
+pkgrel=1
+pkgdesc='CLI client for buildbtw (bbtw)'
+url='https://gitlab.archlinux.org/archlinux/buildbtw/'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(libgcc glibc libgit2 openssh openssl sqlite sqlx-cli)
+makedepends=(cargo git just cargo-nextest just)
+options=(!lto)
+provides=('bbtw')
+source=("buildbtw::git+https://gitlab.archlinux.org/archlinux/buildbtw.git#tag=v${pkgver}"
+        "${pkgname}-archlinux-common-style::git+https://gitlab.archlinux.org/archlinux/archlinux-common-style.git")
+sha256sums=('e434e6ff919c2901dc28f11ffec74bcb5d4a4968ff0ba8dc352a3f4783a2011e'
+            'SKIP')
+validpgpkeys=(
+  E240B57E2C4630BA768E2F26FC1B547C8D8172C8 # Levente Polyak <anthraxx@archlinux.org>
+  AAE2599CE2DFD58B8E884726B4EFE6DC59FAE118 # Rafael Epplée <raffomania@archlinux.org>
+  8FC15A064950A99DD1BD14DD39E4B877E62EB915 # Sven-Hendrik Haase <svenstaro@archlinux.org>
+)
+
+prepare() {
+  cd buildbtw
+
+  git submodule init
+  git config submodule."common-style".url "${srcdir}/${pkgname}"-archlinux-common-style
+  git -c protocol.file.allow=always submodule update --init --recursive
+
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd buildbtw
+  cargo build --frozen --release
+}
+
+check() {
+  cd buildbtw
+  just test
+}
+
+package() {
+  cd buildbtw
+  install -Dm 755 target/release/bbtw -t "${pkgdir}/usr/bin"
+}
+
+# vim: ts=2 sw=2 et:

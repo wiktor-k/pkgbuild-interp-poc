@@ -1,0 +1,37 @@
+pkgbase = gpaste
+	pkgdesc = Clipboard management system
+	pkgver = 51.1
+	pkgrel = 1
+	url = https://www.imagination-land.org/tags/GPaste.html
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = dbus
+	makedepends = git
+	makedepends = gjs
+	makedepends = glib2-devel
+	makedepends = gnome-keybindings
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = systemd
+	makedepends = vala
+	depends = dconf
+	depends = gcr-4
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libpwquality
+	depends = libsecret
+	depends = libsodium
+	depends = mutter
+	depends = pango
+	depends = sqlite
+	optdepends = curl: Upload clipboard contents
+	source = git+https://github.com/keruspe/gpaste#tag=v51.1
+	source = 0001-tests-Disconnect-signal-handlers-in-history-tests.patch
+	b2sums = c776e40bb1d32fa4fca4067335eb7b9c35004be2f9afed96e6da9458aca3a4c00ebbd0ec8ad39c89508670a7db6ea11c885debadcf94fa56b44163a83c155688
+	b2sums = ddd7de50520c2abc81b9815252a02045f98b3fc1c6369e39c07915ca485dacae4289f8828587f36126ae88d852e861727c5c85f627300257cc460db11ef28179
+
+pkgname = gpaste

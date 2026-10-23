@@ -1,0 +1,20 @@
+pkgbase = rapidcheck
+	pkgdesc = QuickCheck clone for C++
+	pkgver = r1056.ff6af6f
+	pkgrel = 5
+	url = https://github.com/emil-e/rapidcheck
+	arch = x86_64
+	arch = aarch64
+	arch = i686
+	arch = arm
+	arch = armv6h
+	arch = armv7h
+	license = BSD
+	makedepends = cmake
+	makedepends = git
+	provides = librapidcheck.so
+	options = !lto
+	source = git+https://github.com/emil-e/rapidcheck.git#commit=ff6af6fc683159deb51c543b065eba14dfcf329b
+	sha256sums = f12e4e1d2b57b290780dbb9f05c75d3e42b9a71ee27b0eb55e71a7bdfd0b5f1e
+
+pkgname = rapidcheck

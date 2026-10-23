@@ -1,0 +1,39 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Francesco Minnocci <ascoli.minnocci@gmail.com>
+
+pkgname=python-bleak
+pkgver=3.0.2
+pkgrel=1
+pkgdesc='Bluetooth Low Energy platform Agnostic Klient for Python'
+arch=(any)
+url=https://github.com/hbldh/bleak
+license=(MIT)
+depends=(
+  python
+  python-dbus-fast
+  python-service-identity
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-uv-build
+)
+source=(git+https://github.com/hbldh/bleak.git#tag=v${pkgver})
+b2sums=('SKIP')
+
+prepare() {
+  sed -i 's/uv_build>=0.10.9,<0.11.0/uv_build>=0.10.9/' bleak/pyproject.toml
+}
+
+build() {
+  cd bleak
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" bleak/dist/*.whl
+  install -Dm 644 bleak/LICENSE -t "${pkgdir}"/usr/share/licenses/python-bleak/
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,35 @@
+pkgbase = gammaray
+	pkgdesc = A tool for examining the internals of a Qt application and to some extent also manipulate it
+	pkgver = 3.4.1
+	pkgrel = 2
+	url = https://www.kdab.com/gammaray/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = git
+	makedepends = qt6-connectivity
+	makedepends = qt6-location
+	makedepends = qt6-scxml
+	makedepends = qt6-shadertools
+	makedepends = qt6-wayland
+	makedepends = qt6-webengine
+	depends = glibc
+	depends = libelf
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-svg
+	depends = qt6-tools
+	depends = syntax-highlighting
+	optdepends = qt6-declarative: QML support
+	optdepends = qt6-positioning: Qt Positioning support
+	optdepends = qt6-scxml: state machine viewer plugin
+	optdepends = qt6-wayland: Wayland compositor inspector plugin
+	optdepends = qt6-webengine: web inspector plugin
+	optdepends = qt6-connectivity: bluetooth plugin
+	source = git+https://github.com/KDAB/GammaRay#tag=v3.4.1
+	validpgpkeys = E86C000370B1B9E2A9191AD53DBFB6882C9358FB
+	sha256sums = dfc0abd5233a278ae13355c064d1015ef38f3ee765b2c83a514bb4d757c3480c
+
+pkgname = gammaray

@@ -1,0 +1,81 @@
+# Maintainer: Anatol Pomozov
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Keinv Yue <yuezk001@gmail.com>
+
+pkgname=globalprotect-openconnect
+pkgver=2.6.5
+pkgrel=1
+pkgdesc="A GlobalProtect VPN GUI client based on Openconnect, supports SAML auth mode"
+arch=(x86_64)
+url="https://github.com/yuezk/GlobalProtect-openconnect"
+license=(GPL-3.0-only)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gmp
+  gnutls
+  gtk3
+  hicolor-icon-theme
+  libgcc
+  libp11-kit
+  libsoup3
+  libxml2
+  lz4
+  nettle
+  openconnect
+  openssl
+  webkit2gtk-4.1
+  xz
+  zlib
+)
+makedepends=(
+  cargo
+  git
+)
+optdepends=('libappindicator: for system tray icon')
+provides=(
+  gpclient
+  gpservice
+)
+options=(!lto)
+source=(
+  "$pkgname::git+$url.git#tag=v$pkgver"
+	"git+https://gitlab.com/openconnect/openconnect.git"
+	"git+https://gitlab.gnome.org/GNOME/libxml2.git"
+  "$pkgname-hipreport-install-location.patch"
+)
+b2sums=('51d2643c8c5a310f6b14bbccfdec785d2770e2d49a272e0b46b3dd0ff40726150c27d61df0b96edb1c32c4106d20c2b920a07694347150bfd0d44fe6d48540c1'
+        'SKIP'
+        'SKIP'
+        '2d807731ab30d28a0b14f49bf71014d7fe1b7d012223bb4c834bc1cf25050448429605750f97f63c4eed649efc28fc625b2846f1ac54cf6d0e850297a8f81391')
+
+prepare() {
+  cd $pkgname
+  patch -Np1 < ../$pkgname-hipreport-install-location.patch
+
+  git submodule init
+  git config submodule.crates/openconnect/deps/openconnect.url ../openconnect
+  git config submodule.crates/openconnect/deps/libxml2.url ../libxml2
+  git -c protocol.file.allow=always submodule update \
+    crates/openconnect/deps/openconnect \
+    crates/openconnect/deps/libxml2
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --frozen
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" make install
+}

@@ -1,0 +1,27 @@
+pkgbase = pantheon-camera
+	pkgdesc = The Pantheon Camera Application
+	pkgver = 8.0.2
+	pkgrel = 1
+	url = https://github.com/elementary/camera
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gstreamer
+	depends = gst-plugins-base-libs
+	depends = gst-plugins-good
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libcanberra.so
+	depends = libgranite-7.so
+	source = pantheon-camera::git+https://github.com/elementary/camera.git#tag=46e6bcd298653bcaafddfe2f0f9321d5040968f5
+	b2sums = f695cae69d71439acec7e7207b9aa14d03da5fc8071beba8e2b2b530dd7380842f01235d934e9d58fa31db3dd0ef632c4393c7c46537566717451d6a5969e197
+
+pkgname = pantheon-camera

@@ -1,0 +1,49 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+
+pkgname=swayosd
+_name=SwayOSD
+pkgver=0.3.2
+pkgrel=1
+pkgdesc='A GTK based on screen display for keyboard shortcuts like caps-lock and volume'
+arch=(x86_64)
+url='https://github.com/ErikReider/SwayOSD'
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  gtk4
+  gtk4-layer-shell
+  libinput
+  gdk-pixbuf2
+  pango
+  libevdev
+  libpulse
+  systemd-libs
+  glib2
+  cairo
+  dbus
+  libgcc
+)
+makedepends=(cargo meson ninja sassc)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+b2sums=('19bdb114a08cc37c1cd07ee5ca287d782074147c99ba5a3025ccfd93b9433f5569478df4c86e848b82df870658945fca20de698808bb94444a9dedf977e69c8f')
+
+prepare() {
+  cd $_name-$pkgver
+
+  cargo fetch --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_name-$pkgver
+  arch-meson --buildtype=release build
+  ninja -C build
+}
+
+package() {
+  cd $_name-$pkgver
+  # upstream marks its cargo target build_always_stale, so meson would rerun cargo here,
+  # which fails without a writable CARGO_HOME. --no-rebuild installs what build() produced.
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}
+
+# vim:set ts=2 sw=2 et:

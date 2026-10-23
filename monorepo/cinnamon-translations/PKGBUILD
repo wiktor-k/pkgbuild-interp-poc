@@ -1,0 +1,24 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Alexandre Filgueira <alexfilgueira@antergos.com>
+
+pkgname=cinnamon-translations
+pkgver=6.6.2
+pkgrel=1
+pkgdesc='Translations for Cinnamon and Nemo'
+arch=(any)
+url='https://github.com/linuxmint/cinnamon-translations'
+license=(GPL-2.0-or-later)
+makedepends=(git)
+source=("git+https://github.com/linuxmint/cinnamon-translations.git#tag=$pkgver")
+b2sums=('cf27da84c4ab994b9885af9fa5fed321e49dfb941b429f091061b6178aba9d2f3644530b2a169ff257782f3414c1f8c625f1ddb255eeb6f9631728149786942f')
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  cp -r usr/ "$pkgdir"
+}

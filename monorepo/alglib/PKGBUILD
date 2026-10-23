@@ -1,0 +1,66 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Aetf <aetf at unlimitedcodeworks dot xyz>
+# Contributor: Lex Black <autumn-wind at web dot de>
+# Contributor: Peng Zhang <pczhang@gmail.com>
+
+pkgname=alglib
+pkgver=4.08.0
+pkgrel=1
+pkgdesc="A cross-platform numerical analysis and data processing library - Free Version"
+arch=('x86_64')
+url="https://www.alglib.net"
+license=('GPL-2.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+  'libstdc++'
+)
+makedepends=('cmake')
+source=("${url}/translator/re/alglib-${pkgver}.cpp.gpl.tgz")
+b2sums=('cb09095f4e85a70f2fb0d9095a71246363e2a0c8854477e58806271998c29f3ed33a6d7f9eda7e7df7ca29c2adebae72e8a9e5f973b8de2bffaf17d12729089c')
+
+prepare() {
+  # Generate a simple cmake file to build the library since the release
+  # doesn't provide any build system.
+  cat > alglib-cpp/CMakeLists.txt << END
+cmake_minimum_required(VERSION 4.0)
+project(alglib VERSION ${pkgver})
+
+file(GLOB SRCS src/*.cpp)
+file(GLOB HEADERS src/*.h)
+
+add_library(alglib_static STATIC \${SRCS})
+set_target_properties(alglib_static PROPERTIES
+    OUTPUT_NAME alglib
+    PUBLIC_HEADER "\${HEADERS}"
+)
+
+add_library(alglib SHARED \${SRCS})
+set_target_properties(alglib PROPERTIES
+    VERSION "\${PROJECT_VERSION}"
+    SOVERSION "\${PROJECT_VERSION_MAJOR}"
+    PUBLIC_HEADER "\${HEADERS}"
+)
+
+include(GNUInstallDirs)
+install(TARGETS alglib alglib_static
+    LIBRARY DESTINATION "\${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "\${CMAKE_INSTALL_LIBDIR}"
+    PUBLIC_HEADER DESTINATION "\${CMAKE_INSTALL_INCLUDEDIR}/libalglib"
+)
+install(FILES manual.cpp.html DESTINATION "\${CMAKE_INSTALL_DOCDIR}")
+END
+}
+
+build() {
+  cmake -S alglib-cpp -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR=$pkgdir cmake --install build
+}

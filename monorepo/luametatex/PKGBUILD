@@ -1,0 +1,26 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=luametatex
+pkgver=2.11.08
+pkgrel=1
+pkgdesc='The lean and mean successor of the LuaTeX engine'
+arch=(x86_64)
+url='https://wiki.contextgarden.net/LMTX'
+license=(GPL-2.0-or-later)
+depends=(glibc)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/contextgarden/luametatex#tag=v$pkgver)
+sha256sums=('9272431f670d15787bfbba01c4aae212758cf54c7951ac2ac33936a8901b5137')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  ln -s luametatex "$pkgdir"/usr/bin/context
+  ln -s luametatex "$pkgdir"/usr/bin/mtxrun
+}

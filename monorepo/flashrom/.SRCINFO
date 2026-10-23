@@ -1,0 +1,20 @@
+pkgbase = flashrom
+	pkgdesc = Utility for reading, writing, erasing and verifying flash ROM chips
+	pkgver = 1.8.0
+	pkgrel = 1
+	url = https://www.flashrom.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmocka
+	makedepends = git
+	makedepends = meson
+	makedepends = python-sphinx
+	depends = libcrypto.so
+	depends = libftdi
+	depends = libusb
+	depends = pciutils
+	optdepends = dmidecode: for SMBIOS/DMI table decoder support
+	source = git+https://github.com/flashrom/flashrom.git#tag=v1.8.0
+	sha256sums = c370c329b6cec5e84320c40931fa6200cd72f4e16b6bb2a83e57dcbeb7bd0f54
+
+pkgname = flashrom

@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: icasdri <icasdri at gmail dot com>
+
+pkgname=diff-so-fancy
+pkgver=1.4.14
+pkgrel=1
+pkgdesc="Good-looking diffs with diff-highlight and more"
+arch=('any')
+url="https://github.com/so-fancy/diff-so-fancy"
+license=('MIT')
+depends=('perl')
+makedepends=('git')
+checkdepends=('bats-assert' 'bats-support')
+source=("git+https://github.com/so-fancy/diff-so-fancy.git#tag=v$pkgver")
+sha384sums=('1b25b538f2508109fc1afd63e3cc95cf5911e72f6c7f3b92e5927a8b13230d166546932616bb4658bee34e33ee18cf24')
+
+prepare() {
+  cd $pkgname
+
+  sed -e "s|load 'test_helper/bats-support/load'|bats_load_library 'bats-support'|g" \
+      -e "s|load 'test_helper/bats-assert/load'|bats_load_library 'bats-assert'|g" \
+      -i test/*.bats
+}
+
+check() {
+  cd $pkgname
+  git init
+  export TERM=xterm
+  bats test/*.bats
+}
+
+package() {
+  cd $pkgname
+
+  sed -i 's|^use lib .*$|use lib "/usr/share/diff-so-fancy";|' diff-so-fancy
+
+  install -Dm755 diff-so-fancy "$pkgdir"/usr/bin/diff-so-fancy
+  install -Dm755 lib/DiffHighlight.pm "$pkgdir"/usr/share/diff-so-fancy/DiffHighlight.pm
+  install -Dm644 README.md "$pkgdir"/usr/share/doc/diff-so-fancy/README.md
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

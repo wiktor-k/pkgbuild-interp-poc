@@ -1,0 +1,63 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-system-monitor
+pkgver=51.1
+pkgrel=1
+pkgdesc="View current processes and monitor system state"
+url="https://apps.gnome.org/SystemMonitor"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  glibmm-2.68
+  graphene
+  gtk4
+  gtkmm-4.0
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libgtop
+  librsvg
+  libsigc++-3.0
+  libstdc++
+  pango
+  polkit
+  systemd
+  systemd-libs
+)
+makedepends=(
+  appstream
+  catch2
+  git
+  glib2-devel
+  meson
+  yelp-tools
+)
+groups=(gnome)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-system-monitor.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('09e4a0793e3f1e8912f5f74154ee2a059effa5812416e34c244635cb7cd2803d0019a7313fe40bdbb0e788f8dd50ac1a501e31e89aab760f053dacdf776458ca')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

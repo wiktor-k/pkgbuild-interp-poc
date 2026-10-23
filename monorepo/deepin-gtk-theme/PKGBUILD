@@ -1,0 +1,21 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-gtk-theme
+epoch=1
+pkgver=25.3.7
+pkgrel=2
+pkgdesc="Deepin GTK Theme"
+arch=('any')
+url="https://github.com/linuxdeepin/deepin-gtk-theme"
+license=('GPL-3.0-or-later')
+makedepends=('git')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-gtk-theme.git#tag=$pkgver")
+sha512sums=('2dd174106cd24a3b06ff4728f57a9d531f83312a156c5212ba0f2871b48639e8eedef1b36dc3883728731b966d07ee00c510479580b1c049d8631b2b3f671460')
+
+package() {
+  cd deepin-gtk-theme
+  make DESTDIR="$pkgdir" install
+}

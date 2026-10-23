@@ -1,0 +1,52 @@
+pkgbase = synthv1
+	pkgdesc = Old-school all-digital 4-oscillator subtractive polyphonic synthesizer with stereo fx
+	pkgver = 1.5.0
+	pkgrel = 1
+	url = https://synthv1.sourceforge.io/synthv1-index.html
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = alsa-lib
+	makedepends = cmake
+	makedepends = jack
+	makedepends = liblo
+	makedepends = lv2
+	makedepends = qt6-base
+	makedepends = qt6-svg
+	makedepends = qt6-tools
+	source = https://download.sourceforge.net/synthv1/synthv1-1.5.0.tar.gz
+	sha512sums = 23b86aa9cc1a17547306a0f6ed845fa7eb06221a1b8e9ab87afad61cf5cab7ee17ace460e15c083681ba4d94eff4d0c232a17326550e24931b710e5fc4c0e596
+	b2sums = 2cc1f8061f72c67a1fa7f9f8c2f6a9ffc93705858a3d11efc298b8ea06a0bc39a094fc70b90e2b9784105bd206b927774455595de35ca53dcfe60781c70e5f47
+
+pkgname = synthv1
+	depends = synthv1-lv2=1.5.0
+	depends = synthv1-standalone=1.5.0
+
+pkgname = synthv1-common
+	pkgdesc = Old-school all-digital 4-oscillator subtractive polyphonic synthesizer with stereo fx - common files
+
+pkgname = synthv1-lv2
+	pkgdesc = Old-school all-digital 4-oscillator subtractive polyphonic synthesizer with stereo fx - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = lv2-host
+	depends = qt6-base
+	depends = qt6-svg
+	depends = synthv1-common
+
+pkgname = synthv1-standalone
+	pkgdesc = Old-school all-digital 4-oscillator subtractive polyphonic synthesizer with stereo fx - standalone
+	groups = pro-audio
+	depends = alsa-lib
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = jack
+	depends = libgcc
+	depends = liblo
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-svg
+	depends = synthv1-common
+	optdepends = new-session-manager: for session management using the standalone application

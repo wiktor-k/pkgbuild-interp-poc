@@ -1,0 +1,24 @@
+pkgbase = drawing
+	pkgdesc = Basic image editor for the GNOME desktop
+	pkgver = 1.0.2
+	pkgrel = 3
+	url = https://maoschanz.github.io/drawing/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = itstool
+	makedepends = meson
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	source = git+https://github.com/maoschanz/drawing.git#tag=1.0.2
+	b2sums = cf91bedf355a35a475db86b867ce54f704c89bc5a061a130194c2a3855743e6151fdfa9c0b8efcf61007442556200cbb08fcb80d51d7369b40554ffe26b2c8a9
+
+pkgname = drawing

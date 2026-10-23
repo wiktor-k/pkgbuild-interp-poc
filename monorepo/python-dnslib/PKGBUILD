@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-dnslib
+pkgver=0.9.26
+pkgrel=3
+pkgdesc="Simple library to encode/decode DNS wire-format packets"
+arch=('any')
+url="https://github.com/paulc/dnslib"
+license=('BSD-2-Clause')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/paulc/dnslib#tag=$pkgver")
+sha512sums=('c7a59c9f14fadfd1f6344aa30f9e034f6ae61d4b645d7ef2edf9996a51bc6d60c34b0ba5e1a7f054cad84f453e5bfc1dfd825faec25497969a3071e8ebef7ae8')
+
+build() {
+  cd dnslib
+  python -m build --wheel --no-isolation
+}
+
+
+check() {
+  cd dnslib
+  VERSIONS=python ./run_tests.sh
+}
+
+package() {
+  cd dnslib
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

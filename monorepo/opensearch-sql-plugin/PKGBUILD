@@ -1,0 +1,42 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=opensearch-sql-plugin
+pkgver=3.9.0.0
+pkgrel=1
+_opensearchver=3.9.0
+_jdkver=21
+pkgdesc="OpenSearch SQL Plugin"
+arch=('x86_64')
+url="https://docs.opensearch.org/latest/install-and-configure/plugins/#bundled-plugins"
+license=('Apache-2.0')
+depends=("opensearch=${_opensearchver}")
+makedepends=("java-environment=${_jdkver}" 'unzip')
+source=(
+  "${pkgname}-${pkgver}.tar.gz::https://github.com/opensearch-project/sql/archive/${pkgver}.tar.gz"
+)
+sha256sums=('8de415a3191b8b1eb293f695df19ec9d74218b1d219fb8e02029226c9168230f')
+
+build() {
+  cd "sql-${pkgver}"
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  export GRADLE_OPTS="-Dbuild.snapshot=false -Dopensearch.version=${_opensearchver}"
+  # :doctest requires python 3.7
+  # :sql:build and :integ-test (reaper) require JDK 14
+  ./gradlew build \
+    --exclude-task ":doctest:bootstrap" \
+    --exclude-task ":doctest:stopOpenSearch" \
+    --exclude-task ":doctest:doctest" \
+    --exclude-task ":jacocoTestReport" \
+    --exclude-task ":sql:build" \
+    --exclude-task ":integ-test:integTest" \
+    --exclude-task ":prometheus:test"
+}
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/opensearch/plugins/opensearch-sql"
+  cd "${pkgdir}/usr/share/opensearch/plugins/opensearch-sql"
+  unzip "${srcdir}/sql-${pkgver}/plugin/build/distributions/opensearch-sql-${pkgver}.zip"
+
+  install -Dm644 "${srcdir}/sql-${pkgver}/LICENSE.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+}

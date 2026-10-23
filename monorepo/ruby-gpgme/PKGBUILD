@@ -1,0 +1,113 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+_gemname='gpgme'
+pkgname="ruby-${_gemname}"
+pkgver=2.0.26
+pkgrel=1
+pkgdesc='Ruby interface to GnuPG Made Easy (GPGME)'
+url='https://github.com/ueno/ruby-gpgme'
+arch=('x86_64')
+license=('LGPL-2.1-or-later')
+depends=(
+  gpgme
+  libassuan
+  libgpg-error
+  ruby
+  ruby-mini_portile2
+)
+makedepends=(
+  ruby-rdoc
+)
+# checkdepends=(
+#   ruby-bundler
+#   ruby-minitest
+#   ruby-mocha
+#   ruby-rake
+#   ruby-yard
+# )
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('e2e5425a87b6161ef340f9136b861d29a7673873736e8594eb90b3845801589f0e6ddbb41f00b861adf81ad97a4a24e777467eb7bff8efd3a5b43107dbcc165d')
+b2sums=('3e3b86bff032a00384f4365f7ddd0965878e0857823a02458cd57ba7ea320aa5b14c0fa96b2bac8735978b2885284e0252cc20412bc506ceef46616875ee9588')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    "${_gemname}.gemspec"
+
+  # sed --in-place --regexp-extended \
+  #   --expression '/byebug/Id' \
+  #   --expression '/coveralls/Id' \
+  #   "${_gemname}.gemspec" \
+  #   test/test_helper.rb
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  export RUBY_GPGME_USE_SYSTEM_LIBRARIES=1
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem" \
+    -- \
+    --use-system-libraries
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+# https://github.com/ueno/ruby-gpgme/issues/162
+# check() {
+#  cd "${pkgname}-${pkgver}"
+#
+#  local _gemdir="$(gem env gemdir)"
+#
+#  GEM_HOME="tmp_install${_gemdir}" rake test
+# }
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 COPYING* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.rdoc examples/* AUTHORS NEWS THANKS --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

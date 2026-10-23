@@ -1,0 +1,32 @@
+# Maintainer: Florian "Bluewind" Pritz <flo@xssn.at>
+
+pkgname=fb-client
+pkgver=2.4.0
+pkgrel=1
+pkgdesc="Client for paste.xinu.at"
+arch=("any")
+url="https://github.com/Bluewind/fb"
+license=('GPL3')
+depends=('python' 'python-pycurl' 'python-xdg')
+optdepends=(
+  'xclip: automatically copy the URL into the clipboard on X11'
+  'wl-clipboard: automatically copy the URL into the clipboard on wayland'
+)
+source=(https://paste.xinu.at/data/client/fb-$pkgver.tar.gz{,.sig})
+sha256sums=('a3dd5580c7ba459c18f2d2ac39614422fd9c0dccb4545dbd683c77104062af39'
+            'SKIP')
+validpgpkeys=("CFA6AF15E5C74149FC1D8C086D1655C14CE1C13E")
+
+build() {
+  cd "$srcdir/fb-$pkgver"
+
+  make
+}
+
+package() {
+  cd "$srcdir/fb-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

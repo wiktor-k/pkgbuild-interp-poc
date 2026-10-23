@@ -1,0 +1,53 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=distroshelf
+pkgver=1.5.2
+pkgrel=1
+pkgdesc='Graphical interface for managing Distrobox containers'
+arch=(x86_64)
+url='https://github.com/ranfdev/DistroShelf'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  distrobox
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  vte4
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=("git+https://github.com/ranfdev/DistroShelf.git#tag=v$pkgver")
+b2sums=(874fbf1942b1ac092c2ecdfad1382de8b3102683e640a46a5bd9496556af64f3bd7675e5988f7892adeca1846ba6d0714e499d824d3c1c34bff189fdcd15648d)
+
+prepare() {
+  cd DistroShelf
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson DistroShelf build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

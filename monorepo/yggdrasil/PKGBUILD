@@ -1,0 +1,64 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: Knut Ahlers <knut at ahlers dot me>
+
+pkgname=yggdrasil
+pkgver=0.5.14
+pkgrel=1
+pkgdesc="An experiment in scalable routing as an encrypted IPv6 overlay network"
+arch=('x86_64')
+url="https://github.com/yggdrasil-network/yggdrasil-go"
+license=('LGPL-3.0-only')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'go'
+)
+# we can not use LTO as otherwise we get no reproducible package with full RELRO
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/yggdrasil-network/yggdrasil-go/archive/v${pkgver}.tar.gz"
+        'yggdrasil.sysusers')
+sha256sums=('afed8dd1002b322eef51f1869cab19d96b3774eba1339b5f4088b85d1f8acd0a'
+            '233f436a5b4ff62f3da66f871ae9b49ed2b4a13572a83f057a07232627c4b3fd')
+b2sums=('05c6fb1965f90943a6b26033f74e93c38819c328716099cb7f3071b1c0030db9feb290e0798cecbcf2c28eca45870af3b25b559a0a64fb52274bafec3a3906b8'
+        '3cf5bfb3c09908f841b39f7206bb472e50e60f10d1b87ab6def97a7212e27627f1e795bbaffd964d2d27a80fbbd1a3be63d63c59793ec1967c02f48b8462c08b')
+
+build() {
+  cd "${pkgname}-go-${pkgver}"
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  for bin in yggdrasil yggdrasilctl genkeys; do
+    go build \
+      -buildmode=pie \
+      -mod=readonly \
+      -modcacherw \
+      -ldflags "-compressdwarf=false -linkmode=external
+-X github.com/yggdrasil-network/yggdrasil-go/src/version.buildName=yggdrasil
+-X github.com/yggdrasil-network/yggdrasil-go/src/version.buildVersion=${pkgver}
+" \
+      "./cmd/${bin}"
+  done
+}
+
+package() {
+  cd "${pkgname}-go-${pkgver}"
+  install -Dm755 -t "${pkgdir}/usr/bin" \
+    yggdrasil \
+    yggdrasilctl
+  install -Dm755 -t "${pkgdir}/usr/lib/yggdrasil" \
+    genkeys
+
+  install -Dm644 -t "${pkgdir}/usr/lib/systemd/system" \
+    contrib/systemd/yggdrasil.service \
+    contrib/systemd/yggdrasil-default-config.service
+  install -Dm644 "${srcdir}/yggdrasil.sysusers" "${pkgdir}/usr/lib/sysusers.d/yggdrasil.conf"
+
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

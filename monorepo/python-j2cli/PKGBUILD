@@ -1,0 +1,46 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+
+_pkgname=j2cli
+pkgname=python-${_pkgname}
+pkgver=0.3.12b
+pkgrel=13
+pkgdesc="Command-line interface to Jinja2 for templating in shell scripts."
+url="https://github.com/kolypto/j2cli"
+license=("BSD-2-Clause")
+arch=('any')
+depends=('python' 'python-jinja' 'python-pyyaml')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+checkdepends=('python-pytest')
+optdepends=('python-simplejson: for an alternative JSON parser')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kolypto/j2cli/archive/v${pkgver}.tar.gz"
+	"imp-removal.patch"
+	"python-j2cli-0.3.12b-remove-pkg_resources.patch")
+b2sums=('08b434596021576dcecbaa8e700479c103f5d93c3d42880f8f5062fb0db78d4bd0bcc43c068e56b950a654b383a27b5aaff3b58ef22382c6fd6da8d9135ede98'
+        'fec5bdcc6e63ddc39aa8d6b6a9b514ba3fb10180af1b9e35e3c924eadf1916d05404b5abbc6067b65724d7fc7def784eebc2daee65c6b2b218ea82f1c478bd8a'
+        '691c98c9ed5956a3e9d7ebcaf488972aa30db5fc186345d433acf503b1117072544ebc87c33b2df6a71be2ff4b2a627605369a4a8aa4fec1b38cb6626a780482')
+
+prepare() {
+  cd "${_pkgname}-${pkgver}"
+  patch -Np1 -i ${srcdir}/imp-removal.patch
+  patch -Np1 -i ${srcdir}/python-j2cli-0.3.12b-remove-pkg_resources.patch
+}
+
+build () {
+  cd "${_pkgname}-${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+check () {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd "${_pkgname}-${pkgver}"
+  python -m installer --destdir=test_dir dist/*.whl
+  PYTHONPATH="$PWD/test_dir/$site_packages" pytest tests/render-test.py
+}
+
+package () {
+  cd "${_pkgname}-${pkgver}"
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -vDm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

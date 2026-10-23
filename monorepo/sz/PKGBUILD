@@ -1,0 +1,51 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=sz
+pkgver=3.4.0
+pkgrel=1
+pkgdesc="Modular parametrizable lossy compressor framework for scientific data"
+arch=(x86_64)
+url="https://szcompressor.org/"
+license=(LicenseRef-BSD-3-Clause-UChicago-Argonne)
+depends=(
+  glibc
+  gsl  # not linked to, but required from cmake
+  hdf5
+  libgcc
+  libgomp
+  libstdc++
+  zstd
+)
+makedepends=(
+  cmake
+  gtest
+  ninja
+)
+source=($pkgname-$pkgver.tar.gz::https://github.com/szcompressor/SZ3/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('5fb8c16c30f48b99c85e78e17e44f32046d0fc4aa1edd269e322a4e26cd33de2c2824e05b47e51f9347b2e9052242b778d650f112efc37ce53091a62349993e8')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S SZ3-$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DBUILD_TESTING=ON
+    -DBUILD_H5Z_FILTER=ON
+    -DBUILD_MDZ=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 SZ3-$pkgver/copyright-and-BSD-license.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

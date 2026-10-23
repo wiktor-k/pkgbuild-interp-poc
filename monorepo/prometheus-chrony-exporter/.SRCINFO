@@ -1,0 +1,23 @@
+pkgbase = prometheus-chrony-exporter
+	pkgdesc = Prometheus exporter for chrony metrics
+	pkgver = 0.15.0
+	pkgrel = 1
+	url = https://github.com/SuperQ/chrony_exporter
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	backup = etc/conf.d/prometheus-chrony-exporter
+	source = git+https://github.com/SuperQ/chrony_exporter.git#tag=v0.15.0?signed
+	source = prometheus-chrony-exporter.conf
+	source = prometheus-chrony-exporter.service
+	source = prometheus-chrony-exporter.sysusers
+	validpgpkeys = A058935287E75D832E814E46C646B23C9E3245F1
+	sha256sums = 95265dc2b80005f102c2e40b1f46330e6cae76fd7a063714de7aec0666b585be
+	sha256sums = d1c43502cb42810f388efdea93296ee8f426062659b0f16daeb6f77dfc99433b
+	sha256sums = 789ee6be9f7aaf1669afb86e45bac2e8b6ab5eccb739a860ef41461cce26a215
+	sha256sums = 32451adb791957695ec6372bf78ba57d2746bfdfe2000926279c35fb0b1c8146
+
+pkgname = prometheus-chrony-exporter

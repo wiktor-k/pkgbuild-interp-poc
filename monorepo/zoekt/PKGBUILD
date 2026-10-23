@@ -1,0 +1,63 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+
+pkgname=zoekt
+pkgver=r1921.893a523
+_commit=893a523804f1bbb7132a65b2cc5de348cf4cd2c2
+pkgrel=1
+license=('Apache-2.0')
+pkgdesc="Fast code search"
+depends=('glibc')
+makedepends=('go' 'git')
+arch=('x86_64')
+url="https://github.com/sourcegraph/zoekt"
+source=("git+https://github.com/sourcegraph/zoekt.git#commit=${_commit}")
+sha256sums=('4b48f8db4dc0479759db71da2705dcbc3d0294cbb0a1497a0ff5430f2d460bb9')
+
+pkgver() {
+  cd "$pkgname"
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short=7 HEAD)"
+}
+
+prepare() {
+  cd ${pkgname}
+  mkdir -p dist/
+}
+
+build() {
+  cd ${pkgname}     
+  GOPATH="${srcdir}"
+  go build \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode external -extldflags \"${LDFLAGS}\"" \
+    -o dist \
+    github.com/sourcegraph/zoekt/cmd/...
+}
+
+check() {
+  cd ${pkgname}
+  go test ./...
+}
+
+package() {
+  cd ${pkgname}
+  local _bin
+  for _bin in \
+    zoekt \
+    zoekt-archive-index \
+    zoekt-dynamic-indexserver \
+    zoekt-git-clone \
+    zoekt-git-index \
+    zoekt-index \
+    zoekt-indexserver \
+    zoekt-merge-index \
+    zoekt-repo-index \
+    zoekt-webserver
+  do
+    install -Dm755 "dist/${_bin}" "${pkgdir}/usr/bin/${_bin}"
+  done
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim:set ts=2 sw=2 et:

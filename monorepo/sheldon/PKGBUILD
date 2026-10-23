@@ -1,0 +1,70 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=sheldon
+pkgver=0.8.5
+pkgrel=3
+pkgdesc='A fast and configurable shell plugin manager'
+arch=(x86_64)
+url='https://sheldon.cli.rs'
+license=(Apache-2.0 MIT)
+depends=(
+  curl
+  glibc
+  libgcc
+  libgit2
+  libssh2
+  openssl
+  zlib
+)
+makedepends=(
+  git
+  rust
+)
+source=("$pkgname::git+https://github.com/rossmacarthur/sheldon.git#tag=$pkgver")
+sha512sums=('a3197bf88d9b187b546c6a2ff06a5a99611395d02fb05a4c11fad847255a6423925d2b21c4bf592f374f7dc75c72b0e61d0d61ae5735bd7604e3f2ba45ed3e5a')
+b2sums=('779c158aa26e1145c79253077af4ac2bddcef437044590780cad2ec0c0a5a7a90e647d9ce45392ffffeb6da3b5ec10aca371a442cda35df4c5a544b9554b15ae')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  export LIBGIT2_NO_VENDOR=1
+  export LIBSSH2_SYS_USE_PKG_CONFIG=1
+  export OPENSSL_NO_VENDOR=1
+
+  # binary
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname"
+
+  export LIBGIT2_NO_VENDOR=1
+  export LIBSSH2_SYS_USE_PKG_CONFIG=1
+  export OPENSSL_NO_VENDOR=1
+
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/sheldon
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+
+  # completions
+  install -vDm644 completions/sheldon.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm644 completions/sheldon.zsh "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}

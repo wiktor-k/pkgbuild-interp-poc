@@ -1,0 +1,26 @@
+pkgbase = hieroglyphic
+	pkgdesc = Search through over 1000 different LaTeX symbols by sketching
+	pkgver = 2.3.0
+	pkgrel = 5
+	url = https://apps.gnome.org/Hieroglyphic/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = onnxruntime
+	options = !lto
+	source = git+https://github.com/FineFindus/Hieroglyphic.git#tag=v2.3.0
+	b2sums = cf3b58f4b0c350f5e617ce069b03b45f77d0e59674a5288d30016182df18c79b7581ba97493802a197150846e9e10676b6d2790d21819691a1e1f996a633275e
+
+pkgname = hieroglyphic

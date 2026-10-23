@@ -1,0 +1,36 @@
+pkgbase = mediathekview
+	pkgdesc = Access the Mediathek of many German TV stations
+	pkgver = 14.5.0
+	pkgrel = 3
+	url = https://github.com/mediathekview/mediathekview
+	arch = any
+	license = 0BSD
+	license = GPL-3.0-or-later
+	makedepends = maven
+	makedepends = strip-nondeterminism
+	depends = bash
+	depends = hicolor-icon-theme
+	depends = java-runtime>=25
+	depends = ttf-font
+	depends = xdg-user-dirs
+	optdepends = ffmpeg: for recording streams
+	optdepends = libnotify: to use desktop notifications
+	optdepends = ttf-dejavu: for default font
+	optdepends = vlc: for stream playback
+	provides = mediathek
+	conflicts = mediathek
+	replaces = mediathek
+	source = mediathekview-14.5.0.tar.gz::https://github.com/mediathekview/mediathekview/archive/refs/tags/14.5.0.tar.gz
+	source = de.mediathekview.MediathekView.desktop
+	source = mediathekview.sh
+	source = LICENSE
+	sha512sums = ec8908473cc5b5c03256e682bc00ee84bb35ed571fe782b9a7babf3334b3f29840f9b3e4d39e727b7bc2257aaca34cf0af1ad2b1d3af64be2a3dfc2a84335ac3
+	sha512sums = ac835f6f6311bea6a25217f54a0e4f23adf3427ab3b48e97f9da1e97fa1bce3658d01b03b5028176e20f80f10d319ad8d9f48600a0db32e4c0dadcbe3524ff28
+	sha512sums = 0c63c0080d1e3208f3480f8f7a470a35e38405eefa4f5635384c3824bb4739760e94af22f102ce05e42cbc4e311b4e01c69c826fef7b32e307270ac6b3391692
+	sha512sums = a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930
+	b2sums = 33ecf7411a3f127efd1d7abc04dc4e451d7de1c53d39fafda2a76781d857aeffc75a4594e06ab16e60c0b4220ff7f63de9f13db77c405311a70ef4bd35f5835c
+	b2sums = 2a732a3c4556ccd0211b6ce3fcf883d3f1b6266a57241ee841e699b2ba54e7459388cdfbc409b779b7235cf40e6c1fa29edf3cad04b7b70383664021c52ab2a5
+	b2sums = 7473eaf4e7ac52be398b9ca0b5212f01bb61c360a05d5056ee0545b2720788e55c68ea593aaf2f109018cbdb0e3b39c2423790a18b6a072c5eb2c7b0268ae71c
+	b2sums = a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101
+
+pkgname = mediathekview

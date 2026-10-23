@@ -1,0 +1,27 @@
+pkgbase = python-pywebview
+	pkgdesc = Build GUI for your Python program with JavaScript, HTML, and CSS
+	pkgver = 6.2.1
+	pkgrel = 1
+	url = https://github.com/r0x0r/pywebview
+	arch = any
+	license = BSD-3-Clause
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	makedepends = git
+	depends = python
+	depends = glib2
+	depends = python-bottle
+	depends = python-cryptography
+	depends = python-proxy_tools
+	depends = python-typing_extensions
+	optdepends = pyside6: use with QtPy, PySide6
+	optdepends = python-gobject: use with GTK
+	optdepends = python-pygobject-stubs: use with GTK
+	optdepends = python-qtpy: use with Qt
+	optdepends = webkit2gtk-4.1: use with GTK
+	source = git+https://github.com/r0x0r/pywebview.git#tag=6.2.1
+	b2sums = 7958abe330107357815ead5270d1efd0c696dca590733130b8ea47b7b6c40bbc7ee9f2aea118f029b75aac6d8cf1a2f4e65e9e301639c6ac414bde0987d59b56
+
+pkgname = python-pywebview

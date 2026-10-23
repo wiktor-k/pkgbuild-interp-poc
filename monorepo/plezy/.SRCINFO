@@ -1,0 +1,37 @@
+pkgbase = plezy
+	pkgdesc = A modern Plex and Jellyfin client
+	pkgver = 2.23.0
+	pkgrel = 1
+	url = https://plezy.app
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = chrpath
+	makedepends = clang
+	makedepends = fvm
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = java-environment
+	depends = at-spi2-core
+	depends = cairo
+	depends = fontconfig
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libepoxy
+	depends = libevdev
+	depends = libgcc
+	depends = libstdc++
+	depends = mpv
+	depends = pango
+	depends = curl
+	depends = zlib
+	depends = libglvnd
+	depends = wayland
+	source = git+https://github.com/edde746/plezy.git#tag=2.23.0
+	source = set-flutter-paths.patch
+	sha256sums = acabb23dc6bbb9c68b6751bec99ffded945abe3701d5ed5b9e21255f11e121d3
+	sha256sums = 9dfa1088e6401cbaf7a7e925dd6f73428968faa13781cedc621b84820b8245d6
+
+pkgname = plezy

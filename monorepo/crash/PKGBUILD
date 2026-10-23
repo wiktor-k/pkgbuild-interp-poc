@@ -1,0 +1,45 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Bernhard Walle <bernhard.walle@gmx.de>
+# Contributor: Michael Eckert <michael.eckert@linuxmail.org>
+# Contributor: Mathieu Pasquet <mathieui@mathieui.net>
+# Contributor: Qu Wenruo <wqu@suse.com>
+
+pkgname=crash
+pkgver=9.0.3
+pkgrel=1
+pkgdesc='Linux kernel crashdump analysis tool'
+url='https://crash-utility.github.io/'
+arch=(x86_64)
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  gmp
+  guile
+  libelf
+  libgcc
+  libstdc++
+  lzo
+  mpfr
+  ncurses
+  source-highlight # Provides syntax highlighting in the bundled GDB
+  xxhash
+  xz
+  zstd
+)
+makedepends=(wget)
+optdepends=('binutils: offline vmcore loading functionality')
+source=("https://github.com/crash-utility/crash/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('a233064ba4fec7722aa5756100cfd52f279a6b8fb3bdfd520258821d80b70accefff4d9f0b1c76fc4f877891e50e9bbc30be1574db338db3bcb837fbc5a00a99')
+
+build() {
+  cd $pkgname-$pkgver
+  # Add lzo and zstd support to match makedumpfile's capacity
+  make LDFLAGS="$LDFLAGS -llzo2 -lzstd" lzo zstd
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm755 -t "$pkgdir/usr/bin" crash
+  install -vDm644 -t "$pkgdir/usr/share/man/man8" crash.8
+}

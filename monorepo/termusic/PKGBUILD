@@ -1,0 +1,42 @@
+# Maintainer: orhun <orhunparmaksiz@gmail.com>
+# https://github.com/orhun/pkgbuilds
+
+pkgname=termusic
+pkgver=0.13.2
+pkgrel=1
+pkgdesc="Music Player TUI written in Rust"
+arch=('x86_64')
+url="https://github.com/tramhao/termusic"
+license=('MIT' 'GPL3')
+depends=('gstreamer' 'gst-plugins-base' 'gst-plugins-good' 'gst-plugins-bad' 'gst-plugins-ugly' 'gst-libav' 'dbus' 'libsixel' 'libmpv.so' 'libopus.so')
+optdepends=('yt-dlp: download mp3'
+  'ffmpeg: download mp3'
+  'ueberzug: another cover display protocol in terminal'
+  'emoji-font: for displaying emojis')
+makedepends=('cargo' 'clang' 'protobuf')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('17dae94655ac10dd15736c9e3649ceb845ae6645d629f75b65986e8c29c72f9a39228fcdbf482bd274d536e60b1e5be1cec4b99f2990d6f4560d8e04c3aa44ba')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --features cover,all-backends,rusty-soundtouch,rusty-libopus --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 755 "target/release/$pkgname-server" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE_MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}

@@ -1,0 +1,37 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: David Vernet <void@manifault.com>
+
+pkgname=retsnoop
+pkgver=0.11
+pkgrel=1
+pkgdesc="A tool for investigating kernel error call stacks"
+url="https://github.com/anakryiko/retsnoop"
+arch=('x86_64')
+license=('BSD-2-Clause')
+depends=('glibc' 'libelf' 'zlib')
+makedepends=('git' 'clang' 'cargo' 'llvm')
+source=("git+${url}.git#tag=v${pkgver}"
+        git+https://github.com/libbpf/libbpf.git
+        git+https://github.com/libbpf/bpftool.git)
+sha256sums=('c74cae2f322e350b7e5ba76738c9a1b6ca8f9474d43b8747ea5c81d41ab813b3'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+	cd "${pkgname}"
+	git submodule init
+	git config submodule.libbpf.url "${srcdir}/libbpf"
+	git config submodule.bpftool.url "${srcdir}/bpftool"
+	git -c protocol.file.allow=always submodule update
+}
+
+build() {
+	cd "${pkgname}"
+	make -C src
+}
+
+package() {
+	cd "${pkgname}"
+	install -Dm 755 "src/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

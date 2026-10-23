@@ -1,0 +1,37 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Contributor: Eric Förster <eric DOT foerster AT outlook DOT com>
+# Contributor: Patrick Förster <patrick DOT foerster AT outlook DOT de>
+
+pkgname=texlab
+pkgver=5.25.1
+pkgrel=2
+pkgdesc="A cross-platform implementation of the Language Server Protocol for LaTeX."
+arch=('x86_64')
+url="https://github.com/latex-lsp/texlab/"
+license=('MIT')
+depends=('glibc' 'gcc-libs')
+makedepends=('cargo' 'npm')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/latex-lsp/texlab/archive/v${pkgver}.tar.gz")
+b2sums=('49d7a352eb86d1952bb3ddbb6da16ae0f72b8e8c097cd1b1a5ff309045b19a845900c490a38d142050d50150731ea89f3de69925ef3186eeafa5ceb807cfe829')
+
+prepare() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  install -Dm 755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

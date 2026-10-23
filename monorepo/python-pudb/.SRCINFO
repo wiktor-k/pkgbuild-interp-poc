@@ -1,0 +1,27 @@
+pkgbase = python-pudb
+	pkgdesc = A full-screen, console-based Python debugger
+	pkgver = 2025.1.5
+	pkgrel = 2
+	url = https://github.com/inducer/pudb
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	makedepends = python-build
+	makedepends = python-hatchling
+	makedepends = python-installer
+	makedepends = python-shtab
+	makedepends = python-wheel
+	depends = python
+	depends = python-jedi
+	depends = python-packaging
+	depends = python-pygments
+	depends = python-typing_extensions
+	depends = python-urwid
+	depends = python-urwid_readline
+	source = https://github.com/inducer/pudb/archive/v2025.1.5/python-pudb-2025.1.5.tar.gz
+	source = python-pudb-exclude-tests.patch
+	sha512sums = 5232189e56c45f23b1f24850f442ffff83fa5b942f6d9c8969b898e827b5c68fbe646c9e4770648e73abc1b4ca95f57a5011f9bc81fef09d1605018d15cbc339
+	sha512sums = 25d34a9c5b00e5cc59c0a692a7ca494f1d046a2aa2ace801a47eca743de7e066c0ed95b05653429333121fbd005de2dc63711161f7915de24ec0de12aaf03dcf
+
+pkgname = python-pudb

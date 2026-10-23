@@ -1,0 +1,67 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-taquin
+pkgver=3.38.1+r45+g1ee5d8e
+pkgrel=1
+pkgdesc="Move tiles so that they reach their places"
+url="https://wiki.gnome.org/Apps/Taquin"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gsound
+  gtk3
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  meson
+  vala
+  yelp-tools
+)
+_commit=1ee5d8e8772c668acfc9f6cb1c84d1fb953edc50  # master
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-taquin.git#commit=$_commit"
+  0001-Set-prgname-to-application-ID.patch
+  0002-Don-t-create-window-in-startup-phase.patch
+)
+b2sums=('04dbba1b335ce18fbb1b83398510c1dad75da656e589af01d8f9e6cbb481626e97d8295fcc7842c576bf3d04bd3493526bcfbc1d35950ae6ba2f3c54e4ba2a21'
+        '51985b28076ac14e5770c234efda7ad478bd6933529b6ed966448535631825d0c1719d49149d75552b8c8b0c53badef6494613f8e2fbbae26045c4065e800e7f'
+        '37f6f2a46505a55f1219c515cf5f325a091a21ca1e8ca990199a00e028cc990e28cd1316d33fad092c6e68d3c2c680ab50b333ca901bdc4b680c443e9bc61b5d')
+
+pkgver() {
+  cd $pkgname
+  git describe --tags | sed 's/[^-]*-g/r&/;s/-/+/g'
+}
+
+prepare() {
+  cd $pkgname
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/gnome-taquin/-/merge_requests/26
+  git apply -3 ../0001-Set-prgname-to-application-ID.patch
+
+  # Don't create window in startup phase
+  # https://gitlab.gnome.org/GNOME/gnome-taquin/-/merge_requests/27
+  git apply -3 ../0002-Don-t-create-window-in-startup-phase.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

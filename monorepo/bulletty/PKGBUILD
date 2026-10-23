@@ -1,0 +1,45 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=bulletty
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="Pretty feed reader for the terminal that stores the articles as Markdown"
+url='https://github.com/CrociDB/bulletty'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+options=(!lto)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/CrociDB/${pkgname}/archive/v${pkgver}.tar.gz)
+sha256sums=('93b1da89b46877ee34b2f1688bcf052411c67c74d0e09299adee38ecd86309e5')
+b2sums=('693fe270174cb916c646927a0771495cadc082e8ed3a4d12324e00764a845e24402a310e862551410f088b0be5982ffd014d9e35a00ab335c23a8fa55dd892fc')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+  target/release/bulletty --help
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/bulletty
+  install -Dm 644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,95 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=numba-cuda-mlir
+pkgname=python-$_name
+pkgver=0.5.4
+# https://github.com/NVIDIA/numba-cuda-mlir/blob/main/ci/llvm-version.env
+_llvm_commit=3cbe75b1433a90a28db068d700b7effd2de8f401
+_llvm7_tag=llvmorg-7.1.0
+pkgrel=1
+pkgdesc="Evolution of Numba-CUDA that improves upon its technical foundation and performance"
+url="https://github.com/NVIDIA/numba-cuda-mlir"
+arch=(x86_64)
+license=(Apache-2.0)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  libxml2
+  python
+  python-cuda-bindings
+  python-cuda-core
+  python-cuda-pathfinder
+  python-numpy
+  python-yaml
+  zlib
+  zstd
+)
+makedepends=(
+  cmake
+  git
+  nanobind
+  ninja
+  pybind11
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  sccache
+)
+optdepends=(
+  'python-colorama: colors in error messages'
+  'python-pygments: syntax highlighting in code dumps'
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  "git+https://github.com/llvm/llvm-project.git#commit=$_llvm_commit"
+  pyproject.patch
+  llvm-nanobind-3.0.patch
+)
+b2sums=('73094d3bfb02b5827c3c9939be07dab753cbc9b93dc46eb842a4485f8925e3ca914be0b8b34c3ffd8860d34378b74a37bf308326911b8fe9eae9c2fe24ac328b'
+        'f03eeff96feac6a47e904bac188d57b003bbe9e66671b1f01bca3d7a2cc9dd836b9762fec3ff8749e15bb607365f8d63f09ee7c02a04216809a42fa315af92c6'
+        'c06f7b34dcf5e8400320f3fd249a5c32135111d5695b68db5c327453d7081e4ae18d5458d35bdf6900c08f86d63817403df2cea2310138a4d2babfe783a0ad8b'
+        '13fb437188dc0d1b87310b7f8225e411680ea9c51ce8db8d3dceb6ad0a1d8052468fff482383b53e1e264a0ddc9639b3be2bda9a1b1854c3ae5ca1f25a6fd328')
+
+prepare() {
+  # make a worktree for LLVM 7 tag
+  git -C llvm-project worktree add $_name-llvm7 $_llvm7_tag
+
+  # Fix build with nanobind 3.0 (pinned to 2.9 in LLVM)
+  sed -i 's|nanobind 2.9|nanobind|' llvm-project/mlir/cmake/modules/MLIRDetectPythonEnv.cmake
+
+  # Backport nanobind 3.0 compatibility from upstream LLVM
+  # https://github.com/llvm/llvm-project/commit/0d3f7ae1e926261d532e0cfc92799673ed49489b
+  git -C llvm-project cherry-pick -n 0d3f7ae1e926261d532e0cfc92799673ed49489b
+
+  # nanobind 3.0 fixes not yet upstream: link MLIR's domain-isolated runtime
+  # library directly in add_mlir_python_extension, and initialize the backend
+  # state in the non-module MLIRPythonSupport library via nb::register_module()
+  patch -d llvm-project -p1 < llvm-nanobind-3.0.patch
+
+  cd $_name-$pkgver
+  # drop cmake and ninja dependencies from pyproject.toml
+  patch -p1 < ../pyproject.patch
+}
+
+build() {
+  cd $_name-$pkgver
+
+  # Based on https://github.com/NVIDIA/numba-cuda-mlir/blob/main/INSTALL.md
+  # Build modern LLVM + MLIR (uses ci/llvm-version.env for the commit)
+  LLVM_MODERN_SRC="$srcdir"/llvm-project ci/build-llvm-modern.sh  # produces llvm-modern-install/
+
+  # Build LLVM 7 shared library
+  LLVM7_SRC="$srcdir"/$_name-llvm7 ci/build-llvm7.sh  # produces llvm7-install/
+
+  # Build numba-cuda-mlir
+  MLIR_DIR="$PWD"/llvm-modern-install/lib/cmake/mlir \
+  LIBLLVM7="$PWD"/llvm7-install/lib/libLLVM-7.so \
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

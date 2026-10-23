@@ -1,0 +1,78 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=tali
+pkgver=40.9
+pkgrel=6
+pkgdesc="Beat the odds in a poker-style dice game"
+url="https://wiki.gnome.org/Apps/Tali"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgnome-games-support
+  pango
+)
+makedepends=(
+  git
+  gobject-introspection
+  meson
+  yelp-tools
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/tali.git?signed#tag=$pkgver"
+  0001-Set-prgname-to-application-ID.patch
+  0002-Fix-crash-on-second-activation.patch
+  0003-Don-t-create-window-in-startup-phase.patch
+  0004-Use-GApplication-to-parse-command-line-options.patch
+  0005-Add-D-Bus-service-file.patch
+)
+b2sums=('bca079d586d79bcdc905660b2a721f711b51d568b19a369b1834c6c9fac615774915aaa7765e5b26609dc86c38c1439941b9f0260727a78c2b56ac3637c0722c'
+        '71c70b4f3efe9130d0f4660e164c3bc4a1397b369fd030460d672f2297e710b7994884ce9c917e740c53c231b0a7f4fd10d3331add9936428c0f294a4bcc14e2'
+        '16013cb22385c4e548a0aa654f8c32b2fd58b277352e4679d04526174e95c7aaa723c4b632e127d5b3ce6fe4880bc935c3f515348dd928f16f9a22e4a9efa284'
+        '3408ab6fa5fcb8ed9ca18294d312c4c170a9f92de2364dd41920b27d588dfc7f7eca3f4ba1d1f3a151af18e8f6e06216f442170eca7a9dcc80ad580e0dd46309'
+        'a8ab8e5ba9c213ce65eee921a91d84d0956349bedf33837992acca85ae4e256def062760091be1f00c566e3bf1e18b8d0c33eb261e422d621113e7bc87d912d7'
+        '2620f849655d2d48cd9cbe434a359bae6f378da4ec78889fdd194ca948e9874fc6c414423a3f94d2e190252eaf633ae8de44f2e4fc1143a23fc32bc03b1e3613')
+validpgpkeys=(93A56F193C261368CD7F056904DA8079BE94C646) # Mart Raudsepp <leio@gentoo.org>
+
+prepare() {
+  cd tali
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/tali/-/merge_requests/20
+  git apply -3 ../0001-Set-prgname-to-application-ID.patch
+
+  # Fix crash on second activation
+  # https://gitlab.gnome.org/GNOME/tali/-/merge_requests/21
+  git apply -3 ../0002-Fix-crash-on-second-activation.patch
+  git apply -3 ../0003-Don-t-create-window-in-startup-phase.patch
+
+  # Use GApplication to parse command line options
+  # https://gitlab.gnome.org/GNOME/tali/-/merge_requests/23
+  git apply -3 ../0004-Use-GApplication-to-parse-command-line-options.patch
+
+  # Add D-Bus service file
+  # https://gitlab.gnome.org/GNOME/tali/-/merge_requests/24
+  git apply -3 ../0005-Add-D-Bus-service-file.patch
+}
+
+build() {
+  arch-meson tali build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

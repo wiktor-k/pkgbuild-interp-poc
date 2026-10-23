@@ -1,0 +1,47 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Sanpi <sanpi+aur@homecomputing.fr>
+
+pkgname=trunk
+pkgver=0.22.0
+pkgrel=1
+pkgdesc='Build, bundle & ship your Rust WASM application to the web'
+arch=('x86_64')
+url="https://github.com/thedodd/trunk"
+license=('Apache-2.0' 'MIT')
+depends=(
+  'libgcc'
+  'openssl'
+  'bzip2'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('68bb132c7f827ed40d31948432dd4175f7d16aa745f175b9321987123d9d236b')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --no-default-features --features native-tls
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --release --no-default-features --features native-tls
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  TRUNK_SKIP_VERSION_CHECK=true target/release/$pkgname completion bash | install -Dm 644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  TRUNK_SKIP_VERSION_CHECK=true target/release/$pkgname completion fish | install -Dm 644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+  TRUNK_SKIP_VERSION_CHECK=true target/release/$pkgname completion zsh | install -Dm 644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+  TRUNK_SKIP_VERSION_CHECK=true target/release/$pkgname completion elvish | install -Dm 644 /dev/stdin "$pkgdir/usr/share/elvish/lib/$pkgname.elv"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

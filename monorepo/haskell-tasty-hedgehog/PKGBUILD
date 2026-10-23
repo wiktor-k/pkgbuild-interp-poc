@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=tasty-hedgehog
+pkgname=haskell-tasty-hedgehog
+pkgver=1.4.0.2
+pkgrel=448
+pkgdesc="Integration for tasty and hedgehog"
+url="https://github.com/qfpl/tasty-hedgehog"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-hedgehog' 'haskell-tagged' 'haskell-tasty')
+makedepends=('ghc' 'uusi')
+checkdepends=('haskell-tasty-expected-failure')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('ea995eff179fcecd40c1b346a5c8405090f7a7542848f3d4d591e83bb8d1f9bce51e6fc2f8fd1182b7b5eade0a64e6605ff88b878acf5f79dde2838b0781b760')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    uusi -u hedgehog -u tasty
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 "LICENCE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENCE"
+    rm -f "${pkgdir}/usr/share/doc/${pkgname}/LICENCE"
+}

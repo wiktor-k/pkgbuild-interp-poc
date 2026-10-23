@@ -1,0 +1,21 @@
+pkgbase = paccat
+	pkgdesc = Print pacman package files
+	pkgver = 1.4.0
+	pkgrel = 5
+	url = https://github.com/morganamilo/paccat
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = gcc-libs
+	depends = libarchive
+	depends = libalpm.so
+	optdepends = bat: syntax highlighting
+	source = git+https://github.com/Morganamilo/paccat?signed#tag=v1.4.0
+	source = 0001-Update-deps-for-pacman-7.1.patch
+	validpgpkeys = F850562FCDA369F80D33000AE48D0A8326DE47C5
+	sha256sums = c314802cf54c4215df5e7791106c2b1b5c19bb6c201d3523f539f17ecdfaefa2
+	sha256sums = 324345be3c0059559d8552f43038441ae09572c990e3781d17e09ec033829672
+
+pkgname = paccat

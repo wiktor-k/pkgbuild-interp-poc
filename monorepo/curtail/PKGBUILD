@@ -1,0 +1,54 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Mark Wagie <mark dot wagie at tutanota dot com>
+
+pkgname=curtail
+pkgver=1.17.0
+pkgrel=1
+pkgdesc='Image compressor GUI, supporting PNG, JPEG, WebP and SVG file types, both lossless and lossy compression mode'
+arch=(any)
+url='https://apps.gnome.org/Curtail/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk4
+  hicolor-icon-theme
+  jpegoptim
+  libadwaita
+  libwebp-utils
+  oxipng
+  pngquant
+  python
+  python-gobject
+  scour
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=("git+https://github.com/Huluti/Curtail.git#tag=$pkgver")
+b2sums=(f091472c13244e6ace0f70221843f2a80af880ca5ae23211e4ee3d6fddfd732ea5e988669716f7eb716837e1cfa619b903dd446d161eafb643962648c18ae938)
+
+prepare() {
+  cd Curtail
+}
+
+build() {
+  arch-meson Curtail build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+}

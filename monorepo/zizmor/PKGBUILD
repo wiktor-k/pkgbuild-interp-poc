@@ -1,0 +1,57 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=zizmor
+pkgver=1.31.1
+pkgrel=1
+pkgdesc="A static analysis tool for GitHub Actions"
+url='https://github.com/zizmorcore/zizmor'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'glibc'
+  'jemalloc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+options=(!lto)
+source=(https://github.com/zizmorcore/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('9e976cc981bb9b0bcaae766a6ddee451738821c0a26c4a3c266dda1891ae20d5')
+b2sums=('ba1f3e9497bd2d95e8b01f4587105fdbc739d97a798151ab2531ee40f9c679f846a1d9941b635b63e08473e4a0da31756ac87e1dc7f44b9adf7dd60cd885a96d')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+  export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+  export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+  cargo test --frozen -- --skip "e2e"
+  target/release/zizmor --help
+
+  target/release/zizmor --format plain crates/zizmor/tests/integration/test-data/template-injection.yml | \
+    grep -q 'code injection via template expansion'
+  target/release/zizmor --format plain crates/zizmor/tests/integration/test-data/cache-poisoning.yml | \
+    grep -q 'runtime artifacts potentially vulnerable to a cache poisoning attack'
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/zizmor
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

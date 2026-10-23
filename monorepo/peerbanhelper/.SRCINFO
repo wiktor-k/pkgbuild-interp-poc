@@ -1,0 +1,35 @@
+pkgbase = peerbanhelper
+	pkgdesc = A tool to auto ban peers on the Bittorrent network
+	pkgver = 9.5.1
+	pkgrel = 2
+	url = https://github.com/PBH-BTN/PeerBanHelper
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = gradle
+	makedepends = git
+	makedepends = java-environment=25
+	makedepends = nodejs
+	makedepends = pnpm
+	makedepends = zip
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = java-runtime-headless>=25
+	depends = libgcc
+	depends = libstdc++
+	depends = sh
+	depends = sqlite
+	source = peerbanhelper::git+https://github.com/PBH-BTN/PeerBanHelper.git#tag=v9.5.1
+	source = sqlite-jdbc-3.53.2.1.tar.gz::https://github.com/xerial/sqlite-jdbc/archive/refs/tags/3.53.2.1.tar.gz
+	source = flatlaf-3.7.2.tar.gz::https://github.com/JFormDesigner/FlatLaf/archive/refs/tags/3.7.2.tar.gz
+	source = peerbanhelper.sh
+	source = peerbanhelper.sysusers
+	source = peerbanhelper.service
+	sha256sums = f0768e674a34893da859bfefb7b9c53e93e01f75773bb8f6b494d61759441e56
+	sha256sums = d32bb87f5ba9cc794305ccd1602c326991020b7ed2d9d5e23aa9a093b10a4e07
+	sha256sums = 41870b2abf026fb9ed35ed95343ceb454fb8db2f32fc042309160257a585edb3
+	sha256sums = 3c48af98067ce355934d1ca394d7bcfa1616733b79ce13277f3f2861ffb955f5
+	sha256sums = 394ee8f74dd630f375c34cf5160059078516033b0867ad43b1c43377b4104bde
+	sha256sums = 5ba62e5b6f0cefcc4a70ca14be19a0913bd024f88c445e50c6f8f26077348ff6
+
+pkgname = peerbanhelper

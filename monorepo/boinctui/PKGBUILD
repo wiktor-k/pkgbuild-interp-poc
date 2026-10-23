@@ -1,0 +1,31 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=boinctui
+pkgver=2.7.2
+pkgrel=2
+pkgdesc="Curses based fullscreen BOINC manager"
+arch=('x86_64')
+url="https://sourceforge.net/projects/boinctui/"
+license=('GPL-3.0-or-later')
+depends=('expat' 'glibc' 'libgcc' 'libstdc++' 'ncurses' 'openssl')
+makedepends=("cmake")
+source=("https://sourceforge.net/projects/boinctui/files/${pkgname}_${pkgver}.tar.gz"{,.asc})
+sha512sums=('ee0b93e3a4394907e46980f60b21e75264c8285414d009725533326067891660046464cc1a1bbd6f622bd9d77fb3023a3e1d08530b5d8ab73154774fb738524d'
+            'SKIP')
+validpgpkeys=('4D2DBBB4F06EC2C977B26BFD80878E59832BEC15')  # Sergey Suslov
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --without-gnutls --mandir=/usr/share/man
+  make 
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,24 @@
+pkgbase = python-oslo-concurrency
+	pkgdesc = OpenStack library for all concurrency-related code
+	pkgver = 7.6.1
+	pkgrel = 1
+	url = https://pypi.python.org/pypi/oslo.concurrency/7.6.1
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-oslotest
+	checkdepends = python-stestr
+	checkdepends = python-eventlet
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-pbr
+	depends = python-oslo-config
+	depends = python-oslo-i18n
+	depends = python-oslo-utils
+	depends = python-fasteners
+	depends = python-debtcollector
+	source = git+https://github.com/openstack/oslo.concurrency.git#tag=7.6.1
+	sha512sums = 5b6665fc5cc20d0885c98544fe6bf0cbf5c80d617a975ed3b00111e1f770429341d2aa3cb40712b14f578202a9babe7e16db562f011b444862b2d8dcbf58778f
+
+pkgname = python-oslo-concurrency

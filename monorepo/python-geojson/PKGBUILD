@@ -1,0 +1,34 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Alexander Fasching <fasching.a91@gmail.com>
+# Contributor: Johannes Loethberg <johannes@kyriasis.com>
+
+_pyname=geojson
+pkgname="python-$_pyname"
+pkgver=3.3.0
+pkgrel=1
+pkgdesc='Python bindings and utilities for GeoJSON'
+url="https://github.com/jazzband/$_pyname"
+arch=(any)
+license=(BSD-3-Clause)
+depends=(python)
+makedepends=(python-{build,installer,wheel}
+             python-setuptools)
+_archive="$_pyname-$pkgver"
+source=("$url/archive/$pkgver/$_archive.tar.gz")
+sha256sums=('aea34d7a6798df63eb76e17c64815b45527723b90dd42667d924c87dfe13070a')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+check() {
+	cd "$_archive"
+	python -m unittest discover
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.rst
+}

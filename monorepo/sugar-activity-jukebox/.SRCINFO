@@ -1,0 +1,27 @@
+pkgbase = sugar-activity-jukebox
+	pkgdesc = Media player for Sugar
+	pkgver = 36
+	pkgrel = 5
+	url = https://github.com/sugarlabs/jukebox-activity
+	arch = any
+	groups = sugar-fructose
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = glib2
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gst-python
+	depends = gstreamer
+	depends = gtk3
+	depends = pango
+	depends = python
+	depends = python-gobject
+	depends = sugar-toolkit-gtk3
+	optdepends = gst-libav: Extra media codecs
+	optdepends = gst-plugins-bad: Extra media codecs
+	optdepends = gst-plugins-good: Extra media codecs
+	optdepends = gst-plugins-ugly: Extra media codecs
+	source = git+https://github.com/sugarlabs/jukebox-activity.git#tag=v36
+	b2sums = 517c9a6fb93adda71935b8d46e514a77d32635d0c853ad11ec2c36a25709080dd96ffb8315501f04f376e9face72d5ca79811df9b88c0113d95d413d72929907
+
+pkgname = sugar-activity-jukebox

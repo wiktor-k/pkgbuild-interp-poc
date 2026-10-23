@@ -1,0 +1,37 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+# Contributor: gregor <gregor@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=mhash
+pkgver=0.9.9.9
+pkgrel=7
+pkgdesc="A thread-safe hash library which provides a uniform interface to hash algorithms (MD5, SHA1, HAVAL, etc)"
+arch=('x86_64')
+url="http://mhash.sourceforge.net/"
+license=('LGPL-2.1-or-later')
+depends=('glibc')
+source=("https://downloads.sourceforge.net/sourceforge/mhash/$pkgname-$pkgver.tar.bz2")
+b2sums=('041b253a5a1e5a06c7fa9a0eaa1c7c5e5183cb9bb2fcb6fc619b11f9d03327d9bb557f612fb315dbd41f24523201065bc8a9c31c06842a6b73094ae5bb1c0c63')
+
+prepare() {
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  CFLAGS+=" -std=gnu17" ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,20 @@
+pkgbase = stlink
+	pkgdesc = Open source STM32 MCU programming toolset
+	pkgver = 1.9.0
+	pkgrel = 1
+	url = https://github.com/stlink-org/stlink
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libusb
+	source = stlink::git+https://github.com/stlink-org/stlink#tag=v1.9.0
+	sha512sums = 2bb45c7499eb6f8de630936c6a54d82010480858b609cd35813df1d050e1b096ed3922dc575d2829beefe06c0e6747ba3c7c4fc4f05aba280cf178aef87f8ae4
+	b2sums = 4869301318a01b23f10948f031e5aac8b2edc7b0bc917e275d4fb3afd3f0dfb8cdb23da2fa819ea9c0b451cb96894785dced962f3b3676358b464d82373b4ca2
+
+pkgname = stlink

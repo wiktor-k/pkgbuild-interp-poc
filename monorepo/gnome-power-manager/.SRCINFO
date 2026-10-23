@@ -1,0 +1,22 @@
+pkgbase = gnome-power-manager
+	pkgdesc = System power information and statistics
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-power-manager
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = pango
+	depends = upower
+	source = git+https://gitlab.gnome.org/GNOME/gnome-power-manager.git#tag=50.0
+	b2sums = ae9adf653fd954cbf1cce526e166c8c03e0043994cbcab885a927baf02b63742d7afc30c5077b943164813d772cd2c0b2c2fbf17c050f5107b6a64f1e8d83db1
+
+pkgname = gnome-power-manager

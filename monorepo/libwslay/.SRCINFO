@@ -1,0 +1,20 @@
+pkgbase = libwslay
+	pkgdesc = WebSocket library
+	pkgver = 1.1.1
+	pkgrel = 7
+	url = https://github.com/tatsuhiro-t/wslay
+	arch = x86_64
+	license = MIT
+	checkdepends = cunit
+	makedepends = python-sphinx
+	optdepends = nettle: needed for wslay_testclient
+	provides = wslay
+	replaces = wslay
+	source = libwslay-1.1.1.tar.bz2::https://github.com/tatsuhiro-t/wslay/releases/download/release-1.1.1/wslay-1.1.1.tar.bz2
+	source = sphinx-4.patch
+	source = nettle-4.patch
+	b2sums = e5b5e7435e1e3a82cef4407f2a5fbcf4168f2814546074d8ee5aa70f36acabc648bc58f14aaee53bc6be7ab7e18c39a4f8e16fba507dc85f19ee4f79a827be6e
+	b2sums = 12dc00c3dfcf29a0263b93638164ab9e99a9672962714392cf8f28421498d138a83779a267f59892b579f66dfc4b7fca8c8b1a3662040d9dc29d1841ebe42ea9
+	b2sums = 6614e65ec577193980a44107acb6cdf5c2c22677a1fa22c3570f5b2ec2a56b34b401370da9197dbbd31cd9c8c903525a7aa6b38de24fbb61fe9e66e6ac912033
+
+pkgname = libwslay

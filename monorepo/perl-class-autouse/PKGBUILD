@@ -1,0 +1,29 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Charles Mauch <cmauch@gmail.com>
+# Contributor: Francois Charette <firmicus@gmx.net>
+
+pkgname=perl-class-autouse
+pkgver=2.02
+pkgrel=1
+pkgdesc="Run-time load a class the first time you call a method in it. "
+arch=('any')
+url="https://search.cpan.org/dist/Class-Autouse"
+license=('GPL' 'PerlArtistic')
+depends=('perl')
+options=('!emptydirs')
+source=(https://cpan.metacpan.org/authors/id/E/ET/ETHER/Class-Autouse-$pkgver.tar.gz)
+sha256sums=('538e9575423a8185d8c9f1b92e71e21e44bb9414deb060adb9467a0bad490898')
+
+build() {
+  cd  "$srcdir"/Class-Autouse-$pkgver
+  PERL_USE_UNSAFE_INC=1 \
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd  "$srcdir"/Class-Autouse-$pkgver
+  make pure_install doc_install DESTDIR="$pkgdir"
+  find "$pkgdir" -name '.packlist' -delete
+  find "$pkgdir" -name '*.pod' -delete
+}

@@ -1,0 +1,245 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Alexandre Filgueira <alexfilgueira@antergos.com>
+
+pkgbase=nemo-extensions
+pkgname=(
+  nemo-audio-tab
+  nemo-compare
+  nemo-emblems
+  nemo-fileroller
+  nemo-image-converter
+  nemo-media-columns
+  nemo-pastebin
+  nemo-python
+  nemo-repairer
+  nemo-share
+  nemo-terminal
+)
+# Skipped extensions:
+# - nemo-dropbox - depends on proprietary dropbox
+# - nemo-preview - depends on deprecated clutter
+# - nemo-seahorse - depends on deprecated libcryptui
+pkgver=6.6.0
+pkgrel=4
+pkgdesc='Various extensions for Nemo'
+arch=(x86_64)
+url='https://github.com/linuxmint/nemo-extensions'
+makedepends=(
+  git
+  meson
+  nemo
+  python-setuptools
+)
+optdepends=('cinnamon-translations: i18n')
+source=("git+https://github.com/linuxmint/nemo-extensions.git#tag=$pkgver")
+b2sums=(e3803f0d9254a663576c532e0dbdc08e29eac625ee18274725acdf37f73a1757f557b1bb6452a1f2578ac4c48017e919123ae9c36c117e5e917a81538b4f2d84)
+
+build() {
+  cd $pkgbase
+
+  for _dir in "${pkgname[@]}"; do
+    pushd $_dir
+    if [[ -f meson.build ]]; then
+      arch-meson . build \
+        --libexecdir=lib/$_dir
+      meson compile -C build
+    fi
+    if [[ -f setup.py ]]; then
+      python setup.py build
+    fi
+    popd
+  done
+}
+
+package_nemo-audio-tab(){
+  pkgdesc='View audio tag information in Nemo properties tab'
+  license=(GPL-3.0-only)
+  depends=(
+    glib2
+    gtk3
+    nemo
+    nemo-python
+    python
+    python-gobject
+    python-mutagen
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}
+
+package_nemo-compare() {
+  pkgdesc='Context menu comparison extension for Nemo file manager'
+  license=(GPL-3.0-or-later)
+  depends=(
+    glib2
+    gtk3
+    meld
+    nemo
+    nemo-python
+    python
+    python-gobject
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}
+
+package_nemo-emblems(){
+  pkgdesc='Change a folder or file emblem in Nemo'
+  license=(GPL-3.0-only)
+  depends=(
+    glib2
+    gtk3
+    nemo
+    nemo-python
+    python
+    python-gobject
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}
+
+package_nemo-fileroller(){
+  pkgdesc='File archiver extension for Nemo'
+  license=(GPL-2.0-or-later)
+  depends=(
+    file-roller
+    glib2
+    glibc
+    nemo
+  )
+
+  cd $pkgbase/$pkgname
+  meson install -C build --destdir="$pkgdir"
+}
+
+package_nemo-image-converter(){
+  pkgdesc='Nemo extension to rotate/resize image files'
+  license=(GPL-2.0-or-later)
+  depends=(
+    glib2
+    glibc
+    gtk3
+    imagemagick
+    nemo
+  )
+
+  cd $pkgbase/$pkgname
+  meson install -C build --destdir="$pkgdir"
+}
+
+package_nemo-media-columns(){
+  pkgdesc='A Nemo extension to display music/EXIF and PDF metadata info in the Nemo List View'
+  license=(GPL-3.0-only)
+  depends=(
+    dconf
+    gdk-pixbuf2
+    glib2
+    gtk3
+    libgexiv2
+    nemo
+    nemo-python
+    python
+    python-gobject
+    python-mutagen
+    python-pillow
+    python-pymediainfo
+    python-pypdf
+    python-stopit
+    xapp
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}
+
+package_nemo-pastebin(){
+  pkgdesc='Nemo extension to send files to a pastebin'
+  license=(GPL-2.0-or-later)
+  depends=(
+    dconf
+    glib2
+    gtk3
+    hicolor-icon-theme
+    libnotify
+    nemo
+    nemo-python
+    pastebinit
+    python
+    python-gobject
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}
+
+package_nemo-python() {
+  pkgdesc='Python binding for Nemo components'
+  license=(GPL-2.0-or-later)
+  depends=(
+    glib2
+    glibc
+    gtk3
+    nemo
+    python
+  )
+
+  cd $pkgbase/$pkgname
+  meson install -C build --destdir="$pkgdir"
+}
+
+package_nemo-repairer(){
+  pkgdesc='Nemo extension for filename encoding repair'
+  license=(GPL-2.0-or-later)
+  depends=(
+    glib2
+    glibc
+    gtk3
+    nemo
+  )
+
+  cd $pkgbase/$pkgname
+  meson install -C build --destdir="$pkgdir"
+}
+
+package_nemo-share(){
+  pkgdesc='Samba extension for Nemo'
+  license=(GPL-2.0-or-later)
+  depends=(
+    glib2
+    glibc
+    gtk3
+    nemo
+    python
+    samba
+  )
+
+  cd $pkgbase/$pkgname
+  meson install -C build --destdir="$pkgdir"
+
+  # Remove script that depends on aptkit
+  rm "$pkgdir/usr/share/nemo-share/install-samba"
+  rm "$pkgdir/usr/share/polkit-1/actions/org.nemo.share.samba_install.policy"
+}
+
+package_nemo-terminal(){
+  pkgdesc='Embedded terminal window for Nemo'
+  license=(GPL-3.0-or-later)
+  depends=(
+    dconf
+    glib2
+    gtk3
+    nemo
+    nemo-python
+    python
+    python-gobject
+    vte3
+    xapp
+  )
+
+  cd $pkgbase/$pkgname
+  python setup.py install --root="$pkgdir" --optimize=1
+}

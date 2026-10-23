@@ -1,0 +1,27 @@
+pkgbase = greetd-regreet
+	pkgdesc = Clean and customizable greeter for greetd
+	pkgver = 0.5.0
+	pkgrel = 1
+	url = https://github.com/rharish101/ReGreet
+	install = greetd-regreet.install
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	depends = wayland-compositor
+	depends = greetd
+	depends = accountsservice
+	depends = cairo
+	depends = libgcc
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = pango
+	provides = greetd-greeter
+	backup = etc/greetd/regreet.toml
+	source = https://github.com/rharish101/ReGreet/archive/0.5.0/ReGreet-0.5.0.tar.gz
+	source = regreet.toml
+	sha256sums = 7e26799dffdede183fc62d12aedbda5fea92d7d9802a180755d8a1d1fd93f2f7
+	sha256sums = b80b3eb31f8cc463d512c9db0eef899bdbe232d977429a8a12e95a3b6df2e387
+
+pkgname = greetd-regreet

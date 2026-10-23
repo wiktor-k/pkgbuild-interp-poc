@@ -1,0 +1,47 @@
+# Maintainer: Johannes Löthberg <demize@archlinux.org>
+# Contributor: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+
+pkgname=mdformat-tables
+pkgver=1.0.0
+pkgrel=2
+pkgdesc='An mdformat plugin for rendering tables'
+arch=(any)
+url=https://github.com/hukkin/mdformat-tables
+license=(MIT)
+depends=(
+  mdformat
+  python-wcwidth
+)
+makedepends=(
+  git
+  python-build
+  python-flit-core
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('c65a7a1b13691f724fad41fdc2955c0a2b60b36b92a912e372e6b6e59fbc233e1249fc3ed9de596059893d00b89a69b0d47f8ad91eb27904ee6613c0c06ac080')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd $pkgname
+  python -m installer --destdir=temp dist/*.whl
+  PYTHONPATH=$(echo temp/usr/lib/python*/site-packages) pytest
+}
+
+package() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/$pkgname-$pkgver.dist-info/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

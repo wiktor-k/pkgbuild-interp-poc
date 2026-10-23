@@ -1,0 +1,16 @@
+pkgbase = darkman
+	pkgdesc = Framework for dark-mode and light-mode transitions on Linux desktop
+	pkgver = 2.3.1
+	pkgrel = 1
+	url = https://darkman.whynothugo.nl
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = go
+	optdepends = geoclue: to automatically determine the system's location
+	optdepends = xdg-desktop-portal-impl: to expose the current mode via the XDG settings portal D-Bus API
+	source = git+https://gitlab.com/WhyNotHugo/darkman.git#tag=v2.3.1?signed
+	validpgpkeys = 1204CA9FC2FFADEEDC2961367880733B9D062837
+	b2sums = 5a96289ce2044ef276144f5245ed21819e06271a559db2fb1ae569c37720fb3a57f4e30ba092daf8de0b90e24effa22a645dc7b679fa6e8a58563b3a361f7df4
+
+pkgname = darkman

@@ -1,0 +1,22 @@
+pkgbase = intel-oneapi-tbb
+	pkgdesc = Intel oneAPI Threading Building Blocks
+	pkgver = 2023.0.0_724
+	pkgrel = 1
+	url = https://software.intel.com/content/www/us/en/develop/tools/oneapi.html
+	arch = x86_64
+	license = Apache-2.0 AND LicenseRef-Intel-EULA-Developer-Tools AND LicenseRef-Intel-Simplified
+	depends = intel-oneapi-common
+	depends = intel-oneapi-tcm
+	depends = sh
+	depends = gcc-libs
+	depends = glibc
+	depends = hwloc
+	conflicts = intel-oneapi-basekit
+	noextract = intel-oneapi-tbb-2023.0-2023.0.0-724_amd64.deb
+	noextract = intel-oneapi-tbb-devel-2023.0-2023.0.0-724_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-tbb-2023.0-2023.0.0-724_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-tbb-devel-2023.0-2023.0.0-724_amd64.deb
+	b2sums = 5dc1e6e6a78443a5098089565b4004ac7f0679e6080b96b9c009b0a79660f70b0bc6e5e967fc488db399064a3f68c35e89b068744a2f53aebbfc0107cee3f560
+	b2sums = f96fa6000ccddccc0ea7d20f9e071648405e0532c03d788e64e05b9852b32c1fe7d941bd764de411bef9960c4e6ed31bfed3e358c43560f4858a3af730c4a4d4
+
+pkgname = intel-oneapi-tbb

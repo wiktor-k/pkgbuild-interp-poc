@@ -1,0 +1,54 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=PyAV
+pkgname=python-av
+pkgver=19.0.1
+pkgrel=1
+pkgdesc="Pythonic bindings for FFmpeg"
+arch=(x86_64)
+url="https://github.com/PyAV-Org/PyAV"
+license=(BSD-3-Clause)
+depends=(
+  cython
+  glibc
+  ffmpeg
+  python
+  python-numpy
+  python-pillow
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('e104334a73a20c5a23ad210506f4d9ddbf87a9a2715c605625224551537a03280fe06b93f1c1d6e62dd609d0a62f4c341ec0a9fb965c4d43f9c6f75f0138f506')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # use importlib mode to avoid adding the project's root directory to sys.path
+    # https://docs.pytest.org/en/stable/explanation/pythonpath.html
+    --import-mode importlib
+  )
+
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer $_name-$pkgver/dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" $_name-$pkgver/tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

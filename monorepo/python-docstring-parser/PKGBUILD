@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-docstring-parser
+pkgver=0.18.0
+pkgrel=1
+pkgdesc="Parse Python docstrings in reST, Google and Numpydoc format"
+arch=('any')
+url="https://github.com/rr-/docstring_parser"
+license=('MIT')
+depends=('python')
+makedepends=('git' 'python-build' 'python-hatchling' 'python-installer')
+checkdepends=('python-pytest')
+source=("git+https://github.com/rr-/docstring_parser.git#tag=$pkgver")
+b2sums=('d9a11bb291ecc53fc18d69af9041f1e6e719bac5d6053a133696e2705a558ff8f67fffcb9c105795201bb16a25a651ddcbf5aa2ab89cbc533d4f2b198c33db6a')
+
+build() {
+  cd docstring_parser
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd docstring_parser
+  python -m pytest
+}
+
+package() {
+  cd docstring_parser
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

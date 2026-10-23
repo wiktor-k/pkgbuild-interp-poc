@@ -1,0 +1,70 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=smartctl_exporter
+pkgname=prometheus-smartctl-exporter
+pkgver=0.15.0
+pkgrel=1
+pkgdesc="Prometheus exporter for S.M.A.R.T. metrics using smartctl"
+arch=(x86_64)
+url="https://github.com/prometheus-community/smartctl_exporter"
+license=(Apache-2.0)
+depends=(glibc smartmontools)
+makedepends=(go)
+backup=("etc/conf.d/$pkgname")
+# we cannot use LTO as otherwise we do not get reproducible package with full RELRO
+options=('!lto')
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+  "$pkgname.conf"
+  "$pkgname.service"
+  "$pkgname.sysusers"
+)
+b2sums=('4ba25c0e3fce3461bafc5dce7ceff9faa7b9f3d325a26b21a80ae626cd4deb58ce882bf5bc823ee9dbdaa9acb61b7520a7753929e242d8e180313a0782412cbc'
+        '8f90333769207a931453ef129c1cb91bfd5351d43df64826bc2fafe07b149028b156eb74ac5dfe4e5d990f39605b94e93d1b2598d4eca85ead06b0db5555c50c'
+        'd210a73fd5bc0a38cf01521bb6af67d67be2375d2849182b0b551c0f0211a9bb30da06afaf558f36989ea88590b2d7ec60d8d1d23df969a2d1cb33b2e1e30bed'
+        '93466afbae66c74fd4e1641a77a5a803d8c7f9ef689054d6d42da0db887f2bf1890a25fba9276c2d77f64633f55be68731d545af9e6d8f610b703f6f6af54f84')
+
+prepare() {
+  cd "$_name-$pkgver"
+
+  # create folder for build output
+  mkdir build
+
+  # download dependencies
+  GOPATH="$srcdir" go mod download -modcacherw
+}
+
+build() {
+  cd "$_name-$pkgver"
+
+  # set flags for cgo
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+
+  # set GOPATH so makepkg puts source files into the debug package
+  export GOPATH="$srcdir"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false -linkmode external" \
+    -o build .
+}
+
+package() {
+  # systemd integration
+  install -vDm 644 "$pkgname.service" -t "$pkgdir/usr/lib/systemd/system/"
+  install -vDm 644 "$pkgname.conf" "$pkgdir/etc/conf.d/$pkgname"
+  install -vDm 644 "$pkgname.sysusers" "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+
+  cd "$_name-$pkgver"
+
+  # binary
+  install -vDm 755 "build/$_name" "$pkgdir/usr/bin/$pkgname"
+
+  # license
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

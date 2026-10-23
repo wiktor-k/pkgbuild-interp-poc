@@ -1,0 +1,18 @@
+pkgbase = nginx-mod-brotli
+	pkgdesc = Brotli compression filter module for nginx
+	pkgver = 1.0.0rc
+	pkgrel = 28
+	epoch = 1
+	url = https://github.com/google/ngx_brotli
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = nginx
+	makedepends = nginx-src
+	depends = brotli
+	backup = etc/nginx/modules.d/20-brotli.conf
+	source = https://github.com/google/ngx_brotli/archive/v1.0.0rc/ngx_brotli-1.0.0rc.tar.gz
+	sha256sums = c85cdcfd76703c95aa4204ee4c2e619aa5b075cac18f428202f65552104add3b
+
+pkgname = nginx-mod-brotli
+	depends = brotli
+	depends = nginx

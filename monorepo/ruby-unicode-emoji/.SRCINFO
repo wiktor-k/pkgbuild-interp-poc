@@ -1,0 +1,22 @@
+pkgbase = ruby-unicode-emoji
+	pkgdesc = Provides Unicode Emoji data and regexes, incorporating the latest standards
+	pkgver = 4.3.0
+	pkgrel = 1
+	url = https://github.com/janlelis/unicode-emoji
+	arch = any
+	license = MIT
+	checkdepends = ruby-rake
+	checkdepends = ruby-minitest
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-unicode-version
+	options = !emptydirs
+	source = ruby-unicode-emoji::git+https://github.com/janlelis/unicode-emoji#tag=v4.3.0
+	source = ruby-unicode-emoji-4.3.0-emoji-test.txt::https://www.unicode.org/Public/emoji/latest/emoji-test.txt
+	sha512sums = a6e191a2635fce1c970503c9287d89cabd0c92564994dbac63ce4eca87cbcf53154626abf8341ad043b84e9572c6ec6df0855d27f19b430e23664d9e40fcb64d
+	sha512sums = c4d1a38ddcfe9ed6036865a0494ca9a49fa06ffdf66029b8af6300862137c47c0d96ab8dcfe73b55c670af5de55726a9269682b529ca9b9804b3bb1ed8e30b40
+	b2sums = ebbc806a8129c441bc23eca9344c5fee24c686428cb4055004ebc7088fe82a0d6ad6b26f484a87c19f95eda9989dc2e9da6f07fadb9883ae0e1d810eb081852c
+	b2sums = 83d69fcb279227f6b6ca2ecfc805465684a5eabe8ddac41f9fd4d9c65ab5bd183b8628e2bec4b78dc6e0c8d118138934614f0e24295e8474064646ebc9daeaaa
+
+pkgname = ruby-unicode-emoji

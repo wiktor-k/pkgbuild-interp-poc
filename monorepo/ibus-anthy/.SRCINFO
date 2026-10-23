@@ -1,0 +1,19 @@
+pkgbase = ibus-anthy
+	pkgdesc = Japanese input method Anthy IMEngine for IBus Framework
+	pkgver = 1.5.18
+	pkgrel = 1
+	url = https://github.com/ibus/ibus-anthy
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = intltool
+	makedepends = gobject-introspection
+	depends = ibus
+	depends = anthy
+	depends = python
+	depends = gtk-update-icon-cache
+	depends = python-gobject
+	source = git+https://github.com/ibus/ibus-anthy.git#tag=1.5.18
+	sha512sums = 9669ce0c342a90264172de80444266f51cb449813d64453076d623990af653c54300fb763e0b644b1dfdcfe2f8ca49b4dbedafd4ec72acb5a7361d9720dbda9c
+
+pkgname = ibus-anthy

@@ -1,0 +1,31 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: David Ell <david at bytesizebits dot net>
+
+pkgname=linuxdoc-tools
+pkgver=0.9.86
+pkgrel=1
+pkgdesc="Convert LinuxDoc SGML source into other formats"
+arch=('x86_64')
+url="https://packages.debian.org/sid/linuxdoc-tools"
+license=('GPL')
+depends=('jade')
+makedepends=('texlive-bin' 'texlive-latexrecommended' 'texlive-fontsrecommended')
+optdepends=('groff' 'texlive-bin')
+source=(https://mirrors.edge.kernel.org/debian/pool/main/l/linuxdoc-tools/linuxdoc-tools_${pkgver}.orig.tar.gz)
+sha256sums=('3b02b1a7e2524eda2546819a2bfc609783b62dfd04beaee279c798609c95e977')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  sed -i '/extern int yyleng;/d' rtf-fix/rtf2rtf.l
+  ./configure \
+    --prefix=/usr \
+    --mandir=/usr/share/man \
+    --docdir=/usr/share/doc/$pkgname \
+    --with-texdir=/usr/share/texmf-dist/tex/linuxdoc
+  make
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make DESTDIR="$pkgdir/" install
+}

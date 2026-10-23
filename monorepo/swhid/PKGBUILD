@@ -1,0 +1,45 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=swhid
+pkgver=0.2.2
+pkgrel=2
+pkgdesc="Reference implementation of the Software Hash Identifier (SWHID) standard - ISO 18670"
+url='https://github.com/swhid/swhid-rs'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/swhid/swhid-rs/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('9f79465de20825c0c093f11b786ab25e6b19353b233993c613c30236853f270d')
+b2sums=('5a5e296c8f35af0e192e4469cf62833d10566cb5cc8a969be4522c1db57ec5179f22d319f360d3a384a94fb109bebccd11f550cbb38ccdf8c457366284797d08')
+
+prepare() {
+  cd "${pkgname}-rs-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-rs-${pkgver}"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-rs-${pkgver}"
+  cargo test --frozen
+  target/release/swhid --help
+}
+
+package() {
+  cd "${pkgname}-rs-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/swhid
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

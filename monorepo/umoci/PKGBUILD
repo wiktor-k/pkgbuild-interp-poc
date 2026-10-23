@@ -1,0 +1,39 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Stefan Agner <stefan@agner.ch>
+# Contributor: Samadi van Koten
+
+pkgname=umoci
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="Umoci Modifies Open Container Images"
+arch=('x86_64')
+url="https://umo.ci/"
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go' 'go-md2man')
+source=("git+https://github.com/opencontainers/$pkgname.git#tag=v$pkgver")
+sha256sums=('2603502059c2f577241d867ba23bf88bc0a06316e14ed4ac015b43336e9e4fa2')
+
+prepare() {
+  rm -rf "$srcdir/src/github.com/opencontainers/$pkgname"
+  mkdir -p "$srcdir/src/github.com/opencontainers"
+  ln -s "$srcdir/$pkgname" "$srcdir/src/github.com/opencontainers/$pkgname"
+}
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  cd "$srcdir/src/github.com/opencontainers/$pkgname"
+  GOPATH="$srcdir" make
+  GOPATH="$srcdir" make docs
+}
+
+package() {
+  cd "$srcdir/src/github.com/opencontainers/$pkgname"
+  install -Dm 755 -t "$pkgdir/usr/bin" umoci
+  install -Dm 644 -t "$pkgdir/usr/share/man/man1" doc/man/*1
+}

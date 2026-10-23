@@ -1,0 +1,51 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+
+_name=pymediainfo
+pkgname=python-pymediainfo
+pkgver=7.0.1
+pkgrel=1
+pkgdesc="A Python wrapper around the MediaInfo library"
+arch=('any')
+url="https://github.com/sbraz/pymediainfo/"
+license=('MIT')
+depends=(
+  'libmediainfo'
+  'python'
+  'python-importlib-metadata'
+)
+makedepends=(
+  'mediainfo'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-setuptools-scm'
+  'python-wheel'
+  'python-pdm-backend'
+  'python-myst-parser'
+)
+checkdepends=(
+  'python-pytest'
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('040de008bc0836d7008bdc15fca28479f3e82d6745c528fc644aa134c051d56b8569976d4aa858bf6d2c552da6d540a15040c4237bbdd8a6ba622827fca6f97b')
+b2sums=('db2622a8e1b013bdd4a44cb27499a56e39bcd20ea97007a784668231df47b00e07a5b8d3dc35066581328025c49852a5123ac0a71d26899aa1cadcc4279abad6')
+
+build() {
+  cd $_name-$pkgver
+  PDM_BUILD_SCM_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  python -m installer --destdir=check dist/*.whl
+  export PYTHONPATH="$PWD/check/usr/lib/python3.14/site-packages:$PYTHONPATH"
+  pytest -vv
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {AUTHORS,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

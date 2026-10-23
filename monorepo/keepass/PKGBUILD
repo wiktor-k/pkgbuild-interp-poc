@@ -1,0 +1,61 @@
+# Maintainer: Giancarlo Razzolini <grazzolini@archlinux.org>
+# Contributor: Timothy Redaelli <timothy.redaelli@gmail.com>
+# Contributor: Kirill "reflexing" Churin <reflexing@reflexing.ru>
+# Contributor: Andrej Gelenberg <andrej.gelenberg@udo.edu>
+
+pkgname=keepass
+pkgver=2.61.1
+pkgrel=1
+pkgdesc='Easy-to-use password manager for Windows, Linux, Mac OS X and mobile devices'
+arch=('any')
+url='https://keepass.info/'
+license=('GPL-2.0-or-later')
+depends=(
+  'bash'
+  'hicolor-icon-theme'
+  'mono'
+)
+makedepends=(mono-msbuild)
+optdepends=('argon2: For faster Argon2d and Argon2id'
+            'libgcrypt: For faster AES-KDF'
+            'xdotool: if you want to use auto-type'
+            'xsel: clipboard operations in order to work around Mono clipboard bugs')
+source=("https://downloads.sourceforge.net/keepass/KeePass-$pkgver-Source.zip"
+        "https://keepass.info/integrity/v2/KeePass-$pkgver-Source.zip.asc"
+        'keepass'
+        'keepass.1'
+        'keepass.desktop'
+        'keepass.xml')
+sha256sums=('711bd9ec7076661678469e51bae876debac07a08c32f1b1c6b3b8fe5e761c13a'
+            'SKIP'
+            '05e63a028198ff32d4b26a892923a821066541f0cf798f5be8c138739bc22fbe'
+            'a5fff678466443c0c8256c4771128c86103da47b6a2c49351d9941191b65dd6f'
+            '1d5420e8babce5f4bbb3c68bdffe3bc0d3c3be25ad689138cd02fa14edd89140'
+            '3d017c17a8788166c644e2460ba3596fd503f300342561921201fe5f69e5d194')
+validpgpkeys=('D95044283EE948D911E8B606A4F762DC58C6F98E')
+
+prepare() {
+  cd Build
+  LANG=en_US.UTF-8 bash PrepMonoDev.sh
+}
+
+build() {
+  msbuild /property:Configuration=Release KeePass/KeePass.csproj
+  cp Ext/KeePass.exe.config Build/KeePass/Release/
+}
+
+package() {
+  install -vDm 755 $pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 755 Build/KeePass/Release/KeePass.exe -t "$pkgdir/usr/share/$pkgname/"
+  install -vDm 644 Ext/KeePass.{config.xml,exe.config} -t "$pkgdir/usr/share/$pkgname/"
+  install -vDm 644 Ext/XSL/*.xsl -t "$pkgdir/usr/share/$pkgname/XSL/"
+  install -vDm 644 $pkgname.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 $pkgname.desktop -t "$pkgdir/usr/share/applications/"
+
+  # Install icons
+  for size in 16 32 48 256 512 1024; do
+    install -vDm 644 Ext/Icons_15_VA/KeePass_Round/KeePass_Round_${size}.png "$pkgdir"/usr/share/icons/hicolor/${size}x${size}/apps/$pkgname.png
+  done
+
+  install -vDm 644 $pkgname.xml -t "$pkgdir"/usr/share/mime/packages/
+}

@@ -1,0 +1,97 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+
+_gemname='faraday-net_http'
+pkgname="ruby-${_gemname}"
+pkgver=3.3.0
+pkgrel=1
+pkgdesc='Faraday adapter for Net::HTTP'
+arch=('any')
+url='https://github.com/lostisland/faraday-net_http'
+license=('MIT')
+depends=(
+  ruby
+)
+makedepends=(
+  ruby-rspec
+)
+checkdepends=(
+  ruby-bundler
+  ruby-faraday
+  ruby-rake
+  ruby-webmock
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${_gemname}-v${pkgver}.tar.gz")
+sha512sums=('99f4dd8b68565caf44a8e2a33e7c7ec5d7db523a213a5da1842456624c7db59dd3ee5852a0e3d32a84b2a199761402f08d6acf97a16176246e82277b16dfe576')
+b2sums=('49c8602a8c1aab68698216d9002f3a5c27594e0a694819f10ddc4e9346810dc3ab1e707f5b94ba69b1ecfb8f92fdc86071c7ba3c7ab3bdb1d7800adfd2e9a887')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rake spec
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.* --target-directory "${pkgdir}/usr/share/licenses/${pkgname}/"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

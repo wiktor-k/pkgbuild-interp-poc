@@ -1,0 +1,16 @@
+pkgbase = webhook
+	pkgdesc = A lightweight incoming webhook server to run shell commands
+	pkgver = 2.8.3
+	pkgrel = 1
+	url = https://github.com/adnanh/webhook
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	source = git+https://github.com/adnanh/webhook.git#tag=2.8.3
+	source = webhook.service
+	sha512sums = 4978ec2620428f94fd6e70f0c5854d5f18a7607b41f918eaed2806fb5262086097c7137def5a9ba93f68cc7ba9ac10727038c8f9738b1d0a5651e85f0db50ff5
+	sha512sums = 2f8c46354777050a07001156e3e94821fce43a491712e88b8930a5081060506b0b8de8d05c9ac057aa2891ff73ef855772373299006edbc62b1734af529a2014
+
+pkgname = webhook

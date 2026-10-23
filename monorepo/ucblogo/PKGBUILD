@@ -1,0 +1,33 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: chiku <chirantan.mitra@gmail.com>
+
+pkgname=ucblogo
+pkgver=6.2.5
+pkgrel=4
+pkgdesc='Interpreter for the Logo programming language'
+url='https://www.cs.berkeley.edu/~bh/logo.html'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+makedepends=(git texinfo texlive-bin texlive-basic)
+depends=(libice libsm libx11 ncurses wxwidgets-gtk3)
+source=("$pkgname::git+https://github.com/jrincayc/ucblogo-code#tag=version_$pkgver"
+        configure.patch)
+b2sums=('dd14f330a5127b43328c2c516937c28d8b4536d5f2da3cb9600899b602d1df5690649eef68761cd21ed01ed91e226db578dffd42cf0c40a6b8bbdc47bf741b81'
+        '609a8a2304d6867a83a581dfa8065c05c6847c0983a29fce39efdfc18cfecfeca54989937f472c4339b2bc7fa4bce51951083d2d48b33614bf751dc67abd0e61')
+
+prepare() {
+  cd $pkgname
+  patch -p1 -i ../configure.patch
+  autoreconf -i
+}
+
+build() {
+  cd $pkgname
+  CXXFLAGS+=" -Wno-template-body" \
+  ./configure --enable-docs --prefix=/usr
+  make
+}
+
+package() {
+  make -C $pkgname DESTDIR="$pkgdir" INFODIR="$pkgdir/usr/share/info" install
+}

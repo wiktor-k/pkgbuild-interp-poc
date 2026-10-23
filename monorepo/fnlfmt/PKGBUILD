@@ -1,0 +1,39 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=fnlfmt
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='A formatter for Fennel code'
+arch=('any')
+url='https://git.sr.ht/~technomancy/fnlfmt'
+license=('MIT')
+depends=('lua')
+makedepends=('git')
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('02f87eb43809caaa11cf7bcc3ce4b40ddd439935702b4957bae1f2bc0f3c233d23975f28481e17ea622fc4c4a6e9c651bd5a7e70abc91587113caea046dc474e')
+b2sums=('3c80126ce96e59374bdaca3ad60ac9fd873f451175ad0ecccff564ec92c3ef1f7446e4cec0f14268f65a7dc48a16efc6638174ea9eeb04890b20f9d7e22d0b4b')
+
+build() {
+  cd "$pkgname"
+
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  make test
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" fnlfmt
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

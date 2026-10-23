@@ -1,0 +1,19 @@
+pkgbase = rmpc
+	pkgdesc = A beautiful and configurable TUI client for MPD
+	pkgver = 0.11.0
+	pkgrel = 2
+	url = https://mierak.github.io/rmpc/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cargo
+	makedepends = desktop-file-utils
+	depends = gcc-libs
+	optdepends = yt-dlp: for youtube playback
+	optdepends = ffmpeg: for youtube playback
+	optdepends = python-mutagen: for youtube playback
+	optdepends = ueberzugpp: for alternative album art method
+	optdepends = cava: for visualizer
+	source = rmpc-0.11.0.tar.gz::https://github.com/mierak/rmpc/archive/v0.11.0.tar.gz
+	sha256sums = 930019066228d18e9530a8c0d77f10e231ab5efbbbca73b331efcd6fbb47557d
+
+pkgname = rmpc

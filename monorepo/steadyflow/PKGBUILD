@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: M0Rf30
+# Contributor: Dan Serban
+# Contributor: zbito <ztokarczyk at gmail dot com
+
+pkgname=steadyflow
+pkgver=0.2.0
+pkgrel=13
+pkgdesc='Simple GTK based download manager'
+arch=(x86_64)
+url='https://launchpad.net/steadyflow'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  gvfs
+  hicolor-icon-theme
+  libappindicator
+  libgee
+  libnotify
+)
+makedepends=(
+  cmake
+  ninja
+  vala
+)
+source=(
+  "https://launchpad.net/$pkgname/trunk/$pkgver/+download/$pkgname-$pkgver.tar.xz"
+  steadyflow-fixes.patch
+  steadyflow.appdata.xml
+)
+b2sums=(
+  60cb5446fa0ed7bba4e346604967161e431de2bb09cda72bc2ce5e36e408a3dd3de97564d36a17552d44597227ff8fdc05644e0cee67911cfe340b18ba8ab9b4
+  e876f24ddd73ed608fed0dc2498fe56b2f070120698515af02f2ae83f71d24501e17abf6bc37a12e5d42c3385e3528d86577624e2597f98d9f5f185e65e3a2f5
+  e05a1501d8cd72474e06407e794f089dbe57d49ce02699ecbf0f30a762bf81ee056cec7bc0330a43cdca8e39f0da98e8d9d1d67fa584fb839fde503c2f725a5d
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Various fixes
+  patch -Np1 -i ../steadyflow-fixes.patch
+}
+
+build() {
+  cmake -S $pkgname-$pkgver -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -D COMPILE_GSETTINGS_ON_INSTALL=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 steadyflow.appdata.xml "$pkgdir/usr/share/metainfo/steadyflow.appdata.xml"
+}

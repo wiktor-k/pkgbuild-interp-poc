@@ -1,0 +1,38 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=age-plugin-tkey
+pkgver=0.0.6
+pkgrel=1
+pkgdesc='Tillitis TKey plugin for age'
+arch=(x86_64)
+url="https://github.com/quite/$pkgname"
+license=(GPL2)
+depends=(glibc)
+makedepends=(go)
+optdepends=('age: for use with age'
+            'rage-encryption: for use with rage')
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('d37af3cfcaa2513b7c8f2f8fe66e81c70e15ed3afcd3153fd5196b1d4851a9d9')
+
+build() {
+	cd "$_archive"
+	go build \
+		-trimpath \
+		-buildmode=pie \
+		-mod=readonly \
+		-modcacherw \
+		-ldflags "-linkmode external -extldflags \"$LDFLAGS\"" \
+		-o . ./cmd/$pkgname
+}
+
+check() {
+	cd "$_archive"
+	go test ./...
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$pkgname"
+	install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

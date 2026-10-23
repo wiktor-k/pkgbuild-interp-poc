@@ -1,0 +1,17 @@
+pkgbase = cgdb
+	pkgdesc = Curses-based interface to the GNU Debugger
+	pkgver = 0.8.0
+	pkgrel = 2
+	url = http://cgdb.github.io/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = help2man
+	depends = readline>=5.1
+	depends = ncurses
+	depends = gdb
+	source = 0.8.0-cgdb.tar.gz::https://github.com/cgdb/cgdb/archive/v0.8.0.tar.gz
+	source = cgdb-0_8_0-2-fix-readline-version-detection.patch
+	sha512sums = e2b653db472de2014402dae6d13953ab811526a47ad5d7a05e34cfba09f44d6fea6b19304b9205ff0e2ac9549ffa5818f4282d7c03293b6c0ca9d563f9ae89e1
+	sha512sums = 15c367fa32af5b728edd4f31d4856c67e243dddc3775bb5970e74f3e6c887e6e220f50ba5ae35a748b6550150b6eedf6608d8406b6b5939e3f22a0e0ff6c5ed1
+
+pkgname = cgdb

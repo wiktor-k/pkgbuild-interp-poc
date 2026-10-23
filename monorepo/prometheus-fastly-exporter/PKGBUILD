@@ -1,0 +1,50 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=prometheus-fastly-exporter
+_pkgname=fastly-exporter
+pkgver=10.3.0
+pkgrel=1
+pkgdesc="A Prometheus exporter for the Fastly Real-time Analytics API"
+url="https://github.com/fastly/fastly-exporter"
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('git' 'go')
+provides=("${_pkgname}")
+replaces=("${_pkgname}")
+backup=("etc/conf.d/${pkgname}")
+source=("git+${url}.git#tag=v${pkgver}?signed"
+        "${pkgname}.service"
+        "${pkgname}.conf")
+sha256sums=('739af3addc434b1ff180e056905d284cb041a900a4201bc6484aaf623c197005'
+            '5bc88b49e96e1778c9f4e01f4723fa25a1f1cf54f0757febaabeb4016d4cf773'
+            '42c9d577ada85a5bb35fea5879142523c19593814340ec6fb8ad079e568c4945')
+validpgpkeys=('579A3981735976C495E14BBD5502B4407A5DED4D') # Lukas Eklund <leklund@gmail.com>
+
+prepare(){
+	cd "${_pkgname}"
+	mkdir -p build/
+}
+
+build() {
+	cd "${_pkgname}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+	go build -ldflags="-linkmode=external -s -w -buildid=''" -o "build" ./cmd/...
+}
+
+check() {
+	cd "${_pkgname}"
+	go test ./...
+}
+
+package() {
+	cd "${_pkgname}"
+	install -Dm 755 "build/${_pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 "${srcdir}/${pkgname}.service" "${pkgdir}/usr/lib/systemd/system/${pkgname}.service"
+	install -Dm 644 "${srcdir}/${pkgname}.conf" "${pkgdir}/etc/conf.d/${pkgname}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

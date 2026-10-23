@@ -1,0 +1,36 @@
+pkgbase = retext
+	pkgdesc = A simple editor for Markdown and ReStructuredText markup languages
+	pkgver = 8.1.0
+	pkgrel = 2
+	url = https://github.com/retext-project/retext
+	arch = any
+	license = GPL-2.0-or-later
+	checkdepends = python-chardet
+	checkdepends = python-docutils
+	checkdepends = python-pymdown-extensions
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = imagemagick
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = qt6-tools
+	depends = hicolor-icon-theme
+	depends = python
+	depends = python-chardet
+	depends = python-docutils
+	depends = python-markdown
+	depends = python-markups>=2.0.0
+	depends = python-pygments
+	depends = python-pyqt6
+	depends = xdg-utils
+	optdepends = python-pyqt6-webengine: for WebEngine preview
+	optdepends = python-pyenchant: for spell checking support
+	source = git+https://github.com/retext-project/retext#tag=8.1.0?signed
+	source = x-retext-rst.xml
+	validpgpkeys = F24299FF1BBC9018B906A4CB6026936D2F1C8AE0
+	sha256sums = f7f2e53a17d43966924a889e4f70cfebfe0d25b1c447aad54b5eb7f7eb52a4bd
+	sha256sums = 6fef80cccb14813d9cc74810c397a6cd7831d1ca243536759a47c6e8b6cc977a
+
+pkgname = retext

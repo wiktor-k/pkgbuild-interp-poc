@@ -1,0 +1,37 @@
+pkgbase = cosmic-settings
+	pkgdesc = The settings application for the COSMIC desktop environment
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-settings
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = git
+	makedepends = just
+	makedepends = mold
+	depends = accountsservice
+	depends = adw-gtk-theme
+	depends = cosmic-icon-theme
+	depends = cosmic-randr
+	depends = fontconfig
+	depends = libgcc
+	depends = glibc
+	depends = iso-codes
+	depends = libinput
+	depends = libpipewire
+	depends = libpulse
+	depends = libxkbcommon
+	depends = networkmanager
+	depends = nm-connection-editor
+	depends = pipewire-pulse
+	depends = systemd-libs
+	depends = ttf-opensans
+	depends = wayland
+	optdepends = power-profiles-daemon: power profiles support
+	source = git+https://github.com/pop-os/cosmic-settings.git#tag=epoch-1.10.0
+	b2sums = 6cd3d1a62796f03016bb6c1c6354f93a0f5878668c45903101f4786de2934a6f2288241c85e64a1df4eb584bfea4ebfa0e99d4e4e5e065c57a743577b881b309
+
+pkgname = cosmic-settings

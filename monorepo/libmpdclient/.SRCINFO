@@ -1,0 +1,18 @@
+pkgbase = libmpdclient
+	pkgdesc = C library to implement a MPD client
+	pkgver = 2.27
+	pkgrel = 1
+	url = https://www.musicpd.org/libs/libmpdclient/
+	arch = x86_64
+	license = BSD-2-Clause
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = meson
+	depends = glibc
+	provides = libmpdclient.so
+	source = git+https://github.com/MusicPlayerDaemon/libmpdclient.git?signed#tag=v2.27
+	validpgpkeys = 0392335A78083894A4301C43236E8A58C6DB4512
+	sha512sums = a02d61a8d8d64b631d8faeabe1e4769e59b5cf1aca09a445fecb0e5197ce1fff8332521d06296ffdd9cf3078961773022783d765286d41281696d205bf263e7c
+	b2sums = aa27e4357b1a2b097dbe0498edb9bc949c2ba7491876df75aac4b780b9e2af683e5d574e35602015f32e6c7b4bcf51d5ceb428fee80d5bf1e219e6d49d82f2b0
+
+pkgname = libmpdclient

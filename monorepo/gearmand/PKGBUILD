@@ -1,0 +1,49 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Contributor: Lev Lybin <lev.lybin@gmail.com>
+# Contributor: Vadym Abramchuk <abramm@gmail.com>
+# Contributor: John Gerritse <reaphsharc@gmail.com>
+
+pkgname=gearmand
+pkgver=2.2.0
+pkgrel=1
+pkgdesc="Distributed job queue server."
+arch=('x86_64')
+depends=('glibc' 'libgcc' 'libstdc++' 'libevent' 'util-linux-libs' 'openssl' 'boost-libs' 'mariadb-libs' 'postgresql-libs' 'sqlite' 'hiredis')
+makedepends=('boost' 'gperf' 'python-sphinx')
+conflicts=('gearman')
+replaces=('gearman')
+provides=("gearman=$pkgver")
+url="http://gearman.org/"
+license=('BSD-3-Clause')
+backup=('etc/gearmand.conf')
+source=(https://github.com/gearman/$pkgname/releases/download/$pkgver/$pkgname-$pkgver.tar.gz
+        gearmand.service
+        gearmand.conf
+        user.conf)
+sha256sums=('fec69ec0e893147a9eb8bfa203e173cc5598adc372e307fea12d587d13071d75'
+            '1ce84be1a03697ababe099889c80abac79262f625e8591f83a325827ff6e091d'
+            '6c14fdcd94105338e13bdd59dbed4f9b77430a517b2c125ac2e6d3bc43bdf506'
+            'eeb9e706dc4216b704c08daa7e60e80cd9f6cef1c17bc67d02612271742abca5')
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --sysconfdir=/etc \
+    --localstatedir=/run \
+    --disable-static \
+    --enable-ssl
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  install -Dm644 COPYING "$pkgdir"/usr/share/licenses/$pkgname/COPYING
+
+  cd "$srcdir"
+  install -Dm644 gearmand.service "$pkgdir"/usr/lib/systemd/system/gearmand.service
+  install -Dm644 gearmand.conf "$pkgdir"/etc/gearmand.conf
+  install -Dm644 user.conf "$pkgdir"/usr/lib/sysusers.d/gearmand.conf
+}

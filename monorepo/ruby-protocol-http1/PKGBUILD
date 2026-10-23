@@ -1,0 +1,81 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-protocol-http1
+pkgver=0.41.1
+pkgrel=1
+pkgdesc='A low level implementation of the HTTP/1 protocol'
+arch=(any)
+url='https://github.com/socketry/protocol-http1'
+license=(MIT)
+depends=(
+  ruby
+  ruby-protocol-http
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-sus
+  ruby-traces
+)
+options=(!emptydirs)
+source=(git+https://github.com/socketry/protocol-http1.git#tag=v$pkgver)
+sha512sums=('c62e6af60c604debe7fb4bdd0b30ac4b191a4e0a87c4fb9f6554731122bb51380b9cc773ef5b8fe373732561ffa0b6b96e4e3a262d4e19b0afa6745ad25aaec9')
+
+prepare() {
+  cd protocol-http1
+
+  sed -i -r \
+    -e 's|~>|>=|g' \
+    -e '/signing_key/d' \
+    protocol-http1.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd protocol-http1
+  gem build protocol-http1.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    protocol-http1-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd protocol-http1
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd protocol-http1
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

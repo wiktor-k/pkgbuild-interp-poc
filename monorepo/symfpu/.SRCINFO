@@ -1,0 +1,14 @@
+pkgbase = symfpu
+	pkgdesc = A symbolic IEEE-754 floating-point library
+	pkgver = 1.2.0
+	pkgrel = 1
+	url = https://github.com/martin-cs/symfpu
+	arch = any
+	license = BSD-3-Clause OR GPL-3.0-only
+	makedepends = git
+	source = git+https://github.com/martin-cs/symfpu.git#tag=symfpu-1.2.0-dual-license
+	source = smtlib-min-max.patch
+	sha256sums = 402132d5c3723c03400eb446ccb7b8b061dfc4d5243bb710eed957ff0b9973e1
+	sha256sums = 21ec25a2de6228d6f67b7e20d8cb5245334bfc4ce66c86f10d039fc8e4efabed
+
+pkgname = symfpu

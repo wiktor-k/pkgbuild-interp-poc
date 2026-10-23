@@ -1,0 +1,51 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: fzerorubigd <fzero@rubi.gd>
+
+pkgname=python-cli_helpers
+pkgver=2.15.2
+pkgrel=1
+pkgdesc='Python helpers for common CLI tasks'
+arch=(any)
+url='https://github.com/dbcli/cli_helpers'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-tabulate
+  python-configobj
+  python-wcwidth
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+)
+checkdepends=(python-pytest python-pygments)
+optdepends=('python-pygments: for styles extras')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('edf9ac179e5f2aa0e24e3dbffa78bfea7454dd0d65826ffc7ae27d110f93fd537a3a84ccaf508535fc6beff4255fbb4e91c180fb707e7251f961d0dde39127df')
+b2sums=('9277608601f8b3a7c5f7aa0c72f5a40095a4648f5c918828d133ea22c14af50954a465fbb5e38ff916289083afe58f72f089f7570282c3a859fe1d4ed922bc64')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  pytest -v \
+    --deselect tests/tabular_output/test_tabulate_adapter.py::test_tabulate_wrapper \
+    --deselect tests/tabular_output/test_tabulate_adapter.py::test_style_output_table
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

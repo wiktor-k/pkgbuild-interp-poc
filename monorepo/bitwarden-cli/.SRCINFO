@@ -1,0 +1,21 @@
+pkgbase = bitwarden-cli
+	pkgdesc = The command line vault
+	pkgver = 2026.2.0
+	pkgrel = 1
+	url = https://github.com/bitwarden/clients
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python
+	makedepends = python-setuptools
+	makedepends = npm
+	makedepends = modclean
+	makedepends = fdupes
+	depends = nodejs-lts-jod
+	depends = argon2
+	depends = semver
+	options = !emptydirs
+	source = bitwarden::git+https://github.com/bitwarden/clients.git#tag=cli-v2026.2.0
+	sha512sums = 0d2045a3fcb08c66445c7cbb63f52570f2fe4281033649d1f3a70afc775e5633695c5baa59bfa557bf8d1b9b4e3075e52ea6fca9cd79cb42b950409bf77965ca
+
+pkgname = bitwarden-cli

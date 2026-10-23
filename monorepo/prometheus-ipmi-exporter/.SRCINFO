@@ -1,0 +1,34 @@
+pkgbase = prometheus-ipmi-exporter
+	pkgdesc = Prometheus exporter for IPMI metrics
+	pkgver = 1.10.1
+	pkgrel = 3
+	url = https://github.com/prometheus-community/ipmi_exporter
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = freeipmi
+	backup = etc/prometheus/ipmi-exporter.yml
+	backup = etc/prometheus/ipmi-exporter.env
+	source = prometheus-ipmi-exporter::git+https://github.com/prometheus-community/ipmi_exporter.git#tag=v1.10.1
+	source = systemd.service
+	source = sysusers.conf
+	source = sudoers.conf
+	source = config.yml
+	source = config.env
+	sha512sums = b7713c329d4488e1d615e8a941132d6d8ded6be595ea3bad11a1bea26538ba5bf8ec3ed17c90f6a61552be93e6dafedaa7134c5e3063c024b4b0da20dce79463
+	sha512sums = 3d871b409d8df78d8bc90efe5a0c753c4f742df700404480f9fcf27c8efe0615bf1f3b0a99f70d8deaddb50131eab9ac7ac6cb1a53820cc2afd45e35ba9c17fe
+	sha512sums = bf654d4dad35349c23f4ef91f53b585f899c44f4806b7d9c8de62945711ebf8c751918c3cda0fff106c39b2873a11d2520b829977e4b632070d60e584aed56fd
+	sha512sums = 7be2811049c75f572956ceeba3fc68a5ae52643a09e0275c33e1d8d12acf47e61595db1738cee98dd0437a71927ed254ad99ba5d1fc09a5178bcb18473f43b4a
+	sha512sums = a26a7d379d8577e0f9237218b7d63df25643ae37c9f1a504b4a4ac5421e01cd9ac1a72435bacf16cce25e08a2394367e0d629ac1e877c1831f3c570ffbfafcff
+	sha512sums = 3dc382511dadf808e7a9d412bc4efb31e1c7952646f6d3bf5b16efe603d7136000770a804c55498969839abc26dee51d3ad4dbc22864e61547c2f2b5d7f321b6
+	b2sums = 19ea1be82f92e6d4bc1ac8473221bdfbd300250f4bb8c439a3c8ee1dbee7dfff5054d95ad5da1a9167c2f32e5b2069ecbd88d3431352f6857352e9f9932742b6
+	b2sums = c528c16a774e25b1462780d654268ad0782229562ceab938d27988ad5b1a4a940be7a05542b33ef59fa01dc86b1112d25976d11c4461a18d61a3619eb510f60b
+	b2sums = 5a207a39efa97117e28f356793d1001957309d2912c3be2c6ebe242789a7ce4cd45114526ee7b796704bf3209a35961bc83cc1b29ecf1b2635ebf1c0414c3ec1
+	b2sums = 7289646126dbdd22c9183fa9831d11b5492116daa0bd175ab2b20180cebdfb601edc086e9d7e689ca496f8992926f807d1c45b06d1ead6b85d8ce15c710caaba
+	b2sums = b4390aa6796cfbd2a4595e1aa5ffd250c997def77887cfb48e4e7bba9e044acb51533b5e9c2375aa274eeff27aba31c5df81abdce13228173b9c6da66db4e622
+	b2sums = f041282cf2dcceecadcb4db6b52b626e60a95511438c24ebfcea5de493c61e4cd4d8d7ec3098db7e0d04469cb13bb4b60be46f8c889599f81b741628e44d9a4b
+
+pkgname = prometheus-ipmi-exporter
+	depends = freeipmi
+	depends = glibc

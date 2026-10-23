@@ -1,0 +1,24 @@
+pkgbase = librespot
+	pkgdesc = Open source client library for Spotify
+	pkgver = 0.8.0
+	pkgrel = 5
+	url = https://github.com/librespot-org/librespot
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = alsa-lib
+	depends = glibc
+	depends = gst-plugins-base-libs
+	depends = gstreamer
+	depends = jack
+	depends = libpulse
+	depends = portaudio
+	depends = sdl2
+	optdepends = gst-plugins-base: Audio playback using GStreamer
+	optdepends = gst-plugins-good: Audio playback using GStreamer
+	options = !lto
+	source = git+https://github.com/librespot-org/librespot#tag=v0.8.0
+	sha256sums = 7660f8563c11291ee742b917bfa0f3459c7e57761a50fca6c10a44376d5a48dd
+
+pkgname = librespot

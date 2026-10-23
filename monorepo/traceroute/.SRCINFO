@@ -1,0 +1,16 @@
+pkgbase = traceroute
+	pkgdesc = Tracks the route taken by packets over an IP network
+	pkgver = 2.1.6
+	pkgrel = 1
+	url = http://traceroute.sourceforge.net
+	arch = x86_64
+	license = GPL-2.0-only
+	depends = glibc
+	source = https://downloads.sourceforge.net/traceroute/traceroute-2.1.6.tar.gz
+	source = reproducible-build.patch
+	sha256sums = 9ccef9cdb9d7a98ff7fbf93f79ebd0e48881664b525c4b232a0fcec7dcb9db5e
+	sha256sums = 7da5bb24044f6f4b7289ba7cab6bebed01f1ddbf664101405761ca160b62c9db
+	b2sums = 452daa7cbf5322981a36cc1e155447ea617ed4a0dfa9ef4f67ff7d2c36c7b9bc6145ddb1111eca5489ccc038f30fb0799def27efae1c385e043e9243339361cb
+	b2sums = 6aec98056399e8cf5a6e33a6355314c527bd34a2f704046ac6b7524f60136ede05dc035e2b08c5ac06ed53f0eda5198afff62d05ea8aeababcd679ecb1484a8d
+
+pkgname = traceroute

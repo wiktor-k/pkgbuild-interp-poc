@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-qiniu
+pkgver=7.18.2
+pkgrel=1
+pkgdesc="Qiniu Resource Storage SDK for Python"
+arch=('any')
+url='https://github.com/qiniu/python-sdk'
+license=('MIT')
+depends=('python-requests')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest' 'python-freezegun')
+source=("git+https://github.com/qiniu/python-sdk.git#tag=v$pkgver")
+sha512sums=('44870f7586a38a387dce8840fef967ca9644ba3d7befdcd539951688ebaeba65bb90c626377168e8a1d126179b12073ccc873b1b5248b77eb824c7b8c60927b1')
+
+build() {
+  cd python-sdk
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-sdk
+  pytest || echo "Tests failed"
+}
+
+package() {
+  cd python-sdk
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

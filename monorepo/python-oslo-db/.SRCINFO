@@ -1,0 +1,36 @@
+pkgbase = python-oslo-db
+	pkgdesc = OpenStack Database Pattern Library
+	pkgver = 18.1.1
+	pkgrel = 1
+	url = https://pypi.org/project/oslo.db/18.1.1/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-testresources
+	checkdepends = python-testscenarios
+	checkdepends = python-oslotest
+	checkdepends = python-oslo-context
+	checkdepends = python-stestr
+	checkdepends = python-testtools
+	checkdepends = pifpaf
+	checkdepends = python-psycopg2
+	checkdepends = python-aiosqlite
+	checkdepends = python-pymysql
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python-pbr
+	depends = python-alembic
+	depends = python-debtcollector
+	depends = python-oslo-i18n
+	depends = python-oslo-config
+	depends = python-oslo-utils
+	depends = python-sqlalchemy
+	depends = python-stevedore
+	optdepends = python-testresources: for sqlalchemy test fixtures
+	optdepends = python-testscenarios: for sqlalchemy test fixtures
+	options = !emptydirs
+	source = git+https://github.com/openstack/oslo.db.git#tag=18.1.1
+	sha512sums = 03b4f06448e44163e71bdfadd3e03e8ffd5ce7c2a21bfe5a607c72346b2b193cd5127cb1fab5b45e6c4342b1792df65c3e72e443be5c979337ede3aee3b7cc27
+
+pkgname = python-oslo-db

@@ -1,0 +1,17 @@
+pkgbase = intel-oneapi-umf
+	pkgdesc = Unified Memory Framework
+	pkgver = 1.1.0_340
+	pkgrel = 2
+	url = https://www.intel.com/content/www/us/en/developer/tools/oneapi/overview.html
+	arch = x86_64
+	license = LicenseRef-Intel-Simplified
+	depends = intel-oneapi-common
+	depends = glibc
+	depends = gcc-libs
+	depends = hwloc
+	conflicts = intel-oneapi-basekit
+	noextract = intel-oneapi-umf--1.1.0-340_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-umf-1.1-1.1.0-340_amd64.deb
+	b2sums = 9866450bc041a9a6956c756f82eb2cecb153bc2a3abb0870cc642c316a4caee90bfbfdfd4cbe9cd4c9998efb4dd8950544577a978ea999ab4e23656eec312911
+
+pkgname = intel-oneapi-umf

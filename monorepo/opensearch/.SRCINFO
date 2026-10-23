@@ -1,0 +1,147 @@
+pkgbase = opensearch
+	pkgver = 3.9.0
+	pkgrel = 1
+	url = https://docs.opensearch.org/latest/about/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = java-environment-openjdk=21
+	makedepends = java-environment-openjdk=11
+	makedepends = java-environment-openjdk=17
+	makedepends = unzip
+	source = OpenSearch-3.9.0.tar.gz::https://github.com/opensearch-project/OpenSearch/archive/3.9.0.tar.gz
+	source = opensearch.service
+	source = opensearch@.service
+	source = opensearch-keystore.service
+	source = opensearch-keystore@.service
+	source = opensearch-user.conf
+	source = opensearch-tmpfile.conf
+	source = opensearch.default
+	sha256sums = 9da161af3303cf41be6832358bef5743cafc0c56ffc06617ad1fbbb05ceb3ebd
+	sha256sums = b59d064ce8e348f22b969cc2b7522a1c7b64d4b4e3fd98d9ad1f01d842e94d46
+	sha256sums = 02bfe1e723f6522d7b5bf72d43c7847c4d9329d105b543583aa5b9c952e7d54d
+	sha256sums = 097de1fc6ef1f12e99d2b3def9c9803cf0dd8609aeace608048d599a2cb85c5c
+	sha256sums = a133b8944d57d81224caf03f8d0e5b127f2570123b2a1e2d2f6eb199446448ae
+	sha256sums = 515e509f811a367cfd0a6cbafb3f8f472276410d53df7957aa878d8047a3cfc6
+	sha256sums = eb1ea6146d2bd16eeb63061dfcdb7ebed55da556397c7d6c924941b1564f1f72
+	sha256sums = 66401172f710e80e1f715c89bc6ed5a6d0ad567c58ad03101e59556c52245158
+
+pkgname = opensearch
+	pkgdesc = Open source distributed and RESTful search engine
+	depends = java-runtime-headless=21
+	depends = systemd
+	depends = libxml2
+	optdepends = opensearch-analysis-icu-plugin
+	optdepends = opensearch-analysis-kuromoji-plugin
+	optdepends = opensearch-analysis-nori-plugin
+	optdepends = opensearch-analysis-phonetic-plugin
+	optdepends = opensearch-analysis-smartcn-plugin
+	optdepends = opensearch-analysis-stempel-plugin
+	optdepends = opensearch-analysis-ukrainian-plugin
+	optdepends = opensearch-discovery-azure-classic-plugin
+	optdepends = opensearch-discovery-ec2-plugin
+	optdepends = opensearch-discovery-gce-plugin
+	optdepends = opensearch-ingest-attachment-plugin
+	optdepends = opensearch-mapper-annotated-text-plugin
+	optdepends = opensearch-mapper-murmur3-plugin
+	optdepends = opensearch-mapper-size-plugin
+	optdepends = opensearch-repository-azure-plugin
+	optdepends = opensearch-repository-gcs-plugin
+	optdepends = opensearch-repository-hdfs-plugin
+	optdepends = opensearch-repository-s3-plugin
+	optdepends = opensearch-store-smb-plugin
+	optdepends = opensearch-alerting-plugin
+	optdepends = opensearch-anomaly-detection-plugin
+	optdepends = opensearch-asynchronous-search-plugin
+	optdepends = opensearch-cross-cluster-replication-plugin
+	optdepends = opensearch-geospatial-plugin
+	optdepends = opensearch-ml-commons-plugin
+	optdepends = opensearch-notifications-plugin
+	optdepends = opensearch-neural-search-plugin
+	optdepends = opensearch-index-management-plugin
+	optdepends = opensearch-job-scheduler-plugin
+	optdepends = opensearch-knn-plugin
+	optdepends = opensearch-observability-plugin
+	optdepends = opensearch-performance-analyzer-plugin
+	optdepends = opensearch-reports-scheduler-plugin
+	optdepends = opensearch-security-plugin
+	optdepends = opensearch-sql-plugin
+	backup = etc/opensearch/opensearch.yml
+	backup = etc/opensearch/log4j2.properties
+	backup = etc/opensearch/jvm.options
+	backup = etc/default/opensearch
+
+pkgname = opensearch-analysis-icu-plugin
+	pkgdesc = The ICU Analysis plugin integrates the Lucene ICU module into OpenSearch, adding ICU-related analysis components.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-kuromoji-plugin
+	pkgdesc = The Japanese (kuromoji) Analysis plugin integrates Lucene kuromoji analysis module into opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-nori-plugin
+	pkgdesc = The Korean (nori) Analysis plugin integrates Lucene nori analysis module into opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-phonetic-plugin
+	pkgdesc = The Phonetic Analysis plugin integrates phonetic token filter analysis with opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-smartcn-plugin
+	pkgdesc = Smart Chinese Analysis plugin integrates Lucene Smart Chinese analysis module into opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-stempel-plugin
+	pkgdesc = The Stempel (Polish) Analysis plugin integrates Lucene stempel (polish) analysis module into opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-analysis-ukrainian-plugin
+	pkgdesc = The Ukrainian Analysis plugin integrates the Lucene UkrainianMorfologikAnalyzer into opensearch.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-discovery-azure-classic-plugin
+	pkgdesc = The Azure Classic Discovery plugin allows to use Azure Classic API for the unicast discovery mechanism
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-discovery-ec2-plugin
+	pkgdesc = The EC2 discovery plugin allows to use AWS API for the unicast discovery mechanism.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-discovery-gce-plugin
+	pkgdesc = The Google Compute Engine (GCE) Discovery plugin allows to use GCE API for the unicast discovery mechanism.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-ingest-attachment-plugin
+	pkgdesc = Ingest processor that uses Apache Tika to extract contents
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-mapper-annotated-text-plugin
+	pkgdesc = The Mapper Annotated_text plugin adds support for text fields with markup used to inject annotation tokens into the index.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-mapper-murmur3-plugin
+	pkgdesc = The Mapper Murmur3 plugin allows to compute hashes of a field\'s values at index-time and to store them in the index.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-mapper-size-plugin
+	pkgdesc = The Mapper Size plugin allows document to record their uncompressed size at index time.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-repository-azure-plugin
+	pkgdesc = The Azure Repository plugin adds support for Azure storage repositories.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-repository-gcs-plugin
+	pkgdesc = The GCS repository plugin adds Google Cloud Storage support for repositories.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-repository-hdfs-plugin
+	pkgdesc = The HDFS repository plugin adds support for Hadoop Distributed File-System (HDFS) repositories.
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-repository-s3-plugin
+	pkgdesc = The S3 repository plugin adds S3 repositories
+	depends = opensearch=3.9.0
+
+pkgname = opensearch-store-smb-plugin
+	pkgdesc = The Store SMB plugin adds support for SMB stores.
+	depends = opensearch=3.9.0

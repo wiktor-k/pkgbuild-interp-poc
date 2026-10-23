@@ -1,0 +1,74 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=python-pillow-heif
+pkgname=(
+  python-pillow-heif
+  python-pillow-heif-docs
+)
+pkgver=1.8.1
+pkgrel=1
+pkgdesc='Python bindings to libheif for working with HEIF images and plugin for Pillow'
+arch=(x86_64)
+url='https://github.com/bigcat88/pillow_heif'
+license=(BSD-3-Clause)
+depends=(
+  glibc
+  libheif
+  python
+  python-pillow
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx-issues
+  python-sphinx_rtd_theme
+  python-wheel
+)
+checkdepends=(
+  python-defusedxml
+  python-pytest
+)
+source=("git+https://github.com/bigcat88/pillow_heif.git#tag=v$pkgver")
+b2sums=('ab61fb7bf1807caaf381c3b70497c8f147f7725772f73cc7e400fe0a0cc88457bd89afe133a9ebc2d66b1f0ca0c695fcb8615b97c28b8a69a18ed1965b67dfb6')
+
+build() {
+  cd pillow_heif
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pillow_heif
+  # orientation_test, thumbnails_test and metadata_*_test take forever
+  # options_tests tries to encode an image and fail (reason="No HEVC encoder.") 
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')" \
+    pytest \
+    --deselect tests/orientation_test.py \
+    --deselect tests/metadata_etc_test.py \
+    --deselect tests/metadata_exif_test.py \
+    --deselect tests/metadata_xmp_test.py \
+    --deselect tests/thumbnails_test.py \
+    --deselect tests/options_test.py
+}
+
+package_python-pillow-heif() {
+  conflicts=(python-pillow_heif)
+  provides=("python-pillow_heif=$pkgver")
+  replaces=(python-pillow_heif)
+
+  cd pillow_heif
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.txt
+}
+
+package_python-pillow-heif-docs() {
+  pkgdesc="Developer documentation for python-pillow-heif"
+  depends=()
+
+  cd pillow_heif
+  python -m sphinx -b html docs "$pkgdir/usr/share/doc/$pkgbase/html"
+  rm -r "$pkgdir/usr/share/doc/$pkgbase/html/.doctrees"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.txt
+}

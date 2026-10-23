@@ -1,0 +1,22 @@
+pkgbase = prometheus-fastly-exporter
+	pkgdesc = A Prometheus exporter for the Fastly Real-time Analytics API
+	pkgver = 10.3.0
+	pkgrel = 1
+	url = https://github.com/fastly/fastly-exporter
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	provides = fastly-exporter
+	replaces = fastly-exporter
+	backup = etc/conf.d/prometheus-fastly-exporter
+	source = git+https://github.com/fastly/fastly-exporter.git#tag=v10.3.0?signed
+	source = prometheus-fastly-exporter.service
+	source = prometheus-fastly-exporter.conf
+	validpgpkeys = 579A3981735976C495E14BBD5502B4407A5DED4D
+	sha256sums = 739af3addc434b1ff180e056905d284cb041a900a4201bc6484aaf623c197005
+	sha256sums = 5bc88b49e96e1778c9f4e01f4723fa25a1f1cf54f0757febaabeb4016d4cf773
+	sha256sums = 42c9d577ada85a5bb35fea5879142523c19593814340ec6fb8ad079e568c4945
+
+pkgname = prometheus-fastly-exporter

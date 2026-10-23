@@ -1,0 +1,38 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Kessia 'even' Pinheiro <kessiapinheiro at gmail.com>
+
+pkgname=sniffit
+pkgver=0.7
+pkgrel=1
+pkgdesc="Very good packet sniffer for unix with ncurses interactive mode"
+arch=('x86_64')
+url="https://github.com/resurrecting-open-source-projects/sniffit"
+license=('BSD')
+depends=('ncurses' 'libpcap')
+makedepends=('libtool')
+source=("https://github.com/resurrecting-open-source-projects/sniffit/archive/refs/tags/sniffit-$pkgver.tar.gz")
+sha512sums=('1b7532f7bbba1e535b5a8548bd2e344ce53559cca6df1f7aa9b4424416e4614fa9a64333670d9e59b8da2e47884bcec4f916ce07834c24602e3f2663dbee453f')
+
+build() {
+  cd "${srcdir}/sniffit-sniffit-${pkgver}"
+  test -x ./configure || ./autogen.sh
+  ./configure \
+    --prefix=/usr \
+    --no-recursion \
+    --sbindir=/usr/bin \
+    CFLAGS="-Wno-error -Wno-int-conversion -Wno-incompatible-pointer-types -Wno-unused-result $CFLAGS"
+  make
+}
+
+package() {
+  cd "${srcdir}/sniffit-sniffit-${pkgver}"
+
+  make install DESTDIR="$pkgdir"
+
+  install -dm0755 -g root -o root "$pkgdir"/usr/share/licenses/${pkgname}
+  install -Dm0644 LICENSE "$pkgdir"/usr/share/licenses/${pkgname}
+
+  install -dm0755 -g root -o root "$pkgdir"/usr/share/doc
+  cp -r docs "$pkgdir"/usr/share/doc/sniffit
+  cp -r examples "$pkgdir"/usr/share/doc/sniffit/examples
+}

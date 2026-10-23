@@ -1,0 +1,37 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brian Bidulock <bidulock@openss7.org>
+
+pkgname=perl-extutils-cchecker
+pkgver=0.12
+pkgrel=1
+pkgdesc="configure-time utilities for using C headers, libraries, or OS features"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=('perl' 'perl-extutils-cbuilder')
+makedepends=('perl-test-exception' 'perl-test-fatal' 'perl-module-build')
+url="https://metacpan.org/release/ExtUtils-CChecker"
+source=("http://cpan.metacpan.org/authors/id/P/PE/PEVANS/ExtUtils-CChecker-${pkgver}.tar.gz")
+sha512sums=('d0408d88d6c33de799959f42f296d1d05187a12b943a4aee93a79d608a56d972d0f90e6d64712b2722563ba36fc59092cbfb6608d9a39a97b7c1efebefeab979')
+
+build() {
+  cd "ExtUtils-CChecker-$pkgver"
+  unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1 MODULEBUILDRC=/dev/null
+  /usr/bin/perl Build.PL
+  ./Build
+}
+
+check() {
+  cd "ExtUtils-CChecker-$pkgver"
+unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  export PERL_MM_USE_DEFAULT=1
+  ./Build test
+}
+
+package() {
+  cd "ExtUtils-CChecker-$pkgver"
+  unset PERL5LIB PERL_MM_OPT PERL_MB_OPT PERL_LOCAL_LIB_ROOT
+  ./Build install --installdirs=vendor --destdir="$pkgdir"
+  find "$pkgdir" "(" -name .packlist -o -name perllocal.pod ")" -delete
+}

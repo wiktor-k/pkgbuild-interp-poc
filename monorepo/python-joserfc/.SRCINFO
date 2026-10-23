@@ -1,0 +1,22 @@
+pkgbase = python-joserfc
+	pkgdesc = Implementations of JOSE RFCs in Python
+	pkgver = 1.7.5
+	pkgrel = 1
+	url = https://github.com/authlib/joserfc
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-pycryptodome
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-cryptography
+	optdepends = python-pycryptodome: for draft RFCs
+	source = git+https://github.com/authlib/joserfc?signed#commit=1.7.5
+	validpgpkeys = 72F8E895A70CEBDF4F2ADFE07E55E3E0118B2B4C
+	b2sums = 2d2a1d32cdf50ad6cea60b82559757553f540107d4d0907f43b6002382663d632f338341d7e20a486ae5f4f893f7cae9967e092eb3b7f68addbc0c9f68fefe1c
+
+pkgname = python-joserfc

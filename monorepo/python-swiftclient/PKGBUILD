@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-swiftclient
+pkgver=4.11.0
+pkgrel=1
+pkgdesc="An SDK for building applications to work with OpenStack"
+arch=('any')
+url="https://docs.openstack.org/python-swiftclient"
+license=('Apache-2.0')
+depends=('python-requests')
+optdepends=('python-keystoneclient: for Auth versions 2.0 and 3 support')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel' 'python-pbr')
+checkdepends=('python-keystoneauth1' 'python-stestr' 'python-openstacksdk' 'python-keystoneclient' 'python-openstackclient')
+source=("git+https://github.com/openstack/python-swiftclient.git#tag=$pkgver")
+sha512sums=('f6bdadcff5e800270639f25bd14e842a1a04909a30ea9b76431d225e9a53e745e5b2d8da66e970444aa0f7e95ea348911336d51cc8509f30efa2388c395b3afe')
+
+build() {
+  cd python-swiftclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-swiftclient
+  stestr run
+}
+
+package() {
+  cd python-swiftclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,37 @@
+# Maintainer: ptr1337 <ptr1337@users.noreply.github.com>
+
+pkgname=dav2d
+pkgver=0.0.1
+pkgrel=1
+pkgdesc='AV2 decoder from VideoLAN'
+arch=('x86_64')
+url='https://code.videolan.org/videolan/dav2d'
+license=('BSD-2-Clause')
+depends=(
+  glibc
+)
+makedepends=(
+  git
+  meson
+  ninja
+  nasm
+)
+provides=('libdav2d.so')
+source=("$pkgname::git+$url.git#tag=$pkgver")
+b2sums=('dd6ed7208703f7eb10287d66a902bdc049b381e89c0fcb916edd72e6dd96624713858f98ce618a261f95fc1eba75fd06c4ce91a9ff876701b654c197b9ea88a5')
+
+build() {
+  local meson_options=(
+    -Denable_docs=false
+    -Denable_examples=false
+    -Denable_tests=false
+  )
+
+  arch-meson "$pkgname" build "${meson_options[@]}"
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 "$pkgname/COPYING" "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

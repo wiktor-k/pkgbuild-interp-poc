@@ -1,0 +1,15 @@
+pkgbase = encpipe
+	pkgdesc = Encrypt data from stdin to stdout with libhydrogen
+	pkgver = 0.5
+	pkgrel = 4
+	url = https://github.com/jedisct1/encpipe
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	depends = glibc
+	source = git+https://github.com/jedisct1/encpipe.git#tag=0.5
+	source = ldflags.patch
+	b2sums = ddba4ba2a0875ad3f8cd79b74250500dc7cfc21d57976b9683e84b022cc202a142fe7761e735da15010acc6988f3c87f1ee98ff44d713c0bc429b6b6d50e05f0
+	b2sums = 7f874694b9af75592f44cc037a032099e56b2d83459da95ae02e6bc6d76b4e3a7fc3d39fa302141a2666cb1d6a7eb7ce5f2ed0d8bd2dc7885801d73f3b02b8ed
+
+pkgname = encpipe

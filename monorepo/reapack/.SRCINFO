@@ -1,0 +1,37 @@
+pkgbase = reapack
+	pkgdesc = Package manager for the Reaper DAW
+	pkgver = 1.2.6
+	pkgrel = 3
+	url = https://reapack.com
+	arch = x86_64
+	license = GPL-3.0-or-later
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = boost
+	makedepends = ruby
+	makedepends = php
+	makedepends = catch2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = openssl
+	depends = zlib
+	depends = reaper
+	depends = libxml2
+	depends = curl
+	depends = sqlite
+	source = reapack::git+https://codeberg.org/cfillion/reapack#tag=v1.2.6
+	source = github.com-justinfrankel-wdl::git+https://github.com/justinfrankel/WDL
+	source = github.com-justinfrankel-reaper-sdk::git+https://github.com/justinfrankel/reaper-sdk
+	source = reapack-1.2.4.5-system_wide.patch
+	sha512sums = e785b8f1d5fe142251c55329e69f77fa08fadb34983fcfa3f7df5cdc6d971eda7545d8050e34258ec63a0841b3ad72af0fce37c13d3d251af4b7b0da276a3f5b
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = 96b3392ee3059d1d7dd8c20039ec278d25c80f8fb0cfacab33738d24e2272f048ab36506fdc7049d2639e3bf7c5c403571568fc0261a278c69e040578f3c157d
+	b2sums = 6dc565343c12629d50f487fc78ae50769127b7d0a2e6f901bfe2417b09853fa6de7c0ebbecac84df8fe70a9c185ef40e23994eeb25da909ede19d70991be1759
+	b2sums = SKIP
+	b2sums = SKIP
+	b2sums = 222e37d29c6b9c3b1593545e3e12c40561a6f44b82234e0ba2b8223da541bc74191d955b98a9c72fc29ceac1a09a8e9d8fa24466524a7296e18c148563ee45e8
+
+pkgname = reapack

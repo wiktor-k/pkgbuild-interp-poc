@@ -1,0 +1,28 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: François Charette <francois ατ archlinux δοτ org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+
+pkgname=jhead
+pkgver=3.08
+pkgrel=3
+pkgdesc='EXIF JPEG info parser and thumbnail remover'
+url="http://www.sentex.net/~mwandel/jhead/"
+arch=('x86_64')
+license=('custom')
+depends=('glibc')
+optdepends=('libjpeg-turbo: to up-right images according to rotation tag')
+source=(https://github.com/Matthias-Wandel/jhead/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('999a81b489c7b2a7264118f194359ecf4c1b714996a2790ff6d5d2f3940f1e9f')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  make
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm755 jhead "${pkgdir}/usr/bin/jhead"
+  install -Dm644 jhead.1 "${pkgdir}/usr/share/man/man1/jhead.1"
+	sed -n '/^License:/,$p' readme.txt | install -vDm644 /dev/stdin "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

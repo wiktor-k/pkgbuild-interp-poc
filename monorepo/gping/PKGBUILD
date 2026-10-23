@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=gping
+pkgver=1.21.0
+pkgrel=1
+pkgdesc="Ping, but with a graph"
+arch=('x86_64')
+url="https://github.com/orf/gping"
+license=('MIT')
+depends=('iputils')
+makedepends=('cargo' 'libgit2')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgname-v$pkgver.tar.gz")
+sha512sums=('38a697ae0316baa519ae589d77b9c1f1e315cdf7e665f8f851f4255a0db0b76c5c1c0fcd278e2a68419529002e2988a60cb279e674fceb5232de22de8044a808')
+options=('!lto')
+
+prepare() {
+  mv "$pkgname-$pkgname-v$pkgver" "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen -- --skip "test_integration_ip6"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 readme.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

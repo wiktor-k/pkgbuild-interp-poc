@@ -1,0 +1,55 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=doggo
+pkgver=1.4.2
+pkgrel=1
+pkgdesc="Command-line DNS Client for Humans"
+arch=('x86_64')
+url="https://github.com/mr-karan/doggo"
+license=('GPL-3.0-only')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'go'
+)
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mr-karan/${pkgname}/archive/v${pkgver}.tar.gz")
+sha512sums=('75ada0e87d4532524ab29304cc8f38f7976aef979e731d97492a42af734843c76ee74bb4657ef14ca09b6a8a8cca21aefc3f3aa0e4989271ce0c2cd747cf5303')
+b2sums=('e3c0a884b9dbb705d30e3909ad1e5dfc1f30de293c88c5ac7cae69917b07ba1a4b7f8ac775fde7708271bf01e68f497bdb90bd3f94e3a8767ec0973905fba54c')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -o build/ \
+    -buildmode=pie \
+    -mod=readonly \
+    -ldflags "-compressdwarf=false -linkmode=external -X main.buildVersion=${pkgver}" \
+    ./...
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  build/doggo --help
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/doggo "${pkgdir}/usr/bin/${pkgname}"
+
+  # install completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completions bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+}
+
+# vim: ts=2 sw=2 et:

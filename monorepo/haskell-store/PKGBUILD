@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=store
+pkgname=haskell-store
+pkgver=0.7.22
+pkgrel=11
+pkgdesc="Fast binary serialization"
+url="https://github.com/mgsloan/store"
+license=('MIT')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-async' 'haskell-base-orphans' 'haskell-base64-bytestring'
+         'haskell-bifunctors' 'haskell-contravariant' 'haskell-cryptohash-sha1' 'haskell-free'
+         'haskell-hashable' 'haskell-hspec' 'haskell-hspec-smallcheck' 'haskell-lifted-base'
+         'haskell-monad-control' 'haskell-mono-traversable' 'haskell-network' 'haskell-primitive'
+         'haskell-resourcet' 'haskell-safe' 'haskell-smallcheck' 'haskell-store-core'
+         'haskell-syb' 'haskell-th-lift' 'haskell-th-lift-instances' 'haskell-th-orphans'
+         'haskell-th-reify-many' 'haskell-th-utilities' 'haskell-unordered-containers'
+         'haskell-vector' 'haskell-void')
+makedepends=('ghc' 'uusi' 'haskell-clock' 'haskell-hspec-discover')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz"
+        "smallcheck-1.2.2.patch::https://github.com/felixonmars/store/commit/f18d531115e8dfb7e64c7f34cf92a3eaef32a675.patch")
+sha512sums=('fb36139cade08116d1ae9aca560048d03d59b5cee00a92b7e76dd5d19323e5c87d62c5ddba2ea0206f25dcddf652e8901076c8b94c676eb3c54489c88bcd1315'
+            '202abff69f04b8e0940df714a0d08f64fd248c06e401befe37ab543109482b0117a6824b22afde8139f8f222f2d5491c7c611b18303d331b1ef0026b1526bf20')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    uusi -d nats $_hkgname.cabal
+
+    patch -p1 -i ../smallcheck-1.2.2.patch
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-comparison-bench -f-small-bench
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

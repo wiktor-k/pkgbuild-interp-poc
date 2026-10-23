@@ -1,0 +1,39 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=pantheon-screenshot
+pkgver=8.0.4
+pkgrel=1
+pkgdesc='The Pantheon Screenshot Tool'
+arch=(x86_64)
+url=https://github.com/elementary/screenshot
+license=(LGPL-3.0-or-later)
+groups=(pantheon)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gtk4
+  libcanberra
+  libgranite-7.so
+  libportal
+)
+makedepends=(
+  cmake
+  git
+  intltool
+  meson
+  vala
+)
+source=(pantheon-screenshot::git+https://github.com/elementary/screenshot.git#tag=${pkgver})
+b2sums=('2c9b93a915469d35dbc96b98379042b35f97c93fa68fc630ed890361d92a6717ae21fe6ba586ca2ce6498f2153f91445482da4bb75866213557c28198398f672')
+
+build() {
+  arch-meson pantheon-screenshot build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:
+

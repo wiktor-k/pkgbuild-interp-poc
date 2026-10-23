@@ -1,0 +1,27 @@
+pkgbase = systing
+	pkgdesc = A libbpf based tracer to help figure out what an application is doing
+	pkgver = 1.28.5
+	pkgrel = 1
+	url = https://github.com/josefbacik/systing
+	arch = x86_64
+	license = MIT
+	makedepends = clang
+	makedepends = git
+	makedepends = rust
+	makedepends = linux
+	makedepends = jq
+	depends = bpf
+	depends = fmt
+	depends = glibc
+	depends = libbpf
+	depends = libcap
+	depends = libelf
+	depends = libgcc
+	depends = re2
+	depends = zlib
+	options = !lto
+	source = systing::git+https://github.com/josefbacik/systing.git#tag=v1.28.5
+	sha512sums = dd62133c6eb07927f9e675a1b58041fcffcbb936e3699e04481bac8c7a195edaba477b5fe323d6186979d648b9b833e1c175d1dc45a6402e398021c5c2586852
+	b2sums = f28450b225c57b4e2926b57d592e5d45965731f63b28270af6e67a1d94cfa122d10754d14ac0ac53cc1e59e00ad7aff1ea6a85395a5d55567768c9012f38e556
+
+pkgname = systing

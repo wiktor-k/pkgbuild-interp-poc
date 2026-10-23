@@ -1,0 +1,63 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=alpm-mtree
+_upstream=alpm
+pkgver=0.4.0
+pkgrel=1
+pkgdesc="A CLI for parsing of ALPM MTREE files"
+arch=(x86_64)
+url="https://alpm.archlinux.page/alpm-mtree/index.html"
+_url="https://gitlab.archlinux.org/archlinux/alpm/alpm.git"
+license=(
+  'Apache-2.0 OR MIT'
+  CC-BY-SA-4.0
+)
+groups=(alpm)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  lowdown
+  rust
+  rust-script
+)
+optdepends=(
+  'alpm-docs: for additional specifications'
+)
+source=($_upstream::git+$_url?signed#tag=$pkgname/$pkgver)
+sha512sums=('576d7048ec2a34fa043c0ffd0bb371764d63b3d52d9f2b23a350d4ee9370c5acd3852607dd47bf42bfd71bf87a5a4dc96f4891b84843f801dc0a68100fc0b6ee')
+b2sums=('abb156337ea06bda2f11ec8e7bd6f009ffb4d8359886cf6e7226866702d5fce5ff1629dca00c1565a93448d25b20d8d212d07118f6f9be0a79e8a47004c214ee')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_upstream
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream
+  cargo build --frozen --release --package $pkgname --features cli
+
+  just generate shell_completions $pkgname
+  just generate specifications $pkgname
+  just generate manpages $pkgname
+}
+
+check() {
+  cd $_upstream
+  cargo test --frozen --package $pkgname
+}
+
+package() {
+  cd $_upstream
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 output/manpages/*.5 -t "$pkgdir/usr/share/man/man5/"
+  install -vDm 644 output/shell_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 output/shell_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 output/shell_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

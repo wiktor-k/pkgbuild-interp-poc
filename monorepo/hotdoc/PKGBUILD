@@ -1,0 +1,91 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+
+pkgname=hotdoc
+pkgver=0.18.3
+pkgrel=1
+pkgdesc="The tastiest API documentation system"
+arch=(x86_64)
+url="https://github.com/hotdoc/hotdoc"
+license=(LGPL-2.1-or-later)
+depends=(
+  bash
+  glib2
+  glibc
+  json-glib
+  libxml2
+  python
+  python-appdirs
+  python-dbus-deviation
+  python-feedgen
+  python-lxml
+  python-networkx
+  python-pkgconfig
+  python-schema
+  python-toposort
+  python-wheezy-template
+  python-yaml
+)
+makedepends=(
+  cmake
+  git
+  meson-python
+  npm
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+optdepends=(
+  'clang: for the C extension'
+  'llvm: for the C extension'
+)
+source=(
+  "git+https://github.com/hotdoc/hotdoc#tag=$pkgver"
+  "$pkgname-cmark::git+https://github.com/MathieuDuponchelle/cmark"
+  "$pkgname-prism::git+https://github.com/PrismJS/prism"
+  "$pkgname-hotdoc_bootstrap_theme::git+https://github.com/hotdoc/hotdoc_bootstrap_theme"
+)
+b2sums=('71d28da16934a9adaf2e8eda658842e296c75e5728393947ae2f88c18608112323e3e5bd409209b29f7f5944a64a8a2a4bd41eb48ec2ae4959cc4a46f23cd53b'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.cmark.url ../$pkgname-cmark
+  git config submodule.hotdoc/extensions/syntax_highlighting/prism.url ../$pkgname-prism
+  git config submodule.hotdoc/hotdoc_bootstrap_theme.url ../$pkgname-hotdoc_bootstrap_theme
+  git -c protocol.file.allow=always submodule update
+
+  # Fix theme CSS dependency tracking with Meson >= 1.12
+  git -C hotdoc/hotdoc_bootstrap_theme cherry-pick -n 551472db5280128c1666d5b862d31f6f76c92d00
+
+  # Place submodules in subprojects/ so meson doesn't clone them
+  cp -a cmark subprojects/cmark
+  cp -a hotdoc/hotdoc_bootstrap_theme subprojects/hotdoc_bootstrap_theme
+}
+
+build() {
+  cd $pkgname
+  # npm >= 12 requires opting in to the theme's Git-based bootstrap-toc dependency
+  npm --prefix subprojects/hotdoc_bootstrap_theme install \
+    --allow-git=root \
+    --ignore-scripts \
+    --omit=dev
+  python -m build --wheel --no-isolation \
+    -Csetup-args=-Dhotdoc_bootstrap_theme:offline=true
+}
+
+check() {
+  cd $pkgname
+  python -m installer -d tmp_install dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m unittest discover "$PWD/tmp_install/$site_packages"
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

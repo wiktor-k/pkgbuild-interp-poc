@@ -1,0 +1,20 @@
+pkgbase = njconnect
+	pkgdesc = Curses JACK connection manager
+	pkgver = 1.7
+	pkgrel = 1
+	url = https://sourceforge.net/projects/njconnect/
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-2.0-only
+	makedepends = jack
+	makedepends = ncurses
+	depends = glibc
+	source = https://sourceforge.net/projects/njconnect/files/njconnect-1.7.tar.xz
+	sha512sums = cd5eec651bb6300040729a8e1cc14ebfc51ff7e6bead04b3bb792e0b7c50eba6dc62e61a09e1614beb3a69c015cdc1c386509d20ccebfe4bd319f140adfaa18e
+
+pkgname = njconnect
+	depends = glibc
+	depends = jack
+	depends = libjack.so
+	depends = ncurses
+	depends = libncursesw.so

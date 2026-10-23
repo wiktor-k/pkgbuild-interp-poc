@@ -1,0 +1,57 @@
+# Maintainer: Carl Smedstad <carl.smedstad at protonmail dot com>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Victor <victor@xirion.net>
+
+pkgname=krew
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="Find and install kubectl plugins"
+arch=(x86_64)
+url="https://github.com/kubernetes-sigs/krew"
+license=(Apache-2.0)
+groups=(kubectl-plugins)
+depends=(
+  git
+  glibc
+  kubectl
+)
+makedepends=(go)
+options=(!lto)
+source=("git+$url#tag=v$pkgver")
+sha256sums=('7ffc8bb910e855b5c1ff92f4f57f17649e003369eecc6ae4d5bf0c478e53aec5')
+
+prepare() {
+  cd $pkgname
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+
+  local ld_flags=" \
+    -X sigs.k8s.io/krew/internal/version.gitCommit=v$(git rev-parse HEAD) \
+    -X sigs.k8s.io/krew/internal/version.gitTag=v$pkgver \
+    -compressdwarf=false  \
+    -linkmode=external \
+  "
+  go build -ldflags "$ld_flags" -o . ./cmd/...
+  mv krew kubectl-krew
+}
+
+check() {
+  cd $pkgname
+  KREW_BINARY="$PWD/kubectl-krew" go test ./...
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" kubectl-krew validate-krew-manifest
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -va -t "$pkgdir/usr/share/doc/$pkgname" docs/*
+}

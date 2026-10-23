@@ -1,0 +1,34 @@
+pkgbase = python-manilaclient
+	pkgdesc = Client library for OpenStack Shared File System Storage
+	pkgver = 6.3.0
+	pkgrel = 1
+	url = https://docs.openstack.org/python-manilaclient/
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-ddt
+	checkdepends = python-fixtures
+	checkdepends = python-requests-mock
+	checkdepends = python-stestr
+	checkdepends = python-tempest
+	checkdepends = python-testtools
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-debtcollector
+	depends = python-keystoneauth1
+	depends = python-openstackclient
+	depends = python-osc-lib
+	depends = python-oslo-config
+	depends = python-oslo-i18n
+	depends = python-oslo-log
+	depends = python-oslo-serialization
+	depends = python-oslo-utils
+	depends = python-pbr
+	depends = python-prettytable
+	depends = python-requests
+	source = git+https://opendev.org/openstack/python-manilaclient.git#tag=6.3.0
+	sha512sums = ee9035ca4b55b8cdff5d192b3dba9b19c1a9e57297cf2a65635d98b3ca1129bfaf5f603fb518633d42afac1c3e99136ced5a894f88bb66e1e9f75267064552dc
+
+pkgname = python-manilaclient

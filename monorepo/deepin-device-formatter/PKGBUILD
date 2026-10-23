@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-device-formatter
+pkgver=1.5.11
+pkgrel=2
+pkgdesc='A simple graphical interface for creating file system in a block device'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-device-formatter"
+license=('GPL-3.0-or-later')
+depends=('deepin-qt6platform-plugins' 'deepin-qt6integration' 'dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base'
+         'glibc' 'libgcc' 'libstdc++' 'libx11' 'udisks2-qt6')
+optdepends=('btrfs-progs: btrfs support'
+            'dosfstools: FAT support'
+            'e2fsprogs: ext2/3/4 support'
+            'exfatprogs: exFAT support'
+            'f2fs-tools: f2fs support'
+            'jfsutils: JFS support'
+            'nilfs-utils: nilfs2 support'
+            'ntfsprogs: NTFS support'
+            'xfsprogs: XFS support')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/dde-device-formatter.git#tag=$pkgver")
+sha512sums=('97ac14da176aeb396adc39bed7dea91301730e01314b8b29d9cec8725ecac46e12d3ec4d08a5e596dbd27e7d36483a74928c3a651542d3c462ed695eb3dfeafe')
+
+prepare() {
+  cd dde-device-formatter
+  sed -i '/find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_COMPONENTS} REQUIRED)/a find_package(Qt6GuiPrivate REQUIRED CONFIG)' CMakeLists.txt
+}
+
+build(){
+  cd dde-device-formatter
+  cmake -GNinja . -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+package() {
+  cd dde-device-formatter
+  DESTDIR="$pkgdir" ninja install
+}

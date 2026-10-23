@@ -1,0 +1,43 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=regina
+pkgver=7.4.1
+pkgrel=4
+pkgdesc='Software for low-dimensional topology'
+arch=(x86_64)
+url='https://regina-normal.github.io/'
+license=(LicenseRef-Regina)
+depends=(glibc
+         gmp
+         graphviz
+         libgcc
+         libstdc++
+         libxml2
+         lmdb
+         perl
+         qt6-base
+         qt6-svg
+         zlib)
+makedepends=(cmake
+             git
+             python)
+optdepends=('python: Python bindings')
+source=(git+https://github.com/regina-normal/regina#tag=regina-$pkgver)
+sha256sums=('8ba10f13df7e2baa02aad46612fc08d0a95740a6ab3566b583484fb7dc0998bc')
+
+prepare() {
+  cd $pkgname
+  git cherry-pick -n 611939313b9844279b3a0ebf5b8249c9193eff29 # Fix build with GCC 16
+}
+
+build() {
+  cmake -B build -S regina \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 $pkgname/LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname
+}

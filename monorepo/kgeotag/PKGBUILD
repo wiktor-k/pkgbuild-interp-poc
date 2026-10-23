@@ -1,0 +1,38 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=kgeotag
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='Photo geotagging program'
+arch=(x86_64)
+url='https://kgeotag.kde.org/'
+license=(GPL-3.0-only)
+depends=(glibc
+         kcolorscheme
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         kcrash
+         ki18n
+         kxmlgui
+         libkexiv2
+         libstdc++
+         marble-common
+         qt6-base
+         xdg-utils)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/stable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('888e41d8dafdd88ec89aeb732a9e7f0270c12015322418bf234836a82a151c08'
+            'SKIP')
+validpgpkeys=(F277636BA2E409347D503411CAA57B280FE0E9EE) # Tobias Leupold <tobias.leupold@gmx.de>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DQT_MAJOR_VERSION=6
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

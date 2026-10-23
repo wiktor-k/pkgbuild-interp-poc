@@ -1,0 +1,49 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <remy@archlinux.org>
+
+pkgname=gfan
+pkgver=0.7
+pkgrel=2
+pkgdesc='A software package for computing Gröbner fans and tropical varieties'
+arch=(x86_64)
+url='https://users-math.au.dk/jensen/software/gfan/gfan.html'
+license=(GPL-2.0-or-later)
+depends=(cddlib
+         glibc
+         gmp
+         libgcc
+         libstdc++)
+source=(https://users-math.au.dk/jensen/software/gfan/gfan$pkgver.tar.gz
+        gfan-cflags.patch
+        gcc-14.patch
+        fix-build.patch)
+sha256sums=('ab833757e1e4d4a98662f4aa691394013ea9a226f6416b8f8565356d6fcc989e'
+            'd1282d078e68fe888f63b74baa4873081efd0566511f8b6c0990fd3740be2921'
+            '0e61c5e84af96c9c911301e1597afe76f22e6a899891c565c5ae71630d5e563b'
+            '70dab048aa4c83537377f3ab82275d79905fd452eba6e74c2a4cb655bc7f7f41')
+
+prepare() {
+  cd gfan$pkgver
+# Honor system build flags
+  patch -p1 -i ../gfan-cflags.patch
+# Fix build with GCC 14
+  patch -p1 -i ../gcc-14.patch
+# Fix build
+  patch -p1 -i ../fix-build.patch
+}
+
+build() {
+  cd gfan$pkgver
+  CFLAGS+=" -I/usr/include/cddlib" \
+  make cddnoprefix=true
+}
+
+check() {
+  cd gfan$pkgver
+  make check
+}
+
+package() {
+  cd gfan$pkgver
+  make PREFIX="$pkgdir"/usr install
+}

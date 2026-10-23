@@ -1,0 +1,31 @@
+pkgbase = sympol
+	pkgdesc = A C++ tool to work with symmetric polyhedra
+	pkgver = 0.1.9
+	pkgrel = 24
+	url = http://www.math.uni-rostock.de/~rehn/software/sympol.html
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = eigen
+	makedepends = git
+	makedepends = permlib
+	depends = bliss
+	depends = boost-libs
+	depends = cddlib
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = libstdc++
+	depends = lrs
+	source = git+https://github.com/tremlin/SymPol#tag=v0.1.9
+	source = cddlib-0.94k.patch
+	source = sympol-fix-headers.patch
+	source = sympol-lrs-071.patch
+	source = sympol-lrs-073.patch
+	sha256sums = 5c3c24a0d3dbab13b7f314d953b6a99a0cd25c60dd77db3980b88292fe3ee8ae
+	sha256sums = 23f85255ad1acbaf9c63134c6d331e0f3b8d06230a05e3f63e57399863579649
+	sha256sums = f3ed90e6b9af5dae0728c52ce4bb9107f3040481cac6c08116dbf8c19bfe3971
+	sha256sums = 0aa37a4b87021ed04e02fcdae525dc305a8b0490c98bfb82bba2d9af04ef1d35
+	sha256sums = 695c35962541badc25c5517f55db28c8eee0e46f2df66ea70c5f08892c8006a2
+
+pkgname = sympol

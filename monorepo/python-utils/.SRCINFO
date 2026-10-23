@@ -1,0 +1,23 @@
+pkgbase = python-utils
+	pkgdesc = A module with some convenient utilities not included with the standard Python install
+	pkgver = 4.1.4
+	pkgrel = 1
+	url = https://github.com/WoLpH/python-utils
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-loguru
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-uv-build
+	depends = python
+	depends = python-typing_extensions
+	optdepends = python-loguru: for logging support
+	source = git+https://github.com/WoLpH/python-utils.git?signed#tag=v4.1.4
+	validpgpkeys = 149325FD15904E9C4EB89E95E81444E9CE1F695D
+	sha512sums = eec6f20e13b926d984cc709f9c4073decb6e98e87a435b694339b4a778d318c1cdb13c23e2d0c975b63b6ebcaa9734eefb76ccfb38202eba8b8bf81a2446fb7f
+	b2sums = 7a67cf46ceca838986654b2fc02d9043a8da8e8afa9f93beaea6e9a7ed94dc3ec3e17d621ab4e0d399899777c636f3799e6dcb0a0f05334cd8c161051f2b28fe
+
+pkgname = python-utils

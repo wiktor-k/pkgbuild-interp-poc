@@ -1,0 +1,148 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=yabridge
+pkgname=(
+  yabridge
+  yabridgectl
+)
+# NOTE: currently only compatible with vst3sdk 3.7.7: https://github.com/robbert-vdh/yabridge/issues/312
+_vst3sdk_commit=3ff02a8fb91f8e14f61c4e26130841b51d601575  # refs/tags/v3.7.7_build_19-patched
+_bundled_vst3sdk=1  # whether to use bundled vst3sdk (1) or not (0)
+pkgver=5.1.1
+pkgrel=10
+pkgdesc="A modern and transparent way to use Windows VST2 and VST3 plugins on Linux"
+arch=(x86_64)
+url="https://github.com/robbert-vdh/yabridge"
+license=(GPL-3.0-or-later)
+makedepends=(
+  asio
+  bitsery
+  clap
+  cmake
+  function2
+  ghc-filesystem
+  git
+  libxcb
+  meson
+  rust
+  tomlplusplus
+  wine
+)
+if (( _bundled_vst3sdk == 0 )); then
+  makedepends+=(vst3sdk)
+fi
+# if LTO is enabled the cmake detection will explode because of wine
+options=(!lto)
+source=(
+  git+$url#tag=$pkgver
+  $pkgbase-vst3sdk::git+https://github.com/robbert-vdh/vst3sdk.git#commit=$_vst3sdk_commit
+  $pkgbase-vst3_base::git+https://github.com/steinbergmedia/vst3_base.git
+  $pkgbase-vst3_pluginterfaces::git+https://github.com/steinbergmedia/vst3_pluginterfaces.git
+  $pkgbase-vst3_public_sdk::git+https://github.com/steinbergmedia/vst3_public_sdk.git
+)
+sha512sums=('679b63e8dfd686f8f3199f1e65cb9794446bf17819039458ce2d15b769573b8176e96fb51075076371663394e5b8479532fe450a9a115b8df27f4065ed7f8a96'
+            '39d8b7188aa5b07442e9bf998644bce5d54e3c30000dbf3922cee76c4864e859ff850abe6699d178399948d3d73f3b4a639738429320aa2ebc4b1e0c85d63792'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('378ba811ac3676b4a122030c9d1260a95b062e614d17efc29ed047b7fa72f0945914544ae8526ed424108c18094ea4408fe784df5a6690eac5232e5bc571a302'
+        '3f09ff6929db53a5387661be68a363726edbd966346605444191e791565cf596503e9f88138b7921d15366d1aa1688a41730e3d4163bdc694448269855d982a9'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+pkgver() {
+  cd $pkgbase
+  git describe --tags | sed 's/\([^-]*-g\)/r\1/;s/-/./g;'
+}
+
+prepare() {
+  # Fix build failure: https://github.com/robbert-vdh/yabridge/issues/431
+  pushd $pkgname > /dev/null
+  git show 0002273e4df7c9448b52ce54ef38a93cf753fbfd -- meson.build | git apply -
+
+  # Asio 1.34.2 compatibility
+  git show 918d24a16e8eda9ac2eac692704770dfed96f6ee -- src/common/communication/common.h | git apply -
+
+  # remove version pinning
+  sed -e "s/'==/'>=/" -i meson.build
+  # remove version pinning for clap
+  sed -e "s/, '<1.2'//" -i meson.build
+  popd > /dev/null
+
+  # remove all wraps as they are ignored anyways
+  rm -rv $pkgbase/subprojects/*
+  # add a subproject dir for vst3sdk
+  mkdir -vp $pkgbase/subprojects/vst3
+
+  if (( _bundled_vst3sdk == 1 )); then
+    # use upstream's specific version of vst3sdk to get around compilation errors
+    (
+      cd $pkgbase-vst3sdk
+      git submodule init
+      git config submodule.base.url "$srcdir/$pkgbase-vst3_base"
+      git config submodule.pluginterfaces.url "$srcdir/$pkgbase-vst3_pluginterfaces"
+      git config submodule.publik.sdk.url "$srcdir/$pkgbase-vst3_public_sdk"
+      git -c protocol.file.allow=always submodule update
+    )
+    # build using bundled vst3sdk
+    cp -av $pkgbase-vst3sdk/* $pkgbase/subprojects/vst3/
+  else
+    # put system-installed vst3sdk in place and add upstream meson.build file
+    cp -av /usr/src/vst3sdk/* $pkgbase/subprojects/vst3/
+    cp -v $pkgbase-vst3sdk/meson.build $pkgbase/subprojects/vst3/meson.build
+  fi
+
+  cd $pkgbase/tools/yabridgectl
+  cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+}
+
+build() {
+  # NOTE: we need to add -mwindows to cpp_link_args as we are otherwise overriding it
+  local meson_options=(
+    --cross-file=$pkgname/cross-wine.conf
+    -D bitbridge=false  # https://github.com/robbert-vdh/yabridge/issues/437
+    -D build.cpp_std=c++20
+    -D system-asio=true
+    -D b_lto=false
+    -D b_pie=false
+    -D build.cpp_link_args="$LDFLAGS"
+    -D cpp_link_args="$LDFLAGS -mwindows"
+  )
+
+  arch-meson $pkgbase build "${meson_options[@]}"
+  ninja -C build
+
+  cd $pkgname/tools/yabridgectl
+  cargo build --frozen --release --all-features
+}
+
+package_yabridge() {
+  groups=(pro-audio)
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    libxcb
+    sh
+    wine
+  )
+  optdepends=(
+    'libnotify: for notification integration'
+    'yabridgectl: for optional setup and management utility'
+  )
+
+  # project has no install target
+  install -vDm 755 build/$pkgname-host.exe{,.so} -t "$pkgdir/usr/bin"
+  install -vDm 755 build/lib$pkgname-{,chainloader-}{clap,vst2,vst3}.so -t "$pkgdir/usr/lib/"
+}
+
+package_yabridgectl() {
+  depends=(
+    glibc
+    libgcc
+  )
+  pkgdesc="Optional utility to help set up and manage yabridge"
+
+  install -vDm 755 $pkgbase/tools/$pkgname/target/release/$pkgname -t "$pkgdir/usr/bin"
+}

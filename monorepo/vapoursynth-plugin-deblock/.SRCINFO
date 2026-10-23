@@ -1,0 +1,18 @@
+pkgbase = vapoursynth-plugin-deblock
+	pkgdesc = Deblock plugin for VapourSynth
+	pkgver = 9
+	pkgrel = 1
+	url = https://github.com/HolyWu/VapourSynth-Deblock
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = meson-python
+	makedepends = python-build
+	makedepends = python-installer
+	depends = glibc
+	depends = libgcc
+	depends = vapoursynth
+	source = git+https://github.com/HolyWu/VapourSynth-Deblock.git#tag=r9
+	b2sums = 075323f6bae462d000bf310a75cdb12c340ef7736d3b6ea422bc490560916bdde08906278cdf9ffedad67ab981d5d6e875731748260adfe08da980e620805f3b
+
+pkgname = vapoursynth-plugin-deblock

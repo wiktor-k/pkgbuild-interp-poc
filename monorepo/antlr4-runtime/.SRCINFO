@@ -1,0 +1,21 @@
+pkgbase = antlr4-runtime
+	pkgdesc = Antlr C++ runtime
+	pkgver = 4.13.2
+	pkgrel = 2
+	url = https://www.antlr.org/
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = git
+	makedepends = cmake
+	makedepends = python
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libstdc++
+	depends = libstdc++.so
+	provides = libantlr4-runtime.so
+	options = staticlibs
+	source = https://www.antlr.org/download/antlr4-cpp-runtime-4.13.2-source.zip
+	sha256sums = 0ed13668906e86dbc0dcddf30fdee68c10203dea4e83852b4edb810821bee3c4
+
+pkgname = antlr4-runtime

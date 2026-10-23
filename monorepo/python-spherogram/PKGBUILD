@@ -1,0 +1,32 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-spherogram
+pkgver=2.4.1
+pkgrel=1
+pkgdesc='A Python module for dealing with the kind of planar diagrams that arise in 3-dimensional topology, such as link and Heegaard diagrams'
+url='https://snappy.computop.org/'
+depends=(glibc
+         python
+         python-mpmath
+         python-networkx
+         python-numpy
+         python-packaging)
+makedepends=(cython
+             git
+             python-build
+             python-installer
+             python-setuptools)
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+source=(git+https://github.com/3-manifolds/Spherogram#tag=${pkgver}_as_released)
+sha256sums=('181ea9e3b268db918f3f3097594a9e2fcf597bc9213639f611c350bbaeb2b0ce')
+
+build() {
+  cd Spherogram
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd Spherogram
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

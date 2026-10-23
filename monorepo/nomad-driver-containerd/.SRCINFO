@@ -1,0 +1,16 @@
+pkgbase = nomad-driver-containerd
+	pkgdesc = A nomad taskdriver for containerd containers
+	pkgver = 0.9.4
+	pkgrel = 2
+	url = https://github.com/Roblox/nomad-driver-containerd
+	arch = x86_64
+	license = MPL2
+	makedepends = git
+	makedepends = go
+	depends = nomad
+	depends = containerd
+	options = !lto
+	source = nomad-driver-containerd::git+https://github.com/Roblox/nomad-driver-containerd.git#commit=4f174572bcf2e193a5144714b2e56bb3a79720a1
+	b2sums = SKIP
+
+pkgname = nomad-driver-containerd

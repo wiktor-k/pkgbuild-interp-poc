@@ -1,0 +1,23 @@
+pkgbase = tcpflow
+	pkgdesc = Captures data transmitted as part of TCP connections then stores the data conveniently
+	pkgver = 1.6.1
+	pkgrel = 3
+	url = https://github.com/simsong/tcpflow
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = boost
+	depends = libpcap
+	depends = cairo
+	depends = openssl
+	depends = sqlite
+	source = git+https://github.com/simsong/tcpflow.git#tag=tcpflow-1.6.1
+	source = git+https://github.com/simsong/be13_api.git
+	source = git+https://github.com/simsong/dfxml.git
+	source = git+https://github.com/joyent/http-parser.git
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+	sha512sums = SKIP
+
+pkgname = tcpflow

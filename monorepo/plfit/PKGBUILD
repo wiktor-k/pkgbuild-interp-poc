@@ -1,0 +1,25 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=plfit
+pkgver=1.0.1
+pkgrel=1
+pkgdesc='Fitting power-law distributions to empirical data'
+arch=(x86_64)
+url='https://github.com/ntamas/plfit'
+license=(GPL-2.0-only)
+depends=(glibc)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/ntamas/plfit#tag=$pkgver)
+sha256sums=('5aeed27b6adf131efe84f811ffc6aff3185919692231242d9cc3a3ea961b026b')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

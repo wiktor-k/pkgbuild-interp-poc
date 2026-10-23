@@ -1,0 +1,17 @@
+pkgbase = mkinitcpio-dropbear
+	pkgdesc = hook to install and enable the dropbear daemon in early userspace
+	pkgver = 0.0.3
+	pkgrel = 9
+	url = https://github.com/grazzolini/mkinitcpio-dropbear
+	changelog = ChangeLog
+	arch = any
+	license = BSD-3-Clause
+	depends = dropbear
+	depends = psmisc
+	optdepends = mkinitcpio-netconf: Network interface configuration
+	optdepends = mkinitcpio-ppp: PPP interface configuration
+	optdepends = openssh: Allows the use of the same host keys used for normal access
+	source = https://github.com/grazzolini/mkinitcpio-dropbear/archive/v0.0.3/mkinitcpio-dropbear-0.0.3.tar.gz
+	sha256sums = ebf87726471cfade5b3df99428b0b12a607a12f26d9438c36124f4d6ff1a6015
+
+pkgname = mkinitcpio-dropbear

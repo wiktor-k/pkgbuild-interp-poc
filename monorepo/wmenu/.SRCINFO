@@ -1,0 +1,19 @@
+pkgbase = wmenu
+	pkgdesc = Efficient dynamic menu for Wayland and wlroots based Wayland compositors
+	pkgver = 0.2.0
+	pkgrel = 1
+	url = https://codeberg.org/adnano/wmenu
+	arch = x86_64
+	license = MIT
+	makedepends = meson
+	makedepends = ninja
+	makedepends = scdoc
+	makedepends = wayland-protocols
+	depends = libcairo.so
+	depends = libxkbcommon.so
+	depends = libpango-1.0.so
+	depends = libwayland-client.so
+	source = wmenu-0.2.0.tar.gz::https://codeberg.org/adnano/wmenu/archive/0.2.0.tar.gz
+	b2sums = e3a382013ba94f2468b9585d47d30fe85c643ec618b6df8c23b59e7012aab6ba87317bba94c8420e27c98e02b961a2fee0bccbd12a908315dcf44bca9c3e7417
+
+pkgname = wmenu

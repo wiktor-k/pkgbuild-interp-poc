@@ -1,0 +1,36 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-terminal
+pkgver=6.5.40
+pkgrel=4
+pkgdesc='Default terminal emulation application for Deepin'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-terminal"
+license=('BSD-3-Clause' 'CC-BY-4.0' 'CC0-1.0' 'GPL-2.0-or-later' 'GPL-3.0-or-later' 'LGPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'fontconfig' 'glib2' 'glibc'
+         'hicolor-icon-theme' 'icu' 'libgcc' 'libstdc++' 'qt6-5compat' 'qt6-base'
+         'libchardet' 'libsecret' 'libxcb' 'uchardet')
+makedepends=('git' 'cmake' 'ninja' 'lxqt-build-tools' 'qt6-tools')
+#checkdepends=('xorg-server-xvfb')
+optdepends=('zssh: for remote management support')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-terminal.git#tag=$pkgver")
+sha512sums=('d2d59cfe4481a2b8929fa6fa2ed997147c3d7f4e70c2e81072e860642691d3bf665d446ec0e0f1cfd9ee8fb91f20270465043f1c7e6b525bd57642ea48f01908')
+
+build(){
+  cd deepin-terminal
+  cmake . -GNinja -DVERSION=$pkgver -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+  ninja
+}
+
+check() {
+  cd deepin-terminal
+  #LD_LIBRARY_PATH="$PWD/3rdparty/terminalwidget" xvfb-run ninja test || echo "Tests failed"
+}
+
+package() {
+  cd deepin-terminal
+  DESTDIR="$pkgdir" ninja install
+}

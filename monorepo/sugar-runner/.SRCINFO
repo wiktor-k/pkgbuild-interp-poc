@@ -1,0 +1,25 @@
+pkgbase = sugar-runner
+	pkgdesc = Scripts to run Sugar
+	pkgver = 0.121
+	pkgrel = 3
+	url = https://github.com/sugarlabs/sugar-runner
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libx11
+	depends = libxrandr
+	depends = python
+	depends = python-gobject
+	depends = sugar
+	depends = xorg-server-xephyr
+	depends = xorg-xinit
+	depends = xorg-xrandr
+	source = git+https://github.com/sugarlabs/sugar-runner.git#tag=v0.121
+	b2sums = b8d713266a6207fadf015bbf69f62b71dc9a873628a1769655e2bd9069c237f4fa5a4c74ee629a30239c42a1eaf837191a363c4ff28e9ca49de53c449515d865
+
+pkgname = sugar-runner

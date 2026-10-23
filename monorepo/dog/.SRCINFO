@@ -1,0 +1,23 @@
+pkgbase = dog
+	pkgdesc = Command-line DNS client like dig
+	pkgver = 0.1.0
+	pkgrel = 8
+	url = https://github.com/ogham/dog
+	arch = x86_64
+	license = EUPL-1.2
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = openssl
+	depends = libcrypto.so
+	depends = libssl.so
+	replaces = dog-dns
+	source = https://github.com/ogham/dog/archive/v0.1.0/dog-0.1.0.tar.gz
+	source = dog-0.1.0-man.1
+	source = dog-openssl-crates-update.patch
+	b2sums = 7ea52027e73deb6db6cb67b89063cddd507246256b3ca93479a634ff6696ab6961f004da8272b4c535067868603d8218b44c3696e34b5126371a9e0d5fc36058
+	b2sums = 96260ac3d6b5e16e097877538213ff983e5d1f932d695410664234b1b0eeed3c30d4ca27c79fc9da675e2b3a8f192a8e660628454458545dcdde9ff984548483
+	b2sums = 2e07323f9ad08f804921edf03ff4bbe72a4d25138dfc7d932974ce61ad01ede88bbf04b32a864201fb4b539e7d61850e29b8c536b859dc4f1785039a6d8da64a
+
+pkgname = dog

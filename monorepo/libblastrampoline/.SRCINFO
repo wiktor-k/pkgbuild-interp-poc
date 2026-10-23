@@ -1,0 +1,14 @@
+pkgbase = libblastrampoline
+	pkgdesc = Using PLT trampolines to provide a BLAS and LAPACK demuxing library
+	pkgver = 5.16.0
+	pkgrel = 1
+	url = https://github.com/JuliaLinearAlgebra/libblastrampoline
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	depends = glibc
+	options = !lto
+	source = git+https://github.com/JuliaLinearAlgebra/libblastrampoline#tag=v5.16.0
+	sha256sums = a51684ea6f4c2031b21bc2594c6a682b0505f1d143ed3a7e68269f74394d0d12
+
+pkgname = libblastrampoline

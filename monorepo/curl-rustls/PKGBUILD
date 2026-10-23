@@ -1,0 +1,107 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: Dave Reisner <dreisner@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Eric Belanger <eric@archlinux.org>
+# Contributor: Lucien Immink <l.immink@student.fnt.hvu.nl>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=curl-rustls
+pkgver=8.23.0
+pkgrel=2
+pkgdesc='command line tool and library for transferring data with URLs (with rustls)'
+arch=('x86_64')
+url='https://curl.se/'
+license=('curl')
+depends=(
+  'ca-certificates'
+  'brotli' 'libbrotlidec.so'
+  'glibc'
+  'krb5' 'libgssapi_krb5.so'
+  'libidn2' 'libidn2.so'
+  'libnghttp2' 'libnghttp2.so'
+  'libpsl' 'libpsl.so'
+  'librustls' 'librustls.so'
+  'zlib' 'libz.so'
+  'zstd' 'libzstd.so'
+)
+makedepends=(
+  'git'
+  'patchelf'
+)
+validpgpkeys=('27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2') # Daniel Stenberg
+source=("git+https://github.com/curl/curl.git#tag=curl-${pkgver//./_}?signed")
+sha512sums=('4be9e14dc61c465d1f4e56bed597350ffa66cc49f6b60c29ff196897e8b72cdfb7fc0ad503f3e7f8902b13f085a8138a5e06ca402e50014bda372909eb04798d')
+
+_backports=(
+)
+
+_reverts=(
+)
+
+prepare() {
+  cd "curl"
+
+  local _c
+  for _c in "${_backports[@]}"; do
+    if [[ $_c == *..* ]]; then
+      git log --oneline --reverse "${_c}"
+    else
+      git log --oneline -1 "${_c}"
+    fi
+    git cherry-pick -n -m1 "${_c}"
+  done
+  for _c in "${_reverts[@]}"; do
+    git log --oneline -1 "${_c}"
+    git revert -n "${_c}"
+  done
+
+  # no '-DEV' in version, release date from tagged commit...
+  sed -i \
+    -e "/\WLIBCURL_VERSION\W/c #define LIBCURL_VERSION \"${pkgver}\"" \
+    -e "/\WLIBCURL_TIMESTAMP\W/c #define LIBCURL_TIMESTAMP \"$(git log -1 --format=%cs "curl-${pkgver//./_}")\"" \
+    include/curl/curlver.h
+
+  autoreconf -fi
+}
+
+build() {
+  local _configure_options=(
+    --prefix='/usr'
+    --mandir='/usr/share/man'
+    --disable-ldap
+    --disable-ldaps
+    --disable-manual
+    --enable-ech
+    --enable-ipv6
+    --enable-threaded-resolver
+    --enable-websockets
+    --with-gssapi
+    --with-ca-bundle='/etc/ssl/certs/ca-certificates.crt'
+  )
+
+  mkdir build-curl
+
+  # build curl
+  cd "${srcdir}"/build-curl
+
+  "${srcdir}/curl"/configure \
+    "${_configure_options[@]}" \
+    --with-rustls \
+    --without-openssl \
+    --without-gnutls \
+    --disable-shared
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  install -Dm 755 -t "${pkgdir}/usr/lib/curl-rustls/" \
+    build-curl/src/curl
+
+  install -d "${pkgdir}/usr/bin"
+  ln -s "../lib/${pkgname}/curl" "${pkgdir}/usr/bin/curl-rustls"
+
+  install -Dt "${pkgdir}/usr/share/licenses/${pkgname}" -m0644 curl/COPYING
+}
+
+# vim: ts=2 sw=2 et:

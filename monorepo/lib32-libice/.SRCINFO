@@ -1,0 +1,21 @@
+pkgbase = lib32-libice
+	pkgdesc = X11 Inter-Client Exchange library (32-bit)
+	pkgver = 1.1.2
+	pkgrel = 1
+	url = https://xorg.freedesktop.org/
+	arch = x86_64
+	license = custom
+	makedepends = xtrans>=1.2.5
+	makedepends = xorg-util-macros
+	makedepends = xorgproto
+	depends = lib32-glibc
+	depends = libice
+	source = https://xorg.freedesktop.org//releases/individual/lib/libICE-1.1.2.tar.xz
+	source = https://xorg.freedesktop.org//releases/individual/lib/libICE-1.1.2.tar.xz.sig
+	validpgpkeys = 4A193C06D35E7C670FA4EF0BA2FB9E081F2D130E
+	sha1sums = 99687d0adca149a06b021f16df1c5eb0f1f90c21
+	sha1sums = SKIP
+	sha256sums = 974e4ed414225eb3c716985df9709f4da8d22a67a2890066bc6dfc89ad298625
+	sha256sums = SKIP
+
+pkgname = lib32-libice

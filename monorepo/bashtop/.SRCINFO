@@ -1,0 +1,23 @@
+pkgbase = bashtop
+	pkgdesc = Linux resource monitor
+	pkgver = 0.9.25
+	pkgrel = 2
+	url = https://github.com/aristocratos/bashtop
+	arch = any
+	license = Apache
+	makedepends = git
+	makedepends = sed
+	depends = bash
+	depends = coreutils
+	depends = grep
+	depends = sed
+	depends = gawk
+	depends = procps-ng
+	optdepends = curl: themes download
+	optdepends = lm_sensors: cpu temperatures
+	optdepends = sysstat: disk read/write stats
+	optdepends = python-psutil: use python for data collection
+	source = git+https://github.com/aristocratos/bashtop.git#tag=v0.9.25
+	sha256sums = SKIP
+
+pkgname = bashtop

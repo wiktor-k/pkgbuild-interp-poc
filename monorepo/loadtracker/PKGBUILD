@@ -1,0 +1,59 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=loadtracker
+pkgver=1.99.6
+pkgrel=1
+pkgdesc='A modernised fork of GoatTracker2'
+arch=(x86_64)
+url='https://github.com/libsidplayfp/loadtracker'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  libgcc libgcc_s.so
+  libstdc++ libstdc++.so
+  libexsid libexsid.so
+  libresidfp libresidfp.so
+  jack libjack.so
+  rtmidi librtmidi.so
+  sdl3
+)
+makedepends=(
+  git
+  cmake
+  ninja
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  use-system-rtmidi.patch
+)
+sha512sums=('cb1a37e221b331edf59ae2c35360e668b6b62df423e59973a17800e2d796fe4273aa6f227a019e131284444369f13f7f77fd1a58d8b8ee3caa72287b6f371bde'
+            '474408484ae33efbed783e674f963843b0aa97ffbd620eb48acf30c4df1eb8fbc302786f45f5147c15ee38cd1a3194c0ccf4f06ce5b3667275bc661e5e8b361e')
+b2sums=('d15c366c6d05fecc67987709233a3215f10f4c085af00926d0b445acf298a4dea487194cc652958f8947f53b3df89063fe8fbf9b84a1551c3d021c554bca0328'
+        'd0991fa99008b1dc7bfd62d2213115f046d2e4f4012dfed29aa1079391f5e001d28a95c7ee4b51c6801981f6d827a1b6b1d288bf0f4dd831483fd9306fabec02')
+
+prepare() {
+  cd "$pkgname"
+
+  # link to system rtmidi
+  patch -p1 -i "$srcdir/use-system-rtmidi.patch"
+  rm -rf src/rtmidi
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -W no-author
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+  
+  cmake "${cmake_options[@]}"
+  
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

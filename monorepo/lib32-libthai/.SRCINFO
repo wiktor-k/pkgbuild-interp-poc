@@ -1,0 +1,15 @@
+pkgbase = lib32-libthai
+	pkgdesc = Thai language support routines
+	pkgver = 0.1.30
+	pkgrel = 1
+	url = https://linux.thai.net/projects/libthai
+	arch = x86_64
+	license = LGPL
+	makedepends = autoconf-archive
+	makedepends = git
+	depends = lib32-libdatrie
+	provides = libthai.so
+	source = git+https://github.com/tlwg/libthai.git#tag=v0.1.30
+	sha256sums = b949f005383400df249e7c925f4228db4ccc6cbe395d2ad7b893dfbc0c353615
+
+pkgname = lib32-libthai

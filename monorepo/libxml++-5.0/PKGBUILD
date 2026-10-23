@@ -1,0 +1,64 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgbase=libxml++-5.0
+pkgname=(
+  libxml++-5.0
+  libxml++-5.0-docs
+)
+pkgver=5.6.1
+pkgrel=1
+pkgdesc="C++ bindings to libxml2"
+url="https://libxmlplusplus.github.io/libxmlplusplus/"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  libxml2
+)
+makedepends=(
+  git
+  meson
+  mm-common
+)
+options=(!emptydirs)
+source=("git+https://github.com/libxmlplusplus/libxmlplusplus#tag=$pkgver")
+b2sums=('8eed52144369028971a7e01b9e3dddc0091fc3068282fadb49ce383e2821ef9a6db4deaa83b217d5abde2fbaf31786c6d74978e56a4675347c54870b1f0bdf25')
+
+prepare() {
+  cd libxmlplusplus
+}
+
+build() {
+  local meson_options=(
+    -D maintainer-mode=true
+  )
+
+  arch-meson libxmlplusplus build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package_libxml++-5.0() {
+  provides=(libxml++-5.0.so)
+
+  meson install -C build --destdir "$pkgdir"
+
+  # Split -docs
+  mkdir -p docs/usr/share
+  mv -t docs/usr/share "$pkgdir"/usr/share/{devhelp,doc}
+}
+
+package_libxml++-5.0-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+  options=(!strip)
+
+  mv -t "$pkgdir" docs/*
+}
+
+# vim:set sw=2 sts=-1 et:

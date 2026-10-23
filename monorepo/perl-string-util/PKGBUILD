@@ -1,0 +1,28 @@
+# Maintainer: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Previous Maintainer: Dirk Langer <dirk.langer@vvovgonik.de>
+
+pkgname='perl-string-util'
+pkgver=1.36
+pkgrel=1
+pkgdesc="String processing utilities"
+arch=('any')
+license=('PerlArtistic' 'GPL')
+options=('!emptydirs')
+depends=('perl-number-misc')
+makedepends=('perl-module-build-tiny')
+url='https://metacpan.org/release/String-Util'
+source=("https://cpan.metacpan.org/authors/id/B/BA/BAKERSCOT/String-Util-$pkgver.tar.gz")
+md5sums=('b6ca516e75fc13baa2310cc4c61f8bb2')
+sha512sums=('db6a82ee055b02de634f6f86633faa66650399bcb75a4701e7fb676ffb2e086cf3939cbab7c939c63cbc068787f90d5c2520236e251fc9a9d49830d056e0de57')
+_distdir="String-Util-$pkgver"
+
+build() {
+  cd String-Util-$pkgver
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+package() {
+  cd String-Util-$pkgver
+  make install DESTDIR="$pkgdir"
+}

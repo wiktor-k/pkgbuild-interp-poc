@@ -1,0 +1,34 @@
+pkgbase = sushi
+	pkgdesc = A quick previewer for Nautilus
+	pkgver = 51.2
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/sushi
+	arch = x86_64
+	groups = gnome
+	license = GPL-2.0-or-later
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = webkitgtk-6.0
+	depends = cairo
+	depends = freetype2
+	depends = fribidi
+	depends = gjs
+	depends = glib2
+	depends = glibc
+	depends = glycin-gtk4
+	depends = gst-plugins-base-libs
+	depends = gstreamer
+	depends = gtk4
+	depends = harfbuzz
+	depends = libgcc
+	depends = libx11
+	depends = pango
+	depends = papers
+	optdepends = libreoffice: OpenDocument formats
+	optdepends = webkitgtk-6.0: Render HTML files
+	source = git+https://gitlab.gnome.org/GNOME/sushi.git#tag=51.2
+	b2sums = f911a6ad955c7cf5e409779051e36c7d6f08e5d65773355bd34b72db245aad7c2316cc4748229f10b2497c8bd46b02d581c3ae86cd0e9129fd90eec63682f7ba
+
+pkgname = sushi

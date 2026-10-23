@@ -1,0 +1,16 @@
+pkgbase = libelfin
+	pkgdesc = C++11 ELF/DWARF parser
+	pkgver = 0.3.r7.ge017276
+	pkgrel = 2
+	url = https://github.com/aclements/libelfin
+	arch = x86_64
+	license = MIT
+	makedepends = python
+	makedepends = git
+	depends = gcc-libs
+	source = git+https://github.com/aclements/libelfin#commit=e0172767b79b76373044118ef0272b49b02a0894
+	source = reproducible.patch
+	sha256sums = 47e9f778b93f5ed22f753fc47cc5adfd7c1dfb462ade641ee33223c49a44b115
+	sha256sums = 152a7eab55b4de3cefa0020066ff82bdbc307a695bfe8362d4d8055cbbf654d8
+
+pkgname = libelfin

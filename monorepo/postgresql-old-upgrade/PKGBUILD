@@ -1,0 +1,102 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Dan McGee <dan@archlinux.org>
+
+pkgbase=postgresql-old-upgrade
+pkgname=(
+  postgresql-old-upgrade
+)
+pkgver=17.11
+pkgrel=3
+pkgdesc="Older PostgreSQL for migrating major versions with pg_upgrade"
+url="https://www.postgresql.org/"
+arch=(x86_64)
+license=(PostgreSQL)
+depends=(
+  glibc
+  icu libicui18n.so libicuuc.so
+  krb5 libgssapi_krb5.so
+  libgcc libgcc_s.so
+  libldap
+  libstdc++ libstdc++.so
+  libxml2 libxml2.so
+  llvm-libs
+  lz4 liblz4.so
+  openssl libcrypto.so libssl.so
+  pam libpam.so
+  systemd-libs libsystemd.so
+  util-linux-libs
+  zlib libz.so
+  zstd libzstd.so
+)
+makedepends=(
+  clang
+  llvm
+  perl
+  python
+  systemd
+  tcl
+  util-linux
+)
+source=(
+  https://ftp.postgresql.org/pub/source/v${pkgver}/postgresql-${pkgver}.tar.bz2
+)
+b2sums=('00904ef605eb119999829c100ebaaf728b8c4405b97782ab97718f30c93b2f5d1dfb8895db962ff12c3b2f690220f57b156bb22e02374490145640e97c15b6a0')
+
+# PostgreSQL releases are unsigned and only provide these sums
+md5sums=('27e28654634381f1cdfaa3ac1e246639')
+sha256sums=('dd27f2b3c59e73ed14aa3324901242bf69a032a6347805f274e6260322d42979')
+
+prepare() {
+  cd postgresql-${pkgver}
+}
+
+build() {
+  local configure_options=(
+    --prefix=/opt/pgsql-${pkgver%%.*}
+    --disable-rpath
+    --disable-nls
+    --disable-tap-tests
+    --with-gssapi
+    --with-icu
+    --with-ldap
+    --with-libxml
+    --without-libxslt
+    --with-llvm
+    --with-lz4
+    --with-openssl
+    --with-pam
+    --with-perl
+    --with-python
+    --without-readline
+    --with-system-tzdata=/usr/share/zoneinfo
+    --with-systemd
+    --with-tcl
+    --with-uuid=e2fs
+    --with-zstd
+  )
+
+  # use fat LTO objects for static libraries
+  CFLAGS+=" -ffat-lto-objects"
+  CXXFLAGS+=" -ffat-lto-objects"
+
+  mkdir -p build; cd build
+  ../postgresql-${pkgver}/configure "${configure_options[@]}"
+  make world-bin
+}
+
+package_postgresql-old-upgrade() {
+  depends+=("postgresql-libs>=${pkgver}")
+  optdepends=(
+    'perl: for PL/Perl support'
+    'python: for PL/Python 3 support'
+    'tcl: for PL/Tcl support'
+  )
+
+  make -C build DESTDIR="${pkgdir}" install-world-bin
+
+
+  install -Dm644 postgresql-${pkgver}/COPYRIGHT -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim:set sw=2 sts=-1 et:

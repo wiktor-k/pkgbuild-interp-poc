@@ -1,0 +1,45 @@
+# Maintainer : Daniel Bermond <dbermond@archlinux.org>
+# Contributor: Uffe Jakobsen <uffe@uffe.org>
+# Contributor: Guilherme Calé <gui@cabritacale.eu>
+
+pkgname=fs-uae-launcher
+pkgver=3.2.35
+pkgrel=2
+pkgdesc='Graphical user interface for the FS-UAE Amiga emulator'
+arch=('any')
+url='https://fs-uae.net/'
+license=('GPL-2.0-or-later')
+depends=(
+    'fs-uae'
+    'hicolor-icon-theme'
+    'python'
+    'python-idna'
+    'python-opengl'
+    'python-pillow'
+    'python-pyqt6'
+    'python-requests'
+    'python-setuptools')
+optdepends=(
+    'p7zip: for .7z file support'
+    'python-bottle: for net play support'
+    'python-lhafile: for .lha file support')
+source=("https://github.com/FrodeSolheim/fs-uae-launcher/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz"
+        '010-fs-uae-launcher-fix-install-path.patch'
+        '020-fs-uae-launcher-remove-python2.patch')
+sha256sums=('ed48cbc1c4a63af9c3bf45eb97271ef0ded7a67e5acaf862100ffe9e18748a77'
+            '286753e4f0a5b1fc0f29e3e17bcc98c44a166e07f027932c428abe7fa713b49c'
+            'f0616c0d181733120c68fea2f158eb27e90c3f07c23cd93b042a5ae240cfdd5e')
+
+prepare() {
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/010-fs-uae-launcher-fix-install-path.patch"
+    patch -d "${pkgname}-${pkgver}" -Np1 -i "${srcdir}/020-fs-uae-launcher-remove-python2.patch"
+}
+
+build() {
+    make -C "${pkgname}-${pkgver}" all
+}
+
+package() {
+    make -C "${pkgname}-${pkgver}" DESTDIR="$pkgdir" prefix='/usr' install
+    rm "${pkgdir}/usr/share/doc/${pkgname}/COPYING"
+}

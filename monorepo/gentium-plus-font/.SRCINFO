@@ -1,0 +1,24 @@
+pkgbase = gentium-plus-font
+	pkgdesc = Font supporting a wide range of Latin- and Cyrillic-based alphabets
+	pkgver = 7.000
+	pkgrel = 2
+	url = https://software.sil.org/gentium
+	arch = any
+	license = OFL-1.1-RFN
+	source = https://software.sil.org/downloads/r/gentium/Gentium-7.000.zip
+	source = https://software.sil.org/downloads/r/gentium/GentiumBook-7.000.zip
+	source = https://software.sil.org/downloads/r/gentium/GentiumPlus-6.200.zip
+	sha256sums = 313e64963ba27851356060a725d36ce01680e5c5c63f46e4b40f15741c043e21
+	sha256sums = fa4e35bcea62dd68befabf4bb7c2765aacd2691f51ec8ae008f5f913ef49f419
+	sha256sums = 9b21103b79961149b6508791572acb3b2fe7eb621474c57d5e4ee37e76d7b073
+
+pkgname = ttf-gentium
+	provides = gentium-plus-font=7.000
+	provides = gentium-font=7.000
+	replaces = gentium-plus-font
+
+pkgname = ttf-gentium-book
+	provides = gentium-book-font=7.000
+
+pkgname = ttf-gentium-plus
+	provides = gentium-plus-font=7.000

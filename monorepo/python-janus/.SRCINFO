@@ -1,0 +1,19 @@
+pkgbase = python-janus
+	pkgdesc = Thread-safe asyncio-aware queue for Python
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/aio-libs/janus
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-pytest-benchmark
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	source = git+https://github.com/aio-libs/janus.git#tag=v2.0.0
+	sha512sums = 03c33577dfc9591afe11c88741d98ceb19d060a8a90bdab2a7c21198ca89f6e06f62375e0bea90a18f6fa426390935e750670bb62976153110e4a8a04ef2e21d
+
+pkgname = python-janus

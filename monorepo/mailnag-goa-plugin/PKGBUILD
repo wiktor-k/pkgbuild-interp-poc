@@ -1,0 +1,39 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Patrick Ulbrich <zulu99 at gmx . net>
+
+pkgname=mailnag-goa-plugin
+pkgver=2.0.0
+pkgrel=8
+pkgdesc='Mailnag GNOME Online Accounts plugin'
+arch=(any)
+url='https://github.com/pulb/mailnag-goa-plugin'
+license=(GPL-2.0-or-later)
+depends=(
+  gnome-online-accounts
+  libgoa
+  mailnag
+  python-gobject
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("git+https://github.com/pulb/mailnag-goa-plugin.git#tag=v$pkgver")
+b2sums=(f05f6d821dbb4e7a7ea9db9e372c342b22855116ca3067bc3b9b860a11266c21a874d07a958fbbcb188161b6aa9f571125e689beda1a9d4f9cb75e800e7178e9)
+
+build() {
+  cd $pkgname
+
+  mkdir -p "build/plugins"
+  cp -a goaplugin.py "build/plugins"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

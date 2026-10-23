@@ -1,0 +1,17 @@
+pkgbase = fcitx5-rime
+	pkgdesc = RIME support for Fcitx5
+	pkgver = 5.1.16
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-rime
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	depends = fcitx5
+	depends = librime
+	source = git+https://github.com/fcitx/fcitx5-rime.git#tag=5.1.16?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = b0ca3e4147248d76ac5cc71a54a7bfe94daea35d3adad0bac699901166346946fb1342452688df12e1309dbc3c040b018620db0609c7e3a216bfbff8f5868098
+
+pkgname = fcitx5-rime

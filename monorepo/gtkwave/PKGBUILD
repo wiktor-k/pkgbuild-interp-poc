@@ -1,0 +1,48 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Jared Casper <jaredcasper@gmail.com>
+
+pkgname=gtkwave
+pkgver=3.3.128
+pkgrel=1
+pkgdesc="A wave viewer which reads LXT, LXT2, VZT, GHW and VCD/EVCD files"
+arch=('x86_64')
+url="https://${pkgname}.sourceforge.net"
+license=('GPL-2.0-or-later AND MIT')
+depends=(
+	'bzip2'
+	'cairo'
+	'dconf'
+	'gdk-pixbuf2'
+	'glib2'
+	'glibc'
+	'gtk3'
+	'hicolor-icon-theme'
+	'libgcc'
+	'libstdc++'
+	'pango'
+	'xz'
+	'zlib'
+)
+makedepends=('gperf')
+source=("${url}/${pkgname}-gtk3-${pkgver}.tar.gz")
+sha256sums=('817e197fc1808f8aac3543c2c2f9683cb01368c91192b8eae5af58070ef1d1f8')
+
+build() {
+	cd "gtkwave-gtk3-${pkgver}/"
+	./configure \
+		--prefix=/usr \
+		--disable-tcl \
+		--disable-mime-update \
+		--with-gsettings \
+		--enable-gtk3
+
+	make
+}
+
+package() {
+	cd "gtkwave-gtk3-${pkgver}/"
+	make DESTDIR="${pkgdir}" install
+	install -Dm644 LICENSE.TXT -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+}

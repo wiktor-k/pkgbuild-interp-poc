@@ -1,0 +1,17 @@
+pkgbase = intel-metrics-library
+	pkgdesc = User mode library providing access to Intel GPU performance data (MDAPI)
+	pkgver = 1.0.231
+	pkgrel = 1
+	url = https://github.com/intel/metrics-library
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = libdrm
+	source = intel-metrics-library-1.0.231.tar.gz::https://github.com/intel/metrics-library/archive/refs/tags/1.0.231.tar.gz
+	sha256sums = 725fa7eef91aea8fb65d499213dec26ded73f12e54c31043c2b4110c8d39ba24
+
+pkgname = intel-metrics-library

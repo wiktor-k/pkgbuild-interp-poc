@@ -1,0 +1,57 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnome-keysign
+pkgver=1.9.8
+pkgrel=1
+pkgdesc='Tool for signing OpenPGP keys'
+arch=(any)
+url='https://github.com/gnome-keysign/gnome-keysign'
+license=(GPL-3.0-or-later)
+depends=(
+  avahi
+  gdk-pixbuf2
+  glib2
+  gst-plugins-bad
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gst-python
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  magic-wormhole
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  python-gpgme
+  python-qrcode
+  python-requests
+  python-twisted
+)
+makedepends=(
+  git
+  python-babel-glade
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("git+https://github.com/gnome-keysign/gnome-keysign.git#tag=$pkgver")
+b2sums=(d3ad78d8079248844636618190b6a3a51ecc777c9f39289ed809fb6080d3fe395b5c307c88febf3785855c01480477bf72848d8ccff904c71f19d9b2ace55f1a)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

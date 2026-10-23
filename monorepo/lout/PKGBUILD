@@ -1,0 +1,44 @@
+# Maintainer: Kyle Keen <keenerd@gmail.com>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: catwell <catwell@archlinux.us>
+
+pkgname=lout
+pkgver=3.43.4
+pkgrel=1
+pkgdesc='A lightweight document formatting system'
+arch=(x86_64)
+url='https://github.com/william8000/lout'
+license=(GPL-3.0-or-later)
+depends=(glibc zlib)
+makedepends=(git)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('ab359bad42653f9002dcfad3a7ed78ee397de142df7c99fbea93785515e7c8bc0c76b4f109840f781ea0aa6f6744202b172faa64438ae47b8f34244832b699da')
+b2sums=('2f29693543d800c92cfd5554d9fc5813b2ab1bd346abe79593ded6f95bb0556fe028acf7dfe33b8b373213ff16ff7b0523ab0c3ee1e72fc3fb57d95e790e1c96')
+
+prepare() {
+  cd "$pkgname"
+
+  # simplify paths
+  sed -i \
+    -e 's:^MANDIR.*:MANDIR  = $(PREFIX)/share/man/man1:' \
+    -e 's:^LIBDIR.*:LIBDIR = $(PREFIX)/lib/lout:' \
+    -e 's:^LOUTLIBDIR.*:LOUTLIBDIR = $(LIBDIR):' \
+    makefile
+
+  # TODO generate documentation
+  #-e 's:^LOUTDOCDIR.*:LOUTDOCDIR = $(PREFIX)/share/doc/lout:' \
+}
+
+build() {
+  cd "$pkgname"
+
+  make PDF_COMPRESSION=1 ZLIB=-lz PREFIX=/usr all
+}
+
+package() {
+  cd "$pkgname"
+
+  make PREFIX=/usr DESTDIR="$pkgdir" install installman
+}
+

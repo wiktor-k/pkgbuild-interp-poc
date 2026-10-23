@@ -1,0 +1,56 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Corrado Primier <bardo@aur.archlinux.org>
+# Contributor: William Rea <sillywilly@gmail.com>
+# Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=paprefs
+pkgver=1.2
+pkgrel=4
+pkgdesc="Configuration dialog for PulseAudio"
+url="https://freedesktop.org/software/pulseaudio/paprefs/"
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+depends=(
+  atkmm
+  glib2
+  glibc
+  glibmm
+  gtk3
+  gtkmm3
+  libgcc
+  libsigc++
+  libstdc++
+  pulse-native-provider
+)
+makedepends=(
+  git
+  libpulse
+  lynx
+  meson
+  tidy
+)
+source=("git+https://gitlab.freedesktop.org/pulseaudio/paprefs.git?signed#tag=v$pkgver")
+b2sums=('fabb9185280f08246645c105cf1d4c923a6030b536bdc7a72ce5cf290a6a22f6ef9f9ab7d930c8e575e512ab4af360e45ea1069ed2957e3becf054aa1f2081dc')
+validpgpkeys=(
+  B61E1D411D57BD16F11536162477064CE8B9F3BD # Tanu Kaskinen <tanuk@iki.fi>
+)
+
+prepare() {
+  cd paprefs
+}
+
+build() {
+  arch-meson paprefs build -D lynx=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dt "$pkgdir/usr/share/doc/$pkgname" -m644 build/doc/README
+}
+
+# vim:set sw=2 sts=-1 et

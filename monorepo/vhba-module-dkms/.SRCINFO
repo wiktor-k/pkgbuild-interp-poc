@@ -1,0 +1,16 @@
+pkgbase = vhba-module-dkms
+	pkgdesc = Virtual SCSI adapter - module sources
+	pkgver = 20260313
+	pkgrel = 1
+	url = https://cdemu.sourceforge.io/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = dkms
+	provides = VHBA-MODULE
+	source = cdemu-code::git+https://git.code.sf.net/p/cdemu/code#tag=vhba-module-20260313
+	source = dkms.conf.in
+	b2sums = 2b82d55ab3011a71dbfb81f540f615a3b0fe77b5b6a1c2d19ff0855723da72be67adbab6f7e331e3a5c13d27e28a8b31675a729fde4b4d0fd6004080e44e2787
+	b2sums = fe3017a1e085a6da936b217b9efcebcb7f958fc036fed4b5c84200e105edad40499aad8ea3f4e8c9e33c535f1afc2f18d7b9cc1c2178981210755ef28db2327b
+
+pkgname = vhba-module-dkms

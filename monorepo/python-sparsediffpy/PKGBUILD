@@ -1,0 +1,47 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=SparseDiffPy
+pkgname=python-${_pyname,,}
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='Python bindings for SparseDiffEngine'
+url='https://github.com/SparseDifferentiation/SparseDiffPy'
+license=(Apache-2.0)
+arch=(x86_64)
+depends=(cblas
+         glibc
+         python
+         python-numpy)
+makedepends=(git
+             python-build
+             python-installer
+             python-scikit-build-core)
+source=(git+https://github.com/SparseDifferentiation/SparseDiffPy#tag=v$pkgver
+        git+https://github.com/SparseDifferentiation/SparseDiffEngine
+        git+https://github.com/SparseDifferentiation/sparsediff_linalg)
+sha256sums=('10040bd83a469c34c2f4321ea10cfe7bd1e3d3e89b62d96ccdd9fb0f3aa20410'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+  cd $_pyname
+  git submodule init
+  git submodule set-url SparseDiffEngine "$srcdir"/SparseDiffEngine
+  git -c protocol.file.allow=always submodule update SparseDiffEngine
+
+  cd SparseDiffEngine
+  git submodule init
+  git submodule set-url sparsediff_linalg "$srcdir"/sparsediff_linalg
+  git -c protocol.file.allow=always submodule update sparsediff_linalg
+}
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation \
+    -C cmake.define.BLAS_LIBRARIES=-lcblas
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

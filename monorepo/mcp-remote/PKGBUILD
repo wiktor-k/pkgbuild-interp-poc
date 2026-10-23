@@ -1,0 +1,48 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=mcp-remote
+pkgver=0.8.3
+pkgrel=1
+pkgdesc='Connect an MCP Client that only supports local (stdio) servers to a remote MCP Server'
+arch=(any)
+url=https://github.com/punkpeye/mcp-remote
+license=(MIT)
+depends=(nodejs)
+makedepends=(
+  git
+  pnpm
+)
+source=("git+${url}.git#tag=v${pkgver}")
+b2sums=('ee95927f881afb62617efb3d4ced4f60010cbd5d92218276e4bc9c80319be2c5fb7e90e7b0ac195149dc7f8042b7965d82a2052073ddf70eb45c1d8957e4abac')
+
+prepare() {
+  cd "$pkgname"
+  pnpm install --frozen-lockfile --prod --ignore-scripts
+  mv node_modules node_modules-prod
+
+  pnpm install --frozen-lockfile
+}
+
+build() {
+  cd "$pkgname"
+  pnpm build
+}
+
+package() {
+  local mod_dir="/usr/lib/node_modules/${pkgname}"
+
+  install -d "$pkgdir"/{usr/bin,$mod_dir}
+  ln -s "${mod_dir}/dist/proxy.js" "${pkgdir}/usr/bin/mcp-remote"
+  ln -s "${mod_dir}/dist/client.js" "${pkgdir}/usr/bin/mcp-remote-client"
+
+  cd "$pkgname"
+  install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" LICENSE
+  install -Dm644 -t "${pkgdir}/usr/share/doc/${pkgname}" README.md
+
+  cp -r node_modules-prod "${pkgdir}/${mod_dir}/node_modules"
+  cp -r dist package.json "${pkgdir}/${mod_dir}"
+
+  find "${pkgdir}/${mod_dir}/node_modules" -type d -name ".bin" -exec rm -Rf {} \; 2>/dev/null || true
+  find "${pkgdir}/${mod_dir}/node_modules" -type d -empty -delete
+}
+

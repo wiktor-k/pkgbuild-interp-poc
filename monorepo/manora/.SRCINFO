@@ -1,0 +1,25 @@
+pkgbase = manora
+	pkgdesc = A simple CLI & TUI tool to display, download and save man pages as PDF files
+	pkgver = 2.2.8
+	pkgrel = 1
+	url = https://github.com/Antiz96/manora
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cargo
+	makedepends = scdoc
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = man
+	depends = groff
+	depends = xdg-utils
+	depends = util-linux
+	optdepends = zathura: fallback PDF reader
+	optdepends = zathura-pdf-poppler: PDF support for zathura (poppler backend)
+	optdepends = zathura-pdf-mupdf: PDF support for zathura (mupdf backend)
+	options = !lto
+	source = git+https://github.com/Antiz96/manora.git#tag=v2.2.8?signed
+	validpgpkeys = A67CCEEBF9613C17FDE96E4ED33FAA16B937F3B2
+	sha256sums = f3c7751d74b113724349f58bb23ce0f76eb8fe5a361d1d2129894269f7920c9a
+
+pkgname = manora

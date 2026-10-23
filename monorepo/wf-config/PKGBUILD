@@ -1,0 +1,39 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Adrian Perez de Castro <aperez@igalia.com>
+
+pkgname=wf-config
+pkgver=0.11.0
+pkgrel=1
+pkgdesc='Library for managing configuration files, written for Wayfire'
+arch=(x86_64)
+url='https://github.com/WayfireWM/wf-config'
+license=(MIT)
+depends=(
+  glibc
+  libevdev
+  libgcc
+  libstdc++
+  libxml2
+)
+makedepends=(
+  doctest
+  git
+  glm
+  meson
+)
+source=("git+https://github.com/WayfireWM/wf-config.git#tag=v$pkgver")
+b2sums=(d74cf44a8a33bd8225f2c6342e6536a4996aa55d3d2d6935f8d133b51b420294c6e8f7ab583dbc8f7c9536afb159ad885a543aba2ab8f413325edf771e5aae58)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" $pkgname/LICENSE
+}

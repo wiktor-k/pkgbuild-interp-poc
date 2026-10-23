@@ -1,0 +1,98 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+
+pkgname=tinygo
+pkgver=0.43.0
+pkgrel=1
+pkgdesc='Go compiler for small places. Microcontrollers, WebAssembly, and command-line tools. Based on LLVM.'
+arch=(x86_64)
+url='https://github.com/tinygo-org/tinygo'
+license=(BSD)
+options=(!lto)
+# TODO: re-add these deps when switching back to system LLVM
+#depends=(llvm-libs clang lld)
+depends=(binaryen)
+# TODO: add llvm + remove cmake/ninja/python from build deps
+makedepends=(go git cmake ninja python)
+# use git as we need to fetch submodules
+source=(git+https://github.com/tinygo-org/tinygo#tag=v$pkgver
+        git+https://github.com/NordicSemiconductor/nrfx.git
+        git+https://github.com/ARM-software/CMSIS.git
+        git+https://github.com/avr-rust/avr-mcu.git
+        git+https://github.com/cmsis-svd/cmsis-svd-data#branch=main
+        git+https://github.com/WebAssembly/wasi-libc
+        git+https://github.com/picolibc/picolibc.git
+        git+https://github.com/tinygo-org/stm32-svd
+        git+https://github.com/tinygo-org/musl-libc
+        git+https://github.com/WebAssembly/binaryen.git
+        git+https://github.com/mingw-w64/mingw-w64.git
+        git+https://github.com/tinygo-org/macos-minimal-sdk.git
+        git+https://github.com/tinygo-org/net.git
+        git+https://github.com/WebAssembly/wasi-cli
+        git+https://github.com/ivmai/bdwgc.git
+        git+https://github.com/tinygo-org/py32-svd.git
+        git+https://github.com/tinygo-org/llvm-project#commit=2be7242b6a4d59fe89fb43f7d1e7333dc9b307a2)
+sha256sums=('cd65513e741db11c6a569fdbb2f3c7cf82c36a9c42fe4255163d8c2370a3a9d0'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'ab348da41ea1007b6fb75e65fd067c6992f606b0e780bcd62acc4637613134da')
+
+prepare() {
+  cd tinygo
+
+  git submodule init
+  git config -f .gitmodules 'submodule.lib/nrfx.url' "$srcdir/nrfx"
+  git config -f .gitmodules 'submodule.lib/CMSIS.url' "$srcdir/CMSIS"
+  git config -f .gitmodules 'submodule.lib/avr.url' "$srcdir/avr-mcu"
+  git config -f .gitmodules 'submodule.lib/cmsis-svd.url' "$srcdir/cmsis-svd-data"
+  git config -f .gitmodules 'submodule.lib/wasi-libc.url' "$srcdir/wasi-libc"
+  git config -f .gitmodules 'submodule.lib/picolibc.url' "$srcdir/picolibc"
+  git config -f .gitmodules 'submodule.lib/stm32-svd.url' "$srcdir/stm32-svd"
+  git config -f .gitmodules 'submodule.lib/musl.url' "$srcdir/musl-libc"
+  git config -f .gitmodules 'submodule.lib/mingw-w64.url' "$srcdir/mingw-w64"
+  git config -f .gitmodules 'submodule.lib/macos-minimal-sdk.url' "$srcdir/macos-minimal-sdk"
+  git config -f .gitmodules 'submodule.lib/net.url' "$srcdir/net"
+  git config -f .gitmodules 'submodule.lib/wasi-cli.url' "$srcdir/wasi-cli"
+  git config -f .gitmodules 'submodule.lib/bdwgc.url' "$srcdir/bdwgc"
+  git config -f .gitmodules 'submodule.lib/py32-svd.url' "$srcdir/py32-svd"
+
+  git config --remove-section submodule.lib/binaryen
+
+  git submodule sync
+  # 'protocol.file.allow=always' is a workaround for https://vielmetti.typepad.com/logbook/2022/10/git-security-fixes-lead-to-fatal-transport-file-not-allowed-error-in-ci-systems-cve-2022-39253.html
+  git -c protocol.file.allow=always submodule update
+
+  ln -sf ../llvm-project
+}
+
+build() {
+  cd tinygo
+  make llvm-build -j4
+  USE_SYSTEM_BINARYEN=1 make build/release
+}
+
+check() {
+  cd tinygo
+  # it reqreires a lot of dependencies. todo enable the tests
+  # make test tinygo-test smoketest
+}
+
+package() {
+  cd tinygo
+
+  install -d "$pkgdir"/usr/bin "$pkgdir"/usr/lib/tinygo
+  mv build/release/tinygo/* "$pkgdir"/usr/lib/tinygo
+  ln -s /usr/lib/tinygo/bin/tinygo "$pkgdir"/usr/bin/tinygo
+}

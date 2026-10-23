@@ -1,0 +1,38 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: maz-1 <loveayawaka@gmail.com>
+
+pkgbase=ndiswrapper
+pkgname=(ndiswrapper-dkms ndiswrapper)
+pkgver=1.63
+pkgrel=1
+pkgdesc="Module for NDIS (Windows Network Drivers) drivers supplied by vendors"
+arch=('x86_64')
+url="https://sourceforge.net/projects/ndiswrapper/"
+license=('GPL')
+source=("https://sourceforge.net/projects/ndiswrapper/files/stable/ndiswrapper-$pkgver.tar.gz"
+        'dkms.conf')
+sha512sums=('694802655d775ba55cfc0ec0b8c4d0cbdb659ead613d46f158eed79c8985393cf22ded757fff06b0e1a6e3c94bdaace7dd4cb1059d2960244e9f955f097fb7ad'
+            '9fce255fc02ddf6e939dc61a5e29c0ea5fa1a31ecc3c390081bc53aa1cd48eddf5db621f0a1cb909634529d4ccc2995eea8827be8eb5807b34dc17e15045ecf4')
+
+build() {
+  cd ndiswrapper-$pkgver
+  make -C utils
+}
+
+package_ndiswrapper-dkms() {
+  depends=('dkms')
+  provides=('NDISWRAPPER-MODULE')
+  conflicts=('NDISWRAPPER-MODULE')
+
+  cd ndiswrapper-$pkgver
+  mkdir -p "$pkgdir"/usr/src
+  cp -RL ./driver "$pkgdir"/usr/src/ndiswrapper-$pkgver
+  cp "$srcdir"/dkms.conf "$pkgdir"/usr/src/ndiswrapper-$pkgver
+}
+
+package_ndiswrapper() {
+  depends=('perl' 'NDISWRAPPER-MODULE')
+
+  cd ndiswrapper-$pkgver
+  make -C utils sbindir=/usr/bin usrsbindir=/usr/bin DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,105 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: libertylocked <libertylocked@disroot.org>
+
+pkgname=bitwarden-cli
+pkgver=2026.2.0
+pkgrel=1
+pkgdesc="The command line vault"
+arch=('x86_64')
+url="https://github.com/bitwarden/clients"
+license=('GPL-3.0-only')
+depends=('nodejs-lts-jod' 'argon2' 'semver')
+makedepends=('git' 'python' 'python-setuptools' 'npm' 'modclean' 'fdupes')
+options=(!emptydirs)
+source=(bitwarden::git+https://github.com/bitwarden/clients.git#tag=cli-v${pkgver})
+sha512sums=('0d2045a3fcb08c66445c7cbb63f52570f2fe4281033649d1f3a70afc775e5633695c5baa59bfa557bf8d1b9b4e3075e52ea6fca9cd79cb42b950409bf77965ca')
+
+prepare() {
+	cd bitwarden
+
+	# Remove Bitwarden-licensed files ahead of time to ensure
+	# that we don't accidentally include them in the package.
+	rm -r bitwarden_license/
+
+	export npm_config_build_from_source=true
+	export npm_config_cache="$srcdir/npm_cache"
+
+	npm ci
+}
+
+build() {
+	cd bitwarden/apps/cli
+	export npm_config_build_from_source=true
+	export npm_config_cache="$srcdir/npm_cache"
+	export CXXFLAGS="$CXXFLAGS -Wno-error"
+	npm run build:oss:prod
+	npm run clean
+	node ./build/bw.js completion --shell zsh > _bw
+}
+
+package() {
+	cd bitwarden/apps/cli
+	export npm_config_build_from_source=true
+	export npm_config_cache="$srcdir/npm_cache"
+	export CXXFLAGS="$CXXFLAGS -Wno-error"
+	npm install --production -g --prefix "$pkgdir"/usr $(npm pack . | tail -1)
+
+	# Non-deterministic race in npm gives 777 permissions to random directories.
+	# See https://github.com/npm/npm/issues/9359 for details.
+	chmod -R u=rwX,go=rX "$pkgdir"
+	# npm gives ownership of ALL FILES to build user
+	# https://bugs.archlinux.org/task/63396
+	chown -R root:root "${pkgdir}"
+
+	# package zsh completions
+	install -vDm644 _bw -t "${pkgdir}/usr/share/zsh/site-functions"
+
+	# cleanup
+	sed -e "s|${srcdir}|/|" -i "$pkgdir"/usr/lib/node_modules/@bitwarden/cli/package.json
+	find "$pkgdir"/usr/lib/node_modules -name 'package.json' -exec sed -e "s|${srcdir}||" -i {} \;
+	modclean --path "$pkgdir"/usr/lib -r -a "*.ts,.bin,.github,.vscode,bin.js" --ignore='license'
+
+	fdupes "$pkgdir"/usr/lib
+	pushd "$pkgdir"/usr/lib
+	#JS debug symbols (unusable)
+	find -name '*.map' -type f -print -delete
+	#Source code
+	find -name '*.c' -type f -print -delete
+	find -name '*.cpp' -type f -print -delete
+	find -name '*.h' -type f -print -delete
+	find -name '*.gyp' -type f -print -delete
+	find -name '*.gypi' -type f -print -delete
+	find -name '*.ts' -type f -print -delete
+	find -name '*.cts' -type f -print -delete
+	find -name build-tmp-napi-v3  -print0 |xargs -r0 -- rm -rvf --
+	find -name Makefile -type f -print -delete
+	find -name 'Pipfile*' -type f -print -delete
+	find -name '*.patch' -type f -print -delete
+	#Temporary build files
+	find -name '.deps' -print0 |xargs -r0 -- rm -rvf --
+	find -name 'obj.target' -print0 |xargs -r0 -- rm -rvf --
+	find -name '*package-lock.json' -type f -print -delete
+	find -name '*.mk' -type f -print -delete
+	find -name '*.Makefile' -type f -print -delete
+
+	#Documentation
+	find -name '*.md' -type f -print -delete
+	find -name doc -print0 |xargs -r0 -- rm -rvf --
+	find -name test -print0 |xargs -r0 -- rm -rvf --
+	#Compile-time-only dependencies
+	find -name nan -print0 |xargs -r0 -- rm -rvf --
+	find -name node-addon-api -print0 |xargs -r0 -- rm -rvf --
+	#Other trash
+	find -name '*.yml' -type f -print -delete
+	find -name '.npmignore' -type f -print -delete
+	find -name '.gitignore' -type f -print -delete
+
+	#Fix file mode
+	find . -type f -exec chmod 644 {} \;
+	find . -name '*.node' -exec chmod 755 {} \;
+
+	# Remove empty directories
+	find . -type d -empty -print -delete
+	popd
+	chmod 755 "$pkgdir"/usr/lib/node_modules/@bitwarden/cli/build/bw.js
+}

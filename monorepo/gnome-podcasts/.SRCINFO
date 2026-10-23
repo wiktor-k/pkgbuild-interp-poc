@@ -1,0 +1,32 @@
+pkgbase = gnome-podcasts
+	pkgdesc = Podcast application for GNOME
+	pkgver = 25.3
+	pkgrel = 2
+	url = https://apps.gnome.org/Podcasts/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	checkdepends = xorg-server-xvfb
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gst-plugins-bad-libs
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = openssl
+	depends = sqlite
+	source = git+https://gitlab.gnome.org/World/podcasts.git#tag=25.3
+	b2sums = a045340483d62c625bdc633f0116bc204170d3fd4a4ab219b50560864c2ffd7bb2d8807dbc1aa4beedf84a317fe231dc2d6a51cb34bed2d922410c080dfcf57c
+
+pkgname = gnome-podcasts

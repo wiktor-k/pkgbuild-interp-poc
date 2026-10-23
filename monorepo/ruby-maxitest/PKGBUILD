@@ -1,0 +1,91 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-maxitest
+_pkgname=${pkgname#ruby-}
+pkgver=6.2.0
+pkgrel=1
+pkgdesc='Minitest + all the features you always wanted'
+arch=(any)
+url='https://github.com/grosser/maxitest'
+license=(MIT)
+depends=(
+  ruby
+  ruby-minitest
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  procps-ng
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+)
+options=(!emptydirs)
+source=("git+https://github.com/grosser/maxitest.git#tag=v$pkgver")
+sha512sums=('429c7d10557ac25a1c615a1441e9a48b253fc4f12255c4edf615b0c494894b56c1bde26aa103e1fab8c4d8f1219ab47ba9ccab7855e83b1aa1ff65a3c8331e67')
+
+prepare() {
+  cd "$_pkgname"
+  git rm Gemfile.lock
+
+  # Remove dependency on bump and debug
+  sed -r -e '/bump|debug/d' -i Gemfile
+
+  # Remove ruby-minitest version constraints
+  sed -i 's/s.add_runtime_dependency "minitest".*/s.add_runtime_dependency "minitest"/' \
+    maxitest.gemspec
+}
+
+build() {
+  cd "$_pkgname"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname"
+  PATH="tmp_install/usr/bin:$PATH" GEM_HOME="tmp_install/$(gem env gemdir)" rake
+}
+
+package() {
+  cd "$_pkgname"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" MIT-LICENSE
+}

@@ -1,0 +1,45 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Morgan <morganamilo@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: T.J. Townsend <blakkheim@archlinux.org>
+
+pkgname=discord
+_pkgname=Discord
+pkgver=1.0.166
+pkgrel=1
+epoch=1
+pkgdesc="All-in-one voice and text chat for gamers"
+arch=('x86_64')
+url='https://discord.com'
+license=('LicenseRef-custom')
+depends=('libnotify' 'libxss' 'nspr' 'nss' 'gtk3' 'hicolor-icon-theme')
+optdepends=('libpulse: PulseAudio support'
+            'libappindicator-gtk3: Systray indicator support'
+            'xdg-utils: For opening URLs and files')
+source=("https://dl.discordapp.net/apps/linux/$pkgver/$pkgname-$pkgver.tar.gz"
+        "LICENSE-$pkgver.html::https://discordapp.com/terms"
+        "OSS-LICENSES-$pkgver.html::https://discordapp.com/licenses")
+sha512sums=('102a5220c7b9d0b17bfa73a9cb006bc27994ea506c542481ab2c36fc8f7a5475bd031eee43b2fc76d713d3909e194cc873d668e1234ab4bf72cf1df674b95d89'
+            '598bbdfb25ee77fbf76ed1ed9057931dee970b52c44186a523dfad2a6b562b3607156a78d29c702ad3b2f7b45a4710068f088a33fcab566a2bbe33075c8ce74c'
+            'f2050e4064aa1d8c6053ab3d29554edcbfc583c4e5d58e314bbab3849ef9c3d3322859698107842ee9a782a57803ecbf3a618222bdc2f9ada7d86c894cb3e72d')
+
+# Skip license hashes as they are unstable (discord#2)
+# Since "updpkgsums"/"pkgctl version upgrade" overwrite the checksum array with
+# literal hashes, set them to SKIP with indexed assignments (pacman-contrib#119)
+# https://gitlab.archlinux.org/archlinux/packaging/packages/discord/-/issues/2
+# https://gitlab.archlinux.org/pacman/pacman-contrib/-/issues/119
+sha512sums[1]='SKIP'
+sha512sums[2]='SKIP'
+
+package() {
+  cd $_pkgname
+
+  install -Dm755 $pkgname "$pkgdir"/usr/bin/$pkgname
+  install -Dm755 updater_bootstrap "$pkgdir"/usr/share/$pkgname/updater_bootstrap
+  install -Dm644 $pkgname.desktop "$pkgdir"/usr/share/applications/$pkgname.desktop
+  install -Dm644 $pkgname.png "$pkgdir"/usr/share/icons/hicolor/256x256/apps/$pkgname.png
+
+  install -Dm644 "$srcdir"/LICENSE-$pkgver.html "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.html
+  install -Dm644 "$srcdir"/OSS-LICENSES-$pkgver.html "$pkgdir"/usr/share/licenses/$pkgname/OSS-LICENSES.html
+}

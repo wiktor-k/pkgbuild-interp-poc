@@ -1,0 +1,21 @@
+pkgbase = python-wiktionaryparser
+	pkgdesc = A tool to parse word data from wiktionary.com into a JSON object
+	pkgver = 0.0.97.20210613
+	pkgrel = 8
+	url = https://github.com/Suyash458/WiktionaryParser
+	arch = any
+	license = MIT
+	checkdepends = python-deepdiff
+	checkdepends = python-parameterized
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python-beautifulsoup4
+	depends = python-requests
+	source = git+https://github.com/Suyash458/WiktionaryParser.git#commit=71f396ef6e915b3d1461a41e8a7aec35063d30bf
+	sha512sums = e9e6ccd7bb6dce135a9a7a33f27540fe32a39cdf279c1d4af032e4d219d5e45b3c01af36cd49d959a4ac604b7cd6102542674efff045d6b776b1b6a3559f7e56
+
+pkgname = python-wiktionaryparser

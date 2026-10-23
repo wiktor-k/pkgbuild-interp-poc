@@ -1,0 +1,31 @@
+pkgbase = python-pycurl
+	pkgdesc = A Python 3.x interface to libcurl
+	pkgver = 7.48.0
+	pkgrel = 1
+	url = https://github.com/pycurl/pycurl
+	arch = x86_64
+	license = LGPL-2.1-only
+	license = MIT
+	checkdepends = python-flaky
+	checkdepends = python-flask
+	checkdepends = python-numpy
+	checkdepends = python-paramiko
+	checkdepends = python-pyflakes
+	checkdepends = python-pytest
+	checkdepends = python-pytest-run-parallel
+	checkdepends = python-pytest-timeout
+	checkdepends = python-websockets
+	checkdepends = vsftpd
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = curl
+	depends = glibc
+	depends = openssl
+	depends = python
+	source = git+https://github.com/pycurl/pycurl.git#tag=REL_7_48_0
+	sha512sums = 6855ab052b9097799ccf9bc13b113dfbb4a1f78dc397148ad78df416aef250fddfe6c1e6be309c6b494fde92b489f48e65eea75fced9390688c36345e528048e
+
+pkgname = python-pycurl

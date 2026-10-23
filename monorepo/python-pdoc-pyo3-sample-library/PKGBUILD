@@ -1,0 +1,33 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-pdoc-pyo3-sample-library
+_name=${pkgname#python-}
+pkgver=1.0.11
+pkgrel=3
+pkgdesc="A sample PyO3 library used in pdoc tests"
+arch=(x86_64)
+url="https://github.com/mitmproxy/pdoc-pyo3-sample-library"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  python
+)
+makedepends=(
+  python-build
+  python-maturin
+  python-installer
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha256sums=('5bdf8bb855de9238621786631f761dadc682def48441137ff4f684ae01f3df6d')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

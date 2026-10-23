@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Conrad Hoffmann <ch@bitfehler.net>
+# Contributor: Armin Preiml <apreiml@strohwolke.at>
+
+pkgname=hare
+pkgver=0.26.0.1
+pkgrel=2
+pkgdesc='The Hare programming language'
+arch=(x86_64 aarch64)
+url='https://harelang.org'
+license=('MPL-2.0 AND GPL-3.0-only')
+depends=(qbe harec)
+makedepends=(git scdoc)
+source=("$pkgname::git+https://git.sr.ht/~sircmpwn/hare#tag=$pkgver")
+sha512sums=('40a004f4b52e903e0cf48a3ed9c9cb984d609312ba29af5004dbde91e8db71491c085868dae37e3ff661e14a151464bb86c5fded2805e2c083e2846fec6b3926')
+b2sums=('c79cb4c251dd9cd01931606e23ae8dcd87ed740375906a6d0dffae5660469acf7bf82cba65f80538af68e2594f2bcb216d06d9d85918fdee57fa3fcf8709e1cd')
+
+prepare() {
+  cd "$pkgname"
+
+  # configure prefix directory & architecture
+  sed \
+    -e 's:/usr/local:/usr:' \
+    -e "s/^ARCH = .*/ARCH = $CARCH/" \
+    configs/linux.mk > config.mk
+}
+
+build() {
+  cd "$pkgname"
+
+  # remove '-Wl,' prefix if present, since it is only required when
+  # the linker is invoked indirectly. Keeping it will cause the linker to
+  # fail.
+  export LDFLAGS=${LDFLAGS#"-Wl,"}
+
+  # XXX: parallel build driver builds are broken.
+  LOCALVER=arch make -j1
+}
+
+check() {
+  cd "$pkgname"
+
+  # XXX: see above, in build().
+  #
+  # Currently one test fails on glibc
+  # https://lists.sr.ht/~sircmpwn/hare-dev/%3C2I5P65667M8XC.2AAFMEP64ZWLL%40mforney.org%3E
+  make HARETEST_INCLUDE='slow' check -j1
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+}

@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+_name=pytest-datafixtures
+pkgname=python-pytest-datafixtures
+pkgver=1.1.0
+pkgrel=2
+pkgdesc="Data fixtures for pytest made simple"
+arch=(any)
+url="https://github.com/idlesign/pytest-datafixtures"
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-pytest
+)
+makedepends=(
+  python-build
+  python-installer
+  python-hatchling
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('1ad1dffd7fd3565d98f0ddf55e6e15934c6e8c9e70acaa157b8e00a753839a62fd977bf771e0631f92ee54f2aec85577557039b817bf19634befb771a7325a29')
+b2sums=('fe6e1f786875187140ea67d57fbd7edd7ae09fd50f4e02d334273a54cfdf902c9b8518ccf201aa8c6f895d83cb7c83be9ce6efff9b9fbb30c3e747c64553e02b')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -P -m pytest -v
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {AUTHORS.md,CHANGELOG.md,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,38 @@
+# Maintainer : Felix Yan <felixonmars@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Arnau Sanchez <tokland {at} gmail {dot} com>
+
+pkgname=python-pyquery
+pkgver=2.1.0
+pkgrel=1
+pkgdesc="A jquery-like library for python."
+arch=('any')
+url="https://github.com/gawel/pyquery/"
+license=('BSD')
+depends=('python-lxml' 'python-cssselect')
+optdepends=('python-webob: query wsgi app')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-requests' 'python-webob' 'python-pytest' 'python-webtest')
+source=("git+https://github.com/gawel/pyquery.git#tag=$pkgver")
+sha512sums=('005559c207a0f488f029540cdf9b80763aeb0725032f638d8dc07e01664edea61c549a68299d8b1b4c707a0096db4ae9271470576e31a40f48ca5d3cfab345e0')
+
+build() {
+  cd pyquery
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd pyquery
+  pytest
+}
+
+package() {
+  cd pyquery
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Symlink license file
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/pyquery-$pkgver.dist-info/LICENSE.txt \
+    "$pkgdir"/usr/share/licenses/$pkgname/LICENSE.txt
+}

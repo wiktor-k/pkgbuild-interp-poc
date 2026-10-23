@@ -1,0 +1,51 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=gnome-extensions-app
+pkgver=51alpha
+pkgrel=1
+pkgdesc="Small app for managing GNOME Shell extensions"
+url="https://gitlab.gnome.org/GNOME/gnome-extensions-app"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  bash
+  dconf
+  gjs
+  glib2
+  glibc
+  gnome-shell
+  gtk4
+  hicolor-icon-theme
+  libgcc
+)
+makedepends=(
+  appstream
+  git
+  gobject-introspection
+  meson
+)
+# GNOME Shell tags use SSH signatures which makepkg doesn't understand
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-extensions-app.git#tag=${pkgver/[a-z]/.&}"
+  "git+https://gitlab.gnome.org/GNOME/libshew.git#commit=d16afc40412b565d2bbecf80335f54a19a978009"
+)
+b2sums=('91ee64563058d244cbc4e4677d837fb68dfee4c28145f472fded4c91f77f34e198ba45d3bd9863d4fe3aaa976a3265209920cb6b6ddbfe329dc9f42fc1c00280'
+        '7b39ef786d0af34f207c36c078fda5410848a5eceb84509b145184be1dbb994aeb3ffa70cb3de363a8460d59c140aafbdee8f74312cf2971a80cc5d485f1b829')
+
+build() {
+  # Inject subprojects
+  export MESON_PACKAGE_CACHE_DIR="$srcdir"
+
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

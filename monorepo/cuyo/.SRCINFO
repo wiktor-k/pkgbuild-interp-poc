@@ -1,0 +1,22 @@
+pkgbase = cuyo
+	pkgdesc = Tetris-style puzzle game for up to two players with a twist
+	pkgver = 2.1.0
+	pkgrel = 6
+	epoch = 1
+	url = https://www.karimmi.de/cuyo/
+	changelog = cuyo.changelog
+	arch = x86_64
+	license = GPL
+	makedepends = patch
+	depends = desktop-file-utils
+	depends = hicolor-icon-theme
+	depends = sdl
+	depends = sdl_mixer
+	depends = sdl_image
+	depends = xdg-utils
+	source = https://download.savannah.gnu.org/releases/cuyo/cuyo-2.1.0.tar.gz
+	source = cuyo.diff
+	sha256sums = 6c0809a59a2d236f15d8fbd68d61fb1465e51f6c327d7f7ae4db9f4e44dad89f
+	sha256sums = efceed1489c551f5ae8909df3ad57f302f8105cbb1e735d8ece44269e886ce7c
+
+pkgname = cuyo

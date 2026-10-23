@@ -1,0 +1,59 @@
+pkgbase = padthv1
+	pkgdesc = An old-school polyphonic additive synthesizer
+	pkgver = 1.5.0
+	pkgrel = 1
+	url = https://padthv1.sourceforge.io/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = alsa-lib
+	makedepends = cmake
+	makedepends = fftw
+	makedepends = jack
+	makedepends = libgcc
+	makedepends = liblo
+	makedepends = libstdc++
+	makedepends = lv2
+	makedepends = qt6-base
+	makedepends = qt6-svg
+	makedepends = qt6-tools
+	source = https://download.sourceforge.net/padthv1/padthv1-1.5.0.tar.gz
+	sha512sums = 3e174f09f8cd42deadcb0120163d9c0d1a399ff65649c59a1d6838e36c9cbb1137bac7a9ff7f2a25a679b1d37ab9c7226fc22959abfcb76a7b77e04252ce5be5
+	b2sums = 2e1312b624cae87d6b5e5c2791e9cdb3c7f665bb765d92b3dcc0553df8b141da6b71ad5ff401ee49fa100480d775a8245c8458e10009c6bf780e47fb640b9aab
+
+pkgname = padthv1
+	depends = padthv1-lv2=1.5.0
+	depends = padthv1-standalone=1.5.0
+
+pkgname = padthv1-common
+	pkgdesc = An old-school polyphonic additive synthesizer - common files
+
+pkgname = padthv1-lv2
+	pkgdesc = An old-school polyphonic additive synthesizer - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = fftw
+	depends = libfftw3f.so
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = lv2-host
+	depends = padthv1-common
+	depends = qt6-base
+	depends = qt6-svg
+
+pkgname = padthv1-standalone
+	pkgdesc = An old-school polyphonic additive synthesizer - standalone
+	groups = pro-audio
+	depends = alsa-lib
+	depends = fftw
+	depends = libfftw3f.so
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = jack
+	depends = libgcc
+	depends = liblo
+	depends = libstdc++
+	depends = padthv1-common
+	depends = qt6-base
+	depends = qt6-svg
+	optdepends = new-session-manager: for session management using the standalone application

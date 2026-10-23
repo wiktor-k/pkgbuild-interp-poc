@@ -1,0 +1,18 @@
+pkgbase = python-pbs-installer
+	pkgdesc = Installer for Python Build Standalone
+	pkgver = 2026.10.13
+	pkgrel = 1
+	url = https://github.com/frostming/pbs-installer
+	arch = any
+	license = MIT
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-pdm-backend
+	depends = python
+	optdepends = python-httpx: for download support
+	optdepends = python-zstandard: for zstd installation support
+	source = pbs-installer-2026.10.13.tar.gz::https://github.com/frostming/pbs-installer/archive/refs/tags/2026.10.13.tar.gz
+	sha512sums = ff50e4a1c599b627e972f605583c19042590c34cfa81c4c2ad7e2de3b5ff3103ec2b4290a10c7cae29555d0b97a497e733bba52792c7ad584f20be38183cb542
+	b2sums = e5e01bb5a9bebd4d6ae3a606c08ccecbcfae05253c3c04696c09c8239edf3e239e751cfa86b01ae33dd694a74c0db850b07785837b8f9d6f3ac3d150a4ef15ec
+
+pkgname = python-pbs-installer

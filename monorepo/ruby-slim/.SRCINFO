@@ -1,0 +1,24 @@
+pkgbase = ruby-slim
+	pkgdesc = A template language whose goal is reduce the syntax to the essential parts without becoming cryptic
+	pkgver = 5.2.1
+	pkgrel = 5
+	url = https://github.com/slim-template/slim
+	arch = any
+	license = MIT
+	checkdepends = ruby-erb
+	checkdepends = ruby-kramdown
+	checkdepends = ruby-minitest
+	checkdepends = ruby-rack-test
+	checkdepends = ruby-rake
+	checkdepends = ruby-sinatra
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-temple
+	depends = ruby-tilt
+	options = !emptydirs
+	source = ruby-slim::git+https://github.com/slim-template/slim.git#tag=v5.2.1
+	sha512sums = 8a9d206ad05883a573f9c9f0fd0f11a6afcaf84f0f467391d225b9594aa36d86c835bcd8f2a2666439c7687f71278603aafd22f97b85ecaf5811e37019f8d7ed
+	b2sums = ff8584d93db9eebdc87a0cb3710b486be9583a8b2cbc5594a2fe68ac77e2a853f604748f91fd4444d4aa30d6b55b235750914a208871271be93c8d3f85205e04
+
+pkgname = ruby-slim

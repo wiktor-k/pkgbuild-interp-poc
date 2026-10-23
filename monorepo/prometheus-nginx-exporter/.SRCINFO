@@ -1,0 +1,21 @@
+pkgbase = prometheus-nginx-exporter
+	pkgdesc = NGINX Prometheus Exporter for NGINX and NGINX Plus
+	pkgver = 1.5.3
+	pkgrel = 1
+	url = https://github.com/nginxinc/nginx-prometheus-exporter
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	depends = glibc
+	provides = nginx-prometheus-exporter
+	conflicts = nginx-prometheus-exporter
+	replaces = nginx-prometheus-exporter
+	backup = etc/conf.d/prometheus-nginx-exporter
+	source = nginx-prometheus-exporter-1.5.3.tar.gz::https://github.com/nginxinc/nginx-prometheus-exporter/archive/v1.5.3.tar.gz
+	source = prometheus-nginx-exporter.service
+	source = prometheus-nginx-exporter.conf
+	sha512sums = 36554b5bd78f8470e61f8562be03704f779871cfd19f6a3472f45275f170be5ae57f2adc57ca48cfb8c03bf451cba778ab6b27d8dde67c5acd9a5902faf1dfe6
+	sha512sums = 4868bd54d20dd3f4f67bd0623c9f28121d1dd9f0ddf75a6e9ba0098d4b6722b726c92de4ef9f6e31c9826dec4685d6d4e5594e8d66de6665050481039d6d8bdb
+	sha512sums = 843d6903c8da8356cef0c53722c176f5ed12d140a2888f3f3cf5dedaf6437fdc3c0a527ba6635bd949b28a64af98221aeb5caa13edb12b05a712c6e2aadddf77
+
+pkgname = prometheus-nginx-exporter

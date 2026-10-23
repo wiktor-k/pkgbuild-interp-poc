@@ -1,0 +1,22 @@
+pkgbase = python-urwidgets
+	pkgdesc = A collection of widgets for urwid
+	pkgver = 0.2.1
+	pkgrel = 4
+	url = https://github.com/AnonymouX47/urwidgets
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-urwid
+	source = python-urwidgets::git+https://github.com/AnonymouX47/urwidgets#tag=v0.2.1
+	source = remove-upper-constraint.patch
+	sha512sums = 7fc0b8f66bab7446e59ef37c083c45009c2083c298dc47d583bfa2df5afdeb188db36367882f38dfdb39f08de7d7b69d45720014e969ff2ff4e8e2a985fd64d4
+	sha512sums = e6ee08ade5837ff372a76f82af8ebd021c687a3f819f4a8db0ca62a0c79c0bb0a5c4799485167de1babf2b148d3ddc11013645dadf6636a52258df3187890b59
+	b2sums = 8e0fdf214df11f8ec038b0bff26b21f23d9bb975bc1943e058b98b3a210f6d2015336fea0512dbff6ebd7b771d0089f2e7a52b48dd6244dd340ba1a2aa0c8928
+	b2sums = 3370c9cdeddb2fab8b406695b49b287a123217c33b34ea828ee57825187398c5bcdff9fcf68bdd43af0846b9e2962443c0405ef1421074bb9c8b4405ac89c53d
+
+pkgname = python-urwidgets

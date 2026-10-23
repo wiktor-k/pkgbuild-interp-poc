@@ -1,0 +1,100 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=imageio
+pkgname=python-$_name
+pkgver=2.38.1
+pkgrel=1
+# test_images repo has no releases, the commit may need to be updated on pkgver bumps
+_test_images_commit=f676c96b1af7e04bb1eed1e4551e058eb2f14acd
+pkgdesc="Python library for reading and writing image data"
+arch=(any)
+url="https://github.com/imageio/imageio"
+license=(BSD-2-Clause)
+depends=(
+  python
+  python-numpy
+  python-pillow
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+)
+checkdepends=(
+  python-pytest
+)
+optdepends=(
+  'python-av: for the PyAV plugin'
+  'python-opencv: for the OpenCV plugin'
+  'python-tifffile: for the TIFF plugin'
+  'python-rawpy: for the RawPy plugin'
+  # the following are marked as legacy
+  'freeimage: for the FreeImage plugin (legacy)'
+  'python-astropy: for the FITS plugin (legacy)'
+  'python-imageio-ffmpeg: for the FFMPEG plugin (legacy)'
+  'python-gdal: for the GDAL plugin (legacy)'
+  'python-simpleitk: for the ITK plugin (legacy)'
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz
+  $pkgname-test-images::git+https://github.com/imageio/test_images.git#commit=$_test_images_commit
+)
+b2sums=('bbd0e039b4cb487667f89233dc30acf8afae7c30b41bbbccf0e5fd824c6bff9243e6bf83c63d24c3d9de8e492fab62a5f039f5e3485b3a9cab149555f0db7500'
+        'b48440fbd50d12e0138a6c19676b57029b48905cd6e24ea310ce0ad309275eec6bbf8c58604d5854989d795aa9d4a4c420f586d56f9b313ffdef6dcfb5482aa6')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    # configure path for test images
+    --test-images="$srcdir"/$pkgname-test-images
+    # deselect tests that require sending requests to github
+    --deselect tests/test_freeimage.py::test_get_fi_lib
+    --deselect tests/test_freeimage.py::test_freeimage_format
+    --deselect tests/test_freeimage.py::test_freeimage_lib
+    --deselect tests/test_freeimage.py::test_png
+    --deselect tests/test_freeimage.py::test_png_dtypes
+    --deselect tests/test_freeimage.py::test_jpg
+    --deselect tests/test_freeimage.py::test_jpg_more
+    --deselect tests/test_freeimage.py::test_bmp
+    --deselect tests/test_freeimage.py::test_gif
+    --deselect tests/test_freeimage.py::test_animated_gif
+    --deselect tests/test_freeimage.py::test_ico
+    --deselect tests/test_freeimage.py::test_multi_icon_ico
+    --deselect tests/test_freeimage.py::test_pnm
+    --deselect tests/test_freeimage.py::test_gamma_correction
+    --deselect tests/test_freeimage.py::test_improps
+    --deselect tests/test_freeimage.py::test_exr_write
+    # deselect tests for a legacy plugin which require the python-imageio-ffmpeg package
+    --deselect tests/test_format.py::test_missing_format
+    --deselect tests/test_format.py::test_preferring_arbitrary
+    # deselect tests for a legacy plugin which require freeimage
+    --deselect tests/test_core.py::test_findlib2
+    --ignore tests/test_freeimage.py
+    # ValueError: operands could not be broadcast together with shapes (256,256,4) (256,256)
+    --deselect tests/test_pillow.py::test_boolean_reading
+    # TypeError: numpy boolean subtract, the `-` operator, is not supported, use the bitwise_xor, the `^` operator, or the logical_xor function instead.
+    --deselect tests/test_pillow.py::test_boolean_writing
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # remove utilities for downloading binary dependencies
+  rm "$pkgdir"/usr/bin/{imageio_download_bin,imageio_remove_bin}
+  rmdir --ignore-fail-on-non-empty "$pkgdir"/usr/bin
+}

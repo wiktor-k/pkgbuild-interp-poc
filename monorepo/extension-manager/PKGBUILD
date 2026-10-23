@@ -1,0 +1,43 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Mark Wagie <mark dot wagie at proton dot me>
+# Contributor: Bill Sideris <bill88t@feline.gr>
+
+pkgname=extension-manager
+pkgver=0.6.5
+pkgrel=1
+pkgdesc="A native tool for browsing, installing, and managing GNOME Shell Extensions"
+arch=('x86_64')
+url="https://mattjakeman.com/apps/${pkgname}"
+license=('GPL-3.0-or-later')
+depends=(
+	'gtk4'
+	'json-glib'
+	'libadwaita'
+	'libsoup3'
+	'libxml2'
+)
+makedepends=(
+	'blueprint-compiler'
+	'glib2-devel'
+	'gobject-introspection'
+	'meson'
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/mjakeman/${pkgname}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('5a43c7b9570775948a35f402b1c1d5f0f0401e339ab2144d466f75eae26ef9de')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build \
+		-Dbacktrace=false \
+		-Dpackage="Arch Linux" \
+		-Ddistributor="George Hu <integral@archlinux.org>"
+
+	meson compile -C build
+}
+
+check() {
+	meson test -C build --print-errorlogs
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

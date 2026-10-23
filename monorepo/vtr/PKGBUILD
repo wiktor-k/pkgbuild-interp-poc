@@ -1,0 +1,30 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=vtr
+_pkgname=vtr-verilog-to-routing
+pkgver=9.0.0
+pkgrel=1
+pkgdesc='Verilog to Routing -- Open Source CAD Flow for FPGA Research'
+arch=(x86_64)
+url='https://verilogtorouting.org'
+license=('MIT')
+depends=('ctags' 'tbb')
+makedepends=('cmake' 'wget')
+source=(https://github.com/verilog-to-routing/vtr-verilog-to-routing/releases/download/v$pkgver/vtr-verilog-to-routing-$pkgver.tar.gz)
+sha512sums=('0e9bb66d7cbebc1631559cb19b38c6490833004fe5ea21cec5e4a0d38ff44b02d8aff4841847041c63869f8d7d3de5d5fdbe2d6b6580bd89b831b763c01ccc9f')
+
+build() {
+  cmake -B build -S $_pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_PARMYS=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  rm "$pkgdir"/usr/bin/*.a
+
+  install -Dm 644 $_pkgname/LICENSE.md "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+

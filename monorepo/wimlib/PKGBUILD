@@ -1,0 +1,60 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Alad Wenter <alad@mailbox.org>
+# Contributor: Eric Biggers <ebiggers3 at gmail dot com>
+
+pkgname=wimlib
+pkgver=1.14.5
+pkgrel=4
+pkgdesc='A library and program to extract, create, and modify WIM files'
+arch=(x86_64)
+url='https://wimlib.net'
+license=('LGPL-2.1-only OR LGPL-3.0-only')
+depends=(glibc bash fuse3 libntfs-3g ntfsprogs)
+makedepends=(git)
+checkdepends=(attr)
+optdepends=(
+  'cdrkit: for making ISO image of Windows PE'
+  'mtools: for making disk image of Windows PE' 
+  'syslinux: for making disk image of Windows PE'
+  'cabextract: for extracting Windows PE from the WAIK'
+)
+provides=(libwim.so)
+source=("$pkgname::git+https://github.com/ebiggers/wimlib#tag=v$pkgver")
+sha512sums=('9cb7a9c43aea142fe188e0408c2d1384bda6d4063ebd914539ca5180eca105216964c6c5e4f1921f4183b9ccfa429f94e3f31de3a1d4280a70d559ab205d1ebc')
+b2sums=('34970da4dd0f3ae463c79895c444ee99391eacc14176f32732ef662dda99c484107dee830cae668054bd657fa272845264d1d1424c2672c85728ef28751cd958')
+
+prepare() {
+  cd "$pkgname"
+
+  autoreconf -vfi
+}
+build() {
+  cd "$pkgname"
+
+  ./configure \
+    --disable-static \
+    --with-libcrypto \
+    --with-fuse \
+    --with-ntfs-3g \
+    --prefix=/usr
+
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  make check
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  # documentation
+  install -Dm644 {NEWS,README}.md -t "$pkgdir/usr/share/doc/$pkgname"
+
+  # licenses
+  install -Dm644 COPYING* -t "$pkgdir/usr/share/licenses/$pkgname"
+}

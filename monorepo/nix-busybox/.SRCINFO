@@ -1,0 +1,22 @@
+pkgbase = nix-busybox
+	pkgdesc = Slimmed down busybox for Nix sandbox builds
+	pkgver = 1.37.0
+	pkgrel = 1
+	url = https://www.busybox.net
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = ncurses
+	makedepends = musl
+	makedepends = kernel-headers-musl
+	source = https://www.busybox.net/downloads/busybox-1.37.0.tar.bz2
+	source = https://www.busybox.net/downloads/busybox-1.37.0.tar.bz2.sig
+	source = config
+	validpgpkeys = C9E9416F76E610DBD09D040F47B70C55ACC9965B
+	sha512sums = ad8fd06f082699774f990a53d7a73b189ed404fe0a2166aff13eae4d9d8ee5c9239493befe949c98801fe7897520dbff3ed0224faa7205854ce4fa975e18467e
+	sha512sums = SKIP
+	sha512sums = fe1a8c26184b980bc71d937a8133453dfc43781fcd4b5f91710ddeae129311250a72a6b98896c1088fb1fbfcb512028f5c03dcd0c8cfb85d027222ae65effbab
+	b2sums = bfd9b81a2428670722934316d429b56886b232dc43ced5873a1f72966dd2bb604e3d607082bb8404bc7e8c15c5c79265fc19f8932e2c9703caafd16fc8037a5a
+	b2sums = SKIP
+	b2sums = dbcc129ffde907b183fca6ea80f61b519f876acf9cc56bad2e498c0d414743ab6163511291297451232f5ee54ccb5d5adef57b3406eb54f3fefd7fe5d4a37ee7
+
+pkgname = nix-busybox

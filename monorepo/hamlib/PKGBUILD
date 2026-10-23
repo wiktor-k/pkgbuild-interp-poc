@@ -1,0 +1,75 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=hamlib
+pkgver=4.7.2
+pkgrel=2
+pkgdesc='Ham radio equipment control libraries'
+arch=('x86_64')
+url='https://hamlib.github.io'
+license=(
+  'GPL-2.0-or-later'
+  'LGPL-2.0-or-later'
+)
+depends=(
+  'glibc'
+  'libgcc'
+  'libindi'
+  'libstdc++'
+  'libusb'
+  'readline'
+)
+makedepends=(
+  'git'
+  'lua54'
+  'python'
+  'swig'
+  'tcl'
+)
+optdepends=(
+  'lua54: Lua bindings'
+  'perl: Perl bindings'
+  'python: Python bindings'
+  'tcl: Tcl bindings'
+)
+provides=(
+  'libhamlib++.so'
+  'libhamlib.so'
+)
+source=("$pkgname::git+https://github.com/Hamlib/Hamlib.git#tag=$pkgver")
+b2sums=('f8c46286bbf848bfb5023ad1429e311e8376109768665eeba2b55bad203c4fd7a5ecc7e38ab7d57aa3325fce4f3582cb66bc27847f9ab863fc143337dd0d3f59')
+validpgpkeys=('82D64F6B0E67CD41F689BBA6FB2C5130D55A8819') # Nate Bargmann <n0nb@n0nb.us>
+
+prepare() {
+  cd $pkgname
+  git cherry-pick -n 8c008b7c34fc293f44047d2ecc0126922ba325db # Fix build with swig 4.5
+  sed -i 's/Hamlib-pl.mk install_site/Hamlib-pl.mk install/g' bindings/Makefile.am
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --with-perl-binding \
+    --with-python-binding \
+    --with-tcl-binding \
+    --with-lua-binding \
+    --with-xml-support \
+    --with-indi \
+    --with-readline \
+    --disable-static
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" INSTALLDIRS=vendor install
+  rm -rv "$pkgdir"/usr/lib/perl5/*/core_perl
+}

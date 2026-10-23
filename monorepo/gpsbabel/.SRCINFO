@@ -1,0 +1,25 @@
+pkgbase = gpsbabel
+	pkgdesc = Read, write and manipulate GPS waypoints in a variety of formats
+	pkgver = 1.10.0
+	pkgrel = 4
+	url = https://www.gpsbabel.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = libicns
+	makedepends = qt6-tools
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libgcc
+	depends = libstdc++
+	depends = libusb
+	depends = qt6-5compat
+	depends = qt6-base
+	depends = qt6-serialport
+	depends = shapelib
+	depends = zlib
+	source = git+https://github.com/GPSBabel/gpsbabel.git#tag=gpsbabel_1_10_0
+	b2sums = 0afde01c3edf1b5960566a8b923d836f89fd5a63261dcf54caa69d2a4362c45b7c6543dcd288ea41575c92420489be4164cc6bd85d1199cf202135a7ae06bd50
+
+pkgname = gpsbabel

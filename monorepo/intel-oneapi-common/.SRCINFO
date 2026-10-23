@@ -1,0 +1,21 @@
+pkgbase = intel-oneapi-common
+	pkgdesc = Intel's oneAPI common variables and licensing
+	pkgver = 2026.0.0_235
+	pkgrel = 1
+	url = https://software.intel.com/content/www/us/en/develop/tools/oneapi.html
+	arch = any
+	license = LicenseRef-Intel-EULA-Developer-Tools AND LicenseRef-Intel-Simplified
+	depends = sh
+	optdepends = procps-ng: Sourcing oneapi-vars.sh
+	conflicts = intel-oneapi-basekit
+	noextract = intel-oneapi-common-oneapi-vars-2026.0.0-235_all.deb
+	noextract = intel-oneapi-common-licensing-2026.0-2026.0.0-235_all.deb
+	noextract = intel-oneapi-common-vars-2026.0.0-235_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-common-oneapi-vars-2026.0.0-235_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-common-licensing-2026.0-2026.0.0-235_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-common-vars-2026.0.0-235_all.deb
+	b2sums = 667b791b9206178061b27677360fd2a098a4fc996004e63d5768715cb1fb70debfa88683410ee08ddbcc1d73c688cc30b268ff6655c09414341be1340881ce35
+	b2sums = 54815ca8f66ad017e2afd0d180fc4d010b30b89d7f5b3ca6f36f01458a6b71141040c9b196eb63b2246faf27908d45999fd4b5fbe7c52da1564f47fd11224bf5
+	b2sums = f3d1969522a32d9f8f01515804235275b3fdffa740b5079c0221c1f4cc6865c5cd237450bc5a1bd1e31d5d1fd9fbd622d4e7ac2cf015fecd6d7cda553bb8fcd6
+
+pkgname = intel-oneapi-common

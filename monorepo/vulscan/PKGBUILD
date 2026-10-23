@@ -1,0 +1,26 @@
+# Maintainer: Daniel Micay <danielmicay@gmail.com>
+# Contributor: icoz <icoz.vt at gmail dot com>
+
+pkgname=vulscan
+pkgver=2.1
+pkgrel=1
+pkgdesc='Module which enhances nmap to a vulnerability scanner'
+url='https://github.com/scipag/vulscan'
+arch=(any)
+license=(GPL-3.0-or-later)
+depends=(
+  nmap
+)
+source=(
+  ${url}/archive/refs/tags/${pkgver}/${pkgname}-${pkgver}.tar.gz
+)
+sha512sums=('678edd3a147697b841e9b8810dbb2d460fc3e127ef8717bd96e420402c4dea087afee398ee4fe2d6dcb7462553544a21ece4442a098a7f1c3be0a8d91c18f19f')
+replaces=(nmap-vulscan)
+provides=(nmap-vulscan)
+conflicts=(nmap-vulscan)
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -dm755 "$pkgdir/usr/share/nmap/scripts/vulscan/"
+  cp -a *.csv *.nse "$pkgdir/usr/share/nmap/scripts/vulscan"
+}

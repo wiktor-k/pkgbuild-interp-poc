@@ -1,0 +1,44 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=tamarin-prover
+pkgver=1.12.0
+pkgrel=162
+pkgdesc="The Tamarin prover for security protocol analysis"
+url="https://tamarin-prover.github.io"
+license=("GPL-3.0-only")
+arch=('x86_64')
+depends=('ghc-libs' 'graphviz' 'maude' 'haskell-hunit' 'haskell-binary-orphans'
+         'haskell-binary-instances' 'haskell-blaze-html' 'haskell-cmdargs' 'haskell-conduit'
+         'haskell-file-embed' 'haskell-gitrev' 'haskell-http-types' 'haskell-lifted-base'
+         'haskell-resourcet' 'haskell-safe' 'haskell-shakespeare' 'haskell-threads' 'haskell-wai'
+         'haskell-warp' 'haskell-yesod-core' 'haskell-yesod-static' 'haskell-tamarin-prover-utils'
+         'haskell-tamarin-prover-term' 'haskell-tamarin-prover-theory'
+         'haskell-tamarin-prover-sapic' 'haskell-tamarin-prover-export'
+         'haskell-tamarin-prover-accountability')
+makedepends=('ghc')
+source=("https://github.com/tamarin-prover/tamarin-prover/archive/$pkgver/tamarin-prover-$pkgver.tar.gz")
+sha512sums=('b8e79d894fc65fcf046127abc3428f8a61975a598fc231222444cecf47a778410b7b255ed3ef58b932a049bb6d31f3c57d8769a55c653cffe85b71d7da1e3287')
+
+build() {
+    cd $pkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-executable-dynamic --prefix=/usr \
+        --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname \
+            -fthreaded -ftest-coverage -f-build-tests --ghc-option='-pie'
+    runhaskell Setup build $MAKEFLAGS
+}
+
+check() {
+    cd $pkgname-$pkgver
+    LD_LIBRARY_PATH="$PWD"/dist/build dist/build/tamarin-prover/tamarin-prover test
+}
+
+package() {
+    cd $pkgname-$pkgver
+    runhaskell Setup copy --destdir="${pkgdir}"
+
+    install -Dm644 etc/filetype.vim "$pkgdir"/usr/share/vim/vimfiles/ftdetect/tamarin.vim
+    install -Dm644 etc/syntax/spthy.vim "$pkgdir"/usr/share/vim/vimfiles/syntax/spthy.vim
+    ln -s spthy.vim "$pkgdir"/usr/share/vim/vimfiles/syntax/sapic.vim
+}

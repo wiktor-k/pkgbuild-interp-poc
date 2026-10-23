@@ -1,0 +1,29 @@
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Geoffroy Carrier <geoffroy.carrier@aur.archlinux.org>
+# Maintainer: Daniel J Griffiths <ghost1227@archlinux.us>
+
+pkgname=dot2tex
+pkgver=2.12.0
+pkgrel=1
+pkgdesc="Graphviz to LaTeX converter"
+arch=('any')
+url="https://dot2tex.readthedocs.io/en/latest/"
+license=('MIT')
+depends=('python-pyparsing' 'graphviz')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=($pkgname-$pkgver.tar.gz::https://github.com/sagemath/dot2tex/archive/$pkgver.tar.gz)
+sha512sums=('b8b1f3d8ea59a4c0ea61e6d62c702278368457bb7f2aa5eadc8bd95ed9ce766132b9a309f74c6fab8ad2c18e37ed12bef20090f3974c25af9cdbf196388ab083')
+
+build() {
+	cd ${pkgname}-${pkgver}
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd ${pkgname}-${pkgver}
+
+	python -m installer --destdir="$pkgdir" dist/*.whl
+
+	# Install custom license file
+	install -Dm644 LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+}

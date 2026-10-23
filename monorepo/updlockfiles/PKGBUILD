@@ -1,0 +1,42 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=updlockfiles
+pkgver=0.1.2
+pkgrel=1
+pkgdesc="Manage lockfiles in PKGBUILDs for upstreams that don't ship them"
+url="https://github.com/kpcyrd/updlockfiles"
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+  'pacman-contrib'
+)
+makedepends=('cargo')
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+b2sums=('4de785da1cb02b79dcd7368b9f720d0dec8ca4f8923134fa7f91916a6093266b3b8a8c799aa7a89ea722f40c881588b2a1201287f86d904a88d5916269f1dfdc')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 target/release/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

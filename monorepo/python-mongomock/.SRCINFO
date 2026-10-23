@@ -1,0 +1,21 @@
+pkgbase = python-mongomock
+	pkgdesc = Fake pymongo stub for testing simple MongoDB-dependent code
+	pkgver = 4.3.0
+	pkgrel = 1
+	url = https://github.com/mongomock/mongomock
+	arch = any
+	license = ISC
+	checkdepends = python-pymongo
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-vcs
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python-sentinels
+	depends = python-packaging
+	depends = python-pytz
+	source = git+https://github.com/mongomock/mongomock.git#tag=4.3.0
+	sha512sums = 0e7685b22f6f6a0a5c98870825415cb9e794e705116720a65d806bcf3b542c32149e05b802ab2400e2e38a358d64ba5c5f01dbb062c785500633863f7c9c58d4
+
+pkgname = python-mongomock

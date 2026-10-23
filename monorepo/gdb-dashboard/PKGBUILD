@@ -1,0 +1,30 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=gdb-dashboard
+pkgver=0.17.5
+pkgrel=1
+pkgdesc='Modular visual interface for GDB in Python'
+url='https://github.com/cyrus-and/gdb-dashboard'
+arch=(any)
+license=(MIT)
+depends=(
+  gdb
+  binutils
+)
+optdepends=(
+  'python-pygments: syntax highlighting support'
+)
+source=(
+  https://github.com/cyrus-and/gdb-dashboard/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz
+)
+sha512sums=('5177fb47f9afe6b9028d12feeeb1886203df871b0cd381f145a36fed540d8a2884eec1585da362a4dedc11f6062abb022713f3839d2479c701c7d40e1a34be71')
+b2sums=('15a08b16fd763bad35caac5f3e148da4761e542e9eccf4df3dc3f52a72a8cb7e132a888d120d24c08b196561d0f74d1cd9048fdceca582e7e77cff672bb88a89')
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 644 .gdbinit -t "${pkgdir}/usr/share/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

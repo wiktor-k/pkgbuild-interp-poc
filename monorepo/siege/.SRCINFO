@@ -1,0 +1,17 @@
+pkgbase = siege
+	pkgdesc = An http regression testing and benchmarking utility
+	pkgver = 4.2.0
+	pkgrel = 1
+	url = https://www.joedog.org/siege-home/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	depends = glibc
+	depends = openssl
+	depends = zlib
+	optdepends = perl: siege2csv.pl
+	backup = etc/siegerc
+	backup = etc/urls.txt
+	source = https://download.joedog.org/siege/siege-4.2.0.tar.gz
+	sha256sums = 78af482fc655f1cf7270fdbc3171581ed4cb3163009f7f4f056fc2b7e2d24453
+
+pkgname = siege

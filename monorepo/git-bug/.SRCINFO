@@ -1,0 +1,17 @@
+pkgbase = git-bug
+	pkgdesc = Distributed, offline-first bug tracker embedded in git repositories
+	pkgver = 0.11.0
+	pkgrel = 2
+	url = https://github.com/MichaelMure/git-bug
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = go
+	makedepends = pnpm
+	depends = glibc
+	depends = git
+	options = !lto
+	source = git+https://github.com/MichaelMure/git-bug#tag=v0.11.0
+	sha512sums = 8657e47d941599d5999db81b10878c2c48525560c4f8af772f9b4a0667bdaf07de7ef72edc8addb50aaf6838e0f676f00ab8c57e9ee025e06afc68398a5aa6c9
+	b2sums = ba28e0d29c919c15a069de6fd0c3e377c86e031397ae186fd80b6d8e98ca45a5a8ee1d587a0720ba569f55a3e2d9cbba541903046434a793b265c127f7d0bf3c
+
+pkgname = git-bug

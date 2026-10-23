@@ -1,0 +1,84 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Wesley Moore <wes@wezm.net>
+
+pkgname=difftastic
+pkgver=0.71.0
+pkgrel=1
+pkgdesc='An experimental diff tool that compares files based on their syntax'
+arch=(x86_64)
+url='https://difftastic.wilfred.me.uk'
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  shared-mime-info
+)
+makedepends=(
+  git
+  rust
+  mdbook
+)
+source=(
+  "git+https://github.com/Wilfred/difftastic.git#tag=$pkgver"
+)
+sha512sums=('9282b73fd6c863d2eb1d826175a8bb77d9c9cfc2a4f68f49fa834cd6bf1f243af10c379409cfdf403a3dc59a97931cc64601603ab81d22e48f3ce526d3cbd98f')
+b2sums=('9db1c06d2a43902405755d41407fe902dbde3507a7d14d2f990eb002bc63607dce7faef87490c84fd66ad1af737663124dd63f7128ab187396ec58d40c5439d3')
+
+_srcenv() {
+  cd "$pkgname"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -ffat-lto-objects'
+}
+
+prepare() {
+  _srcenv
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  _srcenv
+
+  # binary
+  cargo build --frozen --release
+
+  # documentation
+  cd manual
+  sed -i "s/DFT_VERSION_HERE/$pkgver/g" -i src/introduction.md
+  mdbook build
+}
+
+check() {
+  _srcenv
+
+  # Skip tests that expect to detect interactive terminal
+  # Run ignored tests that *are* expected to work if MIME database present
+  # c.f. https://github.com/Wilfred/difftastic/commit/34f21c6d
+  cargo test --frozen --all-features -- \
+    --ignored \
+    --skip 'options::tests::test_detect_display_width'
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/difft
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -vr manual/book "$pkgdir/usr/share/doc/$pkgname/manual"
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" difft.1
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

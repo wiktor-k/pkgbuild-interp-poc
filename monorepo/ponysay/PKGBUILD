@@ -1,0 +1,45 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Erkin Batu Altunbaş <erkinbatu@gmail.com>
+
+pkgname=ponysay
+pkgver=3.0.3
+pkgrel=7
+pkgdesc="cowsay reimplemention for ponies"
+url="https://github.com/erkin/ponysay"
+arch=('any')
+license=('GPL-3.0-only')
+depends=('python' 'bash')
+makedepends=('git')
+source=(${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz
+        ${url}/commit/dd922c09bbe5deb808152140679673e8dca3210d.patch
+        fix-do-not-compare-literal.patch
+        fix_invalid_escape_sequence_in_balloon.py_docstring.patch
+      )
+sha512sums=('d6ff905404192bdc207952a4a914458d7f25ddcfcea95763ae277a2a3bc7ab33e86a0a229c1b10ff7295b7a89d6e1b61406feefb6bdf9026f4076d0ed70dbe93'
+            'd1a4fea77c16b07c1aa2279b55c4ce6759833845739405e9a50a2faa88a24f3d2848669bf0a7d3bac53e8136a94ba02716e9150d864d6ad7e3f2b859564b0690'
+            '372e26a1293d05a37821a5edcbfc2ebb41d751ba4226fa503c07e815c1bb32b6c000293c584babd96e48614bf3b9c4321deb8b28587a37a56783a434615ddeb5'
+            'bfc0a360b7378da62dc3421dc1dccda2b618b5cdd12facebcd31aaa4a8608e9cf4389dd69427755bc47b51103a56c1424412814cb8b15efc40990d2bead86391')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  # Fix incorrect install dir for fish completion
+  patch -Np1 -i ../dd922c09bbe5deb808152140679673e8dca3210d.patch
+  patch -Np1 -i ../fix-do-not-compare-literal.patch
+  # Fix invalid escape sequence in balloon.py docstring
+  # From unmerged upstream PR: https://github.com/erkin/ponysay/pull/324
+  patch -Np1 -i ../fix_invalid_escape_sequence_in_balloon.py_docstring.patch
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  python setup.py build --freedom=partial --everything
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  python setup.py --prefix=/usr --dest-dir="${pkgdir}" --freedom=partial --everything \
+    --with-pdf=/usr/share/doc/ponysay --without-pdf-compression \
+    --without-info-compression  \
+    --without-man-compression \
+    install
+}

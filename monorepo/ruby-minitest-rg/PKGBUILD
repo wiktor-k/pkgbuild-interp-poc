@@ -1,0 +1,69 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-minitest-rg
+pkgver=5.4.0
+pkgrel=1
+pkgdesc='Colored red/green output for Minitest'
+arch=(any)
+url='https://github.com/minitest/minitest-rg'
+license=(MIT)
+depends=(
+  ruby
+  ruby-minitest
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-hoe
+  ruby-rake
+)
+options=(!emptydirs)
+source=(git+https://github.com/minitest/minitest-rg.git#tag=v$pkgver)
+sha512sums=('116fc91eb70315b0c53b3f700357d8dd221d0dccb9c618c5a548616fa74efe3d711b557de43f49ba26524e84ca449582fbecfe75628fd941c019983ae142b6eb')
+b2sums=('4650c1f1df67b59ad087ca9520511c6567698aa2060b3e5d071be70ac7029c7aee69f3359fa792d9b46cb733b04aeb8ccf79733621c9c88a51901bf171fea098')
+
+prepare() {
+  cd minitest-rg
+
+  sed -i "s/s\\.version = .*/s\\.version = \"$pkgver\"/" minitest-rg.gemspec
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd minitest-rg
+  gem build minitest-rg.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    minitest-rg-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd minitest-rg
+  GEM_HOME="tmp_install/$_gemdir" rake || echo "Tests failed"
+}
+
+package() {
+  cd minitest-rg
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

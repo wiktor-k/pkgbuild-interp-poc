@@ -1,0 +1,33 @@
+# Maintainer: BlackEagle <ike.devolder@gmail.com>>
+
+pkgname=kodi-addon-peripheral-joystick
+pkgver=21.1.23
+_codename=Omega
+pkgrel=6
+pkgdesc="Joystick support for Kodi"
+arch=('x86_64')
+url='https://github.com/xbmc/peripheral.joystick'
+license=('GPL-2.0-or-later')
+groups=('kodi-addons' 'kodi-addons-peripheral')
+makedepends=('cmake' 'kodi-dev')
+options=(!lto)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/xbmc/peripheral.joystick/archive/$pkgver-$_codename.tar.gz")
+sha512sums=('6c948680ec919076479c47031a75eefd7e6bad7d3f40d8b1a9d38e1f831b136cdab9381fa624e7d0255bd7bc558bf6b34ea4f38021724067059abc7df6917aae')
+
+build() {
+    cd "peripheral.joystick-$pkgver-$_codename"
+    cmake \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=1 \
+        -DUSE_LTO=1 \
+        .
+    make
+}
+
+package() {
+    depends=('kodi')
+    cd "peripheral.joystick-$pkgver-$_codename"
+    make DESTDIR="$pkgdir/" install
+}
+

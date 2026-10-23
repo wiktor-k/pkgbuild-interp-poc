@@ -1,0 +1,19 @@
+pkgbase = fb-client
+	pkgdesc = Client for paste.xinu.at
+	pkgver = 2.4.0
+	pkgrel = 1
+	url = https://github.com/Bluewind/fb
+	arch = any
+	license = GPL3
+	depends = python
+	depends = python-pycurl
+	depends = python-xdg
+	optdepends = xclip: automatically copy the URL into the clipboard on X11
+	optdepends = wl-clipboard: automatically copy the URL into the clipboard on wayland
+	source = https://paste.xinu.at/data/client/fb-2.4.0.tar.gz
+	source = https://paste.xinu.at/data/client/fb-2.4.0.tar.gz.sig
+	validpgpkeys = CFA6AF15E5C74149FC1D8C086D1655C14CE1C13E
+	sha256sums = a3dd5580c7ba459c18f2d2ac39614422fd9c0dccb4545dbd683c77104062af39
+	sha256sums = SKIP
+
+pkgname = fb-client

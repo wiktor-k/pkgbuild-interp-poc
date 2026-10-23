@@ -1,0 +1,51 @@
+# Maintainer: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Patrik Hautala <phloyd@iki.fi>
+
+pkgname=renameutils
+pkgver=0.12.0
+pkgrel=8
+pkgdesc='A set of programs designed to make renaming of files faster and less cumbersome'
+arch=(x86_64)
+url='https://www.nongnu.org/renameutils/'
+license=(GPL-3.0-or-later)
+depends=(readline)
+source=(
+  https://download.savannah.gnu.org/releases/renameutils/renameutils-0.12.0.tar.gz{,.sig}
+  fix-makefile-typo.patch
+  ftbfs-gcc15.patch
+)
+sha512sums=('8aae157e6ead86a2fbf970ecdb27d6067c2d35c04058ead9a3c0af3d99d466d37d8c4f1da0562ef2bea9cf9bd5f8de4d14340906427df421dba1a5c234c63bd6'
+            'SKIP'
+            '8d8d53f55a62cedf022a810dd06e755db97c4361a179a2e561e5b9f50d09fe68b43d648cd663a7696efd6652beefce1970c9785ba9edb7afc682525e125c979c'
+            'd72d1b8ebd6194ad6d4a4b2f2a626c2243aad1ec4630eb7f3233590c069f46061ccf8f768dfc78f08c357d37423265f0870265670498f840421f71682a942b09')
+b2sums=('7c65138d9a6de355a72f8e07a6d9b8c1921a8925f7662a26521dcbb37862161ea866e24246cf2a2b3e4c2910231242883bfcea2acef9dda48556faa1d385baae'
+        'SKIP'
+        '1980a6c6885b66f54a029cc454a105eb4d76502f3f5b73b5842de932e3223d7ad96da46987e033347424cda30d29ae71c345c3c7eb2c021f14782c9d8f4ccdf8'
+        '62e589c9883c5a1c34c336b480d2cffad0836f56df73424b65436e601a442e5e80c66cdba55a26649be6b4c19c19ada61712cccc85f23211d614759b271f11ad')
+validpgpkeys=('4E6E6521EF300E30457D7AFB8AAAC30E7088EFCB') # Oskar Liljeblad <oskar@osk.mine.nu>
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # fix issues with gcc >= 15
+  patch -p1 -i "$srcdir/ftbfs-gcc15.patch"
+
+  # fix mungled variable
+  patch -p1 -i "$srcdir/fix-makefile-typo.patch"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package () {
+  depends+=(glibc)
+
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" INSTALL="install -p" install
+}

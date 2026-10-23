@@ -1,0 +1,87 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=vimrunner
+pkgname=ruby-vimrunner
+pkgver=0.3.6
+pkgrel=3
+pkgdesc="Spawn a Vim instance and control it programatically"
+arch=(any)
+url="https://github.com/AndrewRadev/vimrunner"
+license=(MIT)
+depends=(
+  ruby
+  gvim
+)
+makedepends=(
+  ruby-bundler
+  ruby-rake
+  ruby-rdoc
+  ruby-rspec
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('6b8af32f8c086ceae7e9e7f5536803931099fcdcb9099e70a5f60613f6d3ddf24b54bf95ac74aa73d322b6d71a532859c36b07e255b21f0ecf54d18b16eff3d7')
+b2sums=('474716b55e0c424c9ce3029e79e42f2a3462d0f3e6530dbb5a4f45c3a7323c036b3ef0bbdd3126427c0398ce3a926672288d26b64f8cbdf896d6cbe21a3e457e')
+
+prepare() {
+  cd $_name-$pkgver
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed -i -e 's|~>|>=|g' $_name.gemspec
+}
+
+build() {
+  local gemdir="$(gem env gemdir)"
+  local gem_install_options=(
+    --local
+    --verbose
+    --ignore-dependencies
+    --no-user-install
+    --install-dir tmp_install/$gemdir
+    --bindir tmp_install/usr/bin
+    $_name-$pkgver.gem
+  )
+  local unrepro_files=(
+    tmp_install/$gemdir/cache/
+    tmp_install/$gemdir/gems/$_name-$pkgver/vendor/
+    tmp_install/$gemdir/doc/$_name-$pkgver/ri/ext/
+  )
+
+  cd $_name-$pkgver
+
+  gem build $_name.gemspec
+  gem install "${gem_install_options[@]}"
+
+  # remove unrepreducible files
+  rm -frv "${unrepro_files[@]}"
+
+  find tmp_install/$gemdir/gems/ \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find tmp_install/$gemdir/extensions/ \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+# NOTE: there is no rake test target
+
+package() {
+  cd $_name-$pkgver
+
+  mv -v tmp_install/* "$pkgdir/"
+
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,101 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Johannes Weiner <hannes@saeurebad.de>
+# Contributor: Daniel Leidisch <spam@leidisch.net>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Polar Phoenix <polarphoenixx at gmail dot com>
+
+pkgbase=emacs-slime
+pkgname=(emacs-slime cl-swank)
+pkgver=2.32
+pkgrel=1
+pkgdesc='Superior Lisp Interaction Mode for Emacs'
+arch=(any)
+url='https://slime.common-lisp.dev'
+license=(
+  MIT
+  GPL-2.0-or-later
+  LGPL-2.0-or-later
+  LicenseRef-LLGPL
+  LicenseRef-Public
+)
+makedepends=(
+  git
+  emacs
+  texlive-bin
+)
+source=(
+  "$pkgbase::git+https://github.com/slime/slime#tag=v$pkgver"
+  fix-swank-loader-path.patch
+  fix-texinfo-path.patch
+)
+b2sums=('f8bc2aba07a124d6884ec460a1efb470fa044538e731d78efb430202cffd0d212f36b58f92b2021b2bb0a26320dd1e5977ca8d10ccba6d9a489030d858657fc5'
+        '5e90e5be6b561a61492ca7052bd0b9c8cf872f0d14492c8aa475ce5af4d2104c54dc40093e4b809adef3e49cdfe2b5a0745eb6f7440d7fbc65e8ac95ea7c0299'
+        'e537c07519a5818e45a115fca66dda94accf55ad15e84492565cce3653b16030874fe37e432edf0bebb534ca4b3c826be64de7eed25eac1789ba879abe5aa8db')
+
+prepare() {
+  cd "$pkgbase"
+
+  # apply patches
+  patch --strip=1 --input="$srcdir/fix-swank-loader-path.patch"
+  patch --strip=1 --input="$srcdir/fix-texinfo-path.patch"
+
+  # license extraction
+  sed -n '/License/,/public/p' README.md > LICENSE
+}
+
+build() {
+  cd "$pkgbase"
+
+  # compile emacs lisp files
+  make
+
+  # create texinfo page & html manual
+  make -C doc slime.info html/index.html
+}
+
+package_emacs-slime() {
+  _pkgname="${pkgname#emacs-}"
+  depends=('emacs' 'cl-swank')
+  install='slime.install'
+
+  cd "$pkgbase"
+
+  # install package
+  install -vd "$pkgdir/usr/share/emacs/site-lisp/$_pkgname"
+  cp -vr contrib lib ./*.el{,c} "$pkgdir/usr/share/emacs/site-lisp/$_pkgname"
+
+  # delete unnecessary files
+  find "$pkgdir/usr/share/emacs/site-lisp/$_pkgname" \
+    -name 'Makefile' -delete -or \
+    -name '*.lisp' -delete
+
+  # general documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" CONTRIBUTING.md \
+    README.md NEWS PROBLEMS doc/slime-refcard.pdf
+
+  # texinfo file
+  install -vDm644 -t "$pkgdir/usr/share/info" doc/slime.info
+
+  # html manual
+  cp -vr doc/html "$pkgdir/usr/share/doc/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+
+package_cl-swank() {
+  local _pkgname="${pkgname#cl-}"
+  pkgdesc+=' (Lisp-side server)'
+  depends=('common-lisp' 'cl-asdf')
+
+  cd "$pkgbase"
+
+  # install library
+  install -vDm644 -t "$pkgdir/usr/share/common-lisp/source/$_pkgname" ./*.{lisp,asd}
+  install -vDm644 -t "$pkgdir/usr/share/common-lisp/source/$_pkgname/contrib" contrib/*.lisp
+  install -vDm644 -t "$pkgdir/usr/share/common-lisp/source/$_pkgname/$_pkgname" swank/*.lisp
+  echo "$pkgver" > "$pkgdir/usr/share/common-lisp/source/$_pkgname/slime-version"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

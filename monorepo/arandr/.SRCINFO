@@ -1,0 +1,21 @@
+pkgbase = arandr
+	pkgdesc = Provide a simple visual front end for XRandR 1.2.
+	pkgver = 0.1.11
+	pkgrel = 6
+	url = https://christian.amsuess.com/tools/arandr/
+	arch = any
+	license = GPL3
+	makedepends = python-build
+	makedepends = python-docutils
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = gtk3
+	depends = python-cairo
+	depends = python-gobject
+	depends = xorg-xrandr
+	source = https://christian.amsuess.com/tools/arandr/files/arandr-0.1.11.tar.gz
+	source = dont-compress-man-pages.patch
+	sha256sums = e4cbbe3698bb812b395770870174be0094bbaeb391105a811f95f42eb182ae02
+	sha256sums = eb954b763bd2dd7f98ff04a4d45e59db9f8a16cc7384b47ffed733781057ab37
+
+pkgname = arandr

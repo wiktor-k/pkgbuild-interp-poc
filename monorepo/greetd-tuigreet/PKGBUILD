@@ -1,0 +1,67 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Antoine POPINEAU <antoine at popineau dot eu>
+
+pkgname=greetd-tuigreet
+_pkgname=${pkgname#*-}
+pkgver=0.11.1
+pkgrel=2
+pkgdesc='A console UI greeter for greetd'
+url="https://github.com/$_pkgname/$_pkgname"
+license=(GPL-3.0-only)
+arch=(x86_64)
+depends=(glibc # libc.so libm.so
+         greetd
+         libgcc
+         systemd)
+provides=(greetd-greeter)
+makedepends=(cargo
+             scdoc)
+replaces=(greetd-tuigreet-fork{,-bin}
+          greetd-tuigreety{,-bin}
+          tuigreet{,bin}
+          tuigreet-fork{,bin}
+          tuigreety{,-bin})
+backup=(etc/tuigreet/config.toml)
+_archive="$_pkgname-$pkgver"
+source=("$url/archive/$pkgver/$_archive.tar.gz"
+        "$_pkgname.tmpfiles")
+sha256sums=('7d643ba224c40c6a63f9462a826630543071aea08e732ccd2e880bcd80d939e8'
+            '8f83aee7874aab5d06981a1d1cd05df906368a79dbca90d157a33a2f023b67d3')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=thin
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release --all-features
+	scdoc < contrib/man/$_pkgname-1.scd > contrib/man/$_pkgname.1
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		# Requires libnss_wrapper to mockup data, see https://github.com/apognu/tuigreet/issues/138
+		'info::nsswrapper_tests::nsswrapper_get_users_from_nss stdout'
+	)
+	cargo test --frozen --all-features -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	depends+=(libgcc_s.so)
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$_pkgname"
+	install -Dm0755 -t "$pkgdir/usr/share/man/man1/" "contrib/man/$_pkgname.1"
+	install -Dm0644 "../$_pkgname.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/$_pkgname.conf"
+}

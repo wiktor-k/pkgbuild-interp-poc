@@ -1,0 +1,20 @@
+pkgbase = gurk
+	pkgdesc = Signal Messenger client for terminal
+	pkgver = 0.10.2
+	pkgrel = 1
+	url = https://github.com/boxdot/gurk-rs
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = cargo
+	makedepends = protobuf
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = sqlcipher
+	replaces = gurk-bin
+	options = !lto
+	source = https://github.com/boxdot/gurk-rs/archive/v0.10.2/gurk-0.10.2.tar.gz
+	sha256sums = d047915916bceb221cd96a8afe53e5ba3b897f8d8798a4d36ca4cf354aa63b03
+	b2sums = f89633b01f892554c42c0447bf548f4efa6013f854ca6d0595253af6c27f89faac29f674ec237c9c49dc79346e92b19ae1650f2555c6bea375c49d548456b99b
+
+pkgname = gurk

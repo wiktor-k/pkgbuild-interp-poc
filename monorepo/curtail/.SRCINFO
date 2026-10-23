@@ -1,0 +1,29 @@
+pkgbase = curtail
+	pkgdesc = Image compressor GUI, supporting PNG, JPEG, WebP and SVG file types, both lossless and lossy compression mode
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Curtail/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = jpegoptim
+	depends = libadwaita
+	depends = libwebp-utils
+	depends = oxipng
+	depends = pngquant
+	depends = python
+	depends = python-gobject
+	depends = scour
+	source = git+https://github.com/Huluti/Curtail.git#tag=1.17.0
+	b2sums = f091472c13244e6ace0f70221843f2a80af880ca5ae23211e4ee3d6fddfd732ea5e988669716f7eb716837e1cfa619b903dd446d161eafb643962648c18ae938
+
+pkgname = curtail

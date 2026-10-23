@@ -1,0 +1,36 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Timothy Redaelli <timothy.redaelli@gmail.com>
+# Contributor: Rudy Matela <rudy.matela@gmail.com>
+
+pkgname=packeth
+pkgver=3.0
+pkgrel=2
+pkgdesc='Linux GUI packet generator tool for ethernet'
+url='http://packeth.sourceforge.net/'
+arch=('x86_64')
+license=('GPL')
+depends=('gtk3')
+source=(https://github.com/jemcek/packETH/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('5b63483159d7b34c236b797fbdac3526d06fd5e0db34664163b19e643e942ad0919b4eae637047f69f017510e943188219345ff1c6fefa09dcb4023c09501f06')
+
+prepare() {
+  cd packETH-${pkgver}
+  autoreconf -fiv
+}
+
+build() {
+  cd packETH-${pkgver}
+  CFLAGS+=' -fcommon' # https://wiki.gentoo.org/wiki/Gcc_10_porting_notes/fno_common
+  ./configure --prefix=/usr
+  make
+  cd cli
+  make CFLAGS="$CFLAGS -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations" LDFLAGS="$LDFLAGS"
+}
+
+package() {
+  cd packETH-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  install -Dm 755 -t "${pkgdir}"/usr/bin cli/packETHcli
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,45 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=shakespeare
+pkgname=haskell-shakespeare
+pkgver=2.2.0
+pkgrel=35
+pkgdesc="A toolkit for making compile-time interpolated templates"
+url="https://www.yesodweb.com/book/shakespearean-templates"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-blaze-html' 'haskell-blaze-markup' 'haskell-file-embed'
+         'haskell-scientific' 'haskell-th-lift' 'haskell-unordered-containers' 'haskell-vector')
+makedepends=('ghc' 'haskell-hspec' 'haskell-hspec-discover' 'haskell-hunit')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('271408d7574784034e002b1f0c69699999ba0b2c0f52bcbd1d1a9f31353b6ae6e11e3a36378da38c9b56f0135450661bc7379b455f5c9c002554061a821f9135')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-test_roy -f-test_coffee -f-test_export
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

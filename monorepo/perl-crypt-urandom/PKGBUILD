@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-crypt-urandom
+pkgver=0.55
+pkgrel=2
+pkgdesc="Provide non blocking randomness"
+arch=('x86_64')
+url="https://metacpan.org/dist/Crypt-URandom"
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=('perl')
+checkdepends=('perl-test-pod')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/D/DD/DDICK/Crypt-URandom-$pkgver.tar.gz")
+sha512sums=('84c050078668842eeb377181fdfa3c0170919e2c39b18c4d02bbd4ac638f3ff35f98981afe13d0b2a3cf6f844934a030b1da1121272bc8c15f9db8bd2450bdb7')
+
+build() {
+  cd Crypt-URandom-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Crypt-URandom-$pkgver
+  make test
+}
+
+package() {
+  cd Crypt-URandom-$pkgver
+  make DESTDIR="$pkgdir" install
+}

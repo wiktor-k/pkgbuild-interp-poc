@@ -1,0 +1,22 @@
+pkgbase = prometheus-bird-exporter
+	pkgdesc = Exporter for bird metrics
+	pkgver = 1.7.0
+	pkgrel = 1
+	url = https://github.com/czerwonk/bird_exporter
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	options = !lto
+	backup = etc/conf.d/prometheus-bird-exporter
+	source = prometheus-bird-exporter-1.7.0.tar.gz::https://github.com/czerwonk/bird_exporter/archive/refs/tags/v1.7.0.tar.gz
+	source = prometheus-bird-exporter.conf
+	source = prometheus-bird-exporter.service
+	source = prometheus-bird-exporter.sysusers
+	sha512sums = af942cc91dfdc6b8abc078f46d55adf0922fd64980f0d4b8cbef8a229a989a734a3d7595d946cfd2d5b14322109a252ad76cbd40dfc50fb283af69f5636e2590
+	sha512sums = b00b3db72e3389b7da3f68927951a87d76d937e81c6d35d0ccb7f091fb57bbe11feceb8626301b86f2e0c7be353282c3abfa4c5f2379c9e1e12a963074945411
+	sha512sums = c3cba590d4a69372fbecda3e383f15c8492f8f2d8dc47f676513ffcabda4520f2b13a8dd368e2c271249d552a30ff79d28df6e173af729816751d9204feae211
+	sha512sums = 1a57390a23ce7021f2f40992f0a3c63c044e150621da8d34576eb81c0ecbe4411bb80a6e5e792a8aefffaf67d59b3df585304d2dc328046b9bc7fe033c82fe23
+
+pkgname = prometheus-bird-exporter

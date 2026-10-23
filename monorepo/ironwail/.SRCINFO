@@ -1,0 +1,24 @@
+pkgbase = ironwail
+	pkgdesc = Quake engine based on QuakeSpasm
+	pkgver = 0.8.2
+	pkgrel = 3
+	url = https://github.com/andrei-drexler/ironwail
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = gendesk
+	depends = curl
+	depends = flac
+	depends = glibc
+	depends = libglvnd
+	depends = libvorbis
+	depends = libxmp
+	depends = mpg123
+	depends = opusfile
+	depends = sdl2
+	optdepends = quake: quake command and desktop shortcut
+	optdepends = librequake: open source quake resources
+	provides = quake-engine
+	source = ironwail-0.8.2.tar.gz::https://github.com/andrei-drexler/ironwail/archive/v0.8.2.tar.gz
+	b2sums = 62d8383a5bbc02df56351dbc32464dd632b937351fec13ac159c43373b21687e2a03c401439f0af8ef61d8efcb2bef6ab8b21e6d388c5f84442580baac711b85
+
+pkgname = ironwail

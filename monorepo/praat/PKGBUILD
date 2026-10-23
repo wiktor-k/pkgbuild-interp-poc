@@ -1,0 +1,49 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: svkampen <sam at tehsvk dot net>
+# Contributor: Charlotte Van Petegem <charlotte at vanpetegem dot me>
+# Contributor: jpate <jkpate@jkpate.net>
+
+# c.f. Debian rules and control files here:
+# https://tracker.debian.org/pkg/praat
+
+pkgname=praat
+pkgver=7.0.02
+pkgrel=1
+pkgdesc='A speech analysis tool used for doing phonetics by computer'
+arch=(x86_64 i686 aarch64)
+url=https://www.fon.hum.uva.nl/praat/
+_url="https://github.com/$pkgname/$pkgname"
+license=(GPL-2.0-or-later)
+depends=(alsa-lib
+         gtk3
+         jack
+         libpulse
+         ttf-charis
+         ttf-doulos-sil)
+optdepends=(ttf-sil-fonts)
+_archive="$pkgname.github.io-$pkgver"
+source=("$_url/archive/v$pkgver/$_archive.tar.gz"
+        "$pkgname.1"
+        "$pkgname.desktop"
+        "$pkgname.svg"
+        "$pkgname.xpm")
+sha256sums=('6d97d6b97b673df2cd46a96338390a910c76d930627fb96af0b05892d46ede2c'
+            '21ee03cae45be634c57c167c2dfbdfd9d9b7feadb98e0124413d9426c199e81c'
+            '94720aedc8e9c9e9d53b3230d79ccaae551b5bc5e6986528664311d55f3cce5a'
+            'db6c7568f6e13b4ce7c37bd9fcf289832867f79ba7d7fc48c4f13f0045ad98f1'
+            '07abf61475f22f83f0514a8fba1ec7bd3821d2b7f35b1215c1f3e1feb947d74b')
+
+build() {
+	cd "$_archive"
+	export PRAAT_AUDIO=pulse
+	make
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/applications/" "../$pkgname.desktop"
+	install -Dm0644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" "../$pkgname.svg"
+	install -Dm0644 -t "$pkgdir/usr/share/pixmaps/" "../$pkgname.xpm"
+	install -Dm0644 -t "$pkgdir/usr/share/man/man1/" "../$pkgname.1"
+}

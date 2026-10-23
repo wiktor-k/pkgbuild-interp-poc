@@ -1,0 +1,40 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Alynx Zhou <alynx.zhou@gmail.com>
+
+pkgname=showmethekey
+pkgver=1.21.0
+pkgrel=1
+pkgdesc="A screenkey alternative that works under Wayland via libinput."
+arch=('x86_64')
+url="https://showmethekey.alynx.one/"
+license=("Apache-2.0")
+depends=(
+	'cairo'
+	'dconf'
+	'glib2'
+	'glibc'
+	'gtk4'
+	'hicolor-icon-theme'
+	'json-glib'
+	'libadwaita'
+	'libevdev'
+	'libgcc'
+	'libinput'
+	'libx11'
+	'libxkbcommon'
+	'pango'
+	'polkit'
+	'systemd-libs'
+)
+makedepends=("meson" "glib2-devel")
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/AlynxZhou/${pkgname}/archive/v${pkgver}.tar.gz")
+sha512sums=('38cfd728f14ab60d3b0282c664f78a1dd5db531732f1664bb2fc1ec20173beeb0274207d122f8ccbce96fbcf8e64a97998e987f2b096ad67c474c8ea98141ed4')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

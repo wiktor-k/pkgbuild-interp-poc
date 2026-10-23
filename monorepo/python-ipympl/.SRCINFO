@@ -1,0 +1,28 @@
+pkgbase = python-ipympl
+	pkgdesc = Matplotlib Jupyter Extension
+	pkgver = 0.10.0
+	pkgrel = 1
+	url = https://pypi.org/project/ipympl/
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-numpy
+	checkdepends = python-nbval
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = jupyterlab
+	makedepends = nodejs
+	makedepends = python-build
+	makedepends = python-hatch-jupyter-builder
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = ipython
+	depends = python
+	depends = python-ipywidgets
+	depends = python-matplotlib
+	depends = python-numpy
+	depends = python-pillow
+	depends = python-traitlets
+	source = git+https://github.com/matplotlib/ipympl#tag=v0.10.0
+	sha256sums = 9110a75a9da22307707d57cf907dd553a1c07ce2ca95ebe301a6c636c0dbad7c
+
+pkgname = python-ipympl

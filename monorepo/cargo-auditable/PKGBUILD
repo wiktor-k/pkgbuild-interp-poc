@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: CosmicHorror <LovecraftianHorror@pm.me>
+
+pkgname=cargo-auditable
+pkgver=0.7.7
+pkgrel=1
+pkgdesc="A cargo-subcommand to make production Rust binaries auditable"
+arch=('x86_64')
+url="https://github.com/rust-secure-code/cargo-auditable"
+license=('Apache-2.0' 'MIT')
+depends=('cargo' 'glibc' 'libgcc')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('5f77b32cb699d6cb2ca45776368a1945b81ba65b680d093c549d0babe2b225cea6e390aa573c00d0aef291004938aef0f1af541b4c3192e1576932cc166a5c4a')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cargo build --release --frozen --features wasm
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  cargo test --frozen -- --skip "test_wasm"
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  install -Dm755 "target/release/$pkgname" "$pkgdir/usr/bin/$pkgname"
+  install -Dm644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 "$pkgname/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

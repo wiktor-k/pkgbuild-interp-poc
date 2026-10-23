@@ -1,0 +1,67 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+pkgname=phpldapadmin
+pkgver=2.3.12
+pkgrel=1
+pkgdesc="A PHP and hence web-based tool to administrate LDAP over the WWW"
+arch=('any')
+url="https://github.com/leenooks/phpLDAPadmin"
+license=('GPL')
+depends=('libldap' 'php')
+makedepends=('optipng' 'git' 'npm' 'composer' 'nodejs-lts-krypton')
+backup=("etc/phpldapadmin/env")
+source=("$pkgname-$pkgver.tar.gz::https://github.com/leenooks/phpLDAPadmin/archive/refs/tags/$pkgver.tar.gz"
+	"phpldapadmin.service")
+sha256sums=('760dbb01c812d4d18186ebc4367af77f25ee351d54431765b5444ce270a0d697'
+            '0887bf62f9b1b59133b12110150e4e9de22253cc3fa0c2a7c3d47b577b866b85')
+
+prepare() {
+  cd "$srcdir"/phpLDAPadmin-$pkgver/
+  rm -rf \
+    .gitea \
+    .github \
+    docker \
+    tests
+  rm -f \
+    .gitattributes \
+    .dockerignore
+  find . -type f -name .gitignore -delete
+}
+
+build() {
+  cd "$srcdir"/phpLDAPadmin-$pkgver/
+  composer install --ignore-platform-reqs -n
+  npm install
+  npm run prod
+  rm -rf \
+    node_modules
+  rm -f \
+    package.json \
+    package-lock.json \
+    phpunit.xml
+}
+
+package() {
+  _instdir="$pkgdir"/usr/share/webapps/phpldapadmin
+  mkdir -p ${_instdir} "$pkgdir"/etc/webapps/phpldapadmin
+  cd ${_instdir}
+  cp -ra "$srcdir"/phpLDAPadmin-$pkgver/* .
+
+  install -Dm0644 "$srcdir"/phpldapadmin.service "$pkgdir"/usr/lib/systemd/system/phpldapadmin.service
+
+  # fix dirs
+  install -dm0755 "$pkgdir"/var/{cache,lib} "$pkgdir"/etc/phpldapadmin
+
+  mv ./database "$pkgdir"/var/lib/phpldapadmin
+  ln -s /var/lib/phpldapadmin ./database
+
+  mv ./storage "$pkgdir"/var/cache/phpldapadmin
+  ln -s /var/cache/phpldapadmin ./storage
+
+  mv "$srcdir"/phpLDAPadmin-$pkgver/.env.testing "$pkgdir"/etc/phpldapadmin/env.testing
+  cp "$srcdir"/phpLDAPadmin-$pkgver/.env.example "$pkgdir"/etc/phpldapadmin/env
+  mv "$srcdir"/phpLDAPadmin-$pkgver/.env.example "$pkgdir"/etc/phpldapadmin/env.example
+  ln -s /etc/phpldapadmin/env ./.env
+
+  chown -R http:http "$pkgdir"/var/{cache,lib}/phpldapadmin
+}

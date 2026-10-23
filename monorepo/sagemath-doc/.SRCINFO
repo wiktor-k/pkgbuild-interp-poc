@@ -1,0 +1,27 @@
+pkgbase = sagemath-doc
+	pkgdesc = HTML documentation for SageMath
+	pkgver = 10.10
+	pkgrel = 1
+	url = http://www.sagemath.org
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = boost
+	makedepends = cython
+	makedepends = git
+	makedepends = meson
+	makedepends = python-docutils
+	makedepends = python-jupyter-client
+	makedepends = python-jupyter-sphinx
+	makedepends = python-pkgconfig
+	makedepends = python-pyzmq
+	makedepends = python-sphinx-copybutton
+	makedepends = python-sphinx-furo
+	makedepends = python-sphinx-inline-tabs
+	makedepends = sagemath
+	depends = mathjax
+	depends = python-pplpy
+	options = !strip
+	source = git+https://github.com/sagemath/sage#tag=10.10
+	sha256sums = a940259a5fc00e3d6aae916176f346373026f151a8c4575c5711eb9316f9b058
+
+pkgname = sagemath-doc

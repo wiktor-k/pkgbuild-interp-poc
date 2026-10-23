@@ -1,0 +1,16 @@
+pkgbase = drupal
+	pkgdesc = A PHP-based content management platform
+	pkgver = 11.4.11
+	pkgrel = 1
+	url = https://www.drupal.org/
+	install = drupal.install
+	arch = any
+	license = GPL
+	options = !strip
+	backup = etc/webapps/drupal/.htaccess
+	source = https://ftp.drupal.org/files/projects/drupal-11.4.11.tar.gz
+	sha256sums = f6935da6ddfb2b3bf5c79c5118018be91021f7d5e12901eed1a71de140708e13
+
+pkgname = drupal
+	depends = php
+	depends = php-gd

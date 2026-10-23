@@ -1,0 +1,111 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Tom Richards <tom@tomrichards.net>
+
+pkgname=gnome-games
+pkgver=40.0
+pkgrel=10
+pkgdesc='Simple game launcher for GNOME'
+arch=(x86_64)
+url='https://wiki.gnome.org/Apps/Games'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  grilo
+  gtk3
+  hicolor-icon-theme
+  libarchive
+  libhandy
+  libmanette
+  librsvg
+  libsoup3
+  libxml2
+  retro-gtk
+  sqlite
+  tinysparql
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+optdepends=(
+  'libretro-beetle-pce-fast: Support for TurboGrafx-16 and TurboGrafx-CD games'
+  'libretro-beetle-psx: Support for PlayStation games'
+  'libretro-blastem: Support for Sega Genesis games'
+  'libretro-flycast: Support for Dreamcast games'
+  'libretro-gambatte: Support for Game Boy and Game Boy Color games'
+  'libretro-mgba: Support for Game Boy Advance games'
+  'libretro-nestopia: Support for Nintendo Entertainment System and Famicom Disk System games'
+  'libretro-parallel-n64: Support for Nintendo 64 games'
+  'libretro-picodrive: Support for Master System, Genesis 32X, Sega CD, Sega CD 32X, Sega Genesis and Sega Pico games'
+)
+#  'libretro-beetle-ngp: Support for Neo Geo Pocket and Neo Geo Pocket Color games'
+#  'libretro-beetle-vb: Support for Virtual Boy games'
+#  'libretro-beetle-wswan: Support for WonderSwan and WonderSwan Color games'
+#  'libretro-bsnes-mercury-balanced: Support for Super Nintendo Entertainment System games'
+#  'libretro-citra: Support for Nintendo 3DS games'
+#  'libretro-desmume2015: Support for Nintendo DS games'
+#  'libretro-gearsystem: Support for Game Gear, Master System and SG-1000 games'
+#  'libretro-handy: Support for Atari Lynx games'
+#  'libretro-prosystem: Support for Atari 7800 games'
+#  'libretro-stella2014: Support for Atari 2600 games'
+source=(
+  "git+https://gitlab.gnome.org/Archive/gnome-games.git#tag=$pkgver"
+  gnome-games-tracker3.patch
+  gnome-games-meson-0.60.patch
+  gnome-games-libsoup3.patch
+  gnome-games-appname.patch
+)
+b2sums=(
+  106459557af014f6e44cea409194c48a1c92ae69ea21b7defa6392a7a614b1d940076471d92cd7bb3c9ded39f269fea29e931667e33811c28132df65e5f19003
+  d33f416bf91d6d1491cbc62d25e2c9ce39119f67933e7cd877df85328f65c91d23728e2e7ded884ba5b842de5945ae1d9de6c743ed16c84c0bcc17666ea7cf85
+  6a21f4423e4210dfc2f607c248a199127b51f9e291ff09a6fd3a44ce4b45e9354b0921255effd941a68875c2ccd078251a9c27bc09212cb0c37c5f2220cb674f
+  60955d276eccd943efe66cf3c2576becfb5a568bdae59ecf5ce666605f46aad99bd61efce96fa1f430eea3c3ac35282e772e31aa58e7c918c89ccf184ad11830
+  06d25a12f9105a9ef4aeea9706f034e747840c541a3a2ae4ec58a9a15c3c849de1dc18661f3133ef45f37348ca9e4c739b71cf93a541d71bba2e9e3f61547c31
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix gettext domain name in metainfo file
+  git cherry-pick -n 2c7a4fd02405f5761ea016d673e28ea5f1cfce99
+
+  # Port to Tracker 3
+  git apply -3 ../gnome-games-tracker3.patch
+
+  # Fix build with meson 0.60
+  git apply -3 ../gnome-games-meson-0.60.patch
+
+  # Port to libsoup3
+  git apply -3 ../gnome-games-libsoup3.patch
+
+  # Fix untranslated app name
+  git apply -3 ../gnome-games-appname.patch
+
+  # Replace pcsx_rearmed with mednafen_psx
+  mv flatpak/libretro-cores/{pcsx_rearmed,mednafen_psx}.libretro
+  sed -i 's/^Name=.*/Name=Beetle PSX/
+          s/^Module=.*/Module=mednafen_psx_libretro.so/
+          s/^Authors=.*/Authors=Mednafen Team;/' \
+    flatpak/libretro-cores/mednafen_psx.libretro
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  # Install *.libretro files
+  install -Dm644 -t "$pkgdir/usr/lib/libretro/" $pkgname/flatpak/libretro-cores/*.libretro
+}

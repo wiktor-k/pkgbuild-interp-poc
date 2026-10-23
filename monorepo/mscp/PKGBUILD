@@ -1,0 +1,35 @@
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+
+pkgname=mscp
+pkgver=0.2.4
+pkgrel=1
+pkgdesc='transfer files over multiple SSH (SFTP) connections'
+url='https://github.com/upa/mscp'
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('gcc-libs' 'glibc' 'krb5' 'openssl' 'zlib')
+makedepends=('cmake' 'git')
+source=(git+https://github.com/upa/mscp.git#tag=v${pkgver}
+        git+https://git.libssh.org/projects/libssh.git)
+sha256sums=('04698202cf8f96bf4f31d9203f5a5378ddb07daaaa5cf2a77b2c7b78a5b3c6d0'
+            'SKIP')
+
+prepare() {
+  cd mscp
+  git submodule init
+  git config submodule.libs/libssh.url "${srcdir}/libssh"
+  git -c protocol.file.allow=always submodule update
+  patch -d libssh -p1 < patch/$(git --git-dir=./libssh/.git describe).patch
+}
+
+build() {
+  cmake -B build -S ${pkgname} \
+      -DCMAKE_BUILD_TYPE=None \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+}

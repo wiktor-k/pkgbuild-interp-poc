@@ -1,0 +1,45 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Brian Bidulock <bidulock@openss7.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: Bjorn Lindeijer <bjorn lindeijer nl>
+
+pkgname=sofia-sip
+pkgver=1.13.18
+pkgrel=1
+pkgdesc="An open-source SIP User-Agent library"
+arch=(x86_64)
+url="http://sofia-sip.sourceforge.net"
+license=('LGPL-2.1-only')
+depends=(
+  gawk
+  glib2
+  glibc
+  openssl
+  zlib
+)
+makedepends=(
+  git
+  glib2-devel
+)
+source=(
+  "git+https://github.com/freeswitch/sofia-sip.git#tag=v$pkgver"
+)
+b2sums=('c1767e0b5f17f9166f5b05b79a6a8f96324118a175fb5072c34c08cc8886b1def153f3babd6248e20b19470580deed0ba961afe6993461211052d6fcf2017966')
+
+prepare() {
+  cd $pkgname
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --with-openssl
+  # Fight unused direct deps
+  sed -i -e "s/ -shared / $LDFLAGS\0 /g" libtool
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

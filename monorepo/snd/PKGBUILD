@@ -1,0 +1,136 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: Juergen Hoetzel <juergen@archlinux.org>
+
+pkgname=snd
+pkgver=26.8
+pkgrel=1
+pkgdesc="An advanced sound editor"
+arch=(x86_64)
+url="https://ccrma.stanford.edu/software/snd/"
+license=(
+  BSD-2-Clause
+  'GPL-2.0-or-later OR GL2PS'
+  'LGPL-2.1-only WITH LLGPL'
+  TCL
+)
+groups=(pro-audio)
+depends=(
+  glibc
+  glu
+  gmp
+  gsl
+  libglvnd
+  libmpc
+  libx11
+  libxext
+  libxpm
+  libxt
+  mpfr
+  openmotif
+)
+# TODO: maybe replace mpg123 with mpg321
+makedepends=(
+  alsa-lib
+  fftw
+  flac
+  gendesk
+  jack
+  ladspa
+  libsamplerate
+  mpg123
+  ruby
+  speex
+  timidity++
+  vorbis-tools
+  wavpack
+)
+optdepends=(
+  'flac: For flac support'
+  'mpg123: For MPEG support'
+  'ruby: for snd-ruby'
+  'speex: For speex support'
+  'timidity++: For MIDI to WAVE support'
+  'vorbis-tools: For OGG support'
+  'wavpack: For wav support'
+)
+source=(
+  https://sourceforge.net/projects/$pkgname/files/$pkgname/$pkgver/$pkgname-$pkgver.tar.gz
+  GL2PS.txt
+)
+sha512sums=('00f792cf72228b6ab37bf8b3d0041a6573001eacb99c38d8e2f418c29c6047b1a29fa0771c334f3806911e3a62bfa30a92b473c5c1b30670a70a4b6496bec007'
+            'b4d26fb150cdce132138e080599e5690cde980ab7c687a2d4cb690a8ec9489588de8cd763cfb93a5617f017f438fcde827be71611aa9e460c5f0612d112e76cd')
+b2sums=('616ac57325085427d214da1922ab3f8a648df03ee47a34c62e9dde486e9558dc88bf36c9ec7ba0d34ab3937491194451552c296775f5e1bc460b61f18f5cb895'
+        'c4afa4f44d97eca049002d7fa2c1b20547b550800fe7133625d3c75b24f39005f0f846f7412ef366d820ebb01c82f60c484d1559d31766ab8f6b37514f439a3c')
+
+prepare() {
+  head -n 25 $pkgname-$pkgver/sndins/sndins.h tail -n 22 | sed 's/\* //g;s/\*//g' > BSD-2-Clause.txt
+  gendesk -f -n \
+          --pkgname "edu.stanford.ccrma.$pkgname-s7" \
+          --name "$pkgname (s7)" \
+          --exec "$pkgname-s7" \
+          --genericname "Sound Editor" \
+          --categories "AudioVideo;Audio"
+  gendesk -f -n \
+          --pkgname "edu.stanford.ccrma.$pkgname-ruby" \
+          --name "$pkgname (ruby)" \
+          --exec "$pkgname-ruby" \
+          --genericname "Sound Editor" \
+          --categories "AudioVideo;Audio"
+  gendesk -f -n \
+          --pkgname "edu.stanford.ccrma.$pkgname" \
+          --name $pkgname \
+          --exec $pkgname \
+          --genericname "Sound Editor" \
+          --categories "AudioVideo;Audio"
+  cp -av $pkgname-$pkgver $pkgname-ruby-$pkgver
+}
+
+build() {
+  local options=(
+    --prefix=/usr
+    --with-alsa
+    --with-gl
+    --with-gmp
+    --with-jack
+    --with-ladspa
+    --with-motif
+  )
+  (
+  cd $pkgname-$pkgver
+  ./configure "${options[@]}" --with-s7
+  make
+  )
+  (
+  cd $pkgname-ruby-$pkgver
+  ./configure "${options[@]}" --with-ruby
+  make
+  )
+}
+
+package() {
+  depends+=(libasound.so libfftw3.so libjack.so libsamplerate.so)
+
+  make DESTDIR="$pkgdir" install -C $pkgname-$pkgver
+  mv -v "$pkgdir/usr/bin/snd"{,-s7}
+
+  make DESTDIR="$pkgdir" install -C $pkgname-ruby-$pkgver
+  mv -v "$pkgdir/usr/bin/snd"{,-ruby}
+
+  # set s7 version as default
+  ln -sv snd-s7 "$pkgdir/usr/bin/snd"
+
+  # XDG desktop integration
+  install -vDm 644 *.desktop -t "$pkgdir/usr/share/applications/"
+  # license
+  install -vDm 644 $pkgname-$pkgver/COPYING "$pkgdir/usr/share/licenses/$pkgname/TCL.txt"
+  install -vDm 644 BSD-2-Clause.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 GL2PS.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  # docs
+  install -vDm 644 $pkgname-$pkgver/{{HISTORY,README}.Snd,NEWS} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $pkgname-$pkgver/*.html -t "$pkgdir/usr/share/doc/$pkgname/html"
+  install -vDm 644 $pkgname-$pkgver/pix/*.png -t "$pkgdir/usr/share/doc/$pkgname/html/pix"
+
+  # remove examples of unsupported extension language forth (not in the repos)
+  rm -v "$pkgdir/usr/share/$pkgname/"*.fs
+}

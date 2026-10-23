@@ -1,0 +1,32 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: corvolino <corvolino@archlinux.com.br>
+# Contributor: Joel Schaerer
+
+pkgname=pdf2svg
+pkgver=0.2.4
+pkgrel=1
+pkgdesc="A pdf to svg converter"
+arch=('x86_64')
+url="http://www.cityinthesky.co.uk/opensource/pdf2svg/"
+license=('GPL-2.0-or-later')
+depends=(
+  'cairo'
+  'glib2'
+  'glibc'
+  'poppler-glib'
+)
+source=("https://github.com/dawbarton/pdf2svg/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('1278e32975ac1218eb83b9595cd28d057ac2e203970ebc40b2169406db54d4fab349196360f9080aeeed723c523f3f57a417e8cdb38d28373d220804f63f9c59')
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

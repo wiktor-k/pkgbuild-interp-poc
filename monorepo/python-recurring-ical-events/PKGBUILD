@@ -1,0 +1,48 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-recurring-ical-events
+pkgver=3.9.0
+pkgrel=1
+pkgdesc='Python library to calculate recurrence times of events, todos and journals based on icalendar RFC5545'
+arch=(any)
+url='https://github.com/niccokunzmann/python-recurring-ical-events'
+license=(LGPL-3.0-or-later)
+depends=(
+  python
+  python-dateutil
+  python-icalendar
+  python-x-wr-timezone
+)
+makedepends=(
+  git
+  python-build
+  python-hatch-vcs
+  python-hatchling
+  python-installer
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  python-pytz
+  python-tzdata
+)
+source=("git+https://github.com/niccokunzmann/python-recurring-ical-events.git#tag=v$pkgver")
+b2sums=('3aa444a2bea5a6a91a86449795637da9d68c5cc9e98bbdc811561b2a5cb70eaca0e5154e3e323ddb82853312f289fb4c5b0a14c4592d4be0246d104d242eb20c')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  pytest --ignore=recurring_ical_events/test/test_readme.py --ignore=recurring_ical_events/test/test_with_doctest.py
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Remove installed tests
+  rm -r "$pkgdir$(python -c 'import site; print(site.getsitepackages()[0])')"/recurring_ical_events/test/
+}

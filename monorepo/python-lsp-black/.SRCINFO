@@ -1,0 +1,22 @@
+pkgbase = python-lsp-black
+	pkgdesc = python-lsp-server plugin that adds support to black autoformatter, forked from pyls-black
+	pkgver = 2.0.0
+	pkgrel = 6
+	url = https://github.com/python-lsp/python-lsp-black
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-black
+	depends = python-lsp-server
+	source = https://github.com/python-lsp/python-lsp-black/archive/v2.0.0/python-lsp-black-2.0.0.tar.gz
+	source = https://github.com/python-lsp/python-lsp-black/commit/74d7ae8d.patch
+	source = python-lsp-black-2.0.0-remove-pkg_resources.patch
+	sha256sums = 6387584c38e5758431f5d61c269860892f57b7442c0cf9bd712ad64231b9bb1c
+	sha256sums = 8d552419665fb489e3ece681f0313bd386b27e89978a57ad10eebb5cb90349dd
+	sha256sums = 35677a60c630b38c76b5245310fcb5cf8aa36fc80f34dec3a6bdebb6d86e1ea5
+
+pkgname = python-lsp-black

@@ -1,0 +1,36 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=gost
+pkgver=3.3.1
+pkgrel=1
+pkgdesc="GO Simple Tunnel"
+arch=('x86_64')
+url="https://github.com/go-gost/gost"
+license=('MIT')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/go-gost/gost.git#tag=v$pkgver")
+sha512sums=('9f6e7515dcd8c0a096438e8ff4036392a078616b1b145d21c9fd26a221da642a5307c97d98ac11e9ae6af28990617b9881fcc5bae8a61ca798f5c634b8f49986')
+
+prepare() {
+  cd gost
+  export GOPATH="${srcdir}"
+  go mod download -modcacherw -x
+}
+
+build() {
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  cd gost/cmd/gost
+  go build
+}
+
+package() {
+  cd gost
+  install -Dm755 cmd/gost/gost -t "$pkgdir"/usr/bin/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

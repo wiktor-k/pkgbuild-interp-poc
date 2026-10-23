@@ -1,0 +1,27 @@
+pkgbase = alpm-db
+	pkgdesc = Command line interfaces for the handling of alpm-db structures
+	pkgver = 0.3.0
+	pkgrel = 1
+	url = https://alpm.archlinux.page/alpm-db/
+	arch = x86_64
+	groups = alpm
+	license = Apache-2.0 OR MIT
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = just
+	makedepends = lowdown
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	optdepends = alpm-docs: for additional specifications
+	source = alpm::git+https://gitlab.archlinux.org/archlinux/alpm/alpm.git?signed#tag=alpm-db/0.3.0
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 76f6ab8f84c30fa513e271de4dbe66c85048b1e07768104ed3fc68019315d5c0d1cb29cfca3e076028b440a6c9d137cb43eefd9691b8dcdffc5a4ea631f13efd
+	b2sums = af0ab5a52db33a225e1e9b0e17f76401a11176f89b0b1296ebec6c4c314710c6e9c218438eb689731bdaec02e3e9070d710437f0a6228b25b41dd019862c7712
+
+pkgname = alpm-db
+	conflicts = alpm-db-desc
+	conflicts = alpm-files
+	replaces = alpm-db-desc
+	replaces = alpm-files

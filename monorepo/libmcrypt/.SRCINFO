@@ -1,0 +1,18 @@
+pkgbase = libmcrypt
+	pkgdesc = A library which provides a uniform interface to several symmetric encryption algorithms
+	pkgver = 2.5.8
+	pkgrel = 7
+	url = http://mcrypt.sourceforge.net/
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	depends = glibc
+	depends = sh
+	options = !emptydirs
+	source = https://downloads.sourceforge.net/mcrypt/libmcrypt-2.5.8.tar.bz2
+	source = libmcrypt-2.5.8-c99.patch
+	source = libmcrypt-2.5.8-prototypes.patch
+	sha512sums = 6c05c42767401d66af67b0922b207d17cdb1c3efdbfdfb5b0c2e651821c48a8a6c6749debfa0206091b8a801f538fabe9f7d95ebc86d82c6b84c8001031d50fe
+	sha512sums = 8d12e16d49c8e283d646c02b8d81f4b98b1c9a9ee8cd31685d8dd0d0e9f76f8701464866f95160a01ae5f7c081f3dfaed806690d02294dfa12c33e86dc65a4c4
+	sha512sums = c821c8c6bb42e50bb377c85042ff3127375b195ffa075d17a6ead6cedd01ff66dfe6e1fdf049a48d12b5285ee26e0a2208a86ab333294055c2df7723857c70d7
+
+pkgname = libmcrypt

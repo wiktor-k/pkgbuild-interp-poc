@@ -1,0 +1,31 @@
+pkgbase = gnome-dictionary
+	pkgdesc = Look up words in dictionary sources
+	pkgver = 40.0+r89+g0f14a2e
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Dictionary
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = pango
+	source = git+https://gitlab.gnome.org/GNOME/gnome-dictionary.git#commit=0f14a2e4ed92a9ab59ab5b613ca60093803e9a36
+	source = 0001-metainfo-Fix-screenshots.patch
+	source = 0002-Fix-crash-in-strv_concat.patch
+	source = 0003-Add-new-window-command-line-option.patch
+	source = 0004-Don-t-hide-in-KDE.patch
+	validpgpkeys = 53EF3DC3B63E2899271BD26322E8091EEA11BBB7
+	b2sums = 6c72ae4a58672e64ce97afdd0b7240a27e9aaae5492ab9c819d736d9619a2091024361503d05f6bfe7b095ff8fd43fd3b1b5c2194c92b82d6c911ab5451321e5
+	b2sums = 203e364ce642ecae4b269c126bbcc83b90181dd667489ef2227829bf3652e287cb6c81cb884a56d6e915de00cc63bf6031c90f2723042d756476662aca1e7d0b
+	b2sums = 70be598af0e0e771c7631ea887658f12cbe8955327b6aefb01871e5d871ee48f98ac054bd44d56c792f8f254c346bbc2de80f20b03a27c7b8598ebcf3eeb64c1
+	b2sums = 4b5abc25dd6b65f2155b7f7054bbb1414e2b9865b5f4546478a99d4e734d94c1287ee5175d37f0176c1f012d3850aedbf5a3abe4d62827c87921f69ee9b16a0d
+	b2sums = 91baab07532f5a281d8a65bf751df1d37a3022e4d9b74575161fd3fc91db2c2ee0fbd9e45e6880c5d810a663338484c91ef9333a1898a3337bd43726b6393c7c
+
+pkgname = gnome-dictionary

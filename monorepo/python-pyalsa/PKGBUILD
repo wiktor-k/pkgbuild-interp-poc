@@ -1,0 +1,37 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=pyalsa
+pkgname=python-pyalsa
+pkgver=1.2.14
+pkgrel=2
+pkgdesc="Python binding for the ALSA library"
+arch=(x86_64)
+url="https://www.alsa-project.org"
+license=(LGPL-2.1-or-later)
+depends=(
+  alsa-lib
+  glibc
+  python
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(https://www.alsa-project.org/files/pub/$_name/$_name-$pkgver.tar.bz2{,.sig})
+sha512sums=('8a3fec7568d9e36bdf39a048f5cfe1c7f656ea08777eac3280329afbb1c9c870136e3fd54fd334762d9942385ddfead9bc15ee86d244d8c50869b34c4cb52f7d'
+            'SKIP')
+b2sums=('dc2cf0e631b4bf954a0fd09219236067f3ca7fd0a740641b1cdec86f9bf7af6325e58ffd8b6bae3372eb6c1afdf055c2bcad1fa54cb2784edf9a18eb18923870'
+        'SKIP')
+validpgpkeys=(F04DF50737AC1A884C4B3D718380596DA6E59C91)  # ALSA Release Team (Package Signing Key v1) <release@alsa-project.org>
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

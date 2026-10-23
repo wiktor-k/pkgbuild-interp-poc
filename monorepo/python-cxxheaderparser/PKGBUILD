@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-cxxheaderparser
+pkgver=2.2.0
+pkgrel=1
+pkgdesc='Modern C++ header parser'
+arch=('any')
+url='https://github.com/robotpy/cxxheaderparser'
+license=('BSD-3-Clause')
+depends=('python')
+optdepends=('python-pcpp: PCPP-based preprocessing support')
+makedepends=('git' 'python-build' 'python-hatchling' 'python-hatch-vcs' 'python-installer'
+             'python-wheel')
+checkdepends=('python-pcpp' 'python-pytest')
+source=("git+https://github.com/robotpy/cxxheaderparser.git#tag=$pkgver")
+sha512sums=('266014c829e1410c07b11c45db018ecd032b40d908cd21a7b1d2058e94f924f0f71ca2258413fe2dac33eb2ca8906fc35bd3035b593e8cef4327ed379ad88171')
+
+build() {
+  cd cxxheaderparser
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd cxxheaderparser
+  PYTHONPATH="$PWD" pytest
+}
+
+package() {
+  cd cxxheaderparser
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

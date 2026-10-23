@@ -1,0 +1,32 @@
+pkgbase = chrony
+	pkgdesc = Lightweight NTP client and server
+	pkgver = 4.9
+	pkgrel = 1
+	url = https://chrony-project.org/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = asciidoctor
+	makedepends = git
+	makedepends = pps-tools
+	depends = glibc
+	depends = gnutls
+	depends = libcap
+	depends = libcap.so
+	depends = libedit
+	depends = libedit.so
+	depends = libseccomp
+	depends = libseccomp.so
+	depends = nettle
+	depends = libnettle.so
+	depends = sh
+	options = !emptydirs
+	backup = etc/chrony.conf
+	source = git+https://gitlab.com/chrony/chrony.git?signed#tag=4.9
+	source = chrony.sysusers
+	source = chrony.tmpfiles
+	validpgpkeys = 8F375C7E8D0EE125A3D3BD51537E2B76F7680DAC
+	b2sums = a420a4ffb4b920aa9887f1bd871587e1dffb83f18979d8bb870a823b1200163e7e4f1022c3971de74fa707c410af8b411c923378fe14cf0e7278b069e1a4910b
+	b2sums = a7aba9192a1b9ba512e78e768c5f5b3c630db0cfff23dd231f1254c5389ee8d750c6c33667cb9cec65712f3e2ef595a66d1dd87faf500a68e8b15d33fec162dc
+	b2sums = e709df2f97b523ef1c7a9dae3232ccbd235ac8f025eba866165272f8ba0372a0aba965d3aae1402395e43331bd629b9d8f3fbffd75fc254f4a7e5ecd47f73130
+
+pkgname = chrony

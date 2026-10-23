@@ -1,0 +1,21 @@
+pkgbase = python-mysqlclient
+	pkgdesc = Fork of MySQL-python with support for Python 3
+	pkgver = 2.3.0
+	pkgrel = 1
+	url = https://github.com/PyMySQL/mysqlclient-python
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = pifpaf
+	checkdepends = python-pytest
+	checkdepends = python-tblib
+	makedepends = mariadb
+	makedepends = python-setuptools
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-build
+	depends = python
+	depends = mariadb-libs
+	source = https://files.pythonhosted.org/packages/source/m/mysqlclient/mysqlclient-2.3.0.tar.gz
+	sha256sums = bea8294964266f6486f1ca514ccfcdbc54d4fe0d32882b38c1d4594df870be8b
+
+pkgname = python-mysqlclient

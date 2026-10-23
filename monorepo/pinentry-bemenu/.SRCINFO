@@ -1,0 +1,21 @@
+pkgbase = pinentry-bemenu
+	pkgdesc = Pinentry based on bemenu
+	pkgver = 0.14.0
+	pkgrel = 2
+	url = https://github.com/t-8ch/pinentry-bemenu
+	arch = x86_64
+	license = GPL2
+	makedepends = meson
+	makedepends = ninja
+	makedepends = cmake
+	makedepends = pkgconf
+	makedepends = popt
+	depends = bemenu
+	depends = libassuan
+	depends = libgpg-error
+	depends = popt
+	provides = pinentry
+	source = pinentry-bemenu-0.14.0.tar.gz::https://github.com/t-8ch/pinentry-bemenu/archive/refs/tags/v0.14.0.tar.gz
+	sha512sums = 0495a8c0f8886ead908ab9f633986ea88a3775e0e76a5a2937125338e5e77a1c1c297ec6c7bb2bbc8198b60a8931c076bc750f3d04dbb5e344d8ddc66245052f
+
+pkgname = pinentry-bemenu

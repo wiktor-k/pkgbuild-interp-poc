@@ -1,0 +1,47 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Nagy <danielnagy at gmx de>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+
+pkgname=haskell-hpack
+_hkgname=hpack
+pkgver=0.38.1
+pkgrel=13
+pkgdesc="A modern format for Haskell packages"
+url="https://github.com/sol/hpack#readme"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-bifunctors' 'haskell-crypton' 'haskell-glob'
+         'haskell-http-client' 'haskell-http-client-tls' 'haskell-http-types'
+         'haskell-infer-license' 'haskell-scientific' 'haskell-unordered-containers'
+         'haskell-vector' 'haskell-yaml')
+makedepends=('ghc' 'haskell-hunit' 'haskell-quickcheck' 'haskell-hspec' 'haskell-interpolate'
+             'haskell-mockery' 'haskell-temporary' 'haskell-vcr')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-${pkgver}.tar.gz")
+sha512sums=('2700163aa922a1de79d562ce1816b75b2fe50ee6cfc61dc4f438ccfa2c1d6b9ba3080b64f6c483ebefb85e44aabf2989f6899b1b103865713edb83066d5899c1')
+
+build() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_hkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_hkgname-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

@@ -1,0 +1,22 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-account-faces
+pkgver=1.0.19
+pkgrel=1
+pkgdesc='Account faces for Linux Deepin'
+arch=('any')
+license=('GPL-3.0-or-later')
+url="https://github.com/linuxdeepin/dde-account-faces"
+conflicts=('dde-account-faces')
+replaces=('dde-account-faces')
+groups=('deepin')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/linuxdeepin/dde-account-faces/archive/$pkgver.tar.gz")
+sha512sums=('ee6b723db9656c446a961cbde4847d96ffb4d61d9317debfcc7b480c7b86c6da77d342f80bfff18cdd281fccc234a9190a4d7737446b6ebded1ccd3a67f185c5')
+
+package() {
+  cd dde-account-faces-$pkgver
+  make DESTDIR="$pkgdir" install
+  chmod 775 "$pkgdir"/var/lib/AccountsService/icons
+}

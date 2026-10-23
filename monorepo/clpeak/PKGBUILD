@@ -1,0 +1,56 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=(clpeak clpeak-cuda)
+pkgver=3.0.1
+pkgrel=1
+pkgdesc="A tool which profiles OpenCL devices to find their peak capacities (OpenCL/Vulkan support)"
+arch=('x86_64')
+url="https://github.com/krrishnarraj/clpeak"
+license=("Unlicense")
+depends=('ocl-icd' 'libgcc' 'libstdc++' 'glibc' 'vulkan-icd-loader')
+makedepends=('cmake' 'opencl-headers' 'ninja' 'git' 'vulkan-headers' 'shaderc' 'cuda' 'clang')
+source=(git+https://github.com/krrishnarraj/clpeak#tag=$pkgver)
+sha512sums=('3ed93c4fe33cff5c82276d6ffa3452f6963e898555c8dba5a6a47acf713b7b2897c80b96de7625155a1823eb20c05bf7f031e78abbdec0cdeb8c74dce9c03f8f')
+
+build() {
+  cd clpeak
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCLPEAK_ENABLE_CUDA=OFF
+  ninja -C build
+
+  cmake \
+    -Bbuild-cuda \
+    -GNinja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCLPEAK_ENABLE_CUDA=ON
+  ninja -C build-cuda
+}
+
+package_clpeak() {
+  cd clpeak
+
+  DESTDIR="$pkgdir" ninja -C build install
+
+  install -Dm644 README.md "$pkgdir/usr/share/clpeak/README.md"
+  cp -r results "$pkgdir"/usr/share/clpeak/results
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/clpeak/LICENSE"
+}
+
+package_clpeak-cuda() {
+  pkgdesc="A tool which profiles GPUs to find their peak capacities (OpenCL/Vulkan/CUDA support)"
+  depends+=('cuda')
+  provides=('clpeak')
+  conflicts=('clpeak')
+
+  cd clpeak
+
+  DESTDIR="$pkgdir" ninja -C build-cuda install
+
+  install -Dm644 README.md "$pkgdir/usr/share/clpeak-cuda/README.md"
+  cp -r results "$pkgdir"/usr/share/clpeak-cuda/results
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/clpeak-cuda/LICENSE"
+}

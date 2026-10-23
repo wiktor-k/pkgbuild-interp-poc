@@ -1,0 +1,81 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=symbolic-preview
+pkgver=0.0.9
+pkgrel=8
+pkgdesc='Utility to create, preview and export symbolic icons'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/design/symbolic-preview'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libxml2
+  pango
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.gnome.org/World/design/symbolic-preview.git#tag=$pkgver"
+  symbolic-preview-new-window.patch
+  symbolic-preview-filedialog.patch
+)
+b2sums=(
+  291520a94fd3c9a6e878f43997b8ae23c0aa2b26a36ef9bb147cf4e79fe094751a1e627b3e2457e706473c254367ef37420448ce31fa7a4e1fd068442c8f7e7e
+  ab835aa8c81cf201ec4ad46b37a5e84dbb6b6b22df60c2515ce3475ba2c8082b433314abd845eedc01692e25d9f3606bd40f04343ad3240637abddfb6a907430
+  c987cb9bf823239ec885ce3a9dcdfba882a11f80cb843012b3eadbd601913d0310506472efad8287d4e6f0da19b250a2c397c79f125259219eaca014d35218c8
+)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.gnome.org/World/design/symbolic-preview/-/issues/46
+  git cherry-pick -n 75e47ee4811dc466e9a5ece21e73f56a42866009
+
+  # https://gitlab.gnome.org/World/design/symbolic-preview/-/merge_requests/17
+  git cherry-pick -n 8f8b9a67e57fb080544587e2690bab851d7566fb
+
+  # https://gitlab.gnome.org/World/design/symbolic-preview/-/merge_requests/20
+  git cherry-pick -n f804f3ce8e76b13977589ef7724e02ef3c592788
+
+  # https://gitlab.gnome.org/World/design/symbolic-preview/-/merge_requests/18
+  git cherry-pick -n e40eeee2f1e9311b1581a5bbf42adb28fd816c51
+
+  # https://gitlab.gnome.org/World/design/symbolic-preview/-/merge_requests/19
+  git apply -3 ../symbolic-preview-new-window.patch
+
+  # Fix some file dialogs
+  git apply -3 ../symbolic-preview-filedialog.patch
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

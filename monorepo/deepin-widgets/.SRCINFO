@@ -1,0 +1,25 @@
+pkgbase = deepin-widgets
+	pkgdesc = Desktop widgets service/implementation for DDE
+	pkgver = 6.0.25
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/dde-widgets
+	arch = x86_64
+	groups = deepin
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = gtest
+	makedepends = qt5-tools
+	depends = qt5-base
+	depends = dtkcore
+	depends = dtkgui
+	depends = dtkwidget
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = startdde
+	source = git+https://github.com/linuxdeepin/dde-widgets.git#tag=6.0.25
+	sha512sums = b67de555105880e887d67aad6135e32081f61f62e0f03b9fa64de62d259cdd61c9b88c25a37ad76971f68d18653d54c8339ad8ab2c6f5a0759bc83d1d646a178
+
+pkgname = deepin-widgets

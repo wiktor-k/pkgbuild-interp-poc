@@ -1,0 +1,19 @@
+pkgbase = profile-cleaner
+	pkgdesc = Simple script to vacuum and reindex sqlite databases used by browsers
+	pkgver = 2.46
+	pkgrel = 1
+	url = https://github.com/graysky2/profile-cleaner
+	install = profile-cleaner.install
+	arch = any
+	license = MIT
+	depends = bash
+	depends = bc
+	depends = findutils
+	depends = parallel
+	depends = sqlite
+	optdepends = zsh-completions: for completion when using zsh
+	source = profile-cleaner-2.46.tar.gz::https://github.com/graysky2/profile-cleaner/archive/v2.46.tar.gz
+	sha512sums = 3027aacbe13ce095850a05996b7e624b81c2f1216d5ffdb327bb1d69bd23f11a599dd451162916117b86654da2ef19c6e750abad5798cdc9e19759d23b2d0cf6
+	b2sums = 32c164073f36e08868a574c0c1e2bd7601672d5e813af9f728e41b82e432999aa759fc9e89ac325d9de083d244f6f7f7c431c4d1ac3d6dcfef4d204044cb6247
+
+pkgname = profile-cleaner

@@ -1,0 +1,15 @@
+pkgbase = opensearch-geospatial-plugin
+	pkgdesc = OpenSearch Geospatial Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 1
+	url = https://opensearch.org/docs/latest/dashboards/geojson-regionmaps/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = java-environment=21
+	makedepends = unzip
+	depends = opensearch=3.9.0
+	depends = opensearch-job-scheduler-plugin
+	source = opensearch-geospatial-plugin-3.9.0.0.tar.gz::https://github.com/opensearch-project/geospatial/archive/3.9.0.0.tar.gz
+	sha256sums = 4d132972b6c5bcf35b4c4cb0e2b80ba8b706c16df77a2428ce85a7d68a6d5db9
+
+pkgname = opensearch-geospatial-plugin

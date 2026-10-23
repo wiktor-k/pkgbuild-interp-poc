@@ -1,0 +1,22 @@
+pkgbase = arch-wiki-lite
+	pkgdesc = Arch Wiki without HTML. 1/9 as big, easily searched & viewable on console
+	pkgver = 20261003
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/grawlinson/arch-wiki-lite
+	arch = any
+	license = GPL-2.0-or-later
+	license = GFDL-1.3-or-later
+	makedepends = git
+	makedepends = python
+	makedepends = arch-wiki-docs=20261003
+	depends = bash
+	depends = gzip
+	optdepends = dialog: for interactive menu
+	optdepends = arch-wiki-docs: for wiki-search-html
+	optdepends = xdg-utils: for wiki-search-html
+	optdepends = less: pager to view content
+	source = arch-wiki-lite::git+https://gitlab.archlinux.org/grawlinson/arch-wiki-lite.git#commit=b87bada8c48378c5c48d7e10f9d54a6d2f01867d
+	sha512sums = 36c9bcdc66700e172c9cb7b40353f7615e6b9786327edbe000e61c029d9e4b9f960a94e76d07723a5d7208f1bdae6c6a563f2a2442091dda3734cd40ef7b9dec
+	b2sums = 6a145d401e6f758483ac3f5634fedac93d17076983f724c5c321c21716d8f8ed6de65877da495c609a31027b31ca52d5541c775b18c213aa730a7b7ad66312c8
+
+pkgname = arch-wiki-lite

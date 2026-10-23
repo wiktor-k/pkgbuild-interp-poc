@@ -1,0 +1,45 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=openapi-diff
+pkgver=2.1.7
+pkgrel=1
+pkgdesc=" Utility for comparing two OpenAPI specifications"
+arch=('any')
+url="https://github.com/OpenAPITools/openapi-diff"
+license=(
+  0BSD
+  Apache-2.0
+)
+depends=(
+  bash
+  java-runtime=8
+)
+makedepends=(
+  maven
+  java-environment=8
+)
+source=(
+  $url/archive/$pkgver/$pkgname-$pkgver.tar.gz
+  $pkgname.sh
+  LICENSE
+)
+sha512sums=('6a9c0c2faeece65ab7e5f6617d2f868388e9c319cd08577912752487f6281e4e855acd4c6b0da2f4f577e324991cddac829ee1c029eb279b68e17cfc5fb2de85'
+            'e4143cff09abc59958f50a969ed3f010ab39e640cf77081e47e77cf3e2bb785645100572fd18bc508ea441732bc13a5a811332fdbfdbd7f8a0d6865f301f978e'
+            'a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930')
+b2sums=('66e94d1bf6e2ddda65a6c7fd787493cf610d2f697e1bdcb9c8991287ae559254852b1f10c01ebdf08a7d75f98cfc875d4543f58fcf12980d344cbd71391f81f0'
+        'a28a194b1b5c731fd3093c22754fc7f6641441ae2acb1ad177b8ee573d8e3787af2b249740ffd1e3472f721e0274d0866c0acf1bf5c85f4a22fe1c2dcf24af7b'
+        'a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101')
+
+build() {
+  cd $pkgname-$pkgver
+  mvn clean install
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 644  cli/target/openapi-diff-cli-$pkgver-all.jar "$pkgdir/usr/share/java/$pkgname/$pkgname-cli.jar"
+  install -vDm 755 ../$pkgname.sh "$pkgdir/usr/bin/$pkgname"
+  ln -svf $pkgname "$pkgdir/usr/bin/$pkgname-cli"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 ../LICENSE "$pkgdir/usr/share/licenses/$pkgname/0BSD.txt"
+}

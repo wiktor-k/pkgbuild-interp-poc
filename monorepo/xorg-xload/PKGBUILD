@@ -1,0 +1,27 @@
+# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+
+pkgname=xorg-xload
+pkgver=1.2.2
+pkgrel=1
+pkgdesc="System load average display for X"
+arch=('x86_64')
+url="https://xorg.freedesktop.org/"
+license=('X11')
+depends=('libxaw' 'libxmu' 'libxt' 'libx11' 'glibc')
+makedepends=('xorg-util-macros')
+source=(https://xorg.freedesktop.org/archive/individual/app/xload-${pkgver}.tar.xz{,.sig})
+sha512sums=('98d853543da8a1b86fc474a6748425861bac01c4888087d052c3f00baca6aade2d4ecfa3ee96feb32ed4fbaa4f89816888fe03a022b8fa19c71f147a0a9a4a48'
+            'SKIP')
+validpgpkeys=('3AB285232C46AE43D8E192F4DAB0F78EA6E7E2D2') # "Alan Coopersmith <alan.coopersmith@oracle.com>"
+
+build() {
+  cd xload-${pkgver}
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd xload-${pkgver}
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-openstackclient
+pkgver=10.5.0
+pkgrel=1
+pkgdesc="OpenStack Command-line Client"
+arch=('any')
+url="https://docs.openstack.org/python-openstackclient/latest/"
+license=('Apache-2.0')
+depends=('python-cryptography' 'python-cliff' 'python-iso8601' 'python-openstacksdk'
+         'python-osc-lib' 'python-oslo-i18n' 'python-keystoneclient'
+         'python-manilaclient' 'python-requests' 'python-stevedore')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-pbr')
+checkdepends=('python-ddt' 'python-fixtures' 'python-hacking' 'python-requests-mock'
+              'python-stestr' 'python-testtools' 'python-wrapt')
+source=("git+https://github.com/openstack/python-openstackclient.git#tag=$pkgver")
+sha512sums=('e08f4556162341f0f50384b18b769bdcd231e117c54b9064cc1de1c4769008f83f0cd1a2891d7a3f8b7518d3fe4613b1e5c8ab79c4667450c2ff096437bd2146')
+
+build() {
+  cd python-openstackclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-openstackclient
+  # test_endpoint_list_project_with_project_domain has a project_endpoints mock issue
+  stestr run --exclude-regex "openstackclient.tests.unit.identity.v3.test_endpoint.TestEndpointList.test_endpoint_list_project_with_project_domain|openstackclient.tests.unit.identity.v3.test_endpoint.TestEndpointListServiceWithoutName.test_endpoint_list_project_with_project_domain"
+}
+
+package() {
+  cd python-openstackclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -dm 755 "$pkgdir/usr/share/bash-completion/completions/"
+  "$pkgdir/usr/bin/openstack" complete --shell bash > "$pkgdir/usr/share/bash-completion/completions/openstack"
+}

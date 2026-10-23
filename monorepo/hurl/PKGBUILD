@@ -1,0 +1,71 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=hurl
+pkgver=8.0.1
+pkgrel=1
+pkgdesc="Run and test HTTP requests with plain text"
+url='https://github.com/Orange-OpenSource/hurl'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  'curl' 'libcurl.so'
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+  'libxml2' 'libxml2.so'
+)
+makedepends=(
+  'cargo'
+  'clang'
+)
+options=('!lto')
+source=("https://github.com/Orange-OpenSource/${pkgname}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('d5ea72ed489b9de319d0306d7b23728c4d284ac505adeb06c297ff5da1cf0de8')
+b2sums=('38ba784b2b1cea83fc9c774ccd0194acc3ab17795d576e055e25ad9e4da55fc9c5c47c9f00e0db24ecd8cab7c4b75f2050a71bf1303e6ea8832359f8c3157b06')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+
+  # Use debug
+  export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+  # Use LTO
+  export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen -- --skip simple_sample --skip runner::hurl_file::run
+  target/release/hurl --help
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/hurl \
+    target/release/hurlfmt
+
+  install -Dm 644 -t "${pkgdir}/usr/share/man/man1" \
+    docs/manual/hurl.1 \
+    docs/manual/hurlfmt.1
+
+  # install completions
+  install -Dm 644 completions/hurl.bash "${pkgdir}/usr/share/bash-completion/completions/hurl"
+  install -Dm 644 completions/hurlfmt.bash "${pkgdir}/usr/share/bash-completion/completions/hurlfmt"
+
+  install -Dm 644 -t "${pkgdir}/usr/share/zsh/site-functions" \
+    completions/_hurl \
+    completions/_hurlfmt
+
+  install -Dm 644 -t "${pkgdir}/usr/share/fish/vendor_completions.d" \
+    completions/hurl.fish \
+    completions/hurlfmt.fish
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,17 @@
+pkgbase = r8168-lts
+	pkgdesc = A kernel module for Realtek 8168 network cards for linux-lts
+	pkgver = 8.057.00
+	pkgrel = 9
+	url = https://www.realtek.com/Download/List?cate_id=584
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = linux-lts-headers
+	source = https://github.com/mtorromeo/r8168/archive/8.057.00/r8168-8.057.00.tar.gz
+	source = https://github.com/mtorromeo/r8168/releases/download/8.057.00/r8168-8.057.00.tar.gz.asc
+	validpgpkeys = 0CADAACF70F64C654E131B3111675C743429DDEF
+	sha256sums = dbe713d07a245c6c49210577b7bbf21c9bcfee86e2fdfbcabff9df708313b070
+	sha256sums = SKIP
+
+pkgname = r8168-lts
+	depends = glibc
+	depends = linux-lts

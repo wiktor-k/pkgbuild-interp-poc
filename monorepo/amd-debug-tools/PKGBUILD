@@ -1,0 +1,49 @@
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: HurricanePootis <hurricanepootis@protonmail.com>
+
+pkgname=amd-debug-tools
+pkgver=0.2.22
+pkgrel=1
+pkgdesc="A collection of Python-based tools for debugging AMD platforms, particularly Zen-based systems."
+arch=('any')
+url="https://git.kernel.org/pub/scm/linux/kernel/git/superm1/amd-debug-tools.git"
+license=('MIT')
+depends=(
+  acpica
+  fwupd
+  python
+  python-cysystemd
+  python-dbus
+  python-gobject
+  python-jinja
+  python-matplotlib
+  python-numpy
+  python-packaging
+  python-pandas
+  python-pyudev
+  python-seaborn
+  python-setuptools
+  python-tabulate
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools-scm
+  python-setuptools-git-versioning
+  python-wheel
+)
+source=("git+https://git.kernel.org/pub/scm/linux/kernel/git/superm1/amd-debug-tools.git#tag=${pkgver}")
+sha256sums=('638fdab9b33dc6b0e3c5994a9ed826d542db07c69e7fdafc64eb4b1adfb22c3e')
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+  python -m installer --destdir="$pkgdir/" dist/*.whl
+  install -Dm755 "$pkgdir/usr/lib/python3.14/site-packages/amd_debug/s2idle-hook" "$pkgdir/usr/lib/systemd/system-sleep/s2idle-hook"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"  
+}

@@ -1,0 +1,67 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=amberol
+pkgver=2026.1
+pkgrel=1
+pkgdesc='Small and simple sound and music player that is well integrated with GNOME'
+arch=(x86_64)
+url='https://apps.gnome.org/Amberol/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  pango
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+optdepends=(
+  'gst-libav: Extra media codecs'
+  'gst-plugins-bad: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+)
+source=("git+https://gitlab.gnome.org/World/amberol.git?signed#tag=$pkgver")
+b2sums=(dd48b1140ecd38b95d19f46c9ff98a10f374ff084b680b9676999202a435e69cde3386e3b110ca2dc7cd773bd3d16bd6874e08b891b8d08886c4547ea4a1b6d5)
+validpgpkeys=(53EF3DC3B63E2899271BD26322E8091EEA11BBB7) # Emmanuele Bassi (GNOME) <ebassi@gnome.org>
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

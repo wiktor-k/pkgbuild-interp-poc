@@ -1,0 +1,60 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgbase=jsonrpc-glib
+pkgname=(
+  jsonrpc-glib
+  jsonrpc-glib-docs
+)
+pkgver=3.44.2
+pkgrel=2
+pkgdesc="JSON-RPC / GVariant RPC library for GLib"
+url="https://gitlab.gnome.org/GNOME/jsonrpc-glib"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  libgcc
+  glib2
+  glibc
+  json-glib
+)
+makedepends=(
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+  vala
+)
+source=("git+https://gitlab.gnome.org/GNOME/jsonrpc-glib.git#tag=$pkgver")
+b2sums=('3be861722c34aa65d290357100514b2750d7f0173b92e6b767a05776bc4f6bf04c1903bd2649f2388d03e85756b2e82a332d218119820b4b9e454c7ded317a9a')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build -D enable_gtk_doc=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package_jsonrpc-glib() {
+  provides=(libjsonrpc-glib-1.0.so)
+
+  meson install -C build --destdir "$pkgdir"
+
+  mkdir -p doc/usr/share
+  mv {"$pkgdir",doc}/usr/share/doc
+}
+
+package_jsonrpc-glib-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+
+  mv doc/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

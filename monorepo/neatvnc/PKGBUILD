@@ -1,0 +1,51 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Andri Yngvason <andri@yngvason.is>
+
+pkgname=neatvnc
+pkgver=1.0.3
+pkgrel=1
+pkgdesc='Fast and neat VNC server library'
+arch=(x86_64)
+url=https://github.com/any1/neatvnc
+license=(ISC)
+depends=(
+  glibc
+  gmp
+  gnutls
+  libaml.so
+  libavcodec.so
+  libdrm
+  libpixman-1.so
+  libturbojpeg.so
+  mesa
+  nettle
+  zlib
+)
+makedepends=(
+  git
+  meson
+  ninja
+)
+provides=(libneatvnc.so)
+source=(git+https://github.com/any1/neatvnc.git#tag=v${pkgver})
+b2sums=('ef06f483fc073e108a0ddf3b5f3aef39008ad9d7fbbb4d641d68937a4fffe1c7c8ffa1135e3eb86b8d4e980d5dfd68822b3dd52ddd953047891120335357ee2f')
+
+prepare() {
+  cd neatvnc
+  git cherry-pick -n 5b190f0fd9e6b0bfd32752a9115242f87ec36c59
+  git cherry-pick -n f97805deaaea489a1c8c851324163a92a3125195
+}
+
+build() {
+  arch-meson neatvnc build \
+    -Djpeg=enabled \
+    -Dtls=enabled
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  install -Dm 644 neatvnc/COPYING -t "${pkgdir}"/usr/share/licenses/neatvnc
+}
+
+# vim: ts=2 sw=2 et:

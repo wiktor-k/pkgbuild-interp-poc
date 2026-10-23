@@ -1,0 +1,24 @@
+pkgbase = python-h5netcdf
+	pkgdesc = Pythonic interface to netCDF4 via h5py
+	pkgver = 1.8.1
+	pkgrel = 1
+	url = https://github.com/h5netcdf/h5netcdf
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-netcdf4
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-h5py
+	depends = python-numpy
+	depends = python-packaging
+	source = https://github.com/h5netcdf/h5netcdf/archive/v1.8.1/python-h5netcdf-1.8.1.tar.gz
+	source = python-h5netcdf-exclude-tests.patch
+	b2sums = 05f052b1349ceb7e79ca9e4d353ab64e341428ae7d4560a5f9e1ce0e97c94a2b49555b740b80a2f77d14952b751b5b1b9846cbaa2678410091dd58b6b9149fb1
+	b2sums = 6d7aeb6dd9baaba13f1683f8b1adfce12f18da8e6cf80c36c1fe0d1f35e2c19d2839fd88e3b3c79d6ce8ce727a71917c4c7627a0dd60de6d245feb6bc0d14df8
+
+pkgname = python-h5netcdf

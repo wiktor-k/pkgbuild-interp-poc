@@ -1,0 +1,49 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Contributor: Dario Ostuni <dario.ostuni@gmail.com>
+
+pkgname=wasmtime
+pkgver=50.0.0
+pkgrel=1
+pkgdesc='Standalone JIT-style runtime for WebAssembly, using Cranelift'
+arch=('x86_64')
+url='https://github.com/bytecodealliance/wasmtime'
+license=('Apache-2.0')
+depends=('glibc' 'libgcc')
+makedepends=('cargo' 'cmake' 'git')
+options=('!lto')
+source=(
+  "git+https://github.com/bytecodealliance/wasmtime#commit=v${pkgver}"
+  git+https://github.com/WebAssembly/testsuite
+  git+https://github.com/WebAssembly/component-model
+  git+https://github.com/WebAssembly/wasi-testsuite
+)
+b2sums=('ee9cade69510aeae68ee8f511956a749e0f4e7469c59d64e771ba9182bfe54ac6650eba135328d7b45cda0710eba7c4410105e41d9c36db2ce7d4256e1cef047'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd ${pkgname}
+  git submodule init
+  git submodule set-url tests/spec_testsuite "${srcdir}"/testsuite
+  git submodule set-url tests/wasi-testsuite "${srcdir}"/wasi-testsuite
+  git submodule set-url tests/component-model "${srcdir}"/component-model
+  git -c protocol.file.allow=always -c protocol.allow=never submodule update
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}
+  cargo build --release --frozen
+}
+
+package() {
+  cd ${pkgname}
+  install -Dm755 target/release/${pkgname} "${pkgdir}"/usr/bin/$pkgname
+}

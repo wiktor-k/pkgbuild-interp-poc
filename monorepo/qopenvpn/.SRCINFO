@@ -1,0 +1,19 @@
+pkgbase = qopenvpn
+	pkgdesc = Simple OpenVPN GUI written in PyQt for systemd based distributions
+	pkgver = 2.0.0
+	pkgrel = 11
+	url = https://github.com/xmikos/qopenvpn
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-pyqt5
+	depends = openvpn
+	depends = systemd
+	source = git+https://github.com/xmikos/qopenvpn.git#tag=v2.0.0
+	sha512sums = 4f0f9880c10a5dd7e67a125c3ada1239c7bb293a1c5b1f8c5e39079d227f1790fa43ab73d494401b428c08fe54c1dac5e57d464b8af184a66b30ad3ce588e998
+
+pkgname = qopenvpn

@@ -1,0 +1,20 @@
+pkgbase = python-hid
+	pkgdesc = Python HID API bindings in Ctypes
+	pkgver = 1.0.9
+	pkgrel = 1
+	url = https://github.com/apmorton/pyhidapi
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = hidapi
+	conflicts = python-hidapi
+	source = python-hid::git+https://github.com/apmorton/pyhidapi#tag=1.0.9
+	sha512sums = e8fabeaf5e071e13ed0acd979b9f4ca7f1c3beeb8d98fa54f7e5957e05944e4a1688a6db99ea26f9729eeb225ff535778a3950d44e9f4acfe4eb370441191422
+	b2sums = f32e641f446347b3081b8a12619c97f19b0c5d5d5225dbd807862e58844112d8ad2cf652430b02d7d7f682685766397285dfc2cb0a9a53c53f02d204253dc072
+
+pkgname = python-hid

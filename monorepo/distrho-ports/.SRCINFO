@@ -1,0 +1,65 @@
+pkgbase = distrho-ports
+	pkgdesc = Linux audio plugins and LV2 ports
+	pkgver = 2021.03.15
+	pkgrel = 4
+	url = https://github.com/distrho/distrho-ports
+	arch = x86_64
+	license = GPL2
+	license = LGPL3
+	checkdepends = kxstudio-lv2-extensions
+	checkdepends = lv2lint
+	checkdepends = xorg-server-xvfb
+	makedepends = alsa-lib
+	makedepends = fftw
+	makedepends = freetype2
+	makedepends = git
+	makedepends = libglvnd
+	makedepends = libx11
+	makedepends = libxcursor
+	makedepends = libxext
+	makedepends = lv2
+	makedepends = meson
+	source = git+https://github.com/distrho/distrho-ports#tag=2021-03-15?signed
+	validpgpkeys = 62B11043D2F6EB6672D93103CDBAA37ABC74FBA0
+	b2sums = SKIP
+
+pkgname = distrho-ports
+	depends = distrho-ports-lv2
+	depends = distrho-ports-vst
+	depends = distrho-ports-vst3
+
+pkgname = distrho-ports-lv2
+	pkgdesc = Linux audio plugins and LV2 ports - LV2 plugins
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = alsa-lib
+	depends = freetype2
+	depends = gcc-libs
+	depends = glibc
+	depends = libglvnd
+	depends = libx11
+	depends = libxext
+	depends = lv2-host
+
+pkgname = distrho-ports-vst
+	pkgdesc = Linux audio plugins and LV2 ports - VST plugins
+	groups = pro-audio
+	groups = vst-plugins
+	depends = alsa-lib
+	depends = freetype2
+	depends = gcc-libs
+	depends = glibc
+	depends = libglvnd
+	depends = libx11
+	depends = libxext
+	depends = vst-host
+
+pkgname = distrho-ports-vst3
+	pkgdesc = Linux audio plugins and LV2 ports - VST3 plugins
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = freetype2
+	depends = gcc-libs
+	depends = glibc
+	depends = libglvnd
+	depends = vst3-host

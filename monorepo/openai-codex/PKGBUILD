@@ -1,0 +1,138 @@
+# Maintainer: Giovanni Harting <anonfunc@archlinux.org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Contributor: Christopher Cooper <christopher@cg505.com>
+
+pkgbase=openai-codex
+pkgname=(openai-codex openai-codex-voice)
+pkgver=0.164.0
+pkgrel=1
+_v8ver=152.2.0
+pkgdesc='OpenAIs lightweight coding agent that runs in your terminal'
+arch=(x86_64)
+url='https://github.com/openai/codex'
+license=(Apache-2.0)
+depends=(
+  bubblewrap
+  bzip2
+  glibc
+  libcap
+  libgcc
+  oniguruma
+  openssl
+  ripgrep
+  sqlite
+  xz
+  zlib
+  zstd
+)
+makedepends=(
+  alsa-lib
+  cargo
+  cmake
+  glib2
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+)
+options=('!debug' '!lto')
+source=(
+  "$pkgbase-$pkgver.tar.gz::$url/archive/refs/tags/rust-v$pkgver.tar.gz"
+  "librusty_v8-$_v8ver.a.gz::$url/releases/download/rusty-v8-v$_v8ver/librusty_v8_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.a.gz"
+  "src_binding-$_v8ver.rs::$url/releases/download/rusty-v8-v$_v8ver/src_binding_ptrcomp_sandbox_release_x86_64-unknown-linux-gnu.rs"
+  'voice-system-libraries.patch'
+)
+noextract=("librusty_v8-$_v8ver.a.gz")
+b2sums=('5b9151a3e699081be31a1842690d85c12fea87e71c16b9c4019089471330d3d760bb291d0539ea44c2a12a5d7a6963f1aa76073f1dd5915a9948f4b0e2a3dd8b'
+        '95c4f4aef03e09d8103f9b0ae109d03fc40ee2ed913ae7e6887b88d3254e7a68ab20c8a262bf19bb1b0ffc05461fbc512eb22c432f0bc46a551e1f139fe46fe3'
+        '53c74672990e2044b60bda41f1b53981c85afd1b2b50ab1fe648d7bf7571db19743af2e2b6e5c0fabd44a260b0075fe761afc73f6eb3398e0830391c4b0f841c'
+        'cb7b3b87c46e14199e1c9c89b7b985b241e281bd266f44c0722d72cef4095fa937952525d5f3c71cb5e9a704ef64c24817bf5b634ed02e46432bc0cb705bfc69')
+
+prepare() {
+  patch -d codex-rust-v$pkgver/codex-rs -Np1 \
+    -i "$srcdir/voice-system-libraries.patch"
+  cd codex-rust-v$pkgver/codex-rs
+  cargo fetch --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd codex-rust-v$pkgver/codex-rs
+  # Used for dynamic linking
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  export RUSTY_V8_ARCHIVE="$srcdir/librusty_v8-$_v8ver.a.gz"
+  export RUSTY_V8_SRC_BINDING_PATH="$srcdir/src_binding-$_v8ver.rs"
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+  # The CLI and voice helper require matching build identities.
+  export STABLE_GIT_COMMIT="arch-$pkgver-$pkgrel"
+  # Reduces build time by about 10 minutes
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  cargo build --frozen --release \
+              --bin codex \
+              --bin codex-code-mode-host \
+              --bin codex-responses-api-proxy \
+              --bin codex-voice-host
+}
+
+package_openai-codex() {
+  optdepends=(
+    'git: allow for repository actions'
+    'nodejs: enable the js_repl experimental tool'
+    'openai-codex-voice: voice mode'
+  )
+
+  cd codex-rust-v$pkgver/codex-rs
+
+  local root="$pkgdir/usr/lib/openai-codex"
+  install -Dm755 -t "$root/bin" \
+    target/release/codex \
+    target/release/codex-code-mode-host \
+    target/release/codex-responses-api-proxy
+
+  install -d "$pkgdir/usr/bin" "$root/codex-resources" "$root/codex-path"
+  local binary
+  for binary in codex codex-code-mode-host codex-responses-api-proxy; do
+    ln -s "../lib/openai-codex/bin/$binary" "$pkgdir/usr/bin/$binary"
+  done
+
+  printf '%s\n' \
+    '{' \
+    '  "layoutVersion": 1,' \
+    "  \"version\": \"$pkgver+arch.$pkgrel\"," \
+    "  \"target\": \"$(rustc --print host-tuple)\"," \
+    '  "entrypoint": "bin/codex"' \
+    '}' > "$root/codex-package.json"
+  printf '%s\n' '#!/bin/sh' 'exec /usr/bin/bwrap "$@"' \
+    > "$root/codex-resources/bwrap"
+  printf '%s\n' '#!/bin/sh' 'exec /usr/bin/rg "$@"' > "$root/codex-path/rg"
+  chmod 755 "$root/codex-resources/bwrap" "$root/codex-path/rg"
+
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "$root/bin/codex" completion bash > "${pkgdir}/usr/share/bash-completion/completions/codex"
+  "$root/bin/codex" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_codex"
+  "$root/bin/codex" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/codex.fish"
+}
+
+package_openai-codex-voice() {
+  pkgdesc='Voice mode support for the Codex CLI'
+  depends=(
+    alsa-lib
+    glib2
+    glibc
+    gst-plugins-base
+    gst-plugins-base-libs
+    gst-plugins-good
+    gstreamer
+    libgcc
+    openai-codex=$pkgver-$pkgrel
+  )
+
+  cd codex-rust-v$pkgver/codex-rs
+  install -Dm755 target/release/codex-voice-host \
+    "$pkgdir/usr/lib/openai-codex/codex-resources/voice/bin/codex-voice-host"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,41 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_project_name=zbus
+_name=zbus-xmlgen
+pkgname=zbus_xmlgen
+pkgver=6.0.0
+pkgrel=1
+pkgdesc="D-Bus XML interface code generator"
+arch=(x86_64)
+url="https://github.com/dbus2/zbus"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=(
+  $url/archive/refs/tags/$pkgname-$pkgver.tar.gz
+)
+sha512sums=('7572ccf4911b206b59beeae2fe7e6cefeeefcb2cd87168a7eeeba4d3b2c069a13869b595ce3a7bb7ef83e3a6a687a917b238a84ae60eb5dd42420f7baf90b2d0')
+b2sums=('fe03e40387b81a41de25017f0e9597f6734c4ecd520632112d08059d389a888a9e94b86dcb1e091f9d9b734138cb7d12449a8f3ddcf6448db5bba5f5d59c2260')
+
+prepare() {
+  cd $_project_name-$pkgname-$pkgver
+  cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+}
+
+build() {
+  cd $_project_name-$pkgname-$pkgver
+  cargo build --frozen --release --all-features --package $pkgname
+}
+
+check() {
+  cd $_project_name-$pkgname-$pkgver
+  cargo test --frozen --all-features --package $pkgname
+}
+
+package() {
+  install -vDm 755 $_project_name-$pkgname-$pkgver/target/release/$_name -t "$pkgdir/usr/bin/"
+  install -vDm 644 $_project_name-$pkgname-$pkgver/LICENSE-MIT "$pkgdir/usr/share/licenses/$pkgname/MIT.txt"
+}

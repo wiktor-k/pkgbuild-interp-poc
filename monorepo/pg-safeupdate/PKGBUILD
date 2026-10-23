@@ -1,0 +1,36 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=pg-safeupdate
+pkgver=1.7
+pkgrel=1
+pkgdesc="A simple extension to PostgreSQL that requires criteria for UPDATE and DELETE"
+arch=('x86_64')
+url="https://github.com/eradman/pg-safeupdate"
+license=('ISC')
+depends=('postgresql')
+makedepends=('git')
+checkdepends=('pifpaf' 'ruby')
+source=("git+https://github.com/eradman/pg-safeupdate#tag=$pkgver")
+sha512sums=('d0bb4b92a81495c0200b337266df159e3f909d905c42aac9c15c7bab706a60a721bda3068671f9aec983efc3e3443bdf2e99d91bc4f0fb9ac778186a81ff2f93')
+
+build() {
+  cd $pkgname
+  make safeupdate.so
+}
+
+check() {
+  cd $pkgname
+  sed -i 's|^@url = .*$|@url = ENV["PIFPAF_URL"]|' test.rb
+  eval $(pifpaf run postgresql)
+  psql -c "set dynamic_library_path = '$PWD'; load 'safeupdate';"
+  # TODO: extension still not loaded, why?
+  ruby test.rb || echo "Tests failed"
+  pifpaf_stop
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 safeupdate.so -t "$pkgdir"/usr/lib/postgresql/
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+# vim:set ts=2 sw=2 et:

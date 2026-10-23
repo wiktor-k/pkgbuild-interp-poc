@@ -1,0 +1,33 @@
+pkgbase = flowblade
+	pkgdesc = Multitrack non-linear video editor
+	pkgver = 2.24.2
+	pkgrel = 1
+	url = https://jliljebl.github.io/flowblade/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = ffmpeg
+	depends = frei0r-plugins
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gmic
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = mlt
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	depends = python-libusb1
+	depends = python-numpy
+	depends = python-pillow
+	depends = sdl2
+	depends = swh-plugins
+	source = git+https://github.com/jliljebl/flowblade.git#tag=v2.24.2
+	b2sums = e63030a6dd8945dd66d9713f1fec6471fddba08058e43bf166ff60a9337067df1224b31d7a244125268f3f5cce98f22f73e3cc5df828908cd34017e56bb43eb2
+
+pkgname = flowblade

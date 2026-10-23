@@ -1,0 +1,40 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=libgedit-gfls
+pkgver=0.5.0
+pkgrel=1
+epoch=1
+pkgdesc='File loading and saving library'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/gedit/libgedit-gfls'
+license=(LGPL-3.0-or-later)
+depends=(
+  glib2
+  glibc
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  gtk-doc
+  gtk3
+  meson
+)
+provides=(libgedit-gfls-1.so)
+source=("git+https://gitlab.gnome.org/World/gedit/libgedit-gfls.git#tag=$pkgver")
+b2sums=(76124bd191b8460ca4341ceea3192b4aa153e75ef206d4a6e4727b84a5307e589f1f67911da20887515f2924e0944c8e5eadb329876c48ed9eb34ebd3fbb6cc2)
+validpgpkeys=(08C0A6B1A08310A45363B328426F014A261FD87F) # Sébastien Wilmet <swilmet@mailfence.com>
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

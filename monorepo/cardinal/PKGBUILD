@@ -1,0 +1,279 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=cardinal
+pkgname=(cardinal cardinal-{clap,data,lv2,standalone,vst,vst3})
+pkgver=26.02
+pkgrel=1
+pkgdesc="Virtual modular synthesizer"
+arch=(x86_64)
+url="https://github.com/DISTRHO/Cardinal"
+license=(GPL-3.0-or-later)
+makedepends=(
+  cmake
+  dbus
+  file
+  fftw
+  gendesk
+  git
+  glibc
+  jack
+  jansson
+  libarchive
+  libgcc
+  libglvnd
+  liblo
+  libsamplerate
+  libsndfile
+  libstdc++
+  libx11
+  libxext
+  libxrandr
+  mold
+  python
+  speexdsp
+)
+checkdepends=(
+  kxstudio-lv2-extensions
+  lv2
+  lv2lint
+  mod-lv2-extensions
+  xorg-server-xvfb
+)
+source=(
+  $url/releases/download/$pkgver/$pkgbase-$pkgver.tar.xz
+  $pkgbase-$pkgver.svg::https://raw.githubusercontent.com/DISTRHO/Cardinal/eb95b5990cf734c10f2caab1a246eac893f0266d/plugins/Cardinal/orig/distrho.svg
+)
+sha512sums=('fdf156b4603f9f24ce021c3d69df55dac38704a4891b75d6932c8caab5b3e2617f427c9ea8e6bc8dd10853b0247ef52f0619b7a2e4ef7827865f74527b65d990'
+            '31a7d1e548285af0ead1bc844fbb1d35b50f6284159047cb401a829d4068992fa328770e42c377c08d013f6787e55ac12b94eba4d5af4b90373b157971fc8835')
+b2sums=('af4a59264bc2a103ee9f76346be16767210d2be06398e6fca1955455589938baa855665f3df9799665e62c5f58325e2e0e84751659532a033cff4dfa26b62cdb'
+        'd82fefe15234c1ed3a4d487c6082a2e3ac73b60f11041314e99c5a5de5b3ea141efbd5afd18851510bd4f801fd71f7cd89d54d86258d1ba750bbfd762aa37a8d')
+
+_common_depends=(
+  cardinal-data
+  dbus libdbus-1.so
+  file libmagic.so
+  fftw libfftw3f.so
+  glibc
+  jansson
+  libarchive libarchive.so
+  libgcc
+  libglvnd libGL.so
+  liblo liblo.so
+  libsamplerate libsamplerate.so
+  libsndfile libsndfile.so
+  libstdc++
+  libx11
+  libxext
+  libxrandr
+  speexdsp libspeexdsp.so
+)
+_common_optdepends=(
+  'carla: for carla module and ildaeil plugin host'
+  'mpv: for experimental video support'
+  'xdg-desktop-portal-impl: for file browser'
+)
+_module_licenses=(
+  Apache-2.0
+  BSD-3-Clause
+  CC0-1.0
+  CC-BY-3.0
+  CC-BY-4.0
+  CC-BY-NC-4.0
+  CC-BY-NC-ND-4.0
+  CC-BY-NC-SA-4.0
+  CC-BY-SA-4.0
+  CC-BY-SA-3.0-DE
+  EUPL-1.2
+  GPL-2.0-or-later
+  GPL-3.0-or-later
+  ISC
+  MIT
+  OFL-1.1
+  OFL-1.1-RFN
+  OFL-1.1-no-RFN
+  Ubuntu-font-1.0  # license file currently missing: https://github.com/knchaffin/Meander/issues/22
+)
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+_install_licenses() {
+  # licenses according to https://github.com/DISTRHO/Cardinal/blob/main/docs/LICENSES.md
+  install -vDm 644 $pkgbase-$pkgver/dpf/LICENSE "$pkgdir/usr/share/licenses/$pkgname/DPF/ISC.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/21kHz/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/21kHz/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/8Mode/LICENSE "$pkgdir/usr/share/licenses/$pkgname/8Mode/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/AS/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/AS/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/AaronStatic/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/AaronStatic/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/AmalgamatedHarmonics/LICENSE "$pkgdir/usr/share/licenses/$pkgname/AmalgamatedHarmonics/BSD-3-Clause.txt"
+  # NOTE: license for Biset is currently missing: https://github.com/gibbonjoyeux/VCV-Biset/issues/35
+  install -vDm 644 $pkgbase-$pkgver/plugins/CatroModulo/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/CatroModulo/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/Computerscare/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/ComputerScare/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/CVfunk/LICENSE "$pkgdir/usr/share/licenses/$pkgname/CVfunk/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/cf/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/cf/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/DHE-Modules/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/DHE-Modules/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/ExpertSleepers-Encoders/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/ExpertSleepers-Encoders/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/HamptonHarmonics/LICENSE "$pkgdir/usr/share/licenses/$pkgname/HamptonHarmonics/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/LifeFormModular/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LifeFormModular/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/LittleUtils/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LittleUtils/EUPL-1.2.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/ML_modules/LICENSE "$pkgdir/usr/share/licenses/$pkgname/ML_modules/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/MockbaModular/LICENSE "$pkgdir/usr/share/licenses/$pkgname/MockbaModular/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/mscHack/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/mscHack/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/MSM/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/MSM/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/PdArray/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/PdArray/EUPL-1.2.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/Prism/LICENSE "$pkgdir/usr/share/licenses/$pkgname/Prism/BSD-3-Clause.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/rackwindows/LICENSE.md "$pkgdir/usr/share/licenses/$pkgname/rackwindows/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/StarlingVia/LICENSE "$pkgdir/usr/share/licenses/$pkgname/StarlingVia/MIT.txt"
+  install -vDm 644 $pkgbase-$pkgver/plugins/WhatTheRack/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/WhatTheRack/WTFPL.txt"
+}
+
+prepare() {
+  gendesk -n \
+          --exec Cardinal \
+          --name Cardinal \
+          --pkgname studio.kx.distrho.Cardinal \
+          --pkgdesc "$pkgdesc standalone" \
+          --icon $pkgbase \
+          --genericname "Virtual modular synthesizer"
+}
+
+build() {
+  export CFLAGS+=" -B/usr/lib/mold -Wno-format-security"
+  export CXXFLAGS+=" -B/usr/lib/mold -Wno-format-security"
+
+  # two dependencies use malloc_usable_size, which is incompatible with fortification level 3
+  # https://github.com/DISTRHO/Cardinal/issues/576
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+
+  make PREFIX=/usr SYSDEPS=true WITH_LTO=true -C $pkgname-$pkgver
+}
+
+check() {
+  declare -A _links=(
+    ["Cardinal"]="https://distrho.kx.studio/plugins/cardinal"
+    ["CardinalFX"]="https://distrho.kx.studio/plugins/cardinal#fx"
+    ["CardinalSynth"]="https://distrho.kx.studio/plugins/cardinal#synth"
+  )
+
+  # NOTE: lvlint fails on Cardinal, as it makes use of non-standard Port Class, which it does not support yet
+  for _name in Cardinal{FX,Synth}; do
+    xvfb-run lv2lint -s "lv2_generate_ttl" -Mpack -I $pkgname-$pkgver/bin/$_name.lv2 "${_links[$_name]}"
+  done
+}
+
+package_cardinal() {
+  depends=(cardinal-{clap,lv2,standalone,vst,vst3})
+
+  make PREFIX=/usr SYSDEPS=true DESTDIR="$pkgdir" install -C $pkgbase-$pkgver
+
+  (
+    cd "$pkgdir"
+    # have find-libdeps resolve dependencies properly:
+    # https://gitlab.archlinux.org/archlinux/devtools/-/issues/102
+    find usr/lib -type f \( -iname "*.clap" -or -iname "*.so" \) -exec chmod +x {} \;
+
+    _pick $pkgbase-clap usr/lib/clap/
+    _pick $pkgbase-data usr/share/$pkgbase
+    _pick $pkgbase-data usr/share/doc
+    _pick $pkgbase-standalone usr/bin/
+    _pick $pkgbase-lv2 usr/lib/lv2/
+    _pick $pkgbase-vst usr/lib/vst/
+    _pick $pkgbase-vst3 usr/lib/vst3/
+  )
+}
+
+package_cardinal-clap() {
+  pkgdesc+=" - CLAP plugin"
+  groups=(clap-plugins pro-audio)
+  license=("${_module_licenses[@]}")
+  depends=("${_common_depends[@]}" clap-host)
+  optdepends=("${_common_optdepends[@]}")
+
+  mv -v $pkgbase-clap/* "$pkgdir"
+  _install_licenses
+}
+
+package_cardinal-data() {
+  pkgdesc+=" - data"
+
+  mv -v $pkgbase-data/* "$pkgdir"
+  _install_licenses
+}
+
+package_cardinal-standalone() {
+  pkgdesc+=" - standalone"
+  groups=(pro-audio)
+  license=("${_module_licenses[@]}")
+  depends=(
+    "${_common_depends[@]}"
+    alsa-lib
+    hicolor-icon-theme
+    jack
+  )
+  optdepends=("${_common_optdepends[@]}")
+  conflicts=(cardinal-jack)
+  replaces=(cardinal-jack)
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 ./*.desktop -t "$pkgdir/usr/share/applications"
+  install -vDm 644 $pkgbase-$pkgver.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgbase.svg"
+  _install_licenses
+}
+
+package_cardinal-lv2() {
+  pkgdesc+=" - LV2 plugin"
+  groups=(
+    lv2-plugins
+    pro-audio
+  )
+  license=("${_module_licenses[@]}")
+  depends=(
+    "${_common_depends[@]}"
+    lv2-host
+  )
+  optdepends=("${_common_optdepends[@]}")
+
+  mv -v $pkgname/* "$pkgdir"
+  _install_licenses
+}
+
+package_cardinal-vst() {
+  pkgdesc+=" - VST2 plugin"
+  groups=(
+    pro-audio
+    vst-plugins
+  )
+  license=("${_module_licenses[@]}")
+  depends=(
+    "${_common_depends[@]}"
+    vst-host
+  )
+  optdepends=("${_common_optdepends[@]}")
+
+  mv -v $pkgname/* "$pkgdir"
+  _install_licenses
+}
+
+package_cardinal-vst3() {
+  pkgdesc+=" - VST3 plugin"
+  groups=(
+    pro-audio
+    vst3-plugins
+  )
+  license=("${_module_licenses[@]}")
+  depends=(
+    "${_common_depends[@]}"
+    vst3-host
+  )
+  optdepends=("${_common_optdepends[@]}")
+
+  mv -v $pkgname/* "$pkgdir"
+  _install_licenses
+}

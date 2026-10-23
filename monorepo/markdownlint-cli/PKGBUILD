@@ -1,0 +1,41 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Achilleas Pipinellis <axilleas at archlinux dot gr>
+
+pkgname=markdownlint-cli
+pkgver=0.49.1
+pkgrel=1
+pkgdesc="Command-line interface for MarkdownLint"
+arch=(any)
+url="https://github.com/igorshubovych/markdownlint-cli"
+license=(MIT)
+depends=(nodejs)
+makedepends=(
+  jq
+  npm
+)
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('802a17c21641c29a60424d6a7a87740a1495b5fad2d1b4e45e0ff7ea7ea43e73243aad6924e57e7eb66b5c304dce3fe970065316f60220d50958cb4790e2abd4')
+
+prepare() {
+  cd $pkgname-$pkgver
+  npm clean-install --ignore-scripts
+}
+
+build() {
+  cd $pkgname-$pkgver
+  npm pkg set bundledDependencies="$(jq '.dependencies | keys' package.json)" --json
+  npm pack
+}
+
+check() {
+  cd $pkgname-$pkgver
+  npm test
+}
+
+package() {
+  cd $pkgname-$pkgver
+  npm install --global --prefix "$pkgdir/usr" --offline $pkgname-$pkgver.tgz \
+    --install-links
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

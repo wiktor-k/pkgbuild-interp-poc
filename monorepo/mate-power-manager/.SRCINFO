@@ -1,0 +1,36 @@
+pkgbase = mate-power-manager
+	pkgdesc = Power management tool for the MATE desktop
+	pkgver = 1.28.1
+	pkgrel = 3
+	url = https://github.com/mate-desktop/mate-power-manager
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = mate-common
+	makedepends = mate-panel
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dbus
+	depends = dbus-glib
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libcanberra
+	depends = libnotify
+	depends = libsecret
+	depends = libx11
+	depends = libxext
+	depends = libxrandr
+	depends = mate-desktop
+	depends = pango
+	depends = polkit
+	depends = upower
+	optdepends = mate-panel: Set brightness and inhibit power management from the panel
+	source = git+https://github.com/mate-desktop/mate-power-manager.git#tag=v1.28.1
+	b2sums = b32b7dda930515c2ea35b90134e2eee977b7b00734a2f6a629561e5cc3f9bf77ec96f3b9cec135e87355d388d1bc165da0b54cc39bcd4734d958123d19259914
+
+pkgname = mate-power-manager

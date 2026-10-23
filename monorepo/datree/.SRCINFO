@@ -1,0 +1,16 @@
+pkgbase = datree
+	pkgdesc = CLI tool to ensure K8s manifests and Helm charts follow best practices as well as your organization’s policies
+	pkgver = 1.9.19
+	pkgrel = 2
+	url = https://github.com/datreeio/datree
+	arch = x86_64
+	license = Apache
+	makedepends = git
+	makedepends = go
+	depends = kubectl
+	options = !lto
+	source = datree-1.9.19.tar.gz::https://github.com/datreeio/datree/archive/refs/tags/1.9.19.tar.gz
+	sha512sums = 2f962385881d3f5e9a26c2a10c9930c19c090efa2b2ec240610a6cb42a51cc986d3eda92324022cf10f2e583fceadd2d81bb93f7bcddd4cf4b3e871da5d16bdc
+	b2sums = 564b3194e424c5396950e4f03ae7c27f9b477afaca4c1f0604202b0f15349307e5f3f70c431227b1e6fcd45f4d323cc3cf990cc12798ccc8887faddf3a1f89dd
+
+pkgname = datree

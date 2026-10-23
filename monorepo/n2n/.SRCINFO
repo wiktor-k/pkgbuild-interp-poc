@@ -1,0 +1,21 @@
+pkgbase = n2n
+	pkgdesc = A Peer-to-peer VPN software which makes it easy to create virtual networks bypassing intermediate firewalls
+	pkgver = 3.1.1
+	pkgrel = 5
+	url = https://github.com/ntop/n2n
+	arch = x86_64
+	license = GPL
+	makedepends = libpcap
+	depends = libcap
+	depends = openssl
+	depends = miniupnpc
+	depends = zstd
+	optdepends = libpcap: for n2n-decode
+	backup = etc/n2n/edge.conf
+	backup = etc/n2n/supernode.conf
+	source = https://github.com/ntop/n2n/archive/3.1.1/n2n-3.1.1.tar.gz
+	source = miniupnpc-2.2.8.patch
+	sha512sums = ba4ffbc758c399758e35b47308a663f33d04ecb9595f296fd77b13631cea08e04a7cd7369fe82e09149a31e145cd25610dd0a387853ec149e479df866b778cb6
+	sha512sums = ca3a5d9c5df9f7e0e766191337f54c46c7032e4fd12f05b2dab148e8a476ca5e8a940dda3ebf766fc742f5d595e3f90d7aa2f480257038116e50e27f409ad5bd
+
+pkgname = n2n

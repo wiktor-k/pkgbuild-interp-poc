@@ -1,0 +1,16 @@
+pkgbase = minisat
+	pkgdesc = A minimalistic and high-performance SAT solver
+	pkgver = 2.2.1.20201216
+	pkgrel = 3
+	url = http://minisat.se/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = zlib
+	source = git+https://github.com/msoos/minisat.git#commit=55d7e7613b94f0369476a0a8ff35969485ed324f
+	sha512sums = 9573d30e012c1b2436cf0a263a2d840702c36c9dc8f140e26aaf05ae2cfd37cb5bd5214152b09d4f3fed60ca4cf569a75d26529780f0f6dae1a58b23fc3056b7
+
+pkgname = minisat

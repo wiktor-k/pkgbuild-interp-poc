@@ -1,0 +1,34 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=libbraiding
+pkgver=1.3.2
+pkgrel=1
+pkgdesc='Library to compute several properties of braids, including centralizer and conjugacy check'
+arch=(x86_64)
+url='https://github.com/enriqueartal/libbraiding'
+license=(GPL-3.0-or-later)
+depends=(glibc
+         libgcc
+         libstdc++)
+makedepends=(git)
+source=(git+https://github.com/enriqueartal/libbraiding#tag=$pkgver)
+sha256sums=('2f9780e172f2a5c8c16f7d56bc5757fe6305fb58e1256f128975f29d24e88d45')
+
+prepare() {
+  cd $pkgname
+  sed -e '/^s/d' -i configure.ac # Fix build
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

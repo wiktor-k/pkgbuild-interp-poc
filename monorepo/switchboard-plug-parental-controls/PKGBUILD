@@ -1,0 +1,52 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-parental-controls
+pkgver=8.0.1
+pkgrel=2
+pkgdesc='Switchboard Parental Controls Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-parental-controls
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  accountsservice
+  flatpak
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libgee
+  libgranite-7.so
+  libmalcontent-0.so
+  libswitchboard-3.so
+  polkit
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=8e2bfece933891c14130646c94b4e1bc05b1da5d
+source=(git+https://github.com/elementary/switchboard-plug-parental-controls.git#tag=${_tag})
+b2sums=('b45328146463f7f7b21d9a43db3dbd69fbd31ebeb8d45b4766b620ad68eb5c307a044700394cd7ef84302737913926a6fb1de7d706308fbb4676801a23c009d1')
+
+pkgver() {
+  cd switchboard-plug-parental-controls
+  git describe --tags
+}
+
+prepare() {
+  cd switchboard-plug-parental-controls
+  sed "s/dbus_dep.get_pkgconfig_variable('sysconfdir')/dbus_dep.get_pkgconfig_variable('datadir')/" -i data/meson.build
+}
+
+build() {
+  arch-meson switchboard-plug-parental-controls build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

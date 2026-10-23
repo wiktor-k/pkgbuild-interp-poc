@@ -1,0 +1,37 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+_pkgname=treelib
+pkgname=python-$_pkgname
+pkgver=1.7.1
+pkgrel=3
+pkgdesc='An efficient implementation of tree data structure'
+arch=('any')
+url='https://github.com/caesar0301/treelib'
+license=('Apache-2.0')
+depends=('python' 'python-six')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+source=("https://pypi.org/packages/source/${_pkgname:0:1}/$_pkgname/$_pkgname-$pkgver.tar.gz")
+sha512sums=('493803588501df20c38d409451ad26442f205d15b1460b38d5e76c3994d5db7ca9f85a84aa47b8db638ed73e42160cdf45a7531b429396d41f1238ad985ee288')
+
+build() {
+  cd $_pkgname-$pkgver
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pkgname-$pkgver
+
+  python -m pytest
+}
+
+package() {
+  cd $_pkgname-$pkgver
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm 644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

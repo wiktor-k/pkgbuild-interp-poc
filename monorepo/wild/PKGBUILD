@@ -1,0 +1,62 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=wild
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="A very fast linker for Linux written in Rust"
+url='https://github.com/wild-linker/wild'
+arch=('x86_64')
+license=('Apache-2.0' 'MIT')
+depends=(
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+  'zstd'
+)
+makedepends=(
+  'cargo'
+)
+checkdepends=(
+  'clang'
+  'lld'
+  'rust-musl'
+  'taplo-cli'
+)
+source=(
+  https://github.com/wild-linker/${pkgname}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz
+  test-config.toml
+)
+sha256sums=('99ec83404558d4d0cbde9dd44b8c6fa2a511a2f8bb04a31f54c0929ec4491990'
+            'f6d85c23f76bd8881c7e5d0e3de385aa130472bcef2f5d372d61e78774fa0248')
+b2sums=('66cb636f9f7d65f2aa739315db7382ace980b886f9cc38cc3d81c41f432874f6fb33b0d7957402b8b6febf722c0169e98f2c7c4c9156fa80cfb4e802c28e5463'
+        'feea6dac7af3ff51d160dde9850da85013c63296ac16d1fa00e2a273bd18a9d9038ba2324209c0c064087e1e57acd83094332d9e71c5d195705c0021a001b63f')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cp "${srcdir}/test-config.toml" .
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export CFLAGS+=" -ffat-lto-objects"
+  ZSTD_SYS_USE_PKG_CONFIG=1 cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  export CFLAGS+=" -ffat-lto-objects"
+  ZSTD_SYS_USE_PKG_CONFIG=1 cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/wild
+  ln -s wild "${pkgdir}/usr/bin/ld.wild"
+  install -dm 755 "${pkgdir}/usr/lib/wild"
+  ln -s ../../bin/wild "${pkgdir}/usr/lib/wild/ld"
+  install -Dm 644 LICENSE-* -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

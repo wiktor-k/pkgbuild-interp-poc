@@ -1,0 +1,36 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=gumbo-parser
+pkgver=0.14.1
+pkgrel=1
+pkgdesc="HTML5 parsing library in pure C99"
+arch=(x86_64)
+url="https://codeberg.org/gumbo-parser/gumbo-parser"
+license=(Apache-2.0)
+depends=(glibc)
+checkdepends=(gtest)
+provides=(libgumbo.so)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+b2sums=('0329ae754553790d3210738b046d39a9dd58e336c78235435d0d07de8fadcc4a16eb93f8a19ec57d640282e00befd54e4610cb50e86cd718b3400dc6d9502b39')
+
+prepare() {
+  cd $pkgname
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+check() {
+  cd $pkgname
+  make -k check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

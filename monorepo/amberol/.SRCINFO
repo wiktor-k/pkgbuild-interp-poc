@@ -1,0 +1,36 @@
+pkgbase = amberol
+	pkgdesc = Small and simple sound and music player that is well integrated with GNOME
+	pkgver = 2026.1
+	pkgrel = 1
+	url = https://apps.gnome.org/Amberol/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gst-plugins-bad-libs
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = pango
+	optdepends = gst-libav: Extra media codecs
+	optdepends = gst-plugins-bad: Extra media codecs
+	optdepends = gst-plugins-ugly: Extra media codecs
+	source = git+https://gitlab.gnome.org/World/amberol.git?signed#tag=2026.1
+	validpgpkeys = 53EF3DC3B63E2899271BD26322E8091EEA11BBB7
+	b2sums = dd48b1140ecd38b95d19f46c9ff98a10f374ff084b680b9676999202a435e69cde3386e3b110ca2dc7cd773bd3d16bd6874e08b891b8d08886c4547ea4a1b6d5
+
+pkgname = amberol

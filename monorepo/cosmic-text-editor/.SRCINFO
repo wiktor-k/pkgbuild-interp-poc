@@ -1,0 +1,27 @@
+pkgbase = cosmic-text-editor
+	pkgdesc = Text editor for the COSMIC desktop
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-edit
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = git
+	makedepends = git-lfs
+	makedepends = just
+	makedepends = mold
+	depends = cosmic-icon-theme
+	depends = glib2
+	depends = libgcc
+	depends = glibc
+	depends = libxkbcommon
+	depends = wayland
+	depends = oniguruma
+	source = git+https://github.com/pop-os/cosmic-edit.git#tag=epoch-1.10.0
+	source = cosmic-text-editor-lto.patch
+	b2sums = 688e2bced9b71bf6b240b8ae6dcd9719855b60acfce4424eeace046945fcfaf8408199884e8cabb0d2d386e98f5e53e01d01cb1c6cf35015826cf8b6136a184e
+	b2sums = d0ac6a0caa849a4445812f574787c5f99e42e73dbc53dcbf0c0a212cc97382dcd3cdbce58f6203fb2d920fc45d4a0a4b5d086308bcb5e2a92b86f1bebf1dd6da
+
+pkgname = cosmic-text-editor

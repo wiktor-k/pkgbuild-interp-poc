@@ -1,0 +1,49 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Kaizhao Zhang <zhangkaizhao@gmail.com>
+
+pkgname=pyright
+pkgver=1.1.412
+pkgrel=1
+pkgdesc='Type checker for the Python language'
+arch=(any)
+url=https://microsoft.github.io/pyright
+license=(MIT)
+depends=(nodejs)
+makedepends=(
+  git
+  npm
+)
+source=("git+https://github.com/microsoft/pyright.git#tag=$pkgver")
+b2sums=('849a33ac864e49ded63534a3ef74b7fb9a7e534757a22c3ac8790cfcbd079daabed71e6a501b12eac261af8188ff744e7c2fadfd95627d38a682a51f65a30892')
+
+prepare() {
+  cd $pkgname
+  npm install
+}
+
+build() {
+  cd $pkgname/packages/$pkgname
+  npm run build
+}
+
+check() {
+  cd $pkgname/packages/$pkgname-internal
+  npm install jest-util # HACK: 
+  # Don't allow jest to OOM the build machine
+  npm test -- --maxWorkers=25%
+}
+
+package() {
+  local mod_dir=/usr/lib/node_modules/$pkgname
+
+  install -d "$pkgdir"/{usr/bin,$mod_dir}
+  ln -s $mod_dir/index.js "$pkgdir"/usr/bin/$pkgname
+  ln -s $mod_dir/langserver.index.js "$pkgdir"/usr/bin/$pkgname-langserver
+
+  cd $pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname README.md
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE.txt
+
+  cd packages/$pkgname
+  cp -r dist {,langserver.}index.js package.json "$pkgdir"/$mod_dir
+}

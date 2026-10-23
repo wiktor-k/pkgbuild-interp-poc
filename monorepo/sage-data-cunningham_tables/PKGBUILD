@@ -1,0 +1,19 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_dbname=cunningham_tables
+pkgname=sage-data-$_dbname
+pkgver=1.0
+pkgrel=1
+pkgdesc='List of the prime numbers occuring in the Cunningham table'
+arch=(any)
+url='https://www.sagemath.org'
+license=(GPL-2.0-or-later)
+depends=()
+source=(https://github.com/sagemath/sage-package/releases/download/tars/$_dbname-$pkgver.tar.gz)
+sha256sums=('ef39ab25bef5b1813071c9bd96abe3a9e683d5595c9654a3ffde5b07b7fe52b0')
+
+package() {
+  cd $_dbname-$pkgver/src
+  install -d "$pkgdir"/usr/share
+  cp -r $_dbname "$pkgdir"/usr/share
+}

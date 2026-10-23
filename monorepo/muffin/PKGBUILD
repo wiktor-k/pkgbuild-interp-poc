@@ -1,0 +1,100 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Alexandre Filgueira <alexfilgueira@cinnarch.com>
+# Contributor: Adam Hani Schakaki <adam@schakaki.net>
+# Contributor: Ner0
+
+pkgname=muffin
+pkgver=6.6.3
+pkgrel=1
+pkgdesc='Cinnamon window manager based on Mutter'
+arch=(x86_64)
+url='https://github.com/linuxmint/muffin'
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  cinnamon-desktop
+  cinnamon-settings-daemon
+  dconf
+  fontconfig
+  fribidi
+  gcc-libs
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gtk3
+  json-glib
+  libcanberra
+  libdrm
+  libglvnd
+  libgudev
+  libice
+  libinput
+  libpipewire
+  libsm
+  libwacom
+  libx11
+  libxau
+  libxcb
+  libxcomposite
+  libxcursor
+  libxdamage
+  libxext
+  libxfixes
+  libxi
+  libxinerama
+  libxkbcommon
+  libxkbcommon-x11
+  libxkbfile
+  libxrandr
+  libxtst
+  mesa
+  pango
+  pipewire
+  startup-notification
+  systemd-libs
+  wayland
+  xorg-xwayland
+  zenity
+)
+makedepends=(
+  egl-wayland
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+  wayland-protocols
+)
+source=(
+  "git+https://github.com/linuxmint/muffin.git#tag=$pkgver"
+  muffin-menu-icon.patch
+  muffin-wayland-wm-capabilities.patch
+)
+b2sums=('be8e5e9f23f5e35de5b2ca0059597fb9f6d16841640fbc0e17a10c0974595fc0340e1e345a69f08fc0de24118dcd1680ee3c384af1876a3ac1e379c3f3387bc7'
+        '3e511043e740ecc08ca611ec67b4e50d5a13bd4b3e0bb0f300d4ada57a7f4346afa303493bcfa43242f6715c7dc50fb7005a54a9def0079505da1846f8bb4f7c'
+        '90e1dde17c970cc1e87e0517c8fcef3f6f53e20969bec34437aa99a042cc7d27eaf8ed08e722f534c758adf80548055948d6ed3efb06489d30559b3243372034')
+
+prepare() {
+  cd $pkgname
+
+  # Use window icon for the menu button if available
+  # https://github.com/linuxmint/muffin/pull/778
+  git apply -3 ../muffin-menu-icon.patch
+
+  # Implement support for xdg_toplevel.wm_capabilities
+  # https://github.com/linuxmint/muffin/pull/780
+  git apply -3 ../muffin-wayland-wm-capabilities.patch
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D egl_device=true \
+    -D wayland_eglstream=true
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}

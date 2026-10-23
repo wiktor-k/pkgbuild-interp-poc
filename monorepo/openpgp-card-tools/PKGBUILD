@@ -1,0 +1,48 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=openpgp-card-tools
+pkgver=0.11.13
+pkgrel=1
+pkgdesc="CLI tool to inspect, manage and use OpenPGP cards"
+arch=(x86_64)
+url="https://codeberg.org/openpgp-card/openpgp-card-tools"
+license=('Apache-2.0 OR MIT')
+depends=(
+  ccid
+  glibc
+  libgcc
+)
+makedepends=(
+  cargo
+  pcsclite
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('4df02b01bfd89bf33c5d2c497527a29910fc0f298ca7be245463707065b6dd6c3c08ac5ec08bddadfb91250da32f7379d583101339376ae592319ce9bf6d6ce3')
+b2sums=('9d175be039bea9f09f0b9f2dae7a5f5ed913518195c40fd7d3d366acef6badb8051258ec827622ec39a831d3cd52273ee5f2d251e537609c26bd92fca900a69d')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release
+  OCT_MANPAGE_OUTPUT_DIR="$PWD/../man/" cargo run
+  OCT_COMPLETION_OUTPUT_DIR="$PWD/../completion/" cargo run
+}
+
+package() {
+  depends+=(
+    pcsclite libpcsclite.so
+  )
+
+  cd $pkgname
+  install -vDm 755 target/release/oct -t "$pkgdir/usr/bin/"
+  install -vDm 644 {scripting,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSES/MIT.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 ../man/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 ../completion/oct.bash "$pkgdir/usr/share/bash-completion/completions/oct"
+  install -vDm 644 ../completion/_oct -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 ../completion/oct.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+}

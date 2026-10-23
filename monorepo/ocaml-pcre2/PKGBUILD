@@ -1,0 +1,31 @@
+# Maintainer: Jürgen Hötzel <juergen@archlinux.org>
+
+pkgname=ocaml-pcre2
+pkgver=8.0.4
+pkgrel=3
+pkgdesc="OCaml bindings to the pcre2 library"
+arch=('x86_64')
+url="https://github.com/camlp5/pcre2-ocaml"
+license=('LGPL2.1')
+depends=('ocaml')
+makedepends=('dune' 'ocaml-findlib')
+options=('!strip' '!makeflags' '!debug')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/camlp5/pcre2-ocaml/archive/${pkgver}.tar.gz")
+sha512sums=('cafe7c61f4aa90063fe7cb12a50905dbf0cfaa1636456cca25e2f3bf6a385b3d23618b451c6e986970c310f7ac20e13c3b8ba76ee579288849298eb7737797ce')
+
+build() {
+  cd "${srcdir}/pcre2-ocaml-${pkgver}"
+  dune build --profile=release -p pcre2
+}
+
+package() {
+  cd "${srcdir}/pcre2-ocaml-${pkgver}"
+
+  install -dm755 "${pkgdir}$(ocamlfind printconf destdir)"
+  dune install  -p pcre2 --prefix "${pkgdir}/usr" \
+    --libdir "${pkgdir}$(ocamlfind printconf destdir)"
+
+  install -Dm644 "LICENSE.md" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.md"
+}
+
+# vim:set ts=2 sw=2 et:

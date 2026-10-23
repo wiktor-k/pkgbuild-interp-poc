@@ -1,0 +1,34 @@
+# Maintainer:  Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer:  Bartłomiej Piotrowski <nospam@bpiotrowski.pl>
+# Contributor: Tom Killian <tomk@runbox.com>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=uptimed
+pkgver=0.4.7
+pkgrel=2
+pkgdesc="A system uptime record daemon"
+arch=(x86_64)
+url="https://github.com/rpodgorny/uptimed"
+license=('GPL-2.0-only')
+depends=(glibc)
+makedepends=('systemd')
+backup=(etc/uptimed.conf)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/rpodgorny/uptimed/archive/v$pkgver.tar.gz")
+sha512sums=('857357d3f21770ea04710eae7775dad562b1112c3d17e3d771d67d80fc11d1e5aeb8a869a70cdb76c103e0fd6384273c4498a3d5cbd33035b3b72dcce65ea211')
+
+prepare() {
+  cd $pkgname-$pkgver
+  ./autogen.sh
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr --sysconfdir=/etc --sbindir=/usr/bin
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make install DESTDIR="$pkgdir"
+  mv "$pkgdir"/etc/uptimed.conf-dist "$pkgdir"/etc/uptimed.conf
+}

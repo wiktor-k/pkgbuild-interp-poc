@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: François Charette <firmicus ατ gmx δοτ net>
+
+pkgname=perl-dbd-pg
+pkgver=3.21.2
+pkgrel=2
+pkgdesc="Postgres Driver for DBI"
+arch=('x86_64')
+url="https://search.cpan.org/dist/DBD-Pg"
+license=('GPL' 'PerlArtistic')
+depends=('perl-dbi>=1.52' 'postgresql-libs')
+options=('!emptydirs')
+source=("https://www.cpan.org/authors/id/T/TU/TURNSTEP/DBD-Pg-${pkgver}.tar.gz")
+sha512sums=('5b5b3daf8afa6839fdf9470baee94bb6c487a4459ccefa0b0ecc91453904812ba185f3c7d6141dc09e1f521a0f6906b316698975432e0432eb0cc51592456d91')
+
+build() {
+  cd  DBD-Pg-${pkgver}
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="$CFLAGS -std=gnu17"
+  make
+}
+
+package() {
+  cd  DBD-Pg-${pkgver}
+  make install DESTDIR="$pkgdir"
+}

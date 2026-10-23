@@ -1,0 +1,56 @@
+pkgbase = networkmanager-l2tp
+	pkgdesc = NetworkManager VPN plugin for L2TP
+	pkgver = 1.52.6
+	pkgrel = 1
+	url = https://github.com/nm-l2tp/NetworkManager-l2tp/wiki
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = libnma
+	makedepends = nspr
+	makedepends = nss
+	makedepends = ppp
+	makedepends = python
+	makedepends = strongswan
+	makedepends = xl2tpd
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libgcc
+	depends = libnm
+	depends = libnma-gtk4
+	depends = libsecret
+	depends = openssl
+	source = git+https://github.com/nm-l2tp/NetworkManager-l2tp#tag=1.52.6
+	b2sums = f9952c7239823c07ada2d8b4f3b61714d590340283c204d23da3d1320598acc659bc4b9f15f52acfaedaff2a89f27e43ec6a330923b53aec47d06dec16d77e6e
+
+pkgname = networkmanager-l2tp
+	pkgdesc = NetworkManager VPN plugin for L2TP (with GUI)
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libgcc
+	depends = libnm
+	depends = libnma-gtk4
+	depends = libsecret
+	depends = openssl
+	depends = networkmanager-vpn-plugin-l2tp=1.52.6-1
+	optdepends = libnma: GUI support (GTK 3)
+	conflicts = networkmanager-l2tp-gtk3
+	conflicts = networkmanager-l2tp-gtk4
+	replaces = networkmanager-l2tp-gtk3
+	replaces = networkmanager-l2tp-gtk4
+
+pkgname = networkmanager-vpn-plugin-l2tp
+	pkgdesc = NetworkManager VPN plugin for L2TP (VPN plugin only)
+	depends = glib2
+	depends = glibc
+	depends = libgcc
+	depends = libnm
+	depends = nspr
+	depends = nss
+	depends = openssl
+	depends = ppp
+	depends = xl2tpd
+	optdepends = strongswan: IPSec support

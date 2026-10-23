@@ -1,0 +1,30 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=marksman
+pkgver=20260208
+pkgrel=3
+pkgdesc="Write Markdown with code assist and intelligence in the comfort of your favourite editor."
+arch=('x86_64')
+url="https://github.com/artempyanykh/marksman"
+license=('MIT')
+makedepends=('dotnet-sdk-9.0' 'git')
+depends=('dotnet-runtime-9.0')
+options=('!strip')
+source=("$pkgname"::git+https://github.com/artempyanykh/marksman.git#tag="${pkgver:0:4}-${pkgver:4:2}-${pkgver:6:2}")
+b2sums=('c237ee8837b184735496335302889fe54c1a8618b1fec9427f5a69af6b01be958e8e948e3b47c8764a8b4c5b1dfc8da847d8e92247d2de467c500b35628e9724')
+
+build() {
+  cd "marksman"
+
+  # Disable dotnet telemetry
+  export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
+  make build
+  make publish
+}
+
+package() {
+  cd "marksman"
+  install -Dm755 Marksman/bin/Release/net*/linux-*/publish/marksman $pkgdir/usr/bin/marksman
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

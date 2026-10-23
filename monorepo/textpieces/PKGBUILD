@@ -1,0 +1,64 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=textpieces
+pkgver=4.3.2
+pkgrel=1
+pkgdesc='Powerful scratchpad with ability to perform a lot of text transformations'
+arch=(x86_64)
+url='https://apps.gnome.org/TextPieces/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  pango
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://gitlab.com/liferooter/textpieces.git#tag=${pkgver//_/-}"
+  textpieces-activate.patch
+)
+b2sums=(
+  78bc7302f4c1b5e530cc4669f738a514d6275c23e562e68861b309a06da2bc8cc790209e924cb972164a218a77e82d5375e2e43f937acb33eb62c999ef046c38
+  41fb9d980a6620a1ad6b70bb4ad9860de82139db20e3f07ddcbbeee5f59298d3b398309218f973a5d3b08245b08178b4e96205807535f252851b590f08b73d2f
+)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.com/liferooter/textpieces/-/merge_requests/10
+  git apply -3 ../textpieces-activate.patch
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,62 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langgraph-prebuilt
+pkgver=1.1.1
+pkgrel=1
+pkgdesc="Library with high-level APIs for creating and executing LangGraph agents and tools"
+arch=('any')
+url="https://github.com/langchain-ai/langgraph/tree/main/libs/prebuilt"
+license=('MIT')
+depends=(
+  'python'
+  'python-langchain-core'
+  'python-langgraph-checkpoint'
+  'python-pydantic'
+  'python-typing_extensions'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-anyio'
+  'python-langgraph-checkpoint-postgres'
+  'python-langgraph-sdk'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-pytest-mock'
+  'python-syrupy'
+  'python-xxhash'
+)
+source=("git+https://github.com/langchain-ai/langgraph.git")
+sha512sums=('SKIP')
+
+prepare() {
+  cd langgraph
+
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "prebuilt==$pkgver"
+
+  # Fast tests use only the memory checkpointer; drop collection-time sqlite
+  # imports until python-langgraph-checkpoint-sqlite can be packaged.
+  sed -i '/from langgraph\.checkpoint\.sqlite/d' libs/prebuilt/tests/conftest_checkpointer.py
+}
+
+build() {
+  cd langgraph/libs/prebuilt
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langgraph/libs/prebuilt
+  LANGGRAPH_TEST_FAST=1 PYTHONPATH="$srcdir"/langgraph/libs/langgraph python -m pytest
+}
+
+package() {
+  cd langgraph/libs/prebuilt
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

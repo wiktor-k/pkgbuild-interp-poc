@@ -1,0 +1,21 @@
+pkgbase = python-sphinx-tabs
+	pkgdesc = Create tabbed content in Sphinx documentation
+	pkgver = 3.5.0
+	pkgrel = 1
+	url = https://sphinx-tabs.readthedocs.io/
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-sphinx
+	depends = python-docutils
+	depends = python-pygments
+	source = python-sphinx-tabs::git+https://github.com/executablebooks/sphinx-tabs#tag=v3.5.0
+	sha512sums = 417a20ffd47120fb56f964034fb28489cfa0fc8caa1cf6fba9c1c7b614871f54f551ff4da922ffd85682883595c01f966ec036619f395093c749b0dfaef8d440
+	b2sums = 81776f11189fc453be846396254e47938bd7ed5b304e089a96812ffc96f192ab8d9ee3de44c9c8b2d6c9c1f998554bf720ee4db9164864ff4455984bf7b72b67
+
+pkgname = python-sphinx-tabs

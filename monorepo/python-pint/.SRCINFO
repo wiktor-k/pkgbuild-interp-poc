@@ -1,0 +1,26 @@
+pkgbase = python-pint
+	pkgdesc = A unit library for Python
+	pkgver = 0.26.1
+	pkgrel = 1
+	url = https://pint.readthedocs.org
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-numpy
+	checkdepends = python-pytest
+	checkdepends = python-pytest-benchmark
+	checkdepends = python-pytest-subtests
+	checkdepends = python-uncertainties
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-hatch-vcs
+	depends = python
+	depends = python-flexcache
+	depends = python-flexparser
+	depends = python-platformdirs
+	depends = python-typing_extensions
+	source = git+https://github.com/hgrecco/pint.git#tag=0.26.1
+	sha512sums = 86aeec9758e9805f89b892e2f441cc5f262b2d88ca7075b006423b018918d3efac68a596ecb5cb042bc2caa5890b9110ca886dcdc0558d19c77b36d00ef75622
+
+pkgname = python-pint

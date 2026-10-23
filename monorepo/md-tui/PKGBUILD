@@ -1,0 +1,42 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+_pkgname=mdt
+pkgname=md-tui
+pkgver=0.11.0
+pkgrel=1
+pkgdesc="Markdown renderer in the terminal"
+arch=('x86_64')
+url="https://github.com/henriklovhaug/$pkgname"
+license=('AGPL-3.0-only')
+depends=(
+  'libgcc'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('b86f03f536235e3016a0f5287ee86972e9a92293586b1c426d0e067b0dd3c0b2')
+options=('!lto')
+install="$pkgname.install"
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" "$pkgdir/usr/bin/$pkgname"
+  ln -s "/usr/bin/$pkgname" "$pkgdir/usr/bin/$_pkgname"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

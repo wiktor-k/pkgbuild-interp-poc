@@ -1,0 +1,34 @@
+# Maintainer:
+# Contributor: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Contributor: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=jxrlib
+pkgver=1.4.4
+pkgrel=3
+pkgdesc="Open source implementation of jpegxr"
+arch=('x86_64')
+url='https://github.com/mircomir/jxrlib'
+license=(BSD-2-Clause)
+depends=(glibc)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/mircomir/jxrlib#tag=$pkgver)
+sha256sums=('2352722428e94b62c5ef526384a922f8f259e76763dddbc6d69ba098608fb37f')
+
+prepare() {
+  cd $pkgname
+  sed -e "s|^CC=cc|CC=cc $CFLAGS $LDFLAGS|" -i Makefile # Use system build flags
+}
+
+build() {
+  cd $pkgname
+  make SHARED=1 DIR_INSTALL=/usr
+}
+
+package() {
+  cd $pkgname
+  make SHARED=1 DIR_INSTALL="$pkgdir/usr" install
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+# Fix install dir in pc file
+  sed -e 's|/build/jxrlib/pkg/jxrlib||' -i "$pkgdir"/usr/lib/pkgconfig/libjxr.pc
+}

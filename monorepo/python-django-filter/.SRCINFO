@@ -1,0 +1,23 @@
+pkgbase = python-django-filter
+	pkgdesc = A generic system for filtering Django QuerySets based on user selections
+	pkgver = 26.2
+	pkgrel = 1
+	url = https://github.com/carltongibson/django-filter
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-django-crispy-forms
+	checkdepends = python-django-rest-framework
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-flit-core
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-django
+	optdepends = python-django-crispy-forms: for enhanced filter form presentation
+	optdepends = python-django-rest-framework: for filter integration using DRF
+	source = django-filter-26.2.tar.gz::https://github.com/carltongibson/django-filter/archive/refs/tags/26.2.tar.gz
+	sha512sums = 520530d0c6ffb39e47b8b5aa544a581858fbce9d0ad17d45cfe9dd471c5ba26e5b36e1e16cee02937a8857546dc0d0167b8d77a3d3a5ed0c13595e4db91f4d17
+	b2sums = 14acf826c18c955c3e77f139683faca47dad4ef9678ecaa689c58251081620ac847dc14826f4886de03a1f2e82c42243fffd2447f48cc4ced372d7677de3c1d1
+
+pkgname = python-django-filter

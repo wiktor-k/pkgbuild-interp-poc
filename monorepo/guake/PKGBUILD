@@ -1,0 +1,70 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Angel Velasquez <angvp@archlinux.org>
+# Contributor: Wilson Pinto Júnior (N3RD3X) <n3rd3x@linuxmail.org>
+# Contributor: Attila Bukor <r1pp3rj4ck@w4it.eu>
+
+pkgname=guake
+pkgver=3.10.1
+pkgrel=2
+pkgdesc='Python based dropdown terminal'
+arch=(any)
+url='https://guake.github.io/'
+license=(GPL-2.0-or-later)
+depends=(
+  dconf
+  glib2
+  gtk3
+  hicolor-icon-theme
+  libkeybinder3
+  libnotify
+  libutempter
+  libwnck3
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  python-yaml
+  vte3
+)
+makedepends=(
+  git
+  python-pip
+)
+optdepends=('libappindicator: StatusNotifierItem support')
+source=(
+  "git+https://github.com/Guake/guake.git#tag=$pkgver"
+  guake-preferences-dialog.patch
+  guake-icon-install.patch
+)
+b2sums=(
+  a5604be38d2becbc470e5e3391437ef5497bf8d7d5f18e0ddc51aa26fb78ee0f163ec83a8a7c2f486a88f295251ba2c53d2287127eb705da576d05e4671d17ea
+  366a4ba89b34df3b7316be8fc28070f8c1c269a8a097efa24deed1fb6dc521ee1a438cdcd22c68ed1f054ec044dbd6389cd875e0c9d82362a29c6844519e475b
+  99f17ca47fd332e1be716e70278c9c6da69b9912d6301e930a1a33eaf32c097e320a34bdc89fa47e919506ce0703c2b46464dfacf0ad5476608d134802c85ad5
+)
+
+prepare() {
+  cd $pkgname
+
+  # Remove eventbox title from the Preferences dialog
+  # https://github.com/Guake/guake/pull/2345
+  git apply -3 ../guake-preferences-dialog.patch
+
+  # Install icons into hicolor directory
+  # https://github.com/Guake/guake/pull/2346
+  git apply -3 ../guake-icon-install.patch
+
+  sed -i '/-m pip install -r requirements.txt/d' Makefile
+}
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" PREFIX=/usr COMPILE_SCHEMA=0 install
+  rm -r "$pkgdir"/usr/lib/python*/site-packages/guake/data
+}

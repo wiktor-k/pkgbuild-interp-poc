@@ -1,0 +1,65 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-calc
+pkgver=1.28.0
+pkgrel=4
+pkgdesc="Calculator for the MATE desktop environment"
+arch=(x86_64)
+url='https://github.com/mate-desktop/mate-calc'
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  dconf
+  glib2
+  glibc
+  gtk3
+  libmpc
+  libxml2
+  mpfr
+  pango
+)
+makedepends=(
+  git
+  glib2-devel
+  mate-common
+  yelp-tools
+)
+groups=(mate-extra)
+source=("git+https://github.com/mate-desktop/mate-calc.git#tag=v$pkgver")
+b2sums=(c45549851b0115e558a5ff764b36bd5dbfd6f19e7d99e3da5577be8cd46aa6a0a92bd2812a59bd9e8cb1cd9118c55b50cd17521fe92ee91df14f9a5c5b3f9c2c)
+
+prepare() {
+  cd $pkgname
+
+  # Fix invalid memory access with invalid powers
+  # https://github.com/mate-desktop/mate-calc/pull/227
+  git cherry-pick -n 7ef327f6f269c7a49357e001cd41d7aaf5807749
+
+  # Fix test-mp-equation test failure with libmpc>=1.4.0
+  # https://github.com/mate-desktop/mate-calc/pull/240
+  git cherry-pick -n 3fc6e65dfccbbb89c378aaa8ac161fd0c7c9807d
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-gtk-doc
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

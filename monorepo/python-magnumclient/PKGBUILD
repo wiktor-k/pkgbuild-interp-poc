@@ -1,0 +1,38 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-magnumclient
+pkgver=5.0.0
+pkgrel=1
+pkgdesc="Client library for Magnum API"
+arch=('any')
+url="https://docs.openstack.org/python-magnumclient/latest/"
+license=('Apache-2.0')
+depends=('python' 'python-pbr' 'python-keystoneauth1' 'python-stevedore' 'python-requests'
+         'python-oslo-i18n' 'python-oslo-log' 'python-oslo-serialization' 'python-oslo-utils'
+         'python-openstacksdk' 'python-osc-lib' 'python-prettytable' 'python-cryptography'
+         'python-decorator')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-openstackclient' 'python-oslotest' 'python-osprofiler' 'python-requests-mock' 'python-stestr'
+              'python-testscenarios' 'python-testtools')
+source=("git+https://github.com/openstack/python-magnumclient.git#tag=$pkgver")
+sha512sums=('1d6fb36e800c5b2c9c49edf83534685ccbfc895e315bad2fb8720d875a7093ef3d099003c4839ef29ffd5d32f26c6696347dce27c15f76794e1cf16ea2a7e14a')
+b2sums=('c660aeed617e43f685ede0cf26efeb5ac6437c500cca9fcc4e8e23f4eb8550caf6eeac850e00f4e72bf85f47533eb1f4bfb846ffe5e368e8ba6e8103dc484032')
+
+build() {
+  cd python-magnumclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local stestr_run_options=(
+  )
+
+  cd python-magnumclient
+  stestr run "${stestr_run_options[@]}"
+}
+
+package() {
+  cd python-magnumclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

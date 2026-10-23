@@ -1,0 +1,33 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=mauikit-archiver
+pkgver=4.0.2
+pkgrel=2
+pkgdesc='QtQuick plugin for online archived/compressed files management'
+url='https://mauikit.org/'
+arch=(x86_64)
+license=(LGPL-3.0-only)
+depends=(glibc
+         karchive
+         kcoreaddons
+         libstdc++
+         mauikit
+         mauikit-filebrowsing
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+source=(https://download.kde.org/stable/maui/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('eb191e4e5cbe3b6d2541f703b267ac6e79d845f9b727dfeae81115650afc8890'
+            'SKIP')
+validpgpkeys=(023625C8D02C0D8C15C3BABB86C793550794FEB8) # Camilo Higuita <milo.h@aol.com>                                    
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+# Workaround https://invent.kde.org/maui/index-fm/-/issues/76
+  sed -e '/prefer/d' -i "$pkgdir"/usr/lib/qt6/qml/org/mauikit/archiver/qmldir
+}

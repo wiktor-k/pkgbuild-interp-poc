@@ -1,0 +1,22 @@
+pkgbase = xf86-video-voodoo
+	pkgdesc = X.org 3dfx Voodoo1/Voodoo2 2D video driver
+	pkgver = 1.2.6
+	pkgrel = 2
+	url = https://xorg.freedesktop.org/
+	arch = x86_64
+	groups = xorg-drivers
+	license = MIT
+	makedepends = xorg-server-devel
+	makedepends = X-ABI-VIDEODRV_VERSION=25.2
+	makedepends = xorgproto
+	depends = glibc
+	conflicts = xorg-server<21.1.1
+	conflicts = X-ABI-VIDEODRV_VERSION<25
+	conflicts = X-ABI-VIDEODRV_VERSION>=26
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-video-voodoo-1.2.6.tar.xz
+	source = https://xorg.freedesktop.org//releases/individual/driver/xf86-video-voodoo-1.2.6.tar.xz.sig
+	validpgpkeys = 4A193C06D35E7C670FA4EF0BA2FB9E081F2D130E
+	sha512sums = c889d79044438d6b15efceda07f63874063a2faa24a86d048e62c8ad1364efdfec04ff7ec662ad0749d2a7263abb14edb74e7d5ebf9a1aa880edb2b341a80a31
+	sha512sums = SKIP
+
+pkgname = xf86-video-voodoo

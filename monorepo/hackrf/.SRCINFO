@@ -1,0 +1,17 @@
+pkgbase = hackrf
+	pkgdesc = Driver for HackRF, allowing general purpose software defined radio (SDR)
+	pkgver = 2026.01.3
+	pkgrel = 1
+	url = https://github.com/greatscottgadgets/hackrf
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	depends = fftw
+	depends = glibc
+	depends = libusb
+	source = https://github.com/greatscottgadgets/hackrf/releases/download/v2026.01.3/hackrf-2026.01.3.tar.xz
+	source = hackrf.conf
+	b2sums = e861d2250c59006fa42b63666c629bca2186d79a408dd7d0615023790434c3c06611e985da5a6c4bcbb776017d46ba7b90ba1d99825caa018318e361dbb0741f
+	b2sums = bf20da7bb04ee17a435651e3b15fffdec167700fb85925f5e7ac592ffd978f7102a95a41d32d014b4e46dc076c9e83e5bf7db07a502a9b2438e13e1eeb015ace
+
+pkgname = hackrf

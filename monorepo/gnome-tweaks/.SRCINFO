@@ -1,0 +1,28 @@
+pkgbase = gnome-tweaks
+	pkgdesc = Graphical interface for advanced GNOME 3 settings (Tweak Tool)
+	pkgver = 49.0
+	pkgrel = 2
+	url = https://wiki.gnome.org/Apps/Tweaks
+	arch = any
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gnome-desktop-4
+	depends = gsettings-desktop-schemas
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgudev
+	depends = libnotify
+	depends = pango
+	depends = python
+	depends = python-gobject
+	source = git+https://gitlab.gnome.org/GNOME/gnome-tweaks.git?signed#tag=49.0
+	validpgpkeys = A3C5EBBF43FBA5F829F1A2548D66762250C07E85
+	validpgpkeys = 3475CBA8D3483594C889B470D64A8D747F6FE706
+	b2sums = ba025e970902e577d1303fc1df7c5f772472921f0584163c4c50193cf4d2ce62a79fe45228245eb4e009a327d13ab08abcb1a0c59d13c819069618bf1921b873
+
+pkgname = gnome-tweaks

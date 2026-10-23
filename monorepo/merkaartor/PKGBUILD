@@ -1,0 +1,65 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Michael Kanis <mkanis gmx de>
+# Contributor: Paulo Freire <paulofreire gmail com>
+# Contributor: Brice Maron <brice bmaron net>
+
+pkgname=merkaartor
+pkgver=0.20.0
+pkgrel=30
+pkgdesc='OpenStreetMap editor'
+arch=(x86_64)
+url='http://merkaartor.be/'
+license=(GPL-2.0-or-later)
+depends=(
+  abseil-cpp
+  exiv2
+  gdal
+  glibc
+  gpsd
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  proj
+  protobuf
+  qt6-5compat
+  qt6-base
+  qt6-networkauth
+  qt6-svg
+  zlib
+)
+makedepends=(
+  cmake
+  git
+  qt6-tools
+)
+source=("git+https://github.com/openstreetmap/merkaartor.git#tag=$pkgver")
+b2sums=(482d16f8706d3ca8cdd3f4ebf8922cc0f4be13b2c0036eda15362ffa9565a0ea9903dadde085e9533c71eb2126e5948cda7678f94002a64e19458446b808690c)
+
+prepare() {
+  cd $pkgname
+
+  # Fixed a crash on download when no server is loaded from config
+  # https://github.com/openstreetmap/merkaartor/pull/308
+  git cherry-pick -n 61fac7791e2c17be946ae54d2f485f02732ac40a
+
+  # Fix build with gdal 3.12
+  # https://github.com/openstreetmap/merkaartor/pull/316
+  git cherry-pick -n 41ea3a2215a64f3cfc465e8aaf481fc29a6a3abc
+  git cherry-pick -n 9949b586afb914ffac7b17d1f2b90f6300b8e2ca
+
+  # Fix build with GPSD support
+  # https://github.com/openstreetmap/merkaartor/pull/318
+  sed -i 's/-DUSE_GPS=1/-DUSE_GPSD_LIB=1/' CMakeLists.txt
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D GPSD=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

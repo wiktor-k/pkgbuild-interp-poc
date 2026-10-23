@@ -1,0 +1,29 @@
+# Maintainer: Maxim Baz <archlinux at maximbaz dot com>
+
+_id=browserpass@maximbaz.com
+pkgname=browserpass-firefox
+pkgver=3.13.0
+pkgrel=1
+pkgdesc="Firefox extension for Browserpass, browser extension for zx2c4's pass (password manager)"
+arch=('any')
+url="https://github.com/browserpass/browserpass-extension"
+license=('ISC')
+groups=('firefox-addons')
+depends=('browserpass')
+source=("${pkgname}-${pkgver}.xpi::https://addons.mozilla.org/firefox/downloads/file/4406417/browserpass_ce-${pkgver}.xpi"
+        "https://raw.githubusercontent.com/browserpass/browserpass-extension/master/LICENSE")
+noextract=("${pkgname}-${pkgver}.xpi")
+b2sums=('66ba736e23376c96b21579f2584864129a8ff6f29b1ccb5af63d7aaa5d09e5231632c464f89f81e0bcd839da5a49eee5ba33d6ebd02a1ee541dc7f66e372314b'
+        'a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101')
+
+package() {
+    install -Dm644 "${pkgname}-${pkgver}.xpi" "${pkgdir}/usr/lib/firefox/browser/extensions/${_id}.xpi"
+
+    # Install host json from browserpass package
+    install -dm755 "${pkgdir}/usr/lib/mozilla/native-messaging-hosts/"
+    ln -sf "/usr/lib/browserpass/hosts/firefox/com.github.browserpass.native.json" "${pkgdir}/usr/lib/mozilla/native-messaging-hosts/"
+
+    install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}/" LICENSE
+}
+
+# vim:set ts=4 sw=4 et:

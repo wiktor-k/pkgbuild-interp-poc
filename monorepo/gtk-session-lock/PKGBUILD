@@ -1,0 +1,24 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: kotontrion <kotontrion@tutanota.de>
+
+pkgname=gtk-session-lock
+pkgver=0.2.0
+pkgrel=2
+pkgdesc="A library to create screen lockers for Wayland using the ext-session-lock protocol"
+url="https://github.com/Cu3PO42/gtk-session-lock"
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=('gtk3' 'wayland')
+makedepends=('meson' 'gobject-introspection' 'vala' 'wayland-protocols')
+provides=(libgtk-session-lock.so)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('a4245c6930580c15ed263b9a7bb7e39f47693baec78be1026b4e0e28b233cb4e')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

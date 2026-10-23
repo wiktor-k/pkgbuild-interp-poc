@@ -1,0 +1,161 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Chirantan Ekbote <chirantan.ekbote at gmail.com>
+# Contributor: Eric Anderson <ejona86 at gmail.com>
+# Contributor: Pierre DOUCET <pierre at equinoxefr.org>
+
+pkgname=openscad
+pkgver=2021.01
+pkgrel=23
+pkgdesc='The programmers solid 3D CAD modeller'
+arch=(x86_64)
+url='https://openscad.org'
+license=(GPL-2.0-or-later)
+depends=(
+  boost-libs # libboost_filesystem.so libboost_program_options.so
+  cairo libcairo.so
+  double-conversion # libdouble-conversion.so
+  fontconfig libfontconfig.so
+  freetype2 libfreetype.so
+  glew libGLEW.so
+  glib2 libglib-2.0.so
+  glibc # libc.so libm.so
+  glu # libGLU.so
+  gmp # libgmp.so
+  harfbuzz libharfbuzz.so
+  hicolor-icon-theme
+  lib3mf # lib3mf.so
+  libgcc libgcc_s.so
+  libglvnd libGL.so
+  libspnav # libspnav.so
+  libstdc++ libstdc++.so
+  libx11 # libX11.so
+  libxml2 libxml2.so
+  libzip libzip.so
+  mpfr libmpfr.so
+  nettle
+  opencsg # libopencsg.so
+  qscintilla-qt5 # libqscintilla2_qt5.so
+  qt5-base # libQt5Core.so libQt5DBus.so libQt5Gui.so libQt5Multimedia.so libQt5Network.so libQt5Widgets.so
+  qt5-multimedia
+)
+makedepends=(
+  boost
+  cgal
+  eigen
+  git
+  imagemagick
+  itstool
+)
+# full tests need imagemagick and an X11 or framebuffer session
+# can't find lib3MF from libsavitar?
+checkdepends=(
+  cmake
+  python
+  xorg-server-xvfb
+  xorgproto
+)
+source=(
+  "$pkgname::git+https://github.com/openscad/openscad#tag=openscad-$pkgver"
+  "github.com-openscad-MCAD::git+https://github.com/openscad/MCAD"
+  boost-1.86.patch
+  boost-1.89.patch
+)
+b2sums=('077aeeeb7b43c69337793dd7543c179234c6f08ff6ef6c67b36bdeaa0be44fb5acb86574447d0a6b9c3f266fcf844d5cc355e76c84383975643da9e8c84c750d'
+        'SKIP'
+        '767d9a9d666d3c8a28ff0a8d8355124cf3518388672d27cb4511ec6f990f8fafe55ad16e4f7c1c2491aebc489421b711f3d8eca6ff74f370ad82abb6f205cc84'
+        '528283a029500185273b4000d8a6d53296afa971e6a220c09cd744f9cf100693dd8001999bf8b5688e4073f121dfeb122456d9784e4e9df606cd929c01894e86')
+
+prepare() {
+  cd "$pkgname"
+
+  # CVE-2022-0496
+  git cherry-pick --no-commit 00a4692989c4e2f191525f73f24ad8727bacdf41
+
+  # CVE-2022-0497
+  git cherry-pick --no-commit 84addf3c1efbd51d8ff424b7da276400bbfa1a4b
+
+  # undefine boost libintl
+  git cherry-pick --no-commit 4c5d19c302d7d440d1c11c3d02b3ce5eb2e548da
+
+  # fix CGAL 5.3
+  git cherry-pick --no-commit 9aa0d7e9f2914fe5f547bdde69202161d1c6064d
+
+  # fix boost x32-x64
+  git cherry-pick --no-commit c50837d597a17b5d4cd8c7ed8e09cb07edb98a6f
+
+  # fix CGAL 5.4
+  git cherry-pick --no-commit abfebc651343909b534ef337aacc7604c99cf0ea
+
+  # fix boost join
+  git cherry-pick --no-commit 08bf69b4115c989fc5671254e0d05735d01bcca5
+
+  # boost compatibility
+  patch -p1 -i "$srcdir/boost-1.86.patch"
+  patch -p1 -i "$srcdir/boost-1.89.patch"
+
+  # Upstream can't be built using newer C++ std libs
+  echo 'CONFIG += c++17' >> defaults.pri
+
+  # prepare git submodule(s) - required for running tests
+  git submodule init libraries/MCAD
+  git config submodule.libraries/MCAD.url "$srcdir/github.com-openscad-MCAD"
+  git -c protocol.file.allow=always submodule update libraries/MCAD
+}
+
+build() {
+  cd "$pkgname"
+
+  # https://github.com/openscad/openscad/commit/426e71260e2ac178289c30eb1a228912d07c5b16
+  export LIB3MF_INCLUDEPATH="/usr/include/lib3mf/Bindings/Cpp"
+  # To fix qmake emitting '-L -l3mf' instead of a real lib3mf search path.
+  export LIB3MF_LIBPATH="/usr/lib"
+
+  # cmake scripts have no install instructions as of ver 2021.01,
+  # so let's wait until using cmake for building
+  qmake-qt5 PREFIX="/usr"
+
+  make
+}
+
+check() {
+  cd "$pkgname/tests"
+
+  cmake . -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
+  make
+
+  echo "Running headless tests…"
+
+  xvfb-run ctest \
+    -R 'dumptest|csgtexttest|csgtermtest|openscad-nonascii|openscad-override' \
+    -E 'astdumptest_allexpressions'
+}
+
+package() {
+  cd "$pkgname"
+
+  make INSTALL_ROOT="$pkgdir" install
+
+  # desktop file
+  install -Dm644 "icons/$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+
+  # application icons
+  for i in 48 64 128 256 512; do
+    install -vDm644 "icons/$pkgname-${i}.png" "$pkgdir/usr/share/icons/hicolor/${i}x${i}/apps/$pkgname.png"
+  done
+
+  # add mime info (*.scad)
+  install -Dm644 "icons/$pkgname.xml" "$pkgdir/usr/share/mime/packages/$pkgname.xml"
+
+  # remove unnecessary files
+  cd "$pkgdir/usr/share/$pkgname"
+  rm -rf libraries/MCAD/.git*
+
+  # remove leftover files from tests (must be removed *after* tests are run)
+  rm -rf libraries/MCAD/*.py
+
+  # remove bundled ttf-liberation
+  rm -rf fonts
+}

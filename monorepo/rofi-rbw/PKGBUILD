@@ -1,0 +1,50 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Ilya Zlobintsev <ilya.zl@protonmail.com>
+# Contributor: Matt Armand <marmand68 at gmail dot com>
+
+pkgname=rofi-rbw
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='Rofi (and dmenu-like) frontend for Bitwarden'
+arch=(any)
+url=https://github.com/fdw/rofi-rbw
+license=(MIT)
+depends=(
+  python-configargparse
+  rbw
+)
+makedepends=(
+  git
+  python-build
+  python-hatchling
+  python-installer
+)
+optdepends=(
+  'rofi: for the X.Org selector'
+  'xclip: for one of the X.Org clipboarders'
+  'xsel: for one of the X.Org clipboarders'
+  'xdotool: for an X.Org typer'
+  'fuzzel: for one of the Wayland selectors'
+  'wofi: for one of the Wayland selectors'
+  'wl-clipboard: for the Wayland clipboarder'
+  'wtype: for a Wayland typer'
+  'ydotool: for a generic typer'
+)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('ee45884a52d040c04c423333e39f5c8c6b25f1cee562e89e13a7f303a3b5c1d3e20f9f65638b7e7db1a37515370983ca8bf8c01ddf90b85f0b8c64d07ba9087a')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/"${pkgname//-/_}"-$pkgver.dist-info/licenses/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 docs/$pkgname.1
+}

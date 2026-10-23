@@ -1,0 +1,42 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Contributor: Zifei Tong <soariez@gmail.com>
+
+pkgname=pkgdiff
+pkgver=1.8
+pkgrel=1
+pkgdesc="A tool for analyzing changes in Linux software packages"
+url="https://lvc.github.io/pkgdiff"
+arch=(any)
+license=(GPL-2.0-only)
+depends=(
+  abi-compliance-checker
+  bash
+  diffutils
+  gawk
+  perl
+  perl-file-libmagic
+  wdiff
+)
+makedepends=(git)
+source=(
+  "git+https://github.com/lvc/pkgdiff#tag=$pkgver"
+  0001-Add-support-for-zstd-compression.patch
+)
+b2sums=('cb2731f99eae265ea7869302f523af695a3353d022a7d1e871bfb040fc3d6cb554e6ce74893139c12061f6909f6f3f0a77bad03757e7418c216da1c75561c27b'
+        '29c596d0be99ef9122a6dd3cad28dc542675df58422f5405a3fba848ff3826f2866e95a9b3d14ac31c04a6cdfa49d0318116ebcc7a142f94fd3fbedffdd6b2c9')
+
+prepare() {
+  cd pkgdiff
+
+  # https://github.com/lvc/pkgdiff/issues/40
+  git apply -3 ../0001-Add-support-for-zstd-compression.patch
+}
+
+package() {
+  cd pkgdiff
+  mkdir -p "$pkgdir/usr"
+  perl Makefile.pl --install --prefix=/usr --destdir="$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

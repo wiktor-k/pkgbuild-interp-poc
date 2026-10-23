@@ -1,0 +1,149 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: peippo <christoph+aur@christophfink.com>
+
+# country_grid.sql.gz source blocks curl
+# https://gitlab.archlinux.org/archlinux/packaging/packages/nominatim/-/issues/1
+DLAGENTS=('https::/usr/bin/curl -qgb "" -fLC - --retry 3 --retry-delay 3 -o %o %u -A\0' ${DLAGENTS[*]})
+
+pkgname="nominatim"
+pkgdesc="Geocoding tool using OpenStreetmap data"
+url="https://nominatim.org"
+
+pkgver=5.3.2
+pkgrel=1
+
+arch=("any")
+license=("GPL-2.0-only")
+
+makedepends=(
+    "git"
+    "python-build"
+    "python-installer"
+    "python-hatchling" # build backend
+    "python-argparse-manpage"
+    "python-psycopg" # manpage only
+    "python-mwparserfromhell"
+)
+#checkdepends=(
+#    "python-behave"
+#    "python-pytest"
+#    "python-pytest-asyncio"
+#)
+depends=(
+    "libosmium"
+    "osm2pgsql"
+    "postgis"
+    "python-asyncpg"
+    "python-psycopg"
+    "python-dotenv"
+    "python-psutil"
+    "python-jinja"
+    "python-pyicu"
+    "python-yaml"
+    "python-requests"
+    "python-osmium"
+    "python-ujson"
+    "python-falcon"
+    "python-sqlalchemy"
+    "python-pygments"
+    "uvicorn"
+    "gunicorn"
+)
+optdepends=(
+    "nginx: http server for python frontend"
+    "apache: http server for python frontend"
+    "python-starlette: Alternative Python frontend using Starlette ASGI framework"
+    "nominatim-data-wikipedia: optional auxiliary data source to help indicate the importance of OSM features"
+    "nominatim-data-postcodes-gb: improve searches that involve a UK postcode"
+    "nominatim-data-postcodes-us: improve searches that involve a US postcode"
+    "nominatim-data-tiger: improves searches that involve US house numbers"
+)
+
+source=(
+    "${pkgname}-${pkgver}.tar.gz::https://github.com/osm-search/Nominatim/archive/refs/tags/v${pkgver}.tar.gz"
+    "https://nominatim.org/data/country_grid.sql.gz"
+    "${pkgname}.sysusers"
+    "${pkgname}.tmpfiles"
+    "nominatim.service"
+    "nominatim.socket"
+    "nominatim-updates.service"
+    "nominatim-updates.timer"
+    "nginx-python.conf"
+    "0001-Fix-configuration-to-point-to-installed-files.patch"
+    "0002-Set-default-project-directory-to-package-provided-di.patch"
+    "0003-Exclude-force-includes-in-wheel-builds-to-fix-duplic.patch"
+)
+sha256sums=('7eff58fba5560617959315a99265901199406c80ddd2746ef45fa9853f0101a8'
+            '09d85801a625079b7007fda0f2fb880db62dcea09f17f8e12e5c1b485e60794e'
+            '808af34d42bd75afc79130dbb721f97cbd1603eea5f3409bb19ebda6fe5a138d'
+            '964e7d8bde044dee0b69002959bcdd5d469f83d85f166ddd5fb178954bc84999'
+            'b42c196b6e1e4b26fa658ee801c93850b0dc7e0c67162a809cbd20a71b3b8adf'
+            '20aac7e4ec92fe89b8b53b0bfdb1c546c39b3db0f0969aeb2ff376d67f4918ba'
+            'a3f0a194b9c26202eff3e3c1dbebde405dc8caab0fff86163fe3664ae05cdcc4'
+            '4f4c14000d2dd56271377a543dbebaf547fc543a9f610570a740e03c196b1947'
+            '5131a42f62d83bd68089769badd29bdd07e08263a336212d7f337e3f5b273fb0'
+            'eadc799564daeb16aa01af8507f31ddd4c6fe429ac847e8b2b3f436e5b95ddac'
+            '7029a9da86edaeb8375e9bc2fc999d64fa974b689fdd0827e1a7df92010d1674'
+            'adc9d325fe0e0c6995fde3f7b13350d8606227476cc86b2bb1106bbf5073c551')
+noextract=(
+)
+
+install="${pkgname}.install"
+
+prepare() {
+    cd "Nominatim-${pkgver}"
+
+    patch -p1 < "$srcdir/0001-Fix-configuration-to-point-to-installed-files.patch"
+    patch -p1 < "$srcdir/0002-Set-default-project-directory-to-package-provided-di.patch"
+    patch -p1 < "$srcdir/0003-Exclude-force-includes-in-wheel-builds-to-fix-duplic.patch"
+
+    # Need to copy here since it might be a link
+    cp ../country_grid.sql.gz data/country_osm_grid.sql.gz
+}
+
+build() {
+    cd "Nominatim-${pkgver}"
+
+    python -m build --wheel --no-isolation --verbose --outdir dist/ packaging/nominatim-db
+    python -m build --wheel --no-isolation --outdir dist/ packaging/nominatim-api
+
+    make manpage
+}
+
+# https://github.com/osm-search/Nominatim/blob/master/.github/workflows/ci-tests.yml#L132
+# Disabled, needs a local postgres
+#check() {
+#    cd "Nominatim-${pkgver}"
+#    python -m pytest test/python
+
+#    cd "test/bdd"
+#    python -m behave -DREMOVE_TEMPLATE=1 -DBUILDDIR=$GITHUB_WORKSPACE/build --format=progress3
+#}
+
+package() {
+    cd "Nominatim-${pkgver}"
+    echo "Installing db"
+    python -m installer --destdir="$pkgdir" dist/nominatim_db-*.whl
+    echo "Installing api"
+    python -m installer --destdir="$pkgdir" dist/nominatim_api-*.whl
+
+    install -Dm644 "${srcdir}/Nominatim-${pkgver}/data/country_osm_grid.sql.gz" -t "${pkgdir}/usr/share/nominatim/"
+
+    # manpage
+    install -Dm644 "man/nominatim.1" "$pkgdir/usr/share/man/man1/nominatim.1"
+
+    # install python gunicorn and update service files
+    install -Dm644 "${srcdir}/nominatim.service" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "${srcdir}/nominatim.socket" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "${srcdir}/nominatim-updates.service" -t "${pkgdir}/usr/lib/systemd/system/"
+    install -Dm644 "${srcdir}/nominatim-updates.timer" -t "${pkgdir}/usr/lib/systemd/system/"
+
+    # install nginx example configs
+    install -Dm644 "${srcdir}/nginx-python.conf" -t "${pkgdir}/usr/share/doc/$pkgname/examples/"
+
+    # create users and directories
+    install -Dm 644 "${srcdir}/${pkgname}.sysusers" "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+    install -Dm 644 "${srcdir}/${pkgname}.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+}
+
+# vim: set et ts=4:

@@ -1,0 +1,21 @@
+pkgbase = keycloak-metrics-spi
+	pkgdesc = A Service Provider that adds a Prometheus metrics endpoint to Keycloak
+	pkgver = 7.0.0
+	pkgrel = 1
+	url = https://github.com/aerogear/keycloak-metrics-spi
+	arch = any
+	license = Apache-2.0
+	makedepends = java-environment=17
+	makedepends = gradle
+	makedepends = keycloak
+	depends = java-runtime>=17
+	source = keycloak-metrics-spi-7.0.0.tar.gz::https://github.com/aerogear/keycloak-metrics-spi/archive/7.0.0.tar.gz
+	source = move-version-to-properties.patch
+	source = reproducible-build.patch
+	source = remove-manifest-variable-fields.patch
+	sha512sums = 5ea370986c7a2078c4c4c9d275d09f2c6061bb21030e2be516d693961b4fb867d1687a4162d70dbc41a05b9593c18f70751d1b98c1e9e1ce48bd43f3d74a91fe
+	sha512sums = a06a2d0595d1d487494bb51a875c65c67675c33dd3e50fd69109c6c1b1145a25365a0b5a8e122b6ae7e19b2590185dd27a0bee732a48b0baa19b7aa88abd6c39
+	sha512sums = 238cd8e201d2831686890eacc4c0188e2f56c93212d66a367a37921408ad768a463aa088472140bc5701f70e0d32c637c75cc18a1bb4b3d2d9d14654888a70f7
+	sha512sums = 356507ba6f056ea33522d7e3e297fd17df84eb8243d9802a8b902dd59808ea1237f2d138487d5061a68d849e289daf5c4e7738ee6facb28987a6df20def83fce
+
+pkgname = keycloak-metrics-spi

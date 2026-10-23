@@ -1,0 +1,77 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Tobias Bohrmann (PlainTextField) <honeypot.carbage@aechelon.de>
+# Contributor: Bernd Prünster (JesusMcCloud) <aur@berndpruenster.org>
+
+pkgname=enter-tex
+pkgver=3.51.0
+pkgrel=1
+pkgdesc='TeX/LaTeX text editor'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/gedit/enter-tex'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gsettings-desktop-schemas
+  gspell
+  gtk3
+  hicolor-icon-theme
+  libgedit-amtk
+  libgedit-gfls
+  libgedit-gtksourceview
+  libgedit-tepl
+  libgee
+  libhandy
+  pango
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  itstool
+  meson
+  vala
+)
+optdepends=(
+  'texlive-binextra: Build LaTeX documents'
+  'texlive-latex: Build LaTeX documents'
+)
+provides=(gnome-latex)
+conflicts=(gnome-latex)
+replaces=(gnome-latex)
+source=(
+  "git+https://gitlab.gnome.org/World/gedit/enter-tex.git#tag=$pkgver"
+  enter-tex-prgname.patch
+)
+b2sums=(
+  8177155152ee842b10e5b2c754da02cfc3fb646a3e48308b0584fa74d3692c73a8687bf52c24a6e20aec94d62f41853858205b2d771625a188cb892527e4efe2
+  a749fb7b60d91786911de0e6b210608188d02328990a71327ef18d1b597a1ecca5cd93a9f474691b52783f55ad86ef53f82c98f32ce5768e38b12022784ce6fd
+)
+validpgpkeys=(08C0A6B1A08310A45363B328426F014A261FD87F) # Sébastien Wilmet <swilmet@mailfence.com>
+
+prepare() {
+  cd $pkgname
+
+  # Enable again Wayland
+  git cherry-pick -n 093ea6f998710ecb80086a7765c5e80be81d9ec5
+
+  # Set prgname to application ID
+  git apply -3 ../enter-tex-prgname.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build src/gtex/Gtex-1.gir
+  meson compile -C build
+}
+
+check() (
+  meson test -C build --print-errorlogs
+)
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

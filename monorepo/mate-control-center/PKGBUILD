@@ -1,0 +1,80 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=mate-control-center
+pkgver=1.28.2
+pkgrel=1
+pkgdesc="The Control Center for MATE"
+arch=(x86_64)
+url='https://github.com/mate-desktop/mate-control-center'
+license=(GPL-2.0-or-later)
+depends=(
+  accountsservice
+  at-spi2-core
+  cairo
+  dconf
+  fontconfig
+  freetype2
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-themes-extra
+  gtk3
+  hicolor-icon-theme
+  libappindicator
+  libcanberra
+  libgcc
+  libgtop
+  libmatekbd
+  libx11
+  libxcursor
+  libxi
+  libxklavier
+  libxml2
+  libxss
+  marco
+  mate-desktop
+  mate-menus
+  mate-panel
+  mate-settings-daemon
+  pango
+  polkit
+  udisks2
+)
+makedepends=(
+  git
+  glib2-devel
+  mate-common
+  yelp-tools
+)
+groups=(mate)
+source=("git+https://github.com/mate-desktop/mate-control-center.git#tag=v$pkgver")
+b2sums=(318e6fb1e835833ccfe914bee6441a489cb5b43fc04f28544b4493af86295ac3c1ddd4e33519cd16da8402c62f2265bf647f29bd13d37b10ced1cb5c93c901e0)
+
+prepare() {
+  cd $pkgname
+
+  # Verify if theme is GTK3
+  # https://github.com/mate-desktop/mate-control-center/pull/814
+  git cherry-pick -n 2ab1577a0fb754042ea95847ab5e44adc0a1a1b3
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sbindir=/usr/bin \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --disable-update-mimedb
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  rm "$pkgdir/usr/share/applications/mimeinfo.cache"
+}

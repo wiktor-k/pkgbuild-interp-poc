@@ -1,0 +1,126 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: PyroDevil <p dot devil at gmail dot com>
+# Contributor: Anibal Pacheco <apacheco.uy@gmail.com>
+
+pkgname=scrapy
+pkgver=2.19.0
+pkgrel=1
+pkgdesc='A fast high-level scraping and web crawling framework'
+arch=(any)
+license=(BSD-3-Clause)
+url='https://scrapy.org'
+depends=(
+  python
+  python-aiohttp
+  python-brotli
+  python-charset-normalizer
+  python-cryptography
+  python-cssselect
+  python-defusedxml
+  python-itemadapter
+  python-itemloaders
+  python-lxml
+  python-packaging
+  python-parsel
+  python-platformdirs
+  python-protego
+  python-pydispatcher
+  python-pyopenssl
+  python-queuelib
+  python-service-identity
+  python-setuptools
+  python-tldextract
+  python-twisted
+  python-w3lib
+  python-zope-interface
+)
+makedepends=(
+  git
+  python-build
+  python-hatchling
+  python-installer
+  python-wheel
+)
+checkdepends=(
+  bpython
+  ipython
+  mitmproxy
+  python-anyio
+  python-attrs
+  python-botocore
+  python-colorlog
+  python-h2
+  python-httpx2
+  python-markupsafe
+  python-psutil
+  python-pyftpdlib
+  python-pytest
+  python-pytest-rerunfailures
+  python-pytest-timeout
+  python-pytest-twisted
+  python-sybil
+  python-uvloop
+)
+optdepends=(
+  'bpython: for ncurses support in cmdline'
+  'ipython: for enhanced support of the interactive scraping shell'
+  'python-anyio: for HTTPX download handler asyncio support'
+  'python-botocore: for various utils'
+  'python-colorlog: for colored logging'
+  'python-h2: for HTTP2 support'
+  'python-hpack: for HTTP2 streaming support'
+  'python-httpx2: for HTTPX download handler support'
+)
+source=("$pkgname::git+https://github.com/scrapy/scrapy#tag=$pkgver")
+sha512sums=('4154fc45e511850b4f61b1ef454d89a9ca54b9bd555a24127a2d9b07282a17fe91c9abef7730797579d3c2e9970b749cedd8fbe773a1254a7082e8cd943e3b4d')
+b2sums=('aaa20d0cae81bac95c48471dff82e43c4c600fb4c162620e0d60752bdb28b5e83e0631b8e4da37ee74545715ffa1a539ca0b92cede6a69ce2243276c13e0ce83')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  local pytest_options=(
+    -vv
+    # Fails with AssertionError under Python 3.14, not sure why
+    --deselect tests/test_pipeline_files.py::TestFilesPipeline::test_file_path
+    --deselect tests/test_command_check.py
+    --deselect tests/test_feedexport.py
+    --deselect tests/test_squeues.py
+    --reactor default
+    # ModuleNotFoundError: No module named 'tests'
+    --deselect tests/test_crawler_subprocess.py::TestCrawlerRunnerSubprocess::test_response_ip_address
+    # assert 'Ignoring response <402' not in "scrapy.middleware"
+    --deselect tests/test_spidermiddleware_httperror.py::TestHttpErrorMiddlewareIntegrational::test_logging_level
+    # Timeout
+    --deselect tests/test_command_shell.py::TestInteractiveShell::test_shell_default_shells
+  )
+
+  pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # License and documentation
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  install -Dm644 README.rst -t "$pkgdir"/usr/share/doc/$pkgname/
+  install -Dm644 docs/intro/install.rst -t "$pkgdir"/usr/share/doc/$pkgname/
+
+  # Shell completions
+  install -Dm644 extras/scrapy_bash_completion \
+    "$pkgdir"/usr/share/bash-completion/completions/scrapy
+  install -Dm644 extras/scrapy_zsh_completion \
+    "$pkgdir"/usr/share/zsh/site-functions/_scrapy
+}

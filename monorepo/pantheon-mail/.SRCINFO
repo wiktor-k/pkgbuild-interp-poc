@@ -1,0 +1,28 @@
+pkgbase = pantheon-mail
+	pkgdesc = Mail app designed for elementary OS
+	pkgver = 8.0.1
+	pkgrel = 2
+	url = https://github.com/elementary/mail
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = gtk3
+	depends = libcamel-1.2.so
+	depends = libedataserver-1.2.so
+	depends = libedataserverui-1.2.so
+	depends = libfolks.so
+	depends = libgranite.so
+	depends = libhandy-1.so
+	depends = libportal-gtk3
+	depends = webkit2gtk-4.1
+	source = pantheon-mail::git+https://github.com/elementary/mail.git#tag=8.0.1
+	source = 0001-Adapt-to-libcamel-API-changes-in-3.57.1.patch
+	b2sums = fe4702d38a158e54b1eb4abd76943b9035d84ebda8e697cc5262b115a7768f933ddd8c97ca7d235d55f1dae1600236b5fd265ad7c71b8f0bef127b5e27c0c226
+	b2sums = c9281c7626d2ac66e5274ce729650aa5e5998d1c9a9edc163c6c105a890a335f0a0fbeedb8c6ecc08cd8d7e2cdb57f9ecaa8dbd0a12f993084c965c4da818aec
+
+pkgname = pantheon-mail

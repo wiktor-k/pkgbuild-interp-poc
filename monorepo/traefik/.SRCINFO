@@ -1,0 +1,24 @@
+pkgbase = traefik
+	pkgdesc = Modern reverse proxy written in Go
+	pkgver = 3.7.13
+	pkgrel = 1
+	url = https://github.com/traefik/traefik
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = nodejs-lts-jod
+	makedepends = npm
+	makedepends = yarn
+	depends = glibc
+	options = !lto
+	backup = etc/traefik/traefik.yml
+	source = https://github.com/traefik/traefik/archive/v3.7.13/traefik-3.7.13.tar.gz
+	source = traefik.service
+	source = traefik.sysusers
+	source = traefik.tmpfiles
+	b2sums = 8cf3e66dc9fa19fddb539b739137432d5079451106b9d302ab55747f38c5d72af6def5b5b6baebd890e31f6eeab8eb5dbadacae40633b314f879a173eeeb606b
+	b2sums = fa35c17d120dc343773395f062504f6ce5bd11015724824907dff3b17812543456662203757a30ed7ac86f34c1e8ec7c60ed667e4e7b811c67dcf9e59d2f831b
+	b2sums = 583ba4ed75f19d5af8c53aefc88b535b2b538414c6da6f670bd142500f70d753bc5222ef1d39f0ceb43e0e37831e467e442c307b1e90b3f902c1a2d74f304570
+	b2sums = cadeab754be6819d2d15bd3e5c380d3edb68d7cb08db676315968733f912cb5f54e0de6b10bff74e0d0b5e9782d707c7afd92ffa5ba20698be70046088406c14
+
+pkgname = traefik

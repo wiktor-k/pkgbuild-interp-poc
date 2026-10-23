@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=gomuks
+pkgver=0.3.1
+pkgrel=1
+pkgdesc="A terminal based Matrix client written in Go"
+arch=(x86_64)
+url="https://github.com/tulir/gomuks"
+license=(AGPL-3.0-or-later)
+depends=(glibc)
+makedepends=(
+  go
+  libolm
+)
+source=($url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('36b3062142e9b094c8fdcf58f7a5babad570fcd482299ce071759019f3c5ad42bb9e40f5d698fe8c74c5e7e405a818b566150b650e2dda642f9f6470c9c90989')
+b2sums=('4b2a899f923332a858ada189ef822506779342542e0153dd3d747ae3b1b4117dec5f25588f14e001af5a6995020dfe0a891d610ed7447475cf4eaf71ba683bd1')
+
+prepare() {
+  mkdir -vp $pkgname-$pkgver/build
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOPATH="${srcdir}"
+  export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+
+  go build -o build/ -ldflags "-compressdwarf=false -linkmode external" .
+}
+
+check() {
+  cd $pkgname-$pkgver
+  go test ./...
+}
+
+package() {
+  depends+=(
+    libolm libolm.so
+  )
+  install -vDm 755 $pkgname-$pkgver/build/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 $pkgname-$pkgver/{CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

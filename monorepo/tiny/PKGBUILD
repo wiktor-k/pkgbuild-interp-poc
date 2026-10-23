@@ -1,0 +1,48 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Ralph Torres <mail at ralphptorr dot es>
+# Contributor: ny-a <nyaarch64 at gmail dot com>
+# Contributor: Jean Lucas <jean at 4ray dot co>
+
+pkgname=tiny
+pkgver=0.13.0
+pkgrel=2
+pkgdesc="A terminal IRC client written in Rust"
+arch=(x86_64)
+url="https://github.com/osa1/tiny"
+license=(MIT)
+depends=(
+  dbus
+  libgcc
+  glibc
+)
+makedepends=(
+  cargo
+  git
+)
+options=(!lto)
+source=("git+$url.git#tag=v$pkgver")
+sha256sums=('673aaf9d34e32dbbb87fbb040fffc82a1b63de61356dd26165efeab4061eae39')
+
+prepare() {
+  cd $pkgname
+  cargo update --workspace
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release --features desktop-notifications
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen --workspace --features desktop-notifications
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/$pkgname
+  install -vDm644 -t "$pkgdir/usr/share/$pkgname" crates/tiny/config.yml
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: CreamSodass <greatvaluecreamsoda@gmail.com>
+
+pkgname=vapoursynth-plugin-vship-vulkan
+pkgrel=2
+pkgver=5.1.1
+pkgdesc='Vship Vapoursynth Plugin'
+arch=(x86_64)
+url=https://codeberg.org/Line-fr/Vship
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  vapoursynth
+  vulkan-icd-loader
+)
+makedepends=(
+  clang
+  git
+  vulkan-headers
+)
+provides=(
+  libvship
+  vapoursynth-plugin-vship
+)
+conflicts=(
+  libvship
+  vapoursynth-plugin-vship
+)
+source=(git+https://codeberg.org/Line-fr/Vship.git#tag=v${pkgver})
+b2sums=('663f0f07f1b2a37e6a0b50c768fb3af4936202babc37a1cb9177384549416633e5347232618edb39f1bead53d8d9820859a1089682b9d113dace12d07ce4f415')
+
+build() {
+  cd Vship
+  make build BACKEND=Vulkan CXX=clang++
+}
+
+package(){
+  cd Vship
+  install -Dm 755 libvship.so -t "${pkgdir}"/$(python -c 'import vapoursynth;print(vapoursynth.get_plugin_dir())')/
+  install -Dm 644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}/
+}
+
+# vim: ts=2 sw=2 et:

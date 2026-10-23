@@ -1,0 +1,27 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Thomas Dziedzic <gostrc@gmail.com>
+# Contributor: Jose Valecillos <valecillosjg@gmail.com>
+# Contributor: Kaos <gianlucaatlas@gmail.com>
+# Contributor: Christopher Rogers <slaxemulator@gmail.com>
+
+pkgname=wordpress
+pkgver=7.1.3
+pkgrel=1
+pkgdesc='Blog tool and publishing platform'
+arch=(any)
+url='https://wordpress.org/'
+license=(GPL-2.0-or-later)
+depends=(php-interpreter)
+optdepends=('apache: Web server'
+            'mariadb: Database server'
+            'nginx: Web server')
+options=(!debug emptydirs)
+install=$pkgname.install
+source=("https://wordpress.org/$pkgname-${pkgver%.0}.tar.gz")
+sha256sums=('d2a09acb6a15e3b9c471d72557753c266d6f41a79ed19bfe04cbfe49e283b2a5')
+b2sums=('74b46f59ce5363d1ffb6cb985042bdbfbf92cfc56409ce35c016ae1213596b5bf647d01622efcdc3d8cf01787ba6ebfe2562f5f08a94274c0bc143924bdd9538')
+
+package() {
+  install -d "$pkgdir/usr/share/webapps"
+  cp -r $pkgname "$pkgdir/usr/share/webapps"
+}

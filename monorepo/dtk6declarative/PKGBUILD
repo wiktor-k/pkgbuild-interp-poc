@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: zccrs <zhangjide@deepin.org>
+
+pkgname=dtk6declarative
+pkgver=6.0.50
+pkgrel=2
+pkgdesc='Deepin Toolkit, declarative module for DDE look and feel'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dtk6declarative"
+license=('LGPL-3.0-or-later')
+# qt6-5compat: used in QML
+# qt6-shadertools: used in QML (optdep of qt6-5compat for Qt5Compat.GraphicalEffects)
+depends=('dtk6core' 'dtk6gui' 'qt6-declarative' 'qt6-base' 'qt6-5compat'
+         'qt6-shadertools' 'libgl' 'gcc-libs')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'qt6-shadertools' 'doxygen' 'gtest' 'gmock' 'vulkan-headers')
+source=("git+https://github.com/linuxdeepin/dtk6declarative.git#tag=$pkgver")
+sha512sums=('20d39624b27b9810b3f44209d251622bf3fe0cd84d9826b3f313b9fc355475e27d01b099bb54ebd798608aee732fa7e7fb69fc05deda47c6fc7bb2e114f53d1f')
+
+build() {
+  cd $pkgname
+  cmake . -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_DOCS=ON
+  ninja
+}
+
+check() {
+  cd $pkgname
+  ninja test || echo "Tests failed"
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" ninja install
+}

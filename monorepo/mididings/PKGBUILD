@@ -1,0 +1,123 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Lieven Moors <lievenmoors@protonmail.com>
+# Contributor: Leonard de Ruijter <dev@systeemdenker.nl>
+# Contributor: speps <speps at aur dot archlinux dot org>
+
+pkgbase=mididings
+pkgname=(mididings mididings-docs)
+pkgver=20260601
+pkgrel=2
+pkgdesc='A MIDI router & processor'
+arch=(x86_64)
+url='https://github.com/mididings/mididings'
+license=(GPL-2.0-or-later GFDL-1.3-or-later)
+makedepends=(
+  git
+  boost
+  boost-libs
+  alsa-lib
+  jack
+  python
+  python-decorator
+  python-build
+  python-installer
+  python-wheel
+  meson-python
+  python-sphinx
+  python-sphinx-furo
+  python-sphinxcontrib-fulltoc
+  python-pyinotify
+  python-pyliblo3
+  python-dbus
+  scdoc
+)
+checkdepends=(python-pytest)
+source=(
+  "$pkgbase::git+https://github.com/mididings/mididings#tag=$pkgver"
+  doc-hackaround.patch
+)
+sha512sums=('577c937277748b562733dfe07cdc4a60c8215781ff0a9cf5b9ba3f83b30b288c0a858fb7f265818485e4b317bab3f14ce62eb267a5e600853653dddb039fc428'
+            '951013b7971b180ce15e8363956478b3c52d4b722bdbb3c4ce71c1b3b13a7b20399b8c1a54bc3b1f51c796411c4f016f97686d241ba9c397672ab2dccd4961f4')
+b2sums=('05f17566289d603d3121c3d5a6ef1ca438c2aa2009299a47fb24824df0169a8fbace7d0efd6da90adbe90a85f0d5ad870721a06b399cfa73965075ef61cfe0a1'
+        '09bbe16609b539fbe8a2037a38739d465eef3ac13faeffbcde9b3a4b5df2744abc6f4e31d5d2701e42a4160db39080a44064f1349b9ae4c91f186c8e999cadb4')
+
+build() {
+  cd "$pkgbase"
+
+  # lib
+  python -m build --wheel --no-isolation
+
+  # install to temporary directory
+  python -m installer --destdir="$PWD/tmp_doc" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$PWD/tmp_doc$site_packages"
+
+  # documentation
+  patch -p1 -i "$srcdir/doc-hackaround.patch"
+  sed -e "s/@VERSION@/$pkgver/" -i doc/conf.py
+  sphinx-build -b html -d doc/build/doctrees doc doc/build/html
+
+  # manpages
+  pushd doc/man > /dev/null
+  for script in livedings mididings send_midi; do
+    scdoc < "${script}.scd" > "${script}.1"
+  done
+
+  # ensure man pages are reproducible
+  bash reproducible-man.sh
+  popd > /dev/null
+}
+
+check() {
+  cd "$pkgbase"
+
+  # install to temporary directory
+  python -m installer --destdir="$PWD/tmp_check" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  PYTHONPATH="$PWD/tmp_check$site_packages" pytest -v \
+    --deselect tests/test_event.py::EventTestCase::test_copy \
+    --deselect tests/test_event.py::EventTestCase::test_pickle \
+    --deselect tests/units/test_modifiers.py::ModifiersTestCase::test_Port
+}
+
+package_mididings() {
+  license=(GPL-2.0-or-later)
+  depends=(
+    glibc
+    libgcc_s.so
+    libstdc++.so
+    boost-libs
+    jack
+    alsa-lib
+    python
+    python-decorator
+  )
+  optdepends=(
+    'python-dbus: send DBUS messages'
+    'python-watchdog: automatically restart when a script changes'
+    'python-pyliblo3: send/recieve OSC messages'
+    'python-pysmf: read/write standard MIDI files using the process_file() function'
+    'python-pyxdg: so mididings knows where to look for config files'
+    'tk: for livedings GUI'
+    'mididings-docs: documentation'
+  )
+
+  cd "$pkgbase"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" doc/man/*.1
+}
+
+package_mididings-docs() {
+  license=(GFDL-1.3-or-later)
+  pkgdesc+=' (documentation)'
+
+  cd "$pkgbase"
+
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgbase" README.md
+  cp -vr doc/examples "$pkgdir/usr/share/doc/$pkgbase"
+  cp -vr doc/build/html "$pkgdir/usr/share/doc/$pkgbase"
+}

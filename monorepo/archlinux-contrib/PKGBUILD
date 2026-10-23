@@ -1,0 +1,35 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=archlinux-contrib
+_pkgname=contrib
+pkgver=20261009
+pkgrel=1
+pkgdesc="Collection of contrib scripts used in Arch Linux"
+url="https://github.com/archlinux/contrib"
+arch=('any')
+license=('GPL-2.0-or-later')
+depends=('python' 'bash' 'pyalpm')
+makedepends=('git')
+optdepends=('python-requests: for security tracker'
+            'jq: for rebuild-todo'
+            'devtools: for rebuild-todo'
+            'pacman-contrib: to enable pacdiff usage in the checkservices script'
+            'python-httpx: for check-pkg-urls'
+            'python-tqdm: for check-pkg-urls'
+            'ripgrep: for pkggrep'
+            'parallel: for pkggrep & greposcope'
+            'rebuilderd-tools: for greposcope')
+source=(git+https://github.com/archlinux/contrib.git#tag=${pkgver}?signed)
+validpgpkeys=('C100346676634E80C940FB9E9C02FF419FECBE16'  # Morten Linderud
+              '86CFFCA918CF3AF47147588051E8B148A9999C34'  # Evangelos Foutras
+              'F00B96D15228013FFC9C9D0393B11DAA4C197E3D'  # Christian Heusel
+              '6F779ADE247A6B8A0F72CC13C047D4F328B52585'  # Christian Heusel
+              'E499C79F53C96A54E572FEE1C06086337C50773E'  # Jelle van der Waa
+              '262A58EC6C51F7EA395B2E2DFDC3040B92ACA748') # Robin Candau
+sha256sums=('cd06fe43277145df66c8c23576113293f836c2c535ea0dc17a828f41f8ff98c7')
+
+package() {
+	cd "${_pkgname}"
+	make PREFIX=/usr DESTDIR="${pkgdir}" install
+}

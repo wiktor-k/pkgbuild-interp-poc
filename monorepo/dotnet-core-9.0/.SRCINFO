@@ -1,0 +1,73 @@
+pkgbase = dotnet-core-9.0
+	pkgver = 9.0.21.sdk122
+	pkgrel = 1
+	url = https://dotnet.microsoft.com
+	arch = x86_64
+	license = MIT
+	makedepends = bash
+	makedepends = clang20
+	makedepends = cmake
+	makedepends = dotnet-sdk-9.0
+	makedepends = dotnet-source-built-artifacts-9.0
+	makedepends = git
+	makedepends = icu
+	makedepends = krb5
+	makedepends = libgit2
+	makedepends = libunwind
+	makedepends = libxml2
+	makedepends = lldb
+	makedepends = llvm20
+	makedepends = lttng-ust2.12
+	makedepends = nodejs
+	makedepends = openssl
+	makedepends = systemd
+	makedepends = zlib
+	optdepends = bash-completion: Bash completion support
+	options = !lto
+	options = staticlibs
+	source = git+https://github.com/dotnet/dotnet.git#tag=v9.0.122
+	b2sums = e83e358fbf0bf94c22dbe6900fc1f28f3655234c830ac1a66c6eceb3e379c00a68272e33bb108b2560e855f925085975ffb901838122fcf8628c5537cef10063
+
+pkgname = dotnet-runtime-9.0
+	pkgdesc = The .NET Core runtime
+	depends = dotnet-host
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = icu
+	depends = krb5
+	depends = libunwind
+	depends = zlib
+	depends = openssl
+	optdepends = lttng-ust2.12: CoreCLR tracing
+	provides = dotnet-runtime=9.0
+
+pkgname = aspnet-runtime-9.0
+	pkgdesc = The ASP.NET Core runtime
+	depends = dotnet-runtime-9.0
+	provides = aspnet-runtime=9.0
+
+pkgname = dotnet-sdk-9.0
+	pkgdesc = The .NET Core SDK
+	depends = dotnet-runtime-9.0
+	depends = dotnet-targeting-pack-9.0
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = netstandard-targeting-pack
+	optdepends = aspnet-targeting-pack: Build ASP.NET Core applications
+	provides = dotnet-sdk=9.0
+
+pkgname = dotnet-targeting-pack-9.0
+	pkgdesc = The .NET Core targeting pack
+	depends = netstandard-targeting-pack
+	provides = dotnet-targeting-pack=9.0
+
+pkgname = aspnet-targeting-pack-9.0
+	pkgdesc = The ASP.NET Core targeting pack
+	depends = dotnet-targeting-pack-9.0
+	provides = aspnet-targeting-pack=9.0
+
+pkgname = dotnet-source-built-artifacts-9.0
+	pkgdesc = Internal package for building the .NET Core SDK
+	provides = dotnet-source-built-artifacts=9.0

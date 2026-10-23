@@ -1,0 +1,20 @@
+pkgbase = softhsm
+	pkgdesc = Software PKCS#11 store
+	pkgver = 2.7.0
+	pkgrel = 1
+	url = https://opendnssec.readthedocs.io/en/latest/softhsm2/
+	arch = x86_64
+	license = BSD-2-Clause
+	checkdepends = cppunit
+	makedepends = git
+	depends = botan
+	depends = sqlite3
+	depends = openssl
+	depends = p11-kit
+	options = !libtool
+	options = !lto
+	backup = etc/softhsm2.conf
+	source = git+https://github.com/softhsm/SoftHSMv2.git#tag=2.7.0
+	sha256sums = 7ac7a5bbeedc0948600228df80a4381452c0eb812b36fc17da2d7064f273e8b5
+
+pkgname = softhsm

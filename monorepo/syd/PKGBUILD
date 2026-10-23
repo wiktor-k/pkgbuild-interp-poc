@@ -1,0 +1,69 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=syd
+_pkgname=sydbox
+pkgver=3.59.0
+pkgrel=1
+pkgdesc="Seccomp and landlock based application sandbox with support for namespaces"
+url="https://gitlab.exherbo.org/sydbox/sydbox"
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('bash' 'libgcc' 'glibc' 'libseccomp' 'gperftools')
+makedepends=('cargo' 'git' 'scdoc')
+optdepends=("syd-tui: Syd's Terminal User Interface"
+            "pandora_box: Syd's log inspector & profile writer")
+provides=("${_pkgname}")
+source=("git+${url}.git#tag=v${pkgver}?signed")
+sha256sums=('f1ab42bcf453f3cb2802dfbced976cfca76df0fd604695bf49739fe126821b3f')
+validpgpkeys=('5DF763560390A149AC6C14C7D076A377FB27DE70')
+options=('!lto')
+
+prepare() {
+	cd "${_pkgname}"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "${_pkgname}"
+	cargo build --frozen --release --features oci,utils
+
+	find man -type f -name "*.scd" -exec sh -c 'scdoc < "${1}" > "${1%.scd}"' _ {} \;
+}
+
+check() {
+	cd "${_pkgname}"
+	# "syd_test" and "fs" tests fail with sandbox
+	# "hash" tests seems flaky (they fail on the build server for some reason)
+	# "proc / executables paths [...]" fails if `/usr/lib/libgcc_s.so.1` is not executable (which is shipped by `gcc_libs`)
+	cargo test --frozen --features oci,utils -- \
+		--skip=syd_test \
+		--skip=fs::tests::test_canonicalize_non_directory_with_slash \
+		--skip=fs::tests::test_canonicalize_self_referential_symlink \
+		--skip=fs::tests::test_canonicalize_symlink_loop \
+		--skip=hash::tests::test_hmac_sha256_simple stdout \
+		--skip=hash::tests::test_aes_ctr_enc_and_dec \
+		--skip=hash::tests::test_aes_ctr_enc_and_dec_tmp \
+		--skip=hash::tests::test_aes_ctr_enc_with_more_flag \
+		--skip=hash::tests::test_aes_ctr_init \
+		--skip=hash::tests::test_aes_ctr_setup \
+		--skip=proc::tests::test_proc_executables_paths_exist_and_executable
+}
+
+package() {
+	cd "${_pkgname}"
+	find target/release/ -maxdepth 1 -type f -name "${pkgname}*" ! -name "*.d" -exec install -Dm 755 -t "${pkgdir}/usr/bin/" {} +
+
+	install -Dm 755 src/esyd.sh "${pkgdir}/usr/lib/${pkgname}/esyd.sh"
+
+	install -Dm 644 "data/user.${pkgname}-3" "${pkgdir}/etc/user.${pkgname}-3.example"
+
+	install -Dm 644 "vim/ftdetect/${pkgname}.vim" "${pkgdir}/usr/share/vim/vimfiles/ftdetect/${pkgname}.vim"
+	install -Dm 644 "vim/syntax/${pkgname}-3.vim" "${pkgdir}/usr/share/vim/vimfiles/syntax/${pkgname}-3.vim"
+
+	install -Dm 644 man/*.1 -t "${pkgdir}/usr/share/man/man1/"
+	install -Dm 644 man/*.2 -t "${pkgdir}/usr/share/man/man2/"
+	install -Dm 644 man/*.5 -t "${pkgdir}/usr/share/man/man5/"
+	install -Dm 644 man/*.7 -t "${pkgdir}/usr/share/man/man7/"
+
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

@@ -1,0 +1,20 @@
+pkgbase = ruby-pcaprub
+	pkgdesc = Consistent interface to libpcap packet capture library
+	pkgver = 0.13.3
+	pkgrel = 5
+	url = https://github.com/pcaprub/pcaprub
+	arch = x86_64
+	license = LGPL2.1
+	makedepends = git
+	makedepends = ruby-rake
+	makedepends = ruby-rake-compiler
+	makedepends = ruby-rdoc
+	makedepends = ruby-rubygems-tasks
+	depends = ruby
+	depends = libpcap
+	options = !emptydirs
+	source = git+https://github.com/pcaprub/pcaprub#tag=v0.13.3
+	sha512sums = ed27c0e0dc2205087d0d777cbed1dedc15b0e65deab1e256f993658dda34d10ba5d00a9c630a931202096df5372b5652a1fc949bc3b3b468db9a5879078d1183
+	b2sums = 3e274f87d87fb722037249595d99999e32e53a859f09fbdb2681d2d920e7a81aadf59634a5962c5f7e431236ebe68ac57b28159baf87adcfaa6feb2a585773f3
+
+pkgname = ruby-pcaprub

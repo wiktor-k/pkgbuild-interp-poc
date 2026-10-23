@@ -1,0 +1,44 @@
+pkgbase = sing-box
+	pkgdesc = The universal proxy platform
+	pkgver = 1.14.3
+	pkgrel = 4
+	url = https://sing-box.sagernet.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	license = LicenseRef-sing-box-exception
+	makedepends = clang
+	makedepends = git
+	makedepends = gn
+	makedepends = go>=1.25
+	makedepends = lld
+	makedepends = llvm
+	makedepends = ninja
+	makedepends = python
+	depends = glibc
+	depends = libgcc
+	depends = brotli
+	depends = simdutf
+	depends = zstd
+	depends = zlib
+	depends = double-conversion
+	optdepends = sing-geosite-rule-set: GeoSite rule sets for domain matching
+	optdepends = sing-geoip-rule-set: GeoIP rule sets for IP matching
+	optdepends = networkmanager: Wi-Fi SSID/BSSID routing rule support via NetworkManager
+	optdepends = iwd: Wi-Fi SSID/BSSID routing rule support via iwd
+	optdepends = wpa_supplicant: Wi-Fi SSID/BSSID routing rule support via wpa_supplicant
+	optdepends = connman: Wi-Fi SSID/BSSID routing rule support via ConnMan
+	backup = etc/sing-box/config.json
+	source = sing-box-1.14.3.tar.gz::https://github.com/SagerNet/sing-box/archive/v1.14.3.tar.gz
+	source = git+https://github.com/SagerNet/cronet-go.git#commit=049f2909701ca088c9569f6b303bba5376a2b2ff
+	source = git+https://github.com/SagerNet/naiveproxy.git#branch=cronet-go
+	source = 0001-build-use-the-system-toolchain.patch
+	source = 0002-build-unbundle-system-simdutf.patch
+	source = https://github.com/chromium/chromium/raw/refs/tags/150.0.7871.63/tools/generate_shim_headers/generate_shim_headers.py
+	sha256sums = 9a8e3712a5f611ad95f1d16874bbdcdffbd3b8eed16dae2d71ce7042a33c3386
+	sha256sums = 2feebadf58de91f9c357c8963dacea68d44ce41089f4377f98c0d0d80148d360
+	sha256sums = SKIP
+	sha256sums = 58c83e0ab0587a8bb020d98ee5cd787e32f692041824b2ae6b78812ec912c5a0
+	sha256sums = 45ee3bbaf2eaa31b254015b53501ce653848e64c3571cd75389cc9a1dbef2e9f
+	sha256sums = b64f3bc06e74955d1027e3720a2ef14b6203722a5e7fe4c777a6b1051b9744dd
+
+pkgname = sing-box

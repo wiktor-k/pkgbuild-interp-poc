@@ -1,0 +1,22 @@
+pkgbase = rdesktop
+	pkgdesc = An open source client for Windows Remote Desktop Services
+	pkgver = 1.9.0
+	pkgrel = 4
+	url = https://www.rdesktop.org/
+	arch = x86_64
+	license = GPL-3.0-only
+	depends = libao
+	depends = libgssglue
+	depends = libsamplerate
+	depends = libxcursor
+	depends = pcsclite
+	depends = xorg-xrandr
+	options = !lto
+	source = https://github.com/rdesktop/rdesktop/archive/v1.9.0/rdesktop-1.9.0.tar.gz
+	source = rdesktop-ssl.patch
+	source = nettle-4.patch
+	sha256sums = d547c2e6f3e4c818a7e69a0f39adb39fac303633e0c25aa804bb588507ffc230
+	sha256sums = 52cdece7b301e1234b313ece9006e848d33cdf02568604f99a4697913166f1cc
+	sha256sums = 94a8ec2911b6d38fae1932d50ad39a6910cd4c637e810a3f492dbeec10b41a5f
+
+pkgname = rdesktop

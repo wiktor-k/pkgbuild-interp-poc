@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=sqlsmith
+pkgver=1.5
+pkgrel=1
+pkgdesc='A random SQL query generator'
+arch=(x86_64)
+url='https://github.com/anse1/sqlsmith'
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  libgcc_s.so
+  libstdc++.so
+  libpqxx
+  postgresql-libs
+  sqlite
+)
+makedepends=(
+  git
+  cmake
+  ninja
+  autoconf-archive
+  boost
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('980375cd796bfd6d254eddd91e5f4dad0369aec6edde2df88d0dc48319106540f6add4a0a815a55c48bf94eda83b2f7ab75518c1d6cfb45f81c874b32c22038c')
+b2sums=('0cca888a43e03164f7628b8bbb65efd53499f560f97eb8cde6aac30f2405f55ce7373362ed98301c7b934685305078b0da1bfce497b4c9291ff7b7dfcd3cab61')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/sqlsmith
+}

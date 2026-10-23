@@ -1,0 +1,20 @@
+pkgbase = gpg-tui
+	pkgdesc = A terminal user interface for GnuPG
+	pkgver = 0.11.2
+	pkgrel = 1
+	url = https://github.com/orhun/gpg-tui
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	makedepends = python
+	depends = libxcb
+	depends = libxkbcommon
+	depends = gpgme
+	optdepends = xplr: for file selection support
+	optdepends = xclip: for clipboard support on X11 (or xsel)
+	optdepends = xsel: for clipboard support on X11 (or xclip)
+	optdepends = wl-clipboard: for clipboard support on Wayland
+	source = gpg-tui-0.11.2.tar.gz::https://github.com/orhun/gpg-tui/archive/v0.11.2.tar.gz
+	sha512sums = e495aa813af45119de1b993f8cc09f8c9668dd154be30bb3974bc8691a918667fba5a53fc211451713e5784bbf563716475dc940e7d6ca601a4213782ed75066
+
+pkgname = gpg-tui

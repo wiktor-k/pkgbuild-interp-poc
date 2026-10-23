@@ -1,0 +1,63 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=warp
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Securely send files to each other via the internet or local network by exchanging a word-based code'
+arch=(x86_64)
+url='https://apps.gnome.org/Warp/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  glib2
+  glibc
+  graphene
+  gst-plugin-gtk4
+  gst-plugin-pipewire
+  gst-plugins-bad
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  git
+  itstool
+  meson
+  rust
+)
+options=(!lto)
+source=("git+https://gitlab.gnome.org/World/warp.git?signed#tag=v$pkgver")
+b2sums=(12d21d36dbe02934c4736d65c3ef1c6131eaa77e062da69abce1557d72809e61b2776d222be72a21d2480c49c2151d0c4b8cb25686c6a52956ae72153be97e33)
+validpgpkeys=(FD04DCE1EB3443DE17FB904ECFD6416C8173524E) # Fina Wilke <fina@felinira.net>
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,28 @@
+pkgbase = pantheon-applications-menu
+	pkgdesc = The Pantheon Application Menu
+	pkgver = 8.0.4
+	pkgrel = 1
+	url = https://github.com/elementary/applications-menu
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = json-glib
+	depends = libgee
+	depends = libgranite.so
+	depends = libhandy-1.so
+	depends = libswitchboard-3.so
+	depends = wingpanel
+	depends = plank
+	depends = zeitgeist
+	source = pantheon-applications-menu::git+https://github.com/elementary/applications-menu.git#tag=eb1416985bea6eea43cdcc84a4aea4cc8498134a
+	b2sums = efae6864298c67fc2a402e88129b7d0f788ed96cbbdf2719de9508bbc54a387a681b2b5ea8382d6d4e9b198d313ae5a5022fc3b62c4746ea7592d27dadcbee62
+
+pkgname = pantheon-applications-menu

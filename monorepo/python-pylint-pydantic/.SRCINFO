@@ -1,0 +1,26 @@
+pkgbase = python-pylint-pydantic
+	pkgdesc = A Pylint plugin to help Pylint understand the Pydantic
+	pkgver = 0.3.5
+	pkgrel = 2
+	url = https://github.com/fcfangcc/pylint-pydantic
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-pylint
+	makedepends = python-setuptools
+	depends = python-pylint
+	depends = python-pydantic
+	depends = python-pylint-plugin-utils
+	provides = python-pylint-pydantic
+	conflicts = python-pylint-pydantic
+	conflicts = python-pylint-pydantic-git
+	replaces = python-pylint-pydantic
+	replaces = python-pylint-pydantic-git
+	source = python-pylint-pydantic-0.3.5::git+https://github.com/fcfangcc/pylint-pydantic.git#commit=v0.3.5
+	sha512sums = 483552439717c7e5f2f102e61d6f757820353c53349d51bc30ff4bf524355b4ba62c03b263faa4a7bae1787411e8df174b36eaed40db9bd3e8f00bf2bb0b6f02
+	b2sums = f3e7fc2fbeb7ab527c14b700c6f617f25512bd54cf06dea68a3e17f9f89e70b4e46280231519efd7464923e22b96e2a9f3f2f92e08722ce4dd2ca3c4df99b07d
+
+pkgname = python-pylint-pydantic

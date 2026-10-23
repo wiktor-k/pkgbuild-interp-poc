@@ -1,0 +1,22 @@
+pkgbase = fricas
+	pkgdesc = An advanced computer algebra system
+	pkgver = 1.4.0
+	pkgrel = 1
+	url = https://fricas.github.io
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = sbcl
+	makedepends = texlive-basic
+	depends = gawk
+	depends = glibc
+	depends = gmp
+	depends = libx11
+	depends = libxpm
+	depends = sh
+	depends = zstd
+	options = !strip
+	options = !debug
+	source = https://github.com/fricas/fricas/releases/download/1.4.0/fricas-1.4.0-full.tar.bz2
+	sha256sums = e113c721aaba673226d0806076a12ec82c07562c2954479443047d4264172514
+
+pkgname = fricas

@@ -1,0 +1,80 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: svoufff <svoufff at gmail dot com>
+# Contributor: Shinlun Hsieh <yngwiexx@yahoo.com.tw>
+
+pkgname=linuxsampler
+pkgver=2.5.0
+pkgrel=1
+pkgdesc="Professional-grade audio sampler alternative to Gigasampler"
+arch=(x86_64)
+url="https://www.linuxsampler.org/"
+license=(LicenseRef-LinuxSampler-Non-Commercial)
+groups=(pro-audio)
+depends=(
+  libgcc
+  libstdc++
+  glibc
+  sqlite
+)
+makedepends=(
+  alsa-lib
+  dssi
+  jack
+  ladspa
+  libgig
+  libsndfile
+  lv2
+  perl-xml-parser
+)
+optdepends=(
+  'dssi-host: for DSSI plugin'
+  'lv2-host: for LV2 plugin'
+)
+provides=(liblinuxsampler.so)
+source=(
+  https://download.linuxsampler.org/packages/$pkgname-$pkgver.tar.bz2
+)
+sha512sums=('bafa1f1e61a5ed67aba94ccad3a13597fce7fbade371e4071511a99f5cf5e3d02ed0357273e82cf8df8e869005a54a79083b76a2024c34761664f3744a301773')
+b2sums=('12f0ad7aaf0c2cde68f39566a5dcf5409c6e515fccad9cea290bccebd04faf3da3dba9bb31cf27943da81c69463e3370a97a289df3d051f562d8b9b8297bf7e0')
+
+prepare(){
+  # extract custom license exception
+  sed -n '11,15p' $pkgname-$pkgver/README > LinuxSampler-Non-Commercial.txt
+
+  cd $pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  # prevent excessive overlinking due to libtool
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  # Prevent code generation from creating unreproducible results.
+  make -j1
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    jack libjack.so
+    libgig libgig.so
+    libsndfile libsndfile.so
+  )
+
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  # NOTE: Due to autotools obfuscating how to properly configure the installation location of the shared libraries in /usr/lib/, we have to move files manually... :(
+  #       In the past we have used patches to the Makefile.in files, but with running `autoreconf`, this no longer works.
+  mv -v "$pkgdir/usr/lib/$pkgname/lib$pkgname"* "$pkgdir/usr/lib/"
+
+  # docs
+  install -vDm 644 {AUTHORS,ChangeLog,NEWS,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 ../LinuxSampler-Non-Commercial.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  # lscp files conflict with nilfs-utils:
+  # https://bugs.archlinux.org/task/45827
+  mv -v "$pkgdir/usr/bin/lscp" "${pkgdir}/usr/bin/lscp-$pkgname"
+  mv -v "$pkgdir/usr/share/man/man1/lscp.1" "$pkgdir/usr/share/man/man1/lscp-$pkgname.1"
+}
+# vim:set ts=2 sw=2 et:

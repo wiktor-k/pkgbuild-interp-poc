@@ -1,0 +1,79 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+
+pkgname=cryptominisat
+pkgver=5.17.0
+pkgrel=1
+_cadiback=445ddc2f2b5e54421af64e0652c2eb8444175322
+_cadical=818c9562f114b315a9246ced943b66b60b38e8fb
+pkgdesc='A modern, multi-threaded, feature-rich, simplifying SAT solver'
+arch=(x86_64)
+url='https://github.com/msoos/cryptominisat/'
+license=(MIT)
+depends=(glibc
+         gmp
+         libgcc
+         libstdc++
+         zlib)
+makedepends=(cmake
+             git
+             help2man
+             python-build
+             python-installer
+             python-scikit-build-core
+             vim)
+optdepends=('python: python module')
+source=(git+https://github.com/msoos/cryptominisat#tag=release/v$pkgver
+        git+https://github.com/meelgroup/cadiback#commit=$_cadiback
+        git+https://github.com/meelgroup/cadical#commit=$_cadical
+        python-build-cmake.patch)
+sha256sums=('84248d4607be3456eedda6311389b4af6bd6cd8e4284c0893c897a53d871ff2e'
+            '21b65a7f3091e4571f13e23477bcfad3ac3d60683b3e903aca62213c56b07230'
+            '9719c1de5f753daa99f1bac8a13c611d61ba19dd7edf0dae6fa2fdff47a0b337'
+            '47e89d73d6107543488e1e7eb3085a5ca61c3dcfb3c3bb7e8f63a9e7dc5272cb')
+options=(!lto)
+
+prepare() {
+  cd $pkgname
+  patch -p1 -i ../python-build-cmake.patch # Link python extension to shared library
+}
+
+build() {
+  cmake -B build-cadical -S cadical \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=OFF
+  cmake --build build-cadical
+  DESTDIR="$PWD/install-cadical" cmake --install build-cadical
+
+  cmake -B build-cadiback -S cadiback \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Dcadical_DIR="$PWD/install-cadical/usr" \
+    -DBUILD_SHARED_LIBS=OFF
+  cmake --build build-cadiback
+  DESTDIR="$PWD/install-cadiback" cmake --install build-cadiback
+
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Dcadical_DIR="$PWD/install-cadical/usr" \
+    -Dcadiback_DIR="$PWD/install-cadiback/usr"
+  cmake --build build
+
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  LD_LIBRARY_PATH="$PWD"/../build/lib \
+  test-env/bin/python python/tests/test_pycryptosat.py
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 $pkgname/LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

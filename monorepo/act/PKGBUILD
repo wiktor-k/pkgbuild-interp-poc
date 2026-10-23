@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Filipe Nascimento <flipee at tuta dot io>
+# Contributor: Sven Lechner <sven[dot]lechner[at]rwth-aachen[dot]de>
+
+pkgname=act
+pkgver=0.2.89
+pkgrel=1
+pkgdesc="Run your GitHub Actions locally"
+arch=('x86_64')
+url="https://github.com/nektos/act"
+license=('MIT')
+makedepends=('go')
+optdepends=('docker: Connect to local docker')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('649cd5b91cad870871d2283fb3ad95c8fa1d5ced7a1db8d7b346d1a7dcd3ec71')
+
+build() {
+  cd $pkgname-$pkgver
+
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+
+  go build \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode=external -X main.version=$pkgver"
+
+  "./$pkgname" --man-page >"$pkgname.1"
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -Dm755 $pkgname -t "$pkgdir/usr/bin"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 "$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim:set ts=2 sw=2 et:

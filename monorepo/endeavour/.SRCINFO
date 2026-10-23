@@ -1,0 +1,37 @@
+pkgbase = endeavour
+	pkgdesc = Personal task manager (Formerly GNOME Todo)
+	pkgver = 43.0
+	pkgrel = 10
+	url = https://wiki.gnome.org/Apps/Todo
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = itstool
+	makedepends = meson
+	depends = dconf
+	depends = evolution-data-server
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libgoa
+	depends = libical
+	depends = libpeas
+	depends = pango
+	provides = gnome-todo
+	conflicts = gnome-todo<=41.0+r106+gebc68374-1
+	replaces = gnome-todo<=41.0+r106+gebc68374-1
+	source = git+https://gitlab.gnome.org/World/Endeavour.git#tag=43.0
+	source = 0001-omni-area-check-for-n_messages-greater-zero-to-avoid.patch
+	source = 0002-libpeas-1.38.patch
+	b2sums = fb09f53f7f980d5caa4badfec372baaa4a144aaf14888431aa6ec0ecf9d43da36141a5f5e7d8b5a15fc768e0bcc851b9b6a11d33c68e4cbb5728ed7d00823295
+	b2sums = 47983047ca62ddd6442997f0d7c7d572eb10508733628867711a6a40550d88a6bdff3948b04c1bee8476212e93a1476e93547e0d4b896f46e35e1da0e2300bf8
+	b2sums = 6a0dbe20ebf7b29a0ed573317decb32bf8d61f7512eedc3190dde7128370adf1c0658a2a6cbd6c4637519fed93debc3358c74f49cb40ba53c860dff94d55e6bc
+
+pkgname = endeavour

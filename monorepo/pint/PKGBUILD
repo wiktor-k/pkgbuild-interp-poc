@@ -1,0 +1,55 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=pint
+pkgver=0.89.3
+pkgrel=1
+pkgdesc='Rule linter/validator for Prometheus'
+arch=(x86_64)
+url='https://github.com/cloudflare/pint'
+license=(Apache-2.0)
+depends=(glibc)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('dcb9bdd2efa394e3de181a7de91d702d8de1c5728830f80555e655b14bf771ecc39736bd8d689aa95ff08d65805bc6d19b7db50839e898aa1d6fbcf204a376d9')
+b2sums=('36c2fff77cac3cae6a49ba8c3bf3616ec72dad1f3db371acff601fd7d3c19949b47810ade29340368269c698320b935ccd159bfc168f19c892dc5377a514b53e')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.version=${pkgver} \
+    -X main.commit=$(git rev-parse HEAD)" \
+    -o build \
+    ./cmd/...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/pint
+}

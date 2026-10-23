@@ -1,0 +1,19 @@
+pkgbase = python-distlib
+	pkgdesc = Low-level functions that relate to packaging and distribution of Python software
+	pkgver = 0.4.4
+	pkgrel = 1
+	url = https://distlib.readthedocs.io
+	arch = any
+	license = PSF-2.0
+	checkdepends = python-tests
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = python-distlib::git+https://github.com/pypa/distlib.git#tag=0.4.4
+	sha512sums = 86ec148c33eef329fa975b69f42dad4f10537739931be4a59f7a5f343b783054610db22ae1ce75a8b07ce22c00c2f7105787ad60c658f9a8182eae8403700ca2
+	b2sums = d407ad40791e59d3ad6f62ecd8e88596fdb6611e85e15ec8e4ff8340453fc3c8a90deac19a9eef22acc2fc70facf1bddf9d000b30662b7c411f56f7b926366e2
+
+pkgname = python-distlib

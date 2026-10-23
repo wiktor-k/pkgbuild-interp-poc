@@ -1,0 +1,39 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Mikael Blomstrand <gmail: kmbloms>
+
+pkgname=abi-dumper
+pkgver=1.4
+pkgrel=2
+pkgdesc="Dump ABI of an ELF object containing DWARF debug info"
+url="https://github.com/lvc/abi-dumper"
+arch=(any)
+license=(LGPL-2.1-or-later)
+depends=(
+  binutils
+  ctags
+  elfutils
+  perl
+  vtable-dumper
+)
+makedepends=(git)
+source=(
+  "git+$url#tag=$pkgver"
+  0001-Suppress-incomplete-info-error.patch
+)
+b2sums=('0e882cb94fc4e1592deaa9bfbbf04f72a08f29c9df1a144162309a5f495c54d7e8c164ca1794aaf524608b72dcb19ff5115b0793064df6ae223c3f8518612160'
+        '2e9bc58baf87911c45566eab3c2b7c11d7cdd5e59335cbd07857033913ff4e41b67bbe4400f646196f6dbeae8c2fe62133215924568e8528f3385f3f155031ea')
+
+prepare() {
+  cd $pkgname
+
+  # Less noise
+  git apply -3 ../0001-Suppress-incomplete-info-error.patch
+}
+
+package() {
+  cd $pkgname
+  mkdir -p "$pkgdir/usr"
+  perl Makefile.pl -install --prefix=/usr --destdir="$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

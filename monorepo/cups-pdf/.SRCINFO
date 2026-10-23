@@ -1,0 +1,18 @@
+pkgbase = cups-pdf
+	pkgdesc = PDF printer for cups
+	pkgver = 3.0.3
+	pkgrel = 1
+	url = https://www.cups-pdf.de/welcome.shtml
+	install = cups-pdf.install
+	arch = x86_64
+	license = GPL-2.0-or-later
+	depends = cups
+	depends = libcups
+	depends = ghostscript
+	depends = glibc
+	backup = etc/cups/cups-pdf.conf
+	source = https://www.cups-pdf.de/src/cups-pdf_3.0.3.tar.gz
+	md5sums = 3a9fdedbf5805e6e49cc4bb0f14620bf
+	sha256sums = 4a66e16976b30f3c6df5ed113ed9d6e13f7f34617eab349f70b0382fce54e08b
+
+pkgname = cups-pdf

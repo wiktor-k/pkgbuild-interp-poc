@@ -1,0 +1,43 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: dorphell <dorphell@archlinux.org>
+
+pkgname=xlockmore
+pkgver=5.89
+pkgrel=1
+pkgdesc="screen saver / locker for the X Window System"
+arch=(x86_64)
+license=('BSD')
+backup=(etc/pam.d/xlock)
+depends=(glu libpng libxmu libxpm libxinerama pam)
+optdepends=('fortune-mod'
+            'openmotif: for xmlock')
+makedepends=(openmotif)
+url="http://sillycycle.com/xlockmore.html"
+options=('!makeflags')
+install=xlockmore.install
+validpgpkeys=('1B79C8478F236DCDADC0D6ACCF159707377919AE')
+DLAGENTS=('https::/usr/bin/curl --user-agent Firefox -fLC - --retry 3 --retry-delay 3 -o %o %u')
+source=(https://sillycycle.com/xlock/xlockmore-$pkgver.tar.xz{,.asc}
+	      license-from-upstream)
+sha512sums=('4f0a52decf458edd9a49984aa811a08cbcd1f85f68e2200c342d7055e6c7cf7e4db9ae05911cd2beba0775a3d5c202808ff598fbb3104a0f26e4a14775ab5248'
+            'SKIP'
+            '41d878ca0262adbdccf8c3bcd386fc72afbcdcf0bf93a38da23730821ce0727d49223573648ff1e3b083d3b63272f39e4bc5e69eaa6e86609610795aa1c6d739')
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+  ./configure --prefix=/usr --disable-setuid \
+    --enable-appdefaultdir=/usr/share/X11/app-defaults \
+    --enable-pam --without-gtk --without-gtk2 --without-esound --without-ftgl
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+
+  make xapploaddir="$pkgdir"/usr/share/X11/app-defaults \
+       mandir="$pkgdir"/usr/man/man1 \
+       prefix="$pkgdir"/usr install
+  install -Dm0644 etc/xlock.pamd "${pkgdir}"/etc/pam.d/xlock
+  install -Dm0644 ../license-from-upstream "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  mv "$pkgdir"/usr/man "$pkgdir"/usr/share/
+}

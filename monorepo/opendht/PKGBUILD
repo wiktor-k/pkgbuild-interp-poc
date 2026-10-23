@@ -1,0 +1,69 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+
+pkgname=opendht
+epoch=1
+pkgver=4.4.1
+pkgrel=1
+pkgdesc="C++17 Distributed Hash Table (DHT) implementation"
+arch=(x86_64)
+url="https://github.com/savoirfairelinux/opendht"
+license=(GPL-3.0-or-later)
+depends=(argon2
+         fmt
+         glibc
+         gnutls
+         jsoncpp
+         libgcc
+         libstdc++
+         llhttp
+         nettle
+         openssl
+         readline
+         simdutf)
+makedepends=(asio
+             cmake
+             cython
+             git
+             msgpack-cxx
+             python-build
+             python-installer
+             python-setuptools
+             restinio)
+checkdepends=(cppunit)
+optdepends=('python: to use the Python bindings'
+            'msgpack-cxx: linking against opendht')
+source=(git+${url}#tag=v$pkgver)
+sha256sums=('84aa49f98923d3dcf99169f5ecedb739991c53b0577fa19cfbfaaea9c6e90fcb')
+
+build() {
+  cd $pkgname
+# Python install is broken for out of source builds
+  cmake . \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DOPENDHT_DOCUMENTATION=OFF \
+    -DOPENDHT_SYSTEMD=ON \
+    -DOPENDHT_SYSTEMD_UNIT_FILE_LOCATION=/usr/lib/systemd/system/ \
+    -DOPENDHT_INDEX=ON \
+    -DOPENDHT_HTTP=ON \
+    -DOPENDHT_PYTHON=ON \
+    -DOPENDHT_PROXY_SERVER=ON \
+    -DOPENDHT_PROXY_CLIENT=ON \
+    -DOPENDHT_PUSH_NOTIFICATIONS=ON \
+    -DOPENDHT_DOWNLOAD_DEPS=OFF
+  make
+  cd python
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  # https://github.com/savoirfairelinux/opendht/issues/568
+  make -C $pkgname test || echo "Tests failed"
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="${pkgdir}" install
+  cd python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

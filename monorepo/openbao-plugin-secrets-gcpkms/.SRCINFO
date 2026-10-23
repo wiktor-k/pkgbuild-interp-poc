@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-secrets-gcpkms
+	pkgdesc = OpenBao Plugin - Encrypt data and manage keys via GCP KMS
+	pkgver = 0.21.0
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-secrets-gcpkms::git+https://github.com/openbao/openbao-plugins.git#tag=secrets-gcpkms-v0.21.0
+	sha256sums = 03a739a163755456ebb31a3a8a879b1f4ab5a04851bf13d2989552604dee1594
+
+pkgname = openbao-plugin-secrets-gcpkms

@@ -1,0 +1,74 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Peter Cai <peter at typeblog dot net>
+# Contributor: Kevin MacMartin <prurigro at gmail dot com>
+
+pkgname=shattered-pixel-dungeon
+pkgver=4.0.2
+pkgrel=1
+pkgdesc='A roguelike dungeon crawler with randomized levels and enemies, and hundreds of items'
+arch=(any)
+url='https://shatteredpixel.com/shatteredpd/'
+license=(GPL-3.0-only)
+depends=(
+  bash
+  xorg-xrandr
+  'java-runtime>=11'
+  hicolor-icon-theme
+)
+makedepends=(
+  git
+  jdk17-openjdk
+  gradle
+)
+source=(
+  "$pkgname::git+https://github.com/00-Evan/shattered-pixel-dungeon#tag=v$pkgver"
+  shattered-pixel-dungeon.desktop
+  wrapper.sh
+  gradle-repro.patch
+)
+sha512sums=('dc9c0455c4ef3ad8f1d34ede01bcd8af0ac173c8622bfe5afb4aeed35d1f834e5b3854b7d6fbf5056c4616ad3d1eb07f44286bb427af84a5b67878a1ff227dfb'
+            'b443e3a84398253178d3158cb211e14ee3b305c95855655ac101837c2f94e7d8a2c6a565f858e859f73cbd305a1dfddb1ceb00dd5e235894d8ac65fa5bafc82f'
+            '12c190bf45da969944fafe1776a29f2cb79013c659b6f156fb3f7a03fb871e4fa78d0f676d603afdd6e25c0be3f2c755bacd613066992ad7bd5fb7dd342c64de'
+            'a37f90fdb05bd23fff6e2d9f4ed29999e3b271ead638d3e8ccc12e700951988f118b63e7ae45de4eaa2c38bf526b09aee90179d17202e1bc791723040c40041f')
+b2sums=('a819811b25eb4664cee8fe24dd8ce4d49b782505394f213649b2931fe24a880da77657e3160642f39b0be5163bf411211bd0348551963a3c54dea513944981c9'
+        '94e110340bddcdf64d74922e9ddf4c0f37e72466ea61edcde61f903680f57b10d81ff804b95f2467e4364a577f7c845d66137fedfc700d11638defe6a3359a93'
+        'c0b0d7d7319159716f1e49620c3c9a0bea9dea149cb1b88da0294a343341075557fe86bd45965a23aa34054ee6c454dd9a0b73273e6cafaf75de3d3fa3ef0ab1'
+        '194480092028d1ab10b7bdb036233ba11984bd994346f9f6b925b7516da80f7214f8dff86e27054a5f9b792d1192732938d88f2121fd5207ad0a93aa5d571e0a')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/gradle-repro.patch"
+
+  # we're not compiling for Android
+  rm -rf android/{build.gradle,src/main/java}
+}
+
+build() {
+  cd "$pkgname"
+
+  # Force the system to build the package using JDK 17
+  export PATH="/usr/lib/jvm/java-17-openjdk/bin/:$PATH"
+  export JAVA_HOME="/usr/lib/jvm/java-17-openjdk"
+
+  gradle desktop:release
+}
+
+package() {
+  cd "$pkgname"
+
+  # wrapper script
+  install -vDm755 "$srcdir/wrapper.sh" "$pkgdir/usr/bin/$pkgname"
+
+  # jar file
+  install -vDm644 "desktop/build/libs/desktop-$pkgver.jar" "$pkgdir/usr/share/$pkgname/$pkgname.jar"
+
+  # desktop file
+  install -vDm644 -t "$pkgdir/usr/share/applications" "$srcdir/$pkgname.desktop"
+
+  # application icons
+  for i in 16 32 48 64 128 256; do
+    install -vDm644 "desktop/src/main/assets/icons/icon_${i}.png" "$pkgdir/usr/share/icons/hicolor/${i}x${i}/apps/$pkgname.png"
+  done
+  install -vDm644 android/src/main/res/mipmap-xxxhdpi/ic_launcher.png "$pkgdir/usr/share/icons/hicolor/192x192/apps/$pkgname.png"
+}

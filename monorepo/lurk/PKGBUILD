@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Kyle Manna <kyle [at] kylemanna [dot] com>
+
+pkgname=lurk
+pkgver=0.3.14
+pkgrel=1
+pkgdesc="A pretty (simple) alternative to strace"
+arch=('x86_64')
+url="https://github.com/JakWai01/lurk"
+license=('MIT' 'Apache-2.0')
+depends=('gcc-libs')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('40d90da03d095fd0fdfcbd7929c188731700050b984d2fdf00dab1453b8f52d1565b371c08509e74a922f7ea7d171b587c1ed4943ced0d80fa2e80e8b6265daf')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

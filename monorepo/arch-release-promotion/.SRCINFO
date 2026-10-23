@@ -1,0 +1,27 @@
+pkgbase = arch-release-promotion
+	pkgdesc = Promote official releases with signatures and additional artifacts
+	pkgver = 0.3.0
+	pkgrel = 4
+	url = https://gitlab.archlinux.org/archlinux/arch-release-promotion
+	arch = any
+	license = GPL-3.0-or-later
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-pdm-backend
+	depends = python
+	depends = python-dotenv
+	depends = python-email-validator
+	depends = python-gitlab
+	depends = python-orjson
+	depends = python-prometheus_client
+	depends = python-pydantic
+	depends = python-pydantic-settings
+	depends = python-pyxdg
+	depends = python-torrentool
+	backup = etc/arch-release-promotion/projects.toml
+	source = https://gitlab.archlinux.org/archlinux/arch-release-promotion/-/archive/0.3.0/arch-release-promotion-0.3.0.tar.gz
+	sha256sums = 139d4cfbee5cc7f15909cff1537a734d785eabb10605ebfc4756f0f390f800a9
+	b2sums = e41c81eaae36c1506a08fdea6a2fcb343c45b1f6ae190ccf71fe66f2dab2adcab78be2c44263c5e8efa1d349bc18ddf1691f8fc2d097f0d074ee434d7502cc07
+
+pkgname = arch-release-promotion

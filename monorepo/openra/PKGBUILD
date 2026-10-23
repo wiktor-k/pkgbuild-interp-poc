@@ -1,0 +1,42 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Matthew Bowra-Dean <matthew@ijw.co.nz>
+pkgname=openra
+pkgver=20250330
+pkgrel=5
+pkgdesc="An open-source implementation of the Red Alert engine using .NET/Mono and OpenGL"
+arch=('x86_64')
+url="https://www.openra.net"
+license=('GPL3')
+install=openra.install
+depends=('openal' 'libgl' 'freetype2' 'sdl2' 'lua51' 'hicolor-icon-theme' 'gtk-update-icon-cache'
+         'desktop-file-utils' 'xdg-utils' 'zenity' 'dotnet-runtime-8.0')
+makedepends=('git' 'dotnet-sdk-8.0')
+options=(!debug)
+source=("git+https://github.com/OpenRA/OpenRA.git#tag=release-${pkgver}")
+sha512sums=('15857c788fdcb739f6392b9abc9281ef16ff6e3fd21c9af998aae02356f0c83ebb17e10232f2bb61f38c883cffe2c0739f3ca704e5a1b8d22eeadb5dd4f68386')
+
+prepare() {
+  cd OpenRA
+
+  # release-20250330 targets net6.0; retarget to net8.0 (dotnet 6 is EOL)
+  sed -i 's|>net6\.0</TargetFramework>|>net8.0</TargetFramework>|' Directory.Build.props
+
+  make version VERSION="release-${pkgver}"
+}
+
+build() {
+  cd OpenRA
+
+  make RUNTIME=net6 TARGETPLATFORM=unix-generic
+}
+
+package() {
+  cd OpenRA
+  mkdir -p "$pkgdir/usr/lib/openra/"
+  cp -r bin/* "$pkgdir/usr/lib/openra/"
+  source ./packaging/functions.sh
+  install_data . "$pkgdir/usr/lib/openra/" cnc d2k ra
+  make prefix=/usr DESTDIR="$pkgdir" install-linux-shortcuts
+  make prefix=/usr DESTDIR="$pkgdir" install-linux-appdata
+  # make prefix=/usr DESTDIR="$pkgdir" install-man
+}

@@ -1,0 +1,33 @@
+# Maintainer: Maxime Gauduin <archlinux.org>
+
+pkgname=libretro-snes9x
+pkgver=20260919.102324.gfae2fea08f74
+pkgrel=1
+epoch=1
+pkgdesc='Super Nintendo Entertainment System core'
+arch=(x86_64)
+url=https://github.com/libretro/snes9x
+license=(
+  GPL-2.0-or-later
+  LGPL-2.1-only
+  LicenseRef-custom
+)
+groups=(libretro)
+depends=(
+  glibc
+  libretro-core-info
+  libstdc++
+  zlib
+)
+makedepends=(git)
+source=(libretro-snes9x::git+https://github.com/libretro/snes9x.git#commit=${pkgver##*.g})
+b2sums=('45254087b2aba1f4b59b4ed95547ea5af2e273caacf2eaa738c6b9d06ed462af6985411116a6bf4bf3e1f5f0414e12736589ae402368956de1aca8a6ee94c716')
+
+build() {
+  make -C libretro-snes9x/libretro
+}
+
+package() {
+  install -Dm 644 libretro-snes9x/libretro/snes9x_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+  install -Dm 644 libretro-snes9x/LICENSE -t "${pkgdir}"/usr/share/licenses/libretro-snes9x/
+}

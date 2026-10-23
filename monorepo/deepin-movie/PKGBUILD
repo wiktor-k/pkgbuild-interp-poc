@@ -1,0 +1,66 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-movie
+epoch=1
+pkgver=6.5.29
+pkgrel=1
+pkgdesc='Movie player based on mpv'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-movie-reborn"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-svg' 'ffmpegthumbnailer'
+         'libxtst' 'libglvnd' 'dconf' 'glib2' 'gsettings-qt6' 'gstreamer'
+         'gst-plugins-base-libs' 'libva' 'libxcb' 'libx11' 'mpv' 'qt6-multimedia'
+         'qt6mpris' 'deepin-daemon' 'xorg-xprop')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools')
+optdepends=('pulseaudio: automatic audio output switching on Wayland')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-movie-reborn.git#tag=$pkgver")
+sha512sums=('8373ddefba967445863555bcce7c9f57495493a2add3188b26393088b4ab99d8b742a6aa8a8169dd30604a841ecd39065f323f2a58992ac61802564fe865cffc')
+
+prepare() {
+  cd deepin-movie-reborn
+
+  # Fix compatibility with FFmpeg 7+.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/691
+  git cherry-pick -n 2607b7409c24101f5cae94b320aa3cd281eb4e73
+
+  # Use the Qt 6 gsettings module in the Qt 6 port.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/553
+  sed -i 's/pkg_check_modules(Other REQUIRED  gsettings-qt)/pkg_check_modules(Other REQUIRED  gsettings-qt6)/' \
+    src/CMakeLists.txt
+
+  # Preserve distribution flags and keep executable PIE flags out of libdmr.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/352
+  sed -i \
+    -e 's|SET(CMAKE_CXX_FLAGS "$ENV{CXXFLAGS} |SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} |g' \
+    -e 's|SET(CMAKE_C_FLAGS "$ENV{CFLAGS} |SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} |g' \
+    -e 's| -fPIE||g' \
+    -e 's|SET(CMAKE_EXE_LINKER_FLAGS "-pie")|SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")|g' \
+    src/CMakeLists.txt
+
+  # Find Qt GuiPrivate before the main target links Qt6::GuiPrivate.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/698
+  sed -i 's|OpenGL Core OpenGLWidgets REQUIRED|OpenGL Core OpenGLWidgets GuiPrivate REQUIRED|' \
+    src/CMakeLists.txt
+
+  # Find Qt GuiPrivate before libdmr links Qt6::GuiPrivate.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/698
+  sed -i 's|find_package(Qt6 REQUIRED COMPONENTS OpenGL OpenGLWidgets)|find_package(Qt6 REQUIRED COMPONENTS OpenGL OpenGLWidgets GuiPrivate)|' \
+    src/libdmr/CMakeLists.txt
+}
+
+build() {
+  cd deepin-movie-reborn
+
+  # Match upstream's Arch build workaround for non-conforming C++ conversions.
+  # https://github.com/linuxdeepin/deepin-movie-reborn/pull/122
+  export CXXFLAGS+=' -fpermissive'
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DVERSION=$pkgver .
+  ninja
+}
+
+package() {
+  cd deepin-movie-reborn
+  DESTDIR="$pkgdir" ninja install
+}

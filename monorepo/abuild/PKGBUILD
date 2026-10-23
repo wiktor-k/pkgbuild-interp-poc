@@ -1,0 +1,52 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Dominic Meiser [git at msrd0 dot de]
+# Contributor: Clar Fon <them@lightdark.xyz>
+
+pkgname=abuild
+pkgver=3.17.0
+pkgrel=1
+pkgdesc="Alpine build tools"
+url="https://gitlab.alpinelinux.org/alpine/abuild"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=('alpine-keyring' 'busybox' 'glibc' 'pax-utils' 'openssl' 'apk-tools'
+         'attr' 'tar' 'pkgconf' 'lzip' 'curl' 'bubblewrap' 'gettext' 'git' 'fakeroot')
+makedepends=('zlib' 'scdoc')
+optdepends=('perl: for cpan resolver'
+            'perl-libwww: for cpan resolver'
+            'perl-json: for cpan resolver'
+            'perl-module-build-tiny: for cpan resolver'
+            'perl-lwp-protocol-https: for cpan resolver'
+            'ruby: for gem resolver'
+            'ruby-augeas: for gem resolver')
+backup=("etc/${pkgname}.conf")
+install="${pkgname}.install"
+source=("${url}/-/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+        "${pkgname}.sysusers"
+        "${pkgname}.tmpfiles")
+sha512sums=('9112b64fa9ecb51c7dd34da08cae77c2334a2cc1e84a16c2071731b0688c6c6c2d584481ea8d516c3355c7d6ed4febd8109444ca1a3d3a0a410f3d3c4593933f'
+            'b6099d7dd0ce1128e1e5263c2fc95bfb8d0e26e02b4f7255f066f65ce405c19bf519fce90420e796a510b51c228a515415bdb021d32814271b11f9306b1ff62b'
+            'f070f0dfb0b4c0ba443851f7e1115e42f76b0d1c6f866101df9dd3dda5ba2280065e50d459e7eda6262a42d10c2460f2ad0f88f02faf69a2188c02773bbbe423')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	find -type f | while read file; do
+		sed -E -i "${file}" \
+			-e '1s|#!/usr/bin/env ash$|#!/bin/busybox ash|' \
+			-e '1s|#!/bin/ash$|#!/bin/busybox ash|' \
+			-e '1s|#!/bin/ash\s+(.*)$|#!/bin/busybox ash\nset \1|'
+	done
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	make VERSION="${pkgver}"
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	make install VERSION="${pkgver}" DESTDIR="${pkgdir}"
+	install -Dm 644 "${pkgname}.conf" "${pkgdir}/etc/${pkgname}.conf"
+	install -Dm 644 "${srcdir}/${pkgname}.sysusers" "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
+	install -Dm 644 "${srcdir}/${pkgname}.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+}

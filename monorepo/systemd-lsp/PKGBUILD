@@ -1,0 +1,40 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: repsac-by <huff-lurch-preset@duck.com>
+
+pkgname=systemd-lsp
+pkgver=2026.09.28
+pkgrel=1
+pkgdesc='A language server implementation for systemd unit files made in rust'
+url=https://github.com/JFryy/systemd-lsp
+arch=(x86_64 aarch64)
+license=(MIT)
+depends=(glibc libgcc)
+makedepends=(git cargo)
+replaces=("${pkgname}-bin") # Previous AUR package
+source=("git+$url.git#tag=v${pkgver}")
+sha256sums=('d342d42055417342a6ae27c21b2598107dc8dddb8a4d4d7f4459de42d645fbb4')
+
+prepare() {
+	cd "${pkgname}"
+	export RUSTUP_TOOLCHAIN=stable
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd "${pkgname}"
+	export RUSTUP_TOOLCHAIN=stable
+	export CARGO_TARGET_DIR=target
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	cd "${pkgname}"
+	export RUSTUP_TOOLCHAIN=stable
+	cargo test --frozen --all-features
+}
+
+package() {
+	cd "${pkgname}"
+	install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" "LICENSE"
+	install -Dm755 -t "${pkgdir}/usr/bin" "target/release/${pkgname}"
+}

@@ -1,0 +1,24 @@
+pkgbase = python-j2cli
+	pkgdesc = Command-line interface to Jinja2 for templating in shell scripts.
+	pkgver = 0.3.12b
+	pkgrel = 13
+	url = https://github.com/kolypto/j2cli
+	arch = any
+	license = BSD-2-Clause
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	depends = python-jinja
+	depends = python-pyyaml
+	optdepends = python-simplejson: for an alternative JSON parser
+	source = python-j2cli-0.3.12b.tar.gz::https://github.com/kolypto/j2cli/archive/v0.3.12b.tar.gz
+	source = imp-removal.patch
+	source = python-j2cli-0.3.12b-remove-pkg_resources.patch
+	b2sums = 08b434596021576dcecbaa8e700479c103f5d93c3d42880f8f5062fb0db78d4bd0bcc43c068e56b950a654b383a27b5aaff3b58ef22382c6fd6da8d9135ede98
+	b2sums = fec5bdcc6e63ddc39aa8d6b6a9b514ba3fb10180af1b9e35e3c924eadf1916d05404b5abbc6067b65724d7fc7def784eebc2daee65c6b2b218ea82f1c478bd8a
+	b2sums = 691c98c9ed5956a3e9d7ebcaf488972aa30db5fc186345d433acf503b1117072544ebc87c33b2df6a71be2ff4b2a627605369a4a8aa4fec1b38cb6626a780482
+
+pkgname = python-j2cli

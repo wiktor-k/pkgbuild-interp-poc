@@ -1,0 +1,19 @@
+pkgbase = networkmanager-dmenu
+	pkgdesc = Control Networkmanager via dmenu
+	pkgver = 2.7.2
+	pkgrel = 1
+	url = https://github.com/firecat53/networkmanager-dmenu
+	arch = any
+	license = MIT
+	makedepends = git
+	depends = python
+	depends = glib2
+	depends = libnm
+	depends = networkmanager
+	depends = python-gobject
+	optdepends = nm-connection-editor: for connection manager GUI
+	optdepends = libnotify: recieve notifications
+	source = git+https://github.com/firecat53/networkmanager-dmenu.git#tag=v2.7.2
+	b2sums = a1a050778e85325408affc6196ad2b5319ebb7ca70bc4f458d7b5e45c6bebda3b2eda2728b0c6f7f3a6973b6dad48083e30cb555849715c1619f470268760c47
+
+pkgname = networkmanager-dmenu

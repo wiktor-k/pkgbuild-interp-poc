@@ -1,0 +1,70 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=chatty
+pkgver=0.8.9
+pkgrel=9
+pkgdesc='Simple to use SMS and Matrix messaging application'
+arch=(x86_64)
+url='https://gitlab.gnome.org/World/Chatty'
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  evolution-data-server
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop-4
+  gstreamer
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libcmatrix
+  libgcc
+  libmm-glib
+  libphonenumber
+  libspelling
+  libstdc++
+  pango
+  sqlite
+)
+makedepends=(
+  appstream
+  git
+  glib2-devel
+  itstool
+  meson
+)
+checkdepends=(xorg-server-xvfb)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/World/Chatty.git?signed#tag=v$pkgver")
+b2sums=(01a9c19484f6f1ce714e7354cf3e28745dc569a1780406612d83a73d307f444dc697578d42847eab981cdb04330461dc122c9c90017021444bb5da9d13f1a6b9)
+validpgpkeys=(
+  FAA79DE7EBDD0D17A3F218E228319315DD47C33B # Evangelos Ribeiro Tzaras <evangelos.tzaras@puri.sm>
+  B9386554B7DD266BCB8E29A990F0C9B18A6B4A19 # Evangelos Ribeiro Tzaras <devrtz@fortysixandtwo.eu>
+)
+
+prepare() {
+  cd Chatty
+
+  # Correct vCard attributes fetch for evolution-data-server 3.60.x
+  # https://gitlab.gnome.org/World/Chatty/-/merge_requests/1492
+  git cherry-pick -n 2556c0831414c72a028656da8cbd055dcdb0d51b
+}
+
+build() {
+  arch-meson Chatty build \
+    -D purple=disabled
+  meson compile -C build
+}
+
+check() {
+  dbus-run-session xvfb-run \
+    -s '-screen 0 1920x1080x24 -nolisten local' \
+    meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

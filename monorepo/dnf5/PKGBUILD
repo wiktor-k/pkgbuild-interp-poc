@@ -1,0 +1,59 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=dnf5
+pkgver=5.4.6.0
+pkgrel=2
+pkgdesc="Next-generation RPM package management system"
+arch=('x86_64')
+url="https://github.com/rpm-software-management/$pkgname"
+license=('GPL-2.0-or-later')
+depends=('curl' 'fmt' 'glib2' 'json-c'
+         'libmodulemd' 'librepo' 'libsolv' 'libxml2'
+         'rpm-tools' 'sdbus-cpp' 'sqlite' 'systemd-libs'
+         'util-linux-libs' 'zlib' 'libpkgmanifest')
+makedepends=('appstream' 'bash-completion' 'cmake' 'doxygen' 'gettext' 'perl'
+             'python' 'python-breathe' 'python-sphinx' 'python-sphinx-autoapi'
+	     'python-sphinx_rtd_theme' 'toml11' 'swig' 'systemd')
+checkdepends=('cppunit' 'createrepo_c' 'perl-test-exception')
+optdepends=('appstream: dnf appstream plugin support')
+backup=('etc/dnf/dnf.conf'
+        'etc/dnf/libdnf5-plugins/actions.conf'
+        'etc/dnf/libdnf5-plugins/appstream.conf'
+        'etc/dnf/libdnf5-plugins/expired-pgp-keys.conf')
+options=('!emptydirs')
+conflicts=(dnf)
+replaces=(dnf)
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('242f0e775bc8e1017a5bfec841c776beafa7ea6b5bd2e4d7bc0ff9d7c57998f3')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  # /usr/include/json-c/linkhash.h:360:36: error: ‘lh_entry* lh_table_head(const lh_table*)’ defined but not used [-Werror=unused-function]
+  export CXXFLAGS="${CXXFLAGS} -Wno-unused-function"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  cmake -B build \
+      -DCMAKE_INSTALL_PREFIX='/usr' \
+      -DCMAKE_INSTALL_SBINDIR='bin' \
+      -DWITH_DNF5_OBSOLETES_DNF='OFF' \
+      -DWITH_RUBY='OFF'  # https://github.com/rpm-software-management/dnf5/issues/562
+
+  cmake --build build
+  cmake --build build --target doc-man
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+
+  LC_ALL=C.UTF-8 ctest --test-dir build --output-on-failure
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dp -m644 COPYING.md "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

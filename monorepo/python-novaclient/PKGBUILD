@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-novaclient
+pkgver=18.13.1
+pkgrel=1
+pkgdesc="Client library for OpenStack Compute API"
+arch=('any')
+url="https://docs.openstack.org/python-novaclient/latest/"
+license=('Apache-2.0')
+depends=('python' 'python-pbr' 'python-babel' 'python-prettytable' 'python-keystoneauth1'
+         'python-requests' 'python-iso8601' 'python-oslo-utils' 'python-oslo-i18n'
+         'python-oslo-serialization' 'python-stevedore')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-fixtures' 'python-openstacksdk' 'python-osprofiler' 'python-requests-mock'
+              'python-stestr' 'python-testscenarios' 'python-testtools')
+source=("git+https://github.com/openstack/python-novaclient.git#tag=$pkgver")
+sha512sums=('7dd1dd1e4c18e3815b38ba22c2adecdf00d5b102d6453bf7c3ef9e71863f7d85447084defff71ba42367dc82a4c26162683d18f059e1091924717ea8a2f55320')
+
+build() {
+  cd python-novaclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-novaclient
+  stestr run
+}
+
+package() {
+  cd python-novaclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=webapp-manager
+pkgver=1.4.6
+pkgrel=2
+pkgdesc='Run websites as if they were apps'
+arch=(any)
+url='https://github.com/linuxmint/webapp-manager'
+license=(GPL-3.0-or-later)
+groups=(x-apps)
+depends=(
+  bash
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  python
+  python-beautifulsoup4
+  python-gobject
+  python-pillow
+  python-requests
+  python-setproctitle
+  python-tldextract
+  xapp
+)
+makedepends=(git)
+source=(
+  "git+https://github.com/linuxmint/webapp-manager.git#tag=$pkgver"
+  webapp-manager-epiphany43.patch
+)
+b2sums=(
+  37ed8994abee1a84942ba517b2ea6f96b067531fdfdce7359b049026ba32b0113900e2a1a7056f784cd920c725d66366927681ac83d46c4b6f8ef87d170704b9
+  ac2c1a30476cf396818c768f464b1b50ef74faa2d29d11005756a585a8d2fca532120a868d4b3b984f20241798ab4d812a295eb061d1a23db6932392a2426316
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix for Epiphany>=43
+  # https://github.com/linuxmint/webapp-manager/pull/390
+  git apply -3 ../webapp-manager-epiphany43.patch
+
+  # Set version number
+  sed -i "s/__DEB_VERSION__/$pkgver/" usr/lib/webapp-manager/webapp-manager.py
+}
+
+build() {
+  cd $pkgname
+  make
+}
+
+package() {
+  cd $pkgname
+  cp -r etc usr "$pkgdir"
+
+  python -m compileall -d /usr/lib "$pkgdir/usr/lib"
+  python -O -m compileall -d /usr/lib "$pkgdir/usr/lib"
+}

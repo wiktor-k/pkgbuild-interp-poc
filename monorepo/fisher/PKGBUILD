@@ -1,0 +1,31 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Sefa Eyeoglu <contact@scrumplex.net>
+# Contributor: Daniel Maslowski <info@orangecms.org>
+
+pkgname=fisher
+pkgver=4.4.8
+pkgrel=1
+pkgdesc='A package manager for the fish shell'
+arch=(any)
+url='https://github.com/jorgebucaran/fisher'
+license=(MIT)
+depends=(fish curl)
+makedepends=(git)
+# TODO add fishtape for tests
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('cf5779d9296aa4827bcfecdfe8c43a495494a6880579252b39c4ec793d62463f75c923522757254cdfae03d8be46903a3e77a8d2d5b7a3dbfc264e2cebce32c2')
+b2sums=('d2e01dd776663a2330b4e601212e4ced5973844baf60831c9d0d8415334b92edf8928240b9305e1bad2428293a669f4c76ef52c978cf60ec9fc0e3e16b91b262')
+
+package() {
+  cd "$pkgname"
+
+  # install to global fish directory
+  install -vDm644 -t "$pkgdir/usr/share/fish/vendor_functions.d" functions/fisher.fish
+  install -vDm644 -t "$pkgdir/usr/share/fish/vendor_completions.d" completions/fisher.fish
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+}

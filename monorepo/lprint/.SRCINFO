@@ -1,0 +1,20 @@
+pkgbase = lprint
+	pkgdesc = Label Printer Application
+	pkgver = 1.4.0
+	pkgrel = 1
+	url = https://www.msweet.org/lprint/
+	install = lprint.install
+	arch = x86_64
+	license = Apache-2.0
+	depends = pappl
+	depends = libcups
+	depends = glibc
+	source = https://github.com/michaelrsweet/lprint/releases/download/v1.4.0/lprint-1.4.0.tar.gz
+	source = https://github.com/michaelrsweet/lprint/releases/download/v1.4.0/lprint-1.4.0.tar.gz.sig
+	source = lprint-buildfix.patch::https://github.com/michaelrsweet/lprint/commit/4936e5f00cb6f2972786f36b4eb318b1eaebd65c.patch
+	validpgpkeys = 9086C3CDC66C3F563CF8F405BE67C75EC81F3244
+	sha256sums = f0a7f8d84b529db000e2ba23fdd30980d0ef50c26b8ef780b36bfdf18cd67ba5
+	sha256sums = SKIP
+	sha256sums = dd6e3308e417f3568418deb3d1ab77683b9f3d88e91a22658d1ff2cc68dada0a
+
+pkgname = lprint

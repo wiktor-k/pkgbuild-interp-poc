@@ -1,0 +1,26 @@
+pkgbase = regina
+	pkgdesc = Software for low-dimensional topology
+	pkgver = 7.4.1
+	pkgrel = 4
+	url = https://regina-normal.github.io/
+	arch = x86_64
+	license = LicenseRef-Regina
+	makedepends = cmake
+	makedepends = git
+	makedepends = python
+	depends = glibc
+	depends = gmp
+	depends = graphviz
+	depends = libgcc
+	depends = libstdc++
+	depends = libxml2
+	depends = lmdb
+	depends = perl
+	depends = qt6-base
+	depends = qt6-svg
+	depends = zlib
+	optdepends = python: Python bindings
+	source = git+https://github.com/regina-normal/regina#tag=regina-7.4.1
+	sha256sums = 8ba10f13df7e2baa02aad46612fc08d0a95740a6ab3566b583484fb7dc0998bc
+
+pkgname = regina

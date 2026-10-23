@@ -1,0 +1,26 @@
+pkgbase = krita-plugin-gmic
+	pkgdesc = GMic plugin for Krita
+	pkgver = 3.7.4.1
+	pkgrel = 3
+	url = https://krita.org/
+	arch = x86_64
+	license = CECILL-2.1
+	license = CECILL-C
+	makedepends = extra-cmake-modules
+	makedepends = git
+	makedepends = qt6-tools
+	depends = fftw
+	depends = glibc
+	depends = gmic
+	depends = kcoreaddons
+	depends = krita
+	depends = libgcc
+	depends = libgomp
+	depends = libstdc++
+	depends = libx11
+	depends = qt6-base
+	depends = zlib
+	source = gmic-krita::git+https://github.com/vanyossi/gmic#tag=v3.7.4.1
+	sha256sums = e0b9c268210b97e9f820667b5471e3e80c456d86693188bba0567a1ea70021c4
+
+pkgname = krita-plugin-gmic

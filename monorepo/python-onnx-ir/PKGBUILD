@@ -1,0 +1,39 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+
+pkgname=python-onnx-ir
+pkgver=0.2.1
+pkgrel=1
+pkgdesc="Efficient in-memory representation for ONNX"
+arch=('x86_64')
+url="http://onnx.ai/ir-py/"
+license=('Apache-2.0')
+depends=(
+  python
+  python-numpy
+  python-onnx
+  python-typing_extensions
+  python-ml-dtypes
+  python-rich
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("${pkgname}::git+https://github.com/onnx/ir-py#tag=v$pkgver")
+sha256sums=('a577e85b237c5445337c74554abd392339ed8e1c63858a02edab217114722040')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname
+}
+
+# vim:set ts=2 sw=2 et:

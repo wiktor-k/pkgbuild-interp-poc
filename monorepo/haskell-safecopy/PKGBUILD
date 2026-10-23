@@ -1,0 +1,41 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=safecopy
+pkgname=haskell-safecopy
+pkgver=0.10.4.3
+pkgrel=139
+pkgdesc="Binary serialization with version control."
+url="https://github.com/acid-state/safecopy"
+license=('LicenseRef-PublicDomain')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-cereal' 'haskell-generic-data' 'haskell-old-time' 'haskell-vector')
+makedepends=('ghc' 'haskell-hunit' 'haskell-lens' 'haskell-lens-action' 'haskell-tasty'
+             'haskell-tasty-quickcheck')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('2b9be8d7ee4b0fe545329c2820c39a5411e2f35b763062e280aa6e2cd923bd71769631436f1e208cd14ba7183d72ad7ee739e0901d5658a576edb284c71a6c4f')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+}

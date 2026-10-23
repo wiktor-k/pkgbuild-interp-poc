@@ -1,0 +1,44 @@
+pkgbase = python-curl_cffi
+	pkgdesc = Python FFI binding for curl-impersonate
+	pkgver = 0.16.3
+	pkgrel = 1
+	url = https://github.com/lexiforest/curl_cffi
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-python-multipart
+	makedepends = unzip
+	depends = glibc
+	depends = curl-impersonate=2.2.2
+	depends = python
+	depends = python-certifi
+	depends = python-cffi
+	depends = python-eventlet
+	depends = python-gevent
+	depends = python-typing_extensions
+	depends = python-rich
+	optdepends = python-orjson: speed and memory optimized JSON parsing
+	optdepends = python-markdownify
+	optdepends = python-lxml-html-clean
+	optdepends = python-readability-lxml
+	source = python-curl_cffi::git+https://github.com/lexiforest/curl_cffi#tag=v0.16.3
+	source = curl-8_21_0.tar.gz::https://github.com/curl/curl/archive/curl-8_21_0.tar.gz
+	source = curl-impersonate::git+https://github.com/lexiforest/curl-impersonate#tag=v2.2.2
+	source = use-system-curl-impersonate.patch
+	source = no-download.patch
+	sha512sums = 64b23be54e4e7a809f6e5756157e057770240b2fb4c377740a20dfd8c39d79131b2c97dbdf536cb98827dd7a4318374837efd3499aff6416ca7c01b64f468f17
+	sha512sums = 0ab6c99c3d5b86fb65c526db517c3159b11db2f8d82552d635c4887059c0602288603c93b754ce0ec543ea2f275122ccec2c8dcd866c2611b5b949c728ee72df
+	sha512sums = c59e564a07357f6f2b67eb961f5521c16bf7aa3e47e6813265b6707984fe821793f199511855f1afa2f1224aea628a7d6315366c1c1d840487959bf74ddf672d
+	sha512sums = f543f6aaf45809bcc144168db29cdf5cd28e21ccf6c8efb535e241111606a66115d674dc62540a4b2b17e96ce1de6e5c2696eff490424643235f68c633499700
+	sha512sums = f9f74740d574cfea9d3c8f6f76c07359f896bed30aaf3c4791a4c92189d365ce61d50f60666d7cf2f25f3f4b20e90efe7f8176ed654870f46d20cc566834243e
+	b2sums = 6c5dc04db0420bb6bcc5ef6633d4325043310e40759cb142264d478720b70d94316a6d419d327844baa8c26ad98017462d7f2280504247f178f0ace78badf4a0
+	b2sums = 3e4df97e213a5aa56ef144cdfd085ea51b2902cf09d6006315e8036156eded548814a43983cd2eea9a653d635219675a8223682f2c98ce4379a8d6f5cd14f63c
+	b2sums = 69cbe84a8cd95036777458639cbec42d9613ef10d83ed53c21c8fc1d5dfdacc8c3920efd8cddae56f1ba96908ab0356a9104bc1276260bc5a668f9fd122c194a
+	b2sums = 3a83f7609c62416237ae8d8bd6a894e7d288070662a9dbfb7e776aa2035794ae94dcf09b4701e5700510fdcb51f11478ea361a74aa24ecf383b4dd530d0e89d0
+	b2sums = 01235672b138af083d1f3d292e9c7b78bc94f38934c87e532b40bd79bf10b5a9b791f91d34aa9c84ada6c73b42002e1d44381eaa7b41b7fee64219410c03bf17
+
+pkgname = python-curl_cffi

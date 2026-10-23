@@ -1,0 +1,46 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Mark Wagie <mark.wagie@proton.me>
+# Contributor: Corey Hinshaw <corey@electrickite.org>
+
+pkgname=system76-firmware
+pkgver=1.0.78
+pkgrel=1
+pkgdesc='System76 Firmware Tool and Daemon'
+arch=(x86_64)
+url=https://github.com/pop-os/system76-firmware
+license=(GPL-3.0-only)
+depends=(
+  ca-certificates
+  dbus
+  dfu-programmer
+  libgcc
+  libstdc++
+  glibc
+  efibootmgr
+  openssl
+  xz
+)
+makedepends=(
+  git
+  rust
+)
+provides=(system76-firmware-daemon)
+conflicts=(system76-firmware-daemon)
+source=(git+https://github.com/pop-os/system76-firmware.git#tag=${pkgver})
+b2sums=('0db420cabe35b3a32bd1b08553820f8c085d905375115e376d5350d058acca8b2acbb7355ceb9c1e6027d63de91c9a249877e6405bde7fe8251e3e93af9b35c1')
+
+prepare() {
+  cd system76-firmware
+  sed -i 's|\$(sysconfdir)/dbus-1/system.d/|\$(datarootdir)/dbus-1/system.d/|g' Makefile
+  sed -i 's|\$(sysconfdir)/systemd/system/|\$(libdir)/systemd/system/|g' Makefile
+}
+
+build() {
+  cd system76-firmware
+  make
+}
+
+package() {
+  cd system76-firmware
+  make DESTDIR="${pkgdir}" install
+}

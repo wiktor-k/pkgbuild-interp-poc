@@ -1,0 +1,134 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Adrian Sampson <adrian@radbox.org>
+# Contributor: Garrett Figueroa <djspacewhale@4d2.org>
+
+pkgname=beets
+pkgver=2.14.1
+pkgrel=1
+pkgdesc='Flexible music library manager and tagger'
+arch=(any)
+url=https://beets.io/
+license=(MIT)
+depends=(
+  python
+  python-confuse
+  python-jellyfish
+  python-lap
+  python-mediafile
+  python-munkres
+  python-musicbrainzngs
+  python-packaging
+  python-platformdirs
+  python-requests
+  python-requests-ratelimiter
+  python-typing_extensions
+  python-unidecode
+  python-yaml
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-hatchling
+  python-sphinx
+  python-wheel
+)
+checkdepends=(
+  bash-completion
+  imagemagick
+  python-beautifulsoup4
+  python-discogs-client
+  python-factory-boy
+  python-flask
+  python-langdetect
+  python-librosa
+  python-mpd2
+  python-numba
+  python-py7zr
+  python-pylast
+  python-pytest
+  python-reflink
+  python-requests-oauthlib
+  python-requests-mock
+  python-responses
+  python-titlecase
+  python-xdg
+  gst-python
+  gst-plugins-bad
+  gst-plugins-good
+  gst-plugins-ugly
+  gst-libav
+  ffmpeg
+  python-pyacoustid
+)
+optdepends=(
+  'bash-completion: Bash completion'
+  'chromaprint: Chromaprint/Acoustid plugin'
+  'ffmpeg: Convert, ReplayGain plugins'
+  'gst-plugins-bad: Chromaprint/Acoustid, BPD, ReplayGain plugins'
+  'gst-plugins-good: Chromaprint/Acoustid, BPD, ReplayGain plugins'
+  'gst-plugins-ugly: Chromaprint/Acoustid, BPD, ReplayGain plugins'
+  'gst-libav: Chromaprint/Acoustid, BPD, ReplayGain plugins'
+  'gst-python: Chromaprint/Acoustid, BPD, ReplayGain plugins'
+  'imagemagick: Thumbnails plugin'
+  'python-beautifulsoup4: Lyrics plugin'
+  'python-discogs-client: Discogs plugin'
+  'python-flask: Web plugin'
+  'python-gobject: ReplayGain plugin'
+  'python-langdetect: Lyrics plugin'
+  'python-librosa: AutoBPM plugin'
+  'python-mpd2: MPDStats plugin'
+  'python-pyacoustid: Chromaprint/Acoustid plugin'
+  'python-pylast: LastGenre plugin'
+  'python-requests-oauthlib: Beatport plugin'
+  'python-xdg: Thumbnails plugin'
+  'python-titlecase: Titlecase plugin'
+)
+source=(
+  "$pkgname::git+https://github.com/beetbox/beets.git#tag=v$pkgver"
+  beet
+)
+sha512sums=('4cd3f75095bb35085b8db8176abaccdb2274899876d890eb8585efc30620a04cbc8b147670941f33cd92379484be2e658175e70632fe26ed783427445f2891fd'
+            '8f51ebcc253b0cf698adffae4d2d1a0ff29dcd2d503d0c5d284e9c5cd5981b0ffd190fce154b112ac3cbb419fc0813f2ccbd7e67e3abbdce043c0f6a967274ad')
+b2sums=('3846366d0ee08d211da62936f7cc1816b42d7c79f3c37695aa6da5dd67da02e6ec1711806202144d10a4cffc9632bffe6e9f285f0c62408eb994a9cc406e8346'
+        '1b36ba07d85f0fbcae0a3d8253ce2e5d7ecf8a17c6f0bb946579663de546d53cd4fe5da84ee8d880d7f95f48e66ef6010232a995d86d0c52b52218cd991a7782')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  local pytest_args=(
+    --override-ini="addopts="
+    --ignore=test/plugins/test_player.py
+    --deselect=test/test_ui.py::CompletionTest::test_completion
+    --deselect=test/plugins/test_embedart.py::EmbedartCliTest::test_reject_different_art
+    --deselect=test/plugins/test_bpd.py::BPDReflectionTest::test_cmd_decoders
+    --deselect=test/plugins/test_aura.py
+    --deselect=test/plugins/test_replaygain.py::TestReplayGainGstCli::test_cli_skips_calculated_tracks
+    --deselect=test/plugins/test_replaygain.py::TestReplayGainGstCli::test_cli_does_not_skip_wrong_tag_type
+    --deselect=test/plugins/test_replaygain.py::TestReplayGainGstCli::test_cli_writes_only_r128_tags
+    --deselect=test/plugins/test_replaygain.py::TestReplayGainGstCli::test_r128_targetlevel_has_effect
+  )
+  pytest "${pytest_args[@]}"
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # shell completions
+  install -Dm 644 "$srcdir/beet" -t "${pkgdir}"/usr/share/bash-completion/completions/
+  install -Dm 644 extra/_beet -t "${pkgdir}"/usr/share/zsh/site-functions/
+
+  # license
+  install -Dm 644 LICENSE -t "${pkgdir}"/usr/share/licenses/beets/
+}
+
+# vim: ts=2 sw=2 et:

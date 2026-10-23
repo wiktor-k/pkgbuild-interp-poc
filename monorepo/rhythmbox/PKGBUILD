@@ -1,0 +1,95 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+
+pkgname=rhythmbox
+pkgver=3.5.1
+pkgrel=1
+pkgdesc='Music playback and management application'
+url='https://gitlab.gnome.org/GNOME/rhythmbox'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  grilo
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk3
+  gvfs
+  gvfs-mtp
+  hicolor-icon-theme
+  json-glib
+  libgcc
+  libgudev
+  libmtp
+  libnotify
+  libpeas
+  libsecret
+  libsoup3
+  libx11
+  libxml2
+  media-player-info
+  pango
+  python
+  python-gobject
+  tdb
+  totem-plparser
+)
+makedepends=(
+  appstream
+  brasero
+  check
+  git
+  gobject-introspection
+  itstool
+  libdmapsharing
+  libgpod
+  lirc
+  meson
+  vala
+  zeitgeist
+)
+checkdepends=(xorg-server-xvfb)
+optdepends=(
+  'brasero: Audio CD Recorder plugin'
+  'grilo-plugins: Grilo media browser plugin'
+  'gst-libav: Extra media codecs'
+  'gst-plugins-bad: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+  'libdmapsharing: DAAP Music Sharing plugin'
+  'libgpod: Portable Players - iPod plugin'
+  'lirc: LIRC plugin'
+  'zeitgeist: Zeitgeist logging plugin'
+)
+source=("git+https://gitlab.gnome.org/GNOME/rhythmbox.git#tag=$pkgver")
+b2sums=(03710ba1210fd4e99df6b69c9a78066aa7cf3dff2f67b3049e50209070d5f0b247dffaee50eed93bee9fcb375dec05076efaeb27291610eb5864164f98ae3500)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  local meson_options=(
+    -D daap=enabled
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  xvfb-run -s '-nolisten local' \
+    meson test -C build --print-errorlogs -t 3
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

@@ -1,0 +1,46 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-online-accounts
+pkgver=8.0.2
+pkgrel=3
+pkgdesc='Switchboard Online Accounts Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-onlineaccounts
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita-1.so
+  libcamel-1.2.so
+  libedataserver-1.2.so
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=0a0c0dfdf7ed56894b48cade54c19aaea8fccef9
+source=(switchboard-plug-online-accounts::git+https://github.com/elementary/switchboard-plug-onlineaccounts.git#tag=${_tag})
+b2sums=('99e52de2cc7a0cee2210c776cfdc5cebffcb4620b7aadc6186ed9d6e26a4cd70d566e667af3f7ae1a94f3427b43ceb1f59c373e4b698d2f345df9844a5486d88')
+
+pkgver() {
+  cd switchboard-plug-online-accounts
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-online-accounts build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim: ts=2 sw=2 et:

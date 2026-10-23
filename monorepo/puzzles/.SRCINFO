@@ -1,0 +1,21 @@
+pkgbase = puzzles
+	pkgdesc = Simon Tatham's Portable Puzzle Collection
+	pkgver = 20260923.616da16
+	pkgrel = 1
+	url = https://www.chiark.greenend.org.uk/~sgtatham/puzzles/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = halibut
+	makedepends = imagemagick
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = pango
+	source = git+https://git.tartarus.org/simon/puzzles.git#commit=616da16
+	sha256sums = 95d4d08b1cca966f0c13bfd13c8ad7ffad566668a25b7d59fb6e6d9895784895
+
+pkgname = puzzles

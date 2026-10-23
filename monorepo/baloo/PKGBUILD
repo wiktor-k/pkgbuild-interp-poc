@@ -1,0 +1,59 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Andrea Scarpino <andrea@archlinux.org>
+
+pkgname=baloo
+pkgver=6.31.0
+pkgrel=2
+pkgdesc='A framework for searching and managing metadata'
+arch=(x86_64)
+url='https://develop.kde.org/products/frameworks/'
+license=(LGPL-2.0-only LGPL-3.0-only)
+depends=(glibc
+         kconfig
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         kfilemetadata
+         ki18n
+         kidletime
+         kio
+         libstdc++
+         lmdb
+         qt6-base
+         solid)
+makedepends=(doxygen
+             extra-cmake-modules
+             kdoctools
+             qt6-tools)
+optdepends=('qt6-declarative: QML bindings')
+conflicts=(baloo5)
+replaces=(baloo5)
+groups=(kf6)
+source=(https://download.kde.org/stable/frameworks/${pkgver%.*}/$pkgname-$pkgver.tar.xz{,.sig}
+        https://invent.kde.org/frameworks/baloo/-/commit/096b0d3f7166ed2bde0266cfad9f04ca50903090.patch
+        https://invent.kde.org/frameworks/baloo/-/commit/a5431882c8cb36116907f59c97b0d2d92a7fe543.patch)
+sha256sums=('178d6550a7c55a820322182814a96a7564343a506772971e4aac8b1e7e4d1829'
+            'SKIP'
+            '315bdaa22e2861b88048ea2174600c1137e6c6985e1790058b002accc63e0385'
+            'f64f2c3fc95c50e2c6657acdb4a49c610568f4f70087676cd1d66edcce949627')
+validpgpkeys=(53E6B47B45CEA3E0D5B7457758D0EE648A48B3BB # David Faure <faure@kde.org>
+              90A968ACA84537CC27B99EAF2C8DF587A6D4AAC1 # Nicolas Fella <nicolas.fella@kde.org>
+              )
+
+prepare() {
+# Fix crashes
+  patch -d $pkgname-$pkgver -p1 -i ../096b0d3f7166ed2bde0266cfad9f04ca50903090.patch
+  patch -d $pkgname-$pkgver -p1 -i ../a5431882c8cb36116907f59c97b0d2d92a7fe543.patch
+}
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

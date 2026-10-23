@@ -1,0 +1,61 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=rocdecode
+pkgver=7.2.4
+pkgrel=2
+pkgdesc='High performance video decode SDK for AMD hardware'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/rocDecode/en/latest/'
+license=('MIT')
+depends=(
+  'ffmpeg'
+  'glibc'
+  'hip-runtime-amd'
+  'libgcc'
+  'libva'
+  'mesa'
+  'rocm-core'
+)
+makedepends=(
+  'cmake'
+  'rocm-cmake'
+  'rocm-llvm'
+)
+_git='https://github.com/ROCm/rocDecode'
+source=("$pkgname-$pkgver.tar.gz::$_git/archive/refs/tags/rocm-$pkgver.tar.gz")
+sha256sums=('3ddeeea3418683673b95f81a4e72ba594daa4fbbfeb5260844994dfbbd12d0dd')
+_dirname="$(basename "$_git")-$(basename "${source[0]}" ".tar.gz")"
+
+prepare() {
+  cd "$_dirname"
+  # https://src.fedoraproject.org/rpms/rocdecode/blob/rawhide/f/rocdecode.spec
+  sed -i "s|\(llvm/bin/clang++\)|\1 CACHE STRING \"ROCm Compiler path\"|" \
+    CMakeLists.txt \
+    samples/*/CMakeLists.txt
+  sed -i "s|/opt/amdgpu/include NO_DEFAULT_PATH|/usr/include|" cmake/FindLibva.cmake
+  sed -i -e 's@${LINK_LIBRARY_LIST} ${LIBVA_DRM_LIBRARY}@${LINK_LIBRARY_LIST} ${LIBVA_DRM_LIBRARY} -ldrm_amdgpu@' CMakeLists.txt
+}
+
+build() {
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_C_COMPILER=amdclang
+    -D CMAKE_CXX_COMPILER=amdclang++
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS} -fcf-protection=none"
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$_dirname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

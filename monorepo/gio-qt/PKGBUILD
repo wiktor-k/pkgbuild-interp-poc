@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=gio-qt
+pkgver=0.0.16
+pkgrel=1
+pkgdesc='Gio wrapper for Qt applications'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/gio-qt"
+license=('LGPL-3.0-or-later')
+depends=('glibmm' 'qt6-base')
+makedepends=('git' 'cmake' 'qt6-tools')
+source=("git+https://github.com/linuxdeepin/gio-qt.git#tag=$pkgver")
+sha512sums=('239e30ac75d391e50fdea4beeb1b059d38242dceafd3333d907021453bd604abf63b3c38347f6ebbb2c1b6951b6b2c134941d81603013bed195413df0d61dc28')
+
+prepare() {
+  cd gio-qt
+  sed -i '/include(qt5.cmake)/d' gio-qt/CMakeLists.txt qgio-tools/CMakeLists.txt
+}
+
+build() {
+  cd gio-qt
+  cmake -DCMAKE_INSTALL_PREFIX=/usr -DBUILD_DOCS=OFF .
+  make
+}
+
+package() {
+  cd gio-qt
+  make DESTDIR="$pkgdir" install
+}

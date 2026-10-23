@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=scmpuff
+pkgver=0.7.0
+pkgrel=1
+pkgdesc="Numeric file shortcuts for common git commands"
+arch=('x86_64')
+url="https://github.com/mroth/scmpuff"
+license=('MIT')
+depends=('glibc')
+makedepends=('go' 'git')
+source=("git+https://github.com/mroth/scmpuff.git#tag=v$pkgver")
+sha512sums=('fa1ddaed6b68f9f2f2fb248d304f9dc5a5a370ceea874879c0e5d605fd1c490990759a040fd3ad582ce28747f409dd1efdff7291814ceb0ac2d9032dd17cf3ae')
+
+build() {
+  cd scmpuff
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  go build -o scmpuff
+}
+
+check() {
+  cd scmpuff
+  go test ./...
+}
+
+package() {
+  cd scmpuff
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/scmpuff/
+  install -Dm755 scmpuff -t "$pkgdir"/usr/bin/
+}

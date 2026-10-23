@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langcodes
+pkgver=3.5.1
+pkgrel=1
+pkgdesc="Tools for labeling human languages with IETF language tags"
+arch=('any')
+url="https://github.com/georgkrause/langcodes"
+license=('MIT')
+depends=('python')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-setuptools-scm'
+  'python-wheel'
+)
+checkdepends=(
+  'python-language-data'
+  'python-pytest'
+)
+optdepends=('python-language-data: language names and population data')
+source=("git+https://github.com/georgkrause/langcodes.git#tag=v$pkgver")
+sha512sums=('1e00121c947e30036dcab8e2615030bc51ffcf0f042efea99d5197594dec3cc05887a592b933efb3a1163de766007ba4ffde9bb339ee16dae404180749f0f21f')
+
+prepare() {
+  cd langcodes
+  # Fix doctests with language-data 1.4.0.
+  git cherry-pick -n 8a626cfb3debe105fce4f55022ec9ff81bbfa9ed
+}
+
+build() {
+  cd langcodes
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langcodes
+  PYTHONPATH="$PWD" pytest
+}
+
+package() {
+  cd langcodes
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

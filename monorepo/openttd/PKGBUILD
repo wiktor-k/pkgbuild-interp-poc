@@ -1,0 +1,39 @@
+# Maintainer: Laurent Carlier <lordheavym@gmail.com>
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Vesa Kaihlavirta <vegai@iki.fi>
+
+pkgname=openttd
+pkgver=15.3
+pkgrel=1
+pkgdesc='Engine for running Transport Tycoon Deluxe'
+arch=(x86_64)
+url='https://www.openttd.org'
+# squirrel (bundled) is licensed under the Zlib license
+# fmt (bundled) is licensed under the MIT license
+license=('GPL-2.0-only' 'BSD-3-Clause' 'LGPL-2.1-or-later' 'MIT' 'Zlib')
+depends=(fluidsynth sdl2-compat fontconfig hicolor-icon-theme)
+makedepends=(cmake)
+optdepends=('openttd-opengfx: free graphics'
+            'openttd-opensfx: free soundset')
+source=("https://cdn.$pkgname.org/$pkgname-releases/$pkgver/$pkgname-$pkgver-source.tar.xz")
+b2sums=('c88253714a2abfa2dc36767bc3a24dcfecd68d5ec6fe06ef3fe7a7ea1747de2caca67332c20f0b4fbb5375caa8c26b45975937df6ded330aceaecf1d0497d05d')
+
+build() {
+  cmake \
+    -B build \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_BINDIR=bin \
+    -D CMAKE_INSTALL_DATADIR=/usr/share \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -S $pkgname-$pkgver
+  make -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" make -C build install
+  cd $pkgname-$pkgver
+  install -Dm644 COPYING.md "$pkgdir/usr/share/licenses/$pkgname/COPYING.md"
+  for f in CREDITS.md known-bugs.md; do
+    install -Dm644 $f "$pkgdir/usr/share/doc/$pkgname/$f"
+  done
+}

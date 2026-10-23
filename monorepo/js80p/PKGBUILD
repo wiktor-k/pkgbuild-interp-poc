@@ -1,0 +1,68 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=js80p
+pkgver=4.1.1
+pkgrel=1
+pkgdesc='A MIDI driven, performance oriented, versatile synthesizer'
+arch=(x86_64)
+url='https://attilammagyar.github.io/js80p/'
+license=(GPL-3.0-only)
+groups=(pro-audio vst3-plugins)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  libxcb
+  cairo
+)
+makedepends=(
+  git
+  alsa-lib
+  libx11
+  zenity
+  kdialog
+)
+install=js80p.install
+source=(
+  "$pkgname::git+https://github.com/attilammagyar/js80p#tag=v$pkgver"
+  do-not-run-cppcheck.patch
+)
+sha512sums=('038225f9471bf5609bd3a7d09b0a79d42e4b59ef878411450087ccba36f7d9877b572f2a082e045369692424e38505ece5e0059fc50731fe8a6603b518780ef0'
+            'e3f6e69f8fd81bd28883a6e74f19e72a887f1c53eb695cd3e6eecd8d15ce457417dbdc635bf8273b4f51490284033112723db288689d80cf39f59b54cfc439f2')
+b2sums=('f728903cf2d0852283da4070f6aee4fd2bc3b552d099aec7456da1fa63f9ae3ca8865038ff4589c2775f0629b4096a426f8b72f1bbbeea07a1eb5c0996a738e7'
+        '9042a7bdde673d0a6884b047f9d37362cb4b4a1b00e13129c73ceb233a4235a677c990f872f58d9c3bf79b74786f6ccc96426a742baaf9b9cea27d475a9b931f')
+
+prepare() {
+  cd "$pkgname"
+
+  # remove cppcheck from makedepends
+  patch -p1 -i "$srcdir/do-not-run-cppcheck.patch"
+}
+
+build() {
+  cd "$pkgname"
+  # supports AVX, but that's not in x86_64_v1
+  make \
+    CXX_WARNINGS='-Wno-error' \
+    SYS_LIB_PATH=/usr/lib \
+    TARGET_PLATFORM="$CARCH-gpp" \
+    INSTRUCTION_SET=sse2 \
+    VERSION_STR=$(git describe --tags) \
+    VERSION_INT=$(git describe --tags | sed "s/[^0-9]//g") \
+    vst3
+}
+
+package() {
+  cd "$pkgname"
+
+  # vst3
+  install -vDm644 \
+    "dist/js80p-dev-linux-$CARCH-sse2-vst3_single/js80p.vst3" \
+    "$pkgdir/usr/lib/vst3/$pkgname.vst3/Contents/$CARCH-linux/$pkgname.so"
+
+  # presets
+  install -vDm644 -t "$pkgdir/usr/share/$pkgname/presets" presets/*.js80p
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

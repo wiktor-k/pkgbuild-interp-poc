@@ -1,0 +1,25 @@
+pkgbase = python-jack-client
+	pkgdesc = JACK Audio Connection Kit (JACK) Client for Python
+	pkgver = 0.5.7
+	pkgrel = 1
+	url = https://github.com/spatialaudio/jackclient-python/
+	arch = any
+	license = MIT
+	checkdepends = jack2
+	checkdepends = procps-ng
+	checkdepends = python-pytest
+	checkdepends = util-linux
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = jack
+	depends = python
+	depends = python-cffi
+	optdepends = python-numpy: Access input/output buffers as numpy arrays
+	source = python-jack-client-0.5.7.tar.gz::https://github.com/spatialaudio/jackclient-python//archive/refs/tags/0.5.7.tar.gz
+	sha512sums = 2d6461b2ef5d3203e3189e343b822a91c1be496ac3be8f346ba645bd56ae0779fe5416cb7d59b897885d86a1329b6f88db4de82d3a2459b39c12483ac2a4100f
+	b2sums = dbf126d09264478516a577a46d733b6644c45e6b90b3449a8b99847fe647f290405b12074782928bb0969680bf3243f757802a650212e9aa1b7b90f6f8632d98
+
+pkgname = python-jack-client

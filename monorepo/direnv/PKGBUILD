@@ -1,0 +1,61 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: zimbatm <zimbatm@zimbatm.com>
+# Contributor: ShadowKyogre <shadowkyogre.public+aur@gmail.com>
+# Contributor: rmorgans <rick.morgans@gmail.com>
+
+pkgname=direnv
+pkgver=2.38.2
+pkgrel=1
+pkgdesc='A shell extension that manages your environment'
+arch=(x86_64)
+url='https://direnv.net'
+license=(MIT)
+depends=(glibc)
+makedepends=(git go)
+checkdepends=(zsh fish bash tcsh elvish)
+options=(!lto)
+source=("$pkgname::git+https://github.com/direnv/direnv.git#tag=v$pkgver")
+sha512sums=('996a88c4e3708106ea55beeb921f151fb060782aebdc5296830771c9242ae09594452ed5568522e06f254923258105d0c3a17d3893cc04af06143f88973f40f0')
+b2sums=('a0e5cc5860f3f9cc67d6b1899e1260c8d739c2a55eddb3560d22d3f9fa57cc79c7bb443c4f9f71e1946bd11d879ef0bdbd4b40aeac358a05e5575707b0e6966a')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags \"$LDFLAGS\"" \
+    .
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" man/*.1
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/docs" docs/*
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

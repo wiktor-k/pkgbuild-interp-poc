@@ -1,0 +1,37 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-bsnes-hd
+pkgver=20251205.215259.gfc26b25ea236
+pkgrel=1
+pkgdesc='Super Nintendo Entertainment System core'
+arch=(x86_64)
+url=https://github.com/DerKoun/bsnes-hd
+license=(GPL-3.0-only)
+groups=(libretro)
+depends=(
+  libgcc
+  libretro-core-info
+  libstdc++
+)
+makedepends=(git)
+source=(
+  libretro-bsnes-hd::git+https://github.com/DerKoun/bsnes-hd.git#commit=${pkgver##*.g}
+  libretro-bsnes-hd-flags.patch
+)
+b2sums=('04eebf6e2961aec00d002cc5f51275fd589f790b282f0c677168d67af9b258c25eab0505043030cf4fc97ff23797c83b45d796d4f387f8ba4bc9637865c5e978'
+        '83d45ef4e6da1be67db96d67ab436a1d2d9e074984d1863e49720b4c8ec9db381b63b5adbfdf3a82921dd0613ba1689774ae30f603f92f98c90dbc223730584b')
+
+prepare() {
+  cd libretro-bsnes-hd
+  patch -Np1 -i ../libretro-bsnes-hd-flags.patch
+}
+
+build() {
+  make -C libretro-bsnes-hd/bsnes -f GNUmakefile target=libretro binary=library local=false platform=linux
+}
+
+package() {
+  install -Dm 644 libretro-bsnes-hd/bsnes/out/bsnes_hd_beta_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}
+
+# vim: ts=2 sw=2 et:

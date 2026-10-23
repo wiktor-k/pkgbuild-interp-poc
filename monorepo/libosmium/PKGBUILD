@@ -1,0 +1,45 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+# Contributor: Aleksandar Trifunovic akstrfn gmail.com
+# Contributor: Simon Legner <Simon.Legner@gmail.com>
+
+pkgname=libosmium
+pkgver=2.23.1
+pkgrel=1
+pkgdesc="Fast and flexible C++ library for working with OpenStreetMap data."
+url="https://osmcode.org/libosmium/"
+arch=('any')
+license=('BSL-1.0')
+makedepends=('cmake' 'clang' 'protozero')
+depends=('expat' 'zlib' 'bzip2' 'boost' 'boost-libs')
+optdepends=('sparsehash: sparse-mem-table index map'
+            'gdal: convert OSM geometries into OGR geometries'
+            'geos: convert OSM geometries into GEOS geometries'
+            'proj: project OSM coordinates into spatial reference systems'
+            'lz4: use LZ4 compression in PBF files')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/osmcode/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('eb47d8163396c73870dbf27819dcadda0c56f0191935c4f8659d1e61b261552f')
+
+build() {
+  mkdir -p "${pkgname}-${pkgver}/build"
+  cd "${pkgname}-${pkgver}/build"
+
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake \
+    -DINSTALL_GDALCPP=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX:PATH=/usr \
+    ..
+  make
+}
+
+check() {
+  cd "${pkgname}-${pkgver}/build"
+  ctest
+}
+
+package() {
+  cd "${pkgname}-${pkgver}/build"
+
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 ../LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

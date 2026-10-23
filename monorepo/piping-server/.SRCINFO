@@ -1,0 +1,17 @@
+pkgbase = piping-server
+	pkgdesc = Infinitely transfer between every device over pure HTTP with pipes or browsers
+	pkgver = 0.18.0
+	pkgrel = 2
+	url = https://github.com/nwtgck/piping-server-rust
+	arch = x86_64
+	license = MIT
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = piping-server-0.18.0.tar.gz::https://github.com/nwtgck/piping-server-rust/archive/v0.18.0.tar.gz
+	source = piping-server.service
+	sha256sums = 7466c517879b918fa72d776de04efebecfe40034c0a431cd78e70b5eee5bcacd
+	sha256sums = 9182467638a583b29bed0ae69ed00013b1721ce8753e5ba90a56cbaac07d768c
+
+pkgname = piping-server

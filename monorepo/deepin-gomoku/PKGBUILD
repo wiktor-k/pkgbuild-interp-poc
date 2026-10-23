@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-gomoku
+pkgver=6.0.7
+pkgrel=3
+pkgdesc='Gomoku is an easy and funny chess game that is suitable for all ages'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-gomoku"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'glibc' 'libgcc' 'libstdc++' 'hicolor-icon-theme' 'qt6-base'
+         'qt6-multimedia' 'qt6-svg')
+makedepends=('git' 'cmake' 'gtest' 'gmock' 'ninja' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-gomoku.git#tag=$pkgver")
+sha512sums=('30a7fc3af5d3fc385acbc470e33b30fe53fa583f11ff9ff7130798be4feddab57741a7ae3834cd4d9b6e9aec1b63ebeda20e761062594d6c6f1903427b14bbe8')
+
+prepare() {
+  cd deepin-gomoku
+  git cherry-pick -n f212f765ce950aa005f08bf339a790b187f740d4
+}
+
+build() {
+  cd deepin-gomoku
+  cmake -GNinja . \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  ninja
+}
+
+package() {
+  cd deepin-gomoku
+  DESTDIR="$pkgdir" ninja install
+}

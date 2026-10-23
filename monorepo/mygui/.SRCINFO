@@ -1,0 +1,24 @@
+pkgbase = mygui
+	pkgdesc = A multilayer and overlappable GUI System
+	pkgver = 3.4.3
+	pkgrel = 2
+	url = http://mygui.info/
+	install = mygui.install
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = graphviz
+	makedepends = ttf-dejavu
+	makedepends = ninja
+	makedepends = glu
+	depends = sdl2
+	depends = sdl2_image
+	depends = gcc-libs
+	depends = glibc
+	depends = freetype2
+	replaces = mygui-docs
+	source = https://github.com/MyGUI/mygui/archive/MyGUI3.4.3.tar.gz
+	sha512sums = 88c69ca2e706af364b72d425f95013eb285501881d8094f8d67e31a54c45ca11b0eb5b62c382af0d4c43f69aa8197648259ac306b72efa7ef3e25eecb9b039cb
+
+pkgname = mygui

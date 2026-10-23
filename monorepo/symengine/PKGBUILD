@@ -1,0 +1,56 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Michael Schubert <mschu.dev at gmail>
+
+pkgname=symengine
+pkgver=0.15.0
+pkgrel=2
+pkgdesc='Fast symbolic manipulation library, written in C++'
+url='http://sympy.org/'
+arch=(x86_64)
+license=(MIT)
+depends=(flint
+         glibc
+         gmp
+         gmp-ecm
+         gperftools
+         libgcc
+         libmpc
+         libstdc++
+         llvm-libs
+         mpfr
+         primesieve)
+makedepends=(boost
+             cereal
+             cmake
+             git
+             llvm)
+source=(git+https://github.com/symengine/symengine#tag=v$pkgver)
+sha256sums=('e66a3ba7a1e3955cd6c3a4303bfc40f80818536f96b16690df20b8f7481ff40c')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON \
+    -DWITH_TCMALLOC=ON \
+    -DWITH_PTHREAD=ON \
+    -DWITH_SYMENGINE_THREAD_SAFE=ON \
+    -DWITH_ARB=ON \
+    -DWITH_ECM=ON \
+    -DWITH_LLVM=ON \
+    -DWITH_MPFR=ON \
+    -DWITH_MPC=ON \
+    -DWITH_PRIMESIEVE=ON \
+    -DWITH_BOOST=ON \
+    -DWITH_SYSTEM_CEREAL=ON \
+    -DWITH_LLVM_DYLIB=ON
+  cmake --build build
+}
+
+check() {
+  cmake --build build --target test
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 $pkgname/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

@@ -1,0 +1,36 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Hossam Mostafa <hossamdash2@gmail.com>
+# Contributor: Nathanael Demacon <nathanael.dmc[at]outlook[dot]fr>
+
+pkgname=sshs
+pkgver=4.8.0
+pkgrel=1
+pkgdesc="Terminal user interface for SSH"
+url="https://github.com/quantumsheep/sshs"
+arch=('x86_64')
+license=('MIT')
+depends=('openssh')
+makedepends=('cargo')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('d78c9a4b63fe7e1b6f4ea7de8910a28a6caa745f53a76feff59a3a580a9f6268')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	cargo test --frozen --all-features
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm 755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

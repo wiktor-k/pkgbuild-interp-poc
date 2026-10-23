@@ -1,0 +1,45 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: HurricanePootis <hurricanepootis@protonmail.com>
+# Contributor: Michal Wojdyla <micwoj9292 at gmail.com>
+# Contributor: Michael DeGuzis <mdeguzis@gmail.com>
+
+pkgname=vkquake
+pkgver=1.37.0
+pkgrel=2
+pkgdesc='Quake for Vulkan'
+arch=(x86_64)
+url='https://github.com/Novum/vkquake'
+license=(GPL-2.0-or-later)
+depends=(flac glibc libvorbis mpg123 opusfile sdl3 vulkan-icd-loader)
+makedepends=(gendesk glslang meson spirv-tools vulkan-headers vulkan-validation-layers)
+optdepends=('quake: quake command and desktop shortcut'
+            'librequake: open source quake resources')
+provides=(quake-engine)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+b2sums=('d2253469cc8f9b1a3796ea2d27e84abf905b40ccf7715417b8886f07f53d085982b594e8b8d362de3e744190ef59703e7c05ebc4fd529ebcb77dd049bc1458d7')
+
+prepare() {
+  gendesk -f -n --pkgname "$pkgname" --name vkQuake --pkgdesc "$pkgdesc" --categories 'Game;Shooter'
+  sed -i 's|host_parms->basedir = cwd;|host_parms->basedir = "/usr/share/librequake";|' vkQuake-$pkgver/Quake/sys_sdl_unix.c
+}
+
+build() {
+  arch-meson build \
+    -D do_userdirs=enabled \
+    -D mp3_lib=mpg123 \
+    -D use_codec_flac=enabled \
+    -D use_codec_mp3=enabled \
+    -D use_codec_opus=enabled \
+    -D use_codec_vorbis=enabled \
+    -D vorbis_lib=vorbis \
+    vkQuake-$pkgver
+  meson compile -C build
+}
+
+package() {
+  install -Dm755 build/vkquake "$pkgdir/usr/bin/vkquake"
+  install -Dm644 $pkgname.desktop "$pkgdir/usr/share/applications/$pkgname.desktop"
+  install -Dm644 vkQuake-$pkgver/Misc/vkQuake_512.png "$pkgdir/usr/share/pixmaps/$pkgname.png"
+  install -Dm644 vkQuake-$pkgver/readme.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 vkQuake-$pkgver/error_reporting_howto.md "$pkgdir/usr/share/doc/$pkgname/error-reporting-howto.md"
+}

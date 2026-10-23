@@ -1,0 +1,25 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: David Runge <dvzrv@archlinux.org>
+
+_name=lspconfig
+_upstream=nvim-lspconfig
+pkgname=neovim-lspconfig
+pkgver=2.12.0
+pkgrel=1
+pkgdesc='Collection of common configurations for Neovim’s built-in language server client'
+arch=(any)
+url="https://github.com/neovim/$_upstream"
+license=(Apache-2.0)
+depends=(luajit
+         neovim)
+groups=(neovim-plugins)
+_archive="$_upstream-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('8acc9a038ada172fc0215490c9be4e337e637aebed51d3450bdfd21ea19255d7')
+
+package() {
+	cd "$_archive"
+	find doc lsp lua plugin -type f -exec \
+		install -Dm0644 {} "$pkgdir/usr/share/nvim/site/pack/dist/start/$_name/{}" \;
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+}

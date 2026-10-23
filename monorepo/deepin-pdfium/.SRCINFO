@@ -1,0 +1,25 @@
+pkgbase = deepin-pdfium
+	pkgdesc = Development library for pdf on Deepin
+	pkgver = 1.5.8
+	pkgrel = 1
+	url = https://github.com/linuxdeepin/deepin-pdfium
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = cmake
+	depends = qt6-base
+	depends = openjpeg2
+	depends = libchardet
+	depends = lcms2
+	depends = libjpeg-turbo
+	depends = libpng
+	depends = icu
+	depends = zlib
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = freetype2
+	source = git+https://github.com/linuxdeepin/deepin-pdfium.git#tag=1.5.8
+	sha512sums = 361abc0d18a80f0fad30020484fb74d0d550097fafc57a966482385890312c91b728c67c349e9a3d959e5a0d9bf8edbe9246f6b1a1c4e3dfc4d1959590b7d4e6
+
+pkgname = deepin-pdfium

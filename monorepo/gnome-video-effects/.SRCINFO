@@ -1,0 +1,17 @@
+pkgbase = gnome-video-effects
+	pkgdesc = Collection of GStreamer effects for GNOME
+	pkgver = 0.6.0
+	pkgrel = 2
+	epoch = 1
+	url = https://gitlab.gnome.org/GNOME/gnome-video-effects
+	arch = any
+	license = GPL2
+	makedepends = git
+	makedepends = meson
+	depends = frei0r-plugins
+	depends = gst-plugins-bad
+	depends = gst-plugins-good
+	source = git+https://gitlab.gnome.org/GNOME/gnome-video-effects.git#commit=e4ae5aa3ee136333c6481469ed1d8869307ef5e4
+	b2sums = SKIP
+
+pkgname = gnome-video-effects

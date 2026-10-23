@@ -1,0 +1,42 @@
+# Maintainer: Anatol Pomozov
+# Contributor: Michael Lass <bevan@bi-co.net>
+# Contributor: Philipp Schrader <philipp.schrader+arch@gmail.com>
+
+pkgname=uboot-tools
+pkgver=2026.07
+pkgrel=2
+pkgdesc='U-Boot bootloader utility tools'
+arch=(x86_64)
+url='https://www.denx.de/wiki/U-Boot/WebHome'
+license=("GPL-2.0-or-later AND BSD-3-Clause AND BSD-2-Clause AND LGPL-2.1-or-later AND LGPL-2.0-or-later")
+depends=(openssl)
+makedepends=(python python-setuptools swig)
+source=(https://ftp.denx.de/pub/u-boot/u-boot-$pkgver.tar.bz2{,.sig}
+        0001-pylibfdt-python-3.14.patch)
+validpgpkeys=('F3CEA8743D60E0192F9B4C7A2BE2A0F50ABFE40A')
+options=(!lto)
+sha1sums=('829b14b2398917d345d0fa7fbf1c2e344ef34aae'
+          'SKIP'
+          '717610872ba26cf3e80b4808af0c4e6e09df1e0c')
+sha256sums=('78e8bfc382fe388f9b55aa1daf8c563522a037779b5d4c349d1415e381f1243e'
+            'SKIP'
+            '6d5cfe797df2019a621f209b81bd6ea8318913614ba4630cfa91990f7ec3cfbe')
+
+prepare() {
+  cd u-boot-$pkgver
+  # fix pylibfdt build with Python 3.14 (removed Python 2 C-APIs)
+  patch -Np1 -i ../0001-pylibfdt-python-3.14.patch
+}
+
+build() {
+  cd u-boot-$pkgver
+  make tools-only_defconfig
+  make tools-all KBUILD_HOSTLDFLAGS=${LDFLAGS}
+}
+
+package() {
+  install -m 755 -d "$pkgdir"/usr/bin
+  install -m 755 -t "$pkgdir"/usr/bin/ u-boot-$pkgver/tools/{mk{,env}image,env/fw_printenv,img2srec,dumpimage,netconsole,jtagconsole,ncb,kwboot}
+  ln -s fw_printenv "$pkgdir"/usr/bin/fw_setenv
+  install -m 644 -Dt "$pkgdir"/usr/share/man/man1/ u-boot-$pkgver/doc/{mkimage,dumpimage,kwboot}.1
+}

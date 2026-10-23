@@ -1,0 +1,77 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Ner0
+
+pkgname=activity-log-manager
+pkgver=0.9.7
+pkgrel=11
+pkgdesc='A graphical user interface which lets you easily control what gets logged by Zeitgeist'
+arch=(x86_64)
+url='https://launchpad.net/activity-log-manager'
+license=(LGPL-2.0-or-later)
+depends=(
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgee
+  pango
+  zeitgeist
+)
+makedepends=(
+  intltool
+  vala
+)
+source=(
+  "https://launchpad.net/$pkgname/${pkgver%.*}/$pkgver/+download/$pkgname-$pkgver.tar.xz"{,.asc}
+  fix-build.patch
+  fix-build-2.patch
+  gee-0.8.patch
+  window-icon.patch
+  activity-log-manager.appdata.xml
+)
+b2sums=(
+  87abc548f111bd25e86c750b91888cf8f5b6d26c0598cb960f6b391523882475e6c285d7136372363010fcf8a10d6943f582c13b54a2993bb90fc3facf9307d0
+  SKIP
+  c14899c4e441f4d99513ebd49e068bcf2762e9b9f47a75de689e4b65b9b3982b7eb91265a58bcc236af5573b781fb4ce201ee15099a138c7a6f565a0aaf76bef
+  667920670f3563fab07e2a89458a62b795b755f7b31d09a3b100c78cbd517150393e0664be6a897710347c72069463b4d45822d497ece4509b19ab0d8fa3fdf6
+  ebb3ff3ba66d3f0559bc15e982cdcb47be46ee9bf9abc90c4f9fcac3a5bdc21566460e9de58e0149f36b67aedc213b0ae4a144d670dd20a848567fd058b42038
+  92ef2a6ac85dbb71e9801d2339412564e509e8b4f05bcebf339c986c8947162a5938880d2fa14549a40d341975620534736d631605b5a9633402ad5d281483ec
+  909969b9e42c389dd85938e5ebf4b1edf49b885882e8c58fa7a7122904e626302e0c0269e065f27dddd28c6e8cd7dc8e2055e0def249826a35c56bc20e69f691
+)
+validpgpkeys=(EEE420E481E68B71594F192D361CC5EBA0BA909F) # Manish Sinha
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Fix build
+  patch -Np1 -i ../fix-build.patch
+  patch -Np1 -i ../fix-build-2.patch
+
+  # Port to gee-0.8
+  patch -Np1 -i ../gee-0.8.patch
+
+  # Set window icon; raise existing window on activation; fix icon size on app list
+  patch -Np1 -i ../window-icon.patch
+
+  # Regenerate C files
+  rm src/*.stamp
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../$pkgname.appdata.xml "$pkgdir/usr/share/metainfo/$pkgname.appdata.xml"
+}

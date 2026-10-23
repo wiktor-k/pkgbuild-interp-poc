@@ -1,0 +1,19 @@
+pkgbase = archivetools
+	pkgdesc = Arch Linux Archive Tools
+	pkgver = 5
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/archlinux/archivetools
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = rsync
+	depends = hardlink
+	depends = xz
+	depends = util-linux
+	depends = systemd
+	depends = bash
+	backup = etc/archive.conf
+	source = git+https://gitlab.archlinux.org/archlinux/archivetools.git#tag=v5
+	sha256sums = 68f69c46995b3b68fab7a04f6168b5f18cdf570c030dbbf06bd2ae8b239b9bd5
+
+pkgname = archivetools

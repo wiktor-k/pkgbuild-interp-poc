@@ -1,0 +1,41 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=papilo
+pkgver=3.0.2
+pkgrel=1
+pkgdesc='Parallel Presolve for Integer and Linear Optimization'
+arch=(x86_64)
+url='https://www.scipopt.org/'
+license=(LGPL-3.0-only)
+depends=(blas
+         boost-libs
+         glibc
+         gmp
+         libgcc
+         libgfortran
+         libquadmath
+         libstdc++
+         tbb)
+makedepends=(boost
+             cmake
+             gcc-fortran
+             git)
+source=(git+https://github.com/scipopt/papilo#tag=v$pkgver
+        shared-libs.patch)
+sha256sums=('a90802fa310e933e51cc826ee46dd39e4e21f801960d2718e6d078f53fab6e08'
+            '957ff8289f3695fef86533b3c32f082b27c7d2e7d472964c214f7c2244c0099d')
+
+prepare() {
+  patch -d $pkgname -p1 < shared-libs.patch # Build shared libraries
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

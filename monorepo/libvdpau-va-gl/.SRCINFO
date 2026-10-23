@@ -1,0 +1,20 @@
+pkgbase = libvdpau-va-gl
+	pkgdesc = VDPAU driver with OpenGL/VAAPI backend
+	pkgver = 0.4.2
+	pkgrel = 5
+	url = https://github.com/i-rinat/libvdpau-va-gl
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libgl
+	depends = libstdc++
+	depends = libva
+	depends = libx11
+	source = git+https://github.com/i-rinat/libvdpau-va-gl.git#tag=v0.4.2
+	b2sums = b751043761da48a16c6ecaeefd9026b3bfad55335ad45c4fe17f98d8761d6d3fbc44f77388a1b0e19be6a1622550ecf49ba3e6c7dce48ce96fe82989961e0dca
+
+pkgname = libvdpau-va-gl

@@ -1,0 +1,44 @@
+# Maintainer: Filipe Laíns (ffy00) <lains@archlinux.org>
+
+pkgname=at51
+pkgver=1.1.1
+pkgrel=1
+pkgdesc='Applications for reverse engineering architecture 8051 firmware'
+arch=(x86_64)
+url=https://github.com/8051Enthusiast/at51
+license=(MIT)
+makedepends=(rust cargo)
+source=($url/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+sha512sums=('d4360905c3037a4ae19003b14a0d91b8e9e2eeb7f51b6a51d08d6d38379c36f6005458767518e10fa6c5fcb86fee252f7de39e2516b23f15504984533987ea03')
+b2sums=('9ba707e09924e8a3effe617675d5f6aa03abaf754f39a68497e6c10581527a458849efb41fca5aa6a8f05bc998d1c27c8af095cafebdf1de4bc3d2ddcddf13c5')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  cargo fetch --locked --target "$CARCH-unknown-linux-gnu"
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  export RUSTUP_TOOLCHAIN=stable
+  export CARGO_TARGET_DIR=target
+
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $pkgname-$pkgver
+
+  export RUSTUP_TOOLCHAIN=stable
+
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  install -Dm 755 target/release/$pkgname -t "$pkgdir"/usr/bin/
+  install -Dm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+

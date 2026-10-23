@@ -1,0 +1,21 @@
+pkgbase = bear
+	pkgdesc = A tool to generate compilation database for clang tooling
+	pkgver = 4.2.3
+	pkgrel = 1
+	url = https://github.com/rizsotto/Bear
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = rust
+	depends = sh
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = bear::git+https://github.com/rizsotto/Bear.git#tag=4.2.3
+	source = avoid-libexec.patch
+	sha512sums = 2ec756934e4ccb4058e717acb0d564fda991d49e05897a16c7c00410f0cfc3aea36187d44873af592e02bee861f5f610a9943af11652856a3fa922ab1b281d39
+	sha512sums = 85348e77df755a0ff567f7b1a16773d7219b4f8411d3fd701c81bb8409ab05c974d675ba3b5efe5df676b4b910ba60b303e7e6f74045a5fc2f3bbbbc322c6050
+	b2sums = de6ca0c25dfb8833995af1076152ece96b9a37ef9df9daa8f0c245c221341775ed5374d3686356823a152674c12ba6f80fea6e5d2ce636fe2dda3abd18f9645d
+	b2sums = 43de659d7545a56b8e2d1d2db126f63bcb654b09c50dcdea5e7e7610fde86faf8bbefac43032df847420e2727ce01f41d92776598f6a5568fe7c0086b09a2b0d
+
+pkgname = bear

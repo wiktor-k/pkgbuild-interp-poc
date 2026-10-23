@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=broadcast-chan
+pkgname=haskell-broadcast-chan
+pkgver=0.3.0
+pkgrel=21
+pkgdesc="Closable, fair, single-wakeup channel type that avoids 0 reader space leaks"
+url="https://github.com/merijn/broadcast-chan"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-async' 'haskell-clock' 'haskell-conduit' 'haskell-optparse-applicative'
+         'haskell-paramtree' 'haskell-pipes' 'haskell-pipes-safe' 'haskell-resourcet'
+         'haskell-tagged' 'haskell-tasty' 'haskell-tasty-golden' 'haskell-tasty-hunit'
+         'haskell-temporary' 'haskell-unliftio-core')
+makedepends=('ghc' 'haskell-foldl' 'haskell-monad-loops' 'haskell-random')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('8a813dc88a83410066602ba20a75c3cd4c10147f6cb549953e3a8c7bc7fe013a515dd725a6ab341bf05dac527daec8fd02914842acbd8eaa27b7691927b1af46')
+
+prepare() {
+    cd $_hkgname-$pkgver
+
+    # Avoid sublibrary names shadowing external dependencies with Cabal v1.
+    # https://github.com/merijn/broadcast-chan/issues/23
+    sed -i -e 's/^Library conduit$/Library broadcast-chan-conduit/' \
+           -e 's/^Library pipes$/Library broadcast-chan-pipes/' \
+           -e 's/broadcast-chan:conduit/broadcast-chan:broadcast-chan-conduit/g' \
+           -e 's/broadcast-chan:pipes/broadcast-chan:broadcast-chan-pipes/g' $_hkgname.cabal
+}
+
+build() {
+    cd $_hkgname-$pkgver    
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

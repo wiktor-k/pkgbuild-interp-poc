@@ -1,0 +1,25 @@
+pkgbase = libmodsecurity
+	pkgdesc = ModSecurity v3 library component
+	pkgver = 3.0.17
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/owasp-modsecurity/ModSecurity/tree/v3/master
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = doxygen
+	depends = yajl
+	depends = curl
+	depends = lmdb
+	depends = libxml2
+	depends = pcre2
+	depends = geoip
+	depends = libmaxminddb
+	depends = ssdeep
+	depends = luajit
+	source = https://github.com/owasp-modsecurity/ModSecurity/releases/download/v3.0.17/modsecurity-v3.0.17.tar.gz
+	source = https://github.com/owasp-modsecurity/ModSecurity/releases/download/v3.0.17/modsecurity-v3.0.17.tar.gz.asc
+	validpgpkeys = 0B2BA1924065B44691202A2AD286E022149F0F6E
+	sha256sums = f283b33d5c21130fd3a15c84a93a1abe12bd1949edaf44288b12af571b671a50
+	sha256sums = SKIP
+
+pkgname = libmodsecurity

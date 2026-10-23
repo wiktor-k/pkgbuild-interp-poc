@@ -1,0 +1,51 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=hledger-lib
+pkgname=haskell-hledger-lib
+pkgver=1.52.4
+pkgrel=26
+pkgdesc="A library providing the core functionality of hledger"
+url="http://hledger.org"
+license=('GPL-3.0-or-later')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-aeson-pretty' 'haskell-ansi-terminal'
+         'haskell-blaze-html' 'haskell-blaze-markup' 'haskell-call-stack' 'haskell-cassava'
+         'haskell-cassava-megaparsec' 'haskell-cmdargs' 'haskell-colour' 'haskell-data-default'
+         'haskell-decimal' 'haskell-doclayout' 'haskell-encoding' 'haskell-extra'
+         'haskell-file-embed' 'haskell-glob' 'haskell-hashtables' 'haskell-megaparsec'
+         'haskell-microlens' 'haskell-microlens-th' 'haskell-lucid' 'haskell-parser-combinators'
+         'haskell-pretty-simple' 'haskell-regex-tdfa' 'haskell-these' 'haskell-safe' 'haskell-tabular'
+         'haskell-tasty' 'haskell-tasty-hunit' 'haskell-terminal-size' 'haskell-timeit'
+         'haskell-uglymemo' 'haskell-unordered-containers' 'haskell-utf8-string')
+makedepends=('ghc' 'haskell-doctest')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('1d6c0d7493a2dce14f7e748095904c145ffe2a0ce8e522a1cef65193b26cc29fdfb0358402efb07a3687ef5df4a750a05426a905bf957b7696eaa611cd4dcea5')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

@@ -1,0 +1,27 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: robertfoster
+
+pkgname=libpam-google-authenticator
+pkgver=1.11
+pkgrel=1
+pkgdesc='PAM module for google authenticator app'
+arch=('x86_64')
+url="https://github.com/google/google-authenticator-libpam"
+license=('Apache')
+depends=('pam')
+optdepends=('qrencode: scannable QR codes for google auth phone app')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/google/google-authenticator-libpam/archive/$pkgver.tar.gz")
+sha512sums=('5bbee53f293a67e6f92e956a24904a0197ba65270e096965e8b91f50e87c176ece9ba81c92392b199aa45f4fe5b38e77069b9c5e2f5800c6a5dbb6a35f20d21b')
+
+build() {
+  cd google-authenticator-libpam-$pkgver
+  ./bootstrap.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd google-authenticator-libpam-$pkgver
+  make DESTDIR="$pkgdir" install
+  libtool --finish "$pkgdir"/usr/lib/security
+}

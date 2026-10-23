@@ -1,0 +1,17 @@
+pkgbase = innernet
+	pkgdesc = A private network system that uses WireGuard under the hood
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/tonarino/innernet
+	arch = x86_64
+	license = MIT
+	makedepends = rust
+	makedepends = git
+	makedepends = clang
+	makedepends = llvm
+	depends = sqlite
+	options = !lto
+	source = https://github.com/tonarino/innernet/archive/v2.0.0/innernet-2.0.0.tar.gz
+	sha256sums = 1429e8546dcafe508c2f9f94a51d65aea64c8049619fef971997ae9e0fdbc79a
+
+pkgname = innernet

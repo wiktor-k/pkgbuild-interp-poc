@@ -1,0 +1,17 @@
+pkgbase = ifuse
+	pkgdesc = A fuse filesystem to access the contents of an iPhone or iPod Touch
+	pkgver = 1.2.1
+	pkgrel = 1
+	url = https://libimobiledevice.org/
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = git
+	depends = fuse3
+	depends = glibc
+	depends = libimobiledevice
+	depends = libplist
+	depends = usbmuxd
+	source = git+https://github.com/libimobiledevice/ifuse#tag=1.2.1
+	b2sums = a39c3e51e370d81c96935dc348e141ff7f991866ebc37fcfdb6ede5161d27587efd2acb4cf58bbd0814225b9b59099596b894b761f71a550ca123b0220657285
+
+pkgname = ifuse

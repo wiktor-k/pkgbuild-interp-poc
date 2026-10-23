@@ -1,0 +1,52 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=serialise
+pkgname=haskell-serialise
+pkgver=0.2.6.1
+pkgrel=258
+pkgdesc="A binary serialisation library for Haskell values"
+url="https://github.com/well-typed/cborg"
+license=('BSD')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-cborg' 'haskell-half' 'haskell-hashable' 'haskell-primitive'
+         'haskell-strict' 'haskell-these' 'haskell-unordered-containers' 'haskell-vector')
+makedepends=('ghc' 'uusi' 'haskell-quickcheck' 'haskell-quickcheck-instances' 'haskell-tasty'
+             'haskell-tasty-hunit' 'haskell-tasty-quickcheck')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz
+        $pkgname-quickcheck-instances-0.3.32.patch::https://github.com/well-typed/cborg/commit/d2e4be528ee0ec48a51fdec63b24e1186390e8d6.patch)
+sha512sums=('ffe43d96f0427fe1f1da47a01df7c7f86157b61180adf420bd698ee9ed3186cc545a313968d21e8217dbc9b105fcd0f908f210a0055c19ff14398ac9b1734cf8'
+            'fb9af2c77b338c91fb654c77f92af11deb587640f529b314aa1595ce78ca60ba33f982fca87464ce3be254313b344b36a6ca89f59eb29c6738f76d500ae426ec')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    patch -p2 -i ../$pkgname-quickcheck-instances-0.3.32.patch
+    uusi -u QuickCheck -u tasty-quickcheck
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE.txt
+}

@@ -1,0 +1,34 @@
+# Maintainer:
+# Contributor: Daniel Peukert <daniel@peukert.cc>
+
+pkgname=ocaml-intrinsics-kernel
+pkgver=0.17.2
+pkgrel=2
+pkgdesc='OCaml interface to operations that have dedicated hardware instructions on some micro-architectures'
+arch=(x86_64)
+url='https://github.com/janestreet/ocaml_intrinsics_kernel'
+license=(MIT)
+depends=(glibc
+         ocaml)
+makedepends=(dune
+             git)
+options=(!debug !strip)
+source=(git+https://github.com/janestreet/ocaml_intrinsics_kernel#tag=v$pkgver)
+b2sums=('302c846b56387e43a567cee8eff8660270ec47d44f86721b3a00189e7c482e789d6f97605e5ea1ff2e862cda450ce63f990083932406e844449e8dc20b2e0f09')
+
+build() {
+  cd ocaml_intrinsics_kernel
+  dune build --release --verbose
+}
+
+package() {
+  cd ocaml_intrinsics_kernel
+  DESTDIR="$pkgdir" dune install --prefix '/usr' --libdir '/usr/lib/ocaml' --docdir '/usr/share/doc' --mandir '/usr/share/man' --release --verbose
+
+  for _folder in "$pkgdir/usr/share/doc/"*; do
+    mv "$_folder" "$pkgdir/usr/share/doc/ocaml-$(basename "$_folder")"
+  done
+
+  install -dm755 "$pkgdir"/usr/share/licenses/$pkgname
+  ln -sf /usr/share/doc/$pkgname/LICENSE.md -t "$pkgdir"/usr/share/licenses/$pkgname
+}

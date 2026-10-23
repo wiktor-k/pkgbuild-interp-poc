@@ -1,0 +1,27 @@
+pkgbase = arch-signoff
+	pkgdesc = Sign off Arch Linux testing packages
+	pkgver = 0.5.2
+	pkgrel = 7
+	url = https://gitlab.archlinux.org/archlinux/arch-signoff
+	arch = any
+	groups = archlinux-tools
+	license = ISC
+	checkdepends = python-pytest-pacman
+	checkdepends = python-pytest
+	makedepends = python-setuptools-scm
+	makedepends = python-setuptools
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = asciidoc
+	makedepends = git
+	depends = python
+	depends = pyalpm
+	depends = python-click
+	depends = python-dateutil
+	depends = python-requests
+	source = arch-signoff::git+https://gitlab.archlinux.org/archlinux/arch-signoff.git#tag=0.5.2?signed
+	validpgpkeys = E499C79F53C96A54E572FEE1C06086337C50773E
+	sha256sums = ad9eeaaa26f64b8a9d7a4bcf06ed38fa80090cc4b95adac5c0f71305f7e57316
+
+pkgname = arch-signoff

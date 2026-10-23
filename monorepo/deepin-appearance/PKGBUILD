@@ -1,0 +1,28 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-appearance
+pkgver=1.1.86
+pkgrel=1
+pkgdesc='Application resource management and control services for the dde desktop environment'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-appearance"
+license=('GPL-3.0-or-later')
+# deepin-services: org.deepin.dde.XSettings1
+depends=('qt6-base' 'dtk6core' 'kconfig' 'kwindowsystem' 'kglobalaccel' 'libxcursor' 'libxfixes'
+         'libx11' 'gtk3' 'libxcb' 'xcb-util-cursor' 'fontconfig' 'openssl' 'glib2' 'dtk6gui'
+         'glibc' 'libgcc' 'libstdc++' 'gsettings-qt6' 'deepin-service-manager' 'deepin-daemon')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'deepin-api')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dde-appearance.git#tag=$pkgver")
+sha512sums=('7b910d75be24963350974a95fc72460dc05a89a6490431f6d6c550211c34fbc698fbebcae02cad4f192b94fcbeaf26728f2857133bb0e00ca98446cf2649bda5')
+
+build() {
+  cd dde-appearance
+  cmake . -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc
+  ninja
+}
+
+package() {
+  cd dde-appearance
+  DESTDIR="$pkgdir" ninja install
+}

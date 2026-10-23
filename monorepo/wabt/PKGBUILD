@@ -1,0 +1,61 @@
+# Maintainer: Quentin Michaud <mh4ckt3mh4ckt1c4s@archlinux.org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+# Contributor:  Konstantin Gorodinskii <mail@konstantin.io>
+
+pkgname=wabt
+pkgdesc="The WebAssembly Binary Toolkit: a suite of tools for WebAssembly"
+url="https://github.com/WebAssembly/wabt"
+pkgver=1.0.42
+pkgrel=1
+arch=('x86_64')
+license=('Apache-2.0')
+depends=(
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=('cmake' 'git' 'gcc' 'clang' 'python-ply' 'gtest' 'ninja')
+source=("git+https://github.com/WebAssembly/wabt#tag=$pkgver"
+        "git+https://github.com/WebAssembly/testsuite"
+        "git+https://github.com/google/googletest"
+        "git+https://github.com/dabeaz/ply")
+validpgpkeys=('5DE3E0509C47EA3CF04A42D34AEE18F83AFDEB23')
+sha512sums=('84d0df6fff0d69260976c836c14977065f74a29e635e6bb3e76807016e477854d34858a58e5bdd5842e13a820d58476fb07836c6b71a7416e684b4a90a542c1e'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+  cd ${pkgname}
+
+  git submodule init
+  git config submodule."external/testsuite".url "${srcdir}/testsuite"
+  git config submodule."external/googletest".url "${srcdir}/googletest"
+  git config submodule."external/ply".url "${srcdir}/ply"
+  git submodule update --recursive
+
+  mkdir build
+}
+
+build() {
+  cd ${pkgname}/build
+  export CFLAGS+=" -ffat-lto-objects"
+  cmake \
+    -G Ninja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_TESTS=OFF \
+    ..
+
+  ninja
+}
+
+#check() {
+#  cd ${pkgname}
+#  make test
+#}
+
+package() {
+  cd ${pkgname}/build
+  DESTDIR="${pkgdir}" ninja install
+}

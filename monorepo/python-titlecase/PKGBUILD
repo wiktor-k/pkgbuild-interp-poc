@@ -1,0 +1,45 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-titlecase
+pkgver=2.4.1
+pkgrel=1
+pkgdesc='Library to capitalize strings as specified by the New York Times Manual of Style'
+arch=(any)
+url='https://github.com/ppannuto/python-titlecase'
+license=(MIT)
+depends=(
+  python
+  python-regex
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('fecb6c346e19bf6aab581d487e4723b95f12088447c115f9bb8e1d523201fe690d03c6f3a3d2531ab0c4004de16cdae59628c38fdaf80b0e6bff130a6856107e')
+b2sums=('7a128dd80fdc9725a8f77a0c6b9a84af32881fb788ca031f26134aa82c4cf03b750ef458b2f12b9f7e4d5ad7aad982c20c27238c3622693b5e058c7ea5362a3c')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  python -m unittest
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

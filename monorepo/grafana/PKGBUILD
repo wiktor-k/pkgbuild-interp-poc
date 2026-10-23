@@ -1,0 +1,90 @@
+# Maintainer: Sébastien "Seblu" Luttringer
+# Contributor: Carsten Feuls <archlinux@carstenfeuls.de>
+# Contributor: Gilles Hamel <hamelg at laposte dot net>
+
+pkgname=grafana
+pkgver=13.2.4
+pkgrel=1
+pkgdesc='Gorgeous metric viz, dashboards & editors for Graphite, InfluxDB & OpenTSDB'
+url='https://grafana.com/'
+arch=('x86_64')
+license=('AGPL' 'Apache')
+depends=('glibc' 'freetype2' 'fontconfig' 'gsfonts')
+makedepends=('git' 'go' 'npm' 'grunt-cli' 'python' 'nodejs-lts-jod' 'yarn')
+backup=('etc/grafana.ini')
+source=("git+https://github.com/grafana/grafana.git#tag=v$pkgver"
+        'grafana.service'
+        'grafana.sysusers'
+        'grafana.tmpfiles'
+       )
+install=$pkgname.install
+sha512sums=('ae37cc294e146948f8a9ff2598ad242a39694d77a0ea85bb598f19a6c19cc212986c01874be4677c4a1c9387af4b806fa6e3ff44fc63409a7070317e3adfabbd'
+            'bec995f07df3e5a09276ec1ec735d27dbd92c925d68d7553e19d863edd8af93bf080aa6e6db5b4ee900f2e2b3e084a2c3ac21204dc20b73610180616e782cbba'
+            '38b46d953837a7afa5a654dfeef163b210d56cad57d937018531d00cd63b5341d6f9cd777299bdc7a994d0cb7df09b8157aad0f166e76ad47564e1ad6d5441d4'
+            'c1724bfc7cbd6a406f17acb661efca0f1e57e2c30cc1841f4cb7ccfc420adc40cc61cb1c023d00444827b2c40e9caa4c2fefbfd503419848c74a0b455b2375ab')
+
+prepare() {
+  cd $pkgname
+  # apply patch from the source array (should be a pacman feature)
+  local filename
+  for filename in "${source[@]}"; do
+    if [[ "$filename" =~ \.patch$ ]]; then
+      echo "Applying patch ${filename##*/}"
+      patch -p1 -N -i "$srcdir/${filename##*/}"
+    fi
+  done
+  # set arch linux paths
+  sed -ri 's,^(\s*data\s*=).*,\1 /var/lib/grafana,' conf/defaults.ini
+  sed -ri 's,^(\s*plugins\s*=).*,\1 /var/lib/grafana/plugins,' conf/defaults.ini
+  sed -ri 's,^(\s*provisioning\s*=).*,\1 /var/lib/grafana/conf/provisioning,' conf/defaults.ini
+  sed -ri 's,^(\s*logs\s*=).*,\1 /var/log/grafana,' conf/defaults.ini
+}
+
+build() {
+  cd grafana
+  echo 'Generate golang'
+  make gen-go
+  make gen-themes
+
+  echo 'building the backend'
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -modcacherw"
+  export BUILD_DATE="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y-%m-%d)"
+
+  go build \
+      -trimpath \
+      -buildmode=pie \
+      -mod=readonly \
+      -modcacherw \
+      -ldflags "-linkmode external -extldflags \"${LDFLAGS}\" -X \"main.version=${pkgver}\" -X \"main.commit=$(git rev-parse --short HEAD)\" -X \"main.buildstamp=${BUILD_DATE}\"" \
+      -o grafana pkg/cmd/grafana/main.go
+
+  echo 'building the frontend'
+  export NPM_CONFIG_PREFIX="$srcdir/npm"
+  export PATH+=":$NPM_CONFIG_PREFIX/bin"
+  export NODE_OPTIONS="--max-old-space-size=16000" # Increase to 8 GB
+  yarn install || cat /tmp/*/build.log
+  NODE_ENV=production yarn run build
+}
+
+package() {
+  install -Dm644 grafana.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/grafana.conf"
+  install -Dm644 grafana.sysusers "$pkgdir/usr/lib/sysusers.d/grafana.conf"
+  install -Dm644 grafana.service "$pkgdir/usr/lib/systemd/system/grafana.service"
+  cd $pkgname
+  install -Dsm755 grafana "$pkgdir/usr/bin/grafana"
+  install -Dm640 -o207 -g207 conf/sample.ini "$pkgdir/etc/$pkgname.ini"
+  install -Dm644 conf/defaults.ini "$pkgdir/usr/share/$pkgname/conf/defaults.ini"
+  install -dm755 "$pkgdir/usr/share/grafana/"
+  for i in public tools; do
+    cp -r "$i" "$pkgdir/usr/share/grafana/$i"
+  done
+
+  # Remove unit tests
+  rm -r "$pkgdir/usr/share/grafana/public/test"
+}
+
+# vim:set ts=2 sw=2 et:

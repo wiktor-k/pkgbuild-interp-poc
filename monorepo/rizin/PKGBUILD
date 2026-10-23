@@ -1,0 +1,101 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=rizin
+pkgver=0.8.2
+pkgrel=2
+pkgdesc='Open-source tools to disasm, debug, analyze and manipulate binary files'
+url='https://rizin.re'
+arch=(x86_64)
+license=(
+  Apache-2.0
+  BSD-2-Clause
+  BSD-3-Clause
+  CC-PDDC
+  CC0-1.0
+  GPL-1.0-or-later
+  GPL-2.0-only
+  GPL-2.0-or-later
+  GPL-3.0-only
+  GPL-3.0-or-later
+  LGPL-2.0-or-later
+  LGPL-2.1-only
+  LGPL-2.1-or-later
+  LGPL-3.0-only
+  MIT
+)
+depends=(
+  glibc
+  sh
+  openssl
+  zlib
+  lz4
+  xz
+)
+makedepends=(
+  capstone
+  file
+  libmspack
+  libzip
+  meson
+  ninja
+  pcre2
+  python
+  python-yaml
+  tree-sitter
+  xxhash
+  zstd
+)
+optdepends=(
+  'rz-ghidra: ghidra decompiler plugin'
+)
+options=(
+  '!emptydirs'
+)
+source=(
+  https://github.com/rizinorg/rizin/releases/download/v${pkgver}/rizin-src-v${pkgver}.tar.xz
+)
+sha512sums=('cb51091c0e054add9a965596d693eb86f6d0f04147386a24a694f51f39702d4b8762272b094d7b103a9e413a158226b0366d982e46949807fb9c529b66ce8981')
+b2sums=('ca5345e28dbeb7a6dcdf8e76335d92b09f63add04b2022de34c44882bcf7f2adfa73143299fbef4960f0c52e503356d392baa08cc0274c554c7a7df36047e1c5')
+
+build() {
+  cd ${pkgname}-v${pkgver}
+  arch-meson build \
+    -D use_sys_capstone=enabled \
+    -D use_capstone_version=v5 \
+    -D use_sys_magic=enabled \
+    -D use_sys_libzip=enabled \
+    -D use_sys_libzstd=enabled \
+    -D use_sys_lz4=enabled \
+    -D use_sys_lzma=enabled \
+    -D use_sys_zlib=enabled \
+    -D use_sys_xxhash=enabled \
+    -D use_sys_openssl=enabled \
+    -D use_sys_pcre2=enabled \
+    -D use_sys_tree_sitter=enabled \
+    -D use_sys_libmspack=enabled \
+    -D use_zlib=true \
+    -D use_lzma=true \
+    -D local=disabled
+  ninja -C build
+}
+
+package() {
+  depends+=(
+    capstone libcapstone.so
+    file libmagic.so
+    libmspack libmspack.so
+    libzip libzip.so
+    pcre2 libpcre2-8.so
+    tree-sitter libtree-sitter.so
+    xxhash libxxhash.so
+    zstd libzstd.so
+  )
+
+  cd ${pkgname}-v${pkgver}
+  DESTDIR="${pkgdir}" ninja -C build install
+  install -d "${pkgdir}/usr/share/doc/rizin"
+  cp -r doc/* "${pkgdir}/usr/share/doc/rizin"
+  install -Dm 644 COPYING* -t "${pkgdir}/usr/share/licenses/rizin"
+}
+
+# vim: ts=2 sw=2 et:

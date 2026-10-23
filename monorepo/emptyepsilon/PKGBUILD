@@ -1,0 +1,65 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Mewp <aur.archlinux.org@mewp.pl>
+
+pkgname=emptyepsilon
+pkgver=2024.12.08
+pkgrel=2
+pkgdesc='Open source spaceship bridge simulator'
+url='https://github.com/daid/EmptyEpsilon'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libglvnd
+  libstdc++
+  libx11
+  libxrandr
+  sdl2
+)
+makedepends=(
+  cmake
+  git
+  mesa
+  python
+)
+source=("git+https://github.com/daid/EmptyEpsilon.git#tag=EE-${pkgver}"
+        "git+https://github.com/daid/SeriousProton.git#tag=EE-${pkgver}")
+sha512sums=('05d531d422ee2be6926befb213ecaa891f9d41eb15cc14117d50ad2ace1d0676a3cc232fea6f728e59aaacc9f5b7c351a3787b9bb51a7a97df6f2f62fcc4150c'
+            'e98e199fa22d234fa65e5a6aa7a777d83edec1cd3fdd757687d9cd6d8a9c531dd018aea33e89d747254dd84ffb6c10ce7dd83256d8c7a31e809a12b32e424a6d')
+
+
+build() {
+  mkdir -p EmptyEpsilon/build
+  cd EmptyEpsilon/build
+  # this uses malloc_usable_size, which is incompatible with fortification level 3
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  # add cppflags to use fortify
+  export CXXFLAGS="${CXXFLAGS} ${CPPFLAGS}"
+  # release type is important here to get optimisation flags
+  # defined in the project's cmake files
+  cmake -DSERIOUS_PROTON_DIR="${srcdir}/SeriousProton" \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCPACK_PACKAGE_VERSION_MAJOR="$(echo ${pkgver} | cut -d. -f1)" \
+        -DCPACK_PACKAGE_VERSION_MINOR="$(echo ${pkgver} | cut -d. -f2)" \
+        -DCPACK_PACKAGE_VERSION_PATCH="$(echo ${pkgver} | cut -d. -f3)" \
+        -DOpenGL_GL_PREFERENCE=GLVND \
+        -DCMAKE_CXX_FLAGS=-DGLM_ENABLE_EXPERIMENTAL \
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+        -Wno-dev \
+        ..
+  make
+}
+
+package() {
+  cd EmptyEpsilon
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/emptyepsilon"
+  mv "${pkgdir}"/usr/share/doc/EmptyEpsilon/script_reference.html "${pkgdir}/usr/share/doc/emptyepsilon"
+  rmdir "${pkgdir}"/usr/share/doc/EmptyEpsilon
+}
+
+# vim: ts=2 sw=2 et:

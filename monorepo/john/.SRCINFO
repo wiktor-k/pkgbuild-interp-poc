@@ -1,0 +1,39 @@
+pkgbase = john
+	pkgdesc = John the Ripper password cracker
+	pkgver = 1.9.0.jumbo1
+	pkgrel = 13
+	url = https://www.openwall.com/john
+	arch = x86_64
+	license = GPL2
+	license = custom
+	makedepends = pkg-config
+	makedepends = opencl-headers
+	depends = openssl
+	depends = gmp
+	depends = libpcap
+	depends = openmpi
+	depends = gcc-libs
+	depends = opencl-icd-loader
+	depends = libxcrypt
+	depends = libcrypt.so
+	optdepends = bash-completion: completion for bash
+	optdepends = lua: lua based john scripts
+	optdepends = perl: perl based john scripts
+	optdepends = ruby: ruby based john scripts
+	optdepends = python: python based john scripts
+	backup = etc/john/john.conf
+	source = https://www.openwall.com/john/k/john-1.9.0-jumbo-1.tar.xz
+	source = https://www.openwall.com/john/k/john-1.9.0-jumbo-1.tar.xz.sign
+	source = john-pdf2john-path-fix2.patch::https://github.com/openwall/john/commit/66cf12d17e9fa453b34bcd9d0b8dc4f1954e8cff.patch?full_index=1
+	source = john-fix-gcc11-build2.patch::https://github.com/openwall/john/commit/8152ac071bce1ebc98fac6bed962e90e9b92d8cf.patch?full_index=1
+	source = john-fix-opencl-topology.patch::https://raw.githubusercontent.com/hlein/gentoo/bfdb9a0c7b1a88f607a7f33137ff60f2bf8002c0/app-crypt/johntheripper-jumbo/files/johntheripper-jumbo-1.9.0-opencl-fix.patch
+	source = john-ssh2json-python3-compatibility.patch
+	validpgpkeys = 297AD21CF86C948081520C1805C027FD4BDC136E
+	sha512sums = c5cb5dc739ee4c666f8479cdf10511fddc391b590c59f90c060d3ccd8449b794ac7b831a6d1f7553883892499e709a66578cfa4d62caef9b7e0a831eb827e808
+	sha512sums = SKIP
+	sha512sums = eec7a121fac3bb00de3ed12218af4129b15953631d56c61d663fefc3eaa805796cda0a36f9582e284d7799c556268e961a7b5a7c7a6b7f5b5fdb6200ce4ac329
+	sha512sums = 41e13c04cfd538b017684ce65ccf566904b5e5abe3ad390ebcfe83212c83cfcd4223b9fa2fa82b4ffbe8df495980e1e7656e4ae9816510dec0ea6482acae3d09
+	sha512sums = 81f9dabc6d8ad54944be7eb9b3c7204ce426db842325c31662038e213775c0a86288c860712e6d3c24f7a9d0b7a0fd8962126a25242f45e5f242307691a97d38
+	sha512sums = f33e054076f61f15ffbccf26f7111b44288c14caa18e1b8a099db0d623bc28358383cd51765eaa89d96b18278a3a0df6ed20694beff08c8537532b3cbc681b7a
+
+pkgname = john

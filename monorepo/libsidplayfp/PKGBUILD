@@ -1,0 +1,77 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Gaetan Bisson <bisson@archlinux.org>
+# Contributor: Simon Perry <aur [at] sanxion [dot] net>
+# Contributor: Jonas Nyrén <jonas.nyren*mindkiller.com>
+
+pkgname=libsidplayfp
+pkgver=3.1.1
+pkgrel=1
+pkgdesc='Library to play Commodore 64 music'
+arch=(x86_64)
+url='https://github.com/libsidplayfp/libsidplayfp'
+license=(GPL-2.0-only)
+makedepends=(
+  git
+  vice
+  xa
+  libusb
+  libresidfp
+  libexsid
+  libgcrypt
+)
+optdepends=(
+  'vice: better SID support'
+  'libusb: USBSID support'
+)
+provides=(
+  libsidplayfp.so
+  libstilview.so
+)
+source=(
+  "$pkgname::git+$url#tag=v$pkgver"
+  'github.com-libsidplayfp-exsid-driver::git+https://github.com/libsidplayfp/exsid-driver'
+  'github.com-LouDnl-USBSID-Pico-driver::git+https://github.com/LouDnl/USBSID-Pico-driver'
+)
+sha512sums=('b2ad0d338f55e76543d6d90394c83afe9907f2a46623f4854cd9d15f87dd4d8507a52368c134ada73d94571ae24f8b775bad02eeee6b8d2ecea3798e346c3fb7'
+            'SKIP'
+            'SKIP')
+b2sums=('1c193446d157f612c5f859784a08de6725f49ce1cd89583207ee4e21da0a9fdba43514492979c541840c18e7b1518f7f1b7375705329aa42195d4d39436799ba'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgname"
+
+  # prepare git submodule(s)
+  git submodule init
+  git config submodule.src/builders/exsid-builder/driver.url "$srcdir/github.com-libsidplayfp-exsid-driver"
+  git config submodule.src/builders/usbsid-builder/driver.url "$srcdir/github.com-LouDnl-USBSID-Pico-driver"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  cd "$pkgname"
+
+  autoreconf -vfi
+
+  ./configure \
+    --prefix=/usr \
+    --with-exsid \
+    --with-usbsid
+
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+
+  make
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+    libstdc++ libstdc++.so
+    libresidfp libresidfp.so
+    libexsid libexsid.so
+  )
+  DESTDIR="$pkgdir" make -C "$pkgname" install
+}

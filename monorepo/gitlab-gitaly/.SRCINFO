@@ -1,0 +1,25 @@
+pkgbase = gitlab-gitaly
+	pkgdesc = Speed up Git access using caching
+	pkgver = 19.5.1
+	pkgrel = 1
+	url = https://gitlab.com/gitlab-org/gitaly
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	makedepends = go
+	makedepends = meson
+	depends = glibc
+	depends = libxml2
+	depends = libxslt
+	depends = libssh2
+	options = !buildflags
+	backup = etc/gitlab-gitaly/config.toml
+	source = https://gitlab.com/gitlab-org/gitaly/-/archive/v19.5.1/gitaly-v19.5.1.tar.gz
+	source = gitlab-gitaly-configs.patch
+	source = gitlab-gitaly.service
+	sha256sums = 4ae4ab0f9c329d4d75142a06597da9dfd59c489f9a08841724e8349bb47fb9fe
+	sha256sums = bbac5dd449b2f216335820cdb5e337be6f86b6058b58bca9abae88aa1372dfdd
+	sha256sums = a047c82481ccbaa3b00ba1bb769135934fa4fa939eb6506d09c77f3a7aec08cd
+
+pkgname = gitlab-gitaly

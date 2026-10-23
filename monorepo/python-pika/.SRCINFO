@@ -1,0 +1,20 @@
+pkgbase = python-pika
+	pkgdesc = Pure Python RabbitMQ/AMQP 0-9-1 client library
+	pkgver = 1.4.4
+	pkgrel = 1
+	url = https://github.com/pika/pika/
+	arch = any
+	license = BSD-3-Clause
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	makedepends = git
+	depends = python
+	optdepends = python-tornado: use with Tornado I/O loop
+	optdepends = python-twisted: use with Twisted I/O loop
+	optdepends = python-gevent: use with Gevent I/O loop
+	source = git+https://github.com/pika/pika.git#tag=1.4.4
+	sha256sums = e4d854f85a9e9b9654e53bd12e301a0247369a110519fb46a4a27272974b9236
+
+pkgname = python-pika

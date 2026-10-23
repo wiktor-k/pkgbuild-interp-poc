@@ -1,0 +1,61 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Tercio Martins <echo dGVyY2lvd2VuZGVsQGdtYWlsLmNvbQo= | base64 -d>
+# Contributor: Brandon Mulcahy <brandon@jangler.info>
+
+pkgname=schismtracker
+pkgver=20260524
+pkgrel=1
+pkgdesc='An old-school sample-based music composition tool'
+arch=(x86_64)
+url='https://schismtracker.org'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  flac
+  libx11
+  libxv
+  libutf8proc
+  sdl2-compat
+  hicolor-icon-theme
+)
+makedepends=(git python alsa-lib jack2)
+source=("$pkgname::git+https://github.com/schismtracker/schismtracker#tag=$pkgver")
+sha512sums=('816fa5c223ead2faeeb1e4679df7360ed5f0285f66d9cb4fae581c216e73c8165902859500aba8ebcd9d7ede89e6532fbd2839dfbfcb35cfdef174cf6cc79baf')
+b2sums=('0f9d1b860b75bb96c4f48569be1f7a4c5b948776a456ca71b65b7a1dd7bc4971747d176e5a2862902b211a155ace35c18338819bcfb369422fb6e171565da6c0')
+
+prepare() {
+  cd "$pkgname"
+
+  # modify desktop file & application icon
+  sed -e 's/schism.desktop/schismtracker.desktop/' -i Makefile.am
+  sed -e 's/schism-icon-128/schismtracker/' -i sys/fd.org/schism.desktop
+  mv sys/fd.org/{schism,schismtracker}.desktop
+}
+
+build() {
+  cd "$pkgname"
+
+  autoreconf -vfi
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  # delete old application icon
+  rm -rf "$pkgdir/usr/share/pixmaps"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" docs/configuration.md README.md
+
+  # application icons
+  for i in 16 22 24 32 36 48 64 72 96 128 192; do
+    install -vDm644 "icons/schism-icon-${i}.png" "$pkgdir/usr/share/icons/hicolor/${i}x${i}/apps/$pkgname.png" 
+  done
+  install -vDm644 icons/schism-icon.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/$pkgname.svg"
+}

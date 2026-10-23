@@ -1,0 +1,127 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+# Contributor: Mathieu Westphal <mathieu.westphal@kitware.com>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: <xantares09@hotmail.com>
+
+pkgname=paraview
+pkgver=6.2.0
+pkgrel=1
+pkgdesc="Parallel Visualization application using VTK"
+arch=(x86_64)
+url="https://www.paraview.org"
+license=(BSD-3-Clause)
+depends=(
+  abseil-cpp # libvtkRemotingServerManager.so links to libprotobuf.so.x.y.0 but uses abseil symbols directly
+  anari-sdk
+  cgns
+  double-conversion
+  fmt libfmt.so
+  gdal
+  gl2ps
+  glibc
+  hdf5
+  jsoncpp libjsoncpp.so
+  libgcc
+  libglvnd libGLX.so libOpenGL.so
+  libgomp
+  liblas
+  libstdc++
+  libxslt # xsltproc executable
+  lz4 liblz4.so
+  netcdf
+  onetbb
+  openmpi libmpi.so
+  paraview-catalyst
+  pdal
+  proj
+  protobuf libprotobuf.so
+  pugixml
+  python
+  python-mpi4py
+  python-numpy
+  qt6-5compat
+  qt6-base
+  qt6-svg # for showing icons in the UI
+  qt6-tools
+  vtk
+  zlib libz.so
+  # vtk optdepends
+  adios2
+  ffmpeg
+  freetype2
+  libogg
+  libtheora
+  openvdb
+  ospray
+  viskores
+)
+optdepends=(
+  python-matplotlib
+  python-pandas
+  'uv: for managing virtual environments with pvpython -m paraview.envs'
+)
+makedepends=(
+  boost
+  cli11
+  cmake
+  eigen
+  fast_float
+  gcc-fortran
+  mesa
+  ninja
+  nlohmann-json
+  utf8cpp
+)
+source=(
+  $url/files/v${pkgver%.*}/ParaView-v${pkgver/R/-R}.tar.xz
+)
+b2sums=('c22d3a8bcde53d068dcf0cbb2792f0f23a81a838c8d67d9212b398cadc25482084012fbdabb9000afa2d4643ae20dc704d46f473f6d07431bde5d6771163ba09')
+
+build() {
+  export CFLAGS+=" -ffat-lto-objects"
+  export CXXFLAGS+=" -ffat-lto-objects"
+  local cmake_options=(
+    -B build
+    -S ParaView-v${pkgver/R/-R}
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_INSTALL_LICENSEDIR=share/licenses/paraview
+    -DCMAKE_CXX_STANDARD=17
+    # RPATH is needed for loading plugins
+    -DCMAKE_SKIP_INSTALL_RPATH=OFF
+    -DPARAVIEW_ENABLE_ADIOS2=ON
+    -DPARAVIEW_ENABLE_ANARI=ON
+    -DPARAVIEW_ENABLE_CATALYST=ON
+    -DPARAVIEW_ENABLE_FFMPEG=ON
+    -DPARAVIEW_ENABLE_FIDES=ON
+    -DPARAVIEW_ENABLE_GDAL=ON
+    -DPARAVIEW_ENABLE_LAS=ON
+    -DPARAVIEW_ENABLE_MOTIONFX=ON
+    -DPARAVIEW_ENABLE_OPENVDB=ON
+    -DPARAVIEW_ENABLE_PDAL=ON
+    -DPARAVIEW_ENABLE_RAYTRACING=ON
+    -DPARAVIEW_ENABLE_VISITBRIDGE=ON
+    -DPARAVIEW_ENABLE_XDMF3=ON
+    -DPARAVIEW_USE_MPI=ON
+    -DPARAVIEW_USE_PYTHON=ON
+    -DPARAVIEW_VERSIONED_INSTALL=OFF
+    -DPARAVIEW_BUILD_WITH_EXTERNAL=ON
+    -DPARAVIEW_USE_EXTERNAL_VTK=ON
+    # workaround for https://gitlab.kitware.com/paraview/paraview/-/work_items/23235
+    # (should be fixed in paraview 6.1.1)
+    -DCMAKE_POLICY_DEFAULT_CMP0076=NEW
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  # byte-compile python modules since the CMake build does not do it.
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m compileall -o 0 -o 1 -o 2 --hardlink-dupes -s "${pkgdir}" "${pkgdir}"${site_packages}
+}

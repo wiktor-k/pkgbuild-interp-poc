@@ -1,0 +1,23 @@
+pkgbase = scantailor-advanced
+	pkgdesc = An interactive post-processing tool for scanned pages.
+	pkgver = 1.2.1
+	pkgrel = 1
+	url = https://github.com/ScanTailor-Advanced/scantailor-advanced
+	arch = x86_64
+	license = GPL3
+	makedepends = cmake>=3.9.0
+	makedepends = qt6-tools
+	makedepends = boost>=1.0.0
+	makedepends = vulkan-headers
+	depends = qt6-base
+	depends = qt6-svg
+	depends = hicolor-icon-theme
+	depends = libpng>=1.0.0
+	depends = libtiff>=4.0.0
+	depends = boost-libs
+	conflicts = scantailor
+	replaces = scantailor
+	source = https://github.com/ScanTailor-Advanced/scantailor-advanced/archive/v1.2.1/scantailor-advanced-1.2.1.tar.gz
+	sha256sums = 9eb20238378151e32055f8f5c6d67cf0b4c93b77eba3f11266656879c41ac009
+
+pkgname = scantailor-advanced

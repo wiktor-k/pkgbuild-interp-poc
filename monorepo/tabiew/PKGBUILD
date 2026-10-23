@@ -1,0 +1,52 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=tabiew
+pkgver=0.15.1
+pkgrel=1
+pkgdesc="A lightweight TUI to view and query CSV files"
+arch=('x86_64')
+url="https://github.com/shshemi/tabiew"
+license=('MIT')
+depends=('glibc' 'libgcc' 'openssl' 'sqlcipher' 'zstd')
+makedepends=('cargo')
+source=("$url/archive/refs/tags/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('7e7487570e2834cd3ff51181d29561dca33e48ba630eac759be2ad105766d258247813e193d1dc05eb934adf90048a8f76407453b5fc8b5dc8276d4d9b50ba54')
+
+_srcenv() {
+  cd "$pkgname-$pkgver"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -fno-lto'
+  export OPENSSL_NO_VENDOR=true
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  _srcenv
+  cargo build --release --frozen
+}
+
+check() {
+  _srcenv
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/tw" -t "$pkgdir/usr/bin/"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

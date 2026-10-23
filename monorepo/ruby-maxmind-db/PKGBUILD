@@ -1,0 +1,63 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-maxmind-db
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='MaxMind DB reader for Ruby'
+arch=(any)
+url='https://github.com/maxmind/MaxMind-DB-Reader-ruby'
+license=('Apache-2.0' 'MIT')
+depends=(ruby)
+makedepends=(git ruby-minitest ruby-rake)
+checkdepends=(ruby-bundler)
+options=(!emptydirs)
+source=("git+https://github.com/maxmind/MaxMind-DB-Reader-ruby.git#tag=v$pkgver"
+        "git+https://github.com/maxmind/MaxMind-DB.git")
+sha256sums=('5036f963e45d3fb8eb8ef0f59b558607f239d6610348f4e3ec00e7dad1555d3b'
+            'SKIP')
+
+prepare() {
+  cd MaxMind-DB-Reader-ruby
+  git config submodule.test/data.url "$srcdir/MaxMind-DB"
+  git -c protocol.file.allow=always submodule update --init test/data
+  sed '/add_development_dependency.*rubocop/d' -i maxmind-db.gemspec
+  sed '/[rR]ubo[cC]op/d' -i Rakefile
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd MaxMind-DB-Reader-ruby
+  gem build maxmind-db.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    maxmind-db-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd MaxMind-DB-Reader-ruby
+  GEM_HOME="tmp_install/$_gemdir" rake test
+}
+
+package() {
+  cd MaxMind-DB-Reader-ruby
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE-MIT -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

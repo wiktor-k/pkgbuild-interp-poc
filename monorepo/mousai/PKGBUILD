@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=mousai
+pkgver=0.7.10
+pkgrel=1
+pkgdesc='Simple application to identify songs'
+arch=(x86_64)
+url='https://apps.gnome.org/Mousai/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  graphene
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  libsoup3
+)
+makedepends=(
+  git
+  meson
+  rust
+)
+options=(!lto)
+source=("git+https://github.com/SeaDve/Mousai.git#tag=v$pkgver")
+b2sums=('ccb811cd27a5a70f9231cae16ac1d5a61e12471500f572897b9ed781a95077129522c1573e3efc71bfea0e38a5ff28d9b0e53160a4451c5eed0d3be37572a1cf')
+
+prepare() {
+  cd Mousai
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson Mousai build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

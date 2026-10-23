@@ -1,0 +1,28 @@
+pkgbase = mate-applet-streamer
+	pkgdesc = MATE panel applet to let you play your favourite online radio station with a single click
+	pkgver = 0.4.1
+	pkgrel = 3
+	url = https://github.com/assen-totin/mate-applet-streamer
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libnotify
+	depends = libxml2
+	depends = mate-panel
+	depends = sqlite
+	source = git+https://github.com/assen-totin/mate-applet-streamer.git#tag=0.4.1
+	source = mate-applet-streamer-0.4.1-type-cast.patch
+	source = mate-applet-streamer-0.4.1-xml-urls.patch
+	b2sums = 913b4ec7b8bb9e408e4f99e54d9b7e23c68d03b46ae2eb04a65175354c121d08be89372c6c1f7a221afc6f3d1aef900cd31015cd5a1a4f4017add40956ccad46
+	b2sums = d3f5da61a359c737c822eace86530c20b92840baac40ce2b779ae5325b1b8e1e6beb43b572292488434242eb3ba4ae34e07165e57e982191fd6cd918f1722495
+	b2sums = 19e0b142380f94164718d5dc64ba593deccb3d80428a0a9d624a129a1421ffb50d2ecef86b2f25590047db33ec222f737dbda88f00e83cc00925cbfca963566f
+
+pkgname = mate-applet-streamer

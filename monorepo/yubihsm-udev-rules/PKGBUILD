@@ -1,0 +1,27 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=yubihsm-udev-rules
+pkgver=1
+pkgrel=1
+pkgdesc="Enable access to YubiHSM2 devices using the _yubihsm2 group"
+arch=(any)
+url="https://docs.yubico.com/hardware/yubihsm-2/hsm-2-user-guide/hsm2-intro-libyubihsm-backend.html#linux-udev-rules"
+license=(0BSD)
+source=(
+  50-yubihsm2.rules
+  $pkgname.sysusers
+  LICENSE
+)
+sha512sums=('c73c11cae672a223948708fb711be09776646439591da22e5ce6cfecf610e5a1f5be72c5fca2dbe698d835f38ef6297f2faae356e6aaa4c43b69b6512535f2fc'
+            '0f7d1913cf9075c88403684cf9ddbd25b1ed334aea7c84ddac3e01180cf0927b85264097c5995e0d9d2bdacd1c7bf55c3669ff0f4c3598e7d08bdf9b4de7b6c4'
+            'a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930')
+b2sums=('443eb93a05848d35724a9c461f31115dcf6a270534f22c7579dd767c41e040300f358ce6ac033649ca86e36ad4c140d59d9d8e8b282eeacaf715d84c04815c61'
+        '02209c7c46f6508cb7dd695489b9ac67fa5a8533235161f50fda42dfaef2d7888ca8a488645dae68549801c831f93da576a4b078e704b582ee769adf741e6edb'
+        'a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101')
+validpgpkeys=()
+
+package() {
+  install -vDm 644 50-yubihsm2.rules -t "$pkgdir/usr/lib/udev/rules.d/"
+  install -vDm 644 $pkgname.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,55 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-dataclasses-json
+pkgver=0.6.7
+pkgrel=1
+pkgdesc="Easily serialize Python dataclasses to and from JSON"
+arch=('any')
+url="https://github.com/lidatong/dataclasses-json"
+license=('MIT')
+depends=(
+  'python'
+  'python-marshmallow'
+  'python-typing_inspect'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-poetry-core'
+  'python-poetry-dynamic-versioning'
+)
+checkdepends=(
+  'mypy'
+  'python-hypothesis'
+  'python-pytest'
+)
+source=("git+https://github.com/lidatong/dataclasses-json.git#tag=v$pkgver")
+sha512sums=('0d2b7589832d800ecfbe6772f097f1fd14887612f6afe88157b7dc98826d077420807db3a7ee5ab09502c6d6e9d355f2f1e55b55d34f2cedfebbc05fd9146546')
+
+prepare() {
+  cd dataclasses-json
+
+  # Support marshmallow 4: https://github.com/lidatong/dataclasses-json/pull/577
+  git cherry-pick -n 3498ccd5d8014ec1208d2aaf03db2fb0a0ef2cc2
+
+  # Fix Python 3.14 PEP 649 type hint handling: https://github.com/lidatong/dataclasses-json/pull/565
+  git cherry-pick -n 20799887ff1d50dc6ca5d90bc1038ff5160b97f3
+}
+
+build() {
+  cd dataclasses-json
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd dataclasses-json
+
+  pytest tests
+}
+
+package() {
+  cd dataclasses-json
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

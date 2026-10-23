@@ -1,0 +1,72 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=sigal
+pkgver=2.6.1
+pkgrel=1
+pkgdesc="Yet another simple static gallery generator"
+arch=(any)
+url="http://sigal.saimon.org/en/latest/"
+_url="https://github.com/saimn/sigal"
+license=(MIT)
+depends=(
+  ffmpeg
+  python
+  python-blinker
+  python-click
+  python-jinja
+  python-markdown
+  python-natsort
+  python-pillow
+  python-pilkit
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools-scm
+  python-toml
+  python-wheel
+)
+checkdepends=(
+  python-brotli
+  python-cryptography
+  python-feedgenerator
+  python-pillow-heif
+  python-pytest
+  python-zopfli
+)
+optdepends=(
+  'python-brotli: compress assets plugin'
+  'python-cryptography: encrypt plugin'
+  'python-feedgenerator: feed plugin'
+  'python-markupsafe: feed plugin'
+  'python-pillow-heif: for HEIF/HEIC support'
+  'python-zopfli: compress assets plugin'
+)
+source=("$_url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('cf2e00109f3bcf8a6d1cf916669ae7b3f39d5b63c7aa949f64a1f6c8989aa3c3b30252fd004a58a5ef0d18039276a3af979825320570b1096203aeb01efcb1ba')
+b2sums=('276b0e3c4fb67fcdc171695f96466fe6955fea4777ffe12f11c209e85965261558b558f579cc56bd7aa9cc8201c1123f8fc237775052b60b8430fa6c9df28fc9')
+
+build() {
+  cd $pkgname-$pkgver
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+  )
+
+  cd $pkgname-$pkgver
+  # Sigal does not properly clean up multiprocessing pools, running tests on
+  # b.a.o will cause file descriptors to be exhausted.
+  export PYTHON_CPU_COUNT=1
+
+  PYTHONPATH="src" pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {AUTHORS,{CONTRIBUTING,README}.rst} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

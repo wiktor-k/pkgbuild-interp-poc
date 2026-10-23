@@ -1,0 +1,98 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_gemname='jekyll-watch'
+pkgname="ruby-${_gemname}"
+pkgver=2.2.1
+pkgrel=2
+pkgdesc='Rebuild your Jekyll site when a file changes with the `--watch` switch.'
+arch=('any')
+url="https://github.com/jekyll/${_gemname}"
+license=('MIT')
+depends=(
+  ruby
+  ruby-listen
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  jekyll
+  ruby-rspec
+)
+options=('!emptydirs')
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('55867bedf0f453aad7df267d21cc2a49857916b51ed70e727718c9ed18dedd474bc45c446abcbc803ab4b8b26f8afb1f0e05e6655441186788fbace869c74b6d')
+b2sums=('2311802227206b76d1f7b18ccc6360514164c6148f549490bd4df69e56e4d7a8c944c828e950bb156929081ea8ac15bdc37099eba5af3e0f3e1c20b403828f60')
+
+prepare() {
+  cd "${_gemname}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # we build based on a tar archive, not a git repo
+  sed --in-place --regexp-extended 's|git ls-files -z|find . -type f -print0|' "${_gemname}.gemspec"
+}
+
+build() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install${_gemdir}" \
+    --bindir "tmp_install/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+
+check() {
+  cd "${_gemname}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install${_gemdir}" rspec
+}
+
+package() {
+  cd "${_gemname}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

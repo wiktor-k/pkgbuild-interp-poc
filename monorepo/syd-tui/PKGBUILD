@@ -1,0 +1,31 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=syd-tui
+_pkgname=tui
+pkgver=0.2.2
+pkgrel=3
+pkgdesc="Syd's Terminal User Interface"
+url="https://gitlab.exherbo.org/sydbox/sydbox/-/tree/main/tui"
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('glibc' 'libgcc' 'syd')
+makedepends=('cargo' 'git')
+source=("git+https://gitlab.exherbo.org/sydbox/sydbox.git#tag=${pkgname}-${pkgver}?signed")
+sha256sums=('34950b5626fc54e13946aee15f8933f6e68725e9a262396b64c42a64264135c7')
+validpgpkeys=('5DF763560390A149AC6C14C7D076A377FB27DE70')
+
+prepare() {
+	cd "sydbox/${_pkgname}"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "sydbox/${_pkgname}"
+	cargo build --frozen --release --all-features
+}
+
+package() {
+	cd "sydbox/${_pkgname}"
+	install -Dm 755 "target/release/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

@@ -1,0 +1,58 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=virt-firmware
+pkgver=26.10
+pkgrel=2
+pkgdesc="Collection of tools for edk2 firmware images"
+arch=(any)
+url="https://gitlab.com/kraxel/virt-firmware"
+license=(GPL-2.0-or-later)
+depends=(
+  python
+  python-crypt_r
+  python-cryptography
+  python-pefile
+  python-pyyaml
+  qemu-img
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytest
+  systemd  # tests require systemd-detect-virt(?!)
+)
+optdepends=(
+  'python-crc32c: for faster CRC checks'
+  'python-requests: for QEMU test integration'
+)
+source=($url/-/archive/v$pkgver/$pkgname-v$pkgver.tar.gz)
+sha512sums=('518773e7d95292949034882a7dd881e674ce9af2a751ace7d66d59c7051f8d53b4b48222f165183dec85b39fc1b8cd6a073d09808bd5a2db9d64e787a734b81d')
+b2sums=('5d4116a4d0e5bb79c52ca859d41cb50dd7c69391ea08b47043267c439f9da7688e7b4b6afd4d03365164103316e2f55c6c3530968953b49085efde5ef5ed364f')
+
+build() {
+  cd $pkgname-v$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local _site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $pkgname-v$pkgver
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="test_dir/$_site_packages:$PYTHONPATH"
+
+  pytest -vv tests/tests.py
+}
+
+package() {
+  cd $pkgname-v$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 man/virt-*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 systemd/kernel-bootcfg-boot-successful.service -t "$pkgdir/usr/lib/systemd/system/"
+  install -vDm 755 systemd/99-uki-uefi-setup.install -t "$pkgdir/usr/lib/kernel/install.d/"
+}

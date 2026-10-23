@@ -1,0 +1,65 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=openobserve
+pkgver=1.1.2
+pkgrel=1
+pkgdesc="Observability platform for logs, metrics, traces, and frontend monitoring"
+arch=('x86_64')
+url="https://openobserve.ai/"
+license=('AGPL-3.0-only')
+depends=('glibc' 'libgcc' 'sqlite' 'oniguruma' 'zlib' 'zstd')
+makedepends=('rustup' 'git' 'protobuf' 'npm' 'clang')
+backup=('etc/conf.d/openobserve')
+source=("git+https://github.com/openobserve/openobserve.git#tag=v${pkgver}"
+        openobserve.sysusers
+        openobserve.tmpfiles
+        openobserve.service
+        openobserve.env)
+sha256sums=('7eea7f1645c975c5a2871b5288ef99417ae7d9179498d58dad2395ba9f6d0b8e'
+            'fe2d95c0cf4fa36914b10fdd64992718388f59afa449d060c9ece4a7f743d973'
+            '594c286d8ff7af5b7a5d6821b172880b1c530e56b0b42f70f3f1866dd0c936cc'
+            'a0e48687e444d58558d7474dec7fd88b08b4c3efd00099c6cab04f9a5e4feaab'
+            'b3b27e3d7045aa413f6ddf433e05667981204ccc0559c1062f0d79189305b8c6')
+
+prepare() {
+  cd $pkgname
+
+  # TODO: Temporary fix for https://github.com/openobserve/openobserve/issues/14450
+  cargo update
+
+  # Note: We're not fetching the stable toolchain via rustup here
+  # because upstream uses a specific version in a toolchain file.
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname/web
+
+  npm install
+  # We ave to increase the heap limit as otherwise we'd get
+  # Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory"
+  NODE_OPTIONS="--max-old-space-size=8192" npm run build
+
+  cd ..
+
+  CFLAGS+=' -ffat-lto-objects'
+  CXXFLAGS+=' -ffat-lto-objects'
+  export RUSTFLAGS="-C target-feature=+aes,+sse2"
+  export RUSTONIG_SYSTEM_LIBONIG=1
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  export ZSTD_SYS_USE_PKG_CONFIG=1
+
+  cargo build --frozen --release
+}
+
+package() {
+  cd $pkgname
+
+  install -Dm755 target/release/openobserve "$pkgdir"/usr/bin/openobserve
+  install -Dm644 "$srcdir"/openobserve.service "$pkgdir"/usr/lib/systemd/system/openobserve.service
+  install -Dm644 "$srcdir"/openobserve.env "$pkgdir"/etc/conf.d/openobserve
+  install -Dm644 "$srcdir"/openobserve.sysusers "$pkgdir/usr/lib/sysusers.d/openobserve.conf"
+  install -Dm644 "$srcdir"/openobserve.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/openobserve.conf"
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

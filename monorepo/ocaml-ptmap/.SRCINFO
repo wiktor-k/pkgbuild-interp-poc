@@ -1,0 +1,18 @@
+pkgbase = ocaml-ptmap
+	pkgdesc = Maps over integers implemented as Patricia trees
+	pkgver = 2.0.5
+	pkgrel = 5
+	url = https://github.com/backtracking/ptmap
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = dune
+	depends = ocaml
+	depends = ocaml-seq
+	depends = ocaml-stdlib-shims
+	options = !debug
+	options = !makeflags
+	options = !strip
+	source = ocaml-ptmap-2.0.5.tar.gz::https://github.com/backtracking/ptmap/releases/download/2.0.5/ptmap-2.0.5.tbz
+	b2sums = 96e291be16a7c91bbb49a273f1e73843de400409ed4760f061ac64417480a538963bae9dbe760108c78126b942d3a415ba42c2e4bf414b4cddd7ccafb4ad90ff
+
+pkgname = ocaml-ptmap

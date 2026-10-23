@@ -1,0 +1,22 @@
+pkgbase = python-tweepy
+	pkgdesc = Python library for accessing the entire Twitter API
+	pkgver = 4.16.0
+	pkgrel = 1
+	url = https://tweepy.org/
+	arch = any
+	license = MIT
+	checkdepends = python-aiohttp
+	checkdepends = python-vcrpy
+	makedepends = python-build
+	makedepends = python-flit-core
+	makedepends = python-installer
+	depends = python
+	depends = python-oauthlib
+	depends = python-requests
+	depends = python-requests-oauthlib
+	optdepends = python-aiohttp: for async support
+	source = https://github.com/tweepy/tweepy/archive/v4.16.0/tweepy-4.16.0.tar.gz
+	sha256sums = 35b691d6c97024eee8b3c300935b38828cce41444b4c1f86a207947e67147856
+	sha512sums = 81ea84aa241fb7fa354139fb2dfdb917ac8bd50e11ab036307ebee4fd3d4f01f253cb6d4a558a63290f3ec580e489cc1ff0ca004b8abda2c008390e5fc2ac57d
+
+pkgname = python-tweepy

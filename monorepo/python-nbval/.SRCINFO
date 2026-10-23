@@ -1,0 +1,27 @@
+pkgbase = python-nbval
+	pkgdesc = A py.test plugin to validate Jupyter notebooks
+	pkgver = 0.11.0
+	pkgrel = 4
+	url = https://github.com/computationalmodelling/nbval
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-matplotlib
+	checkdepends = python-pytest
+	checkdepends = python-pytest-mock
+	checkdepends = python-sympy
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-nbdime
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-pytest
+	depends = python-jupyter_client
+	depends = jupyter-nbformat
+	depends = python-ipykernel
+	depends = python-coverage
+	optdepends = python-nbdime: for --nbdime option
+	source = git+https://github.com/computationalmodelling/nbval.git#tag=0.11.0
+	sha512sums = 0649b958eda9f21108a3647da60d54047101bab8035f4663e7da6aaefa58c8b67ae58852c492b5c11c2541251c21eed98932e1ad0d2ef974a4ce518f1f2f12ff
+
+pkgname = python-nbval

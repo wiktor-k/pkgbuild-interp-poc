@@ -1,0 +1,33 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Achmad Fathoni<fathoni.id(at)gmail.com>
+# Contributor: Michał Wojdyła < micwoj9292 at gmail dot com >
+
+pkgname=python-trio-websocket
+pkgver=0.12.2
+pkgrel=4
+pkgdesc="WebSocket library for Trio"
+arch=('any')
+url='https://github.com/HyperionGray/trio-websocket'
+license=(MIT)
+depends=(python "python-"{trio,wsproto})
+makedepends=("python-"{build,installer,setuptools,wheel})
+checkdepends=("python-"{pytest,pytest-trio,trustme})
+source=("${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('4784c823dbe98e4dc3909b560857c64f5786bca01d00d16f2e3ae37a32a54174')
+
+build() {
+    cd ${pkgname#*-}-${pkgver}
+    python -m build --wheel --no-isolation
+}
+
+check() {
+    cd ${pkgname#*-}-${pkgver}
+    pytest
+}
+
+package() {
+    cd ${pkgname#*-}-${pkgver}
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

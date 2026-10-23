@@ -1,0 +1,49 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=amd-container-toolkit
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="Tools that streamline the use of AMD GPUs with containers."
+arch=('x86_64')
+url="https://github.com/ROCm/container-toolkit"
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go' 'git')
+options=("!lto")
+source=("$pkgname::git+${url}.git#tag=v${pkgver}")
+sha512sums=('42fa79781165719977453f00036bcabdeb5c4feac632836f92d5e05fc299872a5d5833ec08c6e326c8f9fec6f19df7fae9dcdbf24e97771d9cfab231fb819ae7')
+
+prepare() {
+  cd ${pkgname}
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd ${pkgname}
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw -buildvcs=false"
+  export GOPATH="${srcdir}"
+
+  # https://github.com/ROCm/container-toolkit/blob/main/Makefile#L231
+  local ld_flags=" \
+    -compressdwarf=false \
+    -linkmode=external \
+    -X main.Version=${pkgver}
+    -X main.GitCommit=$(git rev-list -1 HEAD --abbrev-commit)
+    -X main.BuildDate=$(date +%Y-%m-%dT%H:%M:%S%z)
+  "
+
+  for binary in "container-runtime" "amd-ctk"; do
+    go build -C cmd/$binary -ldflags "${ld_flags}" -o $binary
+  done
+}
+
+package() {
+  cd ${pkgname}
+  for binary in "container-runtime" "amd-ctk"; do
+      install -vDm755 -t "${pkgdir}/usr/bin" cmd/$binary/$binary
+  done
+}

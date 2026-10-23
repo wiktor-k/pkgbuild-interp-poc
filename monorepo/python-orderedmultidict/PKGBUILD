@@ -1,0 +1,32 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=orderedmultidict
+pkgname=python-orderedmultidict
+pkgver=1.0.2
+pkgrel=1
+pkgdesc="Ordered multivalue dictionary that retains method parity with dict."
+arch=(any)
+url="https://github.com/gruns/orderedmultidict"
+license=(Unlicense)
+depends=(python python-six)
+makedepends=(python-build python-installer python-setuptools python-wheel)
+source=(https://files.pythonhosted.org/packages/source/${_name::1}/$_name/$_name-$pkgver.tar.gz)
+sha512sums=('2fd2d338ffa78033e67fae5294bf3a21fa01e36f67706720fb4a9f865c7d53945d104748e759c37ae691c0a2fd591041a0d770e65139cbf71706e2bc54fe4ee9')
+b2sums=('c9aa1accecdec19ab4bb07210df3d517625163ce011db14107ee7d1dbd55c41fb4b60fde2e9453601e7d5e613e76ba554a04aded527ea82cb259206fc7f1977e')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_name-$pkgver
+#  No tests in pypi tarball
+#  python -m unittest discover -vs tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {API,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,22 @@
+pkgbase = bloaty
+	pkgdesc = Size profiler for binaries
+	pkgver = 1.1
+	pkgrel = 29
+	url = https://github.com/google/bloaty
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	depends = abseil-cpp
+	depends = capstone
+	depends = protobuf
+	depends = re2
+	source = git+https://github.com/google/bloaty#commit=379d5305670c00c36a57e608079fd253f13bde63
+	source = bloaty-demumble::git+https://github.com/nico/demumble.git
+	source = bloaty-googletest::git+https://github.com/google/googletest
+	b2sums = 211837ca607b8599275929f61f41005dbab6801cc66db529394ffe80392ffe6b5ab221e49e0d95d34e4d947f795ab41320d30cb3ac4e529b8254756518094399
+	b2sums = SKIP
+	b2sums = SKIP
+
+pkgname = bloaty

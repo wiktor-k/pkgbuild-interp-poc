@@ -1,0 +1,66 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Nogweii <me@nogweii.net>
+
+pkgname=zk
+pkgver=0.15.7
+pkgrel=1
+pkgdesc='A command-line tool helping you to maintain a Zettelkasten or personal wiki'
+arch=(x86_64)
+url='https://github.com/zk-org/zk'
+license=(GPL-3.0-only)
+depends=(sqlite)
+makedepends=(git go)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('37da7bb0c761d6c5760878e6dc80b13d6c8e8f0f7a2abc20df49e1ea031b97bbfddfa26a124607a560cf44c762b1805070e6793088fa6b0f9b32b9354bf51da7')
+b2sums=('5c263fe9ad20a5d5549b50e09ace84914bcae7ec814f390449ea4a5c8909971b7e4ea3527ecd724ae02a1a3e54cfdb7600b7fa39777130f47921a7cdfaaf1f9b')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.Version=$(git describe --tags HEAD) \
+    -X main.Build=$(git rev-parse --short HEAD)" \
+    -tags "fts5 libsqlite3" \
+    -o build \
+    .
+}
+
+check() {
+  cd "$pkgname"
+  go test -v -race -tags "fts5 libsqlite3" ./...
+}
+
+package() {
+  depends+=(glibc)
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/zk
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" *.md
+  cp -vr docs "$pkgdir/usr/share/doc/$pkgname"
+}

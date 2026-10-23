@@ -1,0 +1,124 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+# NOTE:
+# Since 2.20.0 the gc feature (--enable-gc) requires a patched bwd-gc or newer
+# version, since this is a build time dependency we don't have yet we can't
+# enable that feature. Can be re-enabled when we can supply bwd.
+# c.f. https://github.com/NixOS/nix/pull/9512/files
+
+pkgname=nix
+pkgver=2.35.4
+pkgrel=1
+pkgdesc='A purely functional package manager'
+arch=(x86_64)
+url='https://nixos.org/nix'
+license=(LGPL-2.1-only)
+depends=(
+  aws-crt-cpp
+  aws-c-auth
+  aws-c-common
+  boost-libs
+  brotli
+  curl
+  editline
+  gc
+  glibc
+  libgcc
+  libstdc++
+  libarchive
+  libblake3
+  libcpuid
+  libgit2
+  libseccomp
+  libsodium
+  lowdown
+  nix-busybox
+  nlohmann-json
+  openssl
+  sqlite
+  zstd
+)
+makedepends=(
+  boost
+  bzip2
+  cmake
+  git
+  graphviz
+  gtest
+  jq
+  meson
+  rapidcheck
+  toml11
+)
+provides=(
+  libnixutilc.so
+  libnixutil.so
+  libnixstorec.so
+  libnixstore.so
+  libnixmainc.so
+  libnixmain.so
+  libnixflakec.so
+  libnixflake.so
+  libnixfetchersc.so
+  libnixfetchers.so
+  libnixexprc.so
+  libnixexpr.so
+  libnixcmd.so
+)
+source=(
+  "$pkgname::git+https://github.com/NixOS/nix.git#tag=${pkgver}?signed"
+  sysusers.conf
+  nix.conf
+  remove-unused-sh-files.patch
+)
+backup=('etc/nix/nix.conf')
+sha512sums=('9d0764cb276fb31819f7045521dbb4b6e06a080c1f9f6fceaf7c99005ce2f15f7ef2e9dd80406f69aa5ee71d64f8a7064ad68b131349ed4d080395e6fdec2627'
+            '982e1f23401fa00ba9fc3b4533b08c41547f3675a2c75ab3969956c96d3bd30a8f14458f0590053275a9658f6f4f3fabaf56feda7df1464ccff27abe49345d49'
+            '9e5305680feac56c207a63d3db8dcac2eb8b7d82499e864ce618bbd4be09862b267965fc1378e30426fdcecc1e55b5b65d780355778e0d851a77e6d56a11679c'
+            '9708a14b83a10af236fb5004c16ba7cf057ccc4d500b7957893782456ab4c9db2e20d00d196d93afcb2180e09f8099746c0e831db161322cc8e6886d1f12c322')
+b2sums=('ce5ed9f7b8454e66ab0d25eecc284589e6f3d00daddc4ad083e207337e3ce1c816d7de0138f62fe64aa95225f0c43dc45a83090af94e3060f47195b4f3676298'
+        '93082469f333ef6c55428c82f4cb208a3c1ddd765ce83e8744761764ad4c0277c00ef62e848794edfd847914077e161098c163e4df759bd3a355b91d5e4850d6'
+        'da4733fa3b5bf20e7be59a260f8dc0ddfd52ad610e312d792e11d729a2c20834b34fbbfc8f0a56128b0cc15035c06d244be93174b7264e132c66f18ec63d048b'
+        '9a6091950e3ed3f9622630e16e5defc84d754562707d4ab8773e7b0cf5b52f2794de1b71cabce5705d140deb7703dc6effa355430b50ce1e397cbeba3ffe86b3')
+validpgpkeys=(
+  'B541D55301270E0BCF15CA5D8170B4726D7198DE' # Eelco Dolstra <edolstra@gmail.com>
+  '158A6F530EA202E5F651611314FAEA63448E1DF9' # Sergei Zimmerman <sergei@zimmerman.foo>
+)
+
+prepare() {
+  cd "$pkgname"
+
+  # skip unused sh files from being installed
+  patch -p1 -i "$srcdir/remove-unused-sh-files.patch"
+}
+
+build() {
+  local meson_opts=(
+    libstore:sandbox-shell=/usr/lib/nix/busybox
+    nix:profile-dir=/etc/profile.d
+    nix:mimalloc=disabled
+    doc-gen=false
+    unit-tests=false
+    functional-tests=false
+    json-schema-checks=false
+  )
+
+  arch-meson "$pkgname" build ${meson_opts[@]/#/-D }
+
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" meson install -C build
+
+  # systemd integration
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/nix-daemon.conf"
+  install -vDm644 nix.conf -t "$pkgdir/etc/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/COPYING"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,58 @@
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Morten Linderud <foxboron@archlinux.org>
+# Contributor: Devin Cofer <ranguvar[at]ranguvar[dot]io>
+# Contributor: DriverX
+# Contributor: Nicolas Quiénot <niQo @ aur>
+# Contributor: Martin Schrodt <martin@schrodt.org>
+
+pkgname=nvme-cli
+pkgver=3.1
+pkgrel=1
+pkgdesc="NVM-Express user space tooling for Linux"
+arch=('x86_64')
+url="https://github.com/linux-nvme/nvme-cli"
+license=('GPL-2.0-or-later')
+makedepends=(
+    'asciidoc'
+    'git'
+    'meson'
+    'swig'
+    'systemd'
+    'xmlto'
+)
+depends=(
+    'libgcc'
+    'glibc'
+    'json-c'
+    'libsystemd'
+    'util-linux'
+)
+install=nvme-cli.install
+# checkdepends=('python2-nose' 'python-nose')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/linux-nvme/${pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('8a6879f1f2af53743c03a8f77f247261306300d3f3b0edfd242c5f646bdfdccb')
+
+build() {
+    local meson_options=(
+        --sysconfdir /etc
+        -D docs=man -D docs-build=true
+        -D systemddir=lib/systemd/system/
+        -D udevrulesdir=lib/udev/rules.d
+        build
+        "${pkgname}-${pkgver}"
+    )
+
+    arch-meson "${meson_options[@]}"
+    meson compile -C build
+}
+
+# Tests require a working NVME disk.
+# check() {
+#   cd "${pkgname}-${pkgver}"
+#   make test
+# }
+
+package() {
+    meson install -C build --destdir "$pkgdir"
+}

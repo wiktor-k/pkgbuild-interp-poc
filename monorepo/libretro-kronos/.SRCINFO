@@ -1,0 +1,17 @@
+pkgbase = libretro-kronos
+	pkgdesc = Sega Saturn core
+	pkgver = 20260901.155445.g3791ffb2221f
+	pkgrel = 1
+	url = https://github.com/libretro/yabause
+	arch = x86_64
+	groups = libretro
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = libglvnd
+	depends = glibc
+	depends = libgl
+	depends = libretro-core-info
+	source = libretro-yabause::git+https://github.com/libretro/yabause.git#commit=3791ffb2221f
+	b2sums = 55adf638c9dd134cf63ac73ed3a276c7141d3d6f5c8af265048d8f11c9c7d9bba31555dd197a99643fb28dc08a32c749c79674da54797422216a29ed72c7a959
+
+pkgname = libretro-kronos

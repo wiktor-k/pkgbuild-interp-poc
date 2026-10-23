@@ -1,0 +1,29 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+pkgname=python-hcloud
+pkgver=2.27.0
+pkgrel=1
+pkgdesc="Official Hetzner Cloud python library"
+arch=('any')
+url="https://github.com/hetznercloud/hcloud-python"
+license=('MIT')
+replaces=('hcloud-python')
+provides=('hcloud-python')
+depends=('python-requests' 'python-dateutil')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("$pkgname"-$pkgver.tar.gz::https://github.com/hetznercloud/hcloud-python/archive/v${pkgver}.tar.gz)
+sha512sums=('3486927cbcaa5fa531fcbd0a09c628fbc7a0c51bbf997b082cd4f9947fec04fdb28ec44373680cd9b3b47d4a5da7dc5cf9f6a3de70fa9d11d347da731675d50c')
+
+build() {
+  cd "$srcdir/hcloud-python-$pkgver"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$srcdir/hcloud-python-$pkgver"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,51 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Mark Wagie <mark dot wagie at tutanota dot com>
+
+pkgname=kooha
+pkgver=2.3.2
+pkgrel=3
+pkgdesc="Elegantly record your screen"
+arch=('x86_64')
+url="https://github.com/SeaDve/Kooha"
+license=('GPL-3.0-only')
+depends=('glib2'
+         'gst-plugin-pipewire'
+         'gst-plugins-base'
+         'gst-plugins-good'
+         'gtk4'
+         'libadwaita'
+         'xdg-desktop-portal')
+makedepends=('meson'
+             'rust')
+optdepends=('gst-plugins-ugly: Encode video into H.264/AVC format')
+sha256sums=('e7f080f420cc1736572143477b045783fc962de36920b50c364b0920df79425d')
+source=("$url/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+
+prepare() {
+  cd Kooha-$pkgver
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson Kooha-$pkgver build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  # https://github.com/SeaDve/Kooha/issues/197
+  : # meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}
+
+# vim: ts=2 sw=2 et:

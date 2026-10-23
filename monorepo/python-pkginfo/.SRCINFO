@@ -1,0 +1,23 @@
+pkgbase = python-pkginfo
+	pkgdesc = Query metadata from sdists / bdists / installed packages
+	pkgver = 1.13.3
+	pkgrel = 1
+	url = https://pypi.python.org/pypi/pkginfo
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-packaging
+	checkdepends = python-wheel
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = python
+	source = python-pkginfo-1.13.3.tar.gz::https://pypi.io/packages/source/p/pkginfo/pkginfo-1.13.3.tar.gz
+	source = remove-pkg_resources.patch
+	sha512sums = 38390a841a8576c2b2a68eb9ed87d9d54d9c696f7f3dfe8d5d91d6e751d4655cdc6dc7f353b2d5eb72abffd00d4f0b17a32773720b651556feb08218d7c4942d
+	sha512sums = b568f86ed50c02f6f6c08b5f79327d9729278a4677d117a2b1f255951c281e0348d24eeb23bde87b9a40e60d684620bec95c404f013e6756c8cee89aec575f8f
+	b2sums = 0f5e14c9715b7ccbc22c6a3ce189b25db511b8498513514c4f5dfd108a15a68d12e2a30376845a66d5a3168d98b3d743b761e65a76420e5466bef57b1b17f7c8
+	b2sums = e7ef432acb7db3f16dc9f6b011a713dfe4ac281ff5a895d18d7b287360cd4281e18650a0b3a153e7aa58a3d05c874fe8a8e26b6b12a83df012d0e915c675dbf3
+
+pkgname = python-pkginfo

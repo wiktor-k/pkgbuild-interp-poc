@@ -1,0 +1,20 @@
+pkgbase = scrot
+	pkgdesc = Simple command-line screenshot utility for X
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://github.com/resurrecting-open-source-projects/scrot
+	arch = x86_64
+	license = MIT
+	makedepends = autoconf-archive
+	makedepends = git
+	depends = imlib2
+	depends = libxext
+	depends = libxfixes
+	depends = libxcomposite
+	depends = libbsd
+	depends = xorg-xrandr
+	source = git+https://github.com/resurrecting-open-source-projects/scrot.git#tag=2.0.0
+	sha512sums = 407e9edabd1c7ecc5fdb6f7a08d910f18f6f76b881c4b9906c41715465f9877229820be80b27774bb71f887d30a6a55c5d884168cc73154f8708a0e326833fc3
+	b2sums = 71213d3ccd85349014594c54376d480164182c7cd02176404116a31a19a1276ffeb819928a7672ad85cb9341200e328ca45508c806f94188f911d71adcb07953
+
+pkgname = scrot

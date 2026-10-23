@@ -1,0 +1,26 @@
+pkgbase = lightdm-webkit2-greeter
+	pkgdesc = LightDM greeter that uses WebKit2 for theming via HTML/JavaScript.
+	pkgver = 2.2.5
+	pkgrel = 9
+	url = https://github.com/antergos/web-greeter
+	arch = x86_64
+	license = GPL3
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = gettext
+	makedepends = dbus-glib
+	depends = lightdm
+	depends = webkit2gtk-4.1
+	depends = accountsservice
+	depends = gnome-backgrounds
+	backup = etc/lightdm/lightdm-webkit2-greeter.conf
+	source = web-greeter-2.2.5.tar.gz::https://github.com/antergos/web-greeter/archive/2.2.5.tar.gz
+	source = lightdm-webkit2-greeter-2.2.5-webkit2gtk-4.1.patch
+	source = archlinux-logo.svg::https://sources.archlinux.org/other/artwork/archlinux-logo-light-scalable.svg
+	source = archlinux-user.svg
+	sha512sums = 173fe64dc3ff9bde0bc3d72319ab014001364eae8336a72b052333e0c6687167164277fd87de7051c689f12f64aeb441f95a9f0d38cc780ccb77751ab62204da
+	sha512sums = fbccff31ad61508d56653c0237fb6c072f7c2c3c7e3f7ea2e4dfb37fc7195e328838ea062230833dac8740fd0c9185c7197c5a729a4d7954f0302c006bb82638
+	sha512sums = a553510431d3771a0ef5c7aaec198f89302f11ea8fe6db83bdac496d087ded6d5a99e442d3d20fd7b9231a76ec0df0f1ffb3da2511f79d196c8516345241d1da
+	sha512sums = 4cf515e5eefa0a16d1ebda6e4cbef2103e405325e265472c3cdc4928f05749597913406494fc4384b268288efbc0bbb86fefb648d1dd6e62c1dbc6569c8253b6
+
+pkgname = lightdm-webkit2-greeter

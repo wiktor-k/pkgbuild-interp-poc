@@ -1,0 +1,25 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=python-vulkan-object
+_pkgname=${pkgname#python-}
+pkgver=1.4.363.0
+pkgrel=2
+pkgdesc="Vulkan Object python scripts bundled up to easily use"
+url="https://github.com/KhronosGroup/vulkan-object"
+arch=('any')
+license=("Apache-2.0 OR MIT")
+depends=('python' 'python-pyparsing')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+${url}.git#tag=vulkan-sdk-${pkgver}")
+sha256sums=('82248f1b631c16b8aba9b8da4c5672d2398b0611980f2c93e5bbeb865f95a31a')
+
+build() {
+	cd "${_pkgname}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${_pkgname}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

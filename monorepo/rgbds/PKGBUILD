@@ -1,0 +1,38 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Vaporeon <vaporeon@vaporeon.io>
+
+pkgname=rgbds
+pkgver=1.0.4
+pkgrel=1
+pkgdesc='Rednex GameBoy Development System'
+arch=(x86_64)
+url=https://github.com/gbdev/rgbds
+license=(MIT)
+depends=(
+  glibc
+  libpng
+  libstdc++
+)
+makedepends=(
+  cmake
+  git
+  ninja
+)
+source=(git+https://github.com/gbdev/rgbds.git#tag=v${pkgver})
+b2sums=('99b0949595ea2896f2d3090d94a12dcb52bdf897e9fdbc4bf0b85b6466986aa688d4e7e705ab42f7cdfb9d155c7ad049f0e788a4b51fb7d209b500f7643cb575')
+
+build() {
+  cmake -S rgbds -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+  rm -rf "${pkgdir}"/build
+  install -Dm 644 rgbds/LICENSE -t "${pkgdir}"/usr/share/licenses/rgbds/
+  find rgbds/contrib/zsh_compl -type f -exec install -Dm 644 {} -t "${pkgdir}"/usr/share/zsh/site-functions/ \;
+}
+
+# vim: ts=2 sw=2 et:

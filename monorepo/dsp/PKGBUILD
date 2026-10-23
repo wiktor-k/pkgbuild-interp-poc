@@ -1,0 +1,48 @@
+# Maintainer: Thore Bödecker <foxxx0@archlinux.org>
+# Contributor: Lauri Niskanen <ape@ape3000.com>
+# Contributor: Michael Barbour <barbour.michael.0@gmail.com>
+# Contributor: sekret
+
+pkgname=dsp
+_commit='2ad23d135cc9cdc75a5f67b954a5cbb20cf91c42'
+pkgver=2.0
+pkgrel=3
+pkgdesc="An audio processing program with an interactive mode"
+arch=('x86_64')
+url="https://github.com/bmc0/${pkgname}"
+license=('ISC')
+groups=('ladspa-plugins')
+makedepends=('git' 'ladspa')
+depends=(
+  'libmad' 'libtool'
+  'ffmpeg' 'libavcodec.so' 'libavformat.so' 'libavutil.so'
+  'alsa-lib' 'libasound.so'
+  'fftw' 'libfftw3.so'
+  'libao' 'libao.so'
+  'libpulse' 'libpulse.so' 'libpulse-simple.so'
+  'libsndfile' 'libsndfile.so'
+  'zita-convolver' 'libzita-convolver.so'
+)
+optdepends=(
+  'ladspa-host: For the LADSPA plugin.'
+)
+source=("${pkgname}::git+https://github.com/bmc0/${pkgname}.git#commit=${_commit}")
+sha256sums=('6a30f9681fc8ea16bc26c44124eeb32cf663fc9d198f4cbc4e0dab59c919da5d')
+
+prepare() {
+  cd $pkgname
+# Fix build with ffmpeg 7
+  git cherry-pick -n 58a9d0c1f99f2d4c7fc51b6dbe563447ec60120f
+}
+
+build() {
+  cd "${srcdir}/${pkgname}"
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

@@ -1,0 +1,47 @@
+# Maintainer: Forest Crossman <cyrozap at gmail dot com>
+
+pkgname=stp
+pkgver=2.4.1
+pkgrel=2
+pkgdesc="Simple Theorem Prover"
+arch=('x86_64')
+url="https://stp.github.io/"
+license=('MIT')
+depends=('boost-libs' 'cryptominisat' 'minisat')
+makedepends=('boost' 'cmake' 'help2man' 'ninja' 'python' 'python-setuptools' 'git')
+source=(git+https://github.com/$pkgname/$pkgname#tag=$pkgver
+        git+https://github.com/berkeley-abc/abc.git
+        mandir.patch)
+sha256sums=('28a0690390e41b38708f9613b47362c4a3d247e0d10fe4248e310223916f75e8'
+            'SKIP'
+            '4c09301c5a36cd89845a7177e1215008f8bbb23fa6f3c6cc941006825e28c327')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git submodule set-url lib/extlib-abc "$srcdir"/abc
+  git -c protocol.file.allow=always submodule update lib/extlib-abc
+
+  # Correct the destination for man documentation.
+  patch < ../mandir.patch
+
+  # Remove RPATH
+  sed -i '/RPATH/d' {,tools/stp/,tools/stp_simple/}CMakeLists.txt
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DENABLE_PYTHON_INTERFACE=ON \
+    -DSTP_ALLOCATOR=system \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  cd $pkgname
+  install -Dm644 LICENSE LICENSE_COMPONENTS -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

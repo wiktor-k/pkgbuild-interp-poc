@@ -1,0 +1,42 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+
+pkgname=hiptensor
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='AMD’s C++ library for accelerating tensor primitives'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/hipTensor/en/latest/'
+license=('MIT')
+depends=('rocm-core' 'hip-runtime-amd' 'composable-kernel' 'glibc' 'gcc-libs')
+makedepends=('cmake' 'ninja' 'rocm-llvm' 'rocm-cmake' 'rocm-toolchain')
+source=("rocm-libraries-$pkgver.tar.gz::https://github.com/ROCm/rocm-libraries/archive/refs/tags/rocm-$pkgver.tar.gz")
+sha256sums=('50a4090b4ad18b34c375f666e5f71816cf55f89bc2175dc3eba9a7b80f65a15d')
+_dirname="rocm-libraries-rocm-$pkgver/projects/$pkgname"
+
+build() {
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -G Ninja
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_CXX_COMPILER=amdclang++
+    # CK doesn't support all targets
+    -D GPU_TARGETS="gfx908;gfx90a;gfx942;gfx1030;gfx1100;gfx1101;gfx1102;gfx1200;gfx1201"
+    -D CMAKE_CXX_FLAGS="${CXXFLAGS} -fcf-protection=none"
+    -D CMAKE_INSTALL_PREFIX=/opt/rocm
+    -D HIPTENSOR_BUILD_TESTS=OFF
+    -D HIPTENSOR_BUILD_SAMPLES=OFF
+    -D HIPTENSOR_BUILD_COMPRESSED_DBG=ON
+    -D HIPTENSOR_BUILD_COMPRESSED_DBG=ON
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 "$_dirname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

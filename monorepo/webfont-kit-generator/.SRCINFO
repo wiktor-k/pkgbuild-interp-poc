@@ -1,0 +1,27 @@
+pkgbase = webfont-kit-generator
+	pkgdesc = Utility to generate WOFF, WOFF2 and the necessary CSS boilerplate from non-web font formats (OTF & TTF)
+	pkgver = 1.3.0
+	pkgrel = 2
+	url = https://apps.gnome.org/WebfontKitGenerator/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libsoup3
+	depends = python
+	depends = python-brotli
+	depends = python-fonttools
+	depends = python-gobject
+	source = git+https://github.com/rafaelmardojai/webfont-kit-generator.git#tag=1.3.0
+	b2sums = 7e01fbfbe62e6424324d87d4f945c6e1239a8bfe2af4b54c0fc2a3c1f7f576da7e57c822b7f0b4500c0bf5e32f5bcbb522990f3c76b317a5b4316de65bd7a65d
+
+pkgname = webfont-kit-generator

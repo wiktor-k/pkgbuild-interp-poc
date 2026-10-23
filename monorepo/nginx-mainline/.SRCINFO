@@ -1,0 +1,121 @@
+pkgbase = nginx-mainline
+	pkgdesc = Lightweight HTTP server and IMAP/POP3 proxy server, mainline release
+	pkgver = 1.31.8
+	pkgrel = 1
+	url = https://nginx.org
+	arch = x86_64
+	license = BSD-2-Clause
+	checkdepends = coreutils
+	checkdepends = ffmpeg
+	checkdepends = memcached
+	checkdepends = perl
+	checkdepends = perl-cache-memcached
+	checkdepends = perl-cryptx
+	checkdepends = perl-fcgi
+	checkdepends = perl-gd
+	checkdepends = perl-io-socket-ssl
+	makedepends = findutils
+	makedepends = gd
+	makedepends = geoip
+	makedepends = git
+	makedepends = glibc
+	makedepends = libxcrypt
+	makedepends = libxml2
+	makedepends = libxslt
+	makedepends = mailcap
+	makedepends = openssl
+	makedepends = pcre2
+	makedepends = rsync
+	makedepends = zlib
+	source = git+https://github.com/nginx/nginx.git#tag=release-1.31.8
+	source = git+https://github.com/nginx/nginx-tests.git#commit=ff61b0ffdb77c4279be2aab1529a5ad06bfcc119
+	source = nginx.service
+	source = logrotate
+	source = perl-io-socket-ssl-2.094-tests-fix.patch
+	validpgpkeys = B0F4253373F8F6F510D42178520A9993A1C052F8
+	validpgpkeys = 43387825DDB1BB97EC36BA5D007C8D7C15D87369
+	validpgpkeys = D6786CE303D9A9022998DC6CC8464D549AF75C0A
+	validpgpkeys = 13C82A63B603576156E30A4EA0EA981B66B0D967
+	sha512sums = a2fea0dcd32f8d24285959cf77234358670b150a6542edaad8aacb10fdbce18349f21aafc0b5e55067196c15d5036712a70bca06a7fedc2b64811ce3e22f8a7e
+	sha512sums = a244c6f5ac3b2441945b7f9f1e497d3f8937d2fa9cada2c66b719d4f0463773f87c04adf0945e40cf7b97d828a066916c4122458efaa9748024027e3f3a61ad0
+	sha512sums = f469b3b14def666e955abf6f2d3c68a47631cad7bee90c92039ffe5bf629aa7e32bb4250844d52c0f963740fb07bf7fea5f8887cc1d5199403f07be6214fcb8d
+	sha512sums = 2f4dfcfa711b8bcbc5918ba635f5e430ef7132e66276261ade62bb1cba016967432c8dce7f84352cb8b07dc7c6b18f09177aa3eb92c8e358b2a106c8ca142fe9
+	sha512sums = 2d4ba6e53ee078bbf0921d0221ea7c7acf5a391ce8b3dc9d135cc4c68c1508569a00dedcfaca382f0f912d97e3ced71691573e0aef3b62b124099b33554fbdde
+
+pkgname = nginx-mainline
+	depends = glibc
+	depends = pcre2
+	depends = zlib
+	depends = openssl
+	depends = mailcap
+	depends = libxcrypt
+	optdepends = nginx-mainline-mod-geoip: GeoIP support
+	optdepends = nginx-mainline-mod-image-filter: transform images
+	optdepends = nginx-mainline-mod-mail: proxy IMAP, POP and SMTP protocols
+	optdepends = nginx-mainline-mod-perl: perl variables and location handlers
+	optdepends = nginx-mainline-mod-stream: proxy TCP/UDP data streams
+	optdepends = nginx-mainline-mod-xslt: transform XML responses
+	provides = nginx
+	conflicts = nginx
+	backup = etc/nginx/fastcgi.conf
+	backup = etc/nginx/fastcgi_params
+	backup = etc/nginx/koi-win
+	backup = etc/nginx/koi-utf
+	backup = etc/nginx/nginx.conf
+	backup = etc/nginx/scgi_params
+	backup = etc/nginx/uwsgi_params
+	backup = etc/nginx/win-utf
+	backup = etc/logrotate.d/nginx
+
+pkgname = nginx-mainline-mod-geoip
+	pkgdesc = GeoIP module for nginx-mainline
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	depends = geoip
+	conflicts = nginx-mod-geoip
+	backup = etc/nginx/modules.d/20-geoip.conf
+
+pkgname = nginx-mainline-mod-image-filter
+	pkgdesc = Module for nginx-mainline that transforms images in JPEG, GIF, PNG, and WebP formats
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	depends = gd
+	conflicts = nginx-mod-image-filter
+	backup = etc/nginx/modules.d/20-image-filter.conf
+
+pkgname = nginx-mainline-mod-mail
+	pkgdesc = Mail module for nginx-mainline to proxy IMAP, POP3 and SMTP protocols
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	conflicts = nginx-mod-mail
+	backup = etc/nginx/modules.d/20-mail.conf
+
+pkgname = nginx-mainline-mod-perl
+	pkgdesc = Module for nginx-mainline to implement location and variable handlers in Perl
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	depends = perl
+	conflicts = nginx-mod-perl
+	backup = etc/nginx/modules.d/20-perl.conf
+
+pkgname = nginx-mainline-mod-stream
+	pkgdesc = Module for nginx-mainline to proxy TCP and UDP data streams
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	conflicts = nginx-mod-stream
+	backup = etc/nginx/modules.d/10-stream.conf
+
+pkgname = nginx-mainline-mod-xslt
+	pkgdesc = Module for nginx-mainline to transform XML responses with XSLT stylesheets
+	depends = nginx-mainline=1.31.8
+	depends = glibc
+	depends = libxml2
+	depends = libxslt
+	conflicts = nginx-mod-xslt
+	backup = etc/nginx/modules.d/20-xslt.conf
+
+pkgname = nginx-mainline-src
+	pkgdesc = Source code of nginx-mainline 1.31.8, useful for building modules
+	depends = bash
+	depends = perl
+	conflicts = nginx-src

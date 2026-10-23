@@ -1,0 +1,21 @@
+pkgbase = lbreakout2
+	pkgdesc = A breakout game with nice effects, graphics, and sounds
+	pkgver = 2.6.5
+	pkgrel = 5
+	url = http://lgames.sourceforge.net
+	arch = x86_64
+	license = GPL
+	makedepends = patch
+	depends = sdl_mixer
+	depends = libpng
+	backup = var/games/lbreakout2/lbreakout2.hscr
+	source = https://downloads.sourceforge.net/lgames/lbreakout2-2.6.5.tar.gz
+	source = lbreakout2.desktop
+	source = lbreakout2.png
+	source = https://salsa.debian.org/games-team/lbreakout2/raw/60e3e5339b073e12f1eb93d08dd48dfe17c35060/debian/patches/sdl_fix_pauses.patch
+	sha256sums = 9104d6175553da3442dc6a5fc407a669e2f5aff3eedc5d30409eb003b7a78d6f
+	sha256sums = 43848f4739c6669f5c83d5944a797ca176615364006426304851d28c50dab46d
+	sha256sums = ece97aed58848bfec08f6b91123cb3dd234f969e0ce66c3b51fd6bcaa4840ef4
+	sha256sums = 2ac4a227fd2bac6e14fcaa2797520fdbb6c161a62b0bca349fe449499f80bc03
+
+pkgname = lbreakout2

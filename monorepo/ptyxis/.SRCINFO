@@ -1,0 +1,28 @@
+pkgbase = ptyxis
+	pkgdesc = A container oriented terminal
+	pkgver = 50.1
+	pkgrel = 1
+	url = https://gitlab.gnome.org/chergert/ptyxis
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = meson
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libadwaita
+	depends = libgcc
+	depends = libportal
+	depends = libportal-gtk4
+	depends = pango
+	depends = vte4
+	source = git+https://gitlab.gnome.org/chergert/ptyxis.git#tag=50.1
+	b2sums = 3487afc9f16bc6167fd9619943c7fe66116d96c0bdb51d72d52c384ac31c9208327808e47ab29181637840b91d132b6cca783e02738bb8b2112ab4792b456678
+
+pkgname = ptyxis

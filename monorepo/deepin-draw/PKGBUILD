@@ -1,0 +1,26 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-draw
+pkgver=6.5.43
+pkgrel=1
+pkgdesc="A lightweight drawing tool for Linux Deepin"
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-draw"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-svg' 'qt6-imageformats' 'glibc' 'libgcc' 'libstdc++' 'deepin-picker'
+         'adobe-source-han-sans-otc-fonts' 'hicolor-icon-theme')
+makedepends=('git' 'cmake' 'qt6-declarative' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-draw.git#tag=$pkgver")
+sha512sums=('439222bd38f904969bc7d18ac333f3bcf7b5669d950c74cc10e45366ed0027e11bc249c9529abdbdc94e53acc474c96d33709d3d73525c140b64f9f71245e5fd')
+
+build() {
+  cd deepin-draw
+  cmake -DCMAKE_INSTALL_PREFIX=/usr .
+  make
+}
+
+package() {
+  cd deepin-draw
+  make DESTDIR="$pkgdir" install
+}

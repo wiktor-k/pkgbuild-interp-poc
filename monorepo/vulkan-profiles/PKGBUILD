@@ -1,0 +1,64 @@
+# Maintainer: Campbell Jones <serebit at archlinux dot org>
+# Maintainer: Robin Candau <antiz at archlinux dot org>
+
+pkgname=vulkan-profiles
+pkgver=1.4.363.0
+pkgrel=1
+pkgdesc="Vulkan profiles tools"
+arch=('x86_64')
+url="https://github.com/KhronosGroup/Vulkan-Profiles"
+license=('Apache-2.0 AND CC-BY-4.0 AND BSL-1.0')
+groups=(vulkan-devel)
+depends=(
+	glibc
+	libgcc
+	libstdc++
+	jsoncpp
+	python
+	python-jsonschema
+	vulkan-headers
+)
+makedepends=(
+	cmake
+	git
+	ninja
+	python-vulkan-object
+	valijson
+	vulkan-utility-libraries
+)
+checkdepends=()
+conflicts=()
+replaces=()
+source=("git+https://github.com/KhronosGroup/Vulkan-Profiles#tag=vulkan-sdk-$pkgver"
+        "fix-jsoncpp-detection.patch"
+	"fix-vulkan-object-detection.patch")
+b2sums=('7891b8f47daf647e6991286953642458adff230b1015afdac9420b91c06aae8f6c77f3d1b270b8e701ed92f049ea924eb55a445d2015fb5ab0658a385e8aec96'
+        'dc8619708711aaae76b4ff116464fb72a532393a82ad03e68ba4c507fd6a0f578bcdde19b12401ee5d7b269355c5be2c97fe1b1d13551cc73ee9052d7a8dc785'
+        '0d3d172483ed00b7ca57a3a81db9298a1c63067ace0b5c324afc75d7455a09a046a953bc565fb1862f622a5206328611b9a4bf687bad284c8961822960c639fa')
+
+prepare() {
+	cd "Vulkan-Profiles"
+
+	git apply -3 ../fix-jsoncpp-detection.patch ../fix-vulkan-object-detection.patch
+}
+
+build() {
+	local cmake_options=(
+		-D CMAKE_BUILD_TYPE=Release
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D CMAKE_INSTALL_DATADIR=/usr/share
+		-D CMAKE_INSTALL_SYSCONFDIR=/etc
+		-D CMAKE_SKIP_INSTALL_RPATH=ON
+	)
+
+	cmake -S Vulkan-Profiles -B build -G Ninja "${cmake_options[@]}"
+	cmake --build build
+}
+
+check() {
+	ctest --test-dir build --output-on-failure --stop-on-failure
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,64 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-pysquashfsimage
+pkgver=0.9.0
+pkgrel=1
+pkgdesc='Python library to read squashfs image files'
+arch=(any)
+url='https://github.com/matteomattei/PySquashfsImage'
+license=(LGPL-2.1-only)
+depends=(
+  python
+  python-lzo
+  python-lz4
+  python-zstandard
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  python-sphinx
+)
+checkdepends=(
+  python-pytest
+  squashfs-tools
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('c4c4af1a286813ce5628f8aa89128b1f2b0f87f0a4f2e42472dc00feef59afa3f798b49dd1f4f32fc2b45772d8f642ed1e91983a8928f58d34b1a503e98f2ff3')
+b2sums=('5750991306cff641e7f54969dcfbd10993cd38b21fd5644f7c4a95db3db382b807425ba7f3164815776fbd37371a0e7fecf4ed65df09227aa5aaacd2ea442add')
+
+prepare() {
+  cd "$pkgname"
+
+  # fix lz4/lzma compressed images
+  # https://github.com/matteomattei/PySquashfsImage/pull/27
+  git cherry-pick --no-commit e637b26b3bc6268dd589fa1439fecf99e49a565b
+}
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  pytest -v PySquashfsImage/tests/test_*.py
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

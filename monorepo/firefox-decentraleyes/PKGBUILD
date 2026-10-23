@@ -1,0 +1,32 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=firefox-decentraleyes
+pkgver=3.0.2
+_commit=0a801793e3976d626cbdc4c496511468509096f1
+pkgrel=1
+pkgdesc='Local emulation of Content Delivery Networks'
+url=https://decentraleyes.org/
+arch=('any')
+license=('MPL-2.0')
+groups=('firefox-addons')
+makedepends=('git' 'npm' 'strip-nondeterminism' 'zip')
+source=("git+https://git.synz.io/Synzvato/decentraleyes.git#commit=$_commit?signed")
+b2sums=('e27f46feeaef04a8b3962cf2e86ecdcb4f5b3a4ecc56a908a9462f92a1a6af45f9f35708054c290b14144f7e62c87833de8a87d03eaaaa033c8c9032ffcad7b8')
+validpgpkeys=('A6B7BA10893FE67EE17A9F8FCECC45E1E979013C') # Thomas Rientjes <synzvato@protonmail.com>
+
+check() {
+  cd decentraleyes/auditor
+  npm install
+  node run
+}
+
+package() {
+  cd decentraleyes
+  install -d "$pkgdir"/usr/lib/firefox/browser/extensions
+  zip -r \
+    "$pkgdir"/usr/lib/firefox/browser/extensions/jid1-BoFifL9Vbdl2zQ@jetpack.xpi \
+    * -x '.git*' 'audit/*' crowdin.yaml
+  strip-nondeterminism -t zip "$pkgdir"/usr/lib/firefox/browser/extensions/*.xpi
+}
+
+# vim:set ts=2 sw=2 et:

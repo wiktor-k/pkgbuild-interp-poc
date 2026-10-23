@@ -1,0 +1,17 @@
+pkgbase = yara
+	pkgdesc = Tool aimed at helping malware researchers to identify and classify malware samples
+	pkgver = 4.5.8
+	pkgrel = 1
+	url = https://github.com/VirusTotal/yara
+	arch = x86_64
+	license = BSD-3-Clause
+	depends = glibc
+	depends = openssl
+	depends = file
+	depends = libmagic.so
+	provides = libyara.so
+	source = https://github.com/VirusTotal/yara/archive/v4.5.8/yara-4.5.8.tar.gz
+	sha512sums = 12bbe1bebb6d51f7ae90ad6a725bdb096f3e884b757913e9ba37bfa1557bced32ef56895eb358af5f3165890336be57dc51e9fe2ad672c1e523cb30e00483c86
+	b2sums = 2e842921aa757d6c592e8eaa2d69cca5d8d8f054b4624ba97b6ac5edd9f56789aa6ad5e64f5ab50986731a42d922dfb2510aa8d6b8676f4cfade3d76bc1aa177
+
+pkgname = yara

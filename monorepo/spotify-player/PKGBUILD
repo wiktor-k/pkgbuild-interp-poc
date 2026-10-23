@@ -1,0 +1,42 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Thang Pham <phamducthang1234 at gmail dot com>
+
+pkgname=spotify-player
+pkgver=0.25.1
+pkgrel=1
+pkgdesc="A command driven spotify player"
+arch=('x86_64')
+url="https://github.com/aome510/spotify-player"
+license=('MIT')
+depends=('openssl' 'dbus' 'libpulse' 'libsixel')
+optdepends=('libnotify: Notification support' 'fzf: Fuzzy search support')
+makedepends=('cargo')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/aome510/spotify-player/archive/v${pkgver}.tar.gz")
+sha512sums=('67d1e3afc0d3bf4b22567ee12d4e411ded1c3827d5e84414e7f0f47529aa2ddb38fee81a099eefbac0ba51dfb09ce4103adce8073918193c0231b61cbf15451b')
+options=('!lto')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  local _features=('pulseaudio-backend' 'media-control' 'notify' 'daemon' 'image' 'sixel' 'fzf')
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release --bin spotify_player --no-default-features --features "${_features[*]}"
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  install -Dm755 target/release/spotify_player -t "${pkgdir}/usr/bin"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+}
+
+# vim:set ts=2 sw=2 et:

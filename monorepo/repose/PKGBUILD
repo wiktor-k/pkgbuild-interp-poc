@@ -1,0 +1,53 @@
+# Maintainer: Johannes Löthberg <johannes@kyriasis.com>
+# Contributor: Simon Gomizelj <simongmzlj@gmail.com>
+
+pkgname=repose
+pkgver=7.1
+pkgrel=14
+pkgdesc="Arch Linux repo building tool"
+url="https://github.com/vodik/repose"
+arch=('x86_64')
+license=('GPL-2.0-or-later')
+depends=(
+  'glibc'
+  'gpgme' 'libgpgme.so'
+  'libarchive' 'libarchive.so'
+  'libgcc'
+  'openssl' 'libcrypto.so'
+  'pacman' 'libalpm.so'
+)
+makedepends=(
+  'ragel'
+)
+checkdepends=(
+  'python-cffi'
+  'python-pytest'
+  'python-pytest-xdist'
+  'python-setuptools'
+)
+source=(
+  "$pkgname-$pkgver.tar.gz::https://github.com/vodik/repose/archive/$pkgver.tar.gz"
+  "$pkgname-ragel7-compat.patch"
+)
+b2sums=('7cece755e56065a30d8f5355e7d4b6c8fc844137f1b389e9d99e48651e775916bca396c1e9571681477b9101acf6b8b783a3f37bcdb62d04718211ea19b718ca'
+        '84dcf152a9db16f8d43b859469ef6ad8eb751f2ea71cb2ce43e861a6ebb834cef60cec48b728936ee2cb6e38aa334515ab6c03674d5e8f4c01a8535876c5b037')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -Np1 < ../$pkgname-ragel7-compat.patch
+}
+
+build() {
+  make -C $pkgname-$pkgver
+}
+
+check() {
+  cd $pkgname-$pkgver
+  pytest
+}
+
+package() {
+  make -C $pkgname-$pkgver DESTDIR="$pkgdir" install
+}
+
+# vim: ft=PKGBUILD ts=2 sw=2 et

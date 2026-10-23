@@ -1,0 +1,48 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=piper
+pkgver=0.8
+pkgrel=5
+pkgdesc='GTK application to configure gaming mice'
+arch=('any')
+url='https://github.com/libratbag/piper'
+license=('GPL-2.0-only')
+depends=('gtk3' 'python' 'python-gobject' 'libratbag' 'python-evdev' 'python-lxml' 'python-cairo')
+makedepends=('git' 'meson' 'appstream')
+validpgpkeys=('3DCE51D60930EBA47858BA4146F633CBB0EB4BF2'  # Filipe Laíns (FFY00) <lains@archlinux.org>
+              '3C2C43D9447D5938EF4551EBE23B7E70B467F0BF'  # Peter Hutterer (Who-T) <office@who-t.net>
+              '2F2670AC164DB36F'                          # Benjamin Tissoires <benjamin.tissoires@gmail.com>
+              'BB45B0B3FF561BDBD45EE8A9B35B49EA5D563EFE'  # stephanlachnit@protonmail.com <stephanlachnit@protonmail.com>
+              '4F60BCD32573AB28D84FD0C4CCF75EB2BBF8F69C') # Yaroslav Chvanov <yaroslav.chvanov@gmail.com>
+source=("git+$url#tag=$pkgver?signed")
+sha256sums=('56d20003503c62ad6d879b316d40cc31e5be8c6f2e650d64b7e0f44bde63c242')
+
+prepare() {
+  cd $pkgname
+
+  # Remove install script
+  # This is handled by pacman hooks
+  sed -i "/meson.add_install_script('meson_install.sh')/d" meson.build
+}
+
+build() {
+  mkdir $pkgname/build
+  cd $pkgname/build
+
+  arch-meson ..
+
+  ninja
+}
+
+check() {
+  cd $pkgname/build
+
+  meson test --print-errorlogs
+}
+
+package() {
+  cd $pkgname/build
+
+  DESTDIR="$pkgdir" ninja install
+}

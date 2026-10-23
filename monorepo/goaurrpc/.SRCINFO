@@ -1,0 +1,20 @@
+pkgbase = goaurrpc
+	pkgdesc = An implementation of the aurweb /rpc service in go
+	pkgver = 1.2.4
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/archlinux/goaurrpc
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	depends = glibc
+	source = git+https://gitlab.archlinux.org/archlinux/goaurrpc.git#tag=v1.2.4?signed
+	source = goaurrpc.service
+	source = goaurrpc.sysusers
+	validpgpkeys = D5AD89388A7C6C9C22E790994A4760AB4EE15296
+	validpgpkeys = F00B96D15228013FFC9C9D0393B11DAA4C197E3D
+	sha256sums = e3ff617c8b2be3cf8de6e55c1921d4411f6b302874ed41eaf8b55066575f833a
+	sha256sums = e6a298e647fcf3b255d9886180b992f0dc447e763509c50513473f6d9b9ac5e3
+	sha256sums = 85b94030647aefedf69b02764729b11fc8287301c8682599c063397e214eebc0
+
+pkgname = goaurrpc

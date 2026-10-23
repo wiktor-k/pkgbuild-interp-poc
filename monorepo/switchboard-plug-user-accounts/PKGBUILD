@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-user-accounts
+pkgver=8.0.1
+pkgrel=4
+pkgdesc='Switchboard User Accounts Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-useraccounts
+license=(LGPL-3.0-only)
+groups=(pantheon)
+depends=(
+  accountsservice
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gnome-desktop-4
+  granite7
+  gtk4
+  libadwaita
+  libgcc
+  libgee
+  libpwquality
+  polkit
+  switchboard
+)
+makedepends=(
+  git
+  gobject-introspection
+  meson
+  vala
+)
+source=(switchboard-plug-user-accounts::git+https://github.com/elementary/switchboard-plug-useraccounts.git#tag=${pkgver})
+b2sums=('6cfe06b47c8c077b613252c4847e4019b6910389af9aafea46e2ac61b250c66ecb7d58cb4b70e3240e37c32f5ce452d0ddffce88803b4406a0bbdb93f01a6e32')
+
+build() {
+  arch-meson switchboard-plug-user-accounts build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}

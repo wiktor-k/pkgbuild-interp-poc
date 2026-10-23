@@ -1,0 +1,107 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=python-flask-security-too
+pkgver=5.9.1
+pkgrel=1
+pkgdesc='Quick and simple security for Flask applications'
+arch=(any)
+url='https://github.com/pallets-eco/flask-security'
+license=(MIT)
+depends=(
+  python
+  python-blinker
+  python-click
+  python-email-validator
+  python-flask
+  python-flask-login
+  python-flask-principal
+  python-flask-wtf
+  python-itsdangerous
+  python-markupsafe
+  python-passlib
+  python-werkzeug
+  python-wtforms
+)
+makedepends=(
+  git
+  python-babel
+  python-build
+  python-flit-core
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  # python-webauthn: not in repos
+  python-argon2-cffi
+  python-asgiref
+  python-authlib
+  python-babel
+  python-bcrypt
+  python-cryptography
+  python-flask-babel
+  python-flask-mail
+  python-flask-sqlalchemy
+  python-freezegun
+  python-humanize
+  python-mongoengine
+  python-mongomock
+  python-nh3
+  python-peewee
+  python-phonenumbers
+  python-pytest
+  python-qrcode
+  python-requests
+  python-sqlalchemy
+  python-sqlalchemy-utils
+  python-zxcvbn
+)
+optdepends=(
+  'python-argon2-cffi: argon2 password hashing'
+  'python-authlib: OAuth authentication'
+  'python-bcrypt: bcrypt password hashing'
+  'python-cryptography: encrypt multi-factor auth recovery codes'
+  'python-flask-babel: translations'
+  'python-flask-mail: alternative email backend'
+  'python-flask-mailman: default email backend'
+  'python-flask-sqlalchemy: SQLAlchemy datastore'
+  'python-humanize: localized time intervals'
+  'python-mongoengine: MongoEngine datastore'
+  'python-nh3: scrub user input'
+  'python-peewee: Peewee datastore'
+  'python-phonenumbers: SMS two-factor auth'
+  'python-qrcode: generate QR codes for TOTP'
+  'python-sqlalchemy: SQLAlchemy datastore'
+  'python-zxcvbn: password strength validation'
+)
+provides=('python-flask-security')
+conflicts=('python-flask-security')
+source=("$pkgname::git+$url.git#tag=$pkgver")
+sha512sums=('571b7303d14703c299519d181f39b18dfa357939a9e6af1dd419653632d14df234cae0b6e098e09b1493859063cb55640cc7329eeef68896d845b2402d51a9db')
+b2sums=('ad92c975f2213afae500c12fd778ccfbe30c00cb6fa7c5780e34d9135720ba56e84123504bc89c0846aeb171fad29cc4d17a0745c6dbcae2cb5533c36b6580bd')
+
+build() {
+  cd $pkgname
+  pybabel compile --domain flask_security -d flask_security/translations
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd $pkgname
+  pybabel compile --domain flask_security -d tests/translations
+
+  # ignore incompatible bcrypt tests
+  # https://github.com/pallets-eco/flask-security/commit/568d81219fc8408e39cc19acc57a682ac0bb9136
+  pytest -v -W=ignore::DeprecationWarning -W=ignore::UserWarning \
+    --deselect=tests/test_hashing.py::test_login_with_bcrypt_enabled \
+    --deselect=tests/test_hashing.py::test_verify_password_double_hash_bcrypt \
+    --deselect=tests/test_misc.py::test_password_unicode_password_salt
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst CHANGES.rst
+  install -vDm 644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

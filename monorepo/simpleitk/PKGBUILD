@@ -1,0 +1,192 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=simpleitk
+pkgname=(
+  simpleitk
+  java-simpleitk
+  lua-simpleitk
+  mono-simpleitk
+  python-simpleitk
+  r-simpleitk
+  ruby-simpleitk
+  tcl-simpleitk
+)
+pkgver=2.5.6
+pkgrel=1
+pkgdesc="A simplified layer built on top of ITK"
+arch=(x86_64)
+url="https://github.com/SimpleITK/SimpleITK"
+license=(Apache-2.0)
+makedepends=(
+  cmake
+  eigen
+  git
+  intel-oneapi-mkl
+  java-environment
+  ninja
+  python-installer
+  python-wheel
+  swig
+  # depends
+  itk
+  java-runtime
+  lua
+  mono
+  python
+  python-numpy
+  r
+  ruby
+  tcl
+  tk
+)
+source=($pkgbase::git+$url.git#tag=v$pkgver
+        lua-5.5.patch)
+b2sums=('88dfcde8accee786ce443d5110f5825388528b16cb1d024975fdd72829ee8d2b7faeb353590107a8f72aeafa56632d9e2efcf8f583682a29512a4c9f7bd79b8d'
+        '85bff06de13feded08bede6ed237a5639cc43da45ba2db63a977ad45441d449761bfa4ff05e181f7240f18b7364251f929565a64e0daa2675447182bec8efaee')
+
+prepare() {
+  cd $pkgbase
+  # fix build with Lua 5.5
+  patch -p1 < ../lua-5.5.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgbase
+    -G Ninja
+    -W no-dev
+    -DBUILD_DOXYGEN=OFF
+    -DBUILD_EXAMPLES=OFF
+    -DBUILD_SHARED_LIBS=ON
+    -DBUILD_TESTING=OFF
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DWRAP_CSHARP=ON
+    -DWRAP_DEFAULT=ON
+    -DWRAP_JAVA=ON
+    -DWRAP_LUA=ON
+    -DWRAP_PYTHON=ON
+    # Swig does not work with Python's limited API
+    -DSimpleITK_PYTHON_USE_LIMITED_API=OFF
+    -DWRAP_R=ON
+    -DWRAP_RUBY=ON
+    -DWRAP_TCL=ON
+    # workaround for broken FindHDF5
+    -DHDF5_C_COMPILER_EXECUTABLE=h5hlcc
+    -DHDF5_CXX_COMPILER_EXECUTABLE=h5hlc++
+  )
+  local java_home=$(find /usr/lib/jvm/ -name "$(archlinux-java get)")
+
+  JAVA_HOME="$java_home" cmake "${cmake_options[@]}"
+  cmake --build build --target all dist
+}
+
+package_simpleitk() {
+  depends=(
+    glibc
+    itk
+    libgcc
+    libstdc++
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+}
+
+package_java-simpleitk() {
+  pkgdesc+=" - Java bindings"
+  depends=(
+    glibc
+    java-runtime
+    libgcc
+    libstdc++
+    simpleitk
+  )
+
+  install -vdm 755 "$pkgdir"/usr/share/java/SimpleITK/
+  cp -ar build/Wrapping/Java/dist/SimpleITK-$pkgver*/* "$pkgdir"/usr/share/java/SimpleITK/
+}
+
+package_lua-simpleitk() {
+  pkgdesc+=" - Lua bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    lua
+    simpleitk
+  )
+
+  local lua_version=$(lua -v | grep -Eo '[0-9]+\.[0-9]+')
+  install -vDm 755 build/Wrapping/Lua/lib/SimpleITK.so -t "$pkgdir"/usr/lib/lua/$lua_version/
+}
+
+package_mono-simpleitk() {
+  pkgdesc+=" - C# bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    mono
+    simpleitk
+  )
+
+  install -vDm 755 build/Wrapping/CSharp/CSharpBinaries/libSimpleITKCSharpNative.so -t "$pkgdir"/usr/lib/
+  install -vDm 755 build/Wrapping/CSharp/CSharpBinaries/SimpleITKCSharpManaged.dll -t "$pkgdir"/usr/lib/
+}
+
+package_python-simpleitk() {
+  pkgdesc+=" - Python bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    python
+    python-numpy
+    simpleitk
+  )
+
+  python -m installer --destdir="$pkgdir" build/Wrapping/Python/dist/*.whl
+}
+
+package_r-simpleitk() {
+  pkgdesc+=" - R bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    r
+    simpleitk
+  )
+
+  install -vdm 755 "$pkgdir"/usr/lib/R/library/
+  cp -ar build/Wrapping/R/Packaging/SimpleITK "$pkgdir"/usr/lib/R/library/
+}
+
+package_ruby-simpleitk() {
+  pkgdesc+=" - Ruby bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    ruby
+    simpleitk
+  )
+
+  local ruby_version=$(ruby -v | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
+  install -vDm 755 build/Wrapping/Ruby/lib/simpleitk.so -t "$pkgdir"/usr/lib/ruby/gems/$ruby_version/gems/ruby-simpleitk-$pkgver/lib/
+}
+
+package_tcl-simpleitk() {
+  pkgdesc+=" - TCL bindings"
+  depends=(
+    glibc
+    libgcc
+    libstdc++
+    simpleitk
+    tcl
+    tk
+  )
+
+  install -vDm 755 build/Wrapping/Tcl/bin/SimpleITKTclsh -t "$pkgdir"/usr/bin/
+}

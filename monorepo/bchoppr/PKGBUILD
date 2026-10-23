@@ -1,0 +1,66 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=BChoppr
+pkgname=bchoppr
+pkgver=1.12.8
+pkgrel=1
+pkgdesc="An audio stream chopping LV2 plugin"
+arch=(x86_64)
+url="https://github.com/sjaehn/BChoppr"
+license=(GPL-3.0-or-later)
+groups=(lv2-plugins pro-audio)
+depends=(
+  cairo
+  glibc
+  fontconfig
+  libgcc
+  libstdc++
+  libx11
+)
+makedepends=(
+  cpio
+  git
+  libsndfile
+  lv2
+)
+checkdepends=(lv2lint)
+source=(
+  $pkgname::git+$url.git#tag=$pkgver
+  bwidgets::git+https://github.com/sjaehn/BWidgets.git
+  pugl::git+https://github.com/lv2/pugl.git
+)
+sha512sums=('72cd831a47355666ed54f683885dbdda3eebe32e893fcbff18dcb68b4bc57fb13181da64d5d32b91b7a82c777d0a706a4a639189cc7ac5d9b534cc623a5bc214'
+            'SKIP'
+            'SKIP')
+b2sums=('f85c0147a573acb4f8731a2571582acd0772ed0a47ceca376f7954a1d7d949c6e4ba9e20500f9472cef52d700a84585d9ef3f1824e5938ada6455ed9c9d681c7'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd $pkgname
+  git submodule init
+  git config submodule.src/BWidgets.url "$srcdir/bwidgets"
+  git -c protocol.file.allow=always submodule update
+  cd src/BWidgets
+  git config submodule.pugl.url "$srcdir/pugl"
+  git -c protocol.file.allow=always submodule update
+}
+
+build() {
+  make PREFIX=/usr -C $pkgname
+}
+
+check() {
+  cd $pkgname
+  # ignore symbols that cause issues with higher versions of gcc: https://github.com/sjaehn/BChoppr/issues/15
+  lv2lint -Mpack -t "UI Symbols" -I "$PWD/$_name.lv2/" "https://www.jahnichen.de/plugins/lv2/$_name"
+}
+
+package() {
+  depends+=(lv2-host)
+
+  make DESTDIR="$pkgdir" PREFIX=/usr install -C $pkgname
+  install -vDm 644 $pkgname/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  # remove license file
+  find "$pkgdir/usr/lib/" -type f -iname "*LICENSE*" -delete
+}

@@ -1,0 +1,40 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-read
+_pkgname=read-activity
+pkgver=124
+pkgrel=3
+pkgdesc='Sugar activity to read books'
+arch=(any)
+url='https://github.com/sugarlabs/read-activity'
+license=(GPL-2.0-or-later)
+groups=(sugar-fructose)
+depends=(
+  evince
+  gdk-pixbuf2
+  glib2
+  gtk3
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+  sugar-toolkit-gtk3
+  telepathy-glib
+  webkit2gtk-4.1
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(3858467ab8b3fbdf89e3567a173c2794bbb14df9345675de6df88781d8a08b64e1d1983e97256e8db084464af7e37cdb5f8b6677996b78af7359f476afae424d)
+
+prepare() {
+  cd $_pkgname
+
+  # Port to WebKit2 4.1
+  git cherry-pick -n da5ccb592ad01699ff859895741f0e034d8472e1
+}
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

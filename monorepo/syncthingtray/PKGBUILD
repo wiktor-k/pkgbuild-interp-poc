@@ -1,0 +1,165 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Martchus <martchus@gmx.net>
+
+pkgbase=syncthingtray
+pkgname=("${pkgbase}" "${pkgbase}-plasma" "${pkgbase}-dolphin")
+pkgver=2.1.9
+pkgrel=1
+pkgdesc='Tray application for Syncthing'
+arch=('x86_64')
+url="https://github.com/Martchus/${pkgbase}"
+license=('GPL-2.0-or-later')
+makedepends=(
+    'boost'
+    'boost-libs'
+    'c++utilities'
+    'cmake'
+    'extra-cmake-modules'
+    'kdeclarative'
+    'libplasma'
+    'ninja'
+    'qt6-tools'
+    'qt6-webengine'
+    'qtforkawesome'
+    'qtutilities'
+)
+checkdepends=(
+    'cppunit'
+    'iproute2'
+    'syncthing'
+)
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/Martchus/${pkgbase}/archive/v${pkgver}.tar.gz")
+sha256sums=('1ea90b8e92d19989f6e3fd900027b4e11c8e28bf2e1994834df7aeab8924cbca')
+
+build() {
+    local cmake_options=(
+        -B build
+        -S ${pkgbase}-${pkgver}
+        -G Ninja
+        -D QT_PACKAGE_PREFIX=Qt6
+        -D KF_PACKAGE_PREFIX=KF6
+        -D CMAKE_BUILD_TYPE=None
+        -D CMAKE_INSTALL_PREFIX=/usr
+        -D BUILD_SHARED_LIBS=ON
+        -D WEBVIEW_PROVIDER=webengine
+        -D JS_PROVIDER=qml
+        -D QUICK_GUI=ON
+        -D QUICK_GUI_CONTROLS_STYLE=dynamic
+        -D SYSTEMD_SUPPORT=ON
+    )
+    cmake "${cmake_options[@]}"
+    cmake --build build
+}
+
+check() {
+    cmake --build build --target tests
+
+    # https://github.com/syncthing/syncthing/issues/8785
+    export HOME="$(mktemp -p "$PWD" -d testhome.XXX)"
+    # https://github.com/Martchus/syncthingtray/issues/455
+    export QT_QPA_PLATFORM=offscreen QT_QPA_PLATFORMTHEME=
+    local _ephemeral_port=$(comm -23 <(seq 49152 65535) <(ss -Htan | awk '{print $4}' | awk -F':' '{print $NF}' | grep -E '^[0-9]+$' | sort -u) | shuf -n 1)
+    export SYNCTHING_PORT=${_ephemeral_port}
+    export SYNCTHING_TEST_TIMEOUT_FACTOR=3
+    local ctest_flags=(
+        --test-dir build
+        --output-on-failure
+        --parallel $(nproc)
+    )
+    ctest "${ctest_flags[@]}"
+}
+
+_pick() {
+    local p="$1" f d; shift
+    for f; do
+        d="${srcdir}/${p}/${f#${pkgdir}/}"
+        mkdir -p "$(dirname "${d}")"
+        mv "${f}" "${d}"
+        rmdir -p --ignore-fail-on-non-empty "$(dirname "${f}")"
+    done
+}
+
+
+package_syncthingtray() {
+    depends=(
+        'boost-libs'
+        'c++utilities'
+        'glibc'
+        'hicolor-icon-theme'
+        'libgcc'
+        'libstdc++'
+        'qt6-base'
+        'qt6-declarative'
+        'qt6-svg'
+        'qt6-webengine'
+        'qtforkawesome'
+        'qtutilities'
+    )
+    optdepends=(
+        'syncthing: for managing a local Syncthing instance'
+        'gnome-shell-extension-appindicator: tray icon support for GNOME Shell'
+        'syncthingtray-plasma: Plasmoid integration for KDE Plasma 6'
+        'syncthingtray-dolphin: Dolphin file manager integration'
+    )
+    provides=("${pkgbase}-qt6")
+    conflicts=("${pkgbase}-qt6")
+    replaces=("${pkgbase}-qt6")
+
+    DESTDIR="${pkgdir}" cmake --install build
+
+    mkdir -p "${srcdir}"/{plasma,dolphin}
+    cd "${pkgdir}"
+
+    # For Plasma
+    _pick plasma usr/lib/qt6/plugins/plasma
+    _pick plasma usr/share/plasma
+    _pick plasma usr/share/metainfo/io.github.martchus.syncthingplasmoid.metainfo.xml
+    _pick plasma usr/share/syncthingplasmoid
+    _pick plasma usr/lib/pkgconfig/syncthingplasmoid.pc
+
+    # For Dolphin
+    _pick dolphin usr/lib/qt6/plugins/kf6/kfileitemaction
+    _pick dolphin usr/share/metainfo/io.github.martchus.syncthingfileitemaction.metainfo.xml
+    _pick dolphin usr/share/syncthingfileitemaction
+    _pick dolphin usr/lib/pkgconfig/syncthingfileitemaction.pc
+}
+
+package_syncthingtray-plasma() {
+    pkgdesc+=' - Plasma 6 applet'
+    depends=(
+        "${pkgbase}=${pkgver}"
+        'c++utilities'
+        'glibc'
+        'libgcc'
+        'libplasma'
+        'libstdc++'
+        'kconfig'
+        'kcoreaddons'
+        'kdeclarative'
+        'kirigami'
+        'ksvg'
+        'qt6-base'
+        'qt6-declarative'
+        'qtforkawesome'
+        'qtutilities'
+    )
+
+    mv "${srcdir}"/plasma/* "${pkgdir}/"
+}
+
+package_syncthingtray-dolphin() {
+    pkgdesc+=' - Dolphin integration'
+    depends=(
+        "${pkgbase}=${pkgver}"
+        'c++utilities'
+        'glibc'
+        'kcoreaddons'
+        'kio'
+        'libgcc'
+        'libstdc++'
+        'qt6-base'
+        'qtutilities'
+    )
+
+    mv "${srcdir}"/dolphin/* "${pkgdir}/"
+}

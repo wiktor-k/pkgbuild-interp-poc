@@ -1,0 +1,94 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Rob Til Freedmen <rob.til.freedman@gmail.com>
+# Contributor: Ray Rashif <schiv@archlinux.org>
+# Contributor: tobias <tobias@archlinux.org>
+
+pkgname=hydrogen
+pkgver=1.2.7
+pkgrel=1
+pkgdesc="An advanced drum machine"
+arch=(x86_64)
+url="http://www.hydrogen-music.org/"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-base
+  qt6-svg
+)
+makedepends=(
+  alsa-lib
+  cmake
+  jack
+  ladspa
+  libarchive
+  liblo
+  liblrdf
+  libpulse
+  libsndfile
+  portaudio
+  portmidi
+  python
+  qt6-tools
+)
+checkdepends=(cppunit)
+optdepends=('new-session-manager: for session management')
+source=(
+  https://github.com/$pkgname-music/$pkgname/archive/$pkgver/$pkgname-$pkgver.tar.gz
+)
+sha512sums=('158cd7e1d32d283347d45e9d7f3d55876badb4ea857094922ec6fd15290239d319830b93925d16e2a6f65758314ad63bbf73ab6b936d05b8858307a464c8d714')
+b2sums=('42a8914a6f20b7d9ee8ecedd998266a8d5e09bd7eb3c065c97a44865934984291bffb5b6d6265ac4db7d520de925c4eb0fce329227abfacdf352dc5d5e0bd555')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_BUILD_TYPE=None
+    -D WANT_DEBUG=OFF
+    -D WANT_CPPUNIT=ON
+    -D WANT_LRDF=ON
+    -D WANT_PORTAUDIO=ON
+    -D WANT_PORTMIDI=ON
+    -D WANT_PULSEAUDIO=ON
+    -D WANT_QT6=ON
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  # Mark the build as non-development version
+  sed -i 's|execute_process(COMMAND git describe --exact-match --tags OUTPUT_VARIABLE GIT_ON_TAG)|set(GIT_ON_TAG 1)|' $pkgname-$pkgver/CMakeLists.txt
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+  # update translations
+  (
+    cd $pkgname-$pkgver/data/i18n
+    ./updateTranslations.sh
+  )
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    jack libjack.so
+    libarchive libarchive.so
+    liblo liblo.so
+    liblrdf liblrdf.so
+    libpulse libpulse.so
+    libsndfile libsndfile.so
+    portaudio libportaudio.so
+    portmidi libportmidi.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/{CHANGELOG,INSTALL,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+# vim:set ts=2 sw=2 et:

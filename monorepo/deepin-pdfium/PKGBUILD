@@ -1,0 +1,28 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-pdfium
+pkgver=1.5.8
+pkgrel=1
+pkgdesc='Development library for pdf on Deepin'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-pdfium"
+license=('LGPL-3.0-or-later')
+depends=('qt6-base' 'openjpeg2' 'libchardet' 'lcms2' 'libjpeg-turbo' 'libpng' 'icu' 'zlib'
+         'glibc' 'libgcc' 'libstdc++' 'freetype2')
+makedepends=('git' 'cmake')
+source=("git+https://github.com/linuxdeepin/deepin-pdfium.git#tag=$pkgver")
+sha512sums=('361abc0d18a80f0fad30020484fb74d0d550097fafc57a966482385890312c91b728c67c349e9a3d959e5a0d9bf8edbe9246f6b1a1c4e3dfc4d1959590b7d4e6')
+
+build() {
+  cmake -B build -S deepin-pdfium \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_DISABLE_FIND_PACKAGE_Qt5=ON \
+    -DVERSION="$pkgver"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

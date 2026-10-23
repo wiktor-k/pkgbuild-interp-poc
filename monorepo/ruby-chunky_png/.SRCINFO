@@ -1,0 +1,17 @@
+pkgbase = ruby-chunky_png
+	pkgdesc = Read/write access to PNG images in pure Ruby
+	pkgver = 1.4.0
+	pkgrel = 5
+	url = https://github.com/wvanbergen/chunky_png
+	arch = any
+	license = MIT
+	checkdepends = ruby-rspec
+	makedepends = git
+	makedepends = rubygems
+	depends = ruby
+	source = git+https://github.com/wvanbergen/chunky_png.git#tag=v1.4.0
+	source = fix-object-regex-match-op.patch::https://github.com/wvanbergen/chunky_png/commit/8e6f5934541833f15664398f90331f3724e40933.patch
+	sha256sums = 941ea2ba3ba177096efea8d5822dcc63daae4237cc09097dc4a7778cee3ed940
+	sha256sums = 0247213c78e5591229b26d75b3bc780f1a6c3e08152aa227b4ba17a512921fa2
+
+pkgname = ruby-chunky_png

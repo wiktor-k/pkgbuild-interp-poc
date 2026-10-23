@@ -1,0 +1,62 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Alex Dewar <alex.dewar@gmx.co.uk>
+
+pkgname=lifeograph
+pkgver=3.1.4
+pkgrel=1
+pkgdesc='Private journal, diary and note taking application'
+arch=(x86_64)
+url='https://lifeograph.sourceforge.net/'
+license=(GPL-3.0-or-later)
+depends=(
+  cairomm-1.16
+  enchant
+  gdk-pixbuf2
+  glib2
+  glibc
+  glibmm-2.68
+  gtk4
+  gtkmm-4.0
+  hicolor-icon-theme
+  libgcc
+  libgcrypt
+  libshumate
+  libsigc++-3.0
+  libstdc++
+  pango
+  pangomm-2.48
+  python
+  python-docx
+  python-jedi
+)
+makedepends=(
+  git
+  meson
+  pybind11
+)
+source=(
+  "git+https://gitlab.com/bilheps/lifeograph.git#tag=v$pkgver"
+  lifeograph-fix-parameter.patch
+)
+b2sums=(
+  d42aa119df14940beae1cced9a022b75a05f603807882381ae6fd972c07ba9810d595b26af8895bf6af0764cc842a6afcdd258e9fcaff21fb4bc1d94bc6e7d94
+  051ee2dccecf9da7c2e91058690e947d07aebcd21aefe552c5be256cad1f16b724f3e3cc4bda44b57c6531bc2017321566b3a2e3899202dcee8bf870ff24a981
+)
+validpgpkeys=(A1DD7BBF56F328A5B0679657BC797409ACE27593) # Ahmet Öztürk <aoz_2@yahoo.com>
+
+prepare() {
+  cd $pkgname
+
+  # Fix missing default argument for Paragraph::is_empty_completely
+  # https://gitlab.com/bilheps/lifeograph/-/merge_requests/6
+  git apply -3 ../lifeograph-fix-parameter.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

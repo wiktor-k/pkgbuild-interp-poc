@@ -1,0 +1,37 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Contributor: Mattias Andrée <`base64 -d`(bWFhbmRyZWUK)@kth.se>
+
+pkgname=libkeccak
+pkgver=1.4.3
+pkgrel=1
+pkgdesc='Keccak-family hashing library'
+arch=('x86_64')
+url='https://codeberg.org/maandree/libkeccak'
+license=('custom:ISC')
+depends=('glibc')
+makedepends=('git')
+source=("git+https://codeberg.org/maandree/libkeccak#tag=${pkgver}?signed")
+b2sums=('648de6031ace7992774acf5611952f0dc496cd0eb619c3202b49ab95327f4ae91087123aacf39b41f488e9a401bf439443415eed6d846ceac09f51316bd5d6ea')
+validpgpkeys=(
+  '3683C4B70CFA859F0173F2CCE0DD13EBFC7D5E3E' # Mattias Andrée <maandree@kth.se>
+)
+
+prepare() {
+  cd ${pkgname}
+  sed -i 's#FLAGS\s\+=#FLAGS +=#g' optimised.mk
+}
+
+build() {
+  cd ${pkgname}
+  make CONFIGFILE=optimised.mk PREFIX=/usr
+}
+
+check() {
+  cd ${pkgname}
+  make CONFIGFILE=optimised.mk check
+}
+
+package() {
+  cd ${pkgname}
+  make CONFIGFILE=optimised.mk PREFIX=/usr DESTDIR="${pkgdir}" install
+}

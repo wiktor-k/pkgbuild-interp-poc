@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=intelli-shell
+pkgver=3.4.5
+pkgrel=1
+pkgdesc="Like IntelliSense, but for shells"
+arch=('x86_64')
+url="https://github.com/lasantosr/intelli-shell"
+license=('Apache-2.0')
+depends=('libgcc' 'libgit2' 'openssl' 'sqlite' 'zlib')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('a5da4c4cb96124e51b2ea9cc8353b4e25f85081734de34a0f7624516391001ccc6068ad11e137cf860e95390a6e73a2632df26f5d645912fd142db913116a479')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  export LIBGIT2_NO_VENDOR=1
+  export OPENSSL_NO_VENDOR=true
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  export LIBGIT2_NO_VENDOR=1
+  export OPENSSL_NO_VENDOR=true
+  export LIBSQLITE3_SYS_USE_PKG_CONFIG=1
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

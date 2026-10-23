@@ -1,0 +1,34 @@
+pkgbase = tomcat9
+	pkgdesc = Open source implementation of the Java Servlet 4.0 and JavaServer Pages 2.3 technologies
+	pkgver = 9.0.123
+	pkgrel = 1
+	url = https://tomcat.apache.org/
+	install = tomcat9.install
+	arch = any
+	license = Apache-2.0
+	makedepends = ant
+	makedepends = git
+	makedepends = java-environment=17
+	depends = bash
+	depends = java-runtime>=8
+	depends = java-jsvc
+	depends = java-commons-daemon
+	depends = eclipse-ecj
+	optdepends = tomcat-native: to allow optimal performance in production environments
+	backup = etc/tomcat9/catalina.policy
+	backup = etc/tomcat9/catalina.properties
+	backup = etc/tomcat9/context.xml
+	backup = etc/tomcat9/logging.properties
+	backup = etc/tomcat9/server.xml
+	backup = etc/tomcat9/tomcat-users.xml
+	backup = etc/tomcat9/web.xml
+	source = git+https://github.com/apache/tomcat.git#tag=9.0.123
+	source = tomcat9.service
+	source = tomcat9.sysusers
+	source = tomcat9.tmpfiles
+	b2sums = a8566496843a1362bfe56a41f274aa4c306faad5618543182f60bc1a2d0ee092d3040cb66951e5b6f25e3c95696d61b970c0037e22eb254b628cda8dce0667d5
+	b2sums = 54b745cefdb9dbe5993b0b2ca08fae8d453a7610ffdeb2795b766d3ce321c267d570f6a1f5bd197f4c8053df3ab46ff68363f9d5ea1d96ddf96d19b84c075d21
+	b2sums = e0b44b4c818815d0cef0041930ad1bed4dbaa1000a94fb9fc4eaf8fe30c7202288f98be678d758f69fcd6218bb81b0f9f74fa754db4b1befe7abefb5702290aa
+	b2sums = 85a0dc807d3398856046e1450578e8f3a81ee34435eba119a883231ecd0e09ed32c97bf1747b20a253270df8a6e918d3823e6273ec52c01afd9a34a042e9dfcf
+
+pkgname = tomcat9

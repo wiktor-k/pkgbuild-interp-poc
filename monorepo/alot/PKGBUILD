@@ -1,0 +1,51 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Mark Foxwell <fastfret79@archlinux.org.uk>
+# Contributor: Nicolas Pouillard [https://nicolaspouillard.fr]
+# Contributor: seschwar -- contact via Arch Linux forum or AUR
+# Contributor: Ian Denhardt <ian@zenhack.net>
+
+pkgname=alot
+pkgver=0.12
+pkgrel=1
+pkgdesc='Terminal-based MUA for the notmuch mail system'
+arch=(any)
+url=https://github.com/pazz/alot
+license=('GPL-3.0-or-later')
+depends=('desktop-file-utils' 'notmuch' 'python-configobj' 'python-gpgme'
+         'python-magic' 'python-twisted' 'python-urwid'
+         'python-urwidtrees' 'python-cffi' 'python-mailcap')
+makedepends=('git' 'python-build' 'python-installer' 'python-wheel' 'python-sphinx' 'python-setuptools-scm')
+checkdepends=('procps-ng' 'python-pytest')
+source=("git+https://github.com/pazz/alot.git#tag=v${pkgver}")
+sha512sums=('63f97df56f9444d2cd0d2c1276da295f4fe473a617b51e16176db6cb2d73ef059f0536d447cfd8d492babba75c5c5ecef8077cc62bd8d146b20114bc613112a2')
+validpgpkeys=('B7838D65FEE80DED1DCA494D94340367D7D6C5AA') # Patrick Totzke
+
+build() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  cd alot
+  python -m build --wheel --no-isolation
+  
+  # install to temporary location, as importlib is used
+  python -m installer --destdir=doc_dir dist/*.whl
+  PYTHONPATH="$PWD/doc_dir/$site_packages:$PYTHONPATH" make -C docs man
+  rm -rf doc_dir
+}
+
+check() {
+  cd alot
+  export PYTHONPATH=$(find $(pwd) -name "*.so" | head -n 1 | xargs dirname):src/alot:src
+  pytest
+}
+
+package() {
+  cd alot
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 docs/build/man/alot.1
+  install -Dm644 -t "$pkgdir"/usr/share/applications extra/alot*.desktop
+  install -Dm644 extra/completion/alot-completion.zsh \
+    "$pkgdir"/usr/share/zsh/functions/_alot
+  install -Dm644 -t "$pkgdir"/usr/share/alot/themes \
+    extra/themes/{mutt,solarized_light,solarized_dark,sup,tomorrow}
+}
+
+# vim:set ts=2 sw=2 et:

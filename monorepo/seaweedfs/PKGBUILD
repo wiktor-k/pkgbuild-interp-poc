@@ -1,0 +1,59 @@
+# Maintainer: Daurnimator <daurnimator@archlinux.org>
+# Contributor: Mario Finelli <mario at finel dot li>
+# Contributor: Jonathon Fernyhough <jonathon+m2x.dev>
+# Contributor: krevedko <helllamer-gmail.com>
+
+pkgname=seaweedfs
+pkgver=4.48
+pkgrel=1
+pkgdesc="Simple and highly scalable distributed file system"
+arch=('x86_64')
+url=https://github.com/seaweedfs/seaweedfs
+license=('Apache-2.0')
+depends=('glibc' 'mailcap')
+makedepends=('go')
+source=(https://github.com/seaweedfs/seaweedfs/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('93199495e93a981451d1fefecb5aa71e12aa1692093eed2338bbfe7f08960bfb')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOPATH="${srcdir}"
+  export GOPROXY=off
+
+  go build -o weed/weed \
+    -buildmode=pie \
+    -trimpath \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode=external \
+              -extldflags \"${LDFLAGS}\"" \
+    weed/weed.go
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+
+  go test -v ./weed/...
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  install -Dm755 weed/weed "$pkgdir/usr/bin/weed"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+
+  install -d "$pkgdir/usr/share/bash-completion/completions/"
+  echo 'complete -C /usr/bin/weed weed' > "$pkgdir/usr/share/bash-completion/completions/weed"
+}

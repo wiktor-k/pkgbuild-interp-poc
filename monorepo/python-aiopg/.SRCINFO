@@ -1,0 +1,20 @@
+pkgbase = python-aiopg
+	pkgdesc = Library for accessing a PostgreSQL database from the asyncio
+	pkgver = 1.4.0
+	pkgrel = 7
+	url = https://github.com/aio-libs/aiopg
+	arch = any
+	license = BSD-2-Clause
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-psycopg2
+	optdepends = python-sqlalchemy: SQLAlchemy support
+	source = https://github.com/aio-libs/aiopg/archive/v1.4.0/python-aiopg-1.4.0.tar.gz
+	source = python-aiopg-remove-dep-async-timeout.patch::https://github.com/aio-libs/aiopg/commit/b5d4a510a0de774085d7bf29297c5abb4ff3b9bc.patch
+	sha256sums = 1b1c2ae3449640fa8fbaa95fe893c83df6ee5195b7018ce5c1b4427f95979509
+	sha256sums = 3d8d5f3d8c097b5008b9d938459673ca75d0bab566b1e8308e9ed1298f77cc59
+
+pkgname = python-aiopg

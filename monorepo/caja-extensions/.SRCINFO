@@ -1,0 +1,90 @@
+pkgbase = caja-extensions
+	pkgdesc = Set of extensions for Caja, the MATE file manager
+	pkgver = 1.28.0
+	pkgrel = 4
+	url = https://github.com/mate-desktop/caja-extensions
+	arch = x86_64
+	groups = mate-extra
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gtk-doc
+	makedepends = mate-common
+	depends = caja
+	depends = dbus-glib
+	depends = gst-plugins-base-libs
+	depends = gupnp
+	source = git+https://github.com/mate-desktop/caja-extensions.git#tag=v1.28.0
+	b2sums = d9ec75038f763c4c5f9522b5cc92297d7fb92aca8da68c532c6281416d045ecbab046d205520968a0625e70ff1fe3441567b24b2bf8daea6a9e15baa547519df
+
+pkgname = caja-extensions-common
+	pkgdesc = Caja extensions (common files)
+	groups = 
+	depends = 
+
+pkgname = caja-audio-video-properties
+	pkgdesc = A Caja extension to see information about audio or video files
+	depends = caja
+	depends = caja-extensions-common
+	depends = glib2
+	depends = glibc
+	depends = gst-plugins-base
+	depends = gst-plugins-base-libs
+	depends = gstreamer
+	depends = gtk3
+
+pkgname = caja-image-converter
+	pkgdesc = A Caja extension for simple image conversions
+	depends = caja
+	depends = caja-extensions-common
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = imagemagick
+
+pkgname = caja-open-terminal
+	pkgdesc = A Caja extension for opening terminals in arbitrary local paths
+	depends = caja
+	depends = caja-extensions-common
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = mate-desktop
+
+pkgname = caja-sendto
+	pkgdesc = A Caja extension for sending files
+	depends = caja
+	depends = caja-extensions-common
+	depends = dbus-glib
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gssdp
+	depends = gtk3
+	depends = gupnp
+	depends = libgcc
+
+pkgname = caja-share
+	pkgdesc = A Caja extension to quickly share a folder
+	depends = caja
+	depends = caja-extensions-common
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = samba
+
+pkgname = caja-wallpaper
+	pkgdesc = A Caja extension to quickly set wallpaper
+	depends = caja
+	depends = caja-extensions-common
+	depends = glib2
+	depends = glibc
+
+pkgname = caja-xattr-tags
+	pkgdesc = A Caja extension to see tags stored on xattrs
+	depends = caja
+	depends = caja-extensions-common
+	depends = glib2
+	depends = glibc

@@ -1,0 +1,43 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-ly
+pkgver=0.9.10
+pkgrel=1
+pkgdesc='Parse, manipulate or create documents in LilyPond format'
+arch=(any)
+url="https://github.com/frescobaldi/$pkgname"
+license=(GPL-2.0-or-later)
+depends=(python)
+makedepends=(python-{build,installer,wheel}
+             python-hatchling
+             python-sphinx)
+checkdepends=(python-lxml
+              python-pytest)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+# PyPi releases are behind, see https://github.com/frescobaldi/python-ly/issues/163
+# source=("https://files.pythonhosted.org/packages/source/${pkgname::1}/$pkgname/$_archive.tar.gz")
+sha256sums=('250eae7e1cdfc03f61e135677318130175f15ff76eaa0cd8ed7de3c888ce575e')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+	pushd doc
+	make man text
+}
+
+check() {
+	cd "$_archive"
+	# Upstream tests are borked, see https://github.com/frescobaldi/python-ly/issues/153
+	# PYTHONPATH=. pytest
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" CHANGELOG.md README.rst
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" doc/build/text/*
+	install -Dm0644 -t "$pkgdir/usr/share/man/man1/" doc/build/man/*
+}

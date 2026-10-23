@@ -1,0 +1,43 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: jgmdev <jgmdev at gmail dot com>
+# Contributor: Térence Clastres <t dot clastres at gmail dot com>
+# Contributor: redtide <redtid3 at gmail dot com>
+
+pkgname=lite-xl
+pkgver=2.1.8
+pkgrel=5
+pkgdesc='A lightweight text editor written in Lua'
+arch=(x86_64 aarch64)
+url="https://$pkgname.com"
+license=(MIT)
+depends=(freetype2 libfreetype.so
+         glibc # libc.so libm.so
+         lua54 # liblua5.4.so
+         pcre2 libpcre2-8.so
+         sdl3) # libSDL3.so 
+makedepends=(git # used by Meson to fetch submodule, TODO: move to source()
+             meson)
+optdepends=('lite-xl-plugin-manager: manage plugins')
+_archive="$pkgname-$pkgver"
+source=("https://github.com/$pkgname/$pkgname/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('fcaffb946bc60583369cb040d533a4ac18075a6d474d49a2a5ff4bf87e2e9a10')
+
+prepare() {
+	cd "$_archive"
+	# https://github.com/lite-xl/lite-xl/issues/956
+	# https://gitlab.alpinelinux.org/alpine/aports/-/merge_requests/98929/diffs
+	sed -i -e 's/ FT_Library_SetLcdFilterWeights.*//' src/renderer.c
+}
+
+build() {
+	local meson_opts=(
+		use_system_lua=true
+	)
+	arch-meson "$_archive" build ${meson_opts[@]/#/-D }
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "$pkgdir" --skip-subprojects
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" "$_archive/LICENSE"
+}

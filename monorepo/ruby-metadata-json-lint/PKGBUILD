@@ -1,0 +1,70 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+
+_gemname='metadata-json-lint'
+pkgname="ruby-${_gemname}"
+pkgver=5.0.0
+pkgrel=1
+pkgdesc='Tool to check the validity of Puppet metadata.json files'
+arch=('any')
+url="https://github.com/voxpupuli/${_gemname}"
+license=('Apache-2.0')
+depends=(
+  ruby
+  ruby-bigdecimal
+  ruby-json-schema
+  ruby-semantic_puppet
+  ruby-spdx-licenses
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+)
+options=('!emptydirs')
+source=("${url}/archive/${pkgver}/${_gemname}-${pkgver}.tar.gz" 'dont_call_mjl_via-bundler.patch')
+sha512sums=('b0d96bff362e838da94cccbcfebb605d3f9ff949ba68cfd66fd100e18855c8799314b5451d9cc8136b7a62549ea6463ca4bb755597b9c91c370d1f2ecfd0a73d'
+            'ed730430b39554b74586fd47c85581afa289a700a677b5c9189fca06ccedb10b31bdef424f692949ed3fa54b292d7a51bb07d838f80d4bcd1cfe80e6d69e398c')
+
+prepare() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  # allow latest dependencies
+  sed --in-place 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # drop development deps, they only cause dependency issues and aren't required
+  sed --in-place '/add_development_dependency/d' "${_gemname}.gemspec"
+
+  # disable rubocop
+  # patch --forward --verbose --strip=1 --input=../disable_rubocop.patch
+
+  # we build with a release tar ball, not a git archive
+  sed --in-place 's|`git ls-files -z`.split("\\x0")|`find`.split("\\n")|' "${_gemname}.gemspec"
+  sed --in-place 's|grep(%r{^bin/})|grep(%r{^./bin/})|' "${_gemname}.gemspec"
+
+  # the tests work through bundle, which doesn't work during *our* build
+  patch --forward --verbose --strip=1 --input=../dont_call_mjl_via-bundler.patch
+}
+
+build() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  rake spec test:acceptance
+}
+
+package() {
+cd "${srcdir}/${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+
+  install -Dm 644 README.md HISTORY.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}

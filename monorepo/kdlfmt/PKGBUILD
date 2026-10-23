@@ -1,0 +1,47 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=kdlfmt
+pkgver=0.1.7
+pkgrel=2
+pkgdesc="A formatter for kdl documents"
+arch=(x86_64)
+url="https://github.com/hougesen/kdlfmt/"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/v$pkgver.tar.gz")
+sha512sums=('cbaed403f97792876e55ebfede99983d7cab0cd38346e99f0b5e45515a09c4ec96df10df6521ecfa0b9d7d02c1532730238192be2300fad0a83a35ac377b807d')
+b2sums=('08446ab6edb00635ce2d0d2830b8d698c632f19dcbebfd2609c42d944e271c415b2fdceec197f52d537b4a7a111b3343dff02874e228466994a57d8b957657aa')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release
+  local shell
+  for shell in bash fish zsh; do
+    ./target/release/$pkgname completions "$shell" > "target/release/$pkgname.$shell"
+  done
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -vDm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+
+  install -vDm 644 target/release/${pkgname}.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 target/release/${pkgname}.fish "$pkgdir/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+  install -vDm 644 target/release/${pkgname}.zsh "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}

@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=cypari2
+pkgname=python-$_pyname
+pkgver=2.2.6
+pkgrel=1
+pkgdesc='Cython bindings for PARI'
+arch=(x86_64)
+url='https://www.sagemath.org'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         pari
+         python
+         python-cysignals)
+makedepends=(cython
+             git
+             meson-python
+             python-build
+             python-installer)
+checkdepends=(python-pytest)
+source=(git+https://github.com/sagemath/cypari2#tag=$pkgver)
+sha256sums=('3c6385e4caf31d0d43ecafc49134f93f56ebf6be3305bc14f73ea21e7f18d21d')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pyname
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  cd tests
+  ../test-env/bin/python -m pytest -v
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

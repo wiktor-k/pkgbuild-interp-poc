@@ -1,0 +1,16 @@
+pkgbase = mmc-utils
+	pkgdesc = Userspace tools for MMC/SD devices
+	pkgver = 1.0
+	pkgrel = 1
+	url = https://mmc-utils.readthedocs.io
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = sparse
+	depends = glibc
+	source = git+https://git.kernel.org/pub/scm/utils/mmc/mmc-utils.git#tag=v1.0
+	source = 0001-makefile-gcc-include-fix.patch
+	sha256sums = 201e123099fd31edd32fb2b6c95025b963a8c9e502c9a510666f3845b2745bb0
+	sha256sums = 20281124858d2739ad1b70753624f599f896e3f3326987ba5d6e1d32a8ea8b75
+
+pkgname = mmc-utils

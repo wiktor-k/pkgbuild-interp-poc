@@ -1,0 +1,24 @@
+pkgbase = retro-gtk
+	pkgdesc = Toolkit to write GTK based Libretro frontends
+	pkgver = 1.0.2
+	pkgrel = 6
+	url = https://gitlab.gnome.org/Archive/retro-gtk
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libepoxy
+	depends = libgcc
+	depends = libpulse
+	depends = libsamplerate
+	source = git+https://gitlab.gnome.org/Archive/retro-gtk.git#tag=1.0.2
+	b2sums = a699e01edd159dfcebae12569350348caed57efe99ea2e0972a09125f869e7f0a07b5ddf025e3d2d2ce2a02c654fb622265766c553ab167b147a7a852bfb8a17
+
+pkgname = retro-gtk

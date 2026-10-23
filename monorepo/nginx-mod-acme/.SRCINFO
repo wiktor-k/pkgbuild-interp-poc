@@ -1,0 +1,22 @@
+pkgbase = nginx-mod-acme
+	pkgdesc = Nginx module adding support for the ACME protocol
+	pkgver = 0.4.1
+	pkgrel = 8
+	url = https://github.com/nginx/nginx-acme/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cargo
+	makedepends = clang
+	makedepends = nginx
+	makedepends = nginx-src
+	depends = libgcc
+	depends = glibc
+	depends = openssl
+	source = nginx-mod-acme-0.4.1.tar.gz::https://github.com/nginx/nginx-acme/archive/v0.4.1/nginx-acme-0.4.1.tar.gz
+	sha256sums = b4f99f971bd0bebc89b2037f3afeaa3281004fe434de558df87d69cab2be1f22
+
+pkgname = nginx-mod-acme
+	depends = libgcc
+	depends = glibc
+	depends = openssl
+	depends = nginx

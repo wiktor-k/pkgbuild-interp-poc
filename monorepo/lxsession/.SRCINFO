@@ -1,0 +1,28 @@
+pkgbase = lxsession
+	pkgdesc = Lightweight X11 session manager
+	pkgver = 0.5.7
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/lxde/lxsession
+	arch = x86_64
+	groups = lxde
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = intltool
+	makedepends = vala
+	depends = bash
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = libx11
+	depends = polkit
+	conflicts = lxpolkit
+	conflicts = lxsession-gtk3
+	replaces = lxpolkit
+	replaces = lxsession-gtk3
+	source = git+https://github.com/lxde/lxsession.git#tag=0.5.7
+	b2sums = 049a4bd86469f95e6f260fac0ab51458bf23a19a202665be3cb6c7b5489ed096c602dcb807885d6d1ba9531600a5a29571d8d1e9aadc4767e0c69f94e2286604
+
+pkgname = lxsession

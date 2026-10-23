@@ -1,0 +1,56 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Jingbei Li <i@jingbei.li>
+# Contributor: Jose Riha <jose1711@gmail.com>
+
+pkgname=python-librosa
+pkgver=1.0.0
+pkgrel=1
+pkgdesc='Python library for music and audio analysis'
+arch=(any)
+url=https://librosa.org
+license=(ISC)
+depends=(
+  python
+  python-audioread
+  python-cycler
+  python-decorator
+  python-joblib
+  python-lazy-loader
+  python-matplotlib
+  python-msgpack
+  python-numba
+  python-numpy
+  python-pooch
+  python-resampy
+  python-scikit-learn
+  python-scipy
+  python-soundfile
+  python-soxr
+  python-typing_extensions
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("$pkgname::git+https://github.com/librosa/librosa.git#tag=$pkgver")
+sha512sums=('5711b5bbfdaac45c0a1453dcf3501577bde39833db6cb2ff119bff4f17676b67755f22cae8a1e3ff95b87929c7a1432f85340218dfe8d96408d5dc6c3b284e8a')
+b2sums=('6c0d5d3588ec1474bc27881230e4708df8c2ad36ef290f4106dabeb7f957f868d40e89e6e88ae7af1727fbd133dca3d32f5f8867799b124548181a75d7d160ee')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+}
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,26 @@
+pkgbase = superlu_dist
+	pkgdesc = Distributed memory, MPI based SuperLU
+	pkgver = 9.3.0
+	pkgrel = 1
+	url = https://github.com/xiaoyeli/superlu_dist
+	arch = x86_64
+	license = BSD-3-Clause-LBNL
+	checkdepends = python-mpi4py
+	checkdepends = python-numpy
+	checkdepends = python-scipy
+	makedepends = cmake
+	makedepends = gcc-fortran
+	makedepends = python
+	depends = blas
+	depends = glibc
+	depends = lapack
+	depends = libgcc
+	depends = libgomp
+	depends = openmpi
+	optdepends = python-mpi4py: for Python interface
+	optdepends = python-numpy: for Python interface
+	optdepends = python-scipy: for Python interface
+	source = superlu_dist-9.3.0.tar.gz::https://github.com/xiaoyeli/superlu_dist/archive/v9.3.0.tar.gz
+	b2sums = 42fb1c25b911c5f898039ae263478accf49478be8df0207a7f387630257200bd040dbea392760c12b87ef438b33c345917b282d68c15b06fda86bc6aef245515
+
+pkgname = superlu_dist

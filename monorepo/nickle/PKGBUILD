@@ -1,0 +1,30 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=nickle
+pkgver=2.108
+pkgrel=1
+pkgdesc="A programming language based prototyping environment with powerful programming and scripting capabilities"
+arch=('x86_64')
+url="https://nickle.org"
+license=('custom')
+depends=('readline')
+makedepends=('meson')
+checkdepends=('bc')
+source=("https://nickle.org/release/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('0b68a2f3e123f27c32b971029658abaae00b4c3ae6e79c3f2c18c5dbbfe554d3')
+
+build() {
+	arch-meson "${pkgname}-${pkgver}" build
+	meson compile -C build
+}
+
+check() {
+	meson test -C build
+}
+
+package() {
+	meson install -C build --destdir "$pkgdir"
+	install -Dm644 "${pkgname}-${pkgver}"/COPYING \
+		"${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

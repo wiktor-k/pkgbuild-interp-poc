@@ -1,0 +1,145 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: malacology <guoyizhang at malacology dot net>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+
+pkgname=gotosocial
+pkgver=0.22.2
+pkgrel=1
+pkgdesc='ActivityPub social network server written in Golang'
+arch=(x86_64)
+url='https://gotosocial.org'
+license=(AGPL-3.0-only)
+depends=(glibc)
+makedepends=(git go yarn nodejs go-swagger)
+options=(!lto)
+backup=(
+  etc/gotosocial/config.yaml
+  etc/gotosocial/template/2fa.tmpl
+  etc/gotosocial/template/about.tmpl
+  etc/gotosocial/template/authorize-interaction.tmpl
+  etc/gotosocial/template/authorize.tmpl
+  etc/gotosocial/template/confirm-email.tmpl
+  etc/gotosocial/template/confirmed-email.tmpl
+  etc/gotosocial/template/directory.tmpl
+  etc/gotosocial/template/domain-allowlist.tmpl
+  etc/gotosocial/template/domain-blocklist.tmpl
+  etc/gotosocial/template/email_confirm.tmpl
+  etc/gotosocial/template/email_new_report.tmpl
+  etc/gotosocial/template/email_new_signup.tmpl
+  etc/gotosocial/template/email_report_closed.tmpl
+  etc/gotosocial/template/email_reset.tmpl
+  etc/gotosocial/template/email_signup_approved.tmpl
+  etc/gotosocial/template/email_signup_rejected.tmpl
+  etc/gotosocial/template/email_test.tmpl
+  etc/gotosocial/template/error.tmpl
+  etc/gotosocial/template/finalize.tmpl
+  etc/gotosocial/template/index.tmpl
+  etc/gotosocial/template/index_register.tmpl
+  etc/gotosocial/template/index_what_is_this.tmpl
+  etc/gotosocial/template/item_deleted.tmpl
+  etc/gotosocial/template/item_not_visible.tmpl
+  etc/gotosocial/template/login-info.tmpl
+  etc/gotosocial/template/login_button.tmpl
+  etc/gotosocial/template/maintenance.tmpl
+  etc/gotosocial/template/oob.tmpl
+  etc/gotosocial/template/page.tmpl
+  etc/gotosocial/template/page_footer.tmpl
+  etc/gotosocial/template/page_header.tmpl
+  etc/gotosocial/template/page_ogmeta.tmpl
+  etc/gotosocial/template/page_stylesheets.tmpl
+  etc/gotosocial/template/profile-gallery.tmpl
+  etc/gotosocial/template/profile.tmpl
+  etc/gotosocial/template/profile_about_user.tmpl
+  etc/gotosocial/template/profile_fields.tmpl
+  etc/gotosocial/template/profile_header.tmpl
+  etc/gotosocial/template/settings.tmpl
+  etc/gotosocial/template/sign-in.tmpl
+  etc/gotosocial/template/sign-up.tmpl
+  etc/gotosocial/template/signed-up.tmpl
+  etc/gotosocial/template/status.tmpl
+  etc/gotosocial/template/status_attachment.tmpl
+  etc/gotosocial/template/status_attributes.tmpl
+  etc/gotosocial/template/status_header.tmpl
+  etc/gotosocial/template/status_info.tmpl
+  etc/gotosocial/template/status_poll.tmpl
+  etc/gotosocial/template/tag.tmpl
+  etc/gotosocial/template/thread.tmpl
+)
+source=(
+  "$pkgname::git+https://codeberg.org/superseriousbusiness/gotosocial#tag=v$pkgver"
+  sysusers.conf
+  tmpfiles.conf
+  use-fhs-directories.patch
+)
+sha512sums=('a18e39833cdaee04e5b14a93fb8a8ff31ebb3389f78333e4dfc02ffe1f977b13648a30f6962849fd271e9e8b41ac2400b2d2d6f43697b2673bdefd5e362a6015'
+            '2ff5499a31e12733cb20a9261942ed135fbac327d5a836b8955f3e86c009a603cf965440d9dbe6db64b80d0f652ba56faddb0ef398393b72474d8cf6c438ab80'
+            'e9580cadf8cfcb4837d932866ba4f11c21309d3e6707e51ef9e8a0fef17510ac6b9e8f2fb77a973dd450e4ff82b324c6a4ad7f6c8ff5adb7aa089bdd788ff6ae'
+            '87edf6e6acee86a621c838a7db32f1c9aab70bc5640f8eae099c5133a2be77ec2f711261d716a6821e4c0414436592170b1ae7a5f652bc8aeab49c8dbd0fedde')
+b2sums=('1718a6b958aac74a95a1a4f4018259674ec1bdb69aa8806051c423008f2c084a2540d00482dd583b130d3593947792962c465d7163bad4f2cc6499332489758b'
+        'ccf672731b88fc6700b0b81737790365e1eea0066bad1bbf6b13dac1e5b42af69063838efca47a6d9c16ee3f6308e2e23b92cf79d4226cd88f8551fb7361649b'
+        '6cfdcf5c8814bf1aa20d1f08d89d57e78866142e2d36b7bfc9527a80da163b0765ccc6c78e311c30f47230a680d404b167971ffd1b03ace7314e2284295c55d9'
+        '3671911545d15cc21045b37fbe6983c05499e66b8a6a1e1b3eccbb5c2686914c88b090dec0bfe8e2919d8787e5b4c59bfb1e2c292cad30a8b552ab57e91d5fdf')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+
+  # use FHS directories
+  patch -p1 -i "$srcdir/use-fhs-directories.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  # generate up-to-date swagger.yaml
+  swagger generate spec --scan-models --exclude-deps -o web/assets/swagger.yaml
+  sed -e "s/REPLACE_ME/$pkgver/" -i web/assets/swagger.yaml
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X main.Version=$pkgver" \
+    -o build \
+    ./cmd/...
+
+  # generate web assets
+  yarn --cwd ./web/source install --frozen-lockfile
+  yarn --cwd ./web/source ts-patch install
+  yarn --cwd ./web/source build
+}
+
+package() {
+  # systemd integration
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  install -vDm644 "$pkgname/example/$pkgname.service" -t "$pkgdir/usr/lib/systemd/system"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "build/$pkgname"
+
+  # configuration
+  install -vDm640 -t "$pkgdir/etc/$pkgname" example/config.yaml
+
+  # web frontend
+  install -vd "$pkgdir/usr/share/$pkgname"
+  cp -vr web/assets/* "$pkgdir/usr/share/$pkgname"
+  cp -vr web/template "$pkgdir/etc/$pkgname"
+}

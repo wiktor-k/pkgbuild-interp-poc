@@ -1,0 +1,84 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Santiago Torres-Arias <santiago[at]archlinux[dot]org>
+# Contributor: Aaron McDaniel (mcd1992) <'aur' at the domain 'fgthou.se'>
+
+pkgname=rz-cutter
+pkgver=2.4.1
+pkgrel=8
+pkgdesc='Qt and C++ GUI for rizin reverse engineering framework'
+url='https://github.com/rizinorg/cutter'
+arch=(x86_64)
+license=(GPL-3.0-only)
+depends=(
+  rizin
+  capstone
+  qt6-base
+  qt6-svg
+  qt6-5compat
+  python
+  pyside6
+  graphviz
+  libgcc
+  libstdc++
+  syntax-highlighting
+)
+makedepends=(
+  clang
+  cmake
+  git
+  ninja
+  qt6-tools
+  shiboken6-generator
+)
+optdepends=(
+  'rz-ghidra: ghidra decompiler plugin'
+)
+source=(
+  "git+https://github.com/rizinorg/cutter#tag=v${pkgver}"
+  "git+https://github.com/rizinorg/cutter-translations"
+  pyside-6.11.patch
+  qt-6.12.patch
+)
+sha512sums=('d958fb2851da74e9d51c8675d707c8995fec810b72568f619f87f5d7e76dfea5d54eb9ac112c51ce8bd8fc4037a61dcc38026e3a3d4da6b3d148f384d8988d08'
+            'SKIP'
+            '46dfaab0d943aabbd469b578e721c7f9789fdb5f17595271ee934a3ccd9010ff7a58f66511ca62bd4ba4490d39f5789cef2d671d443217926f5b39bbd4ac6539'
+            '8c3a0ebf750bb2e28be193008edc7af323e66f1e8804ae80eac84fb28f91b2de9cfc85c3874d4247af8024725022883ee118d487dd7dc428071c857962d7143b')
+b2sums=('a8ee5107740f1a2d77248fc3c7736e8da7b59b8358932cf1da235c8d93685ffd95b93aa431eb193a3aa5ba4f2b30da83193ec8defa32e00a65c6cfab6f468039'
+        'SKIP'
+        '3b3eeabbfa1ea22cf55b51602c5fb32c3472801278fdc0c3f4eec43b347c41a24a8f2b1688bacac3b438518e9a8c0256c5b27eba28db702c6e1d660d1fe88d60'
+        '66668092b4129aeacec1f6eb85a32c61a08829ae9c2c6f2bea9728ded515099e222bd692945f3a92a2e90f324988218eff1c586304f46d5d40911bb7d5c0a9c7')
+
+prepare() {
+  cd cutter
+  git config 'submodule.src/translations.url' "${srcdir}/cutter-translations"
+  git -c protocol.file.allow=always submodule update --init src/translations
+
+  patch -p1 -i ../pyside-6.11.patch
+  patch -p1 -i ../qt-6.12.patch # Fix invalid class name
+}
+
+build() {
+  cd cutter
+  cmake -B build \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCUTTER_ENABLE_PYTHON=ON \
+    -DCUTTER_ENABLE_PYTHON_BINDINGS=ON \
+    -DCUTTER_USE_BUNDLED_RIZIN=OFF \
+    -DCUTTER_USE_ADDITIONAL_RIZIN_PATHS=OFF \
+    -DCUTTER_ENABLE_CRASH_REPORTS=OFF \
+    -DCUTTER_ENABLE_GRAPHVIZ=ON \
+    -DCUTTER_QT6=ON \
+    -Wno-dev \
+    -G Ninja
+  ninja -C build
+}
+
+package() {
+  cd cutter
+  DESTDIR="${pkgdir}" ninja -C build install
+  install -d "${pkgdir}/usr/share/doc/${pkgname}"
+  cp -a docs/* "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

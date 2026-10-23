@@ -1,0 +1,57 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=osqp
+pkgname=python-$_pyname
+pkgver=1.1.3
+pkgrel=1
+pkgdesc='Python wrapper for OSQP: the Operator Splitting QP Solver'
+url='https://osqp.org/'
+license=(Apache-2.0)
+arch=(x86_64)
+depends=(glibc
+         libgcc
+         libstdc++
+         osqp
+         python
+         python-jinja
+         python-numpy
+         python-scipy)
+makedepends=(cmake
+             git
+             pybind11
+             python-build
+             python-installer
+             python-scikit-build-core
+             python-setuptools-scm)
+checkdepends=(intel-oneapi-mkl
+              python-joblib
+              python-pytest
+              python-pytorch)
+source=(git+https://github.com/osqp/osqp-python#tag=v$pkgver
+        system-osqp.patch)
+sha256sums=('fae8ff2d7ffca7b9b8f9f7843fb379838cab5a6a6111bb1efc60a573a97a4202'
+            '3897db4e1b5243b5255e527bdcd95c0a444ea7baf403ac1584ec92fcb1486946')
+
+prepare() {
+  patch -d osqp-python -p1 < system-osqp.patch # Use system osqp
+}
+
+build() {
+  cd osqp-python
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver \
+  python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd osqp-python
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  ln -s /usr/share/osqp/codegen_files $(ls -d test-env/lib/python*)/site-packages/osqp/codegen/codegen_src
+  test-env/bin/python -m pytest -v
+}
+
+package() {
+  cd osqp-python
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

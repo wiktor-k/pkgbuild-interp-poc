@@ -1,0 +1,59 @@
+pkgbase = python-arrow-adbc
+	pkgdesc = Database connectivity API for Apache Arrow
+	pkgver = 24
+	pkgrel = 1
+	url = https://arrow.apache.org/adbc/current/index.html
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	makedepends = cython
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = go
+	makedepends = postgresql-libs
+	source = python-arrow-adbc::git+https://github.com/apache/arrow-adbc#tag=apache-arrow-adbc-24
+	sha512sums = a733afbf6c85a4562662dfd90ad03ab7f19f05af6650b83d591f61a869b4855a8d6ef4f251715456f876d8deaaf46eb332b9c54f6dc1a8bb45eab36dbe5a01ce
+	b2sums = 7f77e0b76d641cdc667b7b41cd4ef7b8a62280da60a6da69d44a89ec1b7e8ad7f8f024d381c824767fa8b855b5baaa767bfe841dcc1d39481f745db2212bdf5d
+
+pkgname = python-arrow-adbc
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-typing_extensions
+	depends = python-pandas
+	depends = python-pyarrow
+	optdepends = python-arrow-adbc-driver-flightsql: Flight SQL driver
+	optdepends = python-arrow-adbc-driver-postgresql: PostgreSQL driver
+	optdepends = python-arrow-adbc-driver-sqlite: SQLite driver
+
+pkgname = python-arrow-adbc-driver-flightsql
+	pkgdesc = Database connectivity API for Apache Arrow - Flight SQL driver
+	depends = glibc
+	depends = python
+	depends = python-arrow-adbc
+	depends = python-importlib_resources
+
+pkgname = python-arrow-adbc-driver-postgresql
+	pkgdesc = Database connectivity API for Apache Arrow - PostgreSQL driver
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-arrow-adbc
+	depends = python-importlib_resources
+	depends = postgresql-libs
+
+pkgname = python-arrow-adbc-driver-sqlite
+	pkgdesc = Database connectivity API for Apache Arrow - SQLite driver
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-arrow-adbc
+	depends = python-importlib_resources
+	depends = sqlite

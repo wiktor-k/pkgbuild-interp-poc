@@ -1,0 +1,44 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-pyfuse3
+pkgver=3.5.0
+pkgrel=1
+pkgdesc='Python bindings for libfuse 3 with asynchronous API'
+arch=(x86_64)
+url='https://github.com/libfuse/pyfuse3'
+license=(LGPL-2.0-or-later)
+depends=(
+  fuse3
+  glibc
+  python
+  python-trio
+)
+makedepends=(
+  cython
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("git+https://github.com/libfuse/pyfuse3.git#tag=v$pkgver")
+b2sums=(1ab12b8f6ec16cb224ba92f9fbe05655c83a7f4d423832f79df3a13bc9396cf1af21dfa77c567a225d535cc9681185dd071280ccad32a28a8c6e194cced64c9e)
+validpgpkeys=(6D5BEF9ADD2075805747B70F9F88FB52FAF7B393) # Thomas Waldmann <tw@waldmann-edv.de>
+
+build() {
+  cd pyfuse3
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd pyfuse3
+  PYTHONPATH="$PWD/build/lib.linux-$CARCH-cpython-$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')" \
+    pytest
+}
+
+package() {
+  cd pyfuse3
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

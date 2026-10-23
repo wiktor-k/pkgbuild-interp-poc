@@ -1,0 +1,33 @@
+pkgbase = zestbay
+	pkgdesc = A PipeWire patchbay and audio routing manager with integrated LV2/VST3/CLAP plugin hosting
+	pkgver = 0.8.6
+	pkgrel = 1
+	url = https://github.com/lemonxah/zestbay
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	makedepends = clang
+	makedepends = cmake
+	makedepends = suil
+	depends = hicolor-icon-theme
+	depends = libstdc++
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = serd
+	depends = libpipewire
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = lilv
+	depends = lv2
+	depends = libx11
+	depends = dbus
+	optdepends = suil: LV2 UI toolkit wrapping for GTK-based plugin UIs
+	options = !lto
+	options = !debug
+	source = zestbay::git+https://github.com/lemonxah/zestbay#tag=v0.8.6
+	sha512sums = 834e3fc77b387155b3aa14e2a54a25123acbb43cd9ea05745f2ba13373b900ae444c1e9b7a0d0f314c9e57aac517f9280320b2c1e54d5412b9d4b25d63d8654b
+	b2sums = cb916b25c05cb1716585a270230a02da6948c574fc6b3776f4470beb1286b26272d03e8f0173d1d1aa409221c95808632490b8c5685f9a27e0a5625e10145fdd
+
+pkgname = zestbay

@@ -1,0 +1,27 @@
+pkgbase = citations
+	pkgdesc = Manage your bibliographies using the BibTeX format
+	pkgver = 0.11.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Citations/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = poppler-glib
+	options = !lto
+	source = git+https://gitlab.gnome.org/World/citations.git#tag=0.11.0
+	b2sums = 51b42e7142aaa2942b80bba328f5ecb44383f393cec456ae9c805936d1189eaa52e87da2696a22ddda13821d3f5e47bd42c30a5eec14c92622ef028e5602eab0
+
+pkgname = citations

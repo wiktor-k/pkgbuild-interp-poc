@@ -1,0 +1,15 @@
+pkgbase = libiodbc
+	pkgdesc = Independent Open DataBase Connectivity for Linux
+	pkgver = 3.52.16
+	pkgrel = 3
+	url = http://www.iodbc.org/dataspace/doc/iodbc/wiki/iodbcWiki/
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	makedepends = chrpath
+	depends = bash
+	source = libiodbc-3.52.16.tar.gz::https://github.com/openlink/iODBC/archive/v3.52.16.tar.gz
+	source = 0001-Make-compilation-work-with-more-recent-compilers-C23.patch
+	sha256sums = a0cf0375b462f98c0081c2ceae5ef78276003e57cdf1eb86bd04508fb62a0660
+	sha256sums = 416be26957eb0db36eafe82dbc8a453d3b27ef14376ed098e51cc1ae3b412df6
+
+pkgname = libiodbc

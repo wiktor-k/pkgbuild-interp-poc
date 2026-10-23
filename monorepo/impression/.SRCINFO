@@ -1,0 +1,28 @@
+pkgbase = impression
+	pkgdesc = Application to create bootable drives from disk images
+	pkgver = 3.8.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Impression/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libcdio
+	depends = libgcc
+	depends = openssl
+	depends = udisks2
+	depends = wimlib
+	source = git+https://gitlab.com/adhami3310/Impression.git#tag=v3.8.0
+	b2sums = 6f8e34cff3c285c294d71a93ba49e154dde84c724b74dec887bd05fb386d0cc644cd29de75ff240e77f23592c06a979bd61879f06147574b8a87e043bd67bec7
+
+pkgname = impression

@@ -1,0 +1,36 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: bartus <arch-user-repoᘓbartus.33mail.com>
+pkgname=geogram
+pkgver=1.10.1
+pkgrel=1
+pkgdesc="Library of geometric algorithms"
+arch=('x86_64')
+url="https://github.com/BrunoLevy/geogram"
+license=('BSD-3-Clause')
+depends=('glfw-x11' 'glibc' 'glu' 'libgcc' 'libgomp' 'libstdc++' 'libxrandr' 'onetbb')
+makedepends=('cmake' 'ninja')
+source=("https://github.com/BrunoLevy/geogram/releases/download/v${pkgver}/geogram_${pkgver}.tar.gz")
+sha256sums=('30033340a0dfd86f9e15a8ffdd7c1e6d49b967d3f26fb96cf3dfd1a502d8eba2')
+
+build() {
+  cd ${pkgname}_${pkgver}
+
+  sed -i "s|cmake/modules|cmake/geogram|" CMakeLists.txt
+
+  CFLAGS+=" -Wno-incompatible-pointer-types -std=gnu99" \
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DGEOGRAM_USE_SYSTEM_GLFW3=ON
+
+  ninja -C build
+}
+
+package() {
+  cd ${pkgname}_${pkgver}
+
+  DESTDIR=${pkgdir} ninja -C build install
+  install -Dm755 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}

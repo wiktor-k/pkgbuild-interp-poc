@@ -1,0 +1,17 @@
+pkgbase = inotify-tools
+	pkgdesc = a C library and a set of command-line programs for Linux providing a simple interface to inotify.
+	pkgver = 4.26.270
+	pkgrel = 1
+	url = https://github.com/inotify-tools/inotify-tools
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = gcc
+	makedepends = make
+	makedepends = doxygen
+	makedepends = rust
+	depends = libgcc
+	options = docs
+	source = inotify-tools-4.26.270.tar.gz::https://github.com/inotify-tools/inotify-tools/archive/refs/tags/4.26.270.tar.gz
+	sha256sums = c4187f85f9f963fa18b0430fc1beb3daefc69bd6649e1b07c47a885138bc9f03
+
+pkgname = inotify-tools

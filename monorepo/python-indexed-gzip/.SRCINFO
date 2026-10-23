@@ -1,0 +1,25 @@
+pkgbase = python-indexed-gzip
+	pkgdesc = Fast random access of gzip-compressed files
+	pkgver = 1.10.3
+	pkgrel = 1
+	url = https://github.com/pauldmccarthy/indexed_gzip
+	arch = x86_64
+	license = Zlib
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	makedepends = cython
+	makedepends = zlib
+	depends = python
+	source = python-indexed-gzip::git+https://github.com/pauldmccarthy/indexed_gzip#tag=v1.10.3
+	sha512sums = adfd497357c875e503336c6405e763bbcd8d2d45e68581e3d48e41e11ceb6738c66b16d2db321e017c6d80c4e44e54ab662b1b7d1010de275ec8a516cc07ccdf
+	b2sums = 419eaf56d1bc3a4024bb410e5bbb7f0326db5d2dc23aa96e139e3b46845520cf8fc48dfa89fe4112ff0c6a79b79a64f333c8a94b73a36debaa85c7545113ddf9
+
+pkgname = python-indexed-gzip
+	depends = python
+	depends = glibc
+	depends = zlib
+	depends = libz.so

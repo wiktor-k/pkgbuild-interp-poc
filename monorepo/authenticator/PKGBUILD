@@ -1,0 +1,80 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=authenticator
+pkgver=4.6.2
+pkgrel=2
+pkgdesc='Simple application for generating two-factor authentication (2FA) codes'
+arch=(x86_64)
+url='https://apps.gnome.org/Authenticator/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  bzip2
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  graphene
+  gst-plugin-gtk4
+  gst-plugin-pipewire
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  openssl
+  sqlite
+  xz
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+options=(!lto)
+source=(
+  "git+https://gitlab.gnome.org/World/Authenticator.git#tag=$pkgver"
+  authenticator-fix-metainfo.patch
+  authenticator-dbus-activatable.patch
+)
+b2sums=(
+  6768cdca54cdaabda7ae12e51a40fc3ccef2db535d0170255b5f30775d22f3b6e35fe2d54dc4622d7ea713ebd0ebce7029ff51884a5b6d942d980718e24fe6ec
+  12778b0f8d02c6e69c5489c8ca19015f139ef19582c102ac387aad8ac8fe7b4af214452474998b5da69b63d6b8c330f3318c71000243f6daa7e410e0574feb33
+  d04208304e9d76dab976b839dc8e78911c8ac5af0a20130283388c536f21e5dd7b8594339c8432cc1c581d0f6196540519ecd65cb0650e3163107f910ebac9ae
+)
+
+prepare() {
+  cd Authenticator
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://gitlab.gnome.org/World/Authenticator/-/merge_requests/296
+  git apply -3 ../authenticator-fix-metainfo.patch
+
+  # https://gitlab.gnome.org/World/Authenticator/-/merge_requests/299
+  git apply -3 ../authenticator-dbus-activatable.patch
+}
+
+build() {
+  arch-meson Authenticator build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,60 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=nomad-driver-nspawn
+pkgver=0.10.0
+pkgrel=2
+pkgdesc='A nomad taskdriver for systemd-nspawn'
+arch=(x86_64)
+url='https://github.com/JanMa/nomad-driver-nspawn'
+license=(MIT)
+depends=(glibc nomad systemd)
+makedepends=(git go)
+options=(!lto)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('d7aed46a7ec3e0890211d0c8dffc3a7fc264e1bb4ddcac167d550e9540635029b764bba08963c43679ac805c44c9e49d0ea2ed76ca28d1029c349bf0c798048e')
+b2sums=('6c8016dc800683bbdf634a9d212d3d075e022a42b0b84f94383df389eaae1a491993c3b7c88c84028743634cdbf19114bc43102bc93a2be98f9b8720f68098dd')
+
+prepare() {
+	cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # verify modules
+  go mod verify
+}
+
+build() {
+	cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=vendor \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}' \
+    -X "github.com/JanMa/nomad-driver-nspawn/nspawn.pluginVersion=${pkgver}"" \
+    -o build \
+    .
+}
+
+package() {
+	cd "$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  cp -r example "$pkgdir/usr/share/doc/$pkgname"
+
+  # plugin
+  install -vDm755 -t "$pkgdir/usr/lib/nomad/plugins" "build/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

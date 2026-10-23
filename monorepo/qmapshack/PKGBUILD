@@ -1,0 +1,47 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sanpi <sanpi+aur@homecomputing.fr>
+# Contributor: Martin Brodbeck <martin@brodbeck-online.de>
+
+pkgname=qmapshack
+pkgver=1.21.1
+pkgrel=1
+pkgdesc='Consumer grade GIS software'
+arch=('x86_64')
+url='https://github.com/Maproom/qmapshack'
+license=('GPL-3.0-only')
+depends=(
+  'gdal'
+  'glibc'
+  'hicolor-icon-theme'
+  'libgcc'
+  'libjpeg-turbo'
+  'libstdc++'
+  'proj'
+  'qt6-5compat'
+  'qt6-base'
+  'qt6-declarative'
+  'qt6-svg'
+  'qt6-tools'
+  'qt6-webengine'
+  'routino'
+)
+makedepends=(
+  'clang'
+  'cmake'
+  'git'
+)
+source=("git+$url.git#tag=V_$pkgver")
+b2sums=('a7e0a174c62af0056fb781bc74315be6f1e456ff2fb5cd8266e090753be1d90f3b592ae9ffe152b601c9675ac9d9b88136b1996e3128362407327da4f74b4e2b')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

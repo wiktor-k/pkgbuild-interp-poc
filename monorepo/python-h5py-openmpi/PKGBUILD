@@ -1,0 +1,74 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Joey Dumont <joey.dumont@gmail.com>
+
+pkgname=python-h5py-openmpi
+_pkgname=h5py
+pkgver=3.16.0
+pkgrel=1
+pkgdesc="General-purpose Python bindings for the HDF5 library (OpenMPI version)"
+arch=(x86_64)
+url="https://www.h5py.org/"
+license=(BSD-3-Clause)
+depends=(
+  glibc
+  hdf5-openmpi
+  liblzf
+  python
+  python-mpi4py
+  python-numpy
+)
+makedepends=(
+  cython
+  python-build
+  python-installer
+  python-pkgconfig
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-pytables
+  python-pytest
+  python-pytest-mpi
+)
+conflicts=(python-h5py)
+provides=(python-h5py)
+source=(
+  "https://github.com/h5py/h5py/archive/$pkgver/$_pkgname-$pkgver.tar.gz"
+  remove-version-check.patch
+)
+b2sums=('ef9cbfaa57ac6379badbdefdd5e7bac40f5514bfa024679c118ab13956dff671b15debff555e2e00b3c40d58d0fab7e912d1ff5c0d9dc829fd980d5e6f7ed031'
+        'a16a3264ae9be1161435ea455fad435f5557e48e44356d1044252ebd7b2c88121ce313a10071ec6b7854ea5dfa506289317357bd0e1f3d14a356da1659ecee6a')
+
+prepare() {
+  cd $_pkgname-$pkgver
+  sed -i 's/mpi4py ==/mpi4py >=/g' setup.py
+  # Remove RPATH
+  sed -i "s/settings\\['runtime_library_dirs'\\] = settings\\['library_dirs'\\]/pass/" setup_build.py
+  # Drop annoying version check
+  patch -p1 -i ../remove-version-check.patch
+}
+
+build() {
+  cd $_pkgname-$pkgver
+  CC=mpicc HDF5_MPI="ON" H5PY_SYSTEM_LZF=1 \
+    python -m build --wheel --no-isolation --skip-dependency-check
+}
+
+check() {
+  cd $_pkgname-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  local python_version=$(test-env/bin/python -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+  local site_packages=test-env/lib/python$python_version/site-packages
+  H5PY_TEST_CHECK_FILTERS=1 test-env/bin/python -m pytest "$site_packages/h5py" \
+    --deselect="$site_packages/h5py/tests/test_file2.py::TestCache::test_defaults" \
+    --deselect="$site_packages/h5py/tests/test_file2.py::TestCache::test_nbytes" \
+    --deselect="$site_packages/h5py/tests/test_file2.py::TestCache::test_w0"
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  HDF5_MPI="ON" python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

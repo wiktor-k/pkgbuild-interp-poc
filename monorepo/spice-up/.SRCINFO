@@ -1,0 +1,34 @@
+pkgbase = spice-up
+	pkgdesc = Create simple and beautiful presentations
+	pkgver = 1.9.1
+	pkgrel = 4
+	url = https://github.com/Philip-Scott/Spice-up
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = xorg-server-xvfb
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = granite
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libevdev
+	depends = libgee
+	depends = libgudev
+	depends = pango
+	source = git+https://github.com/Philip-Scott/Spice-up.git#tag=1.9.1
+	source = spice-up-remove-libsoup.patch
+	source = spice-up-missing-icons.patch
+	source = spice-up-window-icon.patch
+	b2sums = 8c3668ad98d25abd2f3e965fb34ff23d28ac1355d65893bc2d66a93ed52489780e38d175dc985c13f78380c93909c1c244ef1a817f86095e2f89b1d7b848227d
+	b2sums = 2ed6ee2badeb66348b8430121def71139760cc14793e5211f41490678390ef0923f9cc0e109b69710541d0fde32ab98de9ba16e04104d00fee14abab73e16530
+	b2sums = 442e24cf94588ee5ce40526a460bfef0f48bb7ddaea13b9b53668cb28dc79d43d1b0ab8858c28b8ed64e3068a8e427fb510e0f309e294de9cfa9eda5727561f2
+	b2sums = cd439a3cb2b2e25a3f244e8d7ef65e73a500c4a91d6241adb11b7d3e18a2373eba3d9ea441d9220ef71a30bff49c9995362225c7dfb35a2d910e87976d334f9c
+
+pkgname = spice-up

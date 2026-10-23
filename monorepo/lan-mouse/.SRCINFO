@@ -1,0 +1,22 @@
+pkgbase = lan-mouse
+	pkgdesc = Software KVM Switch / mouse & keyboard sharing software for Local Area Networks
+	pkgver = 0.11.0
+	pkgrel = 1
+	url = https://github.com/feschber/lan-mouse
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = desktop-file-utils
+	makedepends = git
+	depends = libadwaita
+	depends = gtk4
+	depends = libx11
+	depends = libxtst
+	depends = glib2
+	depends = gcc-libs
+	depends = hicolor-icon-theme
+	options = !lto
+	source = lan-mouse-0.11.0::git+https://github.com/feschber/lan-mouse.git#commit=0d2190e787db9e482e17d4c16fb7c00ef4841bcb
+	sha256sums = 63fecab52a0939605d82cb0e48544d4e34c3edc19dcf118a5ea183b0edd90d92
+
+pkgname = lan-mouse

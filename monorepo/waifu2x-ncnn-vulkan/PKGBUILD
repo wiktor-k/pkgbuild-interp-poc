@@ -1,0 +1,45 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Mitch Bigelow <ipha00@gmail.com>
+
+pkgname=waifu2x-ncnn-vulkan
+pkgver=20250915
+pkgrel=3
+pkgdesc="ncnn implementation of waifu2x converter"
+url="https://github.com/nihui/waifu2x-ncnn-vulkan"
+license=('MIT')
+arch=('x86_64')
+depends=('libwebp' 'libjpeg-turbo' 'libpng' 'ncnn')
+makedepends=('cmake' 'glslang' 'vulkan-headers')
+source=("https://github.com/nihui/waifu2x-ncnn-vulkan/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('c0f7cffb00243867fb9a6f8104e5f6722b3558cd7e3bae7155ff437c90371e78')
+
+prepare() {
+    mkdir -p build
+
+    cd waifu2x-ncnn-vulkan-$pkgver
+    # Fix default model path
+    sed -i 's|path_t model = PATHSTR("models-cunet")|path_t model = PATHSTR("/usr/share/waifu2x-ncnn-vulkan/models-cunet")|' src/main.cpp
+}
+
+build() {
+    cd build
+    cmake -DCMAKE_INSTALL_PREFIX=/usr \
+	  -DUSE_SYSTEM_NCNN=ON \
+	  -DUSE_SYSTEM_WEBP=ON \
+	  -DUSE_SYSTEM_JPEG=ON \
+	  -DUSE_SYSTEM_ZLIB=ON \
+	  -DUSE_SYSTEM_PNG=ON \
+	  ../waifu2x-ncnn-vulkan-$pkgver/src
+
+    make
+}
+
+package() {
+    install -Dm644 waifu2x-ncnn-vulkan-$pkgver/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+    install -Dm755 build/waifu2x-ncnn-vulkan -t "$pkgdir"/usr/bin/
+
+    cd waifu2x-ncnn-vulkan-$pkgver/models
+    for f in models-*/*; do
+        install -Dm644 "$f" ${pkgdir}/usr/share/waifu2x-ncnn-vulkan/"$f"
+    done
+}

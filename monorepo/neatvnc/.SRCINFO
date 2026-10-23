@@ -1,0 +1,26 @@
+pkgbase = neatvnc
+	pkgdesc = Fast and neat VNC server library
+	pkgver = 1.0.3
+	pkgrel = 1
+	url = https://github.com/any1/neatvnc
+	arch = x86_64
+	license = ISC
+	makedepends = git
+	makedepends = meson
+	makedepends = ninja
+	depends = glibc
+	depends = gmp
+	depends = gnutls
+	depends = libaml.so
+	depends = libavcodec.so
+	depends = libdrm
+	depends = libpixman-1.so
+	depends = libturbojpeg.so
+	depends = mesa
+	depends = nettle
+	depends = zlib
+	provides = libneatvnc.so
+	source = git+https://github.com/any1/neatvnc.git#tag=v1.0.3
+	b2sums = ef06f483fc073e108a0ddf3b5f3aef39008ad9d7fbbb4d641d68937a4fffe1c7c8ffa1135e3eb86b8d4e980d5dfd68822b3dd52ddd953047891120335357ee2f
+
+pkgname = neatvnc

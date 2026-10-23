@@ -1,0 +1,24 @@
+pkgbase = ruby-pry-byebug
+	pkgdesc = Combine 'pry' with 'byebug'. Adds 'step', 'next', 'finish', 'continue' and 'break' commands to control execution.
+	pkgver = 3.12.0
+	pkgrel = 1
+	url = https://github.com/deivid-rodriguez/pry-byebug
+	arch = any
+	license = MIT
+	checkdepends = markdownlint
+	checkdepends = ruby-bundler
+	checkdepends = ruby-irb
+	checkdepends = ruby-minitest
+	checkdepends = ruby-rake
+	makedepends = git
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-byebug
+	depends = ruby-pry
+	options = !emptydirs
+	source = git+https://github.com/deivid-rodriguez/pry-byebug.git#tag=v3.12.0
+	source = ruby-pry-byebug_fix_tests.patch
+	sha256sums = 72e73ec020f73ae5e2258ae46bbde13d764f40e79156b0264ed7bd1cbe525886
+	sha256sums = 5dabd6fad133ba87e778f5a51a4e9122be83c8ab0959058191f3c964d04669fe
+
+pkgname = ruby-pry-byebug

@@ -1,0 +1,36 @@
+pkgbase = khal
+	pkgdesc = CLI calendar application built around CalDAV
+	pkgver = 0.14.1
+	pkgrel = 1
+	url = https://lostpackets.de/khal/
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-freezegun
+	checkdepends = python-hypothesis
+	checkdepends = python-packaging
+	checkdepends = vdirsyncer
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools-scm
+	makedepends = python-sphinx
+	makedepends = python-wheel
+	depends = python
+	depends = python-click
+	depends = python-click-log
+	depends = python-configobj
+	depends = python-dateutil
+	depends = python-icalendar
+	depends = python-pytz
+	depends = python-pyxdg
+	depends = python-tzlocal
+	depends = python-urwid
+	optdepends = gawk: for mutt2khal
+	optdepends = python-setproctitle: to set process name
+	optdepends = vdirsyncer: to synchronize CalDAV calendars
+	source = git+https://github.com/pimutils/khal.git#tag=v0.14.1
+	sha256sums = 04915555014b69c5dd098d99968c6033464bef172a9b0fd636a1034c68e6db12
+	b2sums = 057e5be28734eae4331bd348a661a6f7cbd211e77460c61ca170e80a6e298ee5f9324881285c2fb7a8931dddd98be09526c97017caf66574c0c6948795746a10
+
+pkgname = khal

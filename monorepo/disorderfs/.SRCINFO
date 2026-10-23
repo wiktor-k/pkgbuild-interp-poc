@@ -1,0 +1,22 @@
+pkgbase = disorderfs
+	pkgdesc = FUSE filesystem that introduces non-determinism
+	pkgver = 0.6.2
+	pkgrel = 2
+	url = https://reproducible-builds.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = bc
+	makedepends = asciidoc
+	makedepends = git
+	depends = fuse3
+	depends = libstdc++
+	depends = glibc
+	depends = libgcc
+	source = https://reproducible-builds.org/_lfs/releases/disorderfs/disorderfs-0.6.2.tar.bz2
+	source = https://reproducible-builds.org/_lfs/releases/disorderfs/disorderfs-0.6.2.tar.bz2.asc
+	validpgpkeys = B8BF54137B09D35CF026FE9D091AB856069AAA1C
+	validpgpkeys = C2FE4BD271C139B86C533E461E953E27D4311E58
+	sha512sums = 27ed9bbb1ebc7392a0cb42040892069c055397d7a2d0cd713dd28178a947e00e526b70bf13542f9d7c1234cde9b199578cde0c855f34310295ce2496452b31da
+	sha512sums = SKIP
+
+pkgname = disorderfs

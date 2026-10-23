@@ -1,0 +1,74 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=torchcodec
+pkgname=python-$_name
+pkgver=0.17.0
+pkgrel=1
+license=(BSD-3-Clause)
+pkgdesc="PyTorch media decoding and encoding"
+arch=(x86_64)
+url="https://github.com/pytorch/torchcodec"
+depends=(
+  glibc
+  libavif
+  libgcc
+  libheif
+  libjpeg-turbo
+  libpng
+  libstdc++
+  libwebp
+  python
+  python-pytorch
+)
+makedepends=(
+  cmake
+  ffmpeg
+  fmt
+  pkg-config
+  python-build
+  python-installer
+  python-scikit-build-core
+)
+checkdepends=(
+  python-numpy
+  python-pillow
+  python-pytest
+  python-torchvision
+)
+optdepends=(
+  'ffmpeg: for video and audio decoding and encoding'
+)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('6f47402a6c3353787f72ef8c25dde876fa6d54b699473cd611b946e3a1f1adab84e19d186b34cd2eba3f609963979d535ca7760c72f2b42da3834f7daa4fc1e3')
+
+build() {
+  cd $_name-$pkgver
+
+  # disable adding -Werror (causes errors even for deprecated symbols)
+  export TORCHCODEC_DISABLE_COMPILE_WARNING_AS_ERROR=ON
+
+  # setup.py requires setting this to use the system ffmpeg libraries
+  # https://github.com/pytorch/torchcodec/blob/1acff9c4cffe8b65f77cd892162cd9ed1b2d75e2/setup.py#L176-L189
+  # The Arch Linux ffmpeg package is GPL-licensed (--enable-gpl)
+  export I_CONFIRM_THIS_IS_NOT_A_LICENSE_VIOLATION=1
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" test
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

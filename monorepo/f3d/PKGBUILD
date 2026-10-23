@@ -1,0 +1,91 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Michael Migliore <mcmigliore+aur@gmail.com>
+# Contributor: Mathieu Wespthal <mathieu.westphal+aur@gmail.com>
+
+pkgname=f3d
+pkgver=3.5.0
+pkgrel=6
+pkgdesc='A fast and minimalist 3D viewer'
+arch=(x86_64)
+url="https://github.com/${pkgname}-app/${pkgname}"
+license=(BSD-3-Clause)
+depends=(alembic # libAlembic.so
+         assimp # libassimp.so
+         boost
+         draco # libdraco.so
+         fmt
+         libgcc
+         libstdc++
+         glew
+         glibc # libc.so libm.so
+         imath # libImath-3_1.so
+         jemalloc libjemalloc.so
+         jsoncpp # optdepend of vtk for features required by f3d
+         libglvnd libOpenGL.so
+         libxcursor
+         libx11 # libX11.so
+         netcdf
+         nlohmann-json
+         onetbb # libtbb.so
+         opencascade # libTKBinXCAF.so libTKBRep.so libTKDEIGES.so libTKDESTEP.so libTKernel.so libTKLCAF.so libTKMath.so libTKMesh.so libTKXCAF.so libTKXSBase.so
+         openexr # libOpenEXR-3_3.so
+         openvdb
+         ospray
+         pugixml
+         python # libpython3.13.so
+         usd # libusd_ms.so
+         verdict
+         vtk # libvtkCommonColor.so libvtkCommonCore.so libvtkCommonDataModel.so libvtkCommonExecutionModel.so libvtkCommonMath.so libvtkCommonSystem.so libvtkCommonTransforms.so libvtkFiltersCore.so libvtkFiltersGeneral.so libvtkFiltersGeometry.so libvtkFiltersSources.so libvtkglad.so libvtkImagingCore.so libvtkImagingHybrid.so libvtkInteractionStyle.so libvtkInteractionWidgets.so libvtkIOCityGML.so libvtkIOCore.so libvtkIOExodus.so libvtkIOGeometry.so libvtkIOHDF.so libvtkIOImage.so libvtkIOImport.so libvtkIONetCDF.so libvtkIOOpenVDB.so libvtkIOParallel.so libvtkIOPLY.so libvtkIOXML.so libvtkRenderingAnnotation.so libvtkRenderingCore.so libvtkRenderingOpenGL2.so libvtkRenderingRayTracing.so libvtkRenderingUI.so libvtkRenderingVolumeOpenGL2.so libvtksys.so
+         zlib libz.so)
+makedepends=(cmake
+             cuda
+             eigen
+             fast_float
+             help2man
+             jdk-openjdk
+             ninja
+             openmp
+             pybind11
+             strip-nondeterminism
+             utf8cpp)
+source=("https://github.com/$pkgname-app/$pkgname/archive/refs/tags/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('033845b5d49af3ae60fcc3fe85d82c841d990d3534638a4472123f84b3e82795')
+
+build() {
+  cd "$pkgname-$pkgver"
+  export CXXFLAGS+=' -ffat-lto-objects'
+  local _cmake_options=(
+    -G Ninja
+    -B build
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_BUILD_TYPE=None
+    -D F3D_BINDINGS_JAVA=On
+    -D F3D_BINDINGS_PYTHON=On
+    -D F3D_LINUX_GENERATE_MAN=On
+    -D F3D_MODULE_RAYTRACING=On
+    -D F3D_MODULE_EXR=On
+    -D F3D_PLUGINS_STATIC_BUILD=On
+    -D F3D_PLUGIN_BUILD_ALEMBIC=On
+    -D F3D_PLUGIN_BUILD_ASSIMP=On
+    -D F3D_PLUGIN_BUILD_DRACO=On
+    -D F3D_PLUGIN_BUILD_HDF=On
+    -D F3D_PLUGIN_BUILD_OCCT=On
+    -D F3D_PLUGIN_BUILD_USD=On
+    -D F3D_PLUGIN_BUILD_VDB=On
+  )
+  cmake "${_cmake_options[@]}"
+  cmake --build build
+  # Strip non determinism information from the jar file (e.g. timestamps and filesystem ordering)
+  # Required for reproducible builds
+  find build -name "$pkgname.jar" -exec strip-nondeterminism {} +
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  DESTDIR="$pkgdir" cmake --install build
+  DESTDIR="$pkgdir" cmake --install build --component mimetypes
+  DESTDIR="$pkgdir" cmake --install build --component sdk
+  DESTDIR="$pkgdir" cmake --install build --component configuration
+  install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE.md
+}

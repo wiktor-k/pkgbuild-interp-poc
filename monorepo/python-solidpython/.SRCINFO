@@ -1,0 +1,22 @@
+pkgbase = python-solidpython
+	pkgdesc = Python frontend for solid modelling that compiles to OpenSCAD
+	pkgver = 1.1.3
+	pkgrel = 8
+	url = https://github.com/SolidCode/SolidPython
+	arch = any
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-poetry-core
+	makedepends = python-wheel
+	depends = python
+	depends = python-euclid3
+	depends = python-prettytable
+	depends = python-ply
+	depends = python-pypng
+	source = python-solidpython::git+https://github.com/SolidCode/SolidPython#commit=0a4f539c31a25df52a42bab2ceeffafd45596f73
+	sha512sums = b497f28ef0ffc687de33577dcb3e67c5b530ee81ea1c7debe5d262e95d0dd560dd32e295bfe2d9e99c585b5a13cc782b2ff3fa6bac4bb859f46cc8676a217051
+	b2sums = 2d37e23c33ae98f3572ba61f817c531cc80d5235868ce6d1484ec2819a14f4d9b231c1fed066aec5da3662bb51ea5d6cc46267debcc9dfbdddff64f523a59d2a
+
+pkgname = python-solidpython

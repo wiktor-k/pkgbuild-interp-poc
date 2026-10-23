@@ -1,0 +1,70 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-listen
+pkgver=3.10.1
+pkgrel=1
+pkgdesc='The Listen gem listens to file modifications and notifies you about the changes.'
+arch=(any)
+url='https://github.com/guard/listen'
+license=(MIT)
+depends=(
+  ruby
+  ruby-rb-fsevent
+  ruby-rb-inotify
+)
+makedepends=(
+  git
+)
+checkdepends=(
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+  ruby-thor
+)
+options=(!emptydirs)
+source=(git+https://github.com/guard/listen.git#tag=v$pkgver)
+sha256sums=('1c862bfd08b2cfb27c0ea80bdd2648ac056e74a7577dc707ad6e9f845ba7df6a')
+
+prepare() {
+  cd listen
+  sed -i '/[cC]overalls/d' spec/spec_helper.rb
+  sed -i '/rubocop/d' Rakefile
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd listen
+  gem build listen.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    listen-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd listen
+  GEM_HOME="tmp_install/$_gemdir" rake spec
+}
+
+package() {
+  cd listen
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

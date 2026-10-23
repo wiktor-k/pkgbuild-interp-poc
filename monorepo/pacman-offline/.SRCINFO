@@ -1,0 +1,20 @@
+pkgbase = pacman-offline
+	pkgdesc = offline system update with pacman
+	pkgver = 0.3.11
+	pkgrel = 1
+	url = https://github.com/eworm-de/pacman-offline
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = discount
+	depends = bash
+	depends = systemd
+	depends = pacman
+	optdepends = polkit: elevate privileges
+	backup = etc/pacman.d/offline.conf
+	backup = etc/pacman.d/offline-include.conf
+	source = git+https://github.com/eworm-de/pacman-offline.git#tag=0.3.11?signed
+	validpgpkeys = BD84DE71F493DF6814B0167254EDC91609BC9183
+	sha256sums = d29b321a7c172e2403d3e37b36711b73d3bf450e12bd2fbef9d87d7b519fc5c9
+
+pkgname = pacman-offline

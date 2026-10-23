@@ -1,0 +1,21 @@
+pkgbase = python-comrak
+	pkgdesc = Python bindings for the Comrak Rust library, a fast CommonMark/GFM parser
+	pkgver = 0.0.16
+	pkgrel = 1
+	url = https://github.com/lmmx/comrak
+	arch = x86_64
+	license = BSD-2-Clause
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	makedepends = oniguruma
+	depends = python
+	depends = glibc
+	depends = libgcc
+	source = python-comrak::git+https://github.com/lmmx/comrak#tag=py-0.0.16
+	sha512sums = 75249f0ffdc49c3473784c94a5233bbf7bd7d964d06423b6f0e252b4dfa0fb1e8fc8ffc586547025c0ce7ea9893518328168e24d55acfa7e31d30c48b9ac98d5
+	b2sums = c0f9ba5aef9d2af1549ae74d4f57d0538bf48fcd7b34258abfe964b46cc4861ba24eb0db7a2f34e6bc514de8b619e96c4e0a203696a49f69e6dc74a3988b6535
+
+pkgname = python-comrak

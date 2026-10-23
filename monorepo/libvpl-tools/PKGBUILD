@@ -1,0 +1,62 @@
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+
+pkgname=libvpl-tools
+pkgver=1.6.0
+pkgrel=1
+pkgdesc='Tools for Intel Video Processing Library'
+arch=('x86_64')
+url='https://github.com/intel/libvpl-tools/'
+license=('MIT')
+depends=(
+    'glibc'
+    'libdrm'
+    'libgcc'
+    'libstdc++'
+    'libva'
+    'libvpl'
+    'libx11'
+    'vpl-runtime'
+    'wayland')
+makedepends=(
+    'cmake'
+    'libpciaccess'
+    'wayland-protocols')
+source=("https://github.com/intel/libvpl-tools/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha256sums=('3f8e86ff6f7264a4f5bfa396ba3e4700a6cbd1e69840e33ee0838872dcf9e1e6')
+
+build() {
+    # fix warning: "_FORTIFY_SOURCE" redefined
+    # note: upstream forces _FORTIFY_SOURCE=2
+    export CFLAGS="${CFLAGS/-Wp,-D_FORTIFY_SOURCE=?/}"
+    export CXXFLAGS="${CXXFLAGS/-Wp,-D_FORTIFY_SOURCE=?/}"
+    
+    # NOTE: fails with 'None' build type
+    export CFLAGS+=' -DNDEBUG'
+    export CXXFLAGS+=' -DNDEBUG'
+    cmake -B build -S "${pkgname}-${pkgver}" \
+        -G 'Unix Makefiles' \
+        -DCMAKE_BUILD_TYPE:STRING='Release' \
+        -DCMAKE_INSTALL_PREFIX:PATH='/usr' \
+        -DBUILD_TESTS:BOOL='ON' \
+        -DTOOLS_ENABLE_OPENCL:BOOL='ON' \
+        -DVPL_INSTALL_LICENSEDIR:PATH="share/licenses/${pkgname}" \
+        -Wno-dev
+    cmake --build build
+}
+
+check() {
+    ctest --test-dir build --output-on-failure
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    
+    local _file
+    while read -r -d '' _file
+    do
+        if ! grep -q '^vpl-' <<< "$_file"
+        then
+            mv "${pkgdir}/usr/bin"/{,vpl-}"$_file"
+        fi
+    done < <(find "${pkgdir}/usr/bin" -mindepth 1 -maxdepth 1 -type f -print0 | sed -z 's|.*/||')
+}

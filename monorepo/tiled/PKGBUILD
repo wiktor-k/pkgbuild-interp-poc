@@ -1,0 +1,33 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Collaborator: Jonathan Fine (were.Vire AT gmail DOT com)
+pkgname=tiled
+pkgver=1.12.2
+pkgrel=1
+pkgdesc='A general purpose tile map editor, built to be flexible and easy to use'
+arch=('x86_64')
+url='http://www.mapeditor.org'
+license=('GPL-2.0-or-later')
+depends=('qt6-base' 'libgl' 'gtk-update-icon-cache' 'shared-mime-info' 'desktop-file-utils' 'libxkbcommon-x11'
+         'qt6-declarative' 'qt6-svg' 'zstd')
+makedepends=('mesa' 'qt6-tools' 'python' 'qbs')
+optdepends=('python: Python plugin'
+            'qt6-imageformats: Support for additional image formats (including WebP)'
+            'qaseprite: Support for the Aseprite image format')
+            source=($pkgname-$pkgver.tar.gz::https://github.com/mapeditor/tiled/archive/v${pkgver}.tar.gz)
+sha512sums=('366dd14620133068b0b2324098bcb44ea15d380e329d99e5da84f904e44125cda1e73995ec1d8562de9d7518682896750ce8afa8d2c951acb5b29d83982a9727')
+
+prepare() {
+  sed -e '/QT_DISABLE_DEPRECATED_BEFORE/d' -i $pkgname-$pkgver/*/*/*.qbs
+  qbs setup-qt /usr/bin/qmake6 qt6
+  qbs config defaultProfile qt6
+}
+
+build() {
+  cd $pkgname-$pkgver
+  qbs config:release qbs.installPrefix:"/usr" projects.Tiled.useRPaths:false projects.Tiled.installHeaders:true
+}
+
+package() {
+  cd $pkgname-$pkgver
+  qbs install config:release --install-root "$pkgdir"
+}

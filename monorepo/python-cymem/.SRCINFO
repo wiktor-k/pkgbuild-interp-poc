@@ -1,0 +1,19 @@
+pkgbase = python-cymem
+	pkgdesc = Cython memory pool for RAII-style memory management
+	pkgver = 2.0.13
+	pkgrel = 1
+	url = https://github.com/explosion/cymem
+	arch = x86_64
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = cython
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = git+https://github.com/explosion/cymem.git#tag=release-v2.0.13
+	sha512sums = 824df0f16cf4f8a9a53248049f9a7a25c9c4ab8ef91e785598bb126e305ab843a3a5efaf9e0e67cd25f9874dc4608ee6a902bff926bde4e8898362b896e9bd32
+
+pkgname = python-cymem

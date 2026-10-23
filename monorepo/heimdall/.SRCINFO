@@ -1,0 +1,20 @@
+pkgbase = heimdall
+	pkgdesc = Tool suite used to flash firmware (ROMs) onto Samsung Galaxy S devices (grimler fork)
+	pkgver = 2.2.2
+	pkgrel = 1
+	url = https://git.sr.ht/~grimler/Heimdall
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = qt6-base
+	depends = gcc-libs
+	depends = glibc
+	depends = libusb
+	depends = zlib
+	optdepends = qt6-base: GUI support for heimdall-frontend
+	source = heimdall-2.2.2.tar.gz::https://git.sr.ht/~grimler/Heimdall/archive/v2.2.2.tar.gz
+	source = heimdall.desktop
+	sha256sums = 7d01dd8bf9c2f93ea016ae8b059110c50cea49e78670e8a1333ebd5899cdaaa3
+	sha256sums = 439cea1a8976b9b589ffe4030a084243bcc5e937dcb9c571cdb94d3ff08b4fb4
+
+pkgname = heimdall

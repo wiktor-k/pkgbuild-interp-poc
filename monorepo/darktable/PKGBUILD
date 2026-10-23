@@ -1,0 +1,87 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Christian Himpel <chressie at gmail dot com>
+# Contributor: Johannes Hanika <hanatos at gmail dot com>
+
+pkgname=darktable
+epoch=2
+pkgver=5.6.2
+pkgrel=1
+pkgdesc='Utility to organize and develop raw images'
+arch=(x86_64)
+url='https://darktable.org'
+_url='https://github.com/darktable-org/darktable'
+license=(GPL-3.0-or-later)
+depends=(colord-gtk
+         exiv2
+         flickcurl
+         gmic
+         graphicsmagick
+         iso-codes
+         jasper
+         lensfun
+         libavif
+         libgphoto2
+         libjpeg-turbo
+         libjxl
+         libsecret
+         libxml2
+         lua54
+         openexr
+         openjpeg2
+         openmp
+         osm-gps-map
+         potrace
+         pugixml
+         zlib)
+optdepends=('dcraw: base curve script'
+            'ghostscript: noise profile script'
+            'gnuplot: noise profile script'
+            'imagemagick: base curve and noise profile scripts'
+            'onnxruntime: AI inference'
+            'opencl-driver: hardware accelerated image processing'
+            'perl-image-exiftool: base curve script'
+            'portmidi: game and midi controller input devices')
+makedepends=(clang
+             cmake
+             desktop-file-utils
+             intltool
+             libwebp
+             llvm
+             onnxruntime
+             portmidi
+             python-jsonschema)
+_archive="$pkgname-$pkgver"
+source=("$_url/releases/download/release-$pkgver/$_archive.tar.xz"{,.asc})
+sha256sums=('d2da92c670401d350b576431f21e58bee40348e1f5078201a8a1b8c270585834'
+            'SKIP')
+validpgpkeys=(C4CBC150699956E2A3268EF5BB5CC8295B1779C9  # darktable releases <release@darktable.org>
+              F10F9686652B0E949FCD94C318DCA123F949BD3B) # Pascal Obry <pascal@obry.net>
+
+build() {
+    local cmake_flags=(
+        PROJECT_VERSION="$pkgver"
+        CMAKE_INSTALL_PREFIX=/usr
+        CMAKE_INSTALL_LIBEXECDIR=/usr/lib
+        CMAKE_BUILD_TYPE=Release
+        BINARY_PACKAGE_BUILD=1
+        ONNXRUNTIME_OFFLINE=On
+        USE_AI=On
+        USE_COLORD=On
+        USE_LIBSECRET=On
+        USE_LUA=On
+        BUILD_CURVE_TOOLS=On
+        BUILD_NOISE_TOOLS=On
+        BUILD_USERMANUAL=Off
+        RAWSPEED_ENABLE_LTO=On
+    )
+    cmake -B build -S "$_archive" ${cmake_flags[@]/#/-D }
+    make -C build
+}
+
+package() {
+    make -C build DESTDIR="$pkgdir" install
+    ln -s darktable/libdarktable.so "$pkgdir/usr/lib/"
+}

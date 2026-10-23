@@ -1,0 +1,17 @@
+pkgbase = jolt
+	pkgdesc = TUI-based battery and energy monitor
+	pkgver = 1.2.0
+	pkgrel = 3
+	url = https://github.com/jordond/jolt
+	install = jolt.install
+	arch = x86_64
+	arch = aarch64
+	license = MIT
+	makedepends = cargo
+	options = !lto
+	source = https://github.com/jordond/jolt/archive/refs/tags/1.2.0/jolt-1.2.0.tar.gz
+	source = 99-jolt-rapl.rules
+	sha256sums = c6756b84349a6f253d81eb9ad6074f9b94461043c053b1b7ce5f86c2e1bed04d
+	sha256sums = 6365284cf1dab98955c1df4074b06af46385dce6602524cd91c37a8fb431fb28
+
+pkgname = jolt

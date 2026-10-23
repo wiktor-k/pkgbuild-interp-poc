@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=btfs
+pkgver=3.3
+pkgrel=1
+pkgdesc="A bittorrent filesystem based on FUSE"
+arch=('x86_64')
+url="https://github.com/johang/btfs"
+license=('GPL-3.0-or-later')
+depends=('fuse3' 'libtorrent-rasterbar' 'curl')
+makedepends=('boost' 'git')
+optdepends=('python: for btplay')
+source=("git+https://github.com/johang/btfs.git#tag=v$pkgver")
+sha512sums=('eaaf32528d1677a7d3ea81cb9eb3c8f4a8f1984a7e68966acfae6ba2f8fdbf10f316023c33922295c25f91b0e9fe22f3f5acffa55a50f5e265112366b80d019c')
+
+prepare() {
+  cd $pkgname
+  autoreconf -i
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

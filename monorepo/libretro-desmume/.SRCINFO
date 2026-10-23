@@ -1,0 +1,17 @@
+pkgbase = libretro-desmume
+	pkgdesc = Nintendo DS core
+	pkgver = 20260920.151714.g95b4d798731c
+	pkgrel = 1
+	url = https://github.com/libretro/desmume
+	arch = x86_64
+	groups = libretro
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = libpcap
+	makedepends = mesa
+	depends = libgl
+	depends = libretro-core-info
+	source = libretro-desmume::git+https://github.com/libretro/desmume.git#commit=95b4d798731c
+	b2sums = 0ed9b4b04bd29118d93ccdcfcd0d2f936a68017f290f4102cebac6a45cee1dacc412bf6731c7c6bf0f658ad9585bb7206749833351c952bc6e72e7e2e3ad1010
+
+pkgname = libretro-desmume

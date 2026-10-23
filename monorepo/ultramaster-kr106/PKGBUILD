@@ -1,0 +1,118 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgbase=ultramaster-kr106
+pkgname=(
+  ultramaster-kr106-vst3
+  ultramaster-kr106-lv2
+  ultramaster-kr106-clap
+)
+pkgver=2.5.13
+pkgrel=1
+pkgdesc='A virtual analog synthesizer inspired by the classic Roland Juno polysynths'
+arch=(x86_64)
+url='https://kayrock.org/kr106/'
+license=(GPL-3.0-only)
+groups=(pro-audio)
+_common_depends=(
+  glibc
+  libgcc
+  libstdc++
+  alsa-lib
+  fontconfig
+  freetype2
+)
+makedepends=(
+  "${_common_depends[@]}"
+  git
+  cmake
+  ninja
+  libx11
+  libxrandr
+  libxinerama
+  libxcursor
+  jack
+)
+source=(
+  "$pkgbase::git+https://github.com/kayrockscreenprinting/ultramaster_kr106#tag=v$pkgver"
+  'github.com-juce-framework-JUCE::git+https://github.com/juce-framework/JUCE'
+  'github.com-free-audio-clap-juce-extensions::git+https://github.com/free-audio/clap-juce-extensions'
+  # clap-juce-extensions
+  'github.com-free-audio-clap::git+https://github.com/free-audio/clap'
+  'github.com-free-audio-clap-helpers::git+https://github.com/free-audio/clap-helpers'
+)
+sha512sums=('ee388d02b3fd2cc16b547c5da23b2976b6f49edc3862da7c7af275873694d7c266d4af29db85daaa7ca9afb34e36955ea9530ad9a789c2bd7fb667d3817d764f'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+b2sums=('bb26433977fa4a92e7336a87e376e108cfe88cb5f31c7f693c39b710ee84e65dc699ede1faa3926c6276f163b70b7ade5e49b87586f98c13848850abd12f490c'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd "$pkgbase"
+
+  # prepare git submodule(s)
+  git submodule init
+  git config submodule.libs/JUCE.url "$srcdir/github.com-juce-framework-JUCE"
+  git config submodule.libs/clap-juce-extensions.url "$srcdir/github.com-free-audio-clap-juce-extensions"
+  git -c protocol.file.allow=always submodule update --init
+
+  pushd libs/clap-juce-extensions
+  git submodule init
+  git config submodule.clap-libs/clap.url "$srcdir/github.com-free-audio-clap"
+  git config submodule.clap-libs/clap-helpers.url "$srcdir/github.com-free-audio-clap-helpers"
+  git -c protocol.file.allow=always submodule update --init
+  popd
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgbase"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -W no-dev
+    -D KR106_COPY_AFTER_BUILD=OFF
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package_ultramaster-kr106-vst3() {
+  pkgdesc+=' - VST3 plugin'
+  groups+=(vst3-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    vst3-host
+  )
+
+  install -vd "$pkgdir/usr/lib/vst3"
+  cp -vr build/KR106_artefacts/Release/VST3/Ultramaster\ KR-106.vst3 "$pkgdir/usr/lib/vst3"
+}
+
+package_ultramaster-kr106-lv2() {
+  pkgdesc+=' - LV2 plugin'
+  groups+=(lv2-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    lv2-host
+  )
+
+  install -vd "$pkgdir/usr/lib/lv2"
+  cp -vr build/KR106_artefacts/Release/LV2/* "$pkgdir/usr/lib/lv2"
+}
+
+package_ultramaster-kr106-clap() {
+  pkgdesc+=' - CLAP plugin'
+  groups+=(clap-plugins)
+  depends=(
+    "${_common_depends[@]}"
+    clap-host
+  )
+
+  install -vDm644 -t "$pkgdir/usr/lib/clap" build/KR106_artefacts/Release/CLAP/*.clap
+}

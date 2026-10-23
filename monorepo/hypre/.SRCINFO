@@ -1,0 +1,24 @@
+pkgbase = hypre
+	pkgdesc = Parallel solvers for sparse linear systems featuring multigrid methods
+	pkgver = 3.2.0
+	pkgrel = 1
+	url = https://github.com/hypre-space/hypre
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = cmake
+	makedepends = gcc-fortran
+	makedepends = ninja
+	depends = blas
+	depends = glibc
+	depends = lapack
+	depends = libgcc
+	depends = libgomp
+	depends = openmpi
+	depends = superlu
+	depends = superlu_dist
+	source = hypre-3.2.0::https://github.com/hypre-space/hypre/archive/v3.2.0.tar.gz
+	source = runtest-uname.patch
+	b2sums = cd49df6bd8bde4889743b9251367a7388f2b417c15df8c46c75cfad082d218823642e76a10897fddf4524e1c0fc073449b5f03e3cc05c6fde92568c169b6268d
+	b2sums = bd267ba369d91b132b84a2bebb7a8a0c6a87532f3dcc1b5c5b6430ae65ab99b4067c8db8e993dc921ea889e910a6ae273e59d596695ed3d94571c2d4a5ecd22d
+
+pkgname = hypre

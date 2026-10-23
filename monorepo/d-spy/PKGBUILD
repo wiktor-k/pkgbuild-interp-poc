@@ -1,0 +1,45 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgname=d-spy
+pkgver=50.0
+pkgrel=1
+pkgdesc="D-Bus debugger for GNOME"
+url="https://apps.gnome.org/Dspy/"
+arch=(x86_64)
+license=(
+  GPL-3.0-or-later
+  LGPL-3.0-or-later
+)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libdex
+  libgcc
+)
+makedepends=(
+  git
+  meson
+)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/GNOME/d-spy.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('2968f2996eb6ebe30144cffa1d63d6103b31031e715ca84732310fa19d9778ee39ecb22f3cb7a2fe278b3326bf6e0ecf5bbd493229b919e0bf31eecb6a0534a8')
+
+build() {
+  arch-meson d-spy build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

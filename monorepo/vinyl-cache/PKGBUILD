@@ -1,0 +1,63 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Dave Reisner <dreisner@archlinux.org>
+# Contributor: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Douglas Soares de Andrade
+# Contributor: Roberto Alsina <ralsina@kde.org>
+
+pkgname=vinyl-cache
+pkgver=9.1.0
+_pkg_vinyl_cache_commit=33ed181ff6
+pkgrel=1
+pkgdesc="High-performance HTTP accelerator"
+arch=('x86_64')
+url="https://www.vinyl-cache.org/"
+license=('BSD-2-Clause')
+# Yes, it really does need gcc during runtime to compile its rules.
+depends=('gcc' 'libnsl' 'pcre2' 'glibc' 'libgcc' 'readline' 'ncurses')
+makedepends=('python-docutils' 'python-sphinx' 'git')
+optdepends=('python: needed for vmod development')
+replaces=(varnish)
+conflicts=(varnish)
+backup=('etc/vinyl-cache/default.vcl')
+install=$pkgname.install
+source=("https://vinyl-cache.org/downloads/vinyl-cache-$pkgver.tgz"
+        "git+https://code.vinyl-cache.org/vinyl-cache/pkg-vinyl-cache.git#commit=$_pkg_vinyl_cache_commit")
+sha512sums=('5e8f715fb03dc47d3ce8fff2369f6f1625a63834661a6101057a7838a9a9e7baec93ddaa010d1fed76a90a52376c6cf25d1b7f845cc2fac034bcac823eabeafd'
+            'a23bcfdd097ba422f4960468dcc424eb5a7895cfc10ae194f0c22081b34b1d37e5a109ca26b36b74c8354b5a63cf9f24ac439b8a7b9af044a328712f7f3643d4')
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  autoreconf -i
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var/lib \
+    --sbindir=/usr/bin
+
+  make
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  rm bin/vinyltest/tests/m00000.vtc
+  make check
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 "$srcdir/pkg-vinyl-cache/systemd/vinyl-cache.service" "$pkgdir/usr/lib/systemd/system/vinyl-cache.service"
+  install -Dm644 "$srcdir/pkg-vinyl-cache/systemd/vinylncsa.service" "$pkgdir/usr/lib/systemd/system/vinylncsa.service"
+  install -Dm755 "$srcdir/pkg-vinyl-cache/systemd/vinylreload" "$pkgdir/usr/bin/vinylreload"
+  install -Dm755 "$srcdir/pkg-vinyl-cache/systemd/vinyl-cache.logrotate" "$pkgdir/etc/logrotate.d/vinyl-cache"
+  install -Dm755 "$srcdir/pkg-vinyl-cache/systemd/vinyl-cache.sysusers" "$pkgdir/usr/lib/sysusers.d/vinyl-cache.conf"
+  install -Dm644 "$srcdir/pkg-vinyl-cache/systemd/vinyl-cache.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/vinyl-cache.conf"
+
+  install -Dm644 "etc/example.vcl" "$pkgdir/etc/vinyl-cache/default.vcl"
+
+  install -Dm644 "LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

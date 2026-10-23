@@ -1,0 +1,82 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=openbve
+pkgver=1.14.1.2
+pkgrel=1
+pkgdesc='3D cab based train simulator'
+arch=(any)
+url='https://openbve-project.net/'
+license=(BSD-2-Clause)
+depends=(
+  sh
+  hicolor-icon-theme
+  libglvnd
+  mono
+  openal
+  ttf-font
+)
+makedepends=(
+  git
+  mono-msbuild
+  nuget
+)
+source=(
+  "$pkgname::git+https://github.com/leezer3/OpenBVE.git#tag=${pkgver}"
+  simplify-wrapper-scripts.patch
+  update-restart-cfg.patch
+  use-uaccess-for-udev.patch
+)
+sha512sums=('c0153853a22d62657bee0ec2907548094074bc501a3edce246cfbac625e9034ef2f51bbf342d32e3861c17e6f2a01cc9544555b23b24dcf557a56c1aca190838'
+            'f31fa1a96e842fb0575baaa3c4e5e04a43b401911fa34265c75748f64f402f86cabae412ae41e9a2439413a5cbe0bcfef0361d9356c25f06beae5e8663d43439'
+            '0829176b993db01fc40033eeb8c7300a45a67e693ef6dd61cfef8090ab6485c93be49394e78071f8630dc005a93d853b3bf36b82c4d0c8c977a5e5d1f4857841'
+            '2c75f959a8b9098b5b8ad2180e756eb44bb16ec3c6ee4011f23a86ab213d88f1d25c1584356069c19cfcff3999433b670386a54c634dc7533b62ee75b699933f')
+b2sums=('45f2262cc680a4cb26a5617aa63435ccf214360ab2769071fc3c979a017764b5153f22df890a8e42023ab26472b103b88f2930f3c8a637347934fa8eb76c9c17'
+        '50fb16cd4fd58e4c2e658478d66551b35d1d1b20e0ea7849cd625dd43de4c89b4b93f6e136bfd144c6b1bb78682e67edc55a83cead1aa36b1c452d677cef7ca0'
+        '6ec1b611563efd731f8aaa0d8b4cae4df188b8f589f044f677363dccddf2283e1bd267b8ae96ea96de39d23178cf340180385be9a1ec4c7c391f3ce6744face2'
+        '3e0587752504cb6bbdfd58eb5886a700db8ee86ebe459aea3bd15ec4c498e56bc3621ab9b138db57d9055084844c60fdc5348bdb851dd84983ac0d65c13fa483')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/simplify-wrapper-scripts.patch"
+  patch -p1 -i "$srcdir/update-restart-cfg.patch"
+  patch -p1 -i "$srcdir/use-uaccess-for-udev.patch"
+
+  nuget restore OpenBVE.sln
+}
+
+build() {
+  cd "$pkgname"
+
+  msbuild /p:Configuration=Release OpenBVE.sln
+
+  # this is Windows only, so can be removed
+  rm bin_release/AtsPluginProxy.*
+}
+
+package() {
+  cd "$pkgname"
+
+  # package
+  install -vd "$pkgdir/usr/lib/$pkgname"
+  cp -r bin_release/* "$pkgdir/usr/lib/$pkgname"
+
+  # udev rules + config
+  install -vDm644 -t "$pkgdir/usr/lib/udev/rules.d" installers/debian/etc/udev/rules.d/99-ps2-train-controllers.rules
+  install -vDm644 -t "$pkgdir/etc/openbve" installers/debian/etc/openbve/filesystem.cfg
+
+  # wrapper scripts
+  install -vDm755 -t "$pkgdir/usr/bin" debian/wrappers/*
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man6" debian/*.6
+
+  # desktop file and icon
+  install -vDm644 debian/$pkgname.desktop "$pkgdir/usr/share/applications/net.openbve_project.OpenBVE.desktop"
+  install -vDm644 -t "$pkgdir/usr/share/icons/hicolor/128x128/apps" debian/$pkgname.png
+  install -vDm644 -t "$pkgdir/usr/share/metainfo" net.openbve_project.OpenBVE.metainfo.xml
+
+  # licenses
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" licenses/* Readme.md
+}

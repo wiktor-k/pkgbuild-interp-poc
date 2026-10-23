@@ -1,0 +1,33 @@
+pkgbase = nickel
+	pkgdesc = A generic configuration language
+	pkgver = 1.18.0
+	pkgrel = 2
+	url = https://nickel-lang.org
+	arch = x86_64
+	license = MIT
+	checkdepends = python
+	makedepends = git
+	makedepends = rust
+	makedepends = nlohmann-json
+	makedepends = boost
+	makedepends = python
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = gc
+	depends = nix
+	options = !lto
+	source = nickel::git+https://github.com/tweag/nickel#tag=1.18.0
+	sha512sums = 600ac66f9cc50d7430dcff7f472d7dfb231d6eee12e80a7e30f87ba86534ce6def6f63f20a417a96a2dfdc2a2c6c8d72ed1944882a1d82163d9f63e066b4a16f
+	b2sums = 05d87d9bfeeeebd936eb5c956a15cef74cd4a80620ca55d1aadd192d188460d79920e0a72c625f511bd335014473d01e4085af13ffe77c655ca8d438a8ef3d59
+
+pkgname = nickel
+	optdepends = nickel-docs: documentation
+	optdepends = nickel-language-server: language server
+
+pkgname = nickel-docs
+	pkgdesc = Documentation & examples for the Nickel Programming Language
+	depends = 
+
+pkgname = nickel-language-server
+	pkgdesc = A language server for the Nickel Programming Language

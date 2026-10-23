@@ -1,0 +1,42 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+_pkgname=stm-delay
+pkgname=haskell-stm-delay
+pkgver=0.1.1.2
+pkgrel=138
+pkgdesc='Updatable one-shot timer polled with STM'
+arch=(x86_64)
+url="https://hackage.haskell.org/package/$_pkgname"
+license=(BSD-3-Clause)
+depends=(ghc-libs)
+makedepends=(ghc haskell-async)
+source=("https://hackage.haskell.org/packages/archive/$_pkgname/$pkgver/$_pkgname-$pkgver.tar.gz")
+sha512sums=('517857a15095770d9188ac20aff9a9fc7a907a7b8192511b48614997e5f3d5f6fe81cd60d2f590922d46ca62ade70f0a6b7e3e6d58ce8425a97384e5a6880351')
+
+build() {
+  cd $_pkgname-$pkgver
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+      --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+      --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_pkgname-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}
+
+# vim: ts=2 sw=2 et:

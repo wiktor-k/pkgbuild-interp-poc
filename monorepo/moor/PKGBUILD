@@ -1,0 +1,46 @@
+# Maintainer: Andreas Radke <andyrtr@archlinux.org>
+# Contributor: Jeremy Gust <jeremy AT plasticsoup DOT net>
+# Contributor: Jameson Pugh <imntreal@gmail.com>
+
+pkgname=moor
+pkgver=2.19.5
+pkgrel=1
+pkgdesc="A pager designed to just do the right thing without any configuration."
+arch=('x86_64')
+url="https://github.com/walles/moor"
+license=('BSD-2-Clause-Views')
+depends=('glibc')
+makedepends=('go')
+conflicts=('moar' 'moar-bin' 'moar-git' 'moor-bin' 'moor-git')
+replaces=('moar')
+source=("$pkgname-$pkgver.tar.gz"::"$url/archive/v$pkgver.tar.gz")
+sha256sums=('1ac816a00e30d601da064176cca6537cb3102132111e247abf24573eff8d4030')
+
+prepare() {
+    cd "$pkgname-$pkgver/cmd/moor"
+    sed -i "s/var versionString = \"\"/var versionString = \"$pkgver\"/1" moor.go
+}
+
+build() {
+	cd "$pkgname-$pkgver/cmd/moor"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -ldflags=-buildid= -mod=readonly -modcacherw"
+	go build -ldflags="-linkmode=external -extldflags '${LDFLAGS}'" -o "$pkgname"
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	pushd cmd/moor
+	install -m755 -Dt "${pkgdir}/usr/bin/" moor
+	popd
+	install -m644 -Dt "${pkgdir}/usr/share/man/man1" moor.1
+
+    # license    
+	install -m644 -Dt "${pkgdir}/usr/share/licenses/$pkgname" LICENSE
+    # doc
+	install -m644 -Dt "${pkgdir}/usr/share/doc/$pkgname/" {README.md,MOUSE.md}
+}

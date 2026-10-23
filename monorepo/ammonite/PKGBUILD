@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Thayne <astrothayne at gmail dot com>
+# Contributor: Yiqiao Wang <yiqiao.wang96 at gmail dot com>
+# Contributor: wenLiangcan <boxeed at gmail dot com>
+
+pkgname=ammonite
+pkgver=3.0.9
+_scalaversion=2.13.11
+pkgrel=1
+pkgdesc="A cleanroom re-implementation of the Scala REPL from first principles. "
+arch=('any')
+url="https://github.com/lihaoyi/Ammonite"
+license=('MIT')
+depends=('bash' 'java-environment<25')
+makedepends=('git')
+source=("git+https://github.com/lihaoyi/Ammonite.git#tag=$pkgver")
+b2sums=('407be82330ec140a809dd4bb970c0dcc5844f4f6aaf648c2bab2c59f39a6ec4159b0fcbda1600a48f9b4c465c878d155e64fb32f14d589e2e88a39c7d9653628')
+
+build() {
+  cd Ammonite
+  ./mill -i amm[$_scalaversion].assembly
+}
+
+package() {
+  cd Ammonite
+  install -dm755 "$pkgdir"/usr/bin
+  (echo "#!/bin/sh"; cat out/amm/$_scalaversion/assembly.dest/out.jar) > "$pkgdir"/usr/bin/amm
+  chmod +x "$pkgdir"/usr/bin/amm
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

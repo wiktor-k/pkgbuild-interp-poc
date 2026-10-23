@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-polkit-agent-ext-gnomekeyring
+pkgver=6.0.1
+pkgrel=1
+pkgdesc="GNOME keyring extension for dde-polkit-agent"
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dpa-ext-gnomekeyring"
+license=('GPL-3.0-or-later')
+depends=('deepin-polkit-agent' 'deepin-qt5integration' 'libsecret')
+makedepends=('cmake' 'git' 'ninja' 'qt5-tools')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dpa-ext-gnomekeyring.git#tag=$pkgver")
+sha512sums=('f881848d0d6379fe3f6eaf27596ab77a7055f9dc926abae3b3bf54b363b29e5203673dc8c0bb7f91162ab629d5b0e1fb777401150b1cacde071ae1108f3d1f6b')
+
+build() {
+  cd dpa-ext-gnomekeyring
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr .
+  ninja
+}
+
+package() {
+  cd dpa-ext-gnomekeyring
+  DESTDIR="$pkgdir" ninja install
+}

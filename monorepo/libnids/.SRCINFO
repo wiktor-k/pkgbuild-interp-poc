@@ -1,0 +1,22 @@
+pkgbase = libnids
+	pkgdesc = An implementation of an E-component of Network Intrusion Detection System.
+	pkgver = 1.26
+	pkgrel = 6
+	url = http://libnids.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = pkgconfig
+	depends = glibc
+	depends = libnet
+	depends = libpcap
+	depends = glib2
+	depends = libnsl
+	source = libnids::git+https://github.com/MITRECND/libnids#tag=1.26
+	source = gcc15.patch
+	sha512sums = 6aef5fbe378173931246502921a7e25386455c0438c4107364e62ae55be8b0fb490dd3a1d4c70e4305adb23c515880821427fa2332aae6b6d198fa34957fa321
+	sha512sums = a65a2790460f8034f1f3d502039c2c2a9b3ae38b018176548e42ca0bdbcd2ae58482616bff17bc1a202c7996ecb628873372cc454d4a6869b8f2e3fe1c088e14
+	b2sums = bcb60830a48ce1f5ae44f7df5d4e1fd0d4f801c8b641a6091aeb5ad63690d32ea2a179560a34ac66c9d397d820eb94e3299055a86a9b90fbe009774baab42aa5
+	b2sums = d7dc791056891f4e74580c9395f9b1f6e7bd4cffdaeaa0d7fe32cd26098768ae99b97c8adc61f66df287b5b4318ec9489d20250d19e194a89ddc4c82cc561574
+
+pkgname = libnids

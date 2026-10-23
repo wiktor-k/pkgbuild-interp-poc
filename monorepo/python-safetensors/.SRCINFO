@@ -1,0 +1,25 @@
+pkgbase = python-safetensors
+	pkgdesc = Simple, safe way to store and distribute tensors
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/huggingface/safetensors
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = python-pytest
+	checkdepends = python-pytorch
+	checkdepends = python-tensorflow
+	makedepends = maturin
+	makedepends = python-installer
+	depends = glibc
+	depends = libgcc
+	depends = python
+	depends = python-numpy
+	optdepends = python-jax: usage with jax
+	optdepends = python-tensorflow: usage with tensorflow
+	optdepends = python-pytorch: usage with pytorch
+	source = python-safetensors-0.8.0.tar.gz::https://github.com/huggingface/safetensors/archive/refs/tags/v0.8.0.tar.gz
+	source = Cargo.lock.patch
+	b2sums = f9eb8ac9a9cd11298de8e93bdfe36dd590eb2e8629e2faef1d30d32a26d4e7f2c26618991c4f701ed8c695f0a3bc1eb8ff3efea213e214d9fccde00746163bbe
+	b2sums = f65080579455a57d54b9c6547d2c8b0c6516c95d7bf04995f6caab669149ecd31e6f70f2c04adc627a7907a59afe7378b1b11c0fc1bfe2e76ebc69db06fbd0ce
+
+pkgname = python-safetensors

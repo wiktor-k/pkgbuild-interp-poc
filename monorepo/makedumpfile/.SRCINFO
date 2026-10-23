@@ -1,0 +1,18 @@
+pkgbase = makedumpfile
+	pkgdesc = A tool to generate smaller dumpfiles from kdump memory dumps
+	pkgver = 1.7.9
+	pkgrel = 1
+	url = https://github.com/makedumpfile/makedumpfile
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	depends = perl
+	depends = libelf
+	depends = zstd
+	source = git+https://github.com/makedumpfile/makedumpfile.git?signed#tag=1.7.9
+	validpgpkeys = F4BA97F873AB047F217F8D16B0E0CE20E95D17F5
+	validpgpkeys = 60C5A596A37CDE6C357C5C623136D252B5E85FA9
+	validpgpkeys = F4D1A09161401A7E773BA02A0A56B268DCE35849
+	sha256sums = 0aa869f87d65735be6e7225531844b7b2d2d389cdaf81073ee960af474a2b6cf
+
+pkgname = makedumpfile

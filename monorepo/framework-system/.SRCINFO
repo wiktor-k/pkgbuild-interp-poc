@@ -1,0 +1,22 @@
+pkgbase = framework-system
+	pkgdesc = Tools to interact with the Framework Computer systems
+	pkgver = 0.6.6
+	pkgrel = 1
+	url = https://github.com/FrameworkComputer/framework-system
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libusb
+	depends = libusb-1.0.so
+	depends = systemd-libs
+	depends = libudev.so
+	options = !lto
+	source = framework-system::git+https://github.com/FrameworkComputer/framework-system.git#tag=v0.6.6
+	sha256sums = 50e5dcdebe9e155d66568c1e5c86043f1ae39203821bc26fcf263b11957c4bf1
+	b2sums = 7a4554f8d6e12c0b6acfecc913f4a1d1cfb251a24dfdc5d7f3ea5c317465deb0498c4d20674dd3f08e9783b714b73575cccaf498fc3d0e492c9e57d9930e98aa
+
+pkgname = framework-system

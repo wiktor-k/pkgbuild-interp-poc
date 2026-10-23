@@ -1,0 +1,43 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=dumptorrent
+pkgver=1.7.0
+pkgrel=1
+pkgdesc='Non-interactive text mode program which displays BitTorrent .torrent file information'
+arch=('x86_64')
+url='https://github.com/tomcdj71/dumptorrent'
+license=('GPL-2.0-only')
+depends=('glibc')
+makedepends=('git' 'cmake')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('8b4c84f026085c790f2fee4ae133a5e1a60afad813563e737c2bcd89462f60217ed08902fa80e4a11d1f41d0d7301c2c59adccbb076b7546ee09fe7b963d6e22')
+b2sums=('54d9d2f0d86642fb47e0ddf15e75dee265c76ef74c1655d8124799ac68daa452527d5297be7cd7ba3120487fbce660fad7e00c1d0e5e05d4a7fca617c9fe044b')
+
+prepare() {
+  cd "$pkgname"
+
+  # apply various upstreamed fixes
+  git cherry-pick --no-commit \
+    a42f60dceab952886dd26e62f51befea88ff039c \
+    d4e06308c92c31687e4d1ca19ae75093a5f82062 \
+    6da81032a7df5a9bb9f0aedf640b7d103f255467 \
+    e95defdbfeff1ba9df6ed1f8dfb0d3af3596e5e1
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

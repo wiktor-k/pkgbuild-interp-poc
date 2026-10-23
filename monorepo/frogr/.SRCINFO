@@ -1,0 +1,29 @@
+pkgbase = frogr
+	pkgdesc = Flickr uploader for GNOME
+	pkgver = 1.8.1
+	pkgrel = 5
+	url = https://wiki.gnome.org/Apps/Frogr
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = itstool
+	makedepends = meson
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gstreamer
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = json-glib
+	depends = libexif
+	depends = libgcc
+	depends = libgcrypt
+	depends = libsoup3
+	depends = libxml2
+	source = git+https://gitlab.gnome.org/GNOME/frogr.git?signed#tag=RELEASE_1.8.1
+	source = frogr-prgname.patch
+	validpgpkeys = 9A98AEBB7E250E7654CD627A1AB71886930A0CF6
+	b2sums = 639ac9be27491d86d18b770f57804818435dcb548fa09f9cb37c1998ebbb4dfd04aab49358f7031677d35fc1fa1aedda5123a855b9195c225382ad642e58c072
+	b2sums = ffd2b250cd2fbf47c322aef52d107c91e3cbbb0dd1215d63bb886ef925c63c5a1f2fbf92d4eef3b3559d69357455237fa8ec520578c9c98f60fbe6678ff04359
+
+pkgname = frogr

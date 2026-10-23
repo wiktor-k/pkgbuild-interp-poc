@@ -1,0 +1,17 @@
+pkgbase = stfl
+	pkgdesc = Library implementing a curses-based widget set for text terminals
+	pkgver = 0.24
+	pkgrel = 6
+	url = http://clifford.at/stfl/
+	changelog = stfl.changelog
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = patch
+	makedepends = swig
+	depends = ncurses
+	source = https://ponce.cc/slackware/sources/repo/stfl-0.24.tar.gz
+	source = stfl-archlinux.patch
+	sha256sums = d4a7aa181a475aaf8a8914a8ccb2a7ff28919d4c8c0f8a061e17a0c36869c090
+	sha256sums = c7d7c787bcd287a776aad3b26e6a90a3b121c281125c34c7c35a87f36dcdc453
+
+pkgname = stfl

@@ -1,0 +1,45 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+
+pkgname=passim
+pkgver=0.1.12
+pkgrel=1
+pkgdesc="A local caching server"
+arch=(x86_64)
+url="https://github.com/hughsie/passim"
+license=(LGPL-2.1-or-later)
+depends=(
+  avahi
+  glib2 libgio-2.0.so
+  gnutls
+  hicolor-icon-theme
+  libsoup3 libsoup-3.0.so
+)
+makedepends=(
+  cmake
+  git
+  gobject-introspection
+  meson
+  systemd
+)
+provides=(libpassim.so)
+backup=(
+  etc/passim.conf
+)
+source=("git+https://github.com/hughsie/passim.git#tag=${pkgver}?signed")
+sha512sums=('fc8f1121c18fe34d0c207310ae458add5defa048b83a7680b88e31873f889a74f28d741b3653f55b4063e9a02f38e94d5e2a2d891537576e9ed1041e1657c236')
+b2sums=('4bbdbe680164292060525d3375f723b93e5972e86f44429ac01e1f59aa16eb16bec3b268aa93ea6f04712e42f01866844e275956eedaebb232a670b460ccfe69')
+validpgpkeys=(163EB50119225DB3DF8F49EA17ACBA8DFA970E17) # Richard Hughes <richard@hughsie.com>
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" meson install -C build
+  rm "${pkgdir}"/var/lib/passim/data/*
+}

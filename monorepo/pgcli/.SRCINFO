@@ -1,0 +1,33 @@
+pkgbase = pgcli
+	pkgdesc = A command line interface for PostgreSQL with auto-completion and syntax highlighting
+	pkgver = 4.7.1
+	pkgrel = 1
+	url = https://www.pgcli.com/
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-sshtunnel
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-cli_helpers
+	depends = python-click
+	depends = python-configobj
+	depends = python-pgspecial
+	depends = python-prompt_toolkit
+	depends = python-psycopg
+	depends = python-pygments
+	depends = python-setproctitle
+	depends = python-sqlparse
+	depends = python-tzlocal
+	optdepends = python-keyring: for keyring integration
+	optdepends = python-sshtunnel: for accessing remote instances over SSH
+	source = pgcli::git+https://github.com/dbcli/pgcli.git#tag=v4.7.1
+	sha512sums = 91807c44e9b5eb7c07ae60dfd28982bf625ac7f257257545fb5d6e70aa33449aa1882113a85f32387a9e6218f5f1db1eb7365af05d740971f5d44bf906c0fbbd
+	b2sums = e936bc2c010e486afadb6635ad4b7a66b321be5708bbb3c0e12165932089bcc7ed4c22a11ca82c9301c7f967e386b1994992e246371494fd86cdcfb3c0fe637e
+
+pkgname = pgcli

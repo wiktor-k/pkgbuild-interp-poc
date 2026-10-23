@@ -1,0 +1,59 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Evan Teitelman <teitelmanevan at gmail dot com>
+# Contributor: fxbru <frxbru[at]gmail>
+
+pkgname=sqlmap
+pkgver=1.10.10
+pkgrel=1
+pkgdesc='Automatic SQL injection and database takeover tool'
+url='https://sqlmap.org'
+arch=(any)
+license=(GPL-2.0-or-later)
+depends=(
+  python
+  sh
+)
+optdepends=(
+  'perl: icmpsh extra tool'
+  'python-sqlalchemy: MySQL/MariaDB connection'
+)
+backup=(
+  'etc/sqlmap.conf'
+)
+source=(https://github.com/sqlmapproject/sqlmap/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('7dd690c62fb1ae58bd8555b91012896863c47fc245dc6d39ba300362a3368d17')
+b2sums=('45f9ca830cbd7602a21b92628d65a64a25d63ca97f23900cbd5d44ca64612949629dfcc572482b8ab6d033762738f159a7cc91604c6d6c2c7858cb655bef8369')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  python -m compileall .
+  python -O -m compileall .
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -d "${pkgdir}/etc"
+  install -d "${pkgdir}/usr/bin"
+  install -d "${pkgdir}/opt/${pkgname}"
+  install -d "${pkgdir}/usr/share/doc"
+
+  mv doc "${pkgdir}/usr/share/doc/${pkgname}"
+  mv sqlmap.conf "${pkgdir}/etc/sqlmap.conf"
+  ln -sf /etc/sqlmap.conf "${pkgdir}/opt/${pkgname}/sqlmap.conf"
+  cp -a --no-preserve=ownership * "${pkgdir}/opt/${pkgname}"
+
+  cat > "${pkgdir}/usr/bin/sqlmap" << EOF
+#!/bin/sh
+exec python /opt/${pkgname}/sqlmap.py "\$@"
+EOF
+  cat > "${pkgdir}/usr/bin/sqlmapapi" << EOF
+#!/bin/sh
+exec python /opt/${pkgname}/sqlmapapi.py "\$@"
+EOF
+
+  chmod 755 "${pkgdir}/usr/bin/sqlmap"
+  chmod 755 "${pkgdir}/usr/bin/sqlmapapi"
+}
+
+# vim: ts=2 sw=2 et:

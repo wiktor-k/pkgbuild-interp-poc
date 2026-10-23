@@ -1,0 +1,39 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Julien Virey <julien.virey@gmail.com>
+
+pkgname=rumdl
+pkgver=0.2.78
+pkgrel=1
+pkgdesc='Markdown Linter and Formatter written in Rust'
+arch=('x86_64')
+url=https://github.com/rvben/rumdl
+license=('MIT')
+depends=(glibc jemalloc libgcc)
+makedepends=(cargo)
+
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha256sums=('0e521a2a30dfc3f957fd060d9a76734a9b57a164b59c09ff8af0074f43931338')
+
+prepare() {
+  cd $pkgname-$pkgver
+  export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+  export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+  [[ $CARCH == aarch64 ]] && export CFLAGS+=" -ffat-lto-objects" CXXFLAGS+=" -ffat-lto-objects"
+  cargo fetch --locked --target $(rustc --print host-tuple)
+}
+
+build() {
+  cd $pkgname-$pkgver
+  export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+  export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+  [[ $CARCH == aarch64 ]] && export CFLAGS+=" -ffat-lto-objects" CXXFLAGS+=" -ffat-lto-objects"
+  cargo build --frozen --release --bin rumdl
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+  install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+# vim: ts=2 sw=2 et:

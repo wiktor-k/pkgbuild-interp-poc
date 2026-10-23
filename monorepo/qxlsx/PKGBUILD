@@ -1,0 +1,37 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Carlos Aznarán <caznaranl@uni.pe>
+
+pkgname=qxlsx
+pkgver=1.5.1.1
+pkgrel=2
+pkgdesc='Excel file reader/writer library using Qt'
+arch=(x86_64)
+url='https://github.com/QtExcel/QXlsx'
+license=(MIT)
+depends=(glibc
+         libgcc
+         libstdc++
+         qt6-base)
+makedepends=(cmake
+             git)
+conflicts=(qxlsx-qt6)
+replaces=(qxlsx-qt6)
+source=(git+https://github.com/QtExcel/QXlsx#tag=v$pkgver)
+sha256sums=('58234679d7550b5e40b16a339c321272104ec29ff37e41e189ead1fc7ab4e2d8')
+
+prepare() {
+  cd QXlsx
+  git cherry-pick -n 1fa5dc8da4196762b095a90d0dc50314607352a9 # Install missing header
+}
+
+build() {
+  cmake -B build -S QXlsx/QXlsx \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_SHARED_LIBS=ON
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 QXlsx/LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname 
+}

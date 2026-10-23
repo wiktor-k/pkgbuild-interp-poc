@@ -1,0 +1,87 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Kyle Keen <keenerd@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Jose Negron <josenj.arch@mailnull.net>
+
+pkgname=sdcc
+pkgver=4.6.0
+pkgrel=1
+pkgdesc='Retargettable ANSI C compiler'
+arch=(x86_64)
+url='https://sdcc.sourceforge.net/'
+license=('GPL-2.0-or-later WITH GCC-exception-2.0')
+depends=(
+  bash
+  gc
+  glibc
+  libgcc
+  libstdc++
+  readline
+  zlib
+)
+makedepends=(gputils boost patchutils treedec)
+optdepends=(python)
+options=(!strip staticlibs !debug)
+source=(
+  "$pkgname-$pkgver.tar.bz2::https://sourceforge.net/projects/sdcc/files/sdcc/$pkgver/$pkgname-src-$pkgver.tar.bz2"
+  build-all-mcs51-models.patch
+  sdcc-libgc.patch
+  ftbfs-format-security.patch
+)
+sha512sums=('5beac86cfb26ec00e2ddc21b5e0dae985da57865785aae6129202d480a95b5e4db1c7ccf90c28ddcc24e2654ca73bcb6a686c88ba09ad03af15077d32997541b'
+            'a311117c9dc98eeeada9768e826799b37c603517c779d6b4c5d7ac3c99b0c4dde624d3c1ab972ead070a3b9876da83b705d72f30736f526ee77f0bbbf58048fb'
+            '3155c20a8c4deffb516fd9b973ca8b359d1f77671f483adc3aaa669899ce65ed0de0ebe1d936946d76474d3e831527dc9c01f147ac45130ccd4fa433825ba880'
+            '7aa0b439c1602103c07bcf7b4b3364d5a02e66b61a21582fb909d546142962c3856f9f9c80afba21cd822d2466400887286539d23cdf7919eb17ee615cc629d5')
+b2sums=('1c229b2007fe38d8cc1d0938c1f813b432f66b15721d658bb51faa2d8f7e68487126e16162e4117143071c8b610a0613ad8a4ed09dcf5c22eec2e278795021e4'
+        '2650e9a48562b741718ab19b4623934f937219ef556a271057de3eddc90c5670ec64f9a0bd19c744e7f927f4e8fb81ebdcc55e050950c262dde1041d7cb02715'
+        'a9f98733a9aefad2faf39210c4b5fcdc6e5703ec2e1a48a3f729a14a4c1b27310f9f9a65399a8cea1bb96f0013d6a75e6e9abb6abf28c42f0989bf8b8f31aeff'
+        'a9bccd59abeba049d2df15b454cf4707b81b865609a5560158d958fc8b976cf2eebfabe57327f0ce4426acb05686041c2992c1683779f94b65abfca650573f57')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # FS#79070: Build all models for mcs51 by default
+  patch -p1 -i "$srcdir/build-all-mcs51-models.patch"
+
+  # fix for enabling libgc usage
+  # https://sourceforge.net/p/sdcc/patches/480/
+  patch -p1 -i "$srcdir/sdcc-libgc.patch"
+  
+  # fix FTBFS due to -Werror=format-security
+  patch -p1 -i "$srcdir/ftbfs-format-security.patch"
+
+  # extract license exception
+  sed \
+    -n '/Licenses/,/https:\/\/sourceforge/p' \
+    doc/README.txt \
+    >> LICENSE-EXCEPTION
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  CFLAGS+=" -Wno-incompatible-pointer-types" \
+  ./configure \
+    --prefix=/usr \
+    --includedir=/usr/include/sdcc \
+    --libdir=/usr/lib/sdcc \
+    --libexecdir=/usr/lib \
+    --disable-werror \
+    --enable-libgc
+
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+
+  # licenses
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+
+  cd "$pkgdir/usr"
+  
+  # why is this stuff being installed?
+  rm -rf "${CHOST}" share/{locale,info} bin/c++filt
+}

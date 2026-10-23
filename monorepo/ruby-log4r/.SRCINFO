@@ -1,0 +1,23 @@
+pkgbase = ruby-log4r
+	pkgdesc = Log4r, logging framework for ruby
+	pkgver = 1.1.10
+	pkgrel = 8
+	url = https://github.com/colbygk/log4r
+	arch = any
+	license = LGPL-3.0-only
+	checkdepends = ruby-test-unit
+	checkdepends = ruby-builder
+	makedepends = git
+	makedepends = rake
+	makedepends = ruby-bundler
+	depends = ruby
+	noextract = log4r-1.1.10.gem
+	options = !emptydirs
+	source = git+https://github.com/colbygk/log4r#commit=40e2c2edd657a21b34f09dec7de238f348b6f428
+	source = disable-broken-test.patch
+	source = e64ed5143aae17fef85fe191c967765409061266.patch
+	sha512sums = SKIP
+	sha512sums = e5c5a2b587af405b4b434c6db95a615ccb161c7e2f794c20e4c7203c7bace53beb26ba1a1d35b5acbeef71c97c3ecb4fca4354d289275bda6f513c451afb59f8
+	sha512sums = 7efd5d5eedbc9c94e70180d9e66e73430d3272f3ddad771bca37f1941ca5d2adac150c82680e66963dc0c48af4163034c6beddaedc0915d2de31351d16d59c20
+
+pkgname = ruby-log4r

@@ -1,0 +1,24 @@
+pkgbase = libvolk
+	pkgdesc = The Vector-Optimized Library of Kernels from Gnuradio
+	pkgver = 3.3.0
+	pkgrel = 1
+	epoch = 2
+	url = https://www.libvolk.org/
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = python-mako
+	depends = fmt
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = orc
+	depends = python
+	provides = libvolk.so
+	source = libvolk::git+https://github.com/gnuradio/volk.git#tag=v3.3.0
+	source = git+https://github.com/google/cpu_features.git
+	b2sums = a5c471f51c0094bc8704ad050fa1f6e4716ae2028ec129928476b2acc928f4c5d0787d927e3885520c53f1f54c474b95f1411280cef8dfddd4a8d535f9ad3a98
+	b2sums = SKIP
+
+pkgname = libvolk

@@ -1,0 +1,52 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=spytrap-adb
+pkgver=0.3.5
+pkgrel=2
+pkgdesc="Test a phone for stalkerware using adb and usb debugging to scan for suspicious apps and configuration"
+url='https://github.com/spytrap-org/spytrap-adb'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'android-tools'
+  'gcc-libs'
+  'glibc'
+)
+makedepends=(
+  'cargo'
+)
+options=(!lto)
+source=(https://github.com/spytrap-org/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('e33a342aa461b56a8d857c2c29b743658bd87b4ade7bed20399dea2cea01b0f8')
+b2sums=('56b349c307bd42beba9db28ab3cedb9e98f9d535f465bb38ebdb6d2953e93c5a6f1902bdc22d1f3a98a4c3f4567be8bdb77f683cc6c387f7c5a557afb651be4b')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/spytrap-adb
+
+  # install completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completions bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completions fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+}
+
+# vim: ts=2 sw=2 et:

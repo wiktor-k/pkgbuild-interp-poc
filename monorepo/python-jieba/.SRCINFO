@@ -1,0 +1,27 @@
+pkgbase = python-jieba
+	pkgdesc = Chinese Words Segementation Utilities
+	pkgver = 0.42.1
+	pkgrel = 10
+	url = https://github.com/fxsjy/jieba
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-whoosh
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = git+https://github.com/fxsjy/jieba.git#tag=v0.42.1
+	source = python-jieba-0.42.1-remove_imp.patch
+	source = python-jieba-0.42.1-remove_distutils.patch
+	source = python-jieba-0.42.1-remove_pkg_resources.patch
+	source = python-jieba-0.42.1-fix-parallel-tests.patch
+	sha512sums = 4427f68c6e2279d9bf620a87a3f90ef4eaf24fcbc74afaa52de4aa9aef5541c5398374a35f8fb3ea8bbcfd8eed1b6f505ec1a9bbb2e4e66ac1ab19c0f2d5f31c
+	sha512sums = 2359feb1d4898ed7785e067f145093050b9e587c26187c746a1fbed9bdb57456e1b09cfea5918376b5f4c6882095241ecd1695716f6b5b40943452a266087ace
+	sha512sums = c66c779422e3dd2b4d68505d9acfdaa4d81160eeeb6ecfd1bd0a2931b9c5321df9d41a5a1edb2c2cbd6ba8c10ce58765b000a9a637faf4065a94d15d24bb87ae
+	sha512sums = e5226cf97ca63d54288baa0eece61cc54a384735e19265bccb72c154d9c771f1759f6bbe8c86a38aca3c0f1fc8a76e597941dcad77c666c303a9819b086a767a
+	sha512sums = 6e270e9c910aa54624d69e5976bf7ca3b4e1586e4c24578bf652152dcb6b343f21986ae98da417e86980b6c63f65c6aa13f1b7042388e171d8fb15bd34437dc7
+
+pkgname = python-jieba

@@ -1,0 +1,77 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-flycast
+pkgver=20261001.093226.g04669ebe4164
+pkgrel=1
+pkgdesc='Sega Dreamcast core'
+arch=(x86_64)
+url=https://github.com/flyinghead/flycast
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libgl
+  libgomp
+  libretro-core-info
+  libstdc++
+)
+makedepends=(
+  cmake
+  git
+  mesa
+  ninja
+)
+source=(
+  git+https://github.com/flyinghead/flycast.git#commit=${pkgver##*.g}
+  flycast-asio::git+https://github.com/flyinghead/asio.git
+  git+https://github.com/KhronosGroup/glslang.git
+  flycast-libchdr::git+https://github.com/flyinghead/libchdr.git
+  git+https://github.com/Grumbel/tinycmmc.git
+  flycast-tinygettext::git+https://github.com/flyinghead/tinygettext
+  git+https://github.com/KhronosGroup/Vulkan-Headers.git
+  git+https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git
+  git+https://github.com/herumi/xbyak.git
+)
+b2sums=('abd344495bca5271144029e7848016c4fde39c0c20dd44b5188f66fa0e66137e5a57d7c16078d316db6b451c24a0a3df65d6fcbe62e3c5973a546afd774ce319'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP'
+        'SKIP')
+
+prepare() {
+  cd flycast
+  for submodule in core/deps/{glslang,Vulkan-Headers,VulkanMemoryAllocator,xbyak}; do
+    git submodule init ${submodule}
+    git submodule set-url ${submodule} "${srcdir}/${submodule##*/}"
+    git -c protocol.file.allow=always submodule update ${submodule}
+  done
+  for submodule in core/deps/{asio,libchdr,tinygettext}; do
+    git submodule init ${submodule}
+    git submodule set-url ${submodule} "${srcdir}/flycast-${submodule##*/}"
+    git -c protocol.file.allow=always submodule update ${submodule}
+  done
+  cd core/deps/tinygettext
+  for submodule in external/tinycmmc; do
+    git submodule init ${submodule}
+    git submodule set-url ${submodule} "${srcdir}/${submodule##*/}"
+    git -c protocol.file.allow=always submodule update ${submodule}
+  done
+}
+
+build() {
+  cmake -S flycast -B build -G Ninja \
+    -DCMAKE_BUILD_TYPE=None \
+    -DLIBRETRO=ON \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  install -Dm 644 build/flycast_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}
+

@@ -1,0 +1,31 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Adrian Sausenthaler <aur@sausenthaler.de>
+
+pkgname=openpgl
+pkgver=0.7.1
+pkgrel=1
+pkgdesc="Intel Open Path Guiding Library"
+arch=('x86_64')
+url="https://github.com/openpathguidinglibrary/openpgl"
+license=('Apache-2.0')
+depends=('onetbb')
+makedepends=('cmake' 'make' 'gcc' 'ninja')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/OpenPathGuidingLibrary/openpgl/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('0aa86d28d4e611c873dd587911cf6ab74e3d6706194fbd7b8abe2587579eb590113ff82beb58386565ac72ef4fd5f7e3ec6b8d5a6b0dd3e2f8ec39cd1fa1a237')
+
+build() {
+  cd openpgl-$pkgver
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DOPENPGL_BUILD_STATIC=OFF \
+    -DCMAKE_BUILD_TYPE=Release
+
+  ninja -C build
+}
+
+package() {
+  cd openpgl-$pkgver
+  DESTDIR="$pkgdir" ninja -C build install
+}

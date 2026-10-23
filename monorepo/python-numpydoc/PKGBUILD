@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-numpydoc
+pkgver=1.11.0
+pkgrel=1
+pkgdesc="Numpy's Sphinx extensions"
+url="https://github.com/numpy/numpydoc"
+license=('BSD-2-Clause')
+arch=('any')
+depends=('python-sphinx' 'python-jinja' 'python-tabulate')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-setuptools-scm' 'python-wheel')
+checkdepends=('python-matplotlib' 'python-numpy' 'python-pytest')
+source=("git+https://github.com/numpy/numpydoc.git#tag=v$pkgver")
+sha512sums=('034539aa90035ee4fbff583dd1e0c58c65dc7a4d2b5051936002d5fd661551de7656083d0a7f0901e7908c8eb0229cf7c38dca46dfe23d7e12e33b1f9c06ffe5')
+
+build() {
+  cd numpydoc
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd numpydoc
+  PYTHONPATH="$PWD" pytest --override-ini="addopts="
+}
+
+package() {
+  cd numpydoc
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

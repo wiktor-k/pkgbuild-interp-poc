@@ -1,0 +1,63 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-nibbles
+pkgver=4.6.2
+pkgrel=1
+pkgdesc="Guide a worm around a maze"
+url="https://wiki.gnome.org/Apps/Nibbles"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  glibmm-2.68
+  gsound
+  gtk4
+  gtkmm-4.0
+  hicolor-icon-theme
+  libgcc
+  libsigc++-3.0
+  libstdc++
+  pango
+  pangomm-2.48
+)
+makedepends=(
+  appstream
+  git
+  gobject-introspection
+  meson
+  yelp-tools
+)
+groups=(gnome-extra)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-nibbles.git?signed#tag=$pkgver"
+)
+b2sums=('d651de872229f6504906c99880e82875854b2dd933c68041eb8a16792a25d47461bcaadc851944a85bab9a3e4ec53463b41ebd66563286789c5a8bd3ab188a3d')
+validpgpkeys=(
+  31F449AE968CBE194119A3AD1F1DC770CE79E68B # Ben Corby <bcorby@new-ms.com> (old)
+  9CE6D700965C6A1D6F7B4A1C18B04BB8340E3EC5 # Ben Corby <bcorby@new-ms.com>
+)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  # Suppress a lot of unimportant warnings
+  CFLAGS+=" -Wno-unused"
+
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

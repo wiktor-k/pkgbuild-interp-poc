@@ -1,0 +1,28 @@
+pkgbase = deepfilternet
+	pkgdesc = Noise suppression using deep filtering
+	pkgver = 0.5.6
+	pkgrel = 1
+	url = https://github.com/Rikorose/DeepFilterNet
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = cargo
+	makedepends = git
+	makedepends = jemalloc
+	source = deepfilternet-0.5.6.tar.gz::https://github.com/Rikorose/DeepFilterNet/archive/v0.5.6.tar.gz
+	sha256sums = 0f9a219d06c404bc4200f228e7e224f108cbbca04d7227a6de7d2ce974c2f579
+
+pkgname = deepfilternet-cli
+	pkgdesc = Noise suppression using deep filtering - Command-line interface
+	depends = glibc
+	depends = jemalloc
+	depends = libgcc
+
+pkgname = deepfilternet-ladspa
+	pkgdesc = Noise suppression using deep filtering - LADSPA plugin
+	groups = ladspa-plugins
+	groups = pro-audio
+	depends = glibc
+	depends = libgcc
+	provides = libdeep_filter_ladspa=0.5.6
+	conflicts = libdeep_filter_ladspa
+	replaces = libdeep_filter_ladspa

@@ -1,0 +1,25 @@
+pkgbase = xalan-c
+	pkgdesc = A XSLT processor for transforming XML documents
+	pkgver = 1.12
+	pkgrel = 12
+	epoch = 1
+	url = https://xalan.apache.org/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = cmake
+	depends = xerces-c
+	provides = libxalan-c.so
+	provides = libxalanMsg.so
+	source = https://downloads.apache.org/xalan/xalan-c/sources/xalan_c-1.12.tar.gz
+	source = https://downloads.apache.org/xalan/xalan-c/sources/xalan_c-1.12.tar.gz.asc
+	source = 0001-xalan_libicu76.patch
+	source = 0002-cmake_min_version.patch
+	source = 0003-gcc_15_fixes.patch
+	validpgpkeys = F33D281D470AB4436756147C07B3C8BC4083E800
+	sha256sums = ee7d4b0b08c5676f5e586c7154d94a5b32b299ac3cbb946e24c4375a25552da7
+	sha256sums = SKIP
+	sha256sums = 4ad23c14264d6de40d7d9a93dd91ff7138d8474c5fa4d7e37de59ddf8845b3cb
+	sha256sums = 9c437c197b06be3021b9ea885b91a4599359b49da48af3f9c56baf66d3f02803
+	sha256sums = 41e547def3ead09ab83dff2083b8262d6ab46b8bbfa4168283f9a608e14139df
+
+pkgname = xalan-c

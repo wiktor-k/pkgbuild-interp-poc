@@ -1,0 +1,27 @@
+pkgbase = python-markups
+	pkgdesc = Wrapper around various text markups
+	pkgver = 4.1.1
+	pkgrel = 2
+	url = https://github.com/retext-project/pymarkups
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pymdown-extensions
+	checkdepends = python-yaml
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-docutils
+	makedepends = python-installer
+	makedepends = python-pygments
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-markdown-math
+	optdepends = python-docutils: for reStructuredText language support
+	optdepends = python-pygments: for highlighting output style
+	source = git+https://github.com/retext-project/pymarkups#tag=4.1.1?signed
+	source = python-markups-skip-failing-test.patch
+	validpgpkeys = F24299FF1BBC9018B906A4CB6026936D2F1C8AE0
+	sha256sums = e4d3ffa27c5223f465ec76e67bf1cc188df0d3697742018fa8d32bbd57316be2
+	sha256sums = beb8733a7a796aaf77565feb035f4b57677e4dd850306f1ea08239f50fb08e4b
+
+pkgname = python-markups

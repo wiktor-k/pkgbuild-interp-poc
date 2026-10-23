@@ -1,0 +1,37 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-latex2mathml
+pkgver=3.81.1
+pkgrel=1
+pkgdesc="Pure Python library for LaTeX to MathML conversion"
+url="https://github.com/roniemartinez/latex2mathml"
+license=('MIT')
+arch=('any')
+depends=('python')
+makedepends=('git' 'python-build' 'python-installer' 'python-uv-build')
+checkdepends=('python-pytest' 'python-syrupy')
+source=("git+https://github.com/roniemartinez/latex2mathml.git#tag=$pkgver")
+sha512sums=('4f714b45c883a9d778b5cfc72691311c24d922d1ca116e5c8fc5e6bae2256caaf407fdbcc29927150f24d321e79f92abbb115a753e3670f21e156a5ff5bc6b24')
+
+prepare() {
+  cd latex2mathml
+  sed -i '/--cov/d' pyproject.toml
+}
+
+build() {
+  cd latex2mathml
+  python -m build -nw
+}
+
+check() {
+  cd latex2mathml
+  python -m venv --system-site-packages testenv
+  testenv/bin/python -m installer dist/*.whl
+  testenv/bin/python -m pytest
+}
+
+package() {
+  cd latex2mathml
+  python -m installer -d "$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

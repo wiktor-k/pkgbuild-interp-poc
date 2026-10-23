@@ -1,0 +1,66 @@
+# Maintainer: Ronald van Haren <ronald.archlinux.org>
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: damir <damir@archlinux.org>
+
+_pkg=netcdf
+_mpi=openmpi
+pkgname=${_pkg}-${_mpi}
+pkgver=4.10.1
+pkgrel=1
+pkgdesc="network Common Data Form interface for array-oriented data access and corresponding library with parallel support (${_mpi} version)"
+arch=(x86_64)
+url="https://www.unidata.ucar.edu/software/netcdf/"
+license=(custom)
+depends=("hdf5-${_mpi}" "pnetcdf-${_mpi}" curl libxml2 libzip zlib blosc)
+makedepends=(cmake git)
+optdepends=('netcdf-fortran: fortran bindings' 'netcdf-cxx: c++ bindings')
+checkdepends=(unzip)
+provides=("${_pkg}")
+conflicts=("${_pkg}")
+options=(!makeflags)
+source=("git+https://github.com/Unidata/netcdf-c.git#tag=v${pkgver}")
+sha256sums=('130365b47e8296fa8ac90d8c0c07953257261c3e64ee12473f68453762b3309d')
+
+prepare() {
+  # https://github.com/Unidata/netcdf-c/issues/2188 https://github.com/Unidata/netcdf-c/issues/2242
+  sed -i "/tst_remote3/d" ${_pkg}-c/ncdap_test/CMakeLists.txt
+  # fails with HDF5 2.2
+  sed -i "/nc_test4 tst_specific_filters/d" ${_pkg}-c/nc_test4/CMakeLists.txt
+}
+
+build() {
+  export CC=mpicc
+  cmake -B build -S ${_pkg}-c \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DNETCDF_WITH_PLUGIN_DIR=/usr/lib/netcdf/plugin \
+    -DNETCDF_ENABLE_BYTERANGE=ON \
+    -DNETCDF_ENABLE_CDF5=ON \
+    -DNETCDF_ENABLE_PNETCDF=ON \
+    -DNETCDF_ENABLE_DAP_LONG_TESTS=ON \
+    -DNETCDF_ENABLE_DAP_REMOTE_TESTS=ON \
+    -DNETCDF_ENABLE_EXAMPLE_TESTS=ON \
+    -DNETCDF_ENABLE_EXTRA_TESTS=ON \
+    -DNETCDF_ENABLE_FILTER_TESTING=ON \
+    -DNETCDF_ENABLE_LARGE_FILE_TESTS=ON \
+    -DNETCDF_ENABLE_UNIT_TESTS=ON \
+    -DNETCDF_ENABLE_LOGGING=ON \
+    -DNETCDF_PLUGIN_INSTALL=ON
+  make -C build
+}
+
+
+check() {
+  # This is required starting with OpenMPI 3.0 when trying to run more
+  # processes than the number of available cores
+  export OMPI_MCA_rmaps_base_oversubscribe=yes
+  # We don’t have CUDA by default
+  export OMPI_MCA_opal_warn_on_missing_libcuda=0
+
+  ctest --test-dir build --output-on-failure -E nczarr_test_test_unlim_vars
+}
+
+package() {
+  make -C build DESTDIR="${pkgdir}" install
+  install -Dm644 ${_pkg}-c/COPYRIGHT -t "${pkgdir}"/usr/share/licenses/${_pkg}/
+}

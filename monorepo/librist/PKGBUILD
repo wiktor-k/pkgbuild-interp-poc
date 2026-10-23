@@ -1,0 +1,42 @@
+# Maintainer: Daniel Bermond <dbermond@archlinux.org>
+
+pkgname=librist
+pkgver=0.2.20
+pkgrel=1
+pkgdesc='A library that can be used to add the RIST protocol to applications'
+arch=('x86_64')
+url='https://code.videolan.org/rist/librist/'
+license=('BSD-2-Clause')
+depends=(
+    'cjson'
+    'glibc'
+    'libmicrohttpd'
+    'lz4'
+    'mbedtls3')
+makedepends=(
+    'cmake'
+    'cmocka'
+    'meson')
+source=("https://code.videolan.org/rist/librist/-/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.bz2"
+        '010-librist-disable-multicast-tests.patch')
+sha256sums=('20a5cdce88ccaeab11cd8860c82c565472f21572705d9a476265c5148bf4aeb1'
+            'ce3c9e6065c13287ec55168a16722969b8741eb312972b5f574907671a86d858')
+
+prepare() {
+    patch -d "${pkgname}-v${pkgver}" -Np1 -i "${srcdir}/010-librist-disable-multicast-tests.patch"
+}
+
+build() {
+    export CFLAGS+=' -isystem/usr/include/mbedtls3'
+    arch-meson build "${pkgname}-v${pkgver}" --cmake-prefix-path='/usr/lib/mbedtls3/cmake'
+    meson compile -C build
+}
+
+check() {
+    meson test -C build
+}
+
+package() {
+    meson install -C build --destdir "$pkgdir"
+    install -D -m644 "${pkgname}-v${pkgver}/COPYING" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

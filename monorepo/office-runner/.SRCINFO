@@ -1,0 +1,18 @@
+pkgbase = office-runner
+	pkgdesc = Office game for laptop owners to temporary inhibit suspend on lid close
+	pkgver = 1.0.3
+	pkgrel = 2
+	url = https://gitlab.gnome.org/GNOME/office-runner
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	source = git+https://gitlab.gnome.org/GNOME/office-runner.git#tag=1.0.3
+	source = office-runner-window-icon.patch
+	b2sums = 6695f99a5870dedfbe98a1a09b2840cce11b5429fa75ada682bfad19b08e555ed9cb9a5a7d239eb60a8bc1aa8ab2c03d2e9da8b7789291cd136042c99160df8e
+	b2sums = fc152977ef34693b9f0af33f540383e41bad1143663a0e19e3529affb55f61cfbb21352a1a4e83bf97a05ba13a2c957afe8f73ce5b58c28d17ff5fa138559641
+
+pkgname = office-runner

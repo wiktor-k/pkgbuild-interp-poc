@@ -1,0 +1,23 @@
+pkgbase = python-maxminddb
+	pkgdesc = Reader for the MaxMind DB format
+	pkgver = 3.2.0
+	pkgrel = 1
+	url = https://github.com/maxmind/MaxMind-DB-Reader-python
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	depends = python
+	depends = libmaxminddb
+	source = git+https://github.com/maxmind/MaxMind-DB-Reader-python.git#tag=v3.2.0
+	source = git+https://github.com/maxmind/MaxMind-DB.git
+	source = git+https://github.com/maxmind/libmaxminddb.git
+	sha512sums = e2059cf7d2b51cddb5632eedce00a34ccb5e56be1e685b0cc1fa85c34c339ed1cd1535135bb25fff7bd63ee645d35ee2392c0fc0f0ffcc65038852e1c33ae6ed
+	sha512sums = SKIP
+	sha512sums = SKIP
+
+pkgname = python-maxminddb

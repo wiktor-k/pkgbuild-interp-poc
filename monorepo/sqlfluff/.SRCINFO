@@ -1,0 +1,36 @@
+pkgbase = sqlfluff
+	pkgdesc = A dialect-flexible and configurable SQL linter
+	pkgver = 4.4.0
+	pkgrel = 1
+	url = https://github.com/sqlfluff/sqlfluff
+	arch = x86_64
+	license = MIT
+	checkdepends = python-hypothesis
+	checkdepends = python-pytest-xdist
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	makedepends = python-maturin
+	depends = glibc
+	depends = libgcc
+	depends = python
+	depends = python-chardet
+	depends = python-click
+	depends = python-colorama
+	depends = python-diff-cover
+	depends = python-jinja
+	depends = python-pathspec
+	depends = python-platformdirs
+	depends = python-pluggy
+	depends = python-pytest
+	depends = python-regex
+	depends = python-tblib
+	depends = python-tqdm
+	depends = python-yaml
+	source = sqlfluff::git+https://github.com/sqlfluff/sqlfluff#tag=4.4.0
+	sha512sums = be0cf157d30fba957195a2a450df8f00f9735b7f8ce51bfbd63cc967dd96d47b8879e083bd54289cef4889282448f4be3d51eab3ed446791612737b577ed3dd8
+	b2sums = 9b649f6725db6ff5a1ee4864c7709e843bfeb9267fa5819924d2c58e978e4315419df89464581cae2b9742a04dd979f81f6945306721e2173b0412bd14114353
+
+pkgname = sqlfluff

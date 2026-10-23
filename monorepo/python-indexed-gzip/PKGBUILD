@@ -1,0 +1,57 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-indexed-gzip
+pkgver=1.10.3
+pkgrel=1
+pkgdesc='Fast random access of gzip-compressed files'
+arch=(x86_64)
+url='https://github.com/pauldmccarthy/indexed_gzip'
+license=(Zlib)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+  cython
+  zlib
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('adfd497357c875e503336c6405e763bbcd8d2d45e68581e3d48e41e11ceb6738c66b16d2db321e017c6d80c4e44e54ab662b1b7d1010de275ec8a516cc07ccdf')
+b2sums=('419eaf56d1bc3a4024bb410e5bbb7f0326db5d2dc23aa96e139e3b46845520cf8fc48dfa89fe4112ff0c6a79b79a64f333c8a94b73a36debaa85c7545113ddf9')
+
+prepare() {
+  cd "$pkgname"
+
+  # Remove shebangs from non-script sources
+  find indexed_gzip -type f -name '*.py' \
+    -exec gawk '/^#!/ { print FILENAME }; { nextfile }' '{}' '+' |
+    xargs -r sed -r -i '1{/^#!/d}'
+  # Make sure Cythonized C source files are not present in the tarball; they must
+  # be regenerated. Retain “hand-written” C sources.
+  find indexed_gzip -type f -name '*.pyx' | sed -r 's/\.pyx$/.c/' | xargs -r rm -vf
+}
+
+build() {
+  cd "$pkgname"
+
+  export SETUPTOOLS_SCM_PRETEND_VERSION="$pkgver"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  depends+=(
+    glibc
+    zlib libz.so
+  )
+
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

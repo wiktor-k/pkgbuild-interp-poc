@@ -1,0 +1,71 @@
+# Maintainer: dorphell <dorphell@archlinux.org>
+# Contributor: Jose Javier  <jojapa@terra.es>
+
+pkgname=tftp-hpa
+pkgver=5.2
+pkgrel=11
+pkgdesc="Official tftp server"
+arch=('x86_64')
+url="https://www.kernel.org/pub/software/network/tftp/tftp-hpa/"
+license=('BSD-4-Clause-UC')
+backup=('etc/conf.d/tftpd')
+install='tftpd.install'
+depends=(
+  'glibc'
+  'readline>=6.0.00'
+)
+makedepends=('git')
+source=(git+https://git.kernel.org/pub/scm/network/tftp/tftp-hpa.git#tag=$pkgname-$pkgver
+       tftpd.conf
+       tftpd.service
+       tftpd.socket
+       tftp-hpa-0.49-fortify-strcpy-crash.patch
+       tftp-hpa-5.2-10.1-Makefile.patch)
+sha256sums=('15a86cf986b7f89b5bbbe75b463cc2ac989cecea09afa65f9ecef11d884314f9'
+            'f4bbc89a460da40f0914ebf55edce0306090e11073ea31f6ffc11d62b527ece4'
+            'da79f8d3791daa91624677d4b3ace91b63965c87c6791e3ce0155637609c6cb1'
+            '22af7da2cb61a119cfcba65f740ff0a35157204218dcbdbf13e14dbf74043ff2'
+            '4862bc4bf61b8abbcfc22c4bc6714a5cf8d52e9db1b1d7f7b4c5059ef89ced2f'
+            'd17d729a3ae9404501d234d0278298294228f11f08ce270fdcb953c9341c630b')
+
+_backports=(
+  ff819b108a14f40612ebfb15937ae4a1b632bab9 # Make configure an order-only prerequisite of aconfig.h.in
+  e83d71d394901e6d08605bcd7f35b2f112fe73ea # autoconf: rename configure.in to configure.ac
+  9c0908a778d0c57226c8a4e8ac6582d35b83739c # autoconf: remove workarounds for some very old systems
+  1f4b33a1f726d832742c370dc0c6d7f242424a5a # Modernize: use sigaction() whenever possible. Remove uses of common.
+)
+
+prepare() {
+  cd ${pkgname}
+
+  local _c _l
+  for _c in "${_backports[@]}"; do
+    if [[ "${_c}" == *..* ]]; then _l='--reverse'; else _l='--max-count=1'; fi
+    git log --oneline "${_l}" "${_c}"
+    git cherry-pick --mainline 1 --no-commit "${_c}"
+  done
+
+  # fix #28103
+  patch -Np1 -i ../tftp-hpa-0.49-fortify-strcpy-crash.patch
+  # extract license from source
+  sed -n 's/\t/      /;0,/ \*\/$/p' tftp/tftp.c > LICENSE
+
+  autoreconf -fiv
+}
+
+build() {
+  cd ${pkgname}
+
+  ./configure --prefix=/usr --mandir=/usr/share/man --sbindir=/usr/bin --without-tcpwrappers
+  make
+}
+
+package() {
+  cd ${pkgname}
+  make INSTALLROOT="${pkgdir}" install
+  install -D -m644 "${srcdir}/tftpd.conf" "$pkgdir/etc/conf.d/tftpd"
+  install -d "${pkgdir}/srv/tftp"
+  install -D -m644 "${srcdir}/tftpd.service" "${pkgdir}/usr/lib/systemd/system/tftpd.service"
+  install -D -m644 "${srcdir}/tftpd.socket" "${pkgdir}/usr/lib/systemd/system/tftpd.socket"
+  install -D -m644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

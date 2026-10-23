@@ -1,0 +1,39 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-marshmallow-sqlalchemy
+pkgver=1.5.0
+pkgrel=1
+pkgdesc='SQLAlchemy integration with marshmallow'
+url=https://marshmallow-sqlalchemy.readthedocs.io/
+arch=(any)
+license=(MIT)
+depends=(
+  python-marshmallow
+  python-sqlalchemy
+)
+makedepends=(
+  git
+  python-build
+  python-flit-core
+  python-installer
+)
+source=(git+https://github.com/marshmallow-code/marshmallow-sqlalchemy.git#tag=${pkgver})
+b2sums=('b5706c073a88b51c20438bd69b9d08210cb63f619884951a5790604823a6b137b3fe37c52633e09ed71c8541cba2869195d32827d743bb50f09e269fe237cd6b')
+
+prepare() {
+  cd marshmallow-sqlalchemy
+  # System has flit-core 4; upstream pins <4 — widen the constraint
+  sed -i 's/flit_core<4/flit_core>=3.2/' pyproject.toml
+}
+
+build() {
+  cd marshmallow-sqlalchemy
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" marshmallow-sqlalchemy/dist/*.whl
+  install -Dm 644 marshmallow-sqlalchemy/LICENSE -t "${pkgdir}"/usr/share/licenses/python-marshmallow-sqlalchemy/
+}
+
+# vim: ts=2 sw=2 et:

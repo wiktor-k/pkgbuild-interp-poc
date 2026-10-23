@@ -1,0 +1,28 @@
+pkgbase = cosmic-files
+	pkgdesc = File manager for the COSMIC desktop environment
+	pkgver = 1.10.0
+	pkgrel = 1
+	epoch = 1
+	url = https://github.com/pop-os/cosmic-files
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	depends = cosmic-icon-theme
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = gvfs
+	depends = libxkbcommon
+	depends = xdg-utils
+	depends = zstd
+	source = git+https://github.com/pop-os/cosmic-files.git#tag=epoch-1.10.0
+	source = cosmic-files-lto.patch
+	b2sums = fb64367ef6cc4a8bc2f34c89b0d8b9c12de27594d0a83547bd5951eb71d0dbcca51432eb8a429aa1083e414f444785d6f30175ea31a4acb3bd33088c3a814d0c
+	b2sums = 105231f886affb3274d18bbe95d0fc27ba33cb557245ca567caccc9b0f5fbae0b7d92a81c0b2784130659e81b73e374ac735f8ad9b06adad18b4e4fd227164b5
+
+pkgname = cosmic-files

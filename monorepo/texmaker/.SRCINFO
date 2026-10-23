@@ -1,0 +1,23 @@
+pkgbase = texmaker
+	pkgdesc = Free cross-platform LaTeX editor
+	pkgver = 6.0.2
+	pkgrel = 1
+	url = https://www.xm1math.net/texmaker/index.html
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = qt6-tools
+	depends = glibc
+	depends = libstdc++
+	depends = qt6-5compat
+	depends = qt6-base
+	depends = qt6-declarative
+	depends = qt6-webengine
+	depends = texlive-basic
+	optdepends = ghostscript: LaTeX to HTML conversion command
+	source = https://www.xm1math.net/texmaker/texmaker-6.0.2.tar.bz2
+	source = qt-6.10.patch
+	sha256sums = 25ecbb16d156ed1528b31511d37c9da7858a2def328b87f17fc877f57f5139cf
+	sha256sums = e3ba38dbe6677ab4309eb552deb127d36215c5f0ffe3e702c87262e83e142e10
+
+pkgname = texmaker

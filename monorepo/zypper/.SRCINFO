@@ -1,0 +1,22 @@
+pkgbase = zypper
+	pkgdesc = openSUSE's most powerful command line package manager
+	pkgver = 1.14.101
+	pkgrel = 1
+	url = https://github.com/openSUSE/zypper
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = asciidoctor
+	makedepends = boost
+	makedepends = cmake
+	makedepends = git
+	depends = augeas
+	depends = boost-libs
+	depends = glibc
+	depends = libgcc
+	depends = libxml2
+	depends = libzypp
+	depends = readline
+	source = git+https://github.com/openSUSE/zypper.git#tag=1.14.101
+	sha256sums = fb2777944ec167f08de5bc3cb22cf261d2e6925d21989c57316f5e7fdb84f2e6
+
+pkgname = zypper

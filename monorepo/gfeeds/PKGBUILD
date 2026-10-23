@@ -1,0 +1,88 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Gabriele Musco <gabmus@disroot.org>
+
+pkgname=gfeeds
+pkgver=2.2.0
+pkgrel=6
+pkgdesc='RSS/Atom feed reader for GNOME'
+arch=(any)
+url='https://gfeeds.gabmus.org/'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  pango
+  python
+  python-beautifulsoup4
+  python-dateutil
+  python-gobject
+  python-humanize
+  python-lxml
+  python-magic
+  python-pillow
+  python-pygments
+  python-pytz
+  python-readability-lxml
+  python-requests
+  syndication-domination
+  webkitgtk-6.0
+)
+makedepends=(
+  blueprint-compiler
+  git
+  meson
+)
+checkdepends=(python-pytest)
+source=(
+  "git+https://gitlab.gnome.org/World/$pkgname.git#tag=$pkgver"
+  gfeeds-parse-args.patch
+  gfeeds-present-window.patch
+  gfeeds-dbus-activatable.patch
+  gfeeds-translatable.patch
+)
+b2sums=(
+  5d6cda735a54fec34fb5d1eb5d88a6fe38e63385afca0466467e1654db90b88130e46aed78f94a28e9342cb206570d30f17ad12da3f5393f37fbdcd88b148457
+  f3d0d5b455078cc2cc3bc83f32d5fb699f62d5cc66fec276b86bf25073bd918c1a044676230721e100eb62650f8bec157ed43f45defdb29e7e7aff0217d471cd
+  4e740c913d0c7083cc3844ef887b24d353c99dd828dab0f97de1aedbb400c1b99a1c482aa48638fe1a3b1f5e0df6481cafdeb34f97d7f90b88336392bdec3c29
+  d0f672df925bfff6425fc97ccd6e086254263b136a156ea14baac74d164d7ed427ad5efb9ffcf6b729594cb5cfe0cefa19a3b0c749f981a5e9aebe480eb04060
+  226461b88856ae69291275dc8a8f770b3815446bf2db10005d707880560fc7d744a4af9975b3135d68cf4569c23d59585cf2f395c5366eb5454535d083795f47
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix tests
+  git cherry-pick -n 2e897978137b7bd278149beda572986acc92129c
+
+  # Fix build with blueprint-compiler 0.8
+  git cherry-pick -n cfe860f44f685be302e2ad9f30b55bab08e078ce
+  git cherry-pick -n d099fda0c62e338080061683a154f711cc487b30
+
+  # https://gitlab.gnome.org/World/gfeeds/-/merge_requests/53
+  git apply -3 ../gfeeds-parse-args.patch
+
+  # https://gitlab.gnome.org/World/gfeeds/-/merge_requests/54
+  git apply -3 ../gfeeds-present-window.patch
+
+  # https://gitlab.gnome.org/World/gfeeds/-/merge_requests/55
+  git apply -3 ../gfeeds-dbus-activatable.patch
+
+  # https://gitlab.gnome.org/World/gfeeds/-/merge_requests/56
+  git apply -3 ../gfeeds-translatable.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

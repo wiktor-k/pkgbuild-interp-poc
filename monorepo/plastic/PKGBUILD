@@ -1,0 +1,51 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgbase=plastic
+pkgname=(plastic plastic_tui)
+pkgver=0.3.5
+pkgrel=1
+pkgdesc="A NES emulator with GUI and TUI"
+arch=('x86_64')
+url="https://github.com/Amjad50/plastic"
+license=('MIT')
+depends=('gcc-libs' 'alsa-lib')
+makedepends=('cargo' 'alsa-lib')
+source=("$pkgbase-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('5819fa8bd6e2c7ad7d7f1b0becec72791dc4413f65c32b813a5d4543b5f69da4aa9f865eceecc5aae79072f6848fc6ca6ec6bf08348826fb73d41e7827b9a4d1')
+
+prepare() {
+  cd "$pkgbase-$pkgver"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+  mkdir -p completions/
+}
+
+build() {
+  cd "$pkgbase-$pkgver"
+  cargo build --release --frozen
+  cargo build -p "plastic_tui" --release --frozen
+}
+
+check() {
+  cd "$pkgbase-$pkgver"
+  cargo test --frozen -- --skip "test_host_git_source"
+}
+
+package_plastic() {
+  cd "$pkgbase-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "package/plastic.desktop" "$pkgdir/usr/share/applications/plastic.desktop"
+  install -Dm 644 "images/icon.png" "$pkgdir/usr/share/icons/hicolor/256x256/apps/plastic.png"
+  install -Dm 644 "docs/man/plastic.1" "$pkgdir/usr/share/man/man1/plastic.1"
+}
+
+package_plastic_tui() {
+  depends+=('systemd-libs')
+  cd "$pkgbase-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

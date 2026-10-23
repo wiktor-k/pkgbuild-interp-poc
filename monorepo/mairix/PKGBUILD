@@ -1,0 +1,32 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Alessio 'mOLOk' Bolognino <themolok@gmail.com>
+# Contributor: Giorgio Lando <patroclo7@gmail.com>
+# Contributor: Andreas Wagner <Andreas dot Wagner at em dot uni-frankfurt dot de>
+
+pkgname=mairix
+pkgver=0.24
+pkgrel=5
+_commit=1cc06f4a73ba4b940008c1ffc398d2ac708cd6d6
+pkgdesc="A program for indexing and searching emails"
+arch=('x86_64')
+url="https://github.com/vandry/mairix"
+license=('GPL')
+depends=(bzip2 zlib)
+makedepends=('flex' 'bison' 'git')
+install=$pkgname.install
+source=("git+https://github.com/vandry/mairix#commit=${_commit}")
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir"/$pkgname
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname
+  make DESTDIR="$pkgdir" install
+  mkdir -p "$pkgdir"/usr/share/
+  mv "$pkgdir"/usr/man "$pkgdir"/usr/share/
+  install -D -m 644 dotmairixrc.eg "$pkgdir"/etc/mairixrc.sample
+}

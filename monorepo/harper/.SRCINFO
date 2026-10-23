@@ -1,0 +1,19 @@
+pkgbase = harper
+	pkgdesc = The Grammar Checker for Developers
+	pkgver = 2.13.0
+	pkgrel = 1
+	url = https://github.com/Automattic/harper
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = rust
+	makedepends = gtk3
+	makedepends = webkit2gtk-4.1
+	depends = glibc
+	depends = libgcc
+	options = !lto
+	source = harper::git+https://github.com/Automattic/harper#tag=v2.13.0
+	sha512sums = 7eedcd82a6bd4eef01db1868c6030f1b76147f1a11f85f5f8dda61347e6fbff47aad7287eb370b1ed08b78d68391ed38c486acf3355ef69e241ef882a2ef5431
+	b2sums = 8713b28b0f3f06e1ae2d548ea58cd8af1981bfe3b3024f6cc50753204e6e8c679fc8302c45da8ff7f238a09c5fb1337179ba2bb224c02ddcc3e02c7515272333
+
+pkgname = harper

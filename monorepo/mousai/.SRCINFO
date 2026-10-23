@@ -1,0 +1,30 @@
+pkgbase = mousai
+	pkgdesc = Simple application to identify songs
+	pkgver = 0.7.10
+	pkgrel = 1
+	url = https://apps.gnome.org/Mousai/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = graphene
+	depends = gst-plugins-bad-libs
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = libsoup3
+	options = !lto
+	source = git+https://github.com/SeaDve/Mousai.git#tag=v0.7.10
+	b2sums = ccb811cd27a5a70f9231cae16ac1d5a61e12471500f572897b9ed781a95077129522c1573e3efc71bfea0e38a5ff28d9b0e53160a4451c5eed0d3be37572a1cf
+
+pkgname = mousai

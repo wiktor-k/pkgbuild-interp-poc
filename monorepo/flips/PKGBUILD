@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Vaporeon <vaporeon@vaporeon.io>
+
+pkgname=flips
+pkgver=198
+pkgrel=3
+pkgdesc='A patcher for IPS and BPS files'
+arch=(x86_64)
+url="https://git.disroot.org/Sir_Walrus/Flips.git"
+license=(GPL-3.0-or-later)
+depends=(
+  at-spi2-core
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  harfbuzz
+  hicolor-icon-theme
+  libgcc
+  libgomp
+  libstdc++
+  pango
+  wayland
+  zlib
+)
+makedepends=(git)
+_tag=359d414cff73b3e0400871d3c288a59b36564834
+source=(git+https://git.disroot.org/Sir_Walrus/Flips.git#tag=${_tag})
+b2sums=('bcb84e240f7819b00e6076aa7927e754f39a4639d889ba5c4163b5d32419a6885cc0482981e316ffc998c5ad15e8c7af1fa4a8d18dc1ca745eb8c13f0ebc4d9e')
+
+pkgver() {
+  cd Flips
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  make CFLAGS="$CFLAGS $LDFLAGS" -C Flips
+}
+
+package() {
+  make DESTDIR="${pkgdir}" -C Flips install
+}
+
+# vim: ts=2 sw=2 et:

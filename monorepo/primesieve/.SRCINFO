@@ -1,0 +1,16 @@
+pkgbase = primesieve
+	pkgdesc = Fast prime number generator
+	pkgver = 12.16
+	pkgrel = 1
+	url = https://github.com/kimwalisch/primesieve
+	arch = x86_64
+	license = BSD-2-Clause
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = git+https://github.com/kimwalisch/primesieve#tag=v12.16
+	sha256sums = 3ce43c35173705da4471f1309eb87db877f0f8472092ffc0a6ecfd15b25b9268
+
+pkgname = primesieve

@@ -1,0 +1,22 @@
+pkgbase = resvg
+	pkgdesc = SVG rendering library and CLI
+	pkgver = 0.48.1
+	pkgrel = 1
+	url = https://github.com/linebender/resvg
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	makedepends = cargo
+	makedepends = cargo-c
+	makedepends = clang
+	makedepends = qt5-base
+	makedepends = qt5-tools
+	makedepends = cairo
+	makedepends = pango
+	depends = gdk-pixbuf2
+	optdepends = qt5-base: For the Qt backend
+	optdepends = cairo: For the cairo backend
+	source = https://github.com/linebender/resvg/archive/v0.48.1/resvg-v0.48.1.tar.gz
+	sha256sums = 40dafea6b4b9d01e9d28b6d49f1e912daf3e9055676ad9179a5a2db6e7386945
+
+pkgname = resvg

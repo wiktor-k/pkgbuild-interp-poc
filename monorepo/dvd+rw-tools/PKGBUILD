@@ -1,0 +1,96 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: damir <damir@archlinux.org>
+
+pkgname=dvd+rw-tools
+pkgver=7.1
+pkgrel=13
+pkgdesc="Tools to master DVD media"
+arch=(x86_64)
+url='https://web.archive.org/web/20250512175714/https://fy.chalmers.se/~appro/linux/DVD+RW/'
+license=(GPL-2.0-or-later)
+depends=(
+  cdrtools
+  glibc
+  libstdc++
+)
+# Original source: https://fy.chalmers.se/~appro/linux/DVD+RW/tools/dvd+rw-tools-7.1.tar.gz
+source=(
+  "https://ftp2.osuosl.org/pub/blfs/conglomeration/dvd+rw-tools/$pkgname-$pkgver.tar.gz"
+  dvd+rw-tools-7.0-wexit.patch
+  dvd+rw-tools-7.0-glibc2.6.90.patch
+  dvd+rw-tools-7.0-reload.patch
+  dvd+rw-tools-7.0-wctomb.patch
+  dvd+rw-tools-7.0-dvddl.patch
+  dvd+rw-tools-7.1-noevent.patch
+  dvd+rw-tools-7.1-lastshort.patch
+  dvd+rw-tools-7.1-format.patch
+  dvd+rw-tools-7.1-bluray_srm+pow.patch
+  dvd+rw-tools-7.1-bluray_pow_freespace.patch
+  dvd+rw-tools-7.1-sysmacro-inc.patch
+  dvd+rw-tools-7.1-layerbreaksetup.patch
+)
+b2sums=(
+  e456be6ee8d1863e78abc6d494a1ce08a49e3aec9b45533408c33ff4620dfc450b968280ce0453b0c0d966f3afca0d23e1ed7e3497caee8216561ad85599b138
+  d07a8e54fff49ef4dd6f36bd3beba94920bc7a7278f03787d2c6cfaade36d8d39f804885839de1bac7755e9a075143de75081d18fb0733cfa6661726a0958d5f
+  9cd5a2e77f97ad48eced20fb7b127fc989400c4c597889c9230c2845640a1f71e6b4fa98b5c361d8a8b60746a7318dcb242ac31aa7d0343440f1f1f1eefd1d09
+  2b0fd7b2726f38b8cfeb24dcbe42c02cce97e4f1899c6b042925f9ca504f59c38d76cbe01c3f6eff8d0bdae9a55e59a0b609de568559b77c32bf122fc8d08d65
+  754e6120171868a642e8c6a81ef118c68147f7768e26463066970918f6cc835ecc36eb9f4f5802ccf527938431a1eac12aec0862422d4cc837367dd7cbbdee2b
+  40288f899bc1a30c2813cbebb7747d0c1929182a0641fecc2d0241e744d578ea0cc0a32bd12a4310e003a5ef70e9b0d05dc871e0d977185c07aaf4007a4b31c8
+  78f27d65759b98607ac6e3eb29ce44c2d88029f7fdaffd3a6d305166b82a069c8a8621b2c680bfbb3a9a2e6585370bc6c1503b4107e903f69099565bfdc0de8d
+  e24b41b6eb39961568133f91a110afc87b26597ead0b623deb22bff11a40638bd5faca1de75b8289484889d2d2768077fd637dfe57fdb8bc9f61c1ddd6bed91d
+  caba765d9c01c368653c647bbcf84173673c1137ee146c518da090b29e939ed83297a3eaa0d235bd7a2b9bba0656a27e4be26b6a4555d0b274ca9bd6dd78d7ee
+  5caea4e6afd1af9b0afd33e9cf344e40a191fdfdbd0f7ac9af91b2d346fbfcdf73a2e957c1f5a3aca6bd133054d0a8a89553da2ff3e3e5661241390b0358fdd0
+  ca65ce1389dfb0be7b28882897c5711d8f98edd5f72be5f333703af9c42acfb655c711aa7edd7c0bc0bbe1a1af8f0e2e19eae1a3246deefa1a968ad69f3e7958
+  e7fa813d286d896a40f92456bfc4759fa7fb39e4a76f53d250653023f7bde0c1bcc7c5ed2e5bb26297772de569399907604ec40f470d60d8d54bc36344431b2f
+  8751f6c5572c37a292467a658ca5464d310e071bd66fe6f9a2f9aeece5aa0b7ef91fb93867e25990e3246911ede05918ef0c75e99bb23db49dbf74a55ff31b8d
+)
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  # Fix exit status
+  patch -Np1 -i ../dvd+rw-tools-7.0-wexit.patch
+
+  # Fix build with glibc 2.6
+  patch -Np1 -i ../dvd+rw-tools-7.0-glibc2.6.90.patch
+
+  # Fix a reload problem on some drives, after a successful burn
+  patch -Np1 -i ../dvd+rw-tools-7.0-reload.patch
+
+  # Fix widechar overflow
+  patch -Np0 -i ../dvd+rw-tools-7.0-wctomb.patch
+
+  # Allow burn small images on dvd-dl
+  patch -Np0 -i ../dvd+rw-tools-7.0-dvddl.patch
+
+  # Handle Teac DVD drive timeout issue
+  patch -Np1 -i ../dvd+rw-tools-7.1-noevent.patch
+
+  # Allow buffer length of the block to be shorter than multiple of 16, even in case of DAO writing
+  patch -Np1 -i ../dvd+rw-tools-7.1-lastshort.patch
+
+  # Print error in case we want to write already written DVD-RW in Sequential Recording mode
+  patch -Np1 -i ../dvd+rw-tools-7.1-format.patch
+
+  # When formatting blu-ray as srm+pow, handle it later correctly as srm+pow, not srm
+  patch -Np1 -i ../dvd+rw-tools-7.1-bluray_srm+pow.patch
+
+  # Count nwa (next writeable address) even in pow (pseudo overwrite) mode
+  patch -Np1 -i ../dvd+rw-tools-7.1-bluray_pow_freespace.patch
+
+  # Fix build with glibc 2.29
+  patch -Np1 -i ../dvd+rw-tools-7.1-sysmacro-inc.patch
+
+  # Fix to set layer break manually
+  patch -Np1 -i ../dvd+rw-tools-7.1-layerbreaksetup.patch
+}
+
+build() {
+  cd $pkgname-$pkgver
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make prefix="$pkgdir/usr" install
+}

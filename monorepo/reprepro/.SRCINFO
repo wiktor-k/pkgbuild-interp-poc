@@ -1,0 +1,22 @@
+pkgbase = reprepro
+	pkgdesc = Debian package repository producer
+	pkgver = 5.5.1
+	pkgrel = 1
+	url = https://salsa.debian.org/debian/reprepro
+	arch = x86_64
+	license = GPL-2.0-only
+	depends = db5.3
+	depends = glibc
+	depends = libarchive
+	depends = libarchive.so
+	depends = libgpg-error
+	depends = gpgme
+	depends = libgpgme.so
+	source = https://salsa.debian.org/debian/reprepro/-/archive/reprepro-5.5.1/reprepro-reprepro-5.5.1.tar.bz2
+	source = bdb_5.3.patch
+	sha256sums = e9f909e54158dd6da1640867a35e5da42add48a7dbc38390e94f492fdba85060
+	sha256sums = c5e982dc7fa1790aabd7976216c56019fdf1844972eca7c65a0cdc3a388564a7
+	b2sums = 9e8c2267c47d231b80a502682fdf746e6fcfc39705ca2dea022c8ca934f228b6ec549195155435258ae2406d0463f41c52a0f46a38742df00d8066c3d34ad576
+	b2sums = be2bf6f0a198dd90d34a4976154970857463bca22d9df49e9f697586e60d4d577652f13cab4abf105681ad7a100522b29ce3f743ab98a696fe95348c308d782c
+
+pkgname = reprepro

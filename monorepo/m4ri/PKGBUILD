@@ -1,0 +1,43 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Rémy Oudompheng <oudomphe@clipper.ens.fr>
+
+pkgname=m4ri
+pkgver=20260122
+pkgrel=2
+pkgdesc='Algorithms for linear algebra over F_2'
+arch=(x86_64)
+url='https://bitbucket.org/malb/m4ri'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         libgcc
+         libgomp
+         libpng)
+makedepends=(git)
+source=(git+https://github.com/malb/m4ri#tag=$pkgver)
+sha256sums=('c2e05ce87b3e60fdf90781e4c96b88dcbfaf1d4a29324687dde9db38a501d258')
+
+prepare() {
+  cd $pkgname
+  sed -e '/AX_EXT/d' -i configure.ac # Disable CPU autodetection
+  autoreconf -vi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --enable-openmp \
+    --enable-thread-safe \
+    --disable-static
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make install DESTDIR="$pkgdir"
+}

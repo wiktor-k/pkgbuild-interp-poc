@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=cargo-sort-derives
+pkgver=0.14.1
+pkgrel=1
+pkgdesc="Cargo subcommand to sort derive attributes"
+arch=(x86_64)
+url="https://github.com/lusingander/cargo-sort-derives"
+license=(MIT)
+depends=(
+  cargo
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('c555caacbe1e51ce2a2a5fc0c152c3f57f13fad1ceb6c897908f333aeb3945859c2a056b6f892a4592727218030ac1b5a0c1829d1a632a7483dc78b4aa7ed0d3')
+b2sums=('b33f48e42c271f986fb2c490ca0da3064fde39b51396d341f7e619348d7075644bcea0f0a87e0de53d4bc60b754fa7464527974c3ee9acfadd7ecee75f7aeda5')
+
+prepare() {
+  cd $pkgname-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname-$pkgver
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $pkgname-$pkgver
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

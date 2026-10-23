@@ -1,0 +1,50 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-mupen64plus-next
+pkgver=20261001.093940.g12edd2c74a51
+pkgrel=1
+epoch=1
+pkgdesc='Nintendo 64 core'
+arch=(x86_64)
+url=https://github.com/libretro/mupen64plus-libretro-nx
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libgl
+  libpng
+  libretro-core-info
+  libstdc++
+  minizip
+  xxhash
+  zlib
+)
+makedepends=(
+  git
+  mesa
+  nasm
+)
+replaces=(libretro-mupen64plus)
+source=(libretro-mupen64plus-next::git+https://github.com/libretro/mupen64plus-libretro-nx.git#commit=${pkgver##*.g})
+b2sums=('2f3153e79777f80ec1b18447bd3a36643f3589f9d27dc35f16f0cddfe69de046ca107b359e0b90872c11b46404fde1a1e7944955217c79f714f575bc29e59299')
+options=(!lto)
+
+build() {
+  export CFLAGS+=' -I/usr/include/minizip'
+  export CXXFLAGS+=' -I/usr/include/minizip'
+  make \
+    WITH_DYNAREC=x86_64 \
+    HAVE_PARALLEL_RDP=1 \
+    HAVE_PARALLEL_RSP=1 \
+    HAVE_THR_AL=1 \
+    SYSTEM_LIBPNG=1 \
+    SYSTEM_MINIZIP=1 \
+    SYSTEM_XXHASH=1 \
+    SYSTEM_ZLIB=1 \
+    -C libretro-mupen64plus-next
+}
+
+package() {
+  install -Dm 644 libretro-mupen64plus-next/mupen64plus_next_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}

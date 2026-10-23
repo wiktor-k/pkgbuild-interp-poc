@@ -1,0 +1,24 @@
+pkgbase = python-micawber
+	pkgdesc = A small library for extracting rich content from urls
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/coleifer/micawber
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = python-beautifulsoup4
+	checkdepends = python-django
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	optdepends = python-beautifulsoup4: for text parser
+	optdepends = python-django: django support
+	optdepends = python-flask: flask support
+	optdepends = python-redis: redis caching support
+	source = micawber-0.8.0.tar.gz::https://github.com/coleifer/micawber/archive/refs/tags/0.8.0.tar.gz
+	sha512sums = d135eac794c1ba82eea9afdbb7e910df3c6d20788ab7f2aff1d47bfcfb4030e44b1502835f5a779d3f406c13a90a28bdb4d3e9e268fb104c57180f84cfc7d59c
+	b2sums = cdb8b8ae14c5e00ffcd469cccff8df98d7a1c6c7aaeeda5da3122651819dabcc08a6cd41b2098aa621880c17a34d97aa586061c59869bcca220e313d3166a5dd
+
+pkgname = python-micawber

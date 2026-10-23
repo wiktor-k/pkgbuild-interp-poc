@@ -1,0 +1,17 @@
+pkgbase = iotop-c
+	pkgdesc = A top utility for IO
+	pkgver = 1.33
+	pkgrel = 1
+	url = https://github.com/Tomas-M/iotop
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = glibc
+	depends = ncurses
+	provides = iotop
+	conflicts = iotop
+	source = git+https://github.com/Tomas-M/iotop.git#tag=v1.33?signed
+	validpgpkeys = BA60BC20F37E59444D6D25001365720913D2F22D
+	sha256sums = bb8627ba9125bc61cf30e243c4fbf843cb98b2d403e8c0da82e1f63e1994cbf2
+
+pkgname = iotop-c

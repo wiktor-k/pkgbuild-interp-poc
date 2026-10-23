@@ -1,0 +1,87 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgbase=nginx-mod-njs
+pkgname=(nginx-mod-njs nginx-mod-njs-stream)
+pkgver=1.0.2
+pkgrel=5
+
+_modname="${pkgname#nginx-mod-}"
+
+pkgdesc='nginScript module for nginx'
+arch=('x86_64')
+depends=('glibc' 'libxslt' 'openssl' 'zlib' 'pcre2' 'libxml2')
+makedepends=('nginx' 'nginx-src')
+url="https://nginx.org/en/docs/njs_about.html"
+license=('BSD-2-Clause')
+
+source=(https://github.com/nginx/njs/archive/refs/tags/${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('84a114499fa6878d3ec52b99c1cf2874a91eb0d915408f418a2b1279519f09ae')
+
+prepare() {
+  mkdir -p build
+  cd build
+  ln -sf /usr/src/nginx/auto
+  ln -sf /usr/src/nginx/src
+}
+
+build() {
+  cd "$srcdir/njs-$pkgver"
+  CFLAGS="$CFLAGS -Wno-dangling-pointer -Wno-maybe-uninitialized" ./configure
+  make njs ts
+
+  # next configure cleans the build directory
+  mv build/{njs,ts} ../build/
+
+  cd "$srcdir/build"
+  /usr/src/nginx/configure \
+    --with-ld-opt="$LDFLAGS" \
+    --with-compat \
+    --with-stream \
+    --with-http_ssl_module \
+    --with-http_v2_module \
+    --add-dynamic-module=../njs-$pkgver/nginx
+  make modules
+}
+
+package_nginx-mod-njs() {
+  backup=('etc/nginx/modules.d/20-njs-http.conf')
+
+  if [[ "$BUILDTOOL" == devtools ]]; then
+    local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+    depends+=($nginx_dep)
+  else
+    depends+=(nginx)
+  fi
+
+  install -Dm644 "$srcdir"/njs-$pkgver/LICENSE \
+              "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+  install -Dm755 build/njs "$pkgdir"/usr/bin/njs
+  install -dm0755 "$pkgdir"/etc/nginx/modules.d "$pkgdir"/usr/lib/node_modules
+  echo 'load_module "/usr/lib/nginx/modules/ngx_http_js_module.so";' >> "$pkgdir/etc/nginx/modules.d/20-njs-http.conf"
+  install -Dm755 build/objs/ngx_http_js_module.so "$pkgdir"/usr/lib/nginx/modules/ngx_http_js_module.so
+
+  cp -a build/ts "$pkgdir"/usr/lib/node_modules/njs-types
+}
+
+package_nginx-mod-njs-stream() {
+  pkgdesc='nginScript module for nginx streams'
+  backup=('etc/nginx/modules.d/20-njs-stream.conf')
+
+  if [[ "$BUILDTOOL" == devtools ]]; then
+    local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+    local nginx_mod_stream_dep="nginx-mod-stream=$(nginx -v 2>&1 | sed 's|.*/||')"
+    # this is added to PKGINFO data
+    depends+=($nginx_dep $nginx_mod_stream_dep)
+  else
+    # this is added to SRCINFO data
+    depends+=(nginx nginx-mod-stream)
+  fi
+
+  install -Dm644 "$srcdir"/njs-$pkgver/LICENSE \
+              "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+  install -dm0755 "$pkgdir"/etc/nginx/modules.d
+  echo 'load_module "/usr/lib/nginx/modules/ngx_stream_js_module.so";' >> "$pkgdir/etc/nginx/modules.d/20-njs-stream.conf"
+  install -Dm755 build/objs/ngx_stream_js_module.so "$pkgdir"/usr/lib/nginx/modules/ngx_stream_js_module.so
+}

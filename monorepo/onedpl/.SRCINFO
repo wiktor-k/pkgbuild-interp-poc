@@ -1,0 +1,25 @@
+pkgbase = onedpl
+	pkgdesc = oneAPI DPC++ Library
+	pkgver = 2022.12.0
+	pkgrel = 1
+	url = https://www.intel.com/content/www/us/en/developer/tools/oneapi/dpc-library.html
+	arch = any
+	license = Apache-2.0 WITH LLVM-exceptions
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = intel-oneapi-dpcpp-cpp
+	makedepends = intel-oneapi-openmp
+	depends = level-zero-loader
+	depends = intel-oneapi-common
+	depends = intel-oneapi-tbb
+	depends = intel-oneapi-compiler-dpcpp-cpp-runtime-libs
+	depends = intel-oneapi-compiler-shared-runtime-libs
+	optdepends = intel-oneapi-dpcpp-cpp: Develop applications on Intel GPUs
+	optdepends = intel-oneapi-openmp: Framework for thread or data parallel applications
+	source = onedpl::git+https://github.com/uxlfoundation/oneDPL#tag=oneDPL-release-2022.12.0
+	source = fix-install-destdir.patch
+	sha256sums = 1a0ba10fbae4145635affc6a641aabbd3a118bf34171e828e9d7d5e6e36d9656
+	sha256sums = 6db42540e47cbc19d2568b401ca624f15842f5deed33848b576a181ae4c2a73a
+
+pkgname = onedpl

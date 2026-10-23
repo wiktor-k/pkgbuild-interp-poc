@@ -1,0 +1,26 @@
+pkgbase = critter
+	pkgdesc = Critical Mass (aka Critter) is an SDL/OpenGL space shoot'em up game
+	pkgver = 1.0.2
+	pkgrel = 13
+	url = https://sourceforge.net/projects/criticalmass
+	arch = x86_64
+	license = GPL
+	makedepends = mesa
+	depends = sdl_image
+	depends = sdl_mixer
+	depends = libgl
+	options = !lto
+	source = https://downloads.sourceforge.net/sourceforge/criticalmass/CriticalMass-1.0.2.tar.bz2
+	source = critter-gcc43.patch
+	source = criticalmass-1.0.2-libpng15.patch
+	source = critter.desktop
+	md5sums = e2aff114bffa717fb79c82e1dc473ebe
+	md5sums = e936920acce56bfa3b0123ca8b1193a6
+	md5sums = 76448ba5b7a42aec8fd2a5d1bc31b8e2
+	md5sums = 98c17809aed964c445adad09827035df
+	sha256sums = 846db2d30d39e559612328594084a7aef980169948b2cfaee9fddec8ffdef724
+	sha256sums = b5eaab0e6eba1d4620ae598c010ca259134a81ef87ee3fce92c3162567491ad7
+	sha256sums = fcf92674547fa96389d64df2612906a2aac7d82ef19fb01b4665def32a518585
+	sha256sums = 6b429d538537d15a7fa6a2344dbd98a4b9e05b7416c845fef37d0749a915c7c8
+
+pkgname = critter

@@ -1,0 +1,30 @@
+pkgbase = quadrapassel
+	pkgdesc = Fit falling blocks together (Tetris-like game for GNOME)
+	pkgver = 51.1
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Quadrapassel
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-2.0-or-later
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libmanette
+	depends = libsndfile
+	depends = openal
+	source = git+https://gitlab.gnome.org/GNOME/quadrapassel.git?signed#tag=51.1
+	validpgpkeys = 161DEEB19F942B2CE00B67ADC1C19D5530553963
+	validpgpkeys = 1DB827B47C4E2494A1D733586458908EC334A207
+	validpgpkeys = C6043B3C11E1C16FCA1FBEE48D0B2EC86F801EA9
+	validpgpkeys = BE90F48249ECD35A517CCAD0159682ADDFCBB989
+	b2sums = 3e7038022e6318dbb1c1ae10cca6dca1653a5a5372dd43a12978cf946df9da072bbc136bfa264721015dd7285e0c05a85a7a74464e955f89319f5aaadbed8cf2
+
+pkgname = quadrapassel

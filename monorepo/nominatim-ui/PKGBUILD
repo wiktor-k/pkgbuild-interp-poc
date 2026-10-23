@@ -1,0 +1,48 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=nominatim-ui
+pkgver=3.12.0
+pkgrel=1
+pkgdesc="Debug UI for Nominatim"
+arch=('any')
+url="https://github.com/osm-search/nominatim-ui"
+license=('GPL-2.0-only')
+makedepends=('yarn' 'jq')
+optdepends=('nginx' 'nominatim')
+backup=('etc/webapps/nominatim-ui/config.theme.js')
+install=nominatim-ui.install
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/tags/v${pkgver}.tar.gz"
+        'nginx.conf'
+)
+sha256sums=('93f80975145ee8acdf8a50199662bd082290805dd32ba862bfd9ff70fc9ca2da'
+            '045dda10d978acedba43b071271731b2b63a8ad2743cdd6eda7dab2fd98a52ae')
+
+prepare() {
+  cd "${pkgname}-tags-v${pkgver}"
+
+  # You can run with the latest yarn, you just don't know it yet
+  jq 'del(.packageManager)' package.json > temp.json && mv temp.json package.json
+
+  yarn install
+}
+
+build() {
+  cd "${pkgname}-tags-v${pkgver}"
+
+  yarn build
+}
+
+package() {
+  cd "${pkgname}-tags-v${pkgver}"
+
+  install -D -d -m755 "${pkgdir}/usr/share/webapps/nominatim-ui" "${pkgdir}/etc/webapps/nominatim-ui"
+
+  mv dist/theme/config.theme.js.example "${pkgdir}/etc/webapps/nominatim-ui/config.theme.js"
+  cp -r dist/* "${pkgdir}/usr/share/webapps/nominatim-ui"
+
+  ln -s /etc/webapps/nominatim-ui/config.theme.js "${pkgdir}/usr/share/webapps/nominatim-ui/theme/config.theme.js"
+
+  install -Dm644 "LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+  install -Dm644 ../nginx.conf -t "$pkgdir/usr/share/doc/$pkgname/"
+}

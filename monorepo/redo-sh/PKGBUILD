@@ -1,0 +1,56 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=redo-sh
+pkgver=4.0.7
+pkgrel=1
+pkgdesc="An implementation of the Redo build system in Bash"
+arch=(any)
+url="http://news.dieweltistgarnichtso.net/bin/redo-sh.html"
+license=(AGPL-3.0-or-later)
+depends=(sh)
+makedepends=(git)
+optdepends=('graphviz: dependency graph support via redo-dot')
+provides=(redo)
+conflicts=(redo-python redo-jdebp redo-c)
+source=("$pkgname::git+http://news.dieweltistgarnichtso.net/bin.git#tag=redo-v$pkgver")
+sha512sums=('815e58f4a509816a6c61c65e894082ac5de5ab9a23902b156d2917d37ebf14d1c411b0c1dd5fb79329db2d385f9f3678765ae36eb079f58196d8202d002d896a')
+b2sums=('e40ec2ec199c8db22b297041d8be71309d719454f4a35e7a8769f31ad5d38214edbe2d185480d89178be7fd0f2a40cf13cc60793d58e2b40a386d5ddf7355f70')
+
+prepare() {
+  cd "$pkgname"
+
+  # description of each expression:
+  # 1 - strip executable components in middle of file
+  # 2 & 3 - remove shebang & subsequent 'cat' invocation
+  # 4 - remove html comments
+  # boom, we now have a valid HTML file
+  sed -i \
+    -e '/^EOF/,/^cat <<EOF/d' \
+    -e '/#!\/bin\/sh/d' \
+    -e '/cat <<EOF/d' \
+    -e '/^<!--/,/^-->/d' \
+    "redo-sh.do"
+}
+
+package() {
+  cd "$pkgname"
+
+  # scripts
+  find . \
+    -maxdepth 1 \
+    -executable \
+    -type f \
+    -name "redo*" \
+    -exec install -vDm755 -t "$pkgdir/usr/bin" "{}" +
+
+  # man pages
+  find . \
+    -maxdepth 1 \
+    -type f \
+    -name "redo*.1" \
+    -exec install -vDm644 -t "$pkgdir/usr/share/man/man1" "{}" +
+
+  # documentation
+  install -vDm644 "redo-sh.do" "$pkgdir/usr/share/doc/$pkgname/index.html"
+}
+

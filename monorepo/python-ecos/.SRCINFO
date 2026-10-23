@@ -1,0 +1,24 @@
+pkgbase = python-ecos
+	pkgdesc = Python interface for ECOS
+	pkgver = 2.0.14
+	pkgrel = 3
+	url = https://github.com/embotech/ecos-python
+	arch = x86_64
+	license = GPL-3.0-only
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = ecos
+	depends = glibc
+	depends = python
+	depends = python-numpy
+	depends = python-scipy
+	source = git+https://github.com/embotech/ecos-python#tag=v2.0.14
+	source = unbundle-ecos.patch
+	sha256sums = df8bd9740261394a2a82b3165967bda87ce2e77bced99c0d335d521ff6d8a500
+	sha256sums = c929cbe71cf8a109a66cbc681c6c501c42517b44e63f88440c36e5c7ca9e3be9
+
+pkgname = python-ecos

@@ -1,0 +1,20 @@
+pkgbase = git-filter-repo
+	pkgdesc = Quickly rewrite git repository history (filter-branch replacement)
+	pkgver = 2.47.0
+	pkgrel = 3
+	url = https://github.com/newren/git-filter-repo
+	arch = any
+	license = MIT OR GLP-2.0-or-later
+	checkdepends = rsync
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools-scm
+	depends = git
+	depends = python
+	source = https://github.com/newren/git-filter-repo/releases/download/v2.47.0/git-filter-repo-2.47.0.tar.xz
+	source = https://github.com/newren/git-filter-repo/commit/c1d8461e.patch
+	sha256sums = 4662cbe5918196a9f1b5b3e1211a32e61cff1812419c21df4f47c5439f09e902
+	sha256sums = 2e3f83e2df7db421634b2b3561ee87b326d205835cb05721b4e26b106e7869f2
+
+pkgname = git-filter-repo

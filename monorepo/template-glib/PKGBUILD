@@ -1,0 +1,63 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+
+pkgbase=template-glib
+pkgname=(
+  template-glib
+  template-glib-docs
+)
+pkgver=3.40.0
+pkgrel=2
+pkgdesc="Templating library for GLib"
+url="https://gitlab.gnome.org/GNOME/template-glib"
+arch=(x86_64)
+license=(LGPL-2.1-or-later)
+depends=(
+  glib2
+  glibc
+  libgcc
+)
+makedepends=(
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+  vala
+)
+source=("git+https://gitlab.gnome.org/GNOME/template-glib.git#tag=$pkgver")
+b2sums=('196bbc261901ab8b4b74b36e3d5c2fc150f4eeee24d8a816811a32c3b0296b78120df60ce44bf1cdb8ea91c864050caa3165d04f283696b7e93496b0a41df182')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  local meson_options=(
+    -D docs=true
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package_template-glib() {
+  provides=(libtemplate_glib-1.0.so)
+
+  meson install -C build --destdir "$pkgdir"
+
+  mkdir -p doc/usr/share
+  mv {"$pkgdir",doc}/usr/share/doc
+}
+
+package_template-glib-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+
+  mv doc/* "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

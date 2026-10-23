@@ -1,0 +1,20 @@
+# Maintainer: Christian Hesse <arch@eworm.de>
+# Contributor: Dariusz Górecki <darek.krk@gmail.com>
+# Contributor: Juan Diego Tascon
+
+pkgname=xcursor-comix
+pkgver=0.10.1
+pkgrel=1
+pkgdesc='Comix X Cursor Theme'
+url='https://gitlab.com/limitland/comixcursors'
+depends=('libxcursor')
+license=('GPL')
+arch=('any')
+source=("https://limitland.gitlab.io/comixcursors/ComixCursors-${pkgver}.tar.bz2")
+sha256sums=('51d81738698bb20063470cbd5e8b97bf12fedabf8dc27ffccc3f95e09c0159c2')
+
+package() {
+  mkdir -p "${pkgdir}"/usr/share/icons
+  cp -R "${srcdir}"/ComixCursors-[A-Z]* "${pkgdir}"/usr/share/icons/
+}
+

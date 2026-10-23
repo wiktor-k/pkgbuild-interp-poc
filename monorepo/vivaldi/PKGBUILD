@@ -1,0 +1,107 @@
+# Maintainer: BlackIkeEagle <ike DOT devolder AT gmail DOT com>
+# Contributor: TZ86
+
+# Redistribution of Vivaldi is allowed in Linux distribution package repos
+
+pkgname=vivaldi
+_rpmversion=8.2.4133.94-1
+pkgver=8.2.4133.94
+pkgrel=1
+pkgdesc='An advanced browser made with the power user in mind.'
+url="https://vivaldi.com"
+options=(!strip !zipman)
+license=('LicenseRef-vivaldi')
+arch=('x86_64' 'aarch64')
+provides=('vivaldi-stable')
+depends=(
+    'alsa-lib'
+    'at-spi2-core'
+    'cairo'
+    'libcups'
+    'libxcomposite'
+    'libxdamage'
+    'libxkbcommon'
+    'libxrandr'
+    'libxss'
+    'mesa'
+    'nss'
+    'pango'
+    'ttf-font'
+    'desktop-file-utils'
+    'shared-mime-info'
+    'hicolor-icon-theme'
+)
+makedepends=('w3m' 'imagemagick')
+optdepends=(
+    'vivaldi-ffmpeg-codecs: playback of proprietary video/audio'
+    'org.freedesktop.secrets: better secret storage in gnome-keyring or kwallet'
+    'libnotify: native notifications'
+    'pipewire: WebRTC desktop sharing under Wayland'
+    'gtk3: gtk3 integration'
+    'gtk4: for use with --gtk-version=4'
+    'qt5-base: qt5 integration'
+    'qt6-base: qt6 integration'
+    'upower: Battery Status API support'
+)
+source_x86_64=("https://downloads.vivaldi.com/stable/vivaldi-stable-${_rpmversion}.x86_64.rpm")
+source_aarch64=("https://downloads.vivaldi.com/stable/vivaldi-stable-${_rpmversion}.aarch64.rpm")
+source=('0001-add-support-for-user-flags.patch')
+sha512sums=('6b230614419416c44adf8fc2a677f8b1f1aca16949d20b7499417737001a6e9e314fc5841afaf402ad55b09910fca4c70fa7b6d38509b0546959bdbefb036726')
+sha512sums_x86_64=('12290c9f4c01bb42eda320f8c39ed636d497d7408991b0632350d8b08dc0262a24e4efa67dda0ea63ba59942771d149aeb2b6a63df76c5dbd442f96ee99cc348')
+sha512sums_aarch64=('226ec38a14f322d283631130c0aa5a769e5561d2969b082cf689557071a33378da3c8f5ddd1b405d5145e6052d38fd8efc28ea1145db3716944b1830028a60d9')
+
+package() {
+    cp --parents -a {opt,usr/bin,usr/share} "$pkgdir"
+
+    # add support for ~/.config/vivaldi-stable.conf
+    patch -p1 -i "$srcdir/0001-add-support-for-user-flags.patch" \
+        "$pkgdir/opt/$pkgname/$pkgname"
+    # remove "orig" leftover if it is there
+    rm -f "$pkgdir/opt/$pkgname/$pkgname.orig"
+
+    # suid sandbox
+    chmod 4755 "$pkgdir/opt/$pkgname/vivaldi-sandbox"
+
+    install -dm755 "$pkgdir/usr/bin"
+
+    # make /usr/bin/vivaldi-stable available
+    binf="$pkgdir/usr/bin/vivaldi-stable"
+    if [[ ! -e "$binf" ]] && [[ ! -f "$binf" ]] && [[ ! -L "$binf" ]]; then
+        ln -s /opt/vivaldi/vivaldi "$binf"
+    fi
+    # make /usr/bin/vivaldi available
+    binf="$pkgdir/usr/bin/vivaldi"
+    if [[ ! -e "$binf" ]] && [[ ! -f "$binf" ]] && [[ ! -L "$binf" ]]; then
+        ln -s /opt/vivaldi/vivaldi "$binf"
+    fi
+
+    # Vivaldi has different design for each size of icons. Avoid using them.
+    # hicolor xdg fallback
+    install -Dm644 "$pkgdir/opt/$pkgname/resources/vivaldi/resources/welcomepage-vivaldi.svg" \
+        "$pkgdir/usr/share/icons/hicolor/scalable/apps/${pkgname}.svg"
+    install -Dm644 "$pkgdir/opt/$pkgname/product_logo_256.png" \
+        "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.png"
+    for _res in 128 64 48 32 22; do
+        install -d "$pkgdir/usr/share/icons/hicolor/${_res}x${_res}/apps"
+        magick "$pkgdir/opt/$pkgname/product_logo_256.png" \
+            -resize ${_res}x${_res} \
+            "$pkgdir/usr/share/icons/hicolor/${_res}x${_res}/apps/$pkgname.png"
+        chmod 0644 \
+            "$pkgdir/usr/share/icons/hicolor/${_res}x${_res}/apps/$pkgname.png"
+    done
+    install -d "$pkgdir/usr/share/pixmaps"
+    install -Dm644 "$pkgdir/opt/$pkgname/product_logo_256.png" \
+        "$pkgdir/usr/share/pixmaps/${pkgname}.png"
+
+    rm -f "$pkgdir/opt/$pkgname/product_logo_"*.png
+
+    # license
+    install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+    w3m -dump "$pkgdir/opt/$pkgname/LICENSE.html" \
+        > "$pkgdir/usr/share/licenses/$pkgname/license.txt"
+
+    # https://archlinux.org/todo/legacy-path-for-metainfo-files/
+    install -Dm644 "usr/share/appdata/$pkgname.appdata.xml" -t \
+        "$pkgdir/usr/share/metainfo/"
+    rm -rv "$pkgdir/usr/share/appdata"
+}

@@ -1,0 +1,33 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: John K. Luebs <jkluebs@luebsphoto.com>
+
+pkgname=xiccd
+pkgver=0.4.1
+pkgrel=2
+pkgdesc="X color profile daemon"
+url="https://github.com/agalakhov/xiccd"
+arch=('x86_64')
+license=('GPL-3.0-only')
+depends=('colord' 'libxrandr')
+makedepends=('git')
+source=("git+${url}.git#tag=v${pkgver}")
+sha256sums=('5867be4d97ed8bdcf8fc308cb0ee0f4b83bc4c0a95067ff1959d4ca846403f23')
+
+prepare() {
+	cd "${pkgname}"
+	aclocal
+	autoconf
+	automake --add-missing --foreign --force --copy
+}
+
+build() {
+	cd "${pkgname}"
+	./configure --prefix=/usr --sysconfdir=/etc
+	make
+}
+
+package() {
+	cd "${pkgname}"
+	make DESTDIR="${pkgdir}" install
+	install -Dm 644 "etc/systemd/${pkgname}.service" "${pkgdir}/usr/lib/systemd/user/${pkgname}.service"
+}

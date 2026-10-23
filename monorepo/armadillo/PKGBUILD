@@ -1,0 +1,64 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Joey Dumont <joey.dumont@gmail.com>
+# Contributor: Lucas Hermann Negri <lucashnegri@gmail.com>
+
+pkgbase=armadillo
+pkgname=(armadillo armadillo-intel)
+pkgver=15.6.2
+pkgrel=1
+pkgdesc='Linear algebra library for C++'
+arch=(x86_64)
+url='https://arma.sourceforge.net/'
+license=(Apache-2.0)
+makedepends=(arpack blas cmake intel-oneapi-mkl lapack superlu)
+source=("https://downloads.sourceforge.net/sourceforge/arma/$pkgbase-$pkgver.tar.xz")
+b2sums=('23ecf5e3e7a5febd3aa3575d74dca1f792622dd08c97f503c488286e66160bc253b133c69a14681f32146822ea1761b0b02045435a133161dcc246e9a72d3d84')
+
+build() {
+  # Regular build
+  cmake \
+    -B build \
+    -D BUILD_SHARED_LIBS=ON \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D INSTALL_LIB_DIR:PATH=/usr/lib \
+    -D mkl_rt_LIBRARY:STRING=NO \
+    -S "$pkgbase-$pkgver" \
+    -W no-dev
+  make -C build
+
+  # Intel MKL build
+  cmake \
+    -B build-intel \
+    -D BUILD_SHARED_LIBS=ON \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D INSTALL_LIB_DIR:PATH=/usr/lib \
+    -S "$pkgbase-$pkgver" \
+    -W no-dev
+  make -C build-intel
+}
+
+package_armadillo() {
+  depends=(arpack blas lapack superlu)
+  optdepends=('hdf5: for HDF5 I/O support'
+              'hdf5-openmpi: for parallel HDF5 I/O support')
+  conflicts=(armadillo-intel)
+
+  make -C build DESTDIR="$pkgdir" install
+  install -Dm644 "$pkgbase-$pkgver/LICENSE.txt" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+
+package_armadillo-intel() {
+  pkgdesc='Linear algebra library for C++ (Intel)'
+  depends=(arpack intel-oneapi-mkl superlu)
+  optdepends=('hdf5: for HDF5 I/O support'
+              'hdf5-openmpi: for parallel HDF5 I/O support')
+  provides=(armadillo)
+  conflicts=(armadillo)
+
+  make -C build-intel DESTDIR="$pkgdir" install
+  install -Dm644 "$pkgbase-$pkgver/LICENSE.txt" \
+    "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

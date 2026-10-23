@@ -1,0 +1,36 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-cached-ipaddress
+pkgver=1.1.2
+pkgrel=1
+pkgdesc='Cache construction of ipaddress objects'
+arch=(x86_64)
+url=https://github.com/Bluetooth-Devices/cached-ipaddress
+license=(MIT)
+depends=(
+  glibc
+  python
+  python-propcache
+)
+makedepends=(
+  cython
+  git
+  python-build
+  python-installer
+  python-poetry-core
+  python-wheel
+)
+source=(git+https://github.com/Bluetooth-Devices/cached-ipaddress.git#tag=v${pkgver})
+b2sums=('01e9166e6c66495a9929e809be790d24144d30486835b38fcad939c063f6fb15e15543706773e056e83f692bcd369f0da4e2a7974af8bd6acb130d56b7e8f1fa')
+
+build() {
+  cd cached-ipaddress
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" cached-ipaddress/dist/*.whl
+  install -Dm 644 -t "${pkgdir}"/usr/share/licenses/${pkgname} cached-ipaddress/LICENSE
+}
+
+# vim: ts=2 sw=2 et:

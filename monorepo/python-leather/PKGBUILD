@@ -1,0 +1,39 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Michał Pałubicki <maln0ir@gmx.com>
+
+# TODO : Drop $pkgrel from $source on the next release...
+# https://gitlab.archlinux.org/archlinux/packaging/packages/python-leather/-/merge_requests/1
+# https://github.com/wireservice/leather/issues/107
+
+_pyname=leather
+pkgname=python-$_pyname
+pkgver=0.4.1
+pkgrel=2
+pkgdesc='Python charting for 80% of humans'
+arch=(any)
+url="https://$_pyname.readthedocs.io"
+license=(MIT)
+depends=(python)
+makedepends=(python-{build,installer,wheel}
+             python-setuptools)
+checkdepends=(python-cssselect
+              python-lxml)
+_archive="$_pyname-$pkgver"
+source=("https://github.com/wireservice/$_pyname/archive/$pkgver/$_archive-$pkgrel.tar.gz")
+sha256sums=('c993d8b0ea0e56dff763e7adb28783549920d7604f3784f158ceebfa873c1def')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+check() {
+	cd "$_archive"
+	python -m unittest discover -vs tests
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}

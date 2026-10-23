@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=dump1090_rs
+pkgver=0.8.1
+pkgrel=1
+pkgdesc="Demodulate ADS-B signal from a SDR device"
+arch=('x86_64')
+url="https://github.com/rsadsb/dump1090_rs"
+license=('GPL-2.0-only')
+depends=('soapysdr')
+makedepends=('cargo' 'clang')
+optdepends=('soapyrtlsdr: RTL-SDR support')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('f6298c5c21e2ed3a772ee373b1227e51705d133f13a277f7e8af5a1697ff235c')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

@@ -1,0 +1,44 @@
+pkgbase = luasec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication
+	pkgver = 1.3.2
+	pkgrel = 5
+	epoch = 2
+	url = https://github.com/brunoos/luasec/wiki
+	arch = x86_64
+	license = MIT
+	makedepends = luarocks
+	makedepends = lua51
+	makedepends = lua52
+	makedepends = lua53
+	makedepends = lua54
+	makedepends = lua
+	depends = openssl
+	source = luasec-v1.3.2.tar.gz::https://github.com/brunoos/luasec/archive/v1.3.2.tar.gz
+	sha512sums = 8f0c4b5ff87c024685b23770e1d342467554b8dc19a1704076e184d9e84b966f171091c31d1da135ab009e850275adc2bf2720fc9f32c83ac23f0a42f13d311f
+
+pkgname = lua-sec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication for Lua 5.5
+	depends = openssl
+	depends = lua-socket
+
+pkgname = lua51-sec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication for Lua 5.1
+	depends = openssl
+	depends = lua51-socket
+	conflicts = luasec
+	replaces = luasec
+
+pkgname = lua52-sec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication for Lua 5.2
+	depends = openssl
+	depends = lua52-socket
+
+pkgname = lua53-sec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication for Lua 5.3
+	depends = openssl
+	depends = lua53-socket
+
+pkgname = lua54-sec
+	pkgdesc = Lua bindings for OpenSSL library to provide TLS/SSL communication for Lua 5.4
+	depends = openssl
+	depends = lua54-socket

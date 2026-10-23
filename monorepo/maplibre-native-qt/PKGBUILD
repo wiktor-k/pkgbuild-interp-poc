@@ -1,0 +1,44 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=maplibre-native-qt
+pkgver=3.0.0
+pkgrel=2
+pkgdesc='MapLibre Native Qt Bindings and Qt Location Plugin'
+arch=(x86_64)
+url='https://maplibre.org/maplibre-native-qt/docs/'
+license=(BSD-2-Clause)
+depends=(icu
+         glibc
+         libgcc
+         libstdc++
+         qt6-base
+         qt6-declarative
+         qt6-location
+         qt6-positioning
+         zlib)
+makedepends=(cmake)
+source=(https://github.com/maplibre/maplibre-native-qt/releases/download/v$pkgver/maplibre-native-qt_v${pkgver}_Source.tar.bz2
+        qt-6.10.patch
+        https://github.com/maplibre/maplibre-native/commit/dde3fdd3.patch
+        fix-install-paths.patch)
+sha256sums=('9689fb0630adc33a34ea476bdf53a3ef7dc76cb3c95da9de056081f9330a9355'
+            '686cf847b33490812f675cbb2b81d77d59e1460039c1be33a77adfe56f699279'
+            '559747c0a84292b37ca639fb0d90ef0b347a7c24c277053973f00f4736210a52'
+            '88264f17856a9cde90b2c8dd6610528f6df35fff4bbf03c185dece44c3458df7')
+
+prepare() {
+  patch -d maplibre-native-qt_v${pkgver}_Source -p1 < qt-6.10.patch
+  patch -d maplibre-native-qt_v${pkgver}_Source/vendor/maplibre-native -p1 < dde3fdd3.patch # Fix build with GCC 15
+  patch -d maplibre-native-qt_v${pkgver}_Source -p1 < fix-install-paths.patch
+}
+
+build() {
+  cmake -B build -S maplibre-native-qt_v${pkgver}_Source \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DMLN_WITH_WERROR=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

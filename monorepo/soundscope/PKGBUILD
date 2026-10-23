@@ -1,0 +1,40 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=soundscope
+pkgver=1.10.1
+pkgrel=1
+pkgdesc="A TUI app for analyzing audio data such as frequencies and loudness"
+arch=('x86_64')
+url="https://github.com/bananaofhappiness/soundscope"
+license=('MIT')
+depends=(
+  'libgcc'
+  'alsa-lib'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('39c085b7fcbd8979b497f610db51f84e3608b1ba1e04122283aaadc0396d2336a246eb224dd8fc115f28f948035842c909d8339ed97b2e5c3958352b618f433e')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

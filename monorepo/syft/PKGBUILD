@@ -1,0 +1,54 @@
+# Maintainer: Christian Rebischke <chris.rebischke@archlinux.org>
+
+pkgname=syft
+pkgver=1.54.1
+pkgrel=1
+pkgdesc="CLI tool and library for generating a Software Bill of Materials from container images and filesystems"
+arch=('x86_64')
+url="https://github.com/anchore/syft"
+license=('Apache-2.0')
+depends=(
+  'glibc'
+)
+makedepends=(
+  'git'
+  'go'
+)
+options=(!lto)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/anchore/${pkgname}/archive/v${pkgver}.tar.gz")
+sha512sums=('e11f229c7f5a9e58e6b476a79d90c89285da34a254781aab4335413fdedd1e0daca5a86b2955f31d76c8182bcf834416450ed73c70011d28e0c887f890b07815')
+b2sums=('3badba5663baa5166113b6477037b3a1632090b40c9ee81fbacee505fbcf94695edc5408ca1181f15df901b831c3f8fd0c5be3a55791b8e7ed5eeca2876f2a8c')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export CGO_REQUIRED="1"
+
+  go build \
+    -o build/ \
+    -buildmode=pie \
+    -mod=readonly \
+    -ldflags "-compressdwarf=false -linkmode=external -X main.version=${pkgver}" \
+    ./...
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  build/syft --help
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm755 build/syft "${pkgdir}/usr/bin/${pkgname}"
+
+  # install completions
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  "${pkgdir}/usr/bin/${pkgname}" completion zsh > "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+  "${pkgdir}/usr/bin/${pkgname}" completion fish > "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+  "${pkgdir}/usr/bin/${pkgname}" completion bash > "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+}

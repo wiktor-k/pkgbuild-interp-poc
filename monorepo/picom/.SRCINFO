@@ -1,0 +1,36 @@
+pkgbase = picom
+	pkgdesc = Lightweight compositor for X11
+	pkgver = 13
+	pkgrel = 2
+	url = https://picom.app
+	arch = x86_64
+	license = MPL-2.0 AND MIT
+	makedepends = asciidoctor
+	makedepends = git
+	makedepends = mesa
+	makedepends = meson
+	makedepends = ninja
+	makedepends = setconf
+	makedepends = uthash
+	depends = hicolor-icon-theme
+	depends = libconfig
+	depends = libdbus
+	depends = libepoxy
+	depends = libev
+	depends = libgl
+	depends = pcre2
+	depends = pixman
+	depends = xcb-util-image
+	depends = xcb-util-renderutil
+	optdepends = dbus: for controlling picom via D-Bus
+	optdepends = python: for running picom-convgen.py
+	optdepends = rtkit: for realtime scheduling priority
+	optdepends = xorg-xprop: for picom-trans
+	optdepends = xorg-xwininfo: for picom-trans
+	backup = etc/xdg/picom.conf
+	source = git+https://github.com/yshui/picom.git#tag=v13
+	source = fix_black_screen_with_glx_backend.patch::https://github.com/yshui/picom/commit/676196359c15bb654696b05700330685db914710.patch
+	b2sums = 8a616065ba019583db41e71282e5bd731544d46fd807904e1fc5be3d4b08c23f07d03248a71972d4c1f63da3b95125106d5380e3fde6d379dfc925c7cda229ee
+	b2sums = 660a5b48b7b44c5b3462378fd839f6fd42aff661ec729b11ff3cdba7dd397f6fd2185bc809d0d451243d1b0d86e9ad30c568f8f6292dea0aaf096b25424c5648
+
+pkgname = picom

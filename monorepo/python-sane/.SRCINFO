@@ -1,0 +1,21 @@
+pkgbase = python-sane
+	pkgdesc = Python interface to the SANE scanner and frame grabber
+	pkgver = 2.9.2
+	pkgrel = 2
+	url = https://python-sane.readthedocs.io/en/latest
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = sane
+	depends = python
+	depends = python-pillow
+	depends = python-numpy
+	source = python-sane::git+https://github.com/python-pillow/Sane#tag=v2.9.2
+	sha512sums = bed05e847445fd60200aac872becde6024416ba3924334bce64aad42bee45ceaf5dd5602116e39dda0f14263b4316610315a6b8bebd53c7d0d08ad41d307f436
+	b2sums = a7ddd725f921157df133e805f2efce0c623ab2466470975d1e247596b37c67ec0cf56caeb5610c812ec14c31e7c0cb6019f0054c77385ffa3a337d4a5d92356a
+
+pkgname = python-sane

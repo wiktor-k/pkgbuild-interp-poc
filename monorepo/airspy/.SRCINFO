@@ -1,0 +1,17 @@
+pkgbase = airspy
+	pkgdesc = AirSpy Software Defined Radio (SDR) usermode driver and associated tools
+	pkgver = 1.0.10
+	pkgrel = 5
+	url = https://www.airspy.com
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	depends = glibc
+	depends = libusb
+	provides = libairspy.so
+	source = airspy-1.0.10.tar.gz::https://github.com/airspy/airspyone_host/archive/v1.0.10.tar.gz
+	source = airspy.conf
+	sha256sums = fcca23911c9a9da71cebeffeba708c59d1d6401eec6eb2dd73cae35b8ea3c613
+	sha256sums = b210dd0698c3bb8ad59f0393c12a74e1ed8fe1b16a2faabc38467f68ebed0120
+
+pkgname = airspy

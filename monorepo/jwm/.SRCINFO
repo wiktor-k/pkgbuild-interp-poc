@@ -1,0 +1,29 @@
+pkgbase = jwm
+	pkgdesc = Lightweight window manager for the X11 Window System
+	pkgver = 2.4.6
+	pkgrel = 2
+	url = https://joewing.net/projects/jwm/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = libjpeg-turbo
+	depends = libpng
+	depends = librsvg
+	depends = libx11
+	depends = libxext
+	depends = libxft
+	depends = libxinerama
+	depends = libxmu
+	depends = libxpm
+	depends = libxrender
+	depends = pango
+	backup = etc/system.jwmrc
+	source = git+https://github.com/joewing/jwm.git#tag=v2.4.6
+	source = jwm.desktop
+	b2sums = e7600cfcec1c64c93d3996b02ebe1e8564d878ce8296905fea27178aee043fb99241e3ff0375dee6f007ff09f58605783d33613789b2bf7b66f58750d3f4421e
+	b2sums = a9e1424b6a7d4e3031ef05d1c3783a259360c37c073e14e1ab6f0edf97ead9c51df28a59486ec75db94b0754f98adf5356cce50fe6aeb1ba7e6244dade0946c9
+
+pkgname = jwm

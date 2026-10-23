@@ -1,0 +1,82 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=tinymist
+pkgver=0.15.10
+pkgrel=1
+epoch=1
+pkgdesc='an integrated language service for Typst'
+arch=(i686 x86_64)
+url="https://github.com/Myriad-Dreamin/$pkgname"
+license=(Apache-2.0)
+depends=(
+  libgcc
+  glibc
+  openssl
+)
+makedepends=(cargo)
+replaces=("$pkgname-bin")
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('c6ecb0b8a772148fc4864c87b46f9d9d07ad6e6e19ab2ac0f84f2a873c775f1b')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+	export OPENSSL_NO_VENDOR=true
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+pkgver() {
+	# https://github.com/Myriad-Dreamin/tinymist#versioning-and-release-cycle
+	if [[ $pkgver =~ ^.*[13579]$ ]]; then
+		echo 'Odd-numbered releases target nightly typst, not stable.' >&2
+		exit 1
+	else
+		echo "$pkgver"
+	fi
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release
+}
+
+check() {
+	_srcenv
+	local skipped=(
+		e2e
+		tests::convert_tex # 0.14.16, this is why we use lockfiles!
+		tests::convert # 0.14.16
+		tests::test_docx_generation # 0.14.16
+		doc::tests::diff_v1_preview_frame_paints_generated_page # 0.14.20, typst 0.15.0
+		doc::tests::full_current_preview_frame_paints_generated_page_after_reset # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_exposes_synthetic_accesskit_link_nodes # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_exposes_synthetic_accesskit_text_runs # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_paints_selection_overlay_above_scene # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_paints_supplied_white_background # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_selects_and_copies_text # 0.14.20, typst 0.15.0
+		doc::tests::page_canvas_uses_pointer_cursor_over_links # 0.14.20, typst 0.15.0
+	)
+	cargo test --frozen -- ${skipped[@]/#/--skip }
+}
+
+package() {
+	depends+=(libcrypto.so)
+	cd "$_archive"
+	local _target="target/release/$pkgname"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "$_target"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	install -Dm0644 <($_target completion bash) "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+	install -Dm0644 <($_target completion fish) "$pkgdir/usr/share/fish/vendor_completions.d/$pkgname.fish"
+	install -Dm0644 <($_target completion zsh) "$pkgdir/usr/share/zsh/site-functions/_$pkgname"
+}

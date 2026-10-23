@@ -1,0 +1,41 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sanpi <sanpi+aur@homecomputing.fr>
+
+pkgname=routino
+pkgver=3.4.4
+pkgrel=1
+pkgdesc='Router for OpenStreetMap Data'
+arch=('x86_64')
+url='https://www.routino.org/'
+license=('AGPL-3.0-or-later')
+depends=(
+  'bzip2'
+  'glibc'
+  'zlib'
+)
+source=("https://www.routino.org/download/$pkgname-$pkgver.tgz")
+b2sums=('be5a91fd8201ea17e88e960df83fe6cffe79d3070bbf169d033da6f734dfdaf490dd5866cf943108ad03c36617c8ff31a74309a289fd717c79d6e40a61f8022a')
+
+prepare() {
+  cd $pkgname-$pkgver
+  sed -i 's|prefix=/usr/local|prefix=/usr|' Makefile.conf
+  sed -i 's|/doc/routino|/share/doc/routino|' Makefile.conf
+  sed -i 's|LDFLAGS_LDSO=-Wl,-R.||' Makefile.conf
+  sed -i 's/^CFLAGS=/CFLAGS+=/; s/^LDFLAGS=/LDFLAGS+=/' Makefile.conf
+}
+
+build() {
+  cd $pkgname-$pkgver
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make test
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+}

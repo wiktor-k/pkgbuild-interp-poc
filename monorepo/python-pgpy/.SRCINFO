@@ -1,0 +1,27 @@
+pkgbase = python-pgpy
+	pkgdesc = Pretty Good Privacy for Python
+	pkgver = 0.6.0
+	pkgrel = 6
+	url = https://github.com/SecurityInnovation/PGPy
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-pytest-order
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-cryptography
+	depends = python-pyasn1
+	source = python-pgpy::git+https://github.com/SecurityInnovation/PGPy.git#tag=v0.6.0
+	source = drop-use-of-imghdr.patch::https://github.com/SecurityInnovation/PGPy/commit/221a1f15a42f3ef76ccafcddf66b7c4ade391bff.patch
+	source = fix-tests.patch
+	source = https://github.com/SecurityInnovation/PGPy/commit/5cdda87f.patch
+	b2sums = 0e0fc10f05c5f18f87449ab87c6f9e0e15d9945acfdf532b8e8460a61233f1ed7e00e81af81a9d422628bc7e76462e162604cd11fa1fe28ee961e9b1ce9fce56
+	b2sums = 5e8b46fd94f703f345218e5db6f018de9bd9ca476b4c853795188277be2b46026bd89775c1232b87f67983c1aef8d2fb62a4743987091b90d21b53f9f09f7f00
+	b2sums = 82409e50e2cf060b3b34460709c74c0c60e1c53392a226eb8134aade45f71023500b4f658a8c3353fc08b424e724358cec602b44c695685b4eaa31a521a10853
+	b2sums = 2d8477388f13b2d67e593aa406852ebc17e1fd104b2cd487a120d189df82d339d79657ee85d70c72ff1fa2294db7712394815f9e1f903a8776ec5940067e5afd
+
+pkgname = python-pgpy

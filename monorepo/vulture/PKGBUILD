@@ -1,0 +1,33 @@
+# Maintainer: Leonidas Spyropoulos <artafinde at archlinux dot org>
+
+pkgname=vulture
+pkgver=2.16
+pkgrel=1
+pkgdesc="Finds dead code in Python projects"
+arch=('any')
+url="https://github.com/jendrikseipp/vulture"
+license=('MIT')
+depends=(python-setuptools)
+makedepends=(python-build python-installer python-wheel)
+checkdepends=(python-pytest python-pint python-pytest-cov)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('2cae8ba67c56c040b930df3cc876cb6c919c8a66826c2e1d0605f5692934ddb0')
+b2sums=('cf2ef06be19860ee0a14283e43b866dcca98660b36ab38523411f88d89596512ee2c013aaf6dd0609c74bdd8eea7a984ececaa6d3e6be92e036d01ca91a1b9bf')
+
+build() {
+  cd "${pkgname}"-"${pkgver}"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "${pkgname}"-"${pkgver}"
+  pytest
+}
+
+package() {
+  cd "${pkgname}"-"${pkgver}"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim:set ts=2 sw=2 et:

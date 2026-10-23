@@ -1,0 +1,23 @@
+pkgbase = warehouse
+	pkgdesc = Versatile toolbox for viewing Flatpak info, managing user data, and batch managing installed Flatpaks
+	pkgver = 2.2.0
+	pkgrel = 1
+	url = https://github.com/flattool/warehouse
+	arch = any
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = flatpak
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = python
+	depends = python-gobject
+	source = git+https://github.com/flattool/warehouse.git#tag=2.2.0
+	b2sums = 08f18da6d7c607c1a623b31a8d757e9dfe7f74ef38ddb36a3185a6a4ef08411455ab8e1d9985d8c076141f4ddb8c6fe7edc560d9800aa4b17c0fae9c89cae576
+
+pkgname = warehouse

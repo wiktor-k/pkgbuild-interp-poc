@@ -1,0 +1,35 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+
+pkgname=cilium-cli
+pkgver=0.19.5
+pkgrel=1
+pkgdesc="install, manage & troubleshoot Kubernetes clusters running Cilium"
+arch=("x86_64")
+url="https://github.com/cilium/cilium-cli"
+license=("Apache-2.0")
+depends=("glibc")
+makedepends=("go")
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('12ca7462d43c0dd174939edb792c05ad65fc42f5e70ee9d0083c91c2fea1fd78')
+
+build() {
+	cd "$pkgname-$pkgver"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+	go build \
+		-ldflags "-compressdwarf=false -linkmode external -X \"github.com/cilium/cilium-cli/internal/cli/cmd.Version=v${pkgver}\"" \
+		-o ${pkgname} ./cmd/cilium
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	install -Dm755 ${pkgname} -t "$pkgdir/usr/bin"
+
+	./cilium-cli completion bash | install -Dm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/cilium-cli"
+	./cilium-cli completion zsh | install -Dm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_cilium-cli"
+	./cilium-cli completion fish | install -Dm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/cilium-cli.fish"
+}

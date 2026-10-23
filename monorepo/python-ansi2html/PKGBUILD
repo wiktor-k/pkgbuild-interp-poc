@@ -1,0 +1,47 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Florian Pritz <bluewind@xinu.at>
+
+pkgname=python-ansi2html
+pkgver=1.9.5
+pkgrel=1
+pkgdesc='Convert text with ANSI colour codes to HTML'
+arch=(any)
+url='https://github.com/pycontribs/ansi2html'
+license=(LGPL-3.0-or-later)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(python-pytest)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('dc3fb1855f4de5dcc315ea9b081882747a6e623a5e78a89a8c479898ee082db85696e9c74ace51064486c5ca8a79aff6d90f1579fed233548dcbc1b58afdf01b')
+b2sums=('dfb209d965229056fc8abdb340a4e80c20d86c0c680fd691551b6b6ab6e8bbdd6b52f98b47b44b3636cf851251ec17a233e7d717a2608d96737ac5eed7bcc4d9')
+
+build() {
+  cd "$pkgname"
+
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+  export PATH="$(pwd)/tmp/usr/bin:$PATH"
+
+  pytest -vv
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

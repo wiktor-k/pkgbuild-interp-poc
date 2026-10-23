@@ -1,0 +1,52 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgname=lincity-ng
+pkgver=2.15.0
+pkgrel=1
+pkgdesc="A city simulation game"
+arch=('x86_64')
+url="https://github.com/lincity-ng/lincity-ng"
+license=(
+  'CC-BY-SA-2.0'
+  'GPL-2.0-or-later'
+  'LicenseRef-ArevFontsCopyright'
+  'LicenseRef-BitstreamVeraFontsCopyright'
+)
+depends=(
+  'fmt'
+  'glibc'
+  'hicolor-icon-theme'
+  'libgcc'
+  'libstdc++'
+  'libxml++-5.0'
+  'libxml2'
+  'sdl3'
+  'sdl3_image'
+  'sdl3_mixer'
+  'sdl3_ttf'
+  'zlib'
+)
+makedepends=(
+  'cmake'
+  'git'
+  'libxslt'
+)
+source=("git+$url.git#tag=lincity-ng-$pkgver")
+b2sums=('7f78d1e48a8833c74c474b12eec3c2df28a7b92e28ceea4a40b14271765a79d1dc658eb244d400ed099224f4208fd8346849a95f3a4debfe9e042df376a62507')
+
+build() {
+  cmake -S $pkgname -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  cd $pkgname
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING-data.txt
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" COPYING-fonts.txt
+}

@@ -1,0 +1,56 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=openpgp-card-tool-git
+pkgver=0.1.8
+pkgrel=1
+pkgdesc="A simple tool for Git signing and verification with a focus on OpenPGP cards"
+arch=(x86_64)
+url="https://codeberg.org/openpgp-card/oct-git"
+_name="${url##*/}"
+license=('Apache-2.0 OR MIT')
+depends=(
+  glibc
+  libgcc
+  org.freedesktop.secrets
+  sqlite
+)
+makedepends=(
+  dbus
+  pcsclite
+  rust
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz
+)
+sha512sums=('d7b7d88516e705c71ffe9694f07ea3adfc237d303c30289781c745464b558b6c7e720483a21fbfdf30bed1c13e841fe1c6a29f7c8a03aed0fc732bb4aad9347b')
+b2sums=('dd12ab00acba67ef10d3f6e88fcf7c0ae577e71b38f2c057dfba03b79399228b14507b6e751d6f0613b098bdbab3ba0b0cabd4bb43a4701f122150d15e1ac0fe')
+
+prepare() {
+  cd $_name
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_name
+
+  # ring cannot be built with full LTO
+  CFLAGS+=" -ffat-lto-objects"
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $_name
+  cargo test --frozen --all-features
+}
+
+package() {
+  depends+=(
+    dbus libdbus-1.so
+    pcsclite libpcsclite.so
+  )
+
+  cd $_name
+  install -vDm 755 -t "$pkgdir/usr/bin/" target/release/oct-git
+  install -vDm 644 README.md -t "$pkgdir/usr/lib/systemd/user/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

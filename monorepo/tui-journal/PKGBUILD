@@ -1,0 +1,33 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=tui-journal
+_pkgname=tjournal
+pkgver=0.18.0
+pkgrel=1
+pkgdesc="Write and manage journals/notes from the terminal"
+arch=('x86_64')
+url="https://github.com/AmmarAbouZor/tui-journal"
+license=('MIT')
+depends=('libgcc' 'libgit2' 'sqlite')
+makedepends=('cargo' 'openssl')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('323ef20c0efbdd5e2b4ae0abaf9bba3c44329ded5270a874d3545a2a96ceddfaf5bf395251ac3a9c069e39696843ba70e4b01dc6721fee810bf997c1d880a8a3')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  LIBGIT2_NO_VENDOR=1 LIBSQLITE3_SYS_USE_PKG_CONFIG=1 cargo build --release --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

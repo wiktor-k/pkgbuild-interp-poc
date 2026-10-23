@@ -1,0 +1,14 @@
+pkgbase = libpam_pwdfile
+	pkgdesc = A PAM module allowing authentication via an /etc/passwd-like file
+	pkgver = 2.0
+	pkgrel = 2
+	url = https://git.tiwe.de/libpam-pwdfile.git
+	arch = x86_64
+	license = GPL-2.0-or-later
+	depends = pam
+	depends = libxcrypt
+	optdepends = whois: mkpasswd tool to create passwords from command line
+	source = https://git.tiwe.de/libpam-pwdfile.git/snapshot/libpam-pwdfile-2.0.tar.gz
+	sha256sums = 981c286923c2018ececb5025ba0b27020ffa964d8b8d426ff58ad7f156e72424
+
+pkgname = libpam_pwdfile

@@ -1,0 +1,122 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Bruno Pagani <archange@archlinux.org>
+
+pkgname=matrix-appservice-irc
+pkgver=4.0.0
+pkgrel=2
+pkgdesc="Node.js IRC bridge for Matrix"
+arch=(x86_64)
+url="https://github.com/matrix-org/matrix-appservice-irc"
+license=(Apache-2.0)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  nodejs
+)
+makedepends=(
+  git
+  yarn
+)
+backup=(
+  etc/$pkgname/config.yaml
+  etc/$pkgname/registration.yaml
+)
+install=$pkgname.install
+source=(
+  https://github.com/matrix-org/matrix-appservice-irc/archive/$pkgver/$pkgname-$pkgver.tar.gz
+  $pkgname.service
+  $pkgname.sysusers
+  $pkgname.tmpfiles
+)
+sha512sums=('c69aed5f311804350a066e998e00589b4aa7b99412d9f62451986dac953d6d040d88472629496ee00722cbd795df54d1eeea5d334996964e97abefb9dfd6e2b5'
+            '404ae769bf821b85a9e56e0036ba1f97a3cc8069bd3aa63112146dc60b1a1f6c414516e7e834694459e4e6ab88ce81b1075fc8b73ea7570f339ec0bc957fb802'
+            '97863188f815be7bcfa89fbbe5a083a27c1d48e803a13ebe896afa0bb30f55a19bb9750aa245bf2fd874fb7e9c001c76debb00c707ecc0be51049072d7014ad9'
+            '60b7afdd68aaf2c8e47caf10efefb6c4dc54f40d187ad495a604786b30c00dac7e5c77a7b596d86c2a62a7cdbe3727e11f75494f86d26c9fc51ea7a1bf6ab7f0')
+b2sums=('c943aa4e496fce5dbeaf9ee7c829b9a5eec37984f3bd03e08fff1ea194f508fc7f2e82c7eaec4f26e38f7ad685d1b9dea0e5d257d13675b9f8dc7525e856ff78'
+        '9652180dcea2aeb81306bf01e772e1b1f83df2cf275d543d5865887fcb08f61f54203d3dce390fe2043000abf420fe29df6db1549f53b44abd95469bb6f50318'
+        '6543613b9a0261fded5361ec5b12a1d837f1ed2ba32146fb4f2c5607d505dad617cac43f075cecbab1a06ff441a19cd5fb2078a26d29a76e1304409092011bd3'
+        '2dbbf14f82d88418470f848a2d11c0feacb257026382513c2fa02ad7f605f47e4cc5e9bf05668da383a596bc81450e468288863cdbdde9f7c16b02561f0114a7')
+
+prepare() {
+  cd $pkgname-$pkgver
+  touch registration.yaml
+}
+
+build() {
+  cd $pkgname-$pkgver
+  yarn --strict-semver --frozen-lockfile
+  yarn build:app
+}
+
+package() {
+  cd $pkgname-$pkgver
+  # removing unneeded files and directories
+  find node_modules -type f \
+          \( \
+         -iname '*Makefile*' -o \
+         -iname '*appveyor.yml' -o \
+         -iname '*.babelrc' -o \
+         -iname '*.bak' -o \
+         -iname '*bower.json' -o \
+         -iname '*.c' -o \
+         -iname '*.cc' -o \
+         -iname '*.cpp' -o \
+         -iname '*.md' -o \
+         -iname '*.markdown' -o \
+         -iname '*.rst' -o \
+         -iname '*.nycrc' -o \
+         -iname '*.npmignore' -o \
+         -iname '*.editorconfig' -o \
+         -iname '*.el' -o \
+         -iname '*.eslintignore' -o \
+         -iname '*.eslintrc*' -o \
+         -iname '*.fimbullinter.yaml' -o \
+         -iname '*.gitattributes' -o \
+         -iname '*.gitmodules' -o \
+         -iname '*.h' -o \
+         -iname '*.html' -o \
+         -iname '*.jshintrc' -o \
+         -iname '*.jscs.json' -o \
+         -iname '*.log' -o \
+         -iname '*logo.svg' -o \
+         -iname '*.nvmrc' -o \
+         -iname '*.o' -o \
+         -iname '*package-lock.json' -o \
+         -iname '*.travis.yml' -o \
+         -iname '*.prettierrc' -o \
+         -iname '*.sh' -o \
+         -iname '*.tags*' -o \
+         -iname '*.tm_properties' -o \
+         -iname '*.wotanrc.yaml' -o \
+         -iname '*tsconfig.json' -o \
+         -iname '*yarn.lock' \
+         \) \
+         -delete
+  find node_modules -type d \
+          \( \
+         -iwholename '*.github' -o \
+         -iwholename '*.tscache' -o \
+         -iwholename '*/man' -o \
+         -iwholename '*/test' -o \
+         -iwholename '*/scripts' -o \
+         -iwholename '*/git-hooks' \
+         \) \
+         -exec rm -rvf {} +
+  find node_modules -empty -type d -delete
+  install -vdm 755 "$pkgdir/usr/lib/node_modules/$pkgname/"
+  # copy vendored modules, lib and entry point
+  cp -av {lib,node_modules,app.js,config.schema.yml,package.json} "$pkgdir/usr/lib/node_modules/$pkgname/"
+  # configuration
+  install -vDm 640 config.sample.yaml "$pkgdir/etc/$pkgname/config.yaml"
+  install -vDm 640 registration.yaml -t "$pkgdir/etc/$pkgname/"
+  # service
+  install -vDm 644 ../$pkgname.service -t "$pkgdir/usr/lib/systemd/system"
+  # tmpfiles.d and sysusers.d
+  install -vDm 644 ../$pkgname.sysusers "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm 644 ../$pkgname.tmpfiles "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+  # add scripts (which are location dependent)
+  install -vDm 755 scripts/*.sh -t "$pkgdir/usr/lib/node_modules/$pkgname/scripts"
+  # docs
+  install -vDm 644 {CHANGELOG,CONTRIBUTING,HOWTO,README}.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

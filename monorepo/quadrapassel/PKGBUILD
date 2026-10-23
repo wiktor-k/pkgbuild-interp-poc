@@ -1,0 +1,58 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=quadrapassel
+pkgver=51.1
+pkgrel=1
+pkgdesc="Fit falling blocks together (Tetris-like game for GNOME)"
+url="https://wiki.gnome.org/Apps/Quadrapassel"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libmanette
+  libsndfile
+  openal
+)
+makedepends=(
+  blueprint-compiler
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/quadrapassel.git?signed#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('3e7038022e6318dbb1c1ae10cca6dca1653a5a5372dd43a12978cf946df9da072bbc136bfa264721015dd7285e0c05a85a7a74464e955f89319f5aaadbed8cf2')
+validpgpkeys=(
+  161DEEB19F942B2CE00B67ADC1C19D5530553963 # John Ward <john@johnward.net>
+  1DB827B47C4E2494A1D733586458908EC334A207 # Will Warner <willwwarner@proton.me>
+  C6043B3C11E1C16FCA1FBEE48D0B2EC86F801EA9 # Will Warner <willwwarner@proton.me>
+  BE90F48249ECD35A517CCAD0159682ADDFCBB989 # Will Warner <willwwarner@proton.me>
+)
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

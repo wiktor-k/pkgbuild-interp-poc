@@ -1,0 +1,41 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: gilbus
+
+pkgname=swayidle
+pkgver=1.9.0
+pkgrel=1
+license=('MIT')
+pkgdesc="Idle management daemon for Wayland"
+makedepends=(
+    'git'
+    'meson'
+    'scdoc'
+    'wayland-protocols'
+)
+depends=(
+    'wayland'
+    'systemd'
+)
+arch=('x86_64')
+url="https://github.com/swaywm/swayidle"
+source=(
+    "git+$url.git#tag=v$pkgver?signed"
+)
+sha256sums=('8451569ab48eb24286281c5f5e124a6d68ed1008b7911426b0f5521df03adf29')
+validpgpkeys=('34FF9526CFEF0E97A340E2E40FDE7BE0E88F5E48'  # Simon Ser
+              '9DDA3B9FA5D58DD5392C78E652CB6609B22DA89A') # Drew DeVault
+
+build() {
+    arch-meson "$pkgname" build \
+        -Dlogind=enabled \
+        -Dman-pages=enabled \
+        -Dlogind-provider=systemd
+    ninja -C build
+}
+
+package() {
+    DESTDIR="$pkgdir/" ninja -C build install
+    install -Dm644 "$pkgname/LICENSE" -t "$pkgdir/usr/share/licenses/$pkgname"
+    install -Dm644 "$pkgname/README.md" -t "$pkgdir/usr/share/doc/$pkgname"
+}

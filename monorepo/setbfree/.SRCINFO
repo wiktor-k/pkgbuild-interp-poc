@@ -1,0 +1,63 @@
+pkgbase = setbfree
+	pkgdesc = DSP tonewheel organ
+	pkgver = 0.8.17
+	pkgrel = 1
+	url = https://setbfree.org
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = lv2lint
+	makedepends = cairo
+	makedepends = ftgl
+	makedepends = gendesk
+	makedepends = glib2
+	makedepends = jack
+	makedepends = libglvnd
+	makedepends = liblo
+	makedepends = libx11
+	makedepends = lv2
+	makedepends = pango
+	makedepends = ttf-dejavu
+	source = https://github.com/pantherb/setBfree/archive/v0.8.17/setBfree-0.8.17.tar.gz
+	sha512sums = 698339b47ca3eb3d8c2e41a9b0e90fbfebb2091f60789b6c59193d0cdf81e65c3efd897b48a16bf5ac77918c0b4d143195ecf21409fe1439b830f6a4a78b729e
+	b2sums = 29cdbc2961051ad1a26ee6480dc87dde07a4c530397b6f21f51f3fb168112cf047d81118107014c1bada8febea469b86f086fb38371b6500a21c781efafed399
+
+pkgname = setbfree
+	depends = setbfree-lv2=0.8.17
+	depends = setbfree-standalone=0.8.17
+
+pkgname = setbfree-common
+	pkgdesc = DSP tonewheel organ common files
+
+pkgname = setbfree-lv2
+	pkgdesc = DSP tonewheel organ LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = cairo
+	depends = ftgl
+	depends = glibc
+	depends = glib2
+	depends = libgobject-2.0.so
+	depends = libglvnd
+	depends = libx11
+	depends = lv2-host
+	depends = pango
+	depends = libpango-1.0.so
+	depends = libpangocairo-1.0.so
+	depends = setbfree-common
+
+pkgname = setbfree-standalone
+	pkgdesc = DSP tonewheel organ JACK standalone
+	groups = pro-audio
+	depends = cairo
+	depends = ftgl
+	depends = glib2
+	depends = libgobject-2.0.so
+	depends = glibc
+	depends = jack
+	depends = libglvnd
+	depends = liblo
+	depends = libx11
+	depends = pango
+	depends = libpango-1.0.so
+	depends = libpangocairo-1.0.so
+	depends = setbfree-common

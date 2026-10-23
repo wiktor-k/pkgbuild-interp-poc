@@ -1,0 +1,42 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Contributor: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-pykeepass
+pkgver=4.2.0
+pkgrel=1
+pkgdesc='Python library to interact with keepass databases'
+arch=(any)
+url='https://github.com/libkeepass/pykeepass'
+license=(GPL-3.0-only)
+depends=(
+  python
+  python-argon2_cffi
+  python-construct
+  python-lxml
+  python-pycryptodomex
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-pyotp)
+source=("$pkgname::git+https://github.com/libkeepass/pykeepass.git#tag=v${pkgver}")
+b2sums=('77db5b14dc7f4bb46925b689d00a3d685458f9ad761e6d0018edb31f8420d5d57284e7713772836c9c3b163bb4f134f95470ab261554aa0daf9798820e3d6e11')
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+  python -m unittest tests.tests
+}
+
+package() {
+  cd "$pkgname"
+  python3 -m installer --destdir="$pkgdir" dist/*.whl
+}

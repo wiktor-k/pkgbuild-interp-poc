@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-threadloop
+pkgver=1.0.2
+pkgrel=11
+pkgdesc="Tornado IOLoop Backed Concurrent Futures"
+url="https://github.com/unhashable/threadloop"
+license=('MIT')
+arch=('any')
+depends=('python-tornado')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-pytest')
+source=("git+https://github.com/unhashable/threadloop.git#tag=$pkgver"
+         tornado-5.patch)
+sha512sums=('786f6e5ad837d0c4869ff33e537c311768b0b435210336cf859d95db5a09cfa982e2ed023824475795d98afa11915e9608219d14f888821ee4a1361ef95abbaf'
+            '4b9c0f77e4cc004854588d1fcfcd46dabdd57055dd866c18ce9d29b9f746a0abcaa790f727e92e13b4e422f8c0fd82856db6cf4b7a2dca9ed33ad7403bd44998')
+
+prepare() {
+  cd threadloop
+  patch -p1 -i ../tornado-5.patch
+}
+
+build() {
+  cd threadloop
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd threadloop
+  # Deselected tests: deadlocks
+  pytest -v --deselect tests/threadloop/test_threadloop.py::test_plain_function_exception_propagates \
+            --deselect tests/threadloop/test_threadloop.py::test_plain_function_exception_contains_exc_info
+}
+
+package() {
+  cd threadloop
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

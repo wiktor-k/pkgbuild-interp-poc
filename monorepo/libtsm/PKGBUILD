@@ -1,0 +1,32 @@
+# Maintainer: Tobias Powalowski <tpowa@archlinux.org>
+# Contributor: GreyXor <greyxor@protonmail.com>
+# Contributor: Daniel Micay <danielmicay@gmail.com>
+# Contributor: David Herrmann <dh.herrmann@gmail.com>
+
+pkgname=libtsm
+pkgver=4.8.0
+pkgrel=1
+pkgdesc='Terminal-emulator State Machine'
+arch=('x86_64')
+url='https://github.com/kmscon/libtsm'
+license=('MIT')
+depends=('glibc')
+makedepends=(
+  check
+  git
+  meson
+  libxkbcommon
+)
+options=(!libtool)
+source=(git+${url}.git#tag=v$pkgver)
+b2sums=('587c4dde1a2c3ae1049baceef2c6b5485f3d1425036880f7720bab49e95fe09d4d70d73773d96c5cd35de2a09a550dd9cc6dee0c4f42da1bc81cc538a7c05588')
+
+build() {
+  arch-meson "$pkgname" build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+  install -Dm644 $pkgname/COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}

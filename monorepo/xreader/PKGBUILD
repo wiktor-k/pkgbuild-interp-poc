@@ -1,0 +1,69 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Nate Simon <aurpkg (at natesimon.net)>
+
+pkgname=xreader
+pkgver=4.6.9
+pkgrel=1
+pkgdesc='Document viewer for files like PDF and Postscript'
+arch=(x86_64)
+url='https://github.com/linuxmint/xreader'
+license=(GPL-2.0-or-later)
+groups=(x-apps)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libarchive
+  libgcc
+  libice
+  libsm
+  libtiff
+  libxml2
+  pango
+  poppler-glib
+  xapp
+  zlib
+)
+makedepends=(
+  djvulibre
+  git
+  glib2-devel
+  gobject-introspection
+  intltool
+  itstool
+  libgxps
+  libspectre
+  meson
+  texlive-bin
+)
+optdepends=(
+  'djvulibre: support for djvu files'
+  'libgxps: support for xps files'
+  'libspectre: support for dvi and ps files'
+  'texlive-bin: support for dvi files'
+)
+source=("git+https://github.com/linuxmint/xreader.git#tag=${pkgver}")
+b2sums=(ba89c0a0892ca7252a9405ad358c9e42131ade054078391da1a2aed9ce86fb27776a9b1a832d12004e2bae8ca07085e6235c1cd5264ba77c0417726105814f67)
+
+build() {
+  arch-meson $pkgname build \
+    --libexecdir=lib/$pkgname \
+    -D comics=true \
+    -D djvu=true \
+    -D dvi=true \
+    -D t1lib=true \
+    -D pixbuf=true \
+    -D help_files=true \
+    -D introspection=true
+  meson compile -C build
+}
+
+package(){
+  meson install -C build --destdir="$pkgdir"
+}

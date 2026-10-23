@@ -1,0 +1,115 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Fabian Bornschein <fabiscafe-cat-mailbox-dog-org>
+# Contributor: sebikul <sebikul@gmail.com>
+# Contributor: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=geary
+pkgver=46.0
+pkgrel=9
+epoch=1
+pkgdesc='A lightweight email client for the GNOME desktop'
+arch=(x86_64)
+url=https://wiki.gnome.org/Apps/Geary
+license=(
+  CC-BY-3.0
+  CC-BY-SA-3.0
+  LGPL-2.1-or-later
+)
+depends=(
+  at-spi2-core
+  cairo
+  dconf
+  enchant
+  folks
+  gcr
+  gdk-pixbuf2
+  glib2
+  glibc
+  gmime3
+  gnome-online-accounts
+  gsound
+  gspell
+  gtk3
+  hicolor-icon-theme
+  icu
+  iso-codes
+  json-glib
+  libgee
+  libgoa
+  libhandy
+  libpeas-2
+  libsecret
+  libsoup3
+  libstemmer
+  libunwind
+  libxml2
+  libytnef
+  org.freedesktop.secrets
+  pango
+  sqlite
+  webkit2gtk-4.1
+)
+makedepends=(
+  appstream
+  cmake
+  git
+  gobject-introspection
+  meson
+  vala
+  yelp-tools
+)
+checkdepends=(
+  aspell
+  hspell
+  hunspell
+  libvoikko
+  nuspell
+  xorg-server-xvfb
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/geary.git#tag=${pkgver/[a-z]/.&}"
+  0001-Port-plugins-from-libpeas-1-to-libpeas-2.patch
+)
+b2sums=(
+  7e424cc2f5964390881aefdc6becf527a1e7e05f4edaac373149a73a20b22605d907bb465a0da7456431b2bd6dbb4e1dfe85dccbb5fc8a50e2cee2ea3f335e32
+  dd7b967cac55b781eaa7476e1dc03136369a16fbb18da7bc8e0bbdd02780dca4b36a2ed8cbab81676ce6a97f99599ce3e0538926700953eacef01bf282a231a5
+)
+validpgpkeys=(
+  3A2EF7F138557A145F2866E99FAB18747A8FC649 # Michael James Gratton <mike@vee.net>
+  71BFA565F77720034F44E0B00CF8493F76A7AE36 # Cédric Bellegarde <cedric.bellegarde@adishatz.org>
+)
+
+prepare() {
+  cd geary
+
+  # Set prgname to application ID
+  # https://gitlab.gnome.org/GNOME/geary/-/merge_requests/851
+  git cherry-pick -n e91606b25b052df747d123be11f9ca90a813e4bf
+
+  # Use appstream for appdata validation test
+  # https://gitlab.gnome.org/GNOME/geary/-/merge_requests/859
+  git cherry-pick -n 31a18ce6dd260550818c30d325801d4c6caf0eb9
+  git cherry-pick -n e56734a97d9ee36b486b34a1a605fd5862b5210c
+
+  # libpeas 2
+  git apply -3 ../0001-Port-plugins-from-libpeas-1-to-libpeas-2.patch
+}
+
+build() {
+  local meson_options=(
+    -D profile=release
+  )
+
+  arch-meson geary build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  xvfb-run meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+}
+
+# vim:set sw=2 sts=-1 et:

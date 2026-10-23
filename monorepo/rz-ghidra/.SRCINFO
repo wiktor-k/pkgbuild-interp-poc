@@ -1,0 +1,20 @@
+pkgbase = rz-ghidra
+	pkgdesc = Deep ghidra decompiler integration for rizin and rz-cutter
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://github.com/rizinorg/rz-ghidra
+	arch = x86_64
+	license = LGPL-3.0-only
+	makedepends = git
+	makedepends = cmake
+	makedepends = rz-cutter
+	depends = rizin
+	depends = glibc
+	source = git+https://github.com/rizinorg/rz-ghidra#tag=v0.8.0
+	source = rizin-ghidra::git+https://github.com/rizinorg/ghidra.git
+	source = git+https://github.com/zeux/pugixml.git
+	sha512sums = fe857a56d3fab5150f61cf247b1d006381b37efba469630449300a20e28399efc6b5b589f38b2fe756451cd37f2b5e949cc395ec0255df9086d65eec5498e9e5
+	sha512sums = SKIP
+	sha512sums = SKIP
+
+pkgname = rz-ghidra

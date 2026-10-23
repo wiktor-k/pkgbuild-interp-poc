@@ -1,0 +1,42 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=python-ciso8601
+pkgver=2.3.3
+pkgrel=2
+pkgdesc='Fast ISO8601 date time parser for Python written in C'
+arch=(x86_64)
+url=https://github.com/closeio/ciso8601
+license=(MIT)
+depends=(
+  glibc
+  python
+)
+makedepends=(
+  cython
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+_tag=67a644aefe34b50711351c967fd30d846fcbd758
+source=(git+https://github.com/closeio/ciso8601.git#tag=${_tag})
+sha256sums=('088c1aac3ca9615aea2eb44a669bf31bd7b6331e735836983f679c2182e8b6b3')
+
+pkgver() {
+  cd ciso8601
+
+  git describe --tags | sed 's/^v//'
+}
+
+build() {
+  cd ciso8601
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  python -m installer --destdir="${pkgdir}" ciso8601/dist/*.whl
+  install -Dm 644 ciso8601/LICENSE -t "${pkgdir}"/usr/share/licenses/python-ciso8601/
+}
+
+# vim: ts=2 sw=2 et:

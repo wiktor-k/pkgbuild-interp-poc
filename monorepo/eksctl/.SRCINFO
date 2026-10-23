@@ -1,0 +1,16 @@
+pkgbase = eksctl
+	pkgdesc = Command line tool for creating clusters on Amazon EKS
+	pkgver = 0.231.0
+	pkgrel = 1
+	url = https://github.com/eksctl-io/eksctl
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = kubectl
+	options = !lto
+	source = git+https://github.com/eksctl-io/eksctl.git#tag=v0.231.0
+	b2sums = de49d458896c96c3a9500450a9bbb2b6332b6cff6c91fc70a3b75b93098d2df2fce662905e3e6a58e332c0579175c5d8d4934d5a6ec52f939945f412f319c07d
+
+pkgname = eksctl

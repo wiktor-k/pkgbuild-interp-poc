@@ -1,0 +1,163 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=streamlit
+pkgname=python-$_name
+pkgver=1.66.0
+pkgrel=1
+pkgdesc="A faster way to build and share data apps"
+arch=(any)
+url="https://streamlit.io"
+license=(Apache-2.0)
+depends=(
+  python
+  python-altair
+  python-anyio
+  python-blinker
+  python-cachetools
+  python-click
+  python-itsdangerous
+  python-numpy
+  python-packaging
+  python-pandas
+  python-pillow
+  python-protobuf
+  python-pyarrow
+  python-requests
+  python-starlette
+  python-streamlit-pdf
+  python-tenacity
+  python-toml
+  python-typing_extensions
+  python-watchdog
+  python-websockets
+  uvicorn
+)
+makedepends=(
+  corepack
+  git
+  nodejs
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+)
+checkdepends=(
+  # https://github.com/streamlit/streamlit/blob/develop/lib/test-requirements.txt
+  python-httpx
+  python-hypothesis
+  python-parameterized
+  python-pytest
+  python-requests-mock
+  python-seaborn
+  python-testfixtures
+  # additional optdepends
+  python-authlib
+  python-gitpython
+  python-graphviz
+  python-matplotlib
+  python-plotly
+  python-python-multipart
+  python-rich
+)
+optdepends=(
+  'python-authlib: for user authentication'
+  'python-gitpython: for obtaining information from git repositories'
+  'python-graphviz: for graphviz_chart'
+  'python-matplotlib: for pyplot figures'
+  'python-plotly: for plotly_chart'
+  'python-polars: for using Polars dataframes'
+  'python-pydeck: for pydeck_chart'
+  'python-python-multipart: for file upload'
+  'python-rich: for syntax highlighting in error logs'
+  'python-sqlalchemy: for connecting to SQL databases'
+  'python-xarray: for using Xarray datasets'
+)
+source=(
+  # build requires git in frontend/protobuf/scripts/generate-proto.js
+  git+https://github.com/streamlit/streamlit#tag=$pkgver
+)
+b2sums=('9ce09135ed4544e87b45a8a03522a5b266eb37982a36388e4a9f81073b2fdbed4e98896976031f8d71607a52871aa28d319269c9630c1d0bfe87d0a8c8137f04')
+
+# based on https://github.com/streamlit/streamlit/blob/develop/Makefile
+build() {
+  # initialize corepack
+  mkdir corepack-install
+  corepack enable --install-directory corepack-install
+  cd "$srcdir"/$_name/frontend
+  corepack install
+  export PATH="$PATH:$srcdir/corepack-install"
+
+  # install frontend dependencies
+  cd "$srcdir"/$_name/frontend
+  yarn install --immutable
+
+  # recompile protobuf files for Python and the frontend
+  cd "$srcdir"/$_name
+  protoc \
+    --proto_path=proto \
+    --python_out=lib \
+    proto/streamlit/proto/*.proto
+  # TODO: protoc-gen-mypy: program not found or is not executable
+  #  --mypy_out=lib \
+
+  # JS/TS protobuf generation
+  cd "$srcdir"/$_name/frontend
+  yarn workspace @streamlit/protobuf run generate-protobuf
+
+  # build frontend into static files
+  yarn workspaces foreach --all --topological run build
+
+  # copy the static files into the Python tree
+  cd "$srcdir"/$_name
+  cp -ar frontend/app/build/ lib/streamlit/static/
+
+  # build the Python module
+  cd "$srcdir"/$_name/lib
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+    -m "not performance and not slow"
+    # override addopts as they invoke coverage testing
+    --override-ini="addopts="
+    # ignore tests that require pydeck and cause error during collection
+    --ignore tests/streamlit/delta_generator_test.py
+    --ignore tests/streamlit/elements/pydeck_test.py
+    --ignore tests/streamlit/runtime/caching/cache_data_api_test.py
+    --ignore tests/streamlit/runtime/caching/cache_resource_api_test.py
+    --ignore tests/streamlit/runtime/fragment_test.py
+    --ignore tests/streamlit/runtime/state/widgets_test.py
+    --ignore tests/streamlit/streamlit_test.py
+    --ignore tests/streamlit/testing/proto_variant_parse_test.py
+    --ignore tests/streamlit/write_test.py
+    # sqlite3.OperationalError: table movie already exists
+    --deselect tests/streamlit/dataframe_util_test.py::DataframeUtilTest::test_verify_sqlite3_integration
+    # AssertionError: assert 'text/xml' == 'application/xml'
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_safe_extensions_200_05_xml
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_common_extensions_200_05_xml
+    # AssertionError: assert 'application/octet-stream' == 'font/woff2'  (etc.)
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_safe_extensions_200_06_woff2
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_safe_extensions_200_07_woff
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_safe_extensions_200_08_ttf
+    --deselect tests/streamlit/web/server/app_static_file_handler_test.py::AppStaticFileHandlerTest::test_static_files_with_safe_extensions_200_09_otf
+    # AttributeError: 'google._upb._message.FieldDescriptor' object has no attribute 'label'
+    --deselect tests/streamlit/proto_compatibility_test.py
+    # deselect test that requires editable install of the streamlit package
+    --deselect tests/streamlit/web/skills_test.py::TestVendoredMetaSkillDiscovery::test_discover_py_resolves_bundled_content_skill
+  )
+
+  cd $_name/lib
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name/lib
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  rm -vf "$pkgdir"/usr/bin/streamlit.cmd
+}

@@ -1,0 +1,20 @@
+pkgbase = python-pybluez
+	pkgdesc = Python wrapper for the BlueZ Bluetooth stack
+	pkgver = 0.23.r58.g4d46ce1
+	pkgrel = 5
+	url = https://pybluez.github.io/
+	arch = x86_64
+	license = GPL2
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = bluez-libs
+	depends = glibc
+	depends = python
+	source = git+https://github.com/pybluez/pybluez#commit=4d46ce14d9e888e3b0c65d5d3ba2a703f8e5e861
+	sha256sums = SKIP
+	b2sums = SKIP
+
+pkgname = python-pybluez

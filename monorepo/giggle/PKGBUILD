@@ -1,0 +1,86 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+# Contributor: neodreams <yanbrodeur@gmail.com>
+
+pkgname=giggle
+pkgver=0.7
+pkgrel=15
+pkgdesc='Git repository viewer'
+arch=(x86_64)
+url='https://wiki.gnome.org/Apps/giggle'
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  gdk-pixbuf2
+  git
+  glib2
+  glibc
+  gtk3
+  gtksourceview4
+  hicolor-icon-theme
+  pango
+  vte3
+)
+makedepends=(
+  glib2-devel
+  intltool
+  yelp-tools
+)
+source=(
+  "git+https://gitlab.gnome.org/Archive/giggle.git#tag=$pkgver"
+  giggle.appdata.xml
+  giggle-incompatible-pointer.patch
+  giggle-gtksourceview4.patch
+)
+b2sums=(
+  855d0c15e0a6c432eecd48f589ba6085c5404d54b4c489ba41c2a09e97a654af784e280648d991d7afec670ff8f50725fef4942a8887fd3e596039e229e9b466
+  d1042daa97d169bc9fae44df7e985dbdd5e0ceaf9561da9e8983cf97c507d1a72f233beb886bd7590c8b174f51f1708f42fafbbdd27d486f0e91fb2d5192e88d
+  63d42ba50cd9545ede5c370cff61783e2fbdb4b90e55f6a0504e02f2fd6064b257a2483c26fea20fa007e1cca239f179c1c1e297bdd1f74072cbb7fd1fbd87b5
+  0f49888255bd28bca61ca0545db2c7c51f3d49bf36dbcc95c13f68892f1ed0e6595e5970faaf4802a3914a74c20514a2fb089bd0e37f7c32b0ab3a87a9203767
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix displaying diff for files that have spaces in names
+  git cherry-pick -n c4963107ee97b6bf045b805ed3b8f9f824c62ccb
+
+  # Fix build with gtksourceview 3.8
+  git cherry-pick -n 44490f7f78c3281c8fc4f38aa7226fc5955720a9
+
+  # Port to vte-2.91 API
+  git cherry-pick -n b9e260840d03e33ac55142719f3d54129b54cc70
+
+  # Fix build with gcc-10
+  git cherry-pick -n 57fd690279c4f8f0a367ec4f3599ab3a8159be49
+
+  # Fix incompatible pointer
+  git apply -3 ../giggle-incompatible-pointer.patch
+
+  # Port to gtksourceview4
+  git apply -3 ../giggle-gtksourceview4.patch
+
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  cd $pkgname
+  make -k check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -Dm644 ../giggle.appdata.xml "$pkgdir/usr/share/metainfo/giggle.appdata.xml"
+}

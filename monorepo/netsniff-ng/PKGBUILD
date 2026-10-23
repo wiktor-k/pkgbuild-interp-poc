@@ -1,0 +1,57 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Can Celasun <can[at]dcc[dot]im>
+
+pkgname=netsniff-ng
+pkgver=0.6.9
+pkgrel=2
+pkgdesc='High performance Linux network sniffer for packet inspection'
+arch=('x86_64')
+url='http://netsniff-ng.org/'
+license=('GPL-2.0-only')
+depends=(
+  'geoip'
+  'glibc'
+  'libcli' 'libcli.so'
+  'libgcc'
+  'libnet'
+  'libnetfilter_conntrack'
+  'libnl'
+  'libpcap' 'libpcap.so'
+  'libsodium'
+  'liburcu'
+  'ncurses' 'libncursesw.so'
+  'zlib'
+)
+makedepends=(
+  'bison'
+  'cmake'
+  'flex'
+  'git'
+)
+source=("git+https://github.com/netsniff-ng/netsniff-ng.git#tag=v${pkgver}?signed")
+b2sums=('f1d3208568e6b84670e19d2ad9620ae32985cbc4101bae3477893190859fea3c7754dffd9d3889d1c125308c4df1df045275948eca0206103afd2fb23822d35e')
+validpgpkeys=(
+  'C3DE742283C246F2D7887AB4236B0FE9B5510F47' # Tobias Klauser <tklauser@distanz.ch>
+  'D1E0DA88E90F7E03B314C5D18A59A09E92628B77' # Tobias Klauser <tklauser@distanz.ch>
+)
+
+prepare() {
+  cd ${pkgname}
+  # Fix compilation with GCC 15
+  git cherry-pick -n 1af7ae33e3e8178ab5c649c3a52838d4375c4228
+}
+
+build() {
+  cd ${pkgname}
+  NACL_INC_DIR=/usr/include/sodium
+  NACL_LIB=sodium
+  ./configure \
+    --prefix=/usr
+  make all Q= CFLAGS="${CFLAGS} ${CPPFLAGS}"
+}
+
+package() {
+  cd ${pkgname}
+  make PREFIX=/usr DESTDIR="${pkgdir}" SBINDIR=/usr/bin install_all -j1
+}

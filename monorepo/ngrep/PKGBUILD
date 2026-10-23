@@ -1,0 +1,30 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: Eric Belanger <eric@archlinux.org>
+# Contributor: dorphell <dorphell@archlinux.org>
+
+pkgname=ngrep
+pkgver=1.49.0
+pkgrel=1
+pkgdesc='A grep-like utility that allows you to search for network packets on an interface.'
+arch=('x86_64')
+url='https://github.com/jpr5/ngrep/'
+license=('custom')
+depends=('libpcap>=1.0.0' 'pcre2')
+makedepends=('git')
+source=("git+https://github.com/jpr5/ngrep#tag=v${pkgver}")
+md5sums=('97fb7f37ec569a02afd8218727a3cb48')
+sha256sums=('874fb154f232cab6f070d799cb37561765fee311439b8e5a2d4e019558918d31')
+
+build() {
+	cd "${srcdir}/${pkgname}"
+
+	./configure --prefix=/usr --enable-ipv6 --enable-pcre2 --disable-pcap-restart
+	make
+}
+
+package() {
+	cd "${srcdir}/${pkgname}"
+
+	make DESTDIR="${pkgdir}" install
+	install -Dm0644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

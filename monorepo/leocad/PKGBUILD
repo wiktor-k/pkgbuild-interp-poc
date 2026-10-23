@@ -1,0 +1,56 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: Michael Straube <michael.straube@posteo.de>
+# Contributor: Seth Schroeder <theking@kingdomofseth.com>
+# Contributor: Sven Schneider <archlinux.sandmann@googlemail.com>
+
+pkgname=leocad
+pkgver=26.09
+_libver=26.08
+pkgrel=1
+pkgdesc='A CAD program for creating virtual LEGO models'
+arch=(x86_64)
+url='http://leocad.org'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  libglvnd
+  qt6-base
+  hicolor-icon-theme
+  zlib
+)
+makedepends=(qt6-tools)
+optdepends=(
+  'povray: required for rendering features'
+)
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/leozide/leocad/archive/v${pkgver}.tar.gz"
+        "${pkgname}-library-${_libver}.zip::https://github.com/leozide/leocad/releases/download/v${pkgver}/Library-${_libver}.zip")
+sha512sums=('2b4c73b9793d7a51e8f7b6da9735db0185bec16e484c7990efeffab7de77454821ec126bf009bf77bce4d152386d38996c78551ecd0eb8db526a3ea0997e39a4'
+            '8b03945b108cabfb804bd547a202c12a2f3961229ce8ef4a9316309cbedbb9b655b1aad177ad47def36c91436e058a524d54fad725d54bf1d05a00fd68f62b96')
+b2sums=('ff5fd86d4bbb027bde65b7600347391937edb0bbc0cc6c50ece55ac6f1fdd212633f055fffd6b9627be3e9a52064425610bf57381c7fe2856159136c22338289'
+        'f22da9ba9e419dcbb663dd22ccbd33a23fafc97dc3d94d49a22644aa27d15b71f87fff1b9c4d9cae766607917e11362a92279d845723a916d236cce38fde2e24')
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  # create Makefile with QMake
+  qmake6 \
+    INSTALL_PREFIX=/usr \
+    DISABLE_UPDATE_CHECK=1 \
+    LDRAW_LIBRARY_PATH=/usr/share/leocad \
+    "$pkgname.pro"
+
+  # build package
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  # install to pkgdir
+  make INSTALL_ROOT="$pkgdir" install
+
+  # install parts library
+  install -Dm644 "$srcdir/library.bin" -t "$pkgdir/usr/share/leocad"
+}

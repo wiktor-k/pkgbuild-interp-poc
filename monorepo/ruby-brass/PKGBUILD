@@ -1,0 +1,61 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-brass
+pkgver=1.3.0
+pkgrel=1
+pkgdesc='Bare-Metal Ruby Assertions System Standard'
+arch=(any)
+url='https://github.com/rubyworks/brass'
+license=(BSD-2-Clause)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-lemon
+  ruby-rubytest-cli
+)
+options=(!emptydirs)
+source=(git+https://github.com/rubyworks/brass.git#tag=v$pkgver)
+sha256sums=('abc944a385756e27d259de66bf74a795e677e5c6330ce43923265b062e950220')
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd brass
+  gem build brass.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    brass-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd brass
+  GEM_HOME="tmp_install/$_gemdir" ruby test/run.rb
+}
+
+package() {
+  cd brass
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

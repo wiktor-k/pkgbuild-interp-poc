@@ -1,0 +1,36 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: AndyRTR <andyrtr@archlinux.org>
+
+pkgname=hyphen-hu
+pkgver=20251213
+pkgrel=1
+pkgdesc='Hungarian hyphenation rules'
+arch=(any)
+url='https://magyarispell.sourceforge.net/'
+license=('LGPL-2.1-or-later OR GPL-2.0-or-later OR MPL-1.1')
+makedepends=(git)
+optdepends=('hyphen: offers hyphenation library functions')
+_commit=0f7ce308ab88755131a3811ce493b00932f2c89c
+source=("libreoffice-dictionaries::git+https://git.libreoffice.org/dictionaries#commit=$_commit")
+b2sums=(b6e40388f84c010c84b78e34fbdeb2763c06a81dbcf71432cb332dfafd028a85dbb870ae891b426216853d835c6d39262e896e40b7025ab42a518c0b0f643ce0)
+
+pkgver() {
+  cd libreoffice-dictionaries/hu_HU/
+  sed -n "s/.*Patch version: \(.*\).*/\1/p" README_hyph_hu_HU.txt | sed 's/-//g'
+}
+
+package() {
+  cd libreoffice-dictionaries/hu_HU/
+  install -Dm644 -t "$pkgdir/usr/share/hyphen/" hyph_hu_HU.dic
+
+  # the symlinks
+  install -dm755 "$pkgdir/usr/share/myspell/dicts"
+  pushd "$pkgdir/usr/share/myspell/dicts"
+    for file in "$pkgdir"/usr/share/hyphen/*; do
+      ln -sv "/usr/share/hyphen/$(basename "$file")" .
+    done
+  popd
+
+  # docs
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname/" README_hyph_hu_HU.txt
+}

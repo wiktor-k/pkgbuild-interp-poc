@@ -1,0 +1,31 @@
+pkgbase = gnome-klotski
+	pkgdesc = Slide blocks to solve the puzzle
+	pkgver = 3.38.2
+	pkgrel = 5
+	url = https://wiki.gnome.org/Apps/Klotski
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = cairo
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libgee
+	depends = libgnome-games-support
+	depends = librsvg
+	source = git+https://gitlab.gnome.org/GNOME/gnome-klotski.git#tag=3.38.2
+	source = 0001-Set-prgname-to-application-ID.patch
+	source = 0002-Fix-setting-application-name.patch
+	source = 0003-Don-t-create-window-in-startup-phase.patch
+	b2sums = 7a3be2584ea6399799d163b0effca5129a5a7bf773998f39a517f90d184fdb72476def3897fc71ae95b0266d12998ff7f340822c45145ab3c77fae5b388846f1
+	b2sums = 621449435ec417e17e2e280fdcf0892527016b032b6448f247e7e48232ab8ccb8a4063b38c1ac195967e5762c0d95bc393b049b51ba75d0b6fd4d754f7a5db85
+	b2sums = d13c965dfa8d9db82382c571a50dec06ae3c999bfff634bbb8abfc2d8c749314b13d5d71f6ccb20073bb31c9ac737fe636fafd1fef70fcb57ec5322712f757e9
+	b2sums = f35bd598de8e57ad1650f96caa9fa8ea1faa16c0bd608d4625d3f88dda4822d689684343c876b6a366d1bbf12ccb863df87b0e111b5a0fcf4801a472573d498b
+
+pkgname = gnome-klotski

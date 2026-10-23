@@ -1,0 +1,22 @@
+pkgbase = opensearch-dashboards-notifications-plugin
+	pkgdesc = OpenSearch Dashboards Notifications Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://opensearch.org/docs/latest/notifications-plugin/index/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = python
+	makedepends = git
+	makedepends = unzip
+	depends = opensearch-dashboards=3.9.0
+	depends = coffeescript
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/dashboards-notifications.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = ccc99c4d0caf0bad0706e6c64001ad8a613595062f3a561f9170ec588c9868b7
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-notifications-plugin

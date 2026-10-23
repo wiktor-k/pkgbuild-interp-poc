@@ -1,0 +1,39 @@
+# Maintainer : Christian Rebischke <Chris.Rebischke@archlinux.org>
+# Contributor: Jan Hicken <firstname [dot] lastname [at] posteo [dot] de>
+
+pkgname=networkmanager-strongswan
+_pkgname=NetworkManager-strongswan
+pkgver=1.6.4
+pkgrel=1
+pkgdesc="Strongswan NetworkManager plugin"
+arch=('x86_64')
+url="https://wiki.strongswan.org/projects/strongswan/wiki/NetworkManager"
+license=('GPL')
+depends=('libnm' 'libsecret' 'strongswan>=5.5.1')
+makedepends=('libnma' 'intltool')
+optdepends=('libnma: GUI support')
+source=("https://download.strongswan.org/NetworkManager/$_pkgname-$pkgver.tar.bz2"{,.sig})
+sha512sums=('7bc8e671eb85f7e9f4e6f7bb440292adee10d5bc150dcf264af30c61edf4f4db664ab3322a787f4dcbd05f2412f67faee01faeb8bd754f8c91785548a5902cca'
+            'SKIP')
+validpgpkeys=('12538F8F689B5F1F15F07BE1765FE26C6B467584') # Tobias Brunner
+
+build() {
+  cd "$_pkgname-$pkgver"
+  ./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var \
+    --libexecdir=/usr/lib --disable-static --disable-more-warnings \
+    --without-libnm-glib --with-charon=/usr/lib/strongswan/charon-nm
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  make check
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}
+
+# vim:set ts=2 sw=2 et:

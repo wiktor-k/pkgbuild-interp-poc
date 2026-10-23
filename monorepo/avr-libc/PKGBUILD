@@ -1,0 +1,37 @@
+# Contributor: Corrado Primier <bardo@aur.archlinux.org>
+# Contributor: danst0 <danst0@west.de>
+
+# Build order: avr-binutils -> avr-gcc -> avr-libc
+
+pkgname=avr-libc
+pkgver=2.3.2
+pkgrel=4
+pkgdesc='The C runtime library for the AVR family of microcontrollers'
+arch=('any')
+url='https://github.com/avrdudes/avr-libc'
+license=(BSD-3-Clause)
+depends=(avr-gcc)
+makedepends=(python)
+options=(!strip) # it corrupts avr libraries
+_tag=avr-libc-${pkgver//./_}-release
+source=(https://github.com/avrdudes/avr-libc/archive/refs/tags/$_tag.tar.gz)
+b2sums=('d2ef9c501a6fd211782752b5f40217b3bbf02b0fa643a97063b8b55b7bae4d50b024f283b6e4fbad6a5a483709363c9e8c67805052d5d34bd87b73edc38b7040')
+validpgpkeys=('56628323218C669FF578705C7E9EADC3030D34EB') # Joerg Wunsch
+
+build() {
+  cd avr-libc-$_tag
+  ./bootstrap
+  ./configure \
+    --build=$(./config.guess) \
+    --host=avr \
+    --prefix=/usr
+
+  make
+}
+
+package() {
+  cd avr-libc-$_tag
+  make DESTDIR="$pkgdir" install
+
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,26 @@
+pkgbase = pgbackrest
+	pkgdesc = Reliable PostgreSQL backup and restore
+	pkgver = 2.60.0
+	pkgrel = 1
+	url = https://github.com/pgbackrest/pgbackrest
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = libyaml
+	makedepends = meson
+	depends = bzip2
+	depends = glibc
+	depends = libbacktrace
+	depends = libssh2
+	depends = libxml2
+	depends = lz4
+	depends = openssl
+	depends = postgresql-libs
+	depends = python-yaml
+	depends = zlib
+	depends = zstd
+	backup = etc/pgbackrest/pgbackrest.conf
+	source = git+https://github.com/pgbackrest/pgbackrest#tag=release/2.60.0
+	b2sums = e20c36a39882f1ae2c18b18117c0748455cab9bc61f452d350fa6cfc6db85e9bcc1a1ff578b76d159af0403205d88e61794dcdbc9feae486e3d67b92c23d6915
+
+pkgname = pgbackrest

@@ -1,0 +1,25 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=xfce4-stopwatch-plugin
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="A simple stopwatch plugin for Xfce panel"
+arch=('x86_64')
+url="https://docs.xfce.org/panel-plugins/xfce4-stopwatch-plugin/start"
+license=('BSD-2-Clause')
+depends=('libxfce4ui' 'libxfce4util' 'xfce4-panel')
+makedepends=('git' 'meson' 'xfce4-dev-tools')
+source=("git+https://gitlab.xfce.org/panel-plugins/xfce4-stopwatch-plugin.git#tag=$pkgname-$pkgver")
+sha256sums=('49d632862d5c54683e67a3d27ab925b01a026f4f17860f5323e641f1b2108c63')
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 $pkgname/COPYING "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+# vim:set ts=2 sw=2 et:

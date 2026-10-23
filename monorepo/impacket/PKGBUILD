@@ -1,0 +1,58 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sirat18 <aur@sirat18.de>
+# Contributor: Paolo Giangrandi <peoro.noob@gmail.com>
+
+pkgname=impacket
+pkgver=0.13.1
+pkgrel=1
+pkgdesc='Collection of classes for working with network protocols'
+url='https://github.com/CoreSecurity/impacket'
+arch=(any)
+license=(Apache-2.0)
+depends=(
+  python
+  python-charset-normalizer
+  python-dnspython
+  python-flask
+  python-ldap3
+  python-ldapdomaindump
+  python-pcapy
+  python-pyasn1
+  python-pyasn1-modules
+  python-pycryptodomex
+  python-pyopenssl
+  python-six
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-cryptography
+  python-pytest
+)
+source=(
+  "${url}/archive/impacket_${pkgver//./_}.tar.gz"
+)
+sha512sums=('94a7b742250115266c25a753b37fad7eadc5cafbf3c2528a901d34cc03dc3716232b82b30c5bee136e85fb6f0180110ccc129a9f6ce2e269b15bfb5f2113afd1')
+
+build() {
+  cd ${pkgname}-${pkgname}_${pkgver//./_}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname}-${pkgname}_${pkgver//./_}
+  pytest -m "not remote"
+}
+
+package() {
+  cd ${pkgname}-${pkgname}_${pkgver//./_}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -vDm 644 ChangeLog.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  local PYTHONVERSION="$(python -c 'import sys; print("{}.{}".format(sys.version_info.major, sys.version_info.minor))')"
+  ln -s "/usr/lib/python${PYTHONVERSION}/site-packages/impacket/examples" "${pkgdir}/usr/share/doc/${pkgname}/examples"
+}

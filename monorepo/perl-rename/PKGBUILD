@@ -1,0 +1,58 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Florian Pritz <flo@xinu.at>
+
+pkgname=perl-rename
+pkgver=1.16.3
+pkgrel=1
+pkgdesc='Renames multiple files using Perl regular expressions'
+arch=(any)
+url='https://metacpan.org/dist/App-rename'
+license=(
+  GPL-1.0-or-later
+  Artistic-1.0-Perl
+)
+depends=(perl)
+options=(!emptydirs)
+source=(
+  "$pkgname-$pkgver.tar.gz::https://cpan.metacpan.org/authors/id/P/PE/PEDERST/App-rename-$pkgver.tar.gz"
+)
+sha512sums=('5a309ca3e75cead06a95a591dd59f5605b82ad3ae33e7d8d660caca9922a3868ed2cf10a1a4c168eef21339962c2f38a0171e80e851e259b1b266f4afda47654')
+b2sums=('68c4df51cde08ada78616139a3a28e5c3179f3e2dac00a9f26214d7e238d19bd8af4faae3bd32fb1dbf184a7895b6a553ab38ab14cb5c0d38ddd33459980a1f1')
+
+build() {
+  cd "App-rename-$pkgver"
+
+  perl Makefile.PL PREFIX=/usr INSTALLDIRS=vendor
+
+  make
+
+  # generate shell completions & alter function/binary name
+  ./bin/rename --shell-completion bash > perl-rename
+  sed \
+    -e 's/rename/perl-rename/g' \
+    -i perl-rename
+  ./bin/rename --shell-completion zsh > _perl-rename
+  sed \
+    -e 's/comp_rename/comp_perl_rename/g' \
+    -e 's/rename;/perl-rename;/g' \
+    -i _perl-rename
+}
+
+package() {
+  cd "App-rename-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+
+  # shell completions
+  install -vDm644 -t "$pkgdir/usr/share/bash-completion/completions" perl-rename
+  install -vDm644 -t "$pkgdir/usr/share/zsh/site-functions" _perl-rename
+
+  # create directories
+  install -vd "$pkgdir/usr/bin"
+
+  # symlink binary
+  ln -s vendor_perl/rename "$pkgdir/usr/bin/perl-rename"
+
+  # symlink man page
+  ln -s /usr/share/man/man1/rename.1p.gz "$pkgdir/usr/share/man/man1/perl-rename.1p.gz"
+}

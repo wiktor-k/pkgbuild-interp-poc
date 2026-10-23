@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=lidia
+pkgver=2.3.0
+_patchver=2019-05-02
+pkgrel=7
+pkgdesc='A library for computational number theory'
+arch=(x86_64)
+url='https://www.math.ucdavis.edu/~latte/'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         gmp
+         libgcc
+         libstdc++)
+makedepends=(git)
+source=(git+https://github.com/mkoeppe/LiDIA#tag=v$pkgver+latte-patches-$_patchver)
+sha256sums=('19588fa4bbe51d683c093817a8620926ea8439408bc01f7a109d8ebd54d895c1')
+
+prepare() {
+  cd LiDIA
+  rm config.{guess,sub}
+  ./bootstrap
+}
+
+build() {
+  cd LiDIA
+
+  export CXXFLAGS="-DNTL_STD_CXX $CXXFLAGS"
+  ./configure --prefix=/usr --enable-shared
+  make
+}
+
+package() {
+  cd LiDIA
+  make DESTDIR="$pkgdir" install
+
+# Fix capitalization (needed by latte-integrale)
+  mv "$pkgdir"/usr/include/{lidia,LiDIA}
+}

@@ -1,0 +1,23 @@
+pkgbase = alpm-mtree
+	pkgdesc = A CLI for parsing of ALPM MTREE files
+	pkgver = 0.4.0
+	pkgrel = 1
+	url = https://alpm.archlinux.page/alpm-mtree/index.html
+	arch = x86_64
+	groups = alpm
+	license = Apache-2.0 OR MIT
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = just
+	makedepends = lowdown
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	optdepends = alpm-docs: for additional specifications
+	source = alpm::git+https://gitlab.archlinux.org/archlinux/alpm/alpm.git?signed#tag=alpm-mtree/0.4.0
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 576d7048ec2a34fa043c0ffd0bb371764d63b3d52d9f2b23a350d4ee9370c5acd3852607dd47bf42bfd71bf87a5a4dc96f4891b84843f801dc0a68100fc0b6ee
+	b2sums = abb156337ea06bda2f11ec8e7bd6f009ffb4d8359886cf6e7226866702d5fce5ff1629dca00c1565a93448d25b20d8d212d07118f6f9be0a79e8a47004c214ee
+
+pkgname = alpm-mtree

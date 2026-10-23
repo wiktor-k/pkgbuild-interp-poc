@@ -1,0 +1,56 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Johann Woelper <woelper@gmail.com>
+
+pkgname=oculante
+pkgver=0.9.6
+pkgrel=1
+pkgdesc="A minimalistic image viewer with analysis and editing tools"
+arch=('x86_64')
+url="https://github.com/woelper/oculante"
+license=('MIT')
+depends=(
+  'cairo'
+  'expat'
+  'freetype2'
+  'gtk3'
+  'libheif'
+  'libwebp' 
+  'libjpeg-turbo'
+)
+makedepends=(
+  'cmake'
+  'git'
+  'yasm'
+  'rust'
+)
+options=(!lto)
+source=("git+https://github.com/woelper/oculante.git#tag=${pkgver}")
+b2sums=('7b735cb99fbfb44d9b16c3e7cceff62dfb42d3fe4e92701ec445eede963f648f72bcedba95e73e7f815adfe53140fab482ec17267c6d24ee83a44d84b297737c')
+
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  export TURBOJPEG_SOURCE=pkg-config
+  CMAKE_POLICY_VERSION_MINIMUM=3.5 cargo build --release --locked --features 'heif'
+}
+
+check() {
+  cd $pkgname
+  export TURBOJPEG_SOURCE=pkg-config
+  CMAKE_POLICY_VERSION_MINIMUM=3.5 cargo test --frozen -- --skip=tests::net --skip=tests::flathub --skip=bench --skip=thumbnails::test_thumbs
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 target/release/oculante "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm644 res/icons/icon.png "${pkgdir}/usr/share/icons/hicolor/128x128/apps/${pkgname}.png"
+  install -Dm644 res/oculante.desktop "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+  install -Dm644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}

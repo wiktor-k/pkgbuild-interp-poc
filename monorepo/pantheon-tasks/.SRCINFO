@@ -1,0 +1,30 @@
+pkgbase = pantheon-tasks
+	pkgdesc = The Pantheon tasks
+	pkgver = 6.3.3
+	pkgrel = 5
+	url = https://github.com/elementary/tasks
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = geoclue
+	depends = geocode-glib-2
+	depends = glib2
+	depends = gtk4
+	depends = libadwaita-1.so
+	depends = libecal-2.0.so
+	depends = libedataserver-1.2.so
+	depends = libgranite-7.so
+	depends = libical
+	depends = libportal-gtk4
+	depends = libshumate-1.0.so
+	source = pantheon-tasks::git+https://github.com/elementary/tasks.git#tag=3c892ca846dba56d00d9febe07f4e78a2e66282f
+	source = libical-4.patch
+	b2sums = a287f60596d0723b4ff76a037840878ed75127195e68ae6046fcc3a480fa36baa7314039d67dae8da8e254e544a4f20e7ef8abdd35bd112bce2668572f67da91
+	b2sums = 4001feaf0b23d0c48501867b103c9f65e77255419ea04bc0acceee9f96c5b3b34ef41788e2fd5b3fe5728265ba024ce3d48a4e8003584b28f875c21c6bd22378
+
+pkgname = pantheon-tasks

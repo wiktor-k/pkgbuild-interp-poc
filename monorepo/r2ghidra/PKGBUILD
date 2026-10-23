@@ -1,0 +1,50 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=r2ghidra
+pkgver=6.2.2
+pkgrel=1
+pkgdesc='Deep ghidra decompiler integration for radare2 and iaito'
+arch=(x86_64)
+url='https://github.com/radareorg/r2ghidra'
+license=(LGPL-3.0-only)
+depends=(
+  "radare2=$pkgver"
+  glibc
+  libgcc
+  libstdc++
+  zlib
+)
+makedepends=(
+  git
+  meson
+)
+provides=(radare2-r2ghidra)
+replaces=(r2ghidra-dec)
+_ghidra_native_ver=483ae94bcbc661a77667e52f1eff75928cb6aa2e
+source=(
+  "git+https://github.com/radareorg/r2ghidra#tag=$pkgver"
+  "git+https://github.com/radareorg/ghidra-native.git#commit=$_ghidra_native_ver"
+)
+b2sums=('8965210390b4a6cde344c7a955f3f9d83a66a5b2a4dddf680dfa766340914ceb53f1bf3cb818f94391590e2c586fb3999c83b6a5263001db60569a7526e43c05'
+        '0edaa79814afa502eff3998a1ea9979e73139a15dc3917cb039f9802881201ecf1cd7775b6a4b38641edd34f4e3597876d8c14d21cf1dcca00ed1162ebb774e8')
+
+prepare() {
+  cd $pkgname
+  grep -q "revision = $_ghidra_native_ver" subprojects/ghidra-native.wrap \
+    || { echo "Version mismatch in subproject ghidra-native"; exit 1; }
+}
+
+build() {
+  cd $pkgname
+  export MESON_PACKAGE_CACHE_DIR="$srcdir"
+  arch-meson build
+  meson compile -C build
+}
+
+package() {
+  cd $pkgname
+  meson install -C build --destdir "$pkgdir"
+  local r2version=$(r2 -v|grep radare2|sed -E 's/radare2 ([0-9\.]+) .*/\1/')
+  ln -vs "/usr/lib/radare2/$r2version" "$pkgdir/usr/lib/radare2/last"
+}

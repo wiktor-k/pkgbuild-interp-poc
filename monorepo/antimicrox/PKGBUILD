@@ -1,0 +1,52 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=antimicrox
+pkgver=3.6.1
+pkgrel=1
+pkgdesc='Graphical program used to map keyboard buttons & mouse controls to a gamepad'
+arch=(x86_64)
+url='https://github.com/AntiMicroX/antimicrox'
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libxtst
+  libxi
+  libx11
+  libgcc
+  libstdc++
+  sdl2-compat
+  qt6-base
+)
+makedepends=(
+  git
+  cmake
+  extra-cmake-modules
+  ninja
+  itstool
+  qt6-tools
+)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('bbdf167e97966bb7777b15f173b002e0456e8c989c37ee15d9b0c5d773ee316a22b835480112f88a610150badc244c11c81ec814182138e44be85a5c3f5f3045')
+b2sums=('a72953d4fd0d63195e8344c79a4121adbf8c33f0fc70fe1c9c452f1e6b8e60b5b893ccdc027f9cb1b420ef03c556997dfd7e05cf88c0d06b263f422e5ea2659f')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -W no-dev
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D ANTIMICROX_PKG_VERSION="$pkgver"
+    -D USE_QT6_BY_DEFAULT=ON
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

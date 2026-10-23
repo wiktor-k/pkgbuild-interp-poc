@@ -1,0 +1,54 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Jameson Pugh <imntreal@gmail.com>
+
+pkgname=jc
+pkgver=1.26.1
+pkgrel=1
+pkgdesc='Converts the output of popular command-line tools and file-types to JSON'
+arch=(any)
+url='https://github.com/kellyjonbrazil/jc'
+license=(MIT)
+depends=(
+  python
+  python-pygments
+  python-ruamel-yaml
+  python-xmltodict
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-wheel
+  python-setuptools
+)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('4ddae0d9cb285faff1da1506009266bddd77771cb5af0a6a500fbd665cc56a7565a7dabc5130c367dfb105a9ed3e8e0859981cc34bedad40a6798cb54148923e')
+b2sums=('25aeebeb56c5c7ad441bbff74a7111f749fbb2a8de2f92ecd7aa50c2dbc5dd3c18df94c381b3bab6bb97dbec60b2057f42ff21a966a78b56d3bda2e62835d67d')
+
+build(){
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+#check() {
+#  cd "$pkgname"
+#
+#  python -m unittest -v
+#}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md EXAMPLES.md
+  cp -vr docs "$pkgdir/usr/share/doc/$pkgname"
+
+  # man page
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" man/jc.1
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+}

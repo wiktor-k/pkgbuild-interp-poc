@@ -1,0 +1,119 @@
+# Maintainer: David Runge <dvzrv@archlinux.org
+
+pkgname=guitarix
+pkgver=0.47.0
+pkgrel=5
+pkgdesc="A simple mono guitar amplifier and FX for JACK using Faust"
+arch=(x86_64)
+url="https://guitarix.org"
+license=(
+  GPL-2.0-or-later
+  GPL-3.0-or-later
+  LGPL-3.0-or-later
+)
+groups=(
+  lv2-plugins
+  pro-audio
+)
+depends=(
+  atkmm
+  bluez-libs
+  cairo
+  cairomm
+  libgcc
+  libstdc++
+  glibc
+  glibmm
+  gtkmm3
+  libsigc++
+  libx11
+  pangomm
+  ttf-roboto
+)
+makedepends=(
+  avahi
+  boost
+  boost-libs
+  curl
+  gdk-pixbuf2
+  eigen
+  faust
+  fftw
+  glib2
+  gperf
+  gtk3
+  intltool
+  jack
+  liblo
+  liblrdf
+  libsndfile
+  lilv
+  lv2
+  pango
+  sassc
+  waf
+  zita-convolver
+  zita-resampler
+)
+optdepends=('new-session-manager: for session management')
+provides=(
+  guitarix2 libgxw.so libgxwmm.so
+  lv2-host
+)
+conflicts=(guitarix2)
+replaces=(guitarix2)
+source=(
+  $pkgname-$pkgver.tar.xz::https://github.com/brummer10/guitarix/releases/download/V$pkgver/${pkgname}2-$pkgver.tar.xz
+  boost-1.89.patch
+)
+sha512sums=('6726bfc5e3b71b195e7117ba56f56164a119c6e34934d50131c186c6c4fd0400c97d51acae22f645fc9dff91f16312a55d38c68e3609c0f21d3c3e6db8a09524'
+            '6e904282e15bd8d3b4412f62932308ecec042dd76f23e8dbd540fc3496840cab6503e8fd3879cee0a945cf9fd3a863767352eee0bdc01d6593098fa1b8c2ba15')
+b2sums=('03da29819fb5da4e981d25c229310da9741325475fae694a7745c16a18fc2b21d0e11ddc1aadcc6c1364d61f37d89dbf31f48da69aa823b3e192719cbb3d0736'
+        '74954386f6aee9c7ee2d730db4163025c8e22464170f52d31868d1763a8fcc36127a2e2823dc504b10aed1340b1db032d39ba7e9744aa80296fa8b767c62d4e8')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i ../boost-1.89.patch
+}
+
+build() {
+  local waf_options=(
+    --prefix=/usr
+    --enable-nls
+    --shared-lib
+    --lib-dev
+    --cxxflags='-flto'
+    --ldflags="$LDFLAGS"
+  )
+
+  export LINKFLAGS="$LDFLAGS"
+
+  cd $pkgname-$pkgver
+  ./waf configure "${waf_options[@]}"
+  ./waf build -vv
+}
+
+package() {
+  depends+=(
+    avahi libavahi-common.so libavahi-gobject.so
+    boost-libs libboost_iostreams.so
+    curl libcurl.so
+    fftw libfftw3f.so
+    gdk-pixbuf2 libgdk_pixbuf-2.0.so
+    glib2 libgio-2.0.so libglib-2.0.so libgobject-2.0.so
+    gtk3 libgdk-3.so
+    jack libjack.so
+    liblo liblo.so
+    liblrdf liblrdf.so
+    lilv liblilv-0.so
+    pango libpangocairo-1.0.so libpango-1.0.so
+    libsndfile libsndfile.so
+    zita-convolver libzita-convolver.so
+    zita-resampler libzita-resampler.so
+  )
+
+  cd $pkgname-$pkgver
+  ./waf install --destdir="$pkgdir"
+  # docs
+  install -vDm 644 {changelog,README} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,49 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-session-shell
+pkgver=6.0.55
+pkgrel=1
+pkgdesc='Deepin desktop-environment - session-shell module'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-session-shell-snipe"
+license=('GPL-3.0-or-later')
+# deepin-daemon: org.deepin.dde.Display1
+# deepin-session: org.deepin.dde.Session1
+depends=('bash' 'deepin-daemon' 'deepin-network-core' 'deepin-qt6integration' 'deepin-wallpapers'
+         'liblightdm-qt6' 'lightdm' 'dtk6core' 'dtk6gui'
+         'dtk6widget' 'libx11' 'libxcursor' 'qt6-svg' 'qt6-base' 'libxi' 'dconf'
+         'libxtst' 'glibc' 'libxext' 'libxfixes' 'pam' 'libgcc' 'libstdc++'
+         'libxrandr' 'libxcb' 'xcb-util-wm' 'openssl' 'deepin-session' 'systemd' 'xorg-setxkbmap')
+makedepends=('git' 'cmake' 'gmock' 'gtest' 'ninja' 'qt6-tools')
+conflicts=('deepin-session-ui<5')
+provides=('lightdm-deepin-greeter')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/dde-session-shell-snipe.git#tag=$pkgver"
+        "fix-lightdm-qt6-visibility.patch")
+sha512sums=('2b0ac393f8991210450e01a21828f427ff7b277eff19a6c51209f97b568b5835f086d7625ff8aa9c4d37ed238daf125be3cffb14f6ab19bcc64ceadac074327e'
+            '3c7a7f4444b584ea4112d5a72325015e0f87e94426014b62db1debd5478b6404c319f04645688743ecd2f117e39cc607ad8fd76f3fb991898c7c6839094f2040')
+
+prepare() {
+  cd dde-session-shell-snipe
+
+  # Replace the Debian PAM stack introduced upstream with Arch's system login stack.
+  # https://github.com/linuxdeepin/dde-session-shell-snipe/pull/327
+  sed -i 's/common-auth/system-login/' files/pam.d/dde-lock
+
+  # Correct the Qt 6 export macros introduced by LightDM's Qt 6 port for consumers.
+  # https://github.com/ubuntu/lightdm/pull/373
+  patch -Np1 -i ../fix-lightdm-qt6-visibility.patch
+}
+
+build() {
+  cd dde-session-shell-snipe
+  cmake . -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_SYSCONFDIR=/etc -DDDE_SESSION_SHELL_SNIPE=ON
+  ninja
+}
+
+package() {
+  cd dde-session-shell-snipe
+  DESTDIR="$pkgdir" ninja install
+}

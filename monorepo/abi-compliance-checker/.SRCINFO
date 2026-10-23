@@ -1,0 +1,17 @@
+pkgbase = abi-compliance-checker
+	pkgdesc = Check ABI compatibility between library versions
+	pkgver = 2.3+r24+g7c175c4
+	pkgrel = 1
+	url = https://lvc.github.io/abi-compliance-checker/
+	arch = any
+	license = LGPL-2.1-or-later
+	makedepends = git
+	depends = abi-dumper
+	depends = binutils
+	depends = ctags
+	depends = gcc
+	depends = perl
+	source = git+https://github.com/lvc/abi-compliance-checker#commit=7c175c45a8ba9ac41b8e47d8ebbab557b623b18e
+	b2sums = 474c3f2be087bd742bc9fb08687aed04eac4f679cde96bcaa03eff70752101a76126699068c788393f3a46499afd6e540dbe428327410eb5eac8204a011564aa
+
+pkgname = abi-compliance-checker

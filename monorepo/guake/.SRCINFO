@@ -1,0 +1,33 @@
+pkgbase = guake
+	pkgdesc = Python based dropdown terminal
+	pkgver = 3.10.1
+	pkgrel = 2
+	url = https://guake.github.io/
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-pip
+	depends = dconf
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libkeybinder3
+	depends = libnotify
+	depends = libutempter
+	depends = libwnck3
+	depends = pango
+	depends = python
+	depends = python-cairo
+	depends = python-dbus
+	depends = python-gobject
+	depends = python-yaml
+	depends = vte3
+	optdepends = libappindicator: StatusNotifierItem support
+	source = git+https://github.com/Guake/guake.git#tag=3.10.1
+	source = guake-preferences-dialog.patch
+	source = guake-icon-install.patch
+	b2sums = a5604be38d2becbc470e5e3391437ef5497bf8d7d5f18e0ddc51aa26fb78ee0f163ec83a8a7c2f486a88f295251ba2c53d2287127eb705da576d05e4671d17ea
+	b2sums = 366a4ba89b34df3b7316be8fc28070f8c1c269a8a097efa24deed1fb6dc521ee1a438cdcd22c68ed1f054ec044dbd6389cd875e0c9d82362a29c6844519e475b
+	b2sums = 99f17ca47fd332e1be716e70278c9c6da69b9912d6301e930a1a33eaf32c097e320a34bdc89fa47e919506ce0703c2b46464dfacf0ad5476608d134802c85ad5
+
+pkgname = guake

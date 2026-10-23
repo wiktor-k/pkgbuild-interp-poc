@@ -1,0 +1,48 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=snmalloc
+pkgver=0.7.6
+pkgrel=1
+pkgdesc="Message passing based allocator"
+arch=(x86_64)
+url="https://github.com/microsoft/snmalloc/"
+license=(MIT)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(cmake)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/$pkgver.tar.gz")
+sha512sums=('eb49ebd8eea6d7639cbcedb795469c8ed47f4324ad86cec50ddca76c187f612b5588df6d3316c5d292ead31e96956f5556611fde8fee38f436d5e97b1449a979')
+b2sums=('2bf6f0b464b6bfef55b7ae98389bc3c142a88d41e6941618238b212aa907cb6c73d9557d3391daaeba51f92562cb5bf21485c6a4914942be5a34ab08fe386248')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname-$pkgver"
+    -W no-dev
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  local excluded_tests=""
+  local ctest_flags=(
+    --test-dir build
+    # show the stdout and stderr when the test fails
+    --output-on-failure
+    # execute tests in parallel
+    --parallel "$(nproc)"
+    # exclude problematic tests
+    --exclude-regex "$excluded_tests"
+  )
+  ctest "${ctest_flags[@]}"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

@@ -1,0 +1,63 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-alpm
+_upstream=alpm
+pkgver=0.6.0
+pkgrel=1
+pkgdesc="Python bindings for the Rust-based ALPM project"
+arch=(x86_64)
+url="https://alpm.archlinux.page/python-alpm/"
+_url="https://gitlab.archlinux.org/archlinux/alpm/alpm.git"
+license=(
+  'Apache-2.0 OR MIT'
+  CC-BY-SA-4.0
+)
+groups=(alpm)
+depends=(
+  glibc
+  libgcc
+  python
+)
+makedepends=(
+  git
+  python-build
+  python-maturin
+  python-installer
+)
+checkdepends=(
+  alpm-pkgbuild-bridge
+  python-pytest
+)
+optdepends=(
+  'alpm-docs: for additional specifications'
+  'alpm-pkgbuild-bridge: for creating SRCINFO data from PKGBUILD files'
+)
+source=($_upstream::git+$_url?signed#tag=$pkgname/$pkgver)
+sha512sums=('f148aef3eb24e1275532183d34540066b0eb7bc62c362f7e87266bdf7c7bad08fe60ac2c062e03e47298fdbc06e097365eccefdf1f554756f81c29bf313f728f')
+b2sums=('88026d88aeea1f4bf552447966c40d3d439d398936d81dda8af488dd8b6f9622e2edf7214af1fc149ffcafd9367c38f497e99d424e1de40893aeb3ccab4c29a8')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_upstream
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream/$pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_upstream/$pkgname
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  python -m installer --destdir="tmp_install" dist/*.whl
+  PYTHONPATH="$PWD/tmp_install/$site_packages" pytest -vv tests/
+}
+
+package() {
+  cd $_upstream/$pkgname
+  python -m installer -d "$pkgdir" dist/*.whl
+
+  install -vDm 644 {ARCHITECTURE,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 ../LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

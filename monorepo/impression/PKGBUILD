@@ -1,0 +1,57 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=impression
+pkgver=3.8.0
+pkgrel=1
+pkgdesc='Application to create bootable drives from disk images'
+arch=(x86_64)
+url='https://apps.gnome.org/Impression/'
+license=(GPL-3.0-only)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libcdio
+  libgcc
+  openssl
+  udisks2
+  wimlib
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+source=("git+https://gitlab.com/adhami3310/Impression.git#tag=v$pkgver")
+b2sums=(6f8e34cff3c285c294d71a93ba49e154dde84c724b74dec887bd05fb386d0cc644cd29de75ff240e77f23592c06a979bd61879f06147574b8a87e043bd67bec7)
+
+prepare() {
+  cd Impression
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson Impression build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,19 @@
+pkgbase = ssh-tpm-agent
+	pkgdesc = ssh-agent for TPMs
+	pkgver = 0.9.0
+	pkgrel = 2
+	url = https://github.com/Foxboron/ssh-tpm-agent
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	makedepends = git
+	makedepends = systemd
+	makedepends = asciidoctor
+	depends = glibc
+	source = https://github.com/Foxboron/ssh-tpm-agent/releases/download/v0.9.0/ssh-tpm-agent-v0.9.0.tar.gz
+	source = https://github.com/Foxboron/ssh-tpm-agent/releases/download/v0.9.0/ssh-tpm-agent-v0.9.0.tar.gz.gpg
+	validpgpkeys = C100346676634E80C940FB9E9C02FF419FECBE16
+	sha256sums = 74682d750b3dfa97388d9334fd9f48b797c688642bec0f30d192bb5085c12577
+	sha256sums = 9d48fcdf4c286dbfa1bff8a6321f49efdd3382cf3492fbca9316ded35a293b6b
+
+pkgname = ssh-tpm-agent

@@ -1,0 +1,82 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Dmitry Kharitonov <arch[at]nano-model[dot]com>
+# Contributor: kusakata <shohei atmark kusakata period com>
+
+pkgname=ruby-hashery
+_pkgname=${pkgname#ruby-}
+pkgver=2.1.2
+pkgrel=6
+pkgdesc="Facets-bread collection of Hash-like classes"
+arch=(any)
+url="https://github.com/rubyworks/hashery"
+license=(BSD-2-Clause)
+depends=(ruby)
+makedepends=(
+  git
+  rubygems
+)
+checkdepends=(
+  ruby-lemon
+  ruby-rake
+  ruby-rubytest-cli
+)
+options=(!emptydirs)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha256sums=('f00fcc29e0ff26092efa9e1962a242b0b551538081014a1b0a129b4fa8157e6c')
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  sed -i -E 's|~>|>=|g' .gemspec
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  local gemdir="$(gem env gemdir)"
+
+  gem build .gemspec
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rake test
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+}

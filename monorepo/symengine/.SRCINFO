@@ -1,0 +1,27 @@
+pkgbase = symengine
+	pkgdesc = Fast symbolic manipulation library, written in C++
+	pkgver = 0.15.0
+	pkgrel = 2
+	url = http://sympy.org/
+	arch = x86_64
+	license = MIT
+	makedepends = boost
+	makedepends = cereal
+	makedepends = cmake
+	makedepends = git
+	makedepends = llvm
+	depends = flint
+	depends = glibc
+	depends = gmp
+	depends = gmp-ecm
+	depends = gperftools
+	depends = libgcc
+	depends = libmpc
+	depends = libstdc++
+	depends = llvm-libs
+	depends = mpfr
+	depends = primesieve
+	source = git+https://github.com/symengine/symengine#tag=v0.15.0
+	sha256sums = e66a3ba7a1e3955cd6c3a4303bfc40f80818536f96b16690df20b8f7481ff40c
+
+pkgname = symengine

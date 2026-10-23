@@ -1,0 +1,22 @@
+pkgbase = ibus-chewing
+	pkgdesc = Chinese Chewing Engine for IBus Framework
+	pkgver = 2.2.0
+	pkgrel = 1
+	url = https://codeberg.org/chewing/ibus-chewing
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = dbus
+	checkdepends = xorg-server-xvfb
+	makedepends = cmake
+	makedepends = glib2-devel
+	depends = ibus
+	depends = libchewing>=0.9.0
+	depends = gtk4
+	depends = libadwaita
+	source = https://codeberg.org/chewing/ibus-chewing/releases/download/v2.2.0/ibus-chewing-2.2.0.tar.xz
+	source = https://codeberg.org/chewing/ibus-chewing/releases/download/v2.2.0/ibus-chewing-2.2.0.tar.xz.asc
+	validpgpkeys = 083B3CAB64267E5BAB7159673EF0C673DADCC30C
+	sha512sums = 7b0e9b9e7830f70b1e47ab08cb5bb02a6e5af63da640f534b48f6027041d907eb10dc5d474ef2dc7905c17a9d62cc1ffec9cac6ea266de00b10329f32aa3d61a
+	sha512sums = SKIP
+
+pkgname = ibus-chewing

@@ -1,0 +1,16 @@
+pkgbase = cargo-generate-rpm
+	pkgdesc = Cargo helper command to generate a binary RPM package
+	pkgver = 0.21.1
+	pkgrel = 1
+	url = https://github.com/cat-in-136/cargo-generate-rpm
+	arch = x86_64
+	license = MIT
+	depends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = xz
+	depends = zstd
+	source = cargo-generate-rpm-0.21.1.tar.gz::https://github.com/cat-in-136/cargo-generate-rpm/archive/v0.21.1.tar.gz
+	sha256sums = f841937b3a072eeb77d242a2e1e27f4908ffa53d6e406013e47b20dc722b767e
+
+pkgname = cargo-generate-rpm

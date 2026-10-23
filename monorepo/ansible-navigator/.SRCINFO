@@ -1,0 +1,24 @@
+pkgbase = ansible-navigator
+	pkgdesc = A text-based user interface (TUI) for Ansible
+	pkgver = 26.10.0
+	pkgrel = 1
+	url = https://github.com/ansible/ansible-navigator
+	arch = any
+	license = Apache-2.0
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-jsonschema
+	depends = python-onigurumacffi
+	depends = ansible-core
+	depends = ansible-runner
+	optdepends = ansible: check official ansible collections
+	optdepends = docker: To use docker as a container runtime
+	optdepends = podman: To use podman as a container runtime
+	source = ansible-navigator-26.10.0.tar.gz::https://github.com/ansible/ansible-navigator/archive/refs/tags/v26.10.0.tar.gz
+	sha256sums = 25365b71ce7c284adccca25892ae2f00dcda61ea7969f3fbd8c1a119a59c2cbd
+
+pkgname = ansible-navigator

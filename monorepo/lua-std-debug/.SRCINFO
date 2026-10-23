@@ -1,0 +1,35 @@
+pkgbase = lua-std-debug
+	pkgdesc = Lua-stdlib project’s debug hints library
+	pkgver = 1.2
+	pkgrel = 1
+	url = https://github.com/lua-stdlib/_debug
+	arch = any
+	license = MIT
+	makedepends = lua
+	makedepends = lua51
+	makedepends = lua52
+	makedepends = lua53
+	makedepends = lua54
+	makedepends = luarocks
+	source = https://github.com/lua-stdlib/_debug/archive/v1.2/_debug-1.2.tar.gz
+	sha256sums = eee132807623845371998787b58601588ad974ac403a7a17c3738b9315e2b149
+
+pkgname = lua-std-debug
+	provides = lua-std-_debug
+	replaces = lua-std-_debug
+
+pkgname = lua51-std-debug
+	provides = lua51-std-_debug
+	replaces = lua51-std-_debug
+
+pkgname = lua52-std-debug
+	provides = lua52-std-_debug
+	replaces = lua52-std-_debug
+
+pkgname = lua53-std-debug
+	provides = lua53-std-_debug
+	replaces = lua53-std-_debug
+
+pkgname = lua54-std-debug
+	provides = lua-std-_debug
+	replaces = lua-std-_debug

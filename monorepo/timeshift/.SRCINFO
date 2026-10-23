@@ -1,0 +1,24 @@
+pkgbase = timeshift
+	pkgdesc = A system restore utility for Linux
+	pkgver = 26.09.0
+	pkgrel = 1
+	url = https://github.com/linuxmint/timeshift
+	install = timeshift.install
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = help2man
+	makedepends = meson
+	makedepends = vala
+	depends = libgee
+	depends = json-glib
+	depends = gtk3
+	depends = vte3
+	depends = rsync
+	depends = xapp
+	depends = cronie
+	optdepends = btrfs-progs: For BTRFS support
+	optdepends = grub-btrfs: For BTRFS snapshots in GRUB
+	source = timeshift-26.09.0.tar.gz::https://github.com/linuxmint/timeshift/archive/refs/tags/26.09.0.tar.gz
+	sha256sums = 6c3bbbd3cb905bfee11d565191fd6f550da17acac23e2efc656aa5ab72a6984b
+
+pkgname = timeshift

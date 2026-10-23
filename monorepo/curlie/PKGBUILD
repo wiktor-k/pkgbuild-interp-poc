@@ -1,0 +1,33 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Maxim Baz <archlinux at maximbaz dot com>
+# Contributor: Jianfeng Zhang <swordfeng123@gmail.com>
+
+pkgname=curlie
+pkgver=1.8.2
+pkgrel=1
+pkgdesc="The power of curl, the ease of use of httpie."
+url="https://rs.github.io/curlie"
+arch=('x86_64')
+license=('MIT')
+depends=('glibc' 'curl')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/rs/${pkgname}/archive/v${pkgver}.tar.gz")
+b2sums=('fcb9ededca246226619c5b34802ba85d885fc1bb1835033894d0d68845e4693bb61b794f957906790da53612c3f7bd039cb8a6e1e6ad3c391fdcf4ec3b690380')
+options=('!lto')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+	go build -ldflags "-X main.version=${pkgver} -X main.date=$(date -u -I -d @$SOURCE_DATE_EPOCH) -compressdwarf=false -linkmode external" .
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm 755 "${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE" 
+}

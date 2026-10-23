@@ -1,0 +1,79 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=drone-runner-docker
+pkgver=1.8.5
+pkgrel=1
+pkgdesc='Drone pipeline runner that executes builds inside Docker containers'
+arch=(x86_64)
+url='https://github.com/drone-runners/drone-runner-docker'
+license=(LicenseRef-Polyform-Small-Business-1.0.0 LicenseRef-Polyform-Free-Trial-1.0.0)
+depends=(glibc docker)
+makedepends=(git go)
+optdepends=('drone: for a local Drone instance')
+options=(!lto)
+source=(
+  "$pkgname::git+$url.git#tag=v$pkgver"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+)
+sha512sums=('dbfb0516a2afe8fca7e5ce1d0ac25cfb65662f68cc814aa4c39745359b4e5ed82a490d84d33dda3962a36dff5dd9df82605ae85cceea42a6395a7494cbeeff1f'
+            'eb92c3ad379153953adb07d064d1f33ba52015df2fb045412c57d38c5000f74ce1a0f8ea6042ffd1a5dcf3adbc5535b19067488cc5fd351d78c014effbbd17e8'
+            'ef79ba90c3bf255886a01596f8b38e989ea0b26e481a84d2ca1e6bfda1ce9bc899adf184336da9af9defbb28fe63939c60597311ffaeb9908119368ea11d9909'
+            'e0d22286f58388e0393c0368bd5ea56099718ba772805913056c5251597d3887e013ba5fc9243d856d61d3b531dfd18087dd7aafe43c5857074ad6caceeee255')
+b2sums=('2f32cd3cc32064372c215af4e6825fd6f6ae074674d37dab21f5c713497932ae9e756a3156769cc4b7249d0f8922203f10bd2bac6a91a48dc4b043dd333cc547'
+        'a76e0c190fcecbd99be68e9ead11c6cda27cf30045c9585356032982d1ecf053f2e8ed5b2a640403bd6a214eccfa50ec425bf34a284966a315a6754272133e99'
+        'b66b6d45caaf5c1b00f9475e93838b00734e1d9e9ac2d53e508bfc730969a79947079b743ae87cfbe71173ba82a5e3135457681b591f7a18844260df78638f5b'
+        '02b6ca4f1bdbaf968c81a2aab25efdb76d53590baadfa4c239239bc2b39bf09f8266775fc8addcf3a51fa48bd0a1ecfdb34c674b7355fbe5476cd53ae1780504')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir -p build
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+
+  go build -v \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags \"${LDFLAGS}\"" \
+    -o build \
+    .
+}
+
+check() {
+  cd "$pkgname"
+
+  go test -v ./...
+}
+
+package() {
+  # systemd integration
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/*
+
+  # licenses
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" licenses/* LICENSE.md
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md CHANGELOG.md
+}

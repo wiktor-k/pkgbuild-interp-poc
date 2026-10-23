@@ -1,0 +1,19 @@
+pkgbase = rattler-build
+	pkgdesc = A fast conda-package builder
+	pkgver = 0.55.1
+	pkgrel = 1
+	url = https://github.com/prefix-dev/rattler-build
+	arch = x86_64
+	license = BSD
+	checkdepends = patchelf
+	checkdepends = git
+	makedepends = cargo
+	depends = gcc-libs
+	depends = openssl
+	depends = bzip2
+	depends = xz
+	options = !lto
+	source = rattler-build-0.55.1.tar.gz::https://github.com/prefix-dev/rattler-build/archive/v0.55.1.tar.gz
+	sha512sums = b498ab1b27713d417a577775942529ac53da9980cc52cf54ba82caeaa1a04884d90faddaea0d42dffa50f66270668b78475a788980566eafe05307155629d5f8
+
+pkgname = rattler-build

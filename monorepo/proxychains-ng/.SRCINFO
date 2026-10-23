@@ -1,0 +1,17 @@
+pkgbase = proxychains-ng
+	pkgdesc = A hook preloader that allows to redirect TCP traffic of existing dynamically linked programs through one or more SOCKS or HTTP proxies
+	pkgver = 4.17
+	pkgrel = 3
+	url = https://github.com/rofl0r/proxychains-ng
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	depends = glibc
+	provides = proxychains
+	conflicts = proxychains
+	replaces = proxychains
+	backup = etc/proxychains.conf
+	source = git+https://github.com/rofl0r/proxychains-ng.git#tag=v4.17
+	sha512sums = 7199ea179e93d4fb079001ed399c9ac73791636203beda19271a3c55854fef26383d292d17354fa98b303fbd2c798cfd629db3dbe96c44036968cc64da926d8c
+
+pkgname = proxychains-ng

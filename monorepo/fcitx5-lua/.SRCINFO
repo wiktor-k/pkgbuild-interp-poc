@@ -1,0 +1,17 @@
+pkgbase = fcitx5-lua
+	pkgdesc = Lua support for Fcitx 5
+	pkgver = 5.0.18
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-lua
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	depends = fcitx5
+	depends = lua
+	source = git+https://github.com/fcitx/fcitx5-lua.git#tag=5.0.18?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = f07f91963889aa81f2c08e91f64f73ce20dd7e9cbe790913be9575a85470ced2e5a5c43a742eb2410f51418c4f86cf1c7489e4f123b9c1351c1df4be6d5d4ff3
+
+pkgname = fcitx5-lua

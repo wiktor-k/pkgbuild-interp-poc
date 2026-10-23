@@ -1,0 +1,55 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: kxxt <rsworktech at outlook dot com>
+
+pkgname=tracexec
+pkgver=1.0.0
+pkgrel=2
+pkgdesc="A small utility for tracing execve{,at} and pre-exec behavior"
+arch=('x86_64')
+url="https://github.com/kxxt/tracexec"
+license=('GPL-2.0-or-later')
+depends=('glibc' 'libgcc' 'libseccomp' 'libbpf')
+makedepends=('cargo' 'cargo-about' 'git' 'clang')
+checkdepends=('protobuf')
+validpgpkeys=('17AADD6726DDC58B8EE5881757670CCFA42CCF0A')
+source=("git+https://github.com/kxxt/tracexec.git?signed#tag=v$pkgver")
+b2sums=('88900a355498fc3f67ed6fdeadaccef1a1d2629677266772a7ee75daefe106fe7273692a897eff3459b0c7e3fb139e0c5ab01f41fd0a635306602adb5d7c6fbb')
+
+prepare() {
+  cd "$pkgname"
+  cargo fetch --locked --target host-tuple
+  mkdir completions/
+}
+
+build() {
+  cd "$pkgname"
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  # --bins: needed for test
+  cargo build --bins --frozen --release --no-default-features -F ebpf
+  cargo about generate -o THIRD_PARTY_LICENSES.HTML about.hbs
+  local compgen="target/release/$pkgname generate-completions"
+  $compgen bash >"completions/$pkgbase"
+  $compgen elvish >"completions/$pkgbase.elv"
+  $compgen fish >"completions/$pkgbase.fish"
+  $compgen zsh >"completions/_$pkgbase"
+}
+
+check() {
+  cd "$pkgname"
+  cargo test --workspace --frozen --no-default-features -F ebpf
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+  install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+  install -Dm644 THIRD_PARTY_LICENSES.HTML "$pkgdir/usr/share/licenses/$pkgname/THIRD_PARTY_LICENSES.HTML"
+  install -Dm644 themes/{amber,high-contrast,nord}.toml -t "$pkgdir/usr/share/tracexec/themes/"
+  install -Dm644 "completions/$pkgbase" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm644 "completions/$pkgbase.elv" -t "$pkgdir/usr/share/elvish/lib/"
+  install -Dm644 "completions/$pkgbase.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm644 "completions/_$pkgbase" -t "$pkgdir/usr/share/zsh/site-functions/"
+}
+
+# vim:set ts=2 sw=2 et:

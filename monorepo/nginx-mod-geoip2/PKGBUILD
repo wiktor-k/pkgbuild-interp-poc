@@ -1,0 +1,53 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+
+pkgname=nginx-mod-geoip2
+pkgver=3.4
+pkgrel=24
+
+_modname="ngx_http_geoip2_module"
+
+pkgdesc="Nginx GeoIP2 module"
+arch=('x86_64')
+depends=('libmaxminddb')
+makedepends=('nginx' 'nginx-src')
+url="https://github.com/leev/ngx_http_geoip2_module"
+license=('BSD-2-Clause')
+
+source=(https://github.com/leev/ngx_http_geoip2_module/archive/$pkgver/$_modname-$pkgver.tar.gz)
+sha256sums=('ad72fc23348d715a330994984531fab9b3606e160483236737f9a4a6957d9452')
+backup=('etc/nginx/modules.d/20-geoip2.conf')
+
+prepare() {
+	mkdir -p build
+	cd build
+	ln -sf /usr/src/nginx/auto
+	ln -sf /usr/src/nginx/src
+}
+
+build() {
+	cd build
+	auto/configure \
+		--with-ld-opt="$LDFLAGS" \
+		--with-compat \
+		--add-dynamic-module=../$_modname-$pkgver
+	make modules
+}
+
+package() {
+	if [[ "$BUILDTOOL" == devtools ]]; then
+		local nginx_dep="nginx=$(nginx -v 2>&1 | sed 's|.*/||')"
+		depends+=($nginx_dep)
+	else
+		depends+=(nginx)
+	fi
+
+	install -Dm644 "$srcdir"/$_modname-$pkgver/LICENSE \
+	               "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	install -dm0755 "$pkgdir"/etc/nginx/modules.d
+
+	cd build/objs
+	for mod in ngx_*.so; do
+		install -Dm755 $mod "$pkgdir"/usr/lib/nginx/modules/$mod
+		echo "load_module \"/usr/lib/nginx/modules/$mod\";" >> "$pkgdir/etc/nginx/modules.d/20-geoip2.conf"
+	done
+}

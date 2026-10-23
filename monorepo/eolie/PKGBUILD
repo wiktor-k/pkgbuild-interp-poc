@@ -1,0 +1,111 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Cédric Bellegarde cedric bellegarde at adishatz dot org
+
+pkgname=eolie
+pkgver=0.9.101
+pkgrel=14
+pkgdesc='Simple web browser for GNOME'
+arch=(any)
+url='https://wiki.gnome.org/Apps/Eolie'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  gnome-settings-daemon
+  gtk3
+  gtkspell3
+  hicolor-icon-theme
+  libhandy
+  libsecret
+  libsoup3
+  pango
+  python
+  python-beautifulsoup4
+  python-cairo
+  python-gobject
+  python-pyopenssl
+  webkit2gtk-4.1
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=(
+  "git+https://gitlab.gnome.org/World/eolie.git#tag=$pkgver"
+  git+https://gitlab.gnome.org/gnumdk/eolie-po.git
+  eolie-libsoup3.patch
+  eolie-disable-firefox-sync.patch
+  eolie-po-dir.patch
+  eolie-appstreamcli.patch
+  eolie-private-option.patch
+  eolie-dbus-activatable.patch
+  eolie-clear-tmpdir.patch
+  eolie-search-provider-timeout.patch
+  eolie-missing-icons.patch
+)
+b2sums=(
+  1728085b113cffa00a44a81be6ce6880d6430eba0ac686a89bbb9affe5d9af09e5cbd95076f4ab5d6676ffe5f20d77c69b17ed0f8c7f0c9721678dfd70266b96
+  SKIP
+  c1c94a1f461d50f8bd402cbffa5e03c7e25d715282579e448af50f0d9fa710becebfbf2c6840217c1915a46536f22e6e0032a9121f37063f7a036872be5ec3ab
+  d6525928997a708fc5e1b6127433c97f6b059a081327bd9d34ff63f25b9f33e8e4b0e0520c31fbb2e9edc173109750df54ad5feabf0de9109ba359d9730d4bf9
+  35584ce0d95bc8cbf293604f087d0dc976ea683184e25c0e368c71be32127c534105647640401a0169cac0ae42d9011cf09182a05a5e87e09591e63c94cbac55
+  1727314b2d5007943f11fd8a8ce5efc9fa369ec75102d64b41e4ca88e2e4c484139a459dd2130af486bd0b5e9cf51c63a587fcdd5442e7576b39dd3f1d63b2b4
+  4f05c3bd006ab54e0b53e5545e077739ca71ddcb2f4506f925781eb8ef63333f796224cc5d1a86e048cbbf338c360d5738e9d38a0887d97e8a7745c639820623
+  22337f6f6f350dd91cdde7919af5d3e71a744aca0201068194dbe9f5d9975712ffcc9e22bc2ee2013012749e7edbc8fb0f5503c304b970ec0e276ea61064cb40
+  56124b61de5ae16def6cb343d9f65125fce8d7bd8d34a0b084b4a37b073653170cb9e7451de4ea2cb907ceedec2701c01d982d402abf6f06a916c0ebb9437c37
+  788fb8621377a0bb47581a9d3001a398cb4aa599e4d10bf34ee1daa745f1ee568a67d4ade93034f8448a97b7ded9eb3d882a1380d2f7b0d56a819797c05335d5
+  5fc770f58fb3dd5c793f1ce6876556bf4f809633278ed218c071451cf241796132ddc3d57020dd17bd61a58730253e0760d137cbc3b1f9c66c7889194f9ee7d4
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git config submodule.subprojects/po.url "$srcdir/eolie-po"
+  git -c protocol.file.allow=always submodule update
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/285
+  git apply -3 ../eolie-libsoup3.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/287
+  git apply -3 ../eolie-disable-firefox-sync.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/288
+  git apply -3 ../eolie-po-dir.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/289
+  git apply -3 ../eolie-appstreamcli.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/290
+  git apply -3 ../eolie-private-option.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/291
+  git apply -3 ../eolie-dbus-activatable.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/292
+  git apply -3 ../eolie-clear-tmpdir.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/293
+  git apply -3 ../eolie-search-provider-timeout.patch
+
+  # https://gitlab.gnome.org/World/eolie/-/merge_requests/294
+  git apply -3 ../eolie-missing-icons.patch
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/lib "$pkgdir/usr/lib"
+  python -O -m compileall -d /usr/lib "$pkgdir/usr/lib"
+}

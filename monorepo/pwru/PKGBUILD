@@ -1,0 +1,45 @@
+# Maintainer: Morten Linderud <foxboron@archlinux.org>
+# Contributor: Y7n05h < echo WTduMDVoQHk3bjA1aC5kZXY= | base64 -d >
+
+pkgname=pwru
+pkgver=1.0.12
+pkgrel=1
+pkgdesc="Packet, where are you? -- eBPF-based Linux kernel networking debugger"
+arch=("x86_64")
+url="https://github.com/cilium/pwru"
+license=("GPL2")
+depends=("glibc")
+makedepends=("clang" "llvm" "go")
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('1b5154439ad4bf02d4d7acaf98fd1913fb053593d31282f6898352a1b04e5e09')
+
+prepare() {
+	cd "$pkgname-$pkgver"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+	export TARGET_GOARCH=amd64
+	go generate
+}
+
+build() {
+	cd "$pkgname-$pkgver"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOPATH="${srcdir}"
+	export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+	make libpcap/libpcap.a
+	go build \
+		-ldflags "-compressdwarf=false -linkmode external -X \"github.com/cilium/pwru/internal/pwru.Version=${pkgver}\"" \
+		-o ${pkgname}
+}
+
+package() {
+	cd "$pkgname-$pkgver"
+	install -Dm755 ${pkgname} -t "$pkgdir/usr/bin"
+}

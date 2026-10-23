@@ -1,0 +1,36 @@
+# Maintainer: Maxim Baz <archlinux at maximbaz dot com>
+
+pkgname=kakoune-lsp
+pkgver=21.0.2
+pkgrel=1
+pkgdesc='Kakoune Language Server Protocol Client'
+arch=('x86_64')
+url="https://github.com/${pkgname}/${pkgname}"
+license=('custom:unlicense')
+replaces=('kak-lsp')
+conflicts=('kak-lsp')
+provides=('kak-lsp')
+depends=('kakoune')
+makedepends=('rust')
+optdepends=(
+    'bash-language-server: language server for Bash'
+    'gopls: language server for Go'
+    'haskell-language-server: language server for Haskell'
+    'lua-language-server: language server for Lua'
+    'python-lsp-server: language server for Python'
+    'rust-analyzer: language server for Rust'
+)
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+b2sums=('1c951c5d81bc7a856a9c805d5dc5af2a5802178ec62e96477762a20927902b60bef197d875d910732fa950308ace0a7c020b2cf396aeda955f02df45cea9847a')
+
+build() {
+    cd "${pkgname}-${pkgver}"
+    make
+}
+
+package() {
+    cd "${pkgname}-${pkgver}"
+    make DESTDIR="${pkgdir}" install
+}
+
+# vim:set ts=4 sw=4 et:

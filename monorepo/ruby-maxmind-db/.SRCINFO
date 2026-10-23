@@ -1,0 +1,20 @@
+pkgbase = ruby-maxmind-db
+	pkgdesc = MaxMind DB reader for Ruby
+	pkgver = 1.5.0
+	pkgrel = 1
+	url = https://github.com/maxmind/MaxMind-DB-Reader-ruby
+	arch = any
+	license = Apache-2.0
+	license = MIT
+	checkdepends = ruby-bundler
+	makedepends = git
+	makedepends = ruby-minitest
+	makedepends = ruby-rake
+	depends = ruby
+	options = !emptydirs
+	source = git+https://github.com/maxmind/MaxMind-DB-Reader-ruby.git#tag=v1.5.0
+	source = git+https://github.com/maxmind/MaxMind-DB.git
+	sha256sums = 5036f963e45d3fb8eb8ef0f59b558607f239d6610348f4e3ec00e7dad1555d3b
+	sha256sums = SKIP
+
+pkgname = ruby-maxmind-db

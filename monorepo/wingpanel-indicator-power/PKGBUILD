@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=wingpanel-indicator-power
+pkgver=8.0.2
+pkgrel=2
+pkgdesc='Wingpanel Power Indicator'
+arch=(x86_64)
+url=https://github.com/elementary/wingpanel-indicator-power
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  dconf
+  glib2
+  glibc
+  granite7
+  gtk4
+  libgee
+  libgtop
+  libnotify
+  systemd-libs
+  wingpanel
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+#source=(git+https://github.com/elementary/wingpanel-indicator-power.git#tag=${pkgver})
+source=(git+https://github.com/elementary/wingpanel-indicator-power.git#commit=65e97001da8b7e1bce42c66868c3ebb8594b564d)
+b2sums=('3ae15d3795745615d0d7eccb3da31c025ef7e299c688de414594ac2b828e2fb8c71b4c019cc318f235f6b379dd9a1f92405a93259daf633e8fcf618e50f2dfe8')
+
+build() {
+  arch-meson wingpanel-indicator-power build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}

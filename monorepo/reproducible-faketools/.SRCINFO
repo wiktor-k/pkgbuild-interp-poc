@@ -1,0 +1,66 @@
+pkgbase = reproducible-faketools
+	pkgdesc = Fake system tools for reproducible builds
+	pkgver = 0.5.5
+	pkgrel = 3
+	url = https://github.com/bmwiedemann/reproducible-faketools
+	arch = any
+	license = MIT
+	source = https://github.com/bmwiedemann/reproducible-faketools/archive/v0.5.5/reproducible-faketools-0.5.5.tar.gz
+	sha256sums = 487464bc9956c936a9c5d0fbbf8982aaa95bd00a707fbbe8e9398980be8a7db5
+
+pkgname = reproducible-faketools-ant
+	pkgdesc = Fake system tools for reproducible builds (ant)
+	groups = reproducible-faketools
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-ar
+	pkgdesc = Fake system tools for reproducible builds (ar)
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-date
+	pkgdesc = Fake system tools for reproducible builds (date)
+	depends = bash
+	depends = reproducible-faketools-lib
+
+pkgname = reproducible-faketools-find
+	pkgdesc = Fake system tools for reproducible builds (find)
+	depends = bash
+	depends = reproducible-faketools-lib
+
+pkgname = reproducible-faketools-gzip
+	pkgdesc = Fake system tools for reproducible builds (gzip)
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-hostname
+	pkgdesc = Fake system tools for reproducible builds (hostname)
+	depends = inetutils
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-jar
+	pkgdesc = Fake system tools for reproducible builds (jar)
+	depends = bash
+	depends = reproducible-faketools-lib
+
+pkgname = reproducible-faketools-lib
+	pkgdesc = Fake system tools for reproducible builds (library files)
+
+pkgname = reproducible-faketools-tar
+	pkgdesc = Fake system tools for reproducible builds (tar)
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-uname
+	pkgdesc = Fake system tools for reproducible builds (uname)
+	depends = reproducible-faketools-lib
+	depends = sh
+
+pkgname = reproducible-faketools-zip
+	pkgdesc = Fake system tools for reproducible builds (zip)
+	depends = p7zip
+	depends = perl
+	depends = reproducible-faketools-lib
+	depends = sh

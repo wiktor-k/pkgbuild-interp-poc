@@ -1,0 +1,36 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: TDY <tdy@gmx.com>
+# Contributor: Aaron Griffin <aaron@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=fte
+pkgver=0.50.02
+pkgrel=2
+pkgdesc='Text editor for developers'
+arch=(x86_64)
+url='https://fte.sourceforge.net/'
+license=(GPL-2.0-or-later)
+depends=('gpm>=1.20.4' libxpm slang)
+makedepends=(gendesk imagemagick)
+source=("https://downloads.sourceforge.net/$pkgname/$pkgname-20110708-src.zip"
+        "https://downloads.sourceforge.net/$pkgname/$pkgname-20110708-common.zip")
+b2sums=('42bb3cc4ae9be4b64c0b161488d91d4a260a2e6a1574fccb0fc652359e34f7b6b881f170dfd85a8954f2b2fdbe4fecaaf2fc68cd5244f185dde36fe1a694004e'
+        'ce1ac0f2bd68b2bb7ef1d96a46bd9a481cd46f5cde00607c64f752d5e87f6edefd8a92c8210e1ac7629ef8bc5720a8a2d75bd61f292f344e211b88a2462989fa')
+
+prepare() {
+  convert $pkgname/src/icons/fte64x64.xpm fte.png
+  gendesk --pkgname $pkgname --pkgdesc "$pkgdesc"
+}
+
+build() {
+  cd $pkgname
+  export CXXFLAGS+=' -DHAVE_STRLCPY -DHAVE_STRLCAT'
+  make PREFIX=/usr clean
+  make PREFIX=/usr all
+}
+
+package() {
+  make -C $pkgname PREFIX="$pkgdir/usr" install
+  install -Dm644 -t "$pkgdir/usr/share/pixmaps" fte.png
+  install -Dm644 -t "$pkgdir/usr/share/applications" fte.desktop
+}

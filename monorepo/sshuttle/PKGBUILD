@@ -1,0 +1,49 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: alphazo <alphazo@gmail.com>
+
+pkgname=sshuttle
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='Transparent proxy server that forwards all TCP packets over ssh'
+arch=('any')
+url="https://github.com/sshuttle/sshuttle"
+license=('LGPL-2.1-or-later')
+depends=('iptables' 'openssh' 'net-tools' 'python')
+makedepends=('git' 'python-sphinx' 'python-build' 'python-installer' 'python-hatchling')
+checkdepends=('python-pytest')
+backup=('etc/sshuttle/tunnel.conf' 'etc/sshuttle/prefixes.conf')
+source=("git+https://github.com/sshuttle/sshuttle.git#tag=v$pkgver"
+        'sshuttle.service' 'prefixes.conf' 'tunnel.conf')
+sha512sums=('8d067525b88a8c3005b9df7a2a98ea7ba7eba69150a1265e2b1305d7e69ce67d102d40db823afd6047643ea3425815fe8eae6ff267cd89ffbd29344fcc445a32'
+            'c22504798f6220cd6b0946d6975375437c52753a241cd2a6a03d3aeb005ed1d78e6356dde23716e2514ccf6d7f1c6aace43956dbeede1bf028753b9bdcdd8b7d'
+            'cc5a5dee7991c7641fa8a4fb356e1977aa9d1cbfed63cb5ebf8732c4de76be841f66d9267472e70578b176f528d8cfb4f75e634d5d915f4c8bcdc0b801db8a13'
+            'acd3d0024d4604cc6a96609286c3f27bce2f0b70a068f58a2110dacc235b22ba7cd83c8989f46d0a9391eda7d272040bb3b1b2c547ae3fa0c9f61bef0a187dda')
+
+prepare() {
+  cd sshuttle
+  sed -i '/--cov/d' setup.cfg
+}
+
+build() {
+  cd sshuttle
+  python -m build -nw
+
+  cd docs
+  make man
+}
+
+check() {
+  cd sshuttle
+  PYTHONPATH="$PWD" pytest
+}
+
+package() {
+  cd sshuttle
+  python -m installer -d "$pkgdir" dist/*.whl
+
+  install -Dm644 docs/_build/man/sshuttle.1 "$pkgdir"/usr/share/man/man1/sshuttle.1
+
+  install -d "$pkgdir"/etc/sshuttle
+  install -m644 "$srcdir"/{tunnel.conf,prefixes.conf} "$pkgdir"/etc/sshuttle
+  install -Dm644 "$srcdir"/sshuttle.service "$pkgdir"/usr/lib/systemd/system/sshuttle.service
+}

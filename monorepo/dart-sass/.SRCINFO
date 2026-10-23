@@ -1,0 +1,22 @@
+pkgbase = dart-sass
+	pkgdesc = Sass makes CSS fun again
+	pkgver = 1.106.1
+	pkgrel = 1
+	url = http://sass-lang.com/
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = dart
+	makedepends = buf
+	depends = glibc
+	provides = sass
+	conflicts = ruby-sass
+	options = !strip
+	source = dart-sass::git+https://github.com/sass/dart-sass.git#tag=1.106.1
+	source = github.com-sass-sass::git+https://github.com/sass/sass.git#tag=embedded-protocol-3.3.0
+	sha512sums = dba2786b1ebc53546b2f4d782a0f8336e07c444912a80efee87d2055d3f4203e36a3a3de04375baaadfaf4ffbc55423722db0b78b51b63d84c5f7daa038cba25
+	sha512sums = 82a2ada59c1ca0513dd61d2c12c6048d3c8544c81061792e92886928fb6ef237b76bd39dbc2935d7338f0af8f54a53d991acd5c0cc7b409202b44566d448b7e8
+	b2sums = c99299138b8e176043567a0990d66e40c12c889a8d9f98c0ef8ba5e38ce15500ad097bad13767c529bfa0082f10d659cffbb34869293eeca71b8ba550672b65c
+	b2sums = a4ee88650f6a2075a20c0dcf5496e63c123654f36a48bb04e2fa2a4602dc96c36fca0f140081dda20da7d015aa0241bf8f4dd0d15abce421d8c878f8f87c0202
+
+pkgname = dart-sass

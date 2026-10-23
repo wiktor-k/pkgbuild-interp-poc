@@ -1,0 +1,37 @@
+pkgbase = python-ratarmountcore
+	pkgdesc = Random Access To Archived Resources Library
+	pkgver = 0.11.1
+	pkgrel = 1
+	url = https://github.com/mxmlnkn/ratarmount
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-indexed-gzip
+	depends = python-indexed-zstd
+	depends = python-libarchive-c
+	depends = python-xz
+	depends = python-rapidgzip
+	depends = python-rarfile
+	optdepends = python-rich: color coded files in cli
+	optdepends = python-pygit2: git support
+	optdepends = python-fsspec: for remote files
+	optdepends = python-aiohttp: for http:// via fsspec
+	optdepends = python-requests: for various web backends such as github:// via fsspec
+	optdepends = python-s3fs: for s3:// via fsspec
+	optdepends = python-smbprotocol: for smb:// via fsspec
+	optdepends = python-webdav4: for webdav:// via fsspec
+	optdepends = python-pysquashfsimage: for squashfs images
+	optdepends = python-isal: faster decompression of zlib-compressed squashfs images
+	optdepends = python-fast-zip-decryption: faster zip decryption
+	optdepends = python-py7zr: for password-protected 7z archives
+	optdepends = python-ext4: for EXT4 images
+	source = ratarmount::git+https://github.com/mxmlnkn/ratarmount#tag=core-v0.11.1
+	sha512sums = 4c6d1608d369a9edc7c98ef700be63243a5b9e31716157cc5ca7f31d3949f7bbfc409317d6c5b3f3b6020fb6a06b3b6ed1109ad701d6582bfbb6e00dc14d77bc
+	b2sums = 03925ef2f127dddb30c5200741fe6b1991278775f52567d61a4a472843425ba54fce6c08a557f11701393bfe9fb8e037c390cd4d937696126f16b3a5fc1511c2
+
+pkgname = python-ratarmountcore

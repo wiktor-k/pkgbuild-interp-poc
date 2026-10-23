@@ -1,0 +1,68 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Sebastian Lau <archlinux _at_ slau _dot_ info>
+# Contributor: Eric Ozwigh <ozwigh at gmail dot com>
+
+pkgname=veracrypt
+_pkgname=VeraCrypt
+pkgver=1.26.29
+pkgrel=1
+pkgdesc='Disk encryption with strong security based on TrueCrypt'
+url='https://www.veracrypt.fr/'
+arch=(x86_64)
+license=('LicenseRef-TrueCrypt AND Apache-2.0')
+depends=(
+  device-mapper
+  fuse2
+  libgcc
+  libstdc++
+  glibc
+  libsm
+  wxwidgets-common
+  wxwidgets-gtk3
+)
+optdepends=(
+  'sudo: mounting encrypted volumes as nonroot users'
+)
+makedepends=(
+  pcsclite
+  yasm
+)
+source=(https://launchpad.net/veracrypt/trunk/${pkgver}/+download/VeraCrypt_${pkgver}_Source.tar.bz2{,.sig}
+        wx-3.2-size-warnings.patch)
+sha512sums=('a4a981da258c5349afd5bf55ca3863342ff4ebe6a0b8b1282c1d879f2eaaa2d040e55caa7c159823c4c91ad45e507f852f39c302b713948019afebf86f2823eb'
+            'SKIP'
+            '5ff99e8d8569d36ff0e2e3b9fd85f59f5b3de98e3f5cda7ee85a6688a33a10d4527b0fed08e53812b28ea2b42ed88481455b5f1454870e35940b2e49bf59b5b2')
+validpgpkeys=('5069A233D55A0EEB174A5FC3821ACD02680D16DE') # VeraCrypt Team <veracrypt@idrix.fr>
+
+prepare() {
+  cd src
+  chmod -R u+w . # WAT award
+  patch -p1 < ../wx-3.2-size-warnings.patch # https://github.com/veracrypt/VeraCrypt/issues/952
+}
+
+build() {
+  cd src
+  make PKG_CONFIG_PATH=/usr/lib/pkgconfig \
+    TC_EXTRA_LFLAGS+="-ldl ${LDFLAGS}" \
+    TC_EXTRA_CXXFLAGS="${CXXFLAGS} ${CPPFLAGS}" \
+    TC_EXTRA_CFLAGS="${CFLAGS} ${CPPFLAGS}" \
+    SOURCE_DATE_EPOCH="${SOURCE_DATE_EPOCH}"
+}
+
+package() {
+  cd src
+  install -Dm 755 Main/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
+  install -Dm 644 Setup/Linux/veracrypt.desktop -t "${pkgdir}/usr/share/applications"
+  install -Dm 644 Setup/Linux/veracrypt.xml -t "${pkgdir}/usr/share/mime/packages"
+
+  install -Dm644 Resources/Icons/VeraCrypt-symbolic.svg -t "$pkgdir/usr/share/icons/hicolor/symbolic/apps/"
+  install -Dm644 Resources/Icons/VeraCrypt-256x256.xpm "$pkgdir/usr/share/icons/hicolor/256x256/apps/$pkgname.xpm"
+  for res in 16 22 24 32 48 64 128 256 512 1024; do
+    install -Dm644 Resources/Icons/VeraCrypt-${res}x${res}.png \
+      "$pkgdir/usr/share/icons/hicolor/${res}x${res}/apps/$pkgname.png"
+  done
+
+  install -Dm 644 License.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

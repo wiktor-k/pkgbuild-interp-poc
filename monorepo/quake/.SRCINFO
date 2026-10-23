@@ -1,0 +1,21 @@
+pkgbase = quake
+	pkgdesc = Open source Quake 1 resource files
+	pkgver = 0.09_beta
+	pkgrel = 3
+	epoch = 1
+	url = https://github.com/lavenderdotpet/LibreQuake
+	arch = any
+	license = BSD-3-Clause
+	makedepends = gendesk
+	source = librequake-0.09-beta.zip::https://github.com/lavenderdotpet/LibreQuake/releases/download/v0.09-beta/full.zip
+	source = quake.sh
+	b2sums = a463ed00898d58867eb21b82a95091c6d9fa89300bc07716a1c8c5b1cd1e8b726ba18b597acbac5794ebc454f7c2875e276a2ad224a325f325ab198ba80b7940
+	b2sums = a21191d25d1788ab3cf8886384de65daa0504cd4193619cdcb6d5aaf64f184100d8476c008cc8158947f0ebc77dfe7b834d51011a698292f46e70afc59fa8d9b
+
+pkgname = librequake
+
+pkgname = quake
+	pkgdesc = Launcher for running an installed Quake 1 engine together with LibreQuake
+	license = 0BSD
+	depends = librequake
+	depends = quake-engine

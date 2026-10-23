@@ -1,0 +1,88 @@
+# Maintainer: DeepChirp <deepchirp@archlinux.org>
+# Contributor: Torge Matthies <openglfreak at googlemail dot com>
+
+_pkgname=DeepFilterNet
+pkgbase=deepfilternet
+pkgname=('deepfilternet-cli' 'deepfilternet-ladspa')
+pkgver=0.5.6
+pkgrel=1
+pkgdesc="Noise suppression using deep filtering"
+arch=('x86_64')
+url="https://github.com/Rikorose/${_pkgname}"
+license=('Apache-2.0 OR MIT')
+makedepends=(
+    'cargo'
+    'git'
+    'jemalloc'
+)
+source=("${pkgbase}-${pkgver}.tar.gz::https://github.com/Rikorose/${_pkgname}/archive/v${pkgver}.tar.gz")
+sha256sums=('0f9a219d06c404bc4200f228e7e224f108cbbca04d7227a6de7d2ce974c2f579')
+
+prepare() {
+    cd "${_pkgname}-${pkgver}"
+
+    # Workaround for Rust 1.80+ type inference breakage in time <0.3.35
+    # Ref: https://github.com/time-rs/time/issues/681
+    cargo update -p time --precise 0.3.35
+
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+    cd "${_pkgname}-${pkgver}"
+
+    export CARGO_PROFILE_RELEASE_DEBUG=2
+    export CARGO_PROFILE_RELEASE_STRIP=false
+    export CARGO_PROFILE_RELEASE_LTO=true
+    export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+    export JEMALLOC_OVERRIDE=/usr/lib/libjemalloc.so
+    export CARGO_FEATURE_UNPREFIXED_MALLOC_ON_SUPPORTED_PLATFORMS=1
+
+    cargo build --frozen --release \
+        -p deep_filter \
+        --bin deep-filter \
+        --features tract,wav-utils,transforms,bin,use-jemalloc
+
+    cargo build --frozen --release --all-features \
+        -p deep-filter-ladspa
+}
+
+package_deepfilternet-cli() {
+    pkgdesc+=" - Command-line interface"
+    depends=(
+        'glibc'
+        'jemalloc'
+        'libgcc'
+    )
+
+    cd "${_pkgname}-${pkgver}"
+
+    install -Dm755 "target/release/deep-filter" -t "${pkgdir}/usr/bin"
+
+    install -Dm644 "LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+    install -Dm644 "LICENSE-MIT" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+    install -Dm644 "LICENSE-APACHE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+package_deepfilternet-ladspa() {
+    pkgdesc+=" - LADSPA plugin"
+    groups=('ladspa-plugins' 'pro-audio')
+    depends=(
+        'glibc'
+        'libgcc'
+    )
+    provides=("libdeep_filter_ladspa=${pkgver}")
+    conflicts=('libdeep_filter_ladspa')
+    replaces=('libdeep_filter_ladspa')
+
+    cd "${_pkgname}-${pkgver}"
+
+    install -Dm755 "target/release/libdeep_filter_ladspa.so" -t "${pkgdir}/usr/lib/ladspa"
+
+    install -Dm644 ladspa/filter-chain-configs/*.conf -t "${pkgdir}/usr/share/doc/${pkgname}/examples"
+
+    install -Dm644 "ladspa/LICENSE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+    install -Dm644 "ladspa/LICENSE-MIT" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+    install -Dm644 "ladspa/LICENSE-APACHE" -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}

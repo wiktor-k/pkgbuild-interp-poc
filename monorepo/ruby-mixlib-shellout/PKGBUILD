@@ -1,0 +1,40 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Joel Goguen <contact+aur@jgoguen.ca>
+# Contributor: Christopher Loen <christopherloen at gmail dot com>
+# Contributor: Artem Vorotnikov <artem@vorotnikov.me>
+
+pkgname=ruby-mixlib-shellout
+_pkgname="${pkgname#ruby-}"
+pkgver=3.4.14
+pkgrel=1
+pkgdesc='Run external commands on Unix'
+arch=(any)
+url='https://github.com/chef/mixlib-shellout'
+license=(Apache-2.0)
+depends=(ruby ruby-chef-utils)
+makedepends=(git ruby-rake ruby-rdoc)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('781dcd37e5a59a20ad61217a3396a9a83499d67f9695c217db229c01110d6963460b739cca357963c24161338f19870e19624fe2e9544b2a125390045f4f505a')
+b2sums=('015361fcb9f205c6acf3f37f8c4badc8d6668a1d7a98014ccf19c92702515aa7f5f1a3cd54fdae10a66580981514317b911fb6111929c762fd2c8c4cfa152f00')
+
+build() {
+  cd "$pkgname"
+
+  gem build "$_pkgname.gemspec"
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+}

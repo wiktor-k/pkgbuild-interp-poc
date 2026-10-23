@@ -1,0 +1,51 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+_pyname=whisper
+pkgname=python-openai-$_pyname
+pkgver=20250625
+pkgrel=3
+pkgdesc='Robust speech recognition via large-scale weak supervision'
+arch=(any)
+url='https://github.com/openai/whisper'
+license=(MIT)
+depends=(python
+         python-more-itertools
+         python-numba
+         python-numpy
+         python-pytorch
+         python-regex
+         python-tiktoken
+         python-tqdm)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+checkdepends=(ffmpeg
+              python-pytest)
+source=(git+https://github.com/openai/whisper#tag=v$pkgver)
+sha256sums=('43ba12fdb0ceba5c72e223b36b84a06cd4279d9feda1d1c1c6a060e6bcd7f2f9')
+
+build() {
+  cd $_pyname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pyname
+# Deselect tests that need CUDA
+  PYTHONPATH="$PWD" \
+  pytest -v -x \
+    --deselect tests/test_timing.py::test_dtw_cuda_equivalence \
+    --deselect tests/test_timing.py::test_median_filter_equivalence \
+    --deselect tests/test_transcribe.py::test_transcribe[large-v1] \
+    --deselect tests/test_transcribe.py::test_transcribe[large-v2] \
+    --deselect tests/test_transcribe.py::test_transcribe[large-v3] \
+    --deselect tests/test_transcribe.py::test_transcribe[large]
+}
+
+package() {
+  cd $_pyname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname
+}

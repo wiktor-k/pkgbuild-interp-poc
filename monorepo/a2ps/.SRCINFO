@@ -1,0 +1,24 @@
+pkgbase = a2ps
+	pkgdesc = An Any to PostScript filter
+	pkgver = 4.15.8
+	pkgrel = 1
+	url = https://www.gnu.org/software/a2ps
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = gperf
+	depends = imagemagick
+	depends = perl
+	depends = psutils
+	backup = etc/a2ps/a2ps.cfg
+	backup = etc/a2ps/a2ps-site.cfg
+	source = https://ftp.gnu.org/gnu/a2ps/a2ps-4.15.8.tar.gz
+	source = https://ftp.gnu.org/gnu/a2ps/a2ps-4.15.8.tar.gz.sig
+	source = a2ps-4.13c-emacs.patch
+	source = a2ps-adhere-source-date-epoch.patch
+	validpgpkeys = 24093F016FFE8602EF449BB84C8EF3DA3FD37230
+	sha256sums = 8d13915a36ebbfa8e7b236b350cc81adc714acb217a18e8d8c60747c0ad353f9
+	sha256sums = SKIP
+	sha256sums = 943739a788db47f10942477754f42c8c9b22cdaad4463bea4103c31a330de76a
+	sha256sums = 305ba7b9a44e7d6480a23098efb27aab5daedde71defcfe2f1b01b70d025e3db
+
+pkgname = a2ps

@@ -1,0 +1,41 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: Felix Yan
+# Contributor: Zerial
+# Contributor: Patrick Leslie Polzer
+# Contributor: Jose Riha
+
+pkgname=dd_rescue
+pkgver=1.99.25
+pkgrel=1
+pkgdesc="A dd version that is very useful for data-recovery"
+url="http://www.garloff.de/kurt/linux/ddrescue/"
+license=("GPL")
+depends=('openssl')
+optdepends=('lzo: for libddr_lzo')
+arch=('x86_64')
+source=("http://www.garloff.de/kurt/linux/ddrescue/$pkgname-${pkgver}.tar.bz2"{,.asc}
+        "gzip_reproducible.patch")
+sha512sums=('11cbecba480e8462198c1ba93f58cbf7ecd08782abfe1756984c714f0e12ee137a13961fdce1438915585f85288bd69e3db6b5e1e8cd89ba7973e8c752fdb814'
+            'SKIP'
+            '3b984b16f3ab6edb732efc69c96a41d9f1e1665452e6cb943588c61e029c8ef16129a5588fa4430b03ea7b1b351f907fda73da51761e08515f4e5076cd59ea90')
+validpgpkeys=('6669F7340D31E95EC5565490DE4F1B3A2BFFC5BF') # Kurt Garloff <kurt@garloff.de>
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 < ../gzip_reproducible.patch
+  autoreconf -fi
+
+  # Don't install to /usr/lib64
+  sed -i '/LIB = lib64/d' Makefile
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" INSTALLDIR="$pkgdir/usr/bin" install
+}

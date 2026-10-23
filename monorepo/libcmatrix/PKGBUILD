@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=libcmatrix
+pkgver=0.0.4
+pkgrel=2
+pkgdesc='Matrix client library written in GObject'
+arch=(x86_64)
+url='https://source.puri.sm/Librem5/libcmatrix'
+license=(LGPL-2.1-or-later)
+depends=(
+  glib2
+  glibc
+  json-glib
+  libgcc
+  libgcrypt
+  libolm
+  libsecret
+  libsoup3
+  sqlite
+)
+makedepends=(
+  gi-docgen
+  git
+  glib2-devel
+  gobject-introspection
+  meson
+)
+source=("git+https://source.puri.sm/Librem5/libcmatrix.git?signed#tag=v$pkgver")
+b2sums=(69efb0a10e37f805bbf7597f2ed12a804d4cbb3e0ef2abfdb99777daf1c4443fd9e1a8fd938fe5333185c1a532229a93e06d2fd1bdcca6668800c59c683dc6c5)
+validpgpkeys=(
+  0DB3932762F78E592F6522AFBB5A2C77584122D3 # Guido Günther <guido@xcpu.ch>
+  B9386554B7DD266BCB8E29A990F0C9B18A6B4A19 # Evangelos Ribeiro Tzaras <devrtz@fortysixandtwo.eu>
+)
+
+prepare() {
+  cd $pkgname
+
+  # Secure memory tests fail
+  sed -i "/'client',/d;/'cm-enc',/d" tests/meson.build
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D introspection=true \
+    -D gtk_doc=true
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

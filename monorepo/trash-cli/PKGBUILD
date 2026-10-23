@@ -1,0 +1,51 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Eli Schwartz <eschwartz@archlinux.org>
+# Contributor: Pierre Neidhardt <ambrevar@gmail.com>
+# Contributor: Renato Garcia <fgarcia.renato@gmail.com>
+
+pkgname=trash-cli
+pkgver=0.24.5.26
+pkgrel=3
+pkgdesc="Command line trashcan (recycle bin) interface"
+arch=('any')
+url="https://github.com/andreafrancia/trash-cli"
+license=('GPL-2.0-only')
+depends=('python' 'python-psutil' 'python-six')
+makedepends=('python-setuptools' 'python-shtab' 'python-build' 'python-installer' 'python-wheel')
+checkdepends=('python-pytest' 'python-flexmock' 'python-parameterized')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz")
+sha256sums=('1d7dec1ad8f0264ceb1b0211d25fffee99c9409cd2e1d36dcc82ac5540f39ce5')
+
+prepare() {
+    cd "${srcdir}"/${pkgname}-${pkgver}
+
+    # don't depend on thirdparty copies of the stdlib
+    find tests -type f -name "*.py" -exec \
+        sed -i 's/^import mock$/from unittest import mock/;s/from mock /from unittest.mock /;s/from mock.mock /from unittest.mock /' {} +
+}
+
+build() {
+    cd "${srcdir}"/${pkgname}-${pkgver}
+
+    python -m build --wheel --no-isolation
+    for cmd in trash-empty trash-list trash-restore trash-put trash; do
+      ./$cmd --print-completion bash > ./$cmd-completion
+      ./$cmd --print-completion zsh > ./_$cmd-completion
+    done
+}
+
+check() {
+    cd "${srcdir}"/${pkgname}-${pkgver}
+
+    python -m pytest
+}
+
+package(){
+    cd "${srcdir}"/${pkgname}-${pkgver}
+
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    for cmd in trash-empty trash-list trash-restore trash-put trash; do
+      install -vDm 644 ./$cmd-completion "$pkgdir/usr/share/bash-completion/completions/$cmd"
+      install -vDm 644 ./_$cmd-completion "$pkgdir/usr/share/zsh/site-functions/_$cmd"
+    done
+}

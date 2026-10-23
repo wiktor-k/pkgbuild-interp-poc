@@ -1,0 +1,25 @@
+pkgbase = lib32-libxi
+	pkgdesc = X11 Input extension library (32-bit)
+	pkgver = 1.8.3
+	pkgrel = 1
+	url = https://xorg.freedesktop.org
+	arch = x86_64
+	license = custom
+	makedepends = pkgconfig
+	makedepends = xorgproto
+	makedepends = xorg-util-macros
+	makedepends = gcc-multilib
+	makedepends = automake
+	depends = lib32-libxext
+	depends = lib32-libxfixes
+	depends = libxi
+	source = https://xorg.freedesktop.org/releases/individual/lib/libXi-1.8.3.tar.xz
+	source = https://xorg.freedesktop.org/releases/individual/lib/libXi-1.8.3.tar.xz.sig
+	validpgpkeys = 3C2C43D9447D5938EF4551EBE23B7E70B467F0BF
+	validpgpkeys = C41C985FDCF1E5364576638B687393EE37D128F8
+	validpgpkeys = 3BB639E56F861FA2E86505690FDD682D974CA72A
+	validpgpkeys = FD0004A26EADFE43A4C3F249C6F7AE200374452D
+	sha256sums = 7ad60056f01af4f786cfe93b3a7707447711626fc8da2637bec71a90409babe5
+	sha256sums = SKIP
+
+pkgname = lib32-libxi

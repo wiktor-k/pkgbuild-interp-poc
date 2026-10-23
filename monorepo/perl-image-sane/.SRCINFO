@@ -1,0 +1,26 @@
+pkgbase = perl-image-sane
+	pkgdesc = Perl extension for the SANE (Scanner Access Now Easy) Project
+	pkgver = 5
+	pkgrel = 9
+	url = https://metacpan.org/release/Image-Sane
+	arch = x86_64
+	license = Artistic-1.0-Perl OR GPL-1.0-or-later
+	makedepends = imagemagick
+	depends = perl
+	depends = sane
+	depends = perl-extutils-depends
+	depends = perl-extutils-pkgconfig
+	depends = perl-readonly
+	depends = perl-test-requires
+	depends = perl-exception-class
+	depends = perl-try-tiny
+	provides = perl-sane
+	conflicts = perl-sane
+	replaces = perl-sane
+	options = !emptydirs
+	source = https://www.cpan.org/modules/by-module/Image/Image-Sane-5.tar.gz
+	source = Image-Sane-5-Replace-deprecated-given-and-when-operators.patch
+	sha256sums = 229aa0e9f049efa760f3c2f6e61d9d539af43d8f764b50a6e03064b4729a35ff
+	sha256sums = b81caa036aabe4bcb67ca2729854c8e1dabb62d17b17214e41c930937edbf488
+
+pkgname = perl-image-sane

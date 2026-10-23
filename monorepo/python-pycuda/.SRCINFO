@@ -1,0 +1,37 @@
+pkgbase = python-pycuda
+	pkgdesc = Python wrapper for Nvidia CUDA
+	pkgver = 2026.1
+	pkgrel = 4
+	url = https://documen.tician.de/pycuda/
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = boost
+	makedepends = ctags
+	makedepends = git
+	makedepends = mesa
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = boost-libs
+	depends = cuda
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = nvidia-utils
+	depends = python
+	depends = python-numpy
+	depends = python-pytools
+	provides = pycuda-headers
+	conflicts = pycuda-headers
+	replaces = pycuda-headers
+	source = git+https://github.com/inducer/pycuda.git#tag=v2026.1
+	source = git+https://github.com/inducer/compyte
+	sha512sums = 048558cf0f671fe9eec51dcf6282e7017fcd120dad28cb2c414a0f1ac252a726fdb3af63dab0a9b4065cbffb507f898750efd3bbf8bde818dc556ac8c03172e9
+	sha512sums = SKIP
+	b2sums = ef311ec65f9a1bd4b40072fd18b9abdafea0d1f8c8277ffa7b1a2068c4edb08ebb5d4fef3490e8f45691f08c3f07f2837e434a6bdc44b469bd33c8e545354818
+	b2sums = SKIP
+
+pkgname = python-pycuda

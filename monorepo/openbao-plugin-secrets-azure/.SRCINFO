@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-secrets-azure
+	pkgdesc = OpenBao Plugin - Generate Azure service principals with role and group assignments
+	pkgver = 0.23.0
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-secrets-azure::git+https://github.com/openbao/openbao-plugins.git#tag=secrets-azure-v0.23.0
+	sha256sums = 03a739a163755456ebb31a3a8a879b1f4ab5a04851bf13d2989552604dee1594
+
+pkgname = openbao-plugin-secrets-azure

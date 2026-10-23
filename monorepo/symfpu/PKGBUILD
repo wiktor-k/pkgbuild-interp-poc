@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=symfpu
+pkgver=1.2.0
+pkgrel=1
+pkgdesc='A symbolic IEEE-754 floating-point library'
+arch=('any')
+url='https://github.com/martin-cs/symfpu'
+license=('BSD-3-Clause OR GPL-3.0-only')
+makedepends=('git')
+source=("git+https://github.com/martin-cs/symfpu.git#tag=symfpu-$pkgver-dual-license"
+        'smtlib-min-max.patch')
+sha256sums=('402132d5c3723c03400eb446ccb7b8b061dfc4d5243bb710eed957ff0b9973e1'
+            '21ec25a2de6228d6f67b7e20d8cb5245334bfc4ce66c86f10d039fc8e4efabed')
+
+prepare() {
+  cd symfpu
+  # Make the test runner fail on mismatches and succeed when all tests pass.
+  # https://github.com/martin-cs/symfpu/pull/11
+  git cherry-pick -n c10f2767f3bfc25381645449a3131bd5ef938b4d
+  # Align the tester's zero policy with its native reference and NaNs with SMT-LIB.
+  # https://github.com/martin-cs/symfpu/issues/5#issuecomment-878955729
+  # https://smt-lib.org/theories-FloatingPoint.shtml
+  patch -Np1 -i ../smtlib-min-max.patch
+  # Upstream's test flags enable x86 instructions on every architecture.
+  # https://github.com/martin-cs/symfpu/blob/symfpu-1.2.0-dual-license/flags
+  sed -i -E 's/ -m(sse2|fpmath=sse|fma|no-fma4)//g' flags
+}
+
+check() {
+  cd symfpu
+  # The test harness reinterprets float and integer pointers.
+  CXXFLAGS="$CXXFLAGS -fno-strict-aliasing" make -j1
+  ./test --allTests --allRoundingModes
+}
+
+package() {
+  cd symfpu
+  install -Dm644 core/*.h -t "$pkgdir/usr/include/symfpu/core/"
+  install -Dm644 utils/*.h -t "$pkgdir/usr/include/symfpu/utils/"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -Dm644 LICENSE LICENSE-BSD LICENSE-GPL3 -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

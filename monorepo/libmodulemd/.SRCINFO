@@ -1,0 +1,21 @@
+pkgbase = libmodulemd
+	pkgdesc = C Library for manipulating module metadata files
+	pkgver = 2.15.3
+	pkgrel = 1
+	url = https://github.com/fedora-modularity/libmodulemd
+	arch = x86_64
+	license = MIT
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = help2man
+	makedepends = meson
+	makedepends = python-gobject
+	depends = file
+	depends = glib2
+	depends = libyaml
+	depends = rpm-tools
+	optdepends = python-gobject: for python bindings
+	source = https://github.com/fedora-modularity/libmodulemd/releases/download/2.15.3/modulemd-2.15.3.tar.xz
+	sha256sums = 931b44eabdd5f7d170803f3476397c8e9dea07209589e1194ff8379429991ccb
+
+pkgname = libmodulemd

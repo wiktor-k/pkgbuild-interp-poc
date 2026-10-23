@@ -1,0 +1,53 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=python-gtkspellcheck
+pkgname=(
+  python-gtkspellcheck
+  python-gtkspellcheck-docs
+)
+pkgver=5.0.4
+pkgrel=1
+pkgdesc='Spell-checking library for GTK written in Python'
+arch=(any)
+url='https://github.com/koehlma/pygtkspellcheck'
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  python
+  python-gobject
+  python-pyenchant
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-myst-parser
+  python-poetry-core
+  python-sphinx_rtd_theme
+  python-wheel
+)
+optdepends=(
+  'gtk3: GTK 3 support'
+  'gtk4: GTK 4 support'
+)
+source=("git+https://github.com/koehlma/pygtkspellcheck.git#tag=v$pkgver")
+b2sums=(69d003ff169c076fe8c8ff2ad797a88f556ed657f85e56b289c07323f20856fed837f29bd76812b67669a5e53fe53f88ec47e97a62bc0e72983d9472df5ea0ae)
+
+build() {
+  cd pygtkspellcheck
+  python -m build --wheel --no-isolation
+}
+
+package_python-gtkspellcheck() {
+  cd pygtkspellcheck
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+package_python-gtkspellcheck-docs() {
+  pkgdesc='Developer documentation for python-gtkspellcheck'
+  depends=()
+
+  cd pygtkspellcheck
+  python -m sphinx -b html docs/source "$pkgdir/usr/share/doc/$pkgbase/html"
+  rm -r "$pkgdir/usr/share/doc/$pkgbase/html/.doctrees"
+}

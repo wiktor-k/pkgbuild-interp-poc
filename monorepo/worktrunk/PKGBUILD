@@ -1,0 +1,61 @@
+pkgname=worktrunk
+pkgver=0.80.0
+pkgrel=1
+pkgdesc='CLI for Git worktree management, designed for parallel AI agent workflows'
+url='https://github.com/max-sixty/worktrunk'
+license=("MIT OR Apache-2.0")
+arch=(
+  x86_64
+)
+depends=(
+  git
+  glibc
+  libgcc
+)
+makedepends=(
+  cargo
+)
+options=('!lto')
+source=("${url}/archive/refs/tags/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+b2sums=('0de55a578223077fdbfb8472cd3f1730a16ad9621c88dfbd56065d1d1b163bdb0c2b7c72d13a47163bdac1c692ad9b42cd666594b7825f31ce7bef7acca0668f')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export VERGEN_GIT_DESCRIBE=v${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  export VERGEN_GIT_DESCRIBE=v${pkgver}
+  cargo test -- \
+    --skip git::recover::tests::test_current_or_recover_returns_repo_when_cwd_exists \
+    --skip git::recover::tests::test_hint_for_repo_suggests_switch \
+    --skip integration_tests
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -Dm755 -t "${pkgdir}"/usr/bin \
+    target/release/wt 
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+  install -d "${pkgdir}/usr/share/bash-completion/completions" \
+             "${pkgdir}/usr/share/zsh/site-functions" \
+             "${pkgdir}/usr/share/fish/vendor_completions.d"
+  COMPLETE=bash "${pkgdir}/usr/bin/wt" > "${pkgdir}/usr/share/bash-completion/completions/wt"
+  COMPLETE=zsh "${pkgdir}/usr/bin/wt" > "${pkgdir}/usr/share/zsh/site-functions/_worktrunk"
+  COMPLETE=fish "${pkgdir}/usr/bin/wt" > "${pkgdir}/usr/share/fish/vendor_completions.d/wt.fish"
+  sed "s#${pkgdir}##g" -i \
+    "${pkgdir}/usr/share/bash-completion/completions/wt" \
+    "${pkgdir}/usr/share/zsh/site-functions/_worktrunk" \
+    "${pkgdir}/usr/share/fish/vendor_completions.d/wt.fish"
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,35 @@
+pkgbase = python-python-socks
+	pkgdesc = Core proxy client (SOCKS4, SOCKS5, HTTP) functionality for Python
+	pkgver = 3.1.1
+	pkgrel = 1
+	url = https://github.com/romis2012/python-socks
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-anyio
+	checkdepends = python-curio
+	checkdepends = python-flask
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	checkdepends = python-pytest-trio
+	checkdepends = python-starlette
+	checkdepends = python-tiny-proxy
+	checkdepends = python-trio
+	checkdepends = python-trustme
+	checkdepends = python-yarl
+	checkdepends = uvicorn
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	optdepends = python-anyio: anyio support
+	optdepends = python-curio: curio support
+	optdepends = python-trio: trio support
+	provides = python-python_socks
+	replaces = python-python_socks
+	source = git+https://github.com/romis2012/python-socks.git?signed#tag=v3.1.1
+	validpgpkeys = 706A8935FED55F3BFB7C188B5EEAD7400A5D80ED
+	b2sums = b0410cb38def76de0ddb8fdd7369b0b68252bdf23f0ac35f9f434e4000efde8f792a407dd7831636865632409a86442e1d850d01503ec862fa44816b29040a6c
+
+pkgname = python-python-socks

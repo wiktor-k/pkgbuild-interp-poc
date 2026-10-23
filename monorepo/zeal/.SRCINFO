@@ -1,0 +1,33 @@
+pkgbase = zeal
+	pkgdesc = Offline API documentation browser
+	pkgver = 0.9.1
+	pkgrel = 2
+	url = https://zealdocs.org
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = ninja
+	makedepends = git
+	makedepends = vulkan-headers
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = qt6-webengine
+	depends = qt6-base
+	depends = qt6-webchannel
+	depends = qt6-svg
+	depends = sqlite
+	depends = libarchive
+	depends = libgcc
+	depends = libstdc++
+	depends = libxcb
+	depends = libx11
+	depends = libxkbcommon
+	depends = tomlplusplus
+	depends = xcb-util-keysyms
+	depends = zlib
+	source = zeal::git+https://github.com/zealdocs/zeal#tag=v0.9.1
+	sha512sums = f76ba3b0ac5fa6c22f5fa96601ccc766c1af483dfb63287e9239ca08b34149dbcadb73d2a303502e7cf91e0691c4c212150950f46a2900dfb858e8ebf85eebd2
+	b2sums = 31a8afb8ecf03a4b93731c7026badccbf349a5115021b34c35fbace5c60fbd44c75ad8e59e45f4b35fdfd722b726953bf5c0c708607df9d5238718bc516aaef8
+
+pkgname = zeal

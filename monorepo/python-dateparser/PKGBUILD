@@ -1,0 +1,61 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgbase=python-dateparser
+pkgname=(
+  python-dateparser
+  python-dateparser-docs
+)
+pkgver=1.4.3
+pkgrel=1
+pkgdesc='Python parser for human readable dates'
+arch=(any)
+url='https://github.com/scrapinghub/dateparser'
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-dateutil
+  python-pytz
+  python-regex
+  python-tzlocal
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx_rtd_theme
+  python-wheel
+)
+checkdepends=(
+  python-parameterized
+  python-pytest
+)
+source=("git+https://github.com/scrapinghub/dateparser.git#tag=v$pkgver")
+b2sums=(86085b8c232d90a70e1b219d700cd16f37a790f0cb0977c7bf3bb8b27dc8800820880a775346d89877eb62cc48ba1fc5cc3f665f17be963212e7d754882ce28b)
+
+build() {
+  cd dateparser
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd dateparser
+  pytest tests
+}
+
+package_python-dateparser() {
+  cd dateparser
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  rm -r "$pkgdir$(python -c 'import site; print(site.getsitepackages()[0])')/dateparser_scripts"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}
+
+package_python-dateparser-docs() {
+  pkgdesc="Developer documentation for python-dateparser"
+  depends=()
+
+  cd dateparser
+  python -m sphinx -b html docs "$pkgdir/usr/share/doc/$pkgbase/html"
+  rm -r "$pkgdir/usr/share/doc/$pkgbase/html/.doctrees"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

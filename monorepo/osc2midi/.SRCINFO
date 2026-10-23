@@ -1,0 +1,18 @@
+pkgbase = osc2midi
+	pkgdesc = A highly flexible and configurable OSC to JACK MIDI (and back) bridge
+	pkgver = 0.2.5
+	pkgrel = 3
+	url = https://github.com/ssj71/osc2midi
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-3.0-only
+	makedepends = cmake
+	depends = glibc
+	depends = jack
+	depends = liblo
+	source = osc2midi-0.2.5.tar.gz::https://github.com/ssj71/osc2midi/archive/v0.2.5.tar.gz
+	source = liblo.patch
+	sha512sums = ef29e47157d112f4960d61e14b0568de911da21c4ecef30e93d569a3806f91dece87d81b9c69bf67b3b7a5448f6c5f82b3f3ec7714874e4728b34cf2684ca352
+	sha512sums = 96f8ff8beb05bd365cd121565b862397210868ffd7a55e9f366aab005e6d467df326b1ce88fe96bbf66f18db03903c9dc59d1914bbc100f6de02f7363ab75b0c
+
+pkgname = osc2midi

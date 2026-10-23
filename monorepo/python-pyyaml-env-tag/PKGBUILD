@@ -1,0 +1,36 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: AlphaJack <alphajack@tuta.io>
+
+pkgname=python-pyyaml-env-tag
+pkgver=1.1
+pkgrel=1
+pkgdesc='A custom YAML tag for referencing environment variables in YAML files'
+url=https://github.com/waylan/pyyaml-env-tag
+license=(MIT)
+arch=(any)
+depends=(
+  python
+  python-yaml
+)
+makedepends=(
+  git
+  python-build
+  python-flit-core
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(git+https://github.com/waylan/pyyaml-env-tag.git#tag=${pkgver})
+b2sums=('759fa45960e2089978bcce6039569755d95e892e3126eeb5bf63fd470e364695ce73296b919851a78081dcba20ed7bbfc0c86b82dd2fa6f98aab3c0f888c91da')
+
+build(){
+ cd pyyaml-env-tag
+ python -m build --wheel --no-isolation
+}
+
+package(){
+ python -m installer --destdir="${pkgdir}" pyyaml-env-tag/dist/*.whl
+ install -Dm 644 pyyaml-env-tag/LICENSE -t "${pkgdir}"/usr/share/licenses/python-pyyaml-env-tag/
+}
+
+# vim: ts=2 sw=2 et:

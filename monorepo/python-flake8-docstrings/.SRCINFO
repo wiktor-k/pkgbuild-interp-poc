@@ -1,0 +1,19 @@
+pkgbase = python-flake8-docstrings
+	pkgdesc = Plugin to flake8 to include checks provided by pydocstyle
+	pkgver = 1.7.0
+	pkgrel = 4
+	url = https://github.com/pycqa/flake8-docstrings
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = flake8
+	depends = python-pydocstyle
+	source = python-flake8-docstrings::git+https://github.com/pycqa/flake8-docstrings#commit=cd8a6e79f276b8b9d085776e5c2d8fc256f77e30
+	b2sums = SKIP
+
+pkgname = python-flake8-docstrings

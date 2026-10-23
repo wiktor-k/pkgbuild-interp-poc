@@ -1,0 +1,23 @@
+pkgbase = jumpy
+	pkgdesc = Tactical 2D shooter in fishy pixels style
+	pkgver = 0.12.2
+	pkgrel = 1
+	url = https://fishfolk.org/games/jumpy
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	makedepends = systemd
+	depends = pkg-config
+	depends = mesa-libgl
+	depends = alsa-lib
+	depends = systemd-libs
+	depends = libudev.so
+	replaces = fishfight
+	options = !lto
+	source = jumpy-0.12.2.tar.gz::https://github.com/fishfight/jumpy/archive/v0.12.2.tar.gz
+	source = jumpy.sh
+	sha512sums = b54740ad4c1938e93f8589df0e1a36cb7968ba59eb10fee7cab3875c5f723472b30202c0da32ac4a164ab4229941beb8639abc110de4a071561f7a9f7fb6c4b7
+	sha512sums = c03ee6a44bcbd06618526005f87b4afc8247d6bc08f5a56cc1932546067cc7e4ec0de2def92f427e86888d994f5496bf40187beaca8777b92b2499c306246c71
+
+pkgname = jumpy

@@ -1,0 +1,42 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname=opensearch-geospatial-plugin
+pkgver=3.9.0.0
+pkgrel=1
+_opensearchver=3.9.0
+_jdkver=21
+pkgdesc="OpenSearch Geospatial Plugin"
+arch=('x86_64')
+url="https://opensearch.org/docs/latest/dashboards/geojson-regionmaps/"
+license=('Apache-2.0')
+depends=("opensearch=${_opensearchver}" 'opensearch-job-scheduler-plugin')
+makedepends=("java-environment=${_jdkver}" 'unzip')
+source=(
+  "${pkgname}-${pkgver}.tar.gz::https://github.com/opensearch-project/geospatial/archive/${pkgver}.tar.gz"
+)
+sha256sums=('4d132972b6c5bcf35b4c4cb0e2b80ba8b706c16df77a2428ce85a7d68a6d5db9')
+
+prepare() {
+  cd "geospatial-${pkgver}"
+  # log4j-core 2.25.5 wants jspecify 1.0.0, OpenSearch 3.9.0 brings 1.0.1
+  sed -e '/force("com.google.errorprone:error_prone_annotations/a\        force("org.jspecify:jspecify:1.0.1")' \
+    -i build.gradle
+}
+
+build() {
+  cd "geospatial-${pkgver}"
+  export JAVA_HOME="/usr/lib/jvm/java-${_jdkver}-openjdk"
+  export PATH="/usr/lib/jvm/java-${_jdkver}-openjdk/bin:$PATH"
+  export GRADLE_OPTS="-Dbuild.snapshot=false -Dopensearch.version=${_opensearchver}"
+  ./gradlew build \
+    --exclude-task ":jacocoTestReport" \
+    --exclude-task ":jacocoTestCoverageVerification"
+}
+
+package() {
+  install -dm755 "${pkgdir}/usr/share/opensearch/plugins/opensearch-geospatial"
+  cd "${pkgdir}/usr/share/opensearch/plugins/opensearch-geospatial"
+  unzip "${srcdir}/geospatial-${pkgver}/build/distributions/opensearch-geospatial-${pkgver}.zip"
+
+  install -Dm644 "${srcdir}/geospatial-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

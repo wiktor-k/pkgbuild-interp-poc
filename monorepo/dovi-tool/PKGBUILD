@@ -1,0 +1,55 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: quietvoid <tcChlisop0@gmail.com>
+
+pkgname=dovi-tool
+pkgver=2.3.4
+pkgrel=1
+pkgdesc='CLI tool combining multiple utilities for working with Dolby Vision'
+arch=(x86_64)
+url=https://github.com/quietvoid/dovi_tool
+license=(MIT)
+makedepends=(
+  cargo
+  git
+  gnu-free-fonts
+)
+depends=(
+  fontconfig
+  freetype2
+  glibc
+  libgcc
+)
+source=(git+https://github.com/quietvoid/dovi_tool.git#tag=${pkgver})
+b2sums=('39cf2d0b4456d8063928c2bad8230486dad6ab67adb6c257985352efd692b3e97c74fb53327282f7b2040bba4064c193254ad3728bdb278f2a57102ae0237d18')
+
+prepare() {
+  cargo fetch \
+    --locked \
+    --manifest-path dovi_tool/Cargo.toml
+}
+
+build() {
+  cargo build \
+    --release \
+    --frozen \
+    --manifest-path dovi_tool/Cargo.toml
+}
+
+check() {
+  cargo test \
+    --release \
+    --frozen \
+    --manifest-path dovi_tool/Cargo.toml
+}
+
+package() {
+  cargo install \
+    --frozen \
+    --offline \
+    --no-track \
+    --path dovi_tool \
+    --root "${pkgdir}"/usr
+  install -Dm 644 dovi_tool/LICENSE -t "${pkgdir}"/usr/share/licenses/dovi-tool/
+}
+
+# vim: ts=2 sw=2 et:

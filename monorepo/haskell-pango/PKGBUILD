@@ -1,0 +1,43 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+
+_hkgname=pango
+pkgname=haskell-pango
+pkgver=0.13.12.0
+pkgrel=8
+pkgdesc="Binding to the pango library for Gtk2Hs."
+url="https://hackage.haskell.org/package/pango"
+license=('LGPL-2.1-only')
+arch=('x86_64')
+depends=('ghc-libs' 'pango' 'haskell-glib' 'haskell-cairo')
+makedepends=('ghc' "haskell-gtk2hs-buildtools" "mesa")
+provides=('gtk2hs-pango')
+replaces=('gtk2hs-pango')
+conflicts=('gtk2hs-pango')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('070f1266c0f1d34bd2e73b49878746b6e4bcd59c6af578ba6f2ce03f62d6bd4df52753d23f2831ca090c819fe145bcf9c61b0436f453d314e3d4e0fa010aa9ba')
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+}

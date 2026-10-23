@@ -1,0 +1,50 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=office-runner
+pkgver=1.0.3
+pkgrel=2
+pkgdesc='Office game for laptop owners to temporary inhibit suspend on lid close'
+arch=(x86_64)
+url='https://gitlab.gnome.org/GNOME/office-runner'
+license=(GPL-3.0-or-later)
+depends=(
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+)
+makedepends=(git)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/$pkgname.git#tag=$pkgver"
+  office-runner-window-icon.patch
+)
+b2sums=(
+  6695f99a5870dedfbe98a1a09b2840cce11b5429fa75ada682bfad19b08e555ed9cb9a5a7d239eb60a8bc1aa8ab2c03d2e9da8b7789291cd136042c99160df8e
+  fc152977ef34693b9f0af33f540383e41bad1143663a0e19e3529affb55f61cfbb21352a1a4e83bf97a05ba13a2c957afe8f73ce5b58c28d17ff5fa138559641
+)
+
+prepare() {
+  cd $pkgname
+
+  # https://gitlab.gnome.org/GNOME/office-runner/-/merge_requests/11
+  git apply -3 ../office-runner-window-icon.patch
+
+  # Don't use deprecated path for metainfo file
+  sed -i 's|$(datarootdir)/appdata|$(datarootdir)/metainfo|' src/Makefile.am
+
+  autoreconf -fi
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

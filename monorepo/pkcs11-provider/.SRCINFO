@@ -1,0 +1,23 @@
+pkgbase = pkcs11-provider
+	pkgdesc = A pkcs#11 provider for OpenSSL 3.0+
+	pkgver = 1.3.0
+	pkgrel = 1
+	url = https://github.com/latchset/pkcs11-provider
+	arch = x86_64
+	license = Apache-2.0
+	checkdepends = expect
+	checkdepends = gnutls
+	checkdepends = nss
+	checkdepends = opensc
+	checkdepends = softhsm
+	checkdepends = xxd
+	makedepends = git
+	makedepends = meson
+	depends = glibc
+	depends = openssl>=3.0.7
+	depends = p11-kit
+	source = git+https://github.com/latchset/pkcs11-provider.git#tag=v1.3.0?signed
+	validpgpkeys = 7C7BD146943B206BB645B64594EAD67E004B65AB
+	sha256sums = cb208cf31a8c15ad1a69475b80943ae1cc0aac78eeecc992b5cad4b71c652d18
+
+pkgname = pkcs11-provider

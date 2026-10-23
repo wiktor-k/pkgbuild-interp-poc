@@ -1,0 +1,28 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Javier Tiá <javier dot tia at gmail dot com>
+
+pkgname=yank
+pkgver=1.4.0
+pkgrel=1
+pkgdesc='Copy terminal output to clipboard'
+arch=('x86_64')
+url='https://github.com/mptre/yank'
+license=('MIT')
+depends=('xsel')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('0f1d1000f358bfa373f3903ea2871e2585fa694a0b03d8ff7561c1205207dec5')
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  make
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm0755 yank "${pkgdir}"/usr/bin/yank
+  install -Dm0644 yank.1 "${pkgdir}"/usr/share/man/man1/yank.1
+  install -Dm0644 README.md "${pkgdir}"/usr/share/doc/${pkgname%-*}/README.md
+  install -Dm0644 LICENSE "${pkgdir}"/usr/share/licenses/${pkgname%-*}/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:

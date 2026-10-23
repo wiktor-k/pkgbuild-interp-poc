@@ -1,0 +1,50 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=fclabels
+pkgname=haskell-fclabels
+pkgver=2.0.5.1
+pkgrel=281
+pkgdesc="First class accessor labels implemented as lenses."
+url="https://github.com/sebastiaanvisser/fclabels"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-base-orphans')
+makedepends=('ghc' 'haskell-hunit')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz"
+        "$pkgname-ghc9.6.patch")
+sha512sums=('a5f65a821e946381769bc98df2e78625820e99acf151886b9360e2327b589ac5bb2b214dd9cb27ac8e1e7d4880947771e2f020df69f3275d0310cd5fa293aa7b'
+            '2cf5919981e2236368e2a3641a50e6d2b7d97b8d160b3b246968cee094cc9ef0d4ec858edf22074d92fa7856d89b0ab17d8fbf1eb3626e8164ffd6e893984ba9')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    patch -Np1 -i ../$pkgname-ghc9.6.patch
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

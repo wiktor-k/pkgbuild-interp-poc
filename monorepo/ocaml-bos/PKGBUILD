@@ -1,0 +1,30 @@
+# Maintainer: Jürgen Hötzel <juergen@archlinux.org>
+
+_pkgname=bos
+pkgname=ocaml-${_pkgname}
+pkgver=0.3.0
+pkgrel=1
+pkgdesc="OCaml support for basic and robust interaction with the operating system"
+arch=('x86_64')
+url="https://erratique.ch/software/bos"
+license=('ISC')
+depends=('ocaml' 'ocaml-fpath' 'ocaml-astring' 'ocaml-rresult' 'ocaml-fmt' 'ocaml-logs' 'ocaml-re')
+makedepends=('ocaml-findlib' 'ocamlbuild' 'ocaml-topkg' 'opam')
+options=('!strip')
+source=("https://erratique.ch/software/${_pkgname}/releases/${_pkgname}-${pkgver}.tbz")
+sha256sums=('089f369ed00967e92d89cc5fcd848c56bdab5c02737da4d483550bf56b5a79bc')
+
+
+build() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  ocaml pkg/pkg.ml build --dev-pkg false
+}
+
+package() {
+  cd "${srcdir}/${_pkgname}-${pkgver}"
+  opam-installer --prefix="$pkgdir/usr" --libdir='lib/ocaml' --docdir='share/doc'
+
+  mv "${pkgdir}/usr/share/doc/${_pkgname}" "${pkgdir}/usr/share/doc/${pkgname}"
+  install -dm755 "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "/usr/share/doc/$pkgname/LICENSE.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE.md"
+}

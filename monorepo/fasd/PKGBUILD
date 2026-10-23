@@ -1,0 +1,18 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Giuliano Schneider <gs93@gmx.net>
+# Contributor: Wei Dai <x at wei23 dot com>
+pkgname=fasd
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='Command-line productivity booster, offers quick access to files and directories'
+arch=('any')
+url='https://github.com/whjvenyl/fasd'
+license=('MIT')
+source=("https://github.com/whjvenyl/fasd/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('632dffc3c05fcc359bd9c887df8546f53b9e48559f3b7bbc6feeee61df15c5210b7f5394972e75edb7dc0e4619cb50658a4dce37fe8ba8e0a3b476635ffce877')
+
+package() {
+  cd fasd-${pkgver}
+  PREFIX="$pkgdir/usr" make install
+}
+

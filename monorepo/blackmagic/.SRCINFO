@@ -1,0 +1,18 @@
+pkgbase = blackmagic
+	pkgdesc = In application debugger for ARM Cortex microcontrollers
+	pkgver = 2.0.0
+	pkgrel = 1
+	url = https://codeberg.org/blackmagic-debug/blackmagic
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	makedepends = hidapi
+	makedepends = python
+	makedepends = meson
+	depends = libusb
+	depends = libftdi
+	depends = libhidapi-hidraw.so
+	source = git+https://codeberg.org/blackmagic-debug/blackmagic#tag=v2.0.0
+	sha512sums = 638cd5b0b78ce47b568092766de2a54893e82769aefd12c156b3cf4d2fb814ac6c9199dafc49c920015226a2c4c439d8f97e15edf6f6926fba20169e2a6ec82b
+
+pkgname = blackmagic

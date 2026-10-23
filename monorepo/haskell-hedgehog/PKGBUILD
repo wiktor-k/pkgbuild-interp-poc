@@ -1,0 +1,53 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=hedgehog
+pkgname=haskell-hedgehog
+pkgver=1.5
+pkgrel=292
+pkgdesc="A modern property-based testing system"
+url="https://hedgehog.qa"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-ansi-terminal' 'haskell-async' 'haskell-barbies'
+         'haskell-concurrent-output' 'haskell-erf' 'haskell-lifted-async' 'haskell-mmorph'
+         'haskell-monad-control' 'haskell-pretty-show' 'haskell-primitive' 'haskell-random'
+         'haskell-resourcet' 'haskell-safe-exceptions' 'haskell-transformers-base'
+         'haskell-wl-pprint-annotated')
+makedepends=('ghc' 'uusi')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('35205dbdc430c12a74cdfc2277a34452e8b2d0fc8c127e419c4747a80425513bb3bd067872e9c440dbb66edad8a131e9cb2e9481dee2868ef47a432bb2a9854f')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    gen-setup
+    uusi -u lifted-async
+} 
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

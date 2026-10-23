@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-applications
+pkgver=8.3.0
+pkgrel=1
+pkgdesc='Switchboard Applications Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-applications
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  flatpak
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=7a3db68680295c37e8baabd9812bb2df11f10fc8
+source=(git+https://github.com/elementary/switchboard-plug-applications.git#tag=${_tag})
+b2sums=('7ec634323b850bb4d9876ce5244e815fc44027a1b4cce200253a2306284e32566da6ce836f6a8c8980eced97f1a629fb184f188d0bab362a9b86d53d25628e0d')
+
+pkgver() {
+  cd switchboard-plug-applications
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-applications build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

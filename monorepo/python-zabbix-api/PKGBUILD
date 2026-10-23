@@ -1,0 +1,26 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Florian Pritz <bluewind@xinu.at>
+# Contributor: Jelle van der Waa <jelle@vdwaa.nl>
+
+_name=zabbix-api
+pkgname=python-zabbix-api
+pkgver=0.5.6
+pkgrel=5
+pkgdesc="Python Zabbix API"
+url="https://pypi.org/project/zabbix-api"
+license=('LGPL-2.1-only')
+arch=('any')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+source=(https://files.pythonhosted.org/packages/source/${_name::1}/${_name}/${_name}-${pkgver}.tar.gz)
+sha512sums=('4076c1259ffcc97bf7c0b4cb2006c9f4b6852922afac134647274261cade0d0d66950cf4a498b341fe3af2bed402c9887f16295324448e29a8e2461218d23240')
+
+build() {
+	cd "${_name}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${_name}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+}

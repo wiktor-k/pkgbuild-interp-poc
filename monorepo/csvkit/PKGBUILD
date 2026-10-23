@@ -1,0 +1,48 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Michał Pałubicki <maln0ir@gmx.com>
+
+pkgname=csvkit
+pkgver=2.2.0
+pkgrel=2
+pkgdesc='A suite of utilities for converting to and working with CSV'
+arch=(any)
+url="https://$pkgname.readthedocs.org"
+license=(MIT)
+_pydeps=(agate
+         agate-dbf
+         agate-excel
+         agate-sql
+         setuptools
+         sphinx-furo)
+depends=(python
+         "${_pydeps[@]/#/python-}")
+optdepends=('ipython: nicer command-line for csvpy utility')
+makedepends=(python-{build,installer,wheel}
+             python-sphinx)
+checkdepends=(python-pytest)
+_archive="$pkgname-$pkgver"
+source=("$_archive.tgz::https://github.com/wireservice/$pkgname/archive/$pkgver.tar.gz")
+sha256sums=('2edbec092e05a7e0f81037a616a0210621681046d25533f73c97adceaaeb2063')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+	make -C docs html
+	_rtd_theme_path="$(python -c 'import sphinx_rtd_theme; print(sphinx_rtd_theme.get_html_theme_path())')"
+	rm -rvf "docs/_build/html/_static"
+	ln -svf "$_rtd_theme_path/sphinx_rtd_theme/static" "docs/_build/html/_static"
+}
+
+check() {
+	cd "$_archive"
+	export LANG=en_US.UTF-8
+	pytest tests
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -dm0755 "$pkgdir/usr/share/doc/"
+	cp -rv docs/_build/html "$pkgdir/usr/share/doc/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+}

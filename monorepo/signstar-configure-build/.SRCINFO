@@ -1,0 +1,19 @@
+pkgbase = signstar-configure-build
+	pkgdesc = A commandline tool to configure a Signstar system during build
+	pkgver = 0.4.0
+	pkgrel = 1
+	url = https://gitlab.archlinux.org/archlinux/signstar/-/tree/main/signstar-configure-build
+	arch = x86_64
+	license = Apache-2.0 OR MIT
+	makedepends = git
+	makedepends = just
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	source = signstar::git+https://gitlab.archlinux.org/archlinux/signstar.git?signed#tag=signstar-configure-build/0.4.0
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 8f036eabd780dc7bf7b867112ed284daf3d615c1736376ba234a7c30c1ddd83192b7844ee570f040453575ec5c6ef87be03a9e7fc8703209a67ca2b604afb951
+	b2sums = 2f86267bcfa98c511d302433d645af0ce8924a819fadd2744c2c005e057f4c99a9f9bc572b81a4fa8edf375c6eff6b785fdd938689a99b8a32e64130e844f89f
+
+pkgname = signstar-configure-build

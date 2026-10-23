@@ -1,0 +1,64 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: zccrs <zhangjide@deepin.org>
+
+pkgname=ddm
+pkgver=0.4.0
+pkgrel=1
+pkgdesc='New Display Manager for DDE'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/ddm"
+license=('GPL-2.0-or-later')
+groups=('deepin')
+depends=(bash
+         deepin-seatd
+         glibc
+         libgcc
+         libstdc++
+         libxau
+         pam
+         qt6-base
+         systemd-libs
+         treeland
+         ttf-font
+         wayland
+         xorg-server
+         xorg-xauth)
+makedepends=(git
+             extra-cmake-modules
+             python-docutils
+             treeland-protocols
+             ninja)
+source=("git+https://github.com/linuxdeepin/ddm.git#tag=$pkgver")
+sha512sums=('0b5e7b9338950e13d45a864ff43bf6e4b2355d6ef3b87b8221e388ab84f6bda26ac3736998e76b07efd9953f903a2273d86275f8eb1f0303ee12b4ec1ca26da4')
+
+prepare() {
+  cd ddm
+  # Fix PAM fork children hanging in Qt atexit cleanup:
+  # https://github.com/linuxdeepin/ddm/pull/88
+  git cherry-pick -n 25d277f84837537446e6b42363a53ef20b32795e
+
+  # Use Arch PAM stack names for the non-Debian autologin service.
+  sed -i \
+    -e 's|@include common-account|account     include     system-login|' \
+    -e 's|@include common-session|session     include     system-login|' \
+    services/ddm-autologin.pam
+}
+
+build() {
+  cd ddm
+  cmake . -GNinja \
+      -DCMAKE_INSTALL_LIBDIR=lib \
+      -DCMAKE_INSTALL_LIBEXECDIR=lib \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DDBUS_CONFIG_DIR=/usr/share/dbus-1/system.d
+
+  cmake --build .
+}
+
+package() {
+  cd ddm
+  DESTDIR="$pkgdir" ninja install
+
+  # Provided by lightdm and other display managers implementing the interface
+  rm "$pkgdir/usr/share/dbus-1/system.d/org.freedesktop.DisplayManager.conf"
+}

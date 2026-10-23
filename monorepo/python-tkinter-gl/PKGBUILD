@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=python-tkinter-gl
+pkgver=1.1
+pkgrel=1
+pkgdesc='An OpenGL drawing surface for tkinter based on TkGL'
+url='https://snappy.computop.org/'
+depends=(glibc
+         libglvnd
+         libx11
+         python)
+makedepends=(git
+             python-build
+             python-installer
+             python-setuptools-scm)
+license=(GPL-2.0-or-later)
+arch=(x86_64)
+source=(git+https://github.com/3-manifolds/tkinter_gl#tag=v${pkgver}_as_released)
+sha256sums=('698bb7286e0b26e0e547fc648e29546bc48cdad4868a3c25ad23f1f74b004ebd')
+
+build() {
+  cd tkinter_gl
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd tkinter_gl
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

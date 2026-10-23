@@ -1,0 +1,34 @@
+pkgbase = furnace
+	pkgdesc = A multi-system chiptune tracker compatible with DefleMask modules
+	pkgver = 0.6.8.3
+	pkgrel = 3
+	url = https://github.com/tildearrow/furnace
+	arch = x86_64
+	groups = pro-audio
+	license = GPL-2.0-or-later
+	license = LicenseRef-OriginalAuthors
+	makedepends = cmake
+	makedepends = git
+	makedepends = jack
+	depends = fftw
+	depends = fmt
+	depends = freetype2
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = hicolor-icon-theme
+	depends = libglvnd
+	depends = libsndfile
+	depends = portaudio
+	depends = rtmidi
+	depends = sdl2
+	depends = zlib
+	optdepends = jack: JACK audio support
+	source = furnace::git+https://github.com/tildearrow/furnace#tag=v0.6.8.3
+	source = github.com-superctr-adpcm::git+https://github.com/superctr/adpcm
+	sha512sums = 86de9b6a0a93068e17c17b3750a926a955cb25370711928f23c61855c7c6ecea84b6cb2d5ff44f9624c71edacb6ff559309c89da4f4953806f96e3d7cc81ed70
+	sha512sums = SKIP
+	b2sums = 67453cfef19a9842d0a371a415c440830fcf1be13432ee6f5e8e5d3c622f4ddca359fcd4ce446710809eff6a8acf3353f913032efbde461b79bd4a12dca61b80
+	b2sums = SKIP
+
+pkgname = furnace

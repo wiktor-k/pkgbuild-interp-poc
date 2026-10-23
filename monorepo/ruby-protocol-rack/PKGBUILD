@@ -1,0 +1,85 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-protocol-rack
+pkgver=0.23.0
+pkgrel=1
+pkgdesc='An implementation of the Rack protocol/specification'
+arch=(any)
+url='https://github.com/socketry/protocol-rack'
+license=(MIT)
+depends=(
+  ruby
+  ruby-console
+  ruby-io-stream
+  ruby-protocol-http
+  ruby-rack
+)
+makedepends=(
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-async-http
+  ruby-bake-test
+  ruby-bake-test-external
+  ruby-bundler
+  ruby-covered
+  ruby-sus
+  ruby-sus-fixtures-async-http
+  ruby-sus-fixtures-console
+)
+options=(!emptydirs)
+source=(https://github.com/socketry/protocol-rack/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha512sums=('923cabe571efd5b6af921ee8229731501e16e341ce6796712aa704bf130cd1f4765bf1b7597385d797a34225e3d09dbb920cec7be8a4525e0bd28ea03afcfabb')
+b2sums=('01e3ea94b5c36eb5d4c178085a8f885c9fee4cc6eff5711b25dbd2eee36290d974ba2bed93d3311dd1967a51356ece8f08d665e7a8723f9718f66cf2c059ae39')
+
+prepare() {
+  cd protocol-rack-$pkgver
+
+  sed -r \
+    -e 's|~>|>=|g' \
+    -e '/signing_key/d' \
+    -i protocol-rack.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd protocol-rack-$pkgver
+  gem build protocol-rack.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    protocol-rack-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd protocol-rack-$pkgver
+  GEM_HOME="tmp_install/$_gemdir" bake test
+}
+
+package() {
+  cd protocol-rack-$pkgver
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

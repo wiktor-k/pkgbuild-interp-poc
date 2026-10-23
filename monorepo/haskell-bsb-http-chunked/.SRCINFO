@@ -1,0 +1,23 @@
+pkgbase = haskell-bsb-http-chunked
+	pkgdesc = Chunked HTTP transfer encoding for bytestring builders
+	pkgver = 0.0.0.4
+	pkgrel = 566
+	url = https://github.com/sjakobi/bsb-http-chunked
+	arch = x86_64
+	license = BSD-3-Clause
+	checkdepends = haskell-attoparsec
+	checkdepends = haskell-blaze-builder
+	checkdepends = haskell-hedgehog
+	checkdepends = haskell-tasty
+	checkdepends = haskell-tasty-hedgehog
+	checkdepends = haskell-tasty-hunit
+	checkdepends = haskell-doctest
+	makedepends = ghc
+	makedepends = uusi
+	depends = ghc-libs
+	source = https://hackage.haskell.org/packages/archive/bsb-http-chunked/0.0.0.4/bsb-http-chunked-0.0.0.4.tar.gz
+	source = fix-doctests.patch
+	sha512sums = 74c04c2fd372067c42d3631cdfc2ad7093c0c3af1145833ab307c538dbb936d2042492d4e81c520c3adde8634df29ff8558822f06f226c52d16abb4a35ab1a13
+	sha512sums = b89dd9fff663cde2cc95c8abb73290816815b2f5da7b4c1a7287792c8136cf8c5df9636f8e4a130b1fa37081e817fc859ee91dff3ebc52a787c60280fe46327f
+
+pkgname = haskell-bsb-http-chunked

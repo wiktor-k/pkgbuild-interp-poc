@@ -1,0 +1,22 @@
+pkgbase = python-gammu
+	pkgdesc = Python bindings for Gammu library
+	pkgver = 3.5.0
+	pkgrel = 1
+	url = https://wammu.eu/python-gammu/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = python-pytest
+	checkdepends = libdbi-drivers
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = gammu
+	depends = glibc
+	depends = python
+	source = git+https://github.com/gammu/python-gammu.git?signed#tag=3.5.0
+	validpgpkeys = 63CB1DF1EF12CF2AC0EE5A329C27B31342B7511D
+	b2sums = 8bd90f1e25d1b68ac18ff507209557ced9d9ca02c8406b2bfc88a07a90f57121191149089b7aaf99428d9a6bb1bf28fba233e6693c62ca19e0498e42b28f0f9a
+
+pkgname = python-gammu

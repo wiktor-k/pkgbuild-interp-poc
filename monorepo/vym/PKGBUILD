@@ -1,0 +1,49 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org> 
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Søren Holm <sgh@sgh.dk> 
+
+pkgname=vym
+pkgver=2.9.26
+pkgrel=1
+pkgdesc="A mindmapping tool"
+arch=('x86_64')
+url="https://www.insilmaril.de/vym/"
+license=('GPL')
+depends=('qt5-svg' 'qt5-script' 'desktop-file-utils' 'zip' 'unzip')
+makedepends=('qt5-tools' 'cmake')
+changelog=$pkgname.changelog
+source=($pkgname-$pkgver.tar.gz::https://github.com/insilmaril/vym/archive/refs/tags/v$pkgver.tar.gz
+        $pkgname.desktop)
+sha256sums=('69dc9780e3fed0d44ca964cfdae909b08c7e1df8804d499401bedf4112e5eaea'
+            'e299c69c213e7aac3f5b5d0ab088132b4ec7cb63a391f272e75ed64f049d541b')
+
+prepare() {
+  cd "${srcdir}"/$pkgname-$pkgver/lang
+
+  lrelease *.ts
+}
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  cmake -DCMAKE_INSTALL_PREFIX=/usr .
+  make
+}
+
+package() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+# install files
+  make DESTDIR="${pkgdir}" install
+
+# install documentation
+  install -Dm644 "${srcdir}"/$pkgname-$pkgver/doc/$pkgname.1.gz \
+    "${pkgdir}"/usr/share/man/man1/$pkgname.1.gz
+  install -Dm644 "${srcdir}"/$pkgname-$pkgver/doc/$pkgname.pdf \
+    "${pkgdir}"/usr/share/doc/$pkgname/$pkgname.pdf  
+  rm -rf "${pkgdir}"/usr/share/doc/packages
+
+# .desktop file
+   install -Dm644 "${srcdir}"/$pkgname.desktop \
+     "${pkgdir}"/usr/share/applications/$pkgname.desktop
+}

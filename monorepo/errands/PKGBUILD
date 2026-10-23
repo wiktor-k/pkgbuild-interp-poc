@@ -1,0 +1,51 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=errands
+pkgver=46.2.10
+pkgrel=1
+pkgdesc='Todo application for those who prefer simplicity'
+arch=(any)
+url='https://apps.gnome.org/List/'
+license=(MIT)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  gtk4
+  gtksourceview5
+  hicolor-icon-theme
+  libadwaita
+  libgoa
+  libportal
+  libsecret
+  python
+  python-caldav
+  python-gobject
+  python-requests
+  python-urllib3
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+source=("git+https://github.com/mrvladus/Errands.git#tag=$pkgver")
+b2sums=(55b274ee4a669fdbd40180a2cd07a257771e57ac4e67194e03c5a9b029a73894d74c8e1b769f259af666eab4aa2454640b7d40da8129327d654af27eddb9425e)
+
+build() {
+  arch-meson Errands build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/share "$pkgdir/usr/share"
+  python -O -m compileall -d /usr/share "$pkgdir/usr/share"
+
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" Errands/LICENSE
+}

@@ -1,0 +1,80 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=tidal
+pkgname=haskell-tidal
+pkgver=1.10.0
+pkgrel=9
+pkgdesc="A domain specific language for live coding pattern."
+arch=(x86_64)
+url="https://tidalcycles.org/"
+license=(GPL-3.0-or-later)
+groups=(pro-audio)
+depends=(
+  libstdc++
+  ghc
+  ghc-libs
+  glibc
+  gmp
+  haskell-blaze-builder
+  haskell-clock
+  haskell-colour
+  haskell-data-binary-ieee754
+  haskell-hosc
+  haskell-mwc-random
+  haskell-network
+  haskell-primitive
+  haskell-random
+  haskell-splitmix
+  haskell-tidal-core
+  haskell-tidal-link
+  haskell-vector
+  supercollider
+)
+makedepends=(uusi)
+checkdepends=(haskell-hspec)
+optdepends=('sc3-plugins: Examples using special UGens')
+conflicts=(tidalcycles)
+replaces=(tidalcycles)
+source=(https://hackage.haskell.org/packages/archive/$_name/$pkgver/$_name-$pkgver.tar.gz)
+sha512sums=('5a0a8f95b50bfaad006bac418654c16548b76fe60c7fbad5a7d06e0c7250765fa3a2ad3a71555378b56229acf9dd1b55a44a20d5453ff160d638e2b94d807dd2')
+b2sums=('928bcd4c73e2694fb5ad0aca4e517b77d66aa89004b03c1c8944742921b59b9435b83b206bbc4ed3a7abcb2251be652a04e58fca672aa9e89065b593c2b29ef9')
+
+prepare() {
+  cd $_name-$pkgver
+  uusi -u tidal-core -u tidal-link
+}
+
+build() {
+  local configure_options=(
+    -O
+    --datasubdir=$pkgname
+    --disable-library-vanilla
+    --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname
+    --dynlibdir=/usr/lib
+    --enable-executable-dynamic
+    --enable-shared
+    --enable-tests
+    --libsubdir=\$compiler/site-local/\$pkgid
+    --prefix=/usr
+  )
+
+  cd $_name-$pkgver
+  runhaskell Setup configure "${configure_options[@]}"
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_name-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_name-$pkgver
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -vDm 744 register.sh "$pkgdir/usr/share/haskell/register/$pkgname.sh"
+  install -vDm 744 unregister.sh "$pkgdir/usr/share/haskell/unregister/$pkgname.sh"
+}

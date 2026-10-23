@@ -1,0 +1,17 @@
+pkgbase = auth-tarball-from-git
+	pkgdesc = Authenticate a tarball through a signed tag in a git repository (with reproducible builds)
+	pkgver = 0.2.0
+	pkgrel = 2
+	url = https://github.com/kpcyrd/auth-tarball-from-git
+	arch = x86_64
+	license = GPL3
+	makedepends = cargo
+	depends = git
+	depends = sequoia-sqv
+	source = https://github.com/kpcyrd/auth-tarball-from-git/archive/v0.2.0/auth-tarball-from-git-0.2.0.tar.gz
+	source = https://github.com/kpcyrd/auth-tarball-from-git/releases/download/v0.2.0/auth-tarball-from-git-0.2.0.tar.gz.asc
+	validpgpkeys = 64B13F7117D6E07D661BBCE0FE763A64F5E54FD6
+	b2sums = 811e9970e3fd7f577465dfe840ed53d00ec1eb1d1c5369f2d3cdb73dd4cb956bf291874f925b2b05f704b1ee532bc63b6a6ebb988ae593e6f754325f148992d8
+	b2sums = SKIP
+
+pkgname = auth-tarball-from-git

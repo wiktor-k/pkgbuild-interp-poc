@@ -1,0 +1,42 @@
+# Maintainer: Leonidas Spyropoulos <artafinde@archlinux.org>
+
+pkgname=easyloggingpp
+pkgver=9.97.1
+pkgrel=2
+pkgdesc='Efficient logging library for C++ logging library'
+arch=('any')
+url="https://github.com/amrayn/easyloggingpp"
+license=('MIT')
+makedepends=(cmake ninja)
+checkdepends=(gtest)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/muflihun/easyloggingpp/archive/v${pkgver}.tar.gz")
+sha256sums=('ebe473e17b13f1d1f16d0009689576625796947a711e14aec29530f39560c7c2')
+b2sums=('313a6547e2af4322bac8843d4efbfef89fa1ebcd40ce24ba32dfd6df7f8c7023dd821e773f43ef484facde1cb5c348c02d6fe23a3fdf308ce2a29559a0d65021')
+
+build() {
+  cmake \
+    -Bbuild \
+    -GNinja \
+    -S "$pkgname-$pkgver" \
+    -DCMAKE_BUILD_TYPE='None' \
+    -DCMAKE_INSTALL_PREFIX='/usr' \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -Dtest=ON \
+    -Wno-dev
+  cmake --build build --verbose
+}
+
+check() {
+  cd build && ./easyloggingpp-unit-tests \
+    --gtest_filter=-CommandLineArgsTest.LoggingFlagsArg \
+    -v
+}
+
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,36 @@
+pkgbase = e16
+	pkgdesc = Fast, flexible and extensible window manager (Enlightenment DR16)
+	pkgver = 1.0.32
+	pkgrel = 1
+	url = https://www.enlightenment.org/e16
+	arch = x86_64
+	license = MIT-advertising
+	makedepends = asciidoc
+	makedepends = git
+	depends = bash
+	depends = dbus
+	depends = glib2
+	depends = glibc
+	depends = imlib2
+	depends = libice
+	depends = libpulse
+	depends = libsm
+	depends = libsndfile
+	depends = libx11
+	depends = libxcomposite
+	depends = libxdamage
+	depends = libxext
+	depends = libxfixes
+	depends = libxft
+	depends = libxinerama
+	depends = libxrandr
+	depends = libxrender
+	depends = pango
+	depends = python
+	depends = ttf-font
+	conflicts = enlightenment16
+	replaces = enlightenment16
+	source = git+https://git.enlightenment.org/e16/e16.git#tag=v1.0.32
+	b2sums = 88f0a5e62ae0e2c48d9ea2659316b888cc4d8344d2f673a718290038d1d6097ace582ceda6e45ce4ef15263510e1402593fd4872d018ce278a57891b46f2340f
+
+pkgname = e16

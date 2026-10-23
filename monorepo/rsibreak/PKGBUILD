@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=rsibreak
+pkgver=0.13.0
+pkgrel=2
+pkgdesc='Takes care of your health and regularly breaks your work to avoid repetitive strain injury (RSI)'
+url='https://apps.kde.org/rsibreak/'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(glibc
+         kcolorscheme
+         kconfig
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         ki18n
+         kidletime
+         knotifications
+         knotifyconfig
+         kstatusnotifieritem
+         ktextwidgets
+         kwidgetsaddons
+         kwindowsystem
+         kxmlgui
+         libstdc++
+         qt6-base)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/stable/$pkgname/${pkgver%.*}/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('6ab2ce09c57d0fe5178308ea95f87debbe55ae98cfb37424922ade2593bad120'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7) # Albert Astals Cid <aacid@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF 
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

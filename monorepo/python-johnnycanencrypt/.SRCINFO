@@ -1,0 +1,29 @@
+pkgbase = python-johnnycanencrypt
+	pkgdesc = Python module for OpenPGP written in Rust
+	pkgver = 0.18.0
+	pkgrel = 3
+	url = https://github.com/kushaldas/johnnycanencrypt
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	checkdepends = python-pytest
+	checkdepends = python-vcrpy
+	makedepends = clang
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	makedepends = rust
+	depends = bzip2
+	depends = glibc
+	depends = gmp
+	depends = libgcc
+	depends = nettle3
+	depends = pcsclite
+	depends = python
+	depends = python-httpx
+	source = git+https://github.com/kushaldas/johnnycanencrypt.git?signed#tag=v0.18.0
+	validpgpkeys = A85FF376759C994A8A1168D8D8219C8C43F6C5E1
+	sha512sums = 8ecdac8631a8dea77d12fe1a69546b01856d5be9b17f7538258b7a3268d071b27f38b798494510c0fe57db0c5e4668f64294cdfa8a972d41959fbb740d815873
+	b2sums = 7aa94e573615568dfe4ead0244c0723d292b9b1b42be7ad110d260064a414ce6282b17ed4aeb12f8c127281dec9804fc352e1a3be6e0ad1051d33639ed5b12cb
+
+pkgname = python-johnnycanencrypt

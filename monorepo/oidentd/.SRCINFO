@@ -1,0 +1,23 @@
+pkgbase = oidentd
+	pkgdesc = An RFC1413 compliant ident daemon
+	pkgver = 3.1.0
+	pkgrel = 1
+	url = https://oidentd.janikrabe.com/
+	arch = x86_64
+	license = GPL
+	depends = glibc
+	depends = libnetfilter_conntrack
+	backup = etc/oidentd.conf
+	source = https://files.janikrabe.com/pub/oidentd/releases/3.1.0/oidentd-3.1.0.tar.xz
+	source = https://files.janikrabe.com/pub/oidentd/releases/3.1.0/oidentd-3.1.0.tar.xz.asc
+	source = service
+	source = socket
+	source = sysusers.conf
+	validpgpkeys = 63694DD76ED116B84D286F75C4CD3CE186D1CA13
+	sha256sums = feaa1f5e23df9a0a6b351bffd75345d575a209d5908f60cb3aaf4349f38cb0b0
+	sha256sums = SKIP
+	sha256sums = b88ebda0c1b8153c7eae6804decd25038f594aad381eba8e49759c199a1e68f2
+	sha256sums = 473d84b4f71208088e2f5beae510fdc8df59d7d183ec9c8812a4703050e671b9
+	sha256sums = 35eeb18c2febea96c52e924b62b3857f3d0ceff1820e725acc78e3ff8655c435
+
+pkgname = oidentd

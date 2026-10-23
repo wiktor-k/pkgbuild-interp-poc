@@ -1,0 +1,45 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+# Contributor: Brad Fanella <cesura@archlinux.org>
+# Contributor: Martin Wimpress <code@flexion.org>
+
+pkgname=libmatemixer
+pkgver=1.28.0
+pkgrel=3
+pkgdesc='Mixer library for MATE Desktop'
+arch=(x86_64)
+url='https://github.com/mate-desktop/libmatemixer'
+license=(LGPL-2.0-or-later)
+depends=(
+  alsa-lib
+  glib2
+  glibc
+  libpulse
+  systemd-libs
+)
+makedepends=(
+  git
+  gtk-doc
+  mate-common
+)
+source=("git+https://github.com/mate-desktop/libmatemixer.git#tag=v$pkgver")
+b2sums=(c58a061454d6e8c74f725f2811de51f0fde44cb4e2baba2186b06ec999512cfee4e427418a4889d40b51f5615f9128000db873fc32b210335cba2effbec60c6b)
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-gtk-doc
+  make
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

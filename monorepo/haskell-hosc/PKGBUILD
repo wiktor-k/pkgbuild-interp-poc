@@ -1,0 +1,58 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_name=hosc
+pkgname=haskell-hosc
+pkgver=0.21
+pkgrel=9
+pkgdesc="Haskell Open Sound Control"
+arch=(x86_64)
+url="https://github.com/rd--/hosc"
+license=(GPL-3.0-only)
+depends=(
+  bash
+  ghc-libs
+  glibc
+  gmp
+  haskell-blaze-builder
+  haskell-network
+  haskell-safe
+)
+makedepends=(ghc)
+source=(https://hackage.haskell.org/packages/archive/$_name/$pkgver/$_name-$pkgver.tar.gz)
+sha512sums=('6b2f4911464555bb9378e3b0b2f14adf39e2148dd625f1f1e286d83ff91747f252ffe6fa3acdbb0def762d17a681dfbcab0d702846b1fd356621270792e30136')
+
+build() {
+  local setup_configure_options=(
+    -O
+    --datasubdir=$pkgname
+    --disable-library-vanilla
+    --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname
+    --dynlibdir=/usr/lib
+    --enable-executable-dynamic
+    --enable-shared
+    --enable-tests
+   
+    --libsubdir=\$compiler/site-local/\$pkgid
+    --prefix=/usr
+  )
+
+  cd $_name-$pkgver
+  runhaskell Setup configure "${setup_configure_options[@]}"
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd $_name-$pkgver
+  runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd $_name-$pkgver
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -vDm 744 register.sh "$pkgdir/usr/share/haskell/register/$pkgname.sh"
+  install -vDm 744 unregister.sh "$pkgdir/usr/share/haskell/unregister/$pkgname.sh"
+}

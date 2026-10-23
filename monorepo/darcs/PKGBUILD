@@ -1,0 +1,69 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=darcs
+pkgver=2.18.5
+pkgrel=314
+pkgdesc="A distributed, interactive, smart revision control system"
+url="http://darcs.net"
+license=("GPL-2.0-or-later")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-async' 'haskell-attoparsec' 'haskell-base16-bytestring'
+         'haskell-conduit' 'haskell-constraints' 'haskell-crypton-connection' 'haskell-cryptonite'
+         'haskell-data-default' 'haskell-data-ordlist' 'haskell-fgl' 'haskell-hashable'
+         'haskell-html' 'haskell-http-client-tls' 'haskell-http-conduit' 'haskell-http-types'
+         'haskell-knob' 'haskell-memory' 'haskell-mmap' 'haskell-network' 'haskell-network-uri'
+         'haskell-old-time' 'haskell-regex-applicative' 'haskell-regex-base' 'haskell-regex-tdfa'
+         'haskell-safe' 'haskell-tar' 'haskell-temporary' 'haskell-unix-compat'
+         'haskell-utf8-string' 'haskell-vector' 'haskell-zip-archive' 'haskell-zlib'
+         'haskell-tls' 'haskell-terminal-size')
+makedepends=('ghc' 'uusi' 'haskell-cmdargs' 'haskell-findbin' 'haskell-hunit' 'haskell-leancheck'
+             'haskell-quickcheck' 'haskell-quickcheck-instances' 'haskell-test-framework'
+             'haskell-test-framework-hunit' 'haskell-test-framework-leancheck'
+             'haskell-test-framework-quickcheck2'
+             # Added for their bundled shelly
+             'haskell-monad-control' 'haskell-system-filepath'
+             'haskell-system-fileio' 'haskell-transformers-base')
+checkdepends=('bc' 'time')
+source=("https://hackage.haskell.org/packages/archive/${pkgname}/${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('858d134e0ad4af1b4adeb4dd8250a34b12358de5993c34ee33c9ebbbe85f5b7bf49e219da7f0cdd254601095c4c70f41430871c2dd7508d5f02f1b141ff1ad4d')
+
+prepare() {
+    cd $pkgname-$pkgver
+    # We have crypton-connection 0.4 regardlessly
+    sed -i 's/ghc >= 9.8/ghc >= 9.4/' $pkgname.cabal
+    uusi -u data-default
+}
+
+build() {
+    cd $pkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        -f-static -fterminfo -fthreaded -fexecutable \
+        -f-rts -f-warn-as-error
+    LD_LIBRARY_PATH="$srcdir"/$pkgname-$pkgver/dist/build runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $pkgname-$pkgver
+    runhaskell Setup test --show-details=direct --test-options="--ghcflags -dynamic"
+}
+
+package() {
+    cd $pkgname-$pkgver
+
+    install -D -m744 register.sh   "${pkgdir}/usr/share/haskell/register/${pkgname}.sh"
+    install -D -m744 unregister.sh "${pkgdir}/usr/share/haskell/unregister/${pkgname}.sh"
+    runhaskell Setup copy --destdir="${pkgdir}"
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+    chmod 644 "${pkgdir}/usr/share/man/man1/darcs.1"
+
+    install -Dm644 contrib/darcs_completion "${pkgdir}/usr/share/bash-completion/completions/darcs"
+    install -Dm644 contrib/_darcs.zsh "${pkgdir}/usr/share/zsh/site-functions/_darcs"
+}

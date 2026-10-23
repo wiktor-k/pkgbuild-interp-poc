@@ -1,0 +1,18 @@
+pkgbase = crimson-font
+	pkgdesc = A font family for book production in the tradition of beautiful oldstyle typefaces
+	pkgver = 0.800
+	pkgrel = 2
+	url = https://github.com/skosch/Crimson/
+	arch = any
+	license = OFL-1.1
+	source = https://github.com/skosch/Crimson//archive/f8255058575d26ddf35ab0b2d5ab7832c40f7a1a/Crimson-f8255058575d26ddf35ab0b2d5ab7832c40f7a1a.zip
+	sha256sums = 751e1922bc3fc89bd545e7a6c28a6b8c0f28e266dce83f67fa6bd546672b6cad
+
+pkgname = otf-crimson
+	provides = crimson-font=0.800
+	provides = otf-crimson-text
+	replaces = otf-crimson-text
+
+pkgname = ttf-crimson
+	provides = crimson-font=0.800
+	provides = ttf-crimson-text

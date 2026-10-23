@@ -1,0 +1,43 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=py_stringmatching
+pkgname=python-${_pkg/-/_}
+pkgver=0.4.7
+pkgrel=1
+pkgdesc="Comprehensive and scalable set of string tokenizers and similarity measures"
+arch=(x86_64)
+url="https://github.com/anhaidgroup/py_stringmatching"
+license=(BSD)
+depends=(python-numpy)
+makedepends=(python-setuptools python-build python-installer cython)
+source=(https://github.com/anhaidgroup/py_stringmatching/archive/v${pkgver}/${_pkg}-${pkgver}.tar.gz
+        fix-test-utils-import.patch)
+sha256sums=('4b4e96463d51ad4b0294e4147a41397102aa5e690d528a577ce3bab816de1ee5'
+            '195cd5a2e2f63c6b041440a84a818c3932f0594c02c55bff0e530805fa795e18')
+
+prepare() {
+  cd ${_pkg}-${pkgver}
+  patch -Np1 -i ${srcdir}/fix-test-utils-import.patch
+  sed -e 's|np.int_t|np.npy_long|' -i py_stringmatching/similarity_measure/cython/cython_levenshtein.pyx # Fix build with numpy 2.0
+  sed -e 's|core/include|_core/include|' -e 's|,<2.0||g' -i setup.py -i pyproject.toml # Fix build with numpy 2.0
+}
+
+build() {
+  cd ${_pkg}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+   cd ${_pkg}-${pkgver}
+   local python_version=$(python -c 'import sys; print("".join(map(str, sys.version_info[:2])))')
+   export PYTHONPATH="${PWD}"/build/lib.linux-${CARCH}-cpython-${python_version}
+   cd py_stringmatching/tests
+   python -m unittest discover -vs .
+}
+
+package() {
+  cd ${_pkg}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm644 LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+  rm -r "$pkgdir"/usr/lib/python*/site-packages/{build_tools,docs,LICENSES}
+}

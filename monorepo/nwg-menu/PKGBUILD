@@ -1,0 +1,38 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-menu
+pkgver=0.1.9
+pkgrel=3
+pkgdesc="MenuStart for sway and other wlroots-based compositors"
+arch=('x86_64')
+url="https://github.com/nwg-piotr/nwg-menu"
+license=('MIT')
+depends=('gtk3' 'gtk-layer-shell' 'xdg-utils')
+makedepends=('go')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('ec4f6ffe27c3dc28d6756bda5ae6b852a1e12fbb37b37cff4b682a4726ff2911')
+
+prepare(){
+	cd "${pkgname}-${pkgver}"
+	mkdir -p build/
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	export CGO_CPPFLAGS="${CPPFLAGS}"
+	export CGO_CFLAGS="${CFLAGS}"
+	export CGO_CXXFLAGS="${CXXFLAGS}"
+	export CGO_LDFLAGS="${LDFLAGS}"
+	export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
+	go build -ldflags="-s -w -linkmode=external -buildid=''" -o "build/${pkgname}" *.go
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	install -Dm755 "build/${pkgname}" "${pkgdir}/usr/bin/${pkgname}"
+	install -Dm 644 menu-start.css "${pkgdir}/usr/share/${pkgname}/menu-start.css"
+	install -Dm 644 desktop-directories/* -t "${pkgdir}/usr/share/${pkgname}/desktop-directories/"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

@@ -1,0 +1,43 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Archisman Panigrahi <apandada1ATgmail.com>
+# Contributor: MareDevi <maredevi at foxmail dot com>
+pkgname=readest
+_Packagename=Readest
+pkgver=0.12.16
+pkgrel=1
+pkgdesc="Modern, feature-rich ebook reader"
+arch=('x86_64')
+url='https://github.com/readest/readest'
+license=('AGPL-3.0-or-later')
+depends=('cairo' 'desktop-file-utils' 'libgcc' 'fontconfig' 'gdk-pixbuf2' 'glib2' 'glibc' 'gtk3'
+         'hicolor-icon-theme' 'libsoup3' 'openssl' 'pango' 'webkit2gtk-4.1' 'gst-plugins-good')
+makedepends=('git' 'librsvg' 'pnpm' 'npm' 'nodejs' 'rust')
+source=("git+https://github.com/readest/readest.git#tag=v$pkgver")
+sha256sums=('01c3c22c5dbc2eab32208ad134f401655eb6a2f0518de2fe22b60b4a95eb51ba')
+options=(!lto)  # Disable Link Time Optimization. Otherwise build fails with some 'cc' linking error.
+
+prepare() {
+  cd $pkgname
+  git submodule update --init --recursive
+  pnpm install
+  pnpm --filter @readest/readest-app setup-vendors
+  # Disable updater artifacts in tauri.conf.json
+  # Otherwise it will try to sign the built package with developer's GPG key which is unnecessary,
+  # and then it causes build failure because the GPG key is not available in the build environment.
+  # Also the updater artifacts are not needed for the AUR package.
+  # For more details, see https://github.com/tauri-apps/tauri/issues/13259
+  sed -i 's/"createUpdaterArtifacts": true/"createUpdaterArtifacts": false/' \
+    apps/$pkgname-app/src-tauri/tauri.conf.json
+}
+
+build() {
+  cd $pkgname
+  pnpm tauri build -b deb
+}
+
+package() {
+  cd $pkgname
+  cp -a target/release/bundle/deb/$_Packagename_*/data/* "${pkgdir}"
+  mv "$pkgdir"/usr/share/applications/{$_Packagename,com.bilingify.readest}.desktop
+  install -Dm644 data/metainfo/appdata.xml "$pkgdir"/usr/share/metainfo/com.bilingify.readest.appdata.xml
+}

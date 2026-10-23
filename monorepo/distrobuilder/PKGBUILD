@@ -1,0 +1,79 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+# Contributor: graysky <graysky AT archlinux DOT us>
+# Contributor: Stéphane Graber <stgraber AT ubuntu DOT com>
+
+pkgname=distrobuilder
+pkgver=3.4.0
+pkgrel=1
+pkgdesc='System container image builder for Incus and LXC'
+arch=(x86_64)
+url='https://linuxcontainers.org/distrobuilder/'
+license=(Apache-2.0)
+depends=(
+  glibc
+  rsync
+  squashfs-tools
+  gnupg
+  debootstrap
+  dosfstools
+  gptfdisk
+  qemu-img
+  e2fsprogs
+  btrfs-progs
+  sqlite
+)
+makedepends=(go git)
+optdepends=(
+  'cdrtools: for repack-windows command'
+  'hivex: for repack-windows command'
+  'wimlib: for repack-windows command'
+)
+options=(!lto)
+source=("https://linuxcontainers.org/downloads/$pkgname/$pkgname-$pkgver.tar.gz"{,.asc})
+sha512sums=('7d39b3a5f404d2792fc56cb00fe808f76295740940607ec4e85e962675392e6e6445ae79712abafb1277054035d298d9fdb68c9d9007e93d69fc5255aba95f52'
+            'SKIP')
+b2sums=('439c3e13551b8e7dbd375e5fdd581afcd98c829b5ee67f800013f915923c5779c746454341148843d3abd35e3f360779f0b68f40f35d9f8c265e25c4521744da'
+        'SKIP')
+validpgpkeys=('602F567663E593BCBD14F338C638974D64792D67') # Stéphane Graber <stgraber@stgraber.org>
+
+prepare() {
+  cd "$pkgname-$pkgver"
+
+  # create folder for build output
+  mkdir build
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  # verify modules
+  go mod verify
+
+  go build -v \
+    -buildmode=pie \
+    -mod=vendor \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    -tags=containers_image_storage_stub,containers_image_docker_daemon_stub,containers_image_openpgp,libsqlite3 \
+    -o build \
+    ./...
+}
+
+# failing due to /tmp issues
+#check() {
+#  cd "$pkgname-$pkgver"
+#  go test -v ./...
+#  go vet -v ./...
+#}
+
+package() {
+  install -vDm755 -t "$pkgdir/usr/bin" "$pkgname-$pkgver/build/$pkgname"
+}

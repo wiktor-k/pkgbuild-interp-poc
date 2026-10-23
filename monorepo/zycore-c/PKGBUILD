@@ -1,0 +1,33 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=zycore-c
+pkgver=1.5.2
+pkgrel=1
+pkgdesc='Zyan Core Library for C'
+arch=('x86_64')
+url='https://github.com/zyantific/zycore-c'
+license=('MIT')
+depends=('glibc')
+makedepends=('git' 'cmake')
+provides=('libZycore.so')
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('2d712fe783bee21d7b8d84c2b419c8e722e1ced73d9e3060ff1bf10b3c1239f2d4bae07a2537a62ecae3ccb70df1c0bcaed3b3257964986048176c9a088e58f6')
+b2sums=('ed5826296cf33ddf8f045ff59124493e45ce8f7245566366c8211a60b8dea147326c71e4287e758920c42a33135f05d01a2e268d146ab2a88877ba5723213e08')
+
+prepare() {
+  cmake \
+    -S "$pkgname" \
+    -B build \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D ZYCORE_BUILD_SHARED_LIB=ON
+}
+
+build() {
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" "$pkgname/LICENSE"
+}

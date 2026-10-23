@@ -1,0 +1,42 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Eric Berquist <eric dot berquist at gmail dot com>
+# Contributor: Joel Goguen <contact+aur@jgoguen.ca>
+
+pkgname=ruby-mixlib-config
+_pkgname="${pkgname#ruby-}"
+pkgver=3.1.14
+pkgrel=1
+pkgdesc='A class based configuration library'
+arch=(any)
+url='https://github.com/chef/mixlib-config'
+license=(Apache-2.0)
+depends=(ruby-tomlrb)
+makedepends=(git ruby-rdoc ruby-rake ruby-bundler ruby-rspec)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('7c65aacbcb1da3621f4fcb66d2e388f35584467576534fb34cf0049bcec48610d424e2e266583ec4adc1f6a06dcd2a85d28c859e35ae1e2429af0cf07cb96c53')
+b2sums=('9d94c2db78a98933bcc9a4d30886d03dbc830b99a7de1e1c93461035ce9c496eafee0aa9bfced0095d6a146e4251c96908c6fd22324faf7595b838b2a4f758bf')
+
+build() {
+  cd "$pkgname"
+
+  rake build
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "pkg/$_pkgname-$pkgver.gem"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

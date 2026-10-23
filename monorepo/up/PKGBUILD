@@ -1,0 +1,58 @@
+# Maintainer: George Rawlinson grawlinson@archlinux.org>
+
+pkgname=up
+pkgver=0.4
+pkgrel=4
+pkgdesc='A tool for writing Linux pipes with instant live preview'
+arch=(x86_64)
+url='https://github.com/akavel/up'
+license=(Apache-2.0)
+depends=(glibc)
+makedepends=(git go)
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('402e143ca1897b240e4e6f0eb7309b0593039a24f11a8ea441e1ba67d3c8cdbb9835d69e3dfee7176828a49ad6a3b78707f762a6d351bf9814e630c37f9b234a')
+b2sums=('4fe135f87f681bb45bccaba88ca87dce2a06c8b58eff90a0d00e070c3ec408ae79b8a7850adbe6fd81d865341b295f67d1e28b02798b5f12166ac96061d5bcae')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+
+  go build -v \
+    -trimpath \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-linkmode external -extldflags '$LDFLAGS'" \
+    -o build \
+    .
+}
+
+check() {
+  cd "$pkgname"
+
+  go test -v ./...
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" build/up
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

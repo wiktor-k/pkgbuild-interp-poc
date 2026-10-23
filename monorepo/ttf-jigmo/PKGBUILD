@@ -1,0 +1,19 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Delvier <delvier4 at outlook dot com>
+
+pkgname=ttf-jigmo
+pkgver=20250912
+pkgrel=1
+pkgdesc='Japanese Kanji font set which is the official successor to Hanazono Mincho'
+arch=('any')
+url='https://kamichikoichi.github.io/jigmo/'
+license=('CC0-1.0')
+source=(https://kamichikoichi.github.io/jigmo/Jigmo-$pkgver.zip)
+sha256sums=('5744c7386d129475d87607ca66d043c8793c65448adeaedc921b6931890e5d0b')
+
+package() {
+	install -Dm644 Jigmo{,2,3}.ttf -t \
+		"$pkgdir"/usr/share/fonts/TTF/
+	install -Dm644 LICENSE.txt -t \
+		"$pkgdir"/usr/share/licenses/$pkgname/
+}

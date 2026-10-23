@@ -1,0 +1,71 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Maintainer: Peter Jung <ptr1337@archlinux.org>
+# Contributor: Mark Wagie <mark.wagie@proton.me>
+
+pkgname=cosmic-settings-daemon
+pkgver=1.10.0
+pkgrel=1
+epoch=1
+pkgdesc='Cosmic settings daemon'
+arch=(x86_64)
+url=https://github.com/pop-os/cosmic-settings-daemon
+license=(GPL-3.0-only)
+groups=(cosmic)
+depends=(
+  acpid
+  adw-gtk-theme
+  alsa-utils
+  breeze-icons
+  libgcc
+  geoclue
+  glibc
+  libinput
+  libpulse
+  libpipewire
+  playerctl
+  cosmic-sound-theme
+  qt6ct
+  systemd-libs
+  wireplumber
+  xdg-utils
+)
+makedepends=(
+  clang
+  cargo
+  git
+  just
+  libxkbcommon
+  mold
+)
+optdepends=(
+  'pulseaudio-alsa: Media keys support'
+  'qt5ct: Theming support for Qt5 apps'
+)
+source=(
+  git+https://github.com/pop-os/cosmic-settings-daemon.git#tag=epoch-${pkgver}
+  cosmic-settings-daemon-lto.patch
+)
+b2sums=('ca6ddbc50af438bb420493e3d83ef54ac1d9e6cfdd54003c029137854ca9d413822be160f65958e14d6184397086a27cc8adb1699b45243b35a1bc7f2f8109d5'
+        '935604b934c6fb805fdef20a716838373c1c9463ddc215af9c9bd162ebacc422181f1c227f37b59bc617496a60b88f8b16132fac001f61a2c777179abd8c634a')
+
+prepare() {
+  cd cosmic-settings-daemon
+  patch -Np1 -i ../cosmic-settings-daemon-lto.patch
+  cargo fetch --locked
+  sed 's/sudo/wheel/g' -i data/polkit-1/rules.d/cosmic-settings-daemon.rules
+}
+
+build() {
+  cd cosmic-settings-daemon
+  export GEOCLUE_AGENT="/usr/lib/geoclue-2.0/demos/agent"
+
+  RUSTFLAGS+=" -C link-arg=-fuse-ld=mold"
+  just build-release --frozen
+}
+
+package() {
+  cd cosmic-settings-daemon
+  just rootdir="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

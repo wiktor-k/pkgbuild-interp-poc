@@ -1,0 +1,26 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Giancarlo Razzolini <grazzolini@archlinux.org>
+
+pkgname=mkinitcpio-dropbear
+pkgver=0.0.3
+pkgrel=9
+pkgdesc='hook to install and enable the dropbear daemon in early userspace'
+arch=(any)
+url="https://github.com/grazzolini/$pkgname"
+license=(BSD-3-Clause)
+depends=(dropbear
+         psmisc)
+optdepends=('mkinitcpio-netconf: Network interface configuration'
+            'mkinitcpio-ppp: PPP interface configuration'
+            'openssh: Allows the use of the same host keys used for normal access')
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+changelog=ChangeLog
+sha256sums=('ebf87726471cfade5b3df99428b0b12a607a12f26d9438c36124f4d6ff1a6015')
+
+package() {
+	cd "$_archive"
+	install -Dm0644 dropbear_hook "$pkgdir/usr/lib/initcpio/hooks/dropbear"
+	install -Dm0644 dropbear_install "$pkgdir/usr/lib/initcpio/install/dropbear"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

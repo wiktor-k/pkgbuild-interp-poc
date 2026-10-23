@@ -1,0 +1,56 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=pdoc
+pkgver=16.0.0
+pkgrel=2
+pkgdesc="API Documentation for Python Projects"
+arch=(any)
+url="https://github.com/mitmproxy/pdoc/"
+license=(MIT-0)
+depends=(
+  python
+  python-jinja
+  python-markdown2
+  python-markupsafe
+  python-pygments
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-hypothesis
+  python-pdoc-pyo3-sample-library
+  python-pydantic
+  python-pytest
+  python-pytest-timeout
+)
+provides=(python-pdoc)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('6fb5a5e98f30555bfa6091e845baba445ef95da7e39dfadb41fbb0a5e1c659bf0272321af6bd796065517bb05218cec44d0bd1718784f57dcc2c33e2d93bdcf0')
+b2sums=('5ec3703311471b4c10f0cc226a84d06f45ee66f0c3ff62b234d43bf48c60a1f4f4fd25fd232332a03f46a3b16695822b7d8e5c4df4093934ed7a143f71333052')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    # https://github.com/mitmproxy/pdoc/issues/851
+    --deselect 'test/test_snapshot.py::test_snapshots[html-demopackage_dir]'
+    -vv
+  )
+
+  cd $pkgname-$pkgver
+  pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 {CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

@@ -1,0 +1,30 @@
+pkgbase = paper-clip
+	pkgdesc = PDF document metadata editor
+	pkgver = 5.5.2
+	pkgrel = 2
+	url = https://apps.gnome.org/PdfMetadataEditor/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = exempi
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = poppler-glib
+	source = git+https://github.com/Diego-Ivan/Paper-Clip.git#tag=v5.5.2
+	source = paper-clip-thumbnail-pixbuf.patch
+	source = paper-clip-tmp-file.patch
+	b2sums = bd334dc960ed4ed3bed70f06e9f9798561fa9e6aa369441a0df5e9a85d43a328cd1e2bb255674e6abb599530c89aea98c26cbe7c7634d99d6a883ba9fe89b624
+	b2sums = e0d1ff1f607b2308e54bb6fca9e218e056dec5f28390a282196b0b2e8eed2be41c3a58b4f8e29514be413d248f5002c043d93f06d3b5c1a234fa41b46f38af48
+	b2sums = 945cba12f6a7bce77c5dd914258f8b5fdc042dfe21ecc94793866b161b75abf83955cfe6ca92bdf704efaeca6b65c2ecba316275ea7e705d9380a9e72cfd849e
+
+pkgname = paper-clip

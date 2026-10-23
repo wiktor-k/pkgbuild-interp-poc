@@ -1,0 +1,23 @@
+pkgbase = python-boto3
+	pkgdesc = The AWS SDK for Python
+	pkgver = 1.43.108
+	pkgrel = 1
+	url = https://github.com/boto/boto3
+	arch = any
+	license = Apache-2.0
+	checkdepends = python-awscrt
+	checkdepends = python-pytest
+	checkdepends = python-pytest-xdist
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-botocore
+	depends = python-jmespath
+	depends = python-s3transfer
+	optdepends = python-awscrt: AWS CRT S3 transfers
+	source = https://github.com/boto/boto3/archive/1.43.108/python-boto3-1.43.108.tar.gz
+	b2sums = 73f98863859b8c1ff06655d84d6b155811ac120dc88afd377272187b000e09346ac9c6843967521d1576753427490080e4104ba811defc96bf7fc1595ba649c2
+
+pkgname = python-boto3

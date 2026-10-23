@@ -1,0 +1,23 @@
+pkgbase = typobuster
+	pkgdesc = Lightweight editor with text transformations and auto-correction
+	pkgver = 1.0.0
+	pkgrel = 2
+	url = https://github.com/nwg-piotr/typobuster
+	arch = any
+	license = GPL-3.0-only
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	makedepends = python-setuptools
+	depends = glib2
+	depends = gtk3
+	depends = gtksourceview4
+	depends = python
+	depends = python-cairo
+	depends = python-gobject
+	optdepends = gspell: for spell checking plugin
+	optdepends = hunspell-en_us: for spell checking, American English
+	source = typobuster-1.0.0.tar.gz::https://github.com/nwg-piotr/typobuster/archive/v1.0.0.tar.gz
+	sha256sums = 0c098645c0db6836c3c5021782c991b2ee1cd1bef3da09534db582d6b46a67c0
+
+pkgname = typobuster

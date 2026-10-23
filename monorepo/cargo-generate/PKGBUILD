@@ -1,0 +1,43 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Philipp A. <flying-sheep@web.de>
+
+pkgname=cargo-generate
+pkgver=0.25.1
+pkgrel=1
+pkgdesc="Use pre-existing git repositories as templates"
+arch=('x86_64')
+url="https://github.com/cargo-generate/cargo-generate"
+license=('MIT' 'Apache-2.0')
+depends=('cargo' 'glibc' 'libgcc')
+optdepends=('git: templates from local Git repositories'
+            'openssh: templates from Git repositories over SSH')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('a36b52c52a8a1c62f8f53a7e9d6d88ea84dd917dc8b2e6523a423b1fc32d5c53')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  # Rust's linker needs native code in the GCC LTO objects from aws-lc-sys.
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  CFLAGS+=' -ffat-lto-objects'
+  RUST_TEST_THREADS=1 cargo test --frozen --lib
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

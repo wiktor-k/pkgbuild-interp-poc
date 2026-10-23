@@ -1,0 +1,39 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: linus.mussmaecher@gmail.com
+
+pkgname=rucola
+pkgver=0.10.0
+pkgrel=1
+pkgdesc="Terminal-based markdown note manager"
+arch=('x86_64')
+url="https://github.com/Linus-Mussmaecher/rucola"
+license=("GPL-3.0-only")
+depends=('glibc' 'libgcc' 'libgit2' 'libssh2' 'openssl')
+makedepends=('cargo')
+replaces=('rucola-notes')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('afe89fbd51832fa69851b3f0a775f470326f3d583224c2b229a2e0ee49accbf8')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --target "$(rustc --print host-tuple)" # --locked
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  LIBGIT2_NO_VENDOR=1 LIBSSH2_SYS_USE_PKG_CONFIG=1 cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  LIBGIT2_NO_VENDOR=1 LIBSSH2_SYS_USE_PKG_CONFIG=1 cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 default-config/*.{css,toml} -t "$pkgdir/usr/share/doc/$pkgname/default-config"
+}
+
+# vim: ts=2 sw=2 et:

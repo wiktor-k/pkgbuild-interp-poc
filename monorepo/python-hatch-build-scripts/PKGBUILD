@@ -1,0 +1,38 @@
+# Maintainer:
+
+pkgname=python-hatch-build-scripts
+pkgver=1.0.0
+pkgrel=2
+pkgdesc='A plugin for Hatch that runs build scripts and saves their artifacts'
+arch=(any)
+url='https://github.com/rmorshea/hatch-build-scripts'
+license=(MIT)
+depends=(python
+         python-hatchling
+         python-pathspec)
+makedepends=(git
+             python-build
+             python-installer)
+checkdepends=(python-hatch
+              python-pytest
+              python-pip
+              python-toml)
+source=(git+https://github.com/rmorshea/hatch-build-scripts#tag=v$pkgver)
+sha256sums=('daf97d99ecb8ff63f15662dcf603726a7430e532b19d907ed8e7a0110b6e8873')
+
+build() {
+  cd hatch-build-scripts
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd hatch-build-scripts
+  PYTHONPATH="$PWD"/src \
+  pytest -v
+}
+
+package() {
+  cd hatch-build-scripts
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE.txt "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

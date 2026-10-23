@@ -1,0 +1,28 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Baptiste Grenier <baptiste@bapt.name>
+# Contributor: Florian Fischer <florian.fischer@muhq.space>
+
+pkgname=rubber
+pkgver=1.6.7
+pkgrel=1
+pkgdesc="A wrapper for LaTeX and friends"
+arch=('any')
+url="https://launchpad.net/rubber/"
+license=('GPL-2.0-only')
+depends=('python')
+makedepends=('texinfo' 'texlive-plaingeneric' 'python-hatchling' 'python-installer' 'python-build')
+source=("https://gitlab.com/latex-rubber/rubber/-/archive/$pkgver/rubber-$pkgver.tar.bz2")
+sha512sums=('82ff4457fbe98de15c09adce2dc6dc9693f1ce8bb8f5fa358e9e9f0268e98fb4aa05fe08bafb5a1fad1c400c1623af21e21376c42cec6a162dd05c7791819ef4')
+
+build() {
+  cd "${srcdir}/rubber-$pkgver"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "${srcdir}/rubber-$pkgver"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  mkdir -p "$pkgdir"/usr/share/bash-completion/completions/
+  echo "complete -f -X '!*.tex' rubber" >"$pkgdir"/usr/share/bash-completion/completions/rubber
+}

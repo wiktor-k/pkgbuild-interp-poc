@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=yesod-test
+pkgname=haskell-yesod-test
+pkgver=1.7.0.3
+pkgrel=16
+pkgdesc="Integration testing for WAI/Yesod Applications"
+url="https://www.yesodweb.com"
+license=('MIT')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-hunit' 'haskell-aeson' 'haskell-attoparsec' 'haskell-blaze-builder'
+         'haskell-blaze-html' 'haskell-blaze-markup' 'haskell-case-insensitive' 'haskell-conduit'
+         'haskell-cookie' 'haskell-hspec-core' 'haskell-html-conduit' 'haskell-http-types'
+         'haskell-memory' 'haskell-network' 'haskell-pretty-show' 'haskell-wai'
+         'haskell-wai-extra' 'haskell-xml-conduit' 'haskell-xml-types' 'haskell-yesod-core')
+makedepends=('ghc')
+checkdepends=('haskell-clientsession' 'haskell-hspec' 'haskell-unliftio' 'haskell-unliftio-core'
+              'haskell-yesod-form')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('41378e8d170ae1770ce7ac5f8be2daee55be2e8945063803310f7a2df07e275233dd9de96de9d651fcf2d327371b340a7f109680823dd8300d19640a38184411')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

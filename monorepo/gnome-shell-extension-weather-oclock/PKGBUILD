@@ -1,0 +1,30 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=gnome-shell-extension-weather-oclock
+_pkgname=weather-oclock
+_uuid=weatheroclock@CleoMenezesJr.github.io
+pkgver=50.5
+pkgrel=2
+pkgdesc='GNOME Shell extension that displays the current weather inside the pill next to the clock'
+arch=(any)
+url='https://github.com/CleoMenezesJr/weather-oclock'
+license=(GPL-3.0-or-later)
+depends=(gnome-shell)
+makedepends=(git)
+optdepends=('gnome-weather: Configure location')
+source=("git+https://github.com/CleoMenezesJr/weather-oclock.git#tag=v$pkgver")
+b2sums=(0877a2f7d10d6e4c5f4386f019c6ee2a17ae426c821ab862500b8fd7797c211d0a8a9fa22f4adb6dbce563d20032a0a669944db07a734ef6d3c7886b6ac1fa6c)
+
+prepare() {
+  cd $_pkgname
+
+  # Mark it compatible with GNOME Shell 51
+  sed -i 's/, "50"]/, "50", "51"]/' $_uuid/metadata.json
+}
+
+package() {
+  install -dm755 "$pkgdir/usr/share/gnome-shell/extensions"
+  cp -a $_pkgname/$_uuid "$pkgdir/usr/share/gnome-shell/extensions/$_uuid"
+  install -dm755 "$pkgdir/usr/share/glib-2.0"
+  mv "$pkgdir"/usr/share/gnome-shell/extensions/*/schemas "$pkgdir/usr/share/glib-2.0"
+}

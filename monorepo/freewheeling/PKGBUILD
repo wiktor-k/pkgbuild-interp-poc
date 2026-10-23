@@ -1,0 +1,79 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=freewheeling
+pkgver=0.6.6
+pkgrel=9
+pkgdesc="A live looper"
+arch=(x86_64)
+url="https://github.com/free-wheeling/freewheeling"
+license=(GPL-2.0-or-later)
+groups=(pro-audio)
+depends=(
+  glibc
+  libgcc
+  libogg
+  libstdc++
+  libx11
+  libxml2
+  nettle
+  sdl
+  sdl_gfx
+  sdl_ttf
+)
+makedepends=(
+  alsa-lib
+  fluidsynth
+  gendesk
+  jack
+  libicns
+  liblo
+  libsndfile
+  libvorbis
+)
+source=(
+  $url/archive/v$pkgver/$pkgname-v$pkgver.tar.gz
+  nettle-4.patch
+)
+sha512sums=('c2b51b44f2dfc6e0f97a52f9be1c24b61516719b56eb3f641c5b29616f626c09f0d211ecef23b4857dabab04950e31c2ab45b73a1e4d4b7dfd534e3fffc09f57'
+            '288fa3986baedbfa61ea3cb63842af909b07285da1556152f1a27be3476fdc4317c906fd8d83e8086f4f367316c4cc6bbfbcf404140cece5926f2ed39e3a4475')
+b2sums=('c433509d1d7e8ef7f442a487295ba7cf74c74ff99d4fad85ea11a5a6b65131799b9a3b8ef9842fb61f8e7b24504b5a72d208c3d4c7bc73a0bafdabe59c7efe9b'
+        'aade98a199af9f17718899a9722e9ecafb0e697b18a1ef15b1ede1a923f98469b9ca549e13805aafc48e63f7db14fcd8592fb14f4106df9103a3b5df696f0159')
+
+prepare() {
+  # XDG desktop file
+  gendesk -n \
+          --pkgname ${pkgname} \
+          --pkgdesc "${pkgdesc}" \
+          --name Freewheeling \
+          --exec fweelin \
+          --categories "Audio;Sequencer"
+
+  cd $pkgname-$pkgver
+  icns2png -x MacOSX/freewheeling.icns
+  patch -p1 -i ../nettle-4.patch
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    fluidsynth libfluidsynth.so
+    jack libjack.so
+    liblo liblo.so
+    libsndfile libsndfile.so
+    libvorbis libvorbis.so libvorbisenc.so libvorbisfile.so
+  )
+
+  make DESTDIR="$pkgdir/" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname.desktop -t "$pkgdir/usr/share/applications/"
+  install -vDm 644 $pkgname-$pkgver/${pkgname}_16x16x32.png "$pkgdir/usr/share/icons/hicolor/16x16/apps/$pkgname.png"
+  install -vDm 644 $pkgname-$pkgver/${pkgname}_32x32x32.png "$pkgdir/usr/share/icons/hicolor/32x32/apps/$pkgname.png"
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,ChangeLog,NEWS,README.md,THANKS,TUNING} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 $pkgname-$pkgver/examples/* -t "$pkgdir/usr/share/doc/$pkgname/examples/"
+}

@@ -1,0 +1,43 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-pylibyaml
+_name="${pkgname#python-}"
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Python module that patches the PyYAML library to enable libyaml parser/emitter'
+arch=(any)
+url='https://github.com/philsphicas/pylibyaml'
+license=(MIT)
+depends=(
+  python
+  python-pyyaml
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  "$pkgname-$pkgver.tar.gz::https://files.pythonhosted.org/packages/source/${_name::1}/${_name//-/_}/${_name//-/_}-$pkgver.tar.gz"
+  "$pkgname-$pkgver-LICENSE::https://raw.githubusercontent.com/philsphicas/pylibyaml/597e7856c941a64a39e9afcb7df6a069166fee47/LICENSE"
+)
+sha512sums=('1fdab10678688ae85091b0a0aa6e52db9f4236c458eaab46234c5696a09128a582bc51d7c796e7562eda484864591700ca3b7f885b6f5ba19a65504cabce8c3f'
+            'ce6486050904ad5e7aa740ef504fb8f3270f7d32d6e57bbfcf0e81627b1c5a15378517d18789af149ed1199ba9f9930cdb7bad775707bc1b5b8281cb11a20e6e')
+b2sums=('4d8acfbbf01a37cbf607867b05d4947e8140965ea99bf0acdb59e097f64b83efb8d9bad4a98e418636a8f9001b120081c1a0028abd05d43b509a763a9f404265'
+        '393c08307eb1899211913ab2dc65658209e452f4a90577318188424dc36574ed0c47d8d92511ed3711ec792f123ed4fa900669ea1bf393c9945ddc067d90c413')
+
+build() {
+  cd "$_name-$pkgver"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  # license
+  install -vDm644 "$pkgname-$pkgver-LICENSE" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+
+  cd "$_name-$pkgver"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,23 @@
+pkgbase = python-update-checker
+	pkgdesc = A python module that will check for package updates
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/bboe/update_checker
+	arch = any
+	license = BSD-2-Clause
+	checkdepends = python-aiohttp
+	checkdepends = python-pytest
+	checkdepends = python-pytest-asyncio
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-uv-build
+	depends = python
+	optdepends = python-aiohttp: async API support
+	provides = python-update_checker
+	conflicts = python-update_checker
+	replaces = python-update_checker
+	source = git+https://github.com/bboe/update_checker.git#tag=v1.0.0
+	sha512sums = b384331d9de5a15ecde8232f3e5a4ccb00a6b35fe23046102d4ad9c7a0a46109d5abe28ece0f26cfe6b8258f426b5a493a90a9d4a8d7accbac2c44c8b605754d
+
+pkgname = python-update-checker

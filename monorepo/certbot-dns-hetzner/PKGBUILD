@@ -1,0 +1,30 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+pkgname=certbot-dns-hetzner
+pkgdesc="Certbot plugin enabling dns-01 challenge on the Hetzner DNS API"
+pkgver=4.0.0
+pkgrel=2
+arch=("any")
+url="https://github.com/ctrlaltcoop/certbot-dns-hetzner"
+license=("Apache-2.0")
+depends=('certbot' 'python-tldextract' 'python-hcloud')
+makedepends=("python-build" "python-installer" "python-wheel" "python-setuptools")
+checkdepends=("python-pytest")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('db9c0b0349d1ea001f64080e414ee0f78528c4cd2ed561a6bfa6a2a4722dfd7e')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+check() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	PYTHONPATH=. pytest
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	install -Dm644 LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/LICENSE.txt"
+	install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
+	python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,42 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=charls
+pkgver=2.4.5
+pkgrel=1
+pkgdesc="A C++ JPEG-LS library implementation"
+arch=(x86_64)
+url="https://github.com/team-charls/charls"
+license=(BSD-3-Clause)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+)
+makedepends=(
+  cmake
+  ninja
+)
+provides=(
+  libcharls.so
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz)
+b2sums=('a5601ae40c24fa0469957805f00613424f4efb036004f32f8555f92f8285c88c8dc147557248d31b91cf56ca58a27c2ac51764042f36c6e4db2de09848d5b7cd')
+
+build() {
+  local cmake_options=(
+    -B build
+    -S $pkgname-$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DBUILD_SHARED_LIBS=ON
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/LICENSE.md -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

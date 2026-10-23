@@ -1,0 +1,21 @@
+pkgbase = opensearch-dashboards-index-management-plugin
+	pkgdesc = OpenSearch Dashboards Index Management Plugin
+	pkgver = 3.9.0.0
+	pkgrel = 2
+	url = https://opensearch.org/docs/latest/im-plugin/index/
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = yarn
+	makedepends = npm
+	makedepends = python
+	makedepends = git
+	depends = opensearch-dashboards=3.9.0
+	depends = opensearch-dashboards-notifications-plugin
+	options = !strip
+	options = emptydirs
+	source = git+https://github.com/opensearch-project/index-management-dashboards-plugin.git#tag=3.9.0.0
+	source = git+https://github.com/opensearch-project/OpenSearch-Dashboards.git#tag=3.9.0
+	sha256sums = 238dc19383a09ab7226d8441ebcb1344ba02d4c18a95daa019b4bb6f055a4391
+	sha256sums = aab6519436634d2ff41e4e5f415740b36b23d860fbfb7657c4f46211f4c2fbb7
+
+pkgname = opensearch-dashboards-index-management-plugin

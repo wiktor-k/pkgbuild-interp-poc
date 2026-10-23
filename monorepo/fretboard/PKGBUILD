@@ -1,0 +1,62 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=fretboard
+pkgver=9.1
+pkgrel=3
+pkgdesc='Look up guitar chords'
+arch=(x86_64)
+url='https://apps.gnome.org/Fretboard/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+source=(
+  "git+https://github.com/bragefuglseth/fretboard.git#tag=v$pkgver"
+  fretboard-dbus-activatable.patch
+)
+b2sums=(
+  3cabacce964d8c657a139bd8acbb86387307c5b32b4fb177bc10d9682c30ade9dded097225dd6eea91c9b4a59b9537829365d883fb8282d796ecfda07927fdcf
+  08e41505312019891fb7d3e4e321b5f8a21cfa2837dd1c7aceb74264dc6bf2d3885a4b3a3e5dd926c9a9712d8c8d8f1accc52d6d8ea154365428589f0665f34b
+)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+
+  # https://github.com/bragefuglseth/fretboard/pull/85
+  git apply -3 ../fretboard-dbus-activatable.patch
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

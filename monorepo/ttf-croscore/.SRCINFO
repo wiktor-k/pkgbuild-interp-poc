@@ -1,0 +1,14 @@
+pkgbase = ttf-croscore
+	pkgdesc = Chrome OS core fonts
+	pkgver = 20220810
+	pkgrel = 3
+	url = https://fonts.google.com/noto
+	arch = any
+	license = OFL-1.1
+	makedepends = git
+	makedepends = python-fonttools
+	provides = ttf-font
+	source = git+https://github.com/notofonts/noto-fonts#commit=2725c70baa8b0176c7577093ba1fc6179aa79478
+	sha256sums = SKIP
+
+pkgname = ttf-croscore

@@ -1,0 +1,15 @@
+pkgbase = luajson
+	pkgdesc = JSON parser/encoder for Lua
+	pkgver = 1.3.5
+	pkgrel = 1
+	url = https://github.com/harningt/luajson
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = lua52-lpeg
+	source = git+https://github.com/harningt/luajson#tag=1.3.5
+	b2sums = 56870424eb2cb1aa79068625bb120cbb13f80446299f97e65fb13fd3a251920335ae17b756d908cce03b3cc193ceb613d0302f4a3a8f677fe44a7858b7f71a54
+
+pkgname = lua52-luajson
+	pkgdesc = JSON parser/encoder for Lua 5.2
+	depends = lua52-lpeg

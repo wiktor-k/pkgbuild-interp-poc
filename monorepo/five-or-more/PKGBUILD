@@ -1,0 +1,51 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=five-or-more
+pkgver=48.1
+pkgrel=1
+pkgdesc="Remove colored balls from the board by forming lines"
+url="https://gitlab.gnome.org/GNOME/five-or-more"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk3
+  hicolor-icon-theme
+  libgee
+  libgnome-games-support
+  librsvg
+)
+makedepends=(
+  git
+  gobject-introspection
+  meson
+  vala
+  yelp-tools
+)
+source=(
+  "git+$url.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('ee37da668f7411c2f31efb38d9735fb71c53364eac7f6e2741d07b9891259de725d0f47f0020680eaadc38044aae83a420da9c9ff7f1c03ce163edca78d48eb3')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et

@@ -1,0 +1,44 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-wallpapers
+pkgver=1.7.27
+pkgrel=1
+epoch=1
+pkgdesc='Deepin Wallpapers'
+arch=('any')
+license=('CC-BY-4.0')
+url="https://github.com/linuxdeepin/deepin-wallpapers"
+makedepends=('git' 'deepin-api')
+replaces=('deepin-community-wallpapers')
+source=("git+https://github.com/linuxdeepin/deepin-wallpapers.git#tag=$pkgver")
+sha512sums=('792026c37303bfc3569f957de3395c155380021a4ea10126869a2d60ade3f6b81a431a7ca51e0e02b12e047546dae5088c8de479ab19054f198a8d8c09fe6b22')
+
+build() {
+  cd deepin-wallpapers
+  make SYSTEMID=deepin
+}
+
+package() {
+  cd deepin-wallpapers
+  pkgdesc='Default wallpapers for DDE'
+  groups=('deepin')
+
+  install -dm755 "$pkgdir"/usr/share/wallpapers
+  cp -r deepin "$pkgdir"/usr/share/wallpapers/
+  cp -r deepin-solidwallpapers "$pkgdir"/usr/share/wallpapers/
+  cp -r deepin-livewallpapers "$pkgdir"/usr/share/wallpapers/
+
+  # The build has already copied the selected platform's defaults into place.
+  rm -r "$pkgdir"/usr/share/wallpapers/{deepin,deepin-livewallpapers}/platform
+
+  install -dm755 "$pkgdir"/var/cache
+  cp -r image-blur "$pkgdir"/var/cache/
+
+  # Suggested by upstream
+  install -dm755 "$pkgdir"/usr/share/backgrounds/deepin
+  ln -s ../../wallpapers/deepin/desktop.jpg "$pkgdir"/usr/share/backgrounds/deepin/desktop.jpg
+  ln -s $(echo -n /usr/share/wallpapers/deepin/desktop.jpg | md5sum | cut -d " " -f 1).jpg \
+        "$pkgdir"/var/cache/image-blur/$(echo -n /usr/share/backgrounds/deepin/desktop.jpg | md5sum | cut -d " " -f 1).jpg
+}

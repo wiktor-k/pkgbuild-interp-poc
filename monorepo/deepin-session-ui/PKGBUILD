@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Josip Ponjavic <josipponjavic at gmail dot com>
+# Contributor: Xu Fasheng <fasheng.xu[AT]gmail.com>
+
+pkgname=deepin-session-ui
+pkgver=6.0.51
+pkgrel=1
+pkgdesc='Deepin desktop-environment - Session UI module'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dde-session-ui"
+license=('CC0-1.0' 'GPL-3.0-or-later')
+groups=('deepin')
+# deepin-daemon: org.deepin.dde.daemon.*
+depends=('deepin-daemon' 'deepin-wallpapers' 'deepin-pw-check' 'dtk6core'
+         'dtk6gui' 'dtk6widget' 'glib2' 'libxext' 'libxrandr' 'qt6-base' 'qt6-svg' 'systemd-libs' 'xcb-util-wm'
+         'libxcrypt' 'glibc' 'libgcc' 'libstdc++' 'hicolor-icon-theme')
+makedepends=('git' 'cmake' 'deepin-tray-loader' 'deepin-gettext-tools' 'qt6-tools' 'gtest' 'ninja')
+source=("git+https://github.com/linuxdeepin/dde-session-ui.git#tag=$pkgver")
+sha512sums=('0547537e3aa1291e463c909c823c83020dd33cf84ac44c208d9bcfba7b84eb855ecef62af4e90769a786de88342df0ba61bbe6c8bd404c8319226fe54e4b807a')
+
+build() {
+  cd dde-session-ui
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr .
+  ninja
+}
+
+package() {
+  cd dde-session-ui
+  DESTDIR="$pkgdir" ninja install
+}

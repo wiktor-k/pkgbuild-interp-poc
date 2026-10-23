@@ -1,0 +1,22 @@
+pkgbase = gitolite
+	pkgdesc = An access control layer on top of git
+	pkgver = 3.6.15
+	pkgrel = 1
+	url = https://github.com/sitaramc/gitolite
+	install = gitolite.install
+	arch = any
+	license = GPL-2.0-or-later
+	depends = git
+	depends = perl
+	depends = openssh
+	optdepends = perl-json: json output
+	source = gitolite-3.6.15.tar.gz::https://github.com/sitaramc/gitolite/archive/v3.6.15.tar.gz
+	source = 0001-perl-sys-hostname.patch
+	source = gitolite-sysusers.conf
+	source = gitolite-tmpfiles.conf
+	sha256sums = 9c354234446680d3a890c5cf754679541fe6e41419ab02fbf4fe8cc3989a6b33
+	sha256sums = 60775fcf967599ba2d48cdb21591a3150c7314f74e50579b040fc6bc05f0325f
+	sha256sums = ba1b125fc8541aab6884559450e0f7121734112bfb4bec6646819b94da17efb9
+	sha256sums = 5682190c639618cd4744d3ae193425df1044dde4fb36acf03fc4d20423eeb10c
+
+pkgname = gitolite

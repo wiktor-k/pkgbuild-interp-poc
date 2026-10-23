@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-yaml-syck
+pkgver=1.47
+pkgrel=2
+pkgdesc="Fast, lightweight YAML loader and dumper"
+arch=('x86_64')
+url="https://github.com/toddr/YAML-Syck"
+license=('MIT')
+depends=('perl')
+options=('!emptydirs')
+source=(https://cpan.metacpan.org/authors/id/T/TO/TODDR/YAML-Syck-$pkgver.tar.gz)
+sha512sums=('7f1f37a18063716630f785599e82ebd43747f842775300f3a5f8e69d4261f3a9f69d88e232b55fb1ad61c5c29c7e6b6512cca9b2a3c4f66cf6f9e93947a2f63f')
+
+build() {
+  cd YAML-Syck-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="$CFLAGS -std=gnu17"
+  make
+}
+
+check() {
+  cd YAML-Syck-$pkgver
+  make test
+}
+
+package() {
+  cd YAML-Syck-$pkgver
+  make install DESTDIR="${pkgdir}"
+  install -D -m644 COPYING "${pkgdir}/usr/share/licenses/${pkgname}/COPYING"
+}

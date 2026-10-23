@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=runst
+pkgver=0.2.0
+pkgrel=2
+pkgdesc="A dead simple notification daemon"
+arch=('x86_64')
+url="https://github.com/orhun/runst"
+license=('MIT' 'Apache-2.0')
+depends=('cairo' 'dbus' 'glib2' 'glibc' 'libgcc' 'libxcb' 'pango' 'zstd')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('ff76101d4e23c8d7dce56442a2400c26d4e40a36ad02db71ade13acca13b17d3aa3413b50177fe7ba3b6bf95345d58a21b8613fad8a561953093927414326a3f')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  ZSTD_SYS_USE_PKG_CONFIG=1 cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  ZSTD_SYS_USE_PKG_CONFIG=1 cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

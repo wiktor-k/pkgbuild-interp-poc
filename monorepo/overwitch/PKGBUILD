@@ -1,0 +1,85 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=overwitch
+pkgver=2.2
+pkgrel=2
+pkgdesc='JACK client for Overbridge devices'
+arch=(x86_64)
+url='https://dagargo.github.io/overwitch/'
+license=(GPL-3.0-only)
+depends=(
+  hicolor-icon-theme
+  glibc
+  gtk4
+  systemd-libs
+)
+makedepends=(
+  git
+  gettext
+  jack
+  json-glib
+  libsamplerate
+  libsndfile
+  libusb
+)
+checkdepends=(cunit)
+source=("$pkgname::git+https://github.com/dagargo/overwitch#tag=$pkgver")
+sha512sums=('4d172598f53648fa08054115f07378709e3afac1db850a0186c5a1d3695190285ee9b4c65fc9cb7c0a9a81e665f2d1f660895627a42a28c0dfce793de5fba9a1')
+b2sums=('90856838983799d6048c6eaaf02dc18f1bfe1b3f336957c957313915f2ceb5b23761fe61bb14022e92a58dc4339a4ebc3d1c48de5849fe4177ae10df4b2e236b')
+
+prepare() {
+  cd "$pkgname"
+
+  autoreconf -vfi
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+check() {
+  cd "$pkgname"
+
+  make check
+}
+
+package() {
+  depends+=(
+    libcairo.so
+    libcairo-gobject.so
+    libgdk_pixbuf-2.0.so
+    libgio-2.0.so
+    libglib-2.0.so
+    libgobject-2.0.so
+    libgraphene-1.0.so
+    libgtk-4.so
+    libharfbuzz.so
+    libjack.so
+    libjson-glib-1.0.so
+    libpango-1.0.so
+    libpangocairo-1.0.so
+    libsamplerate.so
+    libsndfile.so
+    libusb-1.0.so
+    libvulkan.so
+  )
+
+  cd "$pkgname"
+
+  make DESTDIR="$pkgdir" install
+
+  # systemd integration
+  install -vDm644 -t "$pkgdir/usr/lib/systemd/user" systemd/overwitch.service
+
+  # udev rules
+  install -vDm644 -t "$pkgdir/usr/lib/udev/rules.d" udev/*.rules
+  install -vDm644 -t "$pkgdir/usr/lib/udev/hwdb.d" udev/*.hwdb
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/docs/images" docs/images/screenshot.png
+}

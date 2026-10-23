@@ -1,0 +1,28 @@
+pkgbase = stopmotion
+	pkgdesc = Program to create stop motion animations
+	pkgver = 0.9.0
+	pkgrel = 3
+	url = https://invent.kde.org/multimedia/stopmotion
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = qt6-tools
+	depends = glibc
+	depends = hicolor-icon-theme
+	depends = libarchive
+	depends = libgcc
+	depends = libstdc++
+	depends = libvorbis
+	depends = libxml2
+	depends = qt6-base
+	depends = qt6-multimedia
+	source = git+https://invent.kde.org/multimedia/stopmotion.git#tag=0.9.0
+	source = stopmotion-path-settings.patch
+	source = stopmotion-install-icons.patch
+	b2sums = f9875213269777030672ab88639a9e653a357605577ca63f62613206c6d25352440dd9691b9dadbbef36667996fd0fcaa74cc531a9c3e623a536194ab1c7ca19
+	b2sums = 9548b1a9e15ef5c67f8d0bf2797eb418a846163f57764fca9f08a7b06411126411f109f2f374a4ff44e18c2109dbc4af9a656831816259002f10b74e0230773a
+	b2sums = 3052918d2d20bd521cfe9d9f458118a12f613105aa8cc4e914d2b69d4e5004ab6b9ab8c68c04ef794f65c520f6772422aaf1fdf477ff1c9599f58df09e5d06b8
+
+pkgname = stopmotion

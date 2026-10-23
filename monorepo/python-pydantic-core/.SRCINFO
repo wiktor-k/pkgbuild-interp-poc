@@ -1,0 +1,32 @@
+pkgbase = python-pydantic-core
+	pkgdesc = Core validation logic for pydantic written in rust
+	pkgver = 2.50.1
+	pkgrel = 1
+	epoch = 3
+	url = https://github.com/pydantic/pydantic-core
+	arch = x86_64
+	license = MIT
+	checkdepends = python-dirty-equals
+	checkdepends = python-hypothesis
+	checkdepends = python-inline-snapshot
+	checkdepends = python-pytest
+	checkdepends = python-pytest-benchmark
+	checkdepends = python-pytest-examples
+	checkdepends = python-pytest-mock
+	checkdepends = python-pytest-run-parallel
+	checkdepends = python-pytest-timeout
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	depends = glibc
+	depends = libgcc
+	depends = python
+	depends = python-typing-inspection
+	depends = python-typing_extensions
+	options = !lto
+	source = pydantic::git+https://github.com/pydantic/pydantic.git#tag=core-v2.50.1
+	sha512sums = 7bd832af38a5b98e0863204887f25694b9354eb25d0132553e12a35e4eefa64228c7d6518c2c1dd45d15942291c607c2e1993cb7aff475de1982a7bf41779039
+	b2sums = 7f325b25dc69f135f7c54f15facbff4693b1174117dff07cb50fe193ac7503219c1ef7819cb0a473b7002d0133e8f4b54e116ad803e67f4b1420e84bd5d5dd14
+
+pkgname = python-pydantic-core

@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-calculator
+pkgver=6.5.40
+pkgrel=1
+pkgdesc='An easy to use calculator for ordinary users'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-calculator"
+license=('GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'glibc' 'libgcc' 'libstdc++' 'hicolor-icon-theme' 'qt6-base'
+         'qt6-svg')
+makedepends=('git' 'cmake' 'ninja' 'qt6-tools' 'clang' 'qt6-declarative')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-calculator.git#tag=$pkgver")
+sha512sums=('7e5637bfc569c0da172f3aba78f01e2d4224df3dd3c3bd91832beada016c5c6903f79f37d91070913e898e0ba91993186038c4a2a606694540e2cfd41216a4e3')
+
+prepare() {
+  cd deepin-calculator
+  # respect our LDFLAGS
+  sed -i '/CMAKE_EXE_LINKER_FLAGS/d' CMakeLists.txt
+}
+
+build() {
+  cd deepin-calculator
+  cmake . -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DVERSION=$pkgver
+  ninja
+}
+
+package() {
+  cd deepin-calculator
+  DESTDIR="$pkgdir" ninja install
+}

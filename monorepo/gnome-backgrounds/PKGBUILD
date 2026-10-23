@@ -1,0 +1,30 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-backgrounds
+pkgver=51.0.1
+pkgrel=1
+pkgdesc="Background images and data for GNOME"
+url="https://gitlab.gnome.org/GNOME/gnome-backgrounds"
+arch=(any)
+license=(CC-BY-SA-3.0)
+depends=(libjxl)
+makedepends=(
+  glib2
+  git
+  meson
+)
+groups=(gnome)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-backgrounds.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('060ffc0224506f6412b5d0760719abaefdd1314ea33e475c3a1c1a3d973622542f7191a3a2370d2b0cea5ee1aa40411385de66f89172ed9d68e76ed7d2a379d5')
+
+build() {
+  arch-meson $pkgname build
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

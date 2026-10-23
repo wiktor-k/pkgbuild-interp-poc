@@ -1,0 +1,41 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+
+pkgname=sc-controller
+pkgver=1.0.7
+pkgrel=1
+pkgdesc="User-mode driver, mapper, and GTK 4 based GUI for game controllers, including but not limited to Steam Controller (2015 & 2026)"
+arch=("x86_64") # "aarch64"
+url="https://github.com/C0rn3j/sc-controller"
+license=("GPL-2.0-only")
+depends=(
+	"gtk4"
+	"gtk4-layer-shell"
+	"python-cairo"
+	"python-evdev"
+	"python-gobject"
+	"python-ioctl-opt" # TODO(Martin): Delete after hidraw-pure gets added back
+	#"python-hidraw-pure" TODO(Martin): Disabled until this issue is resolved: https://github.com/vpelletier/python-hidraw/issues/8
+	"python-libusb1"
+	"python-pylibacl"
+	"python-setuptools"
+	"python-vdf"
+	"xorg-xinput"
+)
+makedepends=(
+	"git"
+	"python-build"
+	"python-installer"
+)
+conflicts=("scc")
+source=("${pkgname}-${pkgver}::git+https://github.com/C0rn3j/sc-controller.git#tag=v${pkgver}")
+sha256sums=('8268cdb0a983ab6432de4121e612481fc14efe949ae9fcfdadb2e02279715d2d')
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m build --wheel
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+}

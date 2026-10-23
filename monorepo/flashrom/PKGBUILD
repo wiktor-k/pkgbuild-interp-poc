@@ -1,0 +1,49 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Giovanni Scafora <giovanni@archlinux.org>
+# Contributor: Cilyan Olowen <gaknar@gmail.com>
+# Contributor: fill <mailbox@fillo.ru>
+# Contributor: Anton Shestakov <engored*ya.ru>
+
+pkgname=flashrom
+pkgver=1.8.0
+pkgrel=1
+pkgdesc="Utility for reading, writing, erasing and verifying flash ROM chips"
+arch=(x86_64)
+url="https://www.flashrom.org/"
+license=(GPL-2.0-or-later)
+depends=(
+  libcrypto.so
+  libftdi
+  libusb
+  pciutils
+)
+makedepends=(
+  cmocka
+  git
+  meson
+  python-sphinx
+)
+optdepends=('dmidecode: for SMBIOS/DMI table decoder support')
+source=(
+  "git+https://github.com/flashrom/flashrom.git#tag=v${pkgver}"
+)
+sha256sums=('c370c329b6cec5e84320c40931fa6200cd72f4e16b6bb2a83e57dcbeb7bd0f54')
+
+prepare() {
+  sed -i 's#GROUP="plugdev"#TAG+="uaccess"#g' flashrom/util/flashrom_udev.rules
+}
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+# FYI, tests are incompatible with LTO enabled
+# check() {
+#   meson test -C build --print-errorlogs
+# }
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+  install -Dm644 flashrom/util/flashrom_udev.rules "${pkgdir}"/usr/lib/udev/rules.d/70-flashrom.rules
+}

@@ -1,0 +1,67 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+pkgname=git-annex
+pkgver=10.20261020
+pkgrel=5
+pkgdesc="Manage files with git, without checking their contents into git"
+url="https://git-annex.branchable.com/"
+license=("AGPL-3.0-only")
+arch=('x86_64')
+depends=('git' 'lsof' 'rsync' 'ghc-libs' 'haskell-aeson' 'haskell-ansi-terminal' 'haskell-async'
+         'haskell-aws' 'haskell-blaze-builder' 'haskell-bloomfilter' 'haskell-byteable'
+         'haskell-case-insensitive' 'haskell-clientsession' 'haskell-concurrent-output'
+         'haskell-crypton' 'haskell-conduit' 'haskell-criterion' 'haskell-crypto-api'
+         'haskell-data-default' 'haskell-dav' 'haskell-dbus' 'haskell-disk-free-space'
+         'haskell-dlist' 'haskell-edit-distance' 'haskell-fdo-notify' 'haskell-feed'
+         'haskell-filepath-bytestring' 'haskell-git-lfs' 'haskell-hinotify' 'haskell-http-client'
+         'haskell-http-client-restricted' 'haskell-http-client-tls' 'haskell-http-conduit'
+         'haskell-http-types' 'haskell-ifelse' 'haskell-magic' 'haskell-memory' 'haskell-microlens'
+         'haskell-monad-control' 'haskell-monad-logger' 'haskell-mountpoints' 'haskell-network'
+         'haskell-network-info' 'haskell-network-multicast' 'haskell-network-uri'
+         'haskell-old-locale' 'haskell-optparse-applicative' 'haskell-path-pieces'
+         'haskell-persistent' 'haskell-persistent-sqlite' 'haskell-quickcheck' 'haskell-ram'
+         'haskell-random' 'haskell-regex-tdfa' 'haskell-resourcet' 'haskell-safesemaphore'
+         'haskell-sandi' 'haskell-securemem' 'haskell-servant' 'haskell-servant-client'
+         'haskell-servant-client-core' 'haskell-servant-server' 'haskell-shakespeare'
+         'haskell-socks' 'haskell-split' 'haskell-stm-chans' 'haskell-tagsoup' 'haskell-tasty'
+         'haskell-tasty-hunit' 'haskell-tasty-quickcheck' 'haskell-tasty-rerun' 'haskell-torrent'
+         'haskell-unbounded-delays' 'haskell-unix-compat' 'haskell-unliftio-core'
+         'haskell-unordered-containers' 'haskell-utf8-string' 'haskell-uuid' 'haskell-vector'
+         'haskell-wai' 'haskell-wai-extra' 'haskell-warp' 'haskell-warp-tls' 'haskell-yesod'
+         'haskell-yesod-core' 'haskell-yesod-form' 'haskell-yesod-static')
+makedepends=('chrpath' 'ghc' 'uusi')
+source=("git+https://git.joeyh.name/git/git-annex.git#tag=$pkgver"
+        'magic-2.0.patch')
+sha256sums=('f14d1e4344e5b11a2405c0472ffdc73f6d8a2a2842a040f2e7a7a9c169762d44'
+            'd5e176829e3ffe17b942c457c6f06943dfa64b8c3152be2291a40185117f13ba')
+
+prepare() {
+  cd git-annex
+
+  # persistent-template was merged into persistent
+  uusi -d persistent-template
+  sed -i 's/MIN_VERSION_persistent_template/MIN_VERSION_persistent/' Database/ImportFeed.hs Database/ContentIdentifier.hs Database/Export.hs Database/Fsck.hs Database/Keys/SQL.hs Database/RepoSize.hs
+
+  # Preserve MIME detection with magic 2.0's flag, Text, path and exception APIs.
+  # https://github.com/philippedev101/magic-haskell/blob/v2.0.0/CHANGELOG.md
+  uusi -u magic
+  patch -Np1 -i "$srcdir/magic-2.0.patch"
+
+  sed -e 's|--ghc-options|-O --prefix=/usr --enable-executable-dynamic --disable-library-vanilla --docdir=/usr/share/doc/'$pkgname' --ghc-options|' \
+      -i Makefile
+}
+
+build() {
+  cd git-annex
+  LDFLAGS="${LDFLAGS/-Wl,-z,pack-relative-relocs/}" \
+  make GHC="ghc -dynamic" BUILDER=./Setup BUILDEROPTIONS=$MAKEFLAGS
+}
+
+package() {
+  cd git-annex
+  make GHC="ghc -dynamic" BUILDER=./Setup DESTDIR="$pkgdir" install
+
+  rmdir "$pkgdir"/usr/share/doc/git-annex "$pkgdir"/usr/share/doc
+}

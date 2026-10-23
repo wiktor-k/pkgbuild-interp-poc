@@ -1,0 +1,40 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Jisu-Woniu <jswn@jswn9945.xyz>
+
+pkgname=typstyle
+pkgver=0.15.2
+pkgrel=1
+pkgdesc="Beautiful and reliable typst code formatter"
+arch=('x86_64')
+url="https://github.com/${pkgname}-rs/${pkgname}"
+license=("Apache-2.0")
+depends=("libgcc" "glibc")
+makedepends=("git" "cargo")
+optdepends=("typst: For typst compilation")
+source=("git+${url}.git#tag=v${pkgver}")
+sha256sums=('5e45534e3373a1c83a81a5b982fc8dbb49555d6abe620ff8f51a8544ba49ed4c')
+
+prepare() {
+	cd "${pkgname}/"
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd "${pkgname}/"
+	cargo build --frozen --release --all-features
+}
+
+check() {
+	cd "${pkgname}/"
+	cargo test --frozen --all-features
+}
+
+package() {
+	cd "${pkgname}/target/release/"
+	install -Dm755 "${pkgname}" -t "${pkgdir}/usr/bin/"
+
+	install -Dm644 <("./${pkgname}" completions bash) "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+	install -Dm644 <("./${pkgname}" completions zsh) "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+	install -Dm644 <("./${pkgname}" completions fish) "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+	install -Dm644 <("./${pkgname}" completions elvish) "${pkgdir}/usr/share/elvish/lib/${pkgname}.elv"
+}

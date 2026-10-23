@@ -1,0 +1,107 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: osc <farid at archlinux-br.org>
+
+_name=SuperCollider
+pkgname=supercollider
+pkgver=3.14.1
+pkgrel=6
+pkgdesc="Platform for audio synthesis and algorithmic composition"
+arch=(x86_64)
+url="https://supercollider.github.io"
+license=(
+  GPL-2.0-or-later
+  GPL-3.0-or-later
+)
+groups=(pro-audio)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libx11
+  qt6-base
+  qt6-svg
+  qt6-webchannel
+  qt6-webengine
+  qt6-websockets
+)
+makedepends=(
+  abletonlink
+  alsa-lib
+  avahi
+  boost
+  boost-libs
+  cmake
+  emacs
+  fftw
+  glib2-devel
+  libsndfile
+  qt6-tools
+  readline
+  systemd-libs
+  yaml-cpp
+)
+checkdepends=(xorg-server-xvfb)
+optdepends=(
+  'sc3-plugins: additional extension plugins for scsynth'
+)
+provides=(libscsynth.so "sclang=$pkgver" "scsynth=$pkgver")
+source=(
+    https://github.com/$pkgname/$pkgname/releases/download/Version-$pkgver/$_name-$pkgver-Source.tar.bz2{,.asc}
+    $pkgname-3.14.1-qt6.patch::https://github.com/supercollider/supercollider/commit/e997e47890a9cee137756dede664811a58dbf85a.patch
+)
+sha512sums=('de3c303feaeb8555859c3bef603214df98b920808b72d0790372147e127d69a721462b358e78fcd006eefcfe08a4818bc144161fff7253a6772cef55b1f0d9ac'
+            'SKIP'
+            '867e234dcf82a09dec8b63964d2cbd1f9bfd0bb9255a89fab701c8ffc59c820f0d4b2b81ef73938f7d2696e2e8d21cfc16908b6aae5d85b92c612ea3e6ae5635')
+b2sums=('faf88cc5e04312d95f0c763f06bdd6300c4377689afac96b18a4e83f0224bfda17e7069d5e3be77ee8dedb3e7bd2e8c0daaf8921e1a0f36cf1a3e8eef2db14a8'
+        'SKIP'
+        '3e40ba29b7a9d0c71545c50ff48ba322226ccd7ade8625a90242e3f9797c2ce8826b14531ad3d8844f8d2336a79b2edc29d942c0e1816bd48f4efbcb7ec42972')
+validpgpkeys=('2E1C4FC2F6BB58FA157B21B8064B501EB7405F04') # Marcin Pączkowski (dyfer)
+
+prepare() {
+  # fix issue with qt6: https://github.com/supercollider/supercollider/issues/7279
+  patch -Np1 -d $_name-$pkgver-Source -i ../$pkgname-3.14.1-qt6.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D CMAKE_BUILD_TYPE=None
+    -D Boost_NO_BOOST_CMAKE=ON
+    -D LIBSCSYNTH=ON
+    -D FORTIFY=ON
+    -D SYSTEM_ABLETON_LINK=ON
+    -D SYSTEM_BOOST=ON
+    -D SYSTEM_YAMLCPP=ON
+    -S $_name-$pkgver-Source
+    -W no-dev
+  )
+  export CFLAGS+=" -DNDEBUG"
+  export CXXFLAGS+=" -DNDEBUG"
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  xvfb-run make test ARGS="-VV -j1" -C build
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    avahi libavahi-common.so libavahi-client.so
+    boost-libs libboost_{program_options,thread}.so
+    fftw libfftw3f.so
+    jack libjack.so
+    libgcc libgcc_s.so
+    libsndfile libsndfile.so
+    libstdc++ libstdc++.so
+    readline libreadline.so
+    systemd-libs libudev.so
+    yaml-cpp libyaml-cpp.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $_name-$pkgver-Source/{AUTHORS,{CHANGELOG,README,README_LINUX}.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

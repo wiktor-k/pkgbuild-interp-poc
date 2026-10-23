@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=primesieve
+pkgver=12.16
+pkgrel=1
+pkgdesc='Fast prime number generator'
+arch=(x86_64)
+url='https://github.com/kimwalisch/primesieve'
+license=(BSD-2-Clause)
+depends=(glibc
+         libgcc
+         libstdc++)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/kimwalisch/primesieve#tag=v$pkgver)
+sha256sums=('3ce43c35173705da4471f1309eb87db877f0f8472092ffc0a6ecfd15b25b9268')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_STATIC_LIBS=OFF
+  cmake --build build --verbose
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 $pkgname/COPYING -t "$pkgdir"/usr/share/licenses/$pkgname
+}

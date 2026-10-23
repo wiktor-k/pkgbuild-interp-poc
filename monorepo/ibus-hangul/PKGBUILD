@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Radim Hvizdák <hvizdakr at gmail dot com>
+
+pkgname=ibus-hangul
+pkgver=1.5.5
+pkgrel=5
+pkgdesc='Korean input engine for IBus'
+arch=('x86_64')
+url='https://github.com/libhangul/ibus-hangul'
+license=('GPL')
+depends=('ibus' 'libhangul' 'iso-codes' 'gtk-update-icon-cache' 'python-gobject')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/libhangul/ibus-hangul/archive/${pkgver}.tar.gz")
+sha512sums=('8b633b4bfbe4af0cade423878e850421e6b66e7bfc8b598a322208b6d09fc0d1006345edcd1cd00e40574bff83af8755a0fbd3d65e2427be681ac9235225d8ca')
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  autoreconf --verbose --force --install
+  ./configure --prefix=/usr --libexecdir=/usr/lib/ibus
+  make
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  make NO_INDEX=true DESTDIR="${pkgdir}" install
+
+  # Fix symlink
+  ln -sf ../lib/ibus/ibus-setup-hangul "$pkgdir/usr/bin/ibus-setup-hangul"
+}

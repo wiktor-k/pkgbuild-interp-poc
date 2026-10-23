@@ -1,0 +1,36 @@
+pkgbase = lttng-ust
+	pkgver = 2.16.0
+	pkgrel = 1
+	url = https://lttng.org/
+	arch = x86_64
+	license = LGPL-2.1-only
+	license = MIT
+	license = GPL-2.0-only
+	license = BSD-3-Clause
+	license = BSD-2-Clause
+	license = GPL-3.0-or-later
+	makedepends = asciidoc
+	makedepends = xmlto
+	makedepends = libxml2
+	makedepends = python
+	makedepends = liburcu>=0.7.2
+	makedepends = util-linux
+	makedepends = numactl
+	makedepends = python-setuptools
+	source = https://lttng.org/files/lttng-ust/lttng-ust-2.16.0.tar.bz2
+	source = https://lttng.org/files/lttng-ust/lttng-ust-2.16.0.tar.bz2.asc
+	validpgpkeys = 2A0B4ED915F2D3FA45F5B16217280A9781186ACF
+	sha512sums = d41e40e6a8a079491f9f832455f242a085676de722d8752fe598e614b7d28f655e125c3012b02159e197bb1aa72e3a65a5f6aa2ecde79ce28843b8e92f5ed78c
+	sha512sums = SKIP
+
+pkgname = lttng-ust
+	pkgdesc = LTTng user space tracing libraries for LTTng
+	depends = liburcu>=0.7.2
+	depends = util-linux
+	depends = python
+	depends = numactl
+
+pkgname = python-lttngust
+	pkgdesc = LTTng-UST Python Bindings
+	depends = lttng-ust
+	depends = python

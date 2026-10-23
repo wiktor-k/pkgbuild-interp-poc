@@ -1,0 +1,65 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgname=python-cuda-tile
+pkgver=1.6.0
+pkgrel=1
+pkgdesc="A Python-based DSL and parallel programming model for NVIDIA GPUs"
+arch=(x86_64)
+url="https://docs.nvidia.com/cuda/cutile-python/"
+license=(Apache-2.0)
+depends=(
+  cuda
+  glibc
+  libstdc++
+  python
+  python-numpy
+  python-typing_extensions
+)
+makedepends=(
+  cmake
+  dlpack
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  $pkgname-$pkgver.tar.gz::https://github.com/NVIDIA/cutile-python/archive/refs/tags/v$pkgver.tar.gz
+)
+b2sums=('69b993456a4e6559922f09f5cc55a6a2e03f5ec477852a3e7eba0c9afda9ce65c7177e6d6322565738134aad2d2c09dca7e4f1388b717432ec9f757209cc9382')
+
+prepare() {
+  cd cutile-python-$pkgver
+  # remove custom FindCUDAToolkit module to fix finding CUDA
+  # https://github.com/NVIDIA/cutile-python/issues/58
+  rm -v cmake/FindCUDAToolkit.cmake
+
+  # CMake's builtin FindCUDAToolkit does not set CUDAToolkit_NVVM_INCLUDE_DIR,
+  # which is needed since 1.6.0 to find nvvm.h for cext/pynvvm.cpp
+  sed -i 's|set(NVVM_INCLUDE_DIR ${CUDAToolkit_NVVM_INCLUDE_DIR})|set(NVVM_INCLUDE_DIR "/opt/cuda/nvvm/include")|' cext/CMakeLists.txt
+
+  # -nostdlib and -fstack-clash-protection do not work together (undefined reference to `__stack_chk_fail')
+  # https://github.com/NVIDIA/cutile-python/issues/60
+  sed -i 's|-nostdlib||' cext/CMakeLists.txt
+
+  # fix version https://github.com/NVIDIA/cutile-python/issues/59
+  echo $pkgver > src/cuda/tile/VERSION
+
+  # unping setuptools version
+  sed -i 's|setuptools==80.10.2|setuptools|' pyproject.toml
+  sed -i 's|dry_run=self.dry_run||' setup.py
+
+  # allow compiler warnings as a workaround for https://gitlab.archlinux.org/archlinux/packaging/packages/python/-/merge_requests/8
+  sed -i 's|add_compile_options(-Wall -Werror)||' CMakeLists.txt
+}
+
+build() {
+  cd cutile-python-$pkgver
+  CUDA_PATH=/opt/cuda CUDA_TILE_CMAKE_DLPACK_PATH=/usr \
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd cutile-python-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

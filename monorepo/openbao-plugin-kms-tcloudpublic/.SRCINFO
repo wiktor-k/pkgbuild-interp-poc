@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-kms-tcloudpublic
+	pkgdesc = OpenBao Plugin - Auto Unseal KMS using T Cloud Public
+	pkgver = 0.0.1
+	pkgrel = 1
+	url = https://openbao.org/docs/next/configuration/seal/tcloudpublickms/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-kms-tcloudpublic::git+https://github.com/openbao/openbao-plugins.git#tag=kms-tcloudpublic-v0.0.1
+	sha256sums = af5bc40b0c9b4af955a8a3bfee101c77a05692609af83cffa4d754b385c40c7e
+
+pkgname = openbao-plugin-kms-tcloudpublic

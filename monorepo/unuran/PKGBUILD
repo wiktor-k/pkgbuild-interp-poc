@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Konstantin Gizdov < arch at kge dot pw >
+
+pkgname=unuran
+pkgver=1.12.0
+pkgrel=1
+pkgdesc='A C library for generating non-uniform pseudorandom variates.'
+arch=('x86_64')
+url='http://statmath.wu.ac.at/unuran/'
+license=('GPL2')
+depends=('gsl')
+options=('!emptydirs')
+source=("${pkgname}-${pkgver}.tar.gz::http://statmath.wu.ac.at/$pkgname/$pkgname-$pkgver.tar.gz")
+b2sums=('1b2e4ed529c2cb6e650e9566ea6a063cbb175f1c434d2926ef3939f814af7ac396772d4416583d1ba259ef6ced3b1b6bcf4144afe6c6422e201a1cc322c9b7ba')
+
+build() {
+  cd "$pkgname-$pkgver"
+  ./configure --prefix=/usr --with-urng-gsl --enable-shared
+  make "$MAKEFLAGS"
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  make DESTDIR="$pkgdir" install
+}

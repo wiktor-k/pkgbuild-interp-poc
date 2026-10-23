@@ -1,0 +1,96 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Conrad Hoffmann <ch@bitfehler.net>
+
+pkgname=stalwart
+pkgver=0.16.27
+pkgrel=1
+pkgdesc='Stalwart mail and collaboration server'
+arch=(x86_64)
+url='https://stalw.art'
+license=(AGPL-3.0-only)
+depends=(
+  rocksdb
+  stalwart-webadmin
+)
+makedepends=(
+  git
+  rust
+  protobuf
+  clang
+  llvm
+  python
+)
+optdepends=(
+  'stalwart-cli: management CLI'
+  'stalwart-proxy: migration proxy'
+  'vandelay: JMAP import/export & backup'
+)
+backup=(etc/stalwart/config.env)
+options=(!lto !debug !buildflags) # LTO causes FTBFS with rocksdb crate
+install=stalwart.install
+source=(
+  "$pkgname::git+https://github.com/stalwartlabs/stalwart#tag=v$pkgver"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+  config.env
+  use-local-webui-archive.patch
+)
+sha512sums=('cabfdc5bb6581784f0c702571f16622f33bf313015028789e8ba42d35b5709b7c8e3281cf552a9bae5e3a9e6dd887d2784091d5d0e1a4d6fa52705efe67e9377'
+            '0429592a55ece36ad869305864035bbecea65581a03d1defb506f5095206dc6df9c549c35d5b06ece6c0dc31d670b0050fb48ba2d7296e62acdaa2accb13193e'
+            '5075932d90d22fbf1708814a70b80a2e8d74741e543fb08f477d053ee66cfb65d775b0326df956d8a3733d8606eccd6af5a7c701856f55a087c953caa2fa8c77'
+            '3180742db13f3a9515fdf86a3cff464c8d3496c8d956cd21db02bd2b31aa67ba57a3250049f6b9410ba48b3f0c73952961d45ee548e822ec8c95a6ebcdd9232d'
+            '6056a0dcd7c4ba95be256d13b3081a3b5fba6f5b3b108aa86adce59dc2a1daff6374523fbdbea9076dae6f0a88f15eccd16362bec8db442319d3f0c7f8677f4f'
+            '7df12be6415b71becb667bc3d88c375b615a5429805de6076e7dd7ea3c99505ea3858282f8882af03c83f537839759d1a077ea24df405fedfb22f845f2699408')
+b2sums=('c745f97f1f039757e822451c740eb7cfdf0d4d73ba1335b4a132a080e8baf067ebaf15f9880f943a9132ca1c69685c3481196d4ab2bfeb2cafebf519eb0dc91a'
+        '9e19abaef69e37046d17dd327718e640b06780c660db4d80880ee7b72f61a4c0e99fec2e1cfef30dd669f722174f8ccaaa8574f45d72d553ebe0c97ccf209d84'
+        '9200d036f00a9a816184989a569465355eeab8c531d309fe5917f4a9690d847deaffb00fa6998a828bdec8823feab6dd2ff625e6d1eea98aa5aee38ecae187c6'
+        '1315720f922121b31da8bfd96fa7c98c2d7f62e68bf0659d5bf7c4132ad349f4c9f1fd8787aeb0746de6a05fe457cfbe663a0a3d958c709ea9cda5823a04f3bc'
+        '6825c04c69cb8b958c6210dc0067c9cd338a32ff35c2ccc05b4c2bac622b73cf5914ec7150ac375cf8b1e960fda627fac8f9cd40451552f9de3c6e54252c0c0d'
+        'c0c7b18c79cec5ae7fbbd29c56bd5de7591897f5ff407376b1efb16c3d1b15126f1d27b92482e96810a5c4bca7afa8975a870461b62260a0d49d4bfb31ab2fb4')
+
+prepare() {
+  cd "$pkgname"
+
+  # ensure proprietary code is removed
+  # https://github.com/stalwartlabs/stalwart/issues/783
+  # https://github.com/stalwartlabs/stalwart/issues/768
+  python resources/scripts/ossify.py crates/
+
+  # use local webui in repos rather than
+  # blindly trusting external file
+  patch -p1 -i "$srcdir/use-local-webui-archive.patch"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  # link with system rocksdb
+  # https://github.com/rust-rocksdb/rust-rocksdb/issues/310#issuecomment-1537137868
+  export ROCKSDB_LIB_DIR="/usr/lib/"
+
+  # note: no support for enterprise or foundationdb features
+  # because that's a whole other can of beans
+  cargo build --release --frozen -p stalwart --no-default-features --features "sqlite postgres mysql rocks s3 redis azure nats"
+}
+
+package() {
+  depends+=(
+    glibc
+    libgcc libgcc_s.so
+    libstdc++ libstdc++.so
+  )
+  # systemd integration
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/stalwart.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/stalwart.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/stalwart.conf"
+  install -vDm640 config.env "$pkgdir/etc/stalwart/config.env"
+
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+}

@@ -1,0 +1,33 @@
+pkgbase = ruby-octokit
+	pkgdesc = Simple wrapper for the GitHub API
+	pkgver = 10.0.0
+	pkgrel = 1
+	url = https://github.com/octokit/octokit.rb
+	arch = any
+	license = MIT
+	checkdepends = ruby-bundler
+	checkdepends = ruby-faraday-http-cache
+	checkdepends = ruby-faraday-multipart
+	checkdepends = ruby-faraday-retry
+	checkdepends = ruby-jwt
+	checkdepends = ruby-mime-types
+	checkdepends = ruby-netrc
+	checkdepends = ruby-rake
+	checkdepends = ruby-rbnacl
+	checkdepends = ruby-rspec
+	checkdepends = ruby-rss
+	checkdepends = ruby-simplecov
+	checkdepends = ruby-test-queue
+	checkdepends = ruby-timecop
+	checkdepends = ruby-vcr
+	checkdepends = ruby-webmock
+	makedepends = git
+	depends = ruby
+	depends = ruby-faraday
+	depends = ruby-sawyer
+	options = !emptydirs
+	source = git+https://github.com/octokit/octokit.rb.git#tag=v10.0.0
+	sha512sums = 27f4e2b5dc0786179f7021a4dea92e3067d14c15984c54f2ffd637519536bfcd5c9e74dcfe4960e7ec3ec17bb7f2bd1e90118bfb6c20a555dab2ff2ea70288c0
+	b2sums = acf2b999648305d83b24e05c1085f0b97805621e7839910f01499e36e9c3c6bbcd5c8eb34b87933ffece2211cbc4ed56ce6871b23c7776343799b9e8a1a5832a
+
+pkgname = ruby-octokit

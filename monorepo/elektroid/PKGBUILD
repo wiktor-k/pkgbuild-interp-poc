@@ -1,0 +1,50 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=elektroid
+pkgver=3.4
+pkgrel=2
+pkgdesc='Sample & MIDI device manager'
+arch=(x86_64 aarch64)
+url='https://github.com/dagargo/elektroid'
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  hicolor-icon-theme
+  gtk3
+  alsa-lib
+  libpulse
+  libsndfile
+  libsamplerate
+  zlib
+  json-glib
+  libzip
+  rubberband
+)
+makedepends=(git)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('49fa2ed33295979196ade8094836198a845948d127a3ebbf6e61c7e79b58166630d4baa1a556e5e3d4135ca1a5efa38df7d49dc87fa9edf027e117d2bab05f1d')
+b2sums=('193cefefdd96f668000cbd765cc7b648a72b81a06c66e3d88680de69b2c831276599ad32d02d096e6fb4aca19ae894fe5f83284b23ffcee803a46d0732ef874d')
+
+prepare() {
+  cd "$pkgname"
+
+  autoreconf -vfi
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  DESTDIR="$pkgdir" make install
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname/docs/images" docs/images/screenshot.png
+}

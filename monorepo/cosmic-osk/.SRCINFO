@@ -1,0 +1,22 @@
+pkgbase = cosmic-osk
+	pkgdesc = On-screen keyboard for the COSMIC desktop environment
+	pkgver = 1.10.0
+	pkgrel = 1
+	url = https://github.com/pop-os/cosmic-osk
+	arch = x86_64
+	groups = cosmic
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = clang
+	makedepends = git
+	makedepends = just
+	makedepends = lld
+	depends = libgcc
+	depends = glibc
+	depends = libxkbcommon
+	depends = systemd-libs
+	depends = wayland
+	source = git+https://github.com/pop-os/cosmic-osk.git#tag=epoch-1.10.0
+	b2sums = 6a75b9f9dc75e20de17586a652a2cdb410026da05ab57837dd0c577f44cd9fe958e0e858b151ae3017792d50a02fc6d62851a4dd1a7cd09a19d7058681686592
+
+pkgname = cosmic-osk

@@ -1,0 +1,74 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Mark Wagie <mark dot wagie at proton dot me>
+
+pkgname=hardinfo2
+pkgver=2.3.1
+pkgrel=1
+pkgdesc="System Information and Benchmark for Linux Systems."
+arch=('x86_64')
+url="https://www.hardinfo2.org"
+license=('GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-only')
+depends=(
+  'cairo'
+  'dmidecode'
+  'gawk'
+  'gdk-pixbuf2'
+  'glib2'
+  'glibc'
+  'gtk3'
+  'hicolor-icon-theme'
+  'iperf3'
+  'json-glib'
+  'libdecor'
+  'libgcc'
+  'libsoup3'
+  'libstdc++'
+  'libx11'
+  'libxcb'
+  'lm_sensors'
+  'mesa-utils'
+  'pango'
+  'pciutils'
+  'qt5-base'
+  'sysbench'
+  'udisks2'
+  'usbutils'
+  'vulkan-icd-loader'
+  'vulkan-tools'
+  'wayland'
+  'xdg-utils'
+)
+makedepends=(
+  'cmake'
+  'glslang'
+  'shaderc'
+  'vulkan-headers'
+)
+checkdepends=('appstream')
+optdepends=(
+  'apcupsd: apcaccess is used for UPS/battery information'
+  'fwupd: Firmware module'
+  'xorg-xrandr: Read monitor setup'
+)
+provides=('hardinfo')
+conflicts=('hardinfo')
+install="$pkgname.install"
+source=("https://github.com/hardinfo2/hardinfo2/archive/release-$pkgver/$pkgname-$pkgver.tar.gz")
+b2sums=('efe758d0049b39a6a749ebe1681289c22bc02072476276cdd275bad7e03c2ca81d1e0aca2bc8f14f0a278e8daa9f281ad72699fdb6e3a5eb640d84facaabfc07')
+
+build() {
+  cmake -B build -S "$pkgname-release-$pkgver" \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev
+  cmake --build build
+}
+
+check() {
+  desktop-file-validate "build/$pkgname.desktop"
+  appstreamcli validate --no-net "build/org.$pkgname.$pkgname.metainfo.xml"
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

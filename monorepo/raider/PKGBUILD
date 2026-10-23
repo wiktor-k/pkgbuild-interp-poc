@@ -1,0 +1,40 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=raider
+pkgver=3.1.0
+pkgrel=3
+pkgdesc='File deletion program designed to permanently remove sensitive files from your computer, enhancing data privacy'
+arch=(x86_64)
+url='https://apps.gnome.org/Raider/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  cairo
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=("git+https://github.com/ADBeveridge/raider.git#tag=v$pkgver")
+b2sums=(1df92e8ff38541b725ff90e27d82152fdb913e4fd243d6d2a582f7b7456355813c1ad993fba970040ab97f16a736b840a38186667ac85bd3837f874023dfc957)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

@@ -1,0 +1,40 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: loqs <bugs-archlinux@entropy-collector.net>
+
+pkgname=docopt
+pkgver=0.6.3
+pkgrel=6
+pkgdesc='Command line arguments parser for C++11 and later'
+arch=(x86_64)
+url='https://github.com/docopt/docopt.cpp/'
+license=(MIT)
+depends=(glibc libgcc libstdc++)
+makedepends=(cmake git setconf)
+source=("git+$url#tag=v$pkgver"
+        docopt.pc)
+b2sums=('a4fc14910a5acc6f4728c1911a19265c6a197931cc96d1fa8bdc59d5be98d300b7e83bae2289506e72079b1600f32ad42133b2558f1197adbe65eddfc17d3ae8'
+        'e56ac399d7fb587f1055eeaf8bdbe579714f108019ef7dfb6e9e26ec14fc7541ad1ff6996e2f89e13fa149e3192c13049c96f16e2e4e62fa16cb1389891e6c1d')
+
+prepare() {
+  setconf docopt.pc Version "$pkgver"
+  cd docopt.cpp
+  git cherry-pick -n 6d3b803d2b0e4bf8703bbfa51a67f378d6bd59f6 # only build one target, use BUILD_SHARED_LIBS where appropriate
+}
+
+build() {
+  cmake \
+    -B build \
+    -D BUILD_SHARED_LIBS=ON \
+    -D CMAKE_BUILD_TYPE=Release \
+    -D CMAKE_INSTALL_LIBDIR=lib \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_POLICY_VERSION_MINIMUM=3.5 \
+    -S docopt.cpp/
+  make -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" make -C build install
+  install -Dm644 docopt.cpp/LICENSE-MIT "$pkgdir/usr/share/licenses/docopt/LICENSE"
+  install -Dm644 docopt.pc "$pkgdir/usr/lib/pkgconfig/docopt.pc"
+}

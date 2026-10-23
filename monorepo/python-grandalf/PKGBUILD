@@ -1,0 +1,60 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-grandalf
+pkgver=0.8
+pkgrel=1
+pkgdesc="Graph and drawing algorithms framework"
+arch=('any')
+url="https://github.com/bdcht/grandalf"
+license=('GPL-2.0-only OR EPL-1.0')
+depends=(
+  'python'
+  'python-pyparsing'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+)
+checkdepends=(
+  'python-networkx'
+  'python-numpy'
+  'python-ply'
+  'python-pytest'
+)
+optdepends=(
+  'python-networkx: NetworkX integration support'
+  'python-numpy: directed-constrained layout support'
+  'python-ply: DOT file parsing support'
+)
+source=("git+https://github.com/bdcht/grandalf.git#tag=v$pkgver")
+sha512sums=('SKIP')
+
+prepare() {
+  cd grandalf
+  # Avoid setuptools trying to fetch the obsolete pytest-runner via setup_requires.
+  sed -i "/setup_requires=/d" setup.py
+}
+
+build() {
+  cd grandalf
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd grandalf
+  # DigcoLayout fails with NumPy 2.4.6 on Python 3.14:
+  # https://github.com/bdcht/grandalf/issues/30
+  python -m pytest \
+    --deselect tests/test_layouts.py::test_002_Digco \
+    --deselect tests/test_routing.py::test_splines \
+    --deselect tests/test_routing.py::test_rounded_corners
+}
+
+package() {
+  cd grandalf
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

@@ -1,0 +1,65 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-robots
+pkgver=50.0
+pkgrel=1
+pkgdesc="Avoid the robots and make them crash into each other"
+url="https://gitlab.gnome.org/GNOME/gnome-robots"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  glib2
+  glibc
+  glycin
+  glycin-gtk4
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+  yelp-tools
+)
+groups=(gnome-extra)
+source=("git+https://gitlab.gnome.org/GNOME/gnome-robots.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('8bc7f9004f1ddbafe9e556adf850a718eac9d03bbbe2155e7a590711321b3b3b408ce300f0e57998f94824994365e0383300c4f5a7d6bcb3b05f8b8abe64bbbc')
+
+# Use debug
+export CARGO_PROFILE_RELEASE_DEBUG=2 CARGO_PROFILE_RELEASE_STRIP=false
+
+# Use LTO
+export CARGO_PROFILE_RELEASE_LTO=true CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+prepare() {
+  cd $pkgname
+
+  # Match CARGO_HOME in src/meson.build
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target host-tuple
+}
+
+build() {
+  local meson_options=(
+    -D profile=release
+  )
+
+  arch-meson $pkgname build "${meson_options[@]}"
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

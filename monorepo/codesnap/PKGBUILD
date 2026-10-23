@@ -1,0 +1,38 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Adam Perkowski <adas1per@protonmail.com>
+
+pkgname=codesnap
+pkgver=0.14.0
+pkgrel=1
+pkgdesc="Pure Rust tool for generating beautiful code snapshots"
+arch=('x86_64')
+url="https://github.com/codesnap-rs/codesnap"
+license=('MIT')
+depends=('openssl' 'libgcc')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('21599899581c0a8dcdd3a8fcb30e212a521aa99bac35b9ad04ace2ae8059e256')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --target "$(rustc --print host-tuple)" --locked
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  OPENSSL_NO_VENDOR=1 cargo build --frozen --release
+}
+
+# check() {
+#   cd "$pkgname-$pkgver"
+#   OPENSSL_NO_VENDOR=1 cargo test --frozen
+# }
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

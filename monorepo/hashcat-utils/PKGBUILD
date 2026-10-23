@@ -1,0 +1,35 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Elvis Angelaccio <elvis.angelaccio@kde.org>
+
+pkgname=hashcat-utils
+pkgver=1.10
+pkgrel=1
+pkgdesc='Set of small utilities that are useful in advanced password cracking'
+url='https://github.com/hashcat/hashcat-utils'
+arch=(x86_64)
+license=(MIT)
+depends=(
+  perl
+)
+source=(https://github.com/hashcat/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('0f2ea19ee0ed12593e991aa73d6ffdf2c38b54e11dca43fa25f14d46945d2642')
+sha512sums=('fccd55dfffa11b5ecceba0beab5af4af80dca7122dc33fb6a37287e6e6ddd15dfd6e8544ba3e6dc2ee2a76279c7b02e9127d07b2639338a03a73052df61b1ca4')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  make -C src
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  for bin in src/*.bin; do
+      install -Dm 755 ${bin} "${pkgdir}/usr/bin/$(basename ${bin} .bin)"
+  done
+  for script in src/*.pl; do
+      install -Dm 755 ${script} "${pkgdir}/usr/bin/$(basename ${script} .pl)"
+  done
+  install -Dm 644 README.md CHANGES -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

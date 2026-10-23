@@ -1,0 +1,32 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Brent Carmer
+# Contributor: Alex J. Malozemoff <amaloz@galois.com>
+
+pkgname=yices
+pkgver=2.7.0
+pkgrel=1
+pkgdesc="A solver for Satisfiability Modulo Theories (SMT) problems"
+arch=('x86_64')
+url="https://yices.csl.sri.com/"
+license=('GPL-3.0-or-later')
+depends=('cudd' 'gmp' 'libpoly')
+makedepends=('git' 'gperf')
+# Since 2.6.3 sources are not published in https://yices.csl.sri.com/releases/ anymore.
+source=("git+https://github.com/SRI-CSL/yices2.git#tag=yices-$pkgver")
+sha512sums=('f371b4760a2214ea2f1a40c9b79e51eb2e721fab03d3449ee6842a72b2ada881eb8a58ee247fe29d9816bc70b64224142bc4152ce0ca1d558bf36debc933a0f0')
+
+build() {
+  cd yices2
+  autoconf
+  ./configure --prefix=/usr --enable-mcsat
+  make
+}
+
+check() {
+  make -C yices2 check
+}
+
+package() {
+  cd yices2
+  make DESTDIR="$pkgdir/" install
+}

@@ -1,0 +1,27 @@
+pkgbase = ruby-net-ssh
+	pkgdesc = A pure-Ruby implementation of the SSH2 client protocol.
+	pkgver = 7.3.2
+	pkgrel = 1
+	url = https://github.com/net-ssh/net-ssh
+	arch = any
+	license = MIT
+	checkdepends = ruby-base64
+	checkdepends = ruby-bundler
+	checkdepends = ruby-minitest
+	checkdepends = ruby-mocha
+	checkdepends = ruby-ostruct
+	checkdepends = ruby-rake
+	makedepends = ruby-rdoc
+	depends = ruby
+	depends = ruby-bcrypt_pbkdf
+	depends = ruby-ed25519
+	depends = ruby-x25519
+	options = !emptydirs
+	source = ruby-net-ssh-7.3.2.tar.gz::https://github.com/net-ssh/net-ssh/archive/v7.3.2.tar.gz
+	source = ruby-net-ssh_fix_tests.patch
+	sha512sums = aa83a569009de2e2c21d557b8a1eb672bf68d4360cfe33d0d81aed94710a6aca75d23e3e278631efd66b757786680ab1cfa3495b020967c9697152133bb6f28f
+	sha512sums = 4a3d9192f189a56d78884be4cfc473506dad3e30bfbac0c3372c8b2576da82e1663b7ef42edb0d683ee55d88bee0b94cabafe9f708bd3a5f4567e3f06ccff8ff
+	b2sums = 28a81e64439594e898c5c4e5fd051decbb705e7a36e999e251751eeaa75a4f27111fe8fb1619038524572928bc62356188803e98cdb56073288652d4004fb7bb
+	b2sums = 52b4cafc98db82aa5ba24487973d0ba022dfa8d92ec1e1767f00c305fd89835c68947b5b605bcb430c7854c84b374aa143fd6619d203005c2dd8c02d4f775d4a
+
+pkgname = ruby-net-ssh

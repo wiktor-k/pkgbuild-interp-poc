@@ -1,0 +1,30 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: mickael9 <mickael9 at gmail dot com>
+
+pkgname=gpsim
+pkgver=0.32.1
+pkgrel=2
+pkgdesc='Full-featured software simulator for Microchip PIC microcontrollers'
+url='http://gpsim.sourceforge.net/'
+arch=('x86_64')
+license=('GPL')
+depends=('glib2' 'popt')
+makedepends=('gputils')
+source=(https://downloads.sourceforge.net/${pkgname}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('c704d923ae771fabb7f63775a564dfefd7018a79c914671c4477854420b32e69')
+sha512sums=('9b6d24f8f183eb421506a3c08883915f3580999b9ee7742c4af2d61e7d84643d125e3b4e1c3412bcb4a312011d7b6fef44c12d22fcc475f66a1f083e394e5623')
+
+build() {
+  cd ${pkgname}-${pkgver}
+  ./configure --prefix=/usr --disable-gui
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" install
+}
+
+# vim: ts=2 sw=2 et:

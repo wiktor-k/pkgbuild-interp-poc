@@ -1,0 +1,40 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=evolution-on
+pkgver=3.24.2
+pkgrel=4
+pkgdesc='Tray plugin for the Evolution email client'
+arch=('x86_64')
+url='https://github.com/acidrain42/evolution-on'
+license=('GPL-2.0-or-later')
+depends=('evolution' 'libnotify')
+makedepends=('intltool')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+        'fix-build.patch')
+sha512sums=('7f6c048c052ecab2efefaeddaba9db8f7f63035c5505fce0b9c260b5cf2044fe0c4d90a2e7461e1643f507daa1d3a871be9c16e58311d229697d9ce11faa82cf'
+            'b581e106804ef201fe8230c52c3b76b67fe92b41406f58f46908d52cdb600433cdf01d72ee7eea1c3a39c70f5677993f8659a0741df0a2922ab8e87f237c59f6')
+
+prepare() {
+  cd $pkgname-$pkgver
+
+  patch -p1 -i ../fix-build.patch
+
+  sed -i '/AM_GCONF_SOURCE_2/d' configure.ac
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname-$pkgver
+
+  ./configure --prefix=/usr
+
+  make
+}
+
+package() {
+  cd $pkgname-$pkgver
+
+  make DESTDIR="$pkgdir" install
+}
+

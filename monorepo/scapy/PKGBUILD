@@ -1,0 +1,78 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Ebubekir KARUL <ebubekirkarul@yandex.com>
+# Contributor: s1gma,shirokuro
+
+pkgbase=scapy
+pkgname=(scapy python-scapy)
+pkgver=2.8.0
+pkgrel=1
+pkgdesc='Powerful interactive packet manipulation program written in Python'
+url='https://scapy.net/'
+arch=(any)
+license=(GPL-2.0-only)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-sphinx
+  python-wheel
+  tcpdump
+)
+checkdepends=(
+  graphviz
+  python-cryptography
+  python-matplotlib
+  python-pyx
+  sox
+)
+source=(https://github.com/secdev/scapy/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('f1ea26f17cfcb3b8e2033676235f37433bff8cf4e14d10c2592e2db30bbfd4f0')
+sha512sums=('c64101f3329c1f7f24c4f7e4714a75c25c039c3df109d1471e258b5070c3824ed3d8fc9e70de0e9a3a2e21ef3219f9489612e86143149212ba079bcfa02f8f63')
+
+build() {
+  cd ${pkgbase}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  # Run only main tests, without network access
+  cd ${pkgbase}-${pkgver}/test
+  ./run_tests -K netaccess -F
+}
+
+package_scapy() {
+  depends=(
+    python
+    python-scapy
+  )
+  pkgdesc+=' (tools)'
+  cd ${pkgbase}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -d "${pkgdir}/usr/share/doc"
+  ln -sf /usr/share/doc/python-scapy "${pkgdir}/usr/share/doc/${pkgname}"
+  rm -r "${pkgdir}/usr/lib"
+}
+
+package_python-scapy() {
+  pkgdesc+=' (library)'
+  depends=(
+    python
+    tcpdump
+  )
+  # TODO: clenup optdeps
+  optdepends=(
+    'python-cryptography: WEP, IPsec and SSL/TLS support'
+    'python-pyx: psdump() and pdfdump() functions'
+    'python-matplotlib: plotting support'
+    'graphviz: conversations() method support'
+    'sox: for VOIP support'
+    'python-prompt_toolkit: expore function'
+  )
+  cd ${pkgbase}-${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm 644 doc/scapy/*.rst -t "${pkgdir}/usr/share/doc/${pkgname}"
+  rm -r "${pkgdir}"/usr/{bin,share/man}
+}
+
+# vim: ts=2 sw=2 et:

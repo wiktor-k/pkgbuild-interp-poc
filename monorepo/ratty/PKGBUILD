@@ -1,0 +1,57 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=ratty
+pkgver=0.6.0
+pkgrel=2
+pkgdesc="A GPU-rendered terminal emulator with inline 3D graphics"
+arch=('x86_64')
+url="https://github.com/orhun/ratty"
+license=('MIT')
+depends=(
+  fontconfig
+  libgcc
+  glibc
+  libx11
+  libxcb
+  libxkbcommon
+  libxkbcommon-x11
+  systemd-libs
+  wayland
+  zlib
+)
+makedepends=('cargo' 'desktop-file-utils')
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz"
+  ratty.desktop
+)
+sha512sums=('9682376587c3c72014e05c4bc0ce156a25d20376f1dc50ee7cb0ac048defc3268e7d153b9a893aea35db1b772c877b0ff505a2945a4c050614b716d3502f2e35'
+            '781135d21bd960576ba7495f294ac2decb1377ca9fc7b1f7cdf6faa1502f53b60d533937661a2f310d27bba13edd2868d0b6fb303fd8f8cf4e1b7f81a4d4064c')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release
+}
+
+#check() {
+#  cd "$pkgname-$pkgver"
+#  cargo test --frozen
+#}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 755 "target/release/$pkgname-mcp" -t "$pkgdir/usr/bin"
+  desktop-file-install --dir="$pkgdir/usr/share/applications" "$srcdir/ratty.desktop"
+  install -Dm 644 assets/ratty.ico "$pkgdir/usr/share/pixmaps/$pkgname.ico"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 config/ratty.toml "$pkgdir/usr/share/doc/$pkgname/ratty.toml"
+  install -Dm644 protocols/graphics.md "$pkgdir/usr/share/doc/$pkgname/graphics.md"
+}
+
+# vim: ts=2 sw=2 et:

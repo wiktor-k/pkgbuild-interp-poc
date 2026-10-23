@@ -1,0 +1,135 @@
+pkgbase = nemo-extensions
+	pkgdesc = Various extensions for Nemo
+	pkgver = 6.6.0
+	pkgrel = 4
+	url = https://github.com/linuxmint/nemo-extensions
+	arch = x86_64
+	makedepends = git
+	makedepends = meson
+	makedepends = nemo
+	makedepends = python-setuptools
+	optdepends = cinnamon-translations: i18n
+	source = git+https://github.com/linuxmint/nemo-extensions.git#tag=6.6.0
+	b2sums = e3803f0d9254a663576c532e0dbdc08e29eac625ee18274725acdf37f73a1757f557b1bb6452a1f2578ac4c48017e919123ae9c36c117e5e917a81538b4f2d84
+
+pkgname = nemo-audio-tab
+	pkgdesc = View audio tag information in Nemo properties tab
+	license = GPL-3.0-only
+	depends = glib2
+	depends = gtk3
+	depends = nemo
+	depends = nemo-python
+	depends = python
+	depends = python-gobject
+	depends = python-mutagen
+
+pkgname = nemo-compare
+	pkgdesc = Context menu comparison extension for Nemo file manager
+	license = GPL-3.0-or-later
+	depends = glib2
+	depends = gtk3
+	depends = meld
+	depends = nemo
+	depends = nemo-python
+	depends = python
+	depends = python-gobject
+
+pkgname = nemo-emblems
+	pkgdesc = Change a folder or file emblem in Nemo
+	license = GPL-3.0-only
+	depends = glib2
+	depends = gtk3
+	depends = nemo
+	depends = nemo-python
+	depends = python
+	depends = python-gobject
+
+pkgname = nemo-fileroller
+	pkgdesc = File archiver extension for Nemo
+	license = GPL-2.0-or-later
+	depends = file-roller
+	depends = glib2
+	depends = glibc
+	depends = nemo
+
+pkgname = nemo-image-converter
+	pkgdesc = Nemo extension to rotate/resize image files
+	license = GPL-2.0-or-later
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = imagemagick
+	depends = nemo
+
+pkgname = nemo-media-columns
+	pkgdesc = A Nemo extension to display music/EXIF and PDF metadata info in the Nemo List View
+	license = GPL-3.0-only
+	depends = dconf
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = libgexiv2
+	depends = nemo
+	depends = nemo-python
+	depends = python
+	depends = python-gobject
+	depends = python-mutagen
+	depends = python-pillow
+	depends = python-pymediainfo
+	depends = python-pypdf
+	depends = python-stopit
+	depends = xapp
+
+pkgname = nemo-pastebin
+	pkgdesc = Nemo extension to send files to a pastebin
+	license = GPL-2.0-or-later
+	depends = dconf
+	depends = glib2
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libnotify
+	depends = nemo
+	depends = nemo-python
+	depends = pastebinit
+	depends = python
+	depends = python-gobject
+
+pkgname = nemo-python
+	pkgdesc = Python binding for Nemo components
+	license = GPL-2.0-or-later
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = nemo
+	depends = python
+
+pkgname = nemo-repairer
+	pkgdesc = Nemo extension for filename encoding repair
+	license = GPL-2.0-or-later
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = nemo
+
+pkgname = nemo-share
+	pkgdesc = Samba extension for Nemo
+	license = GPL-2.0-or-later
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = nemo
+	depends = python
+	depends = samba
+
+pkgname = nemo-terminal
+	pkgdesc = Embedded terminal window for Nemo
+	license = GPL-3.0-or-later
+	depends = dconf
+	depends = glib2
+	depends = gtk3
+	depends = nemo
+	depends = nemo-python
+	depends = python
+	depends = python-gobject
+	depends = vte3
+	depends = xapp

@@ -1,0 +1,34 @@
+# Maintainer: christian rebischke <chris.rebischke@archlinux.org>
+# Contributor: ml <ml@visu.li>
+pkgname=kubectl-ingress-nginx
+_pkgname=${pkgname#kubectl-}-controller
+_bin=kubectl-ingress_nginx
+pkgver=1.12.0
+pkgrel=2
+pkgdesc='kubectl plugin for managing NGINX Ingress Controller for Kubernetes'
+arch=('x86_64')
+url='https://github.com/kubernetes/ingress-nginx'
+license=('Apache')
+depends=('glibc')
+makedepends=('go' 'git')
+groups=('kubectl-plugins')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kubernetes/ingress-nginx/archive/refs/tags/controller-v${pkgver}.tar.gz")
+sha512sums=('76bc3a010b8e83b22107f8d40a6a169d88756192fc5af3f06597af96b0cebdcf58fb5ebd1d10bdde9d4196558ba44caa082f83a17c3a787a8687935acc00f81b')
+b2sums=('1f43b17d5e0ee57456171ff0e4aff441795f80feea7b8549f5eef115a7beeac26de82716c29a358bbbf9667c05df43f1fe56596d47618ef8d7679f35dd0f137d')
+
+build() {
+  cd "${_pkgname}-v${pkgver}"
+
+  export CGO_LDFLAGS="$LDFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export GOFLAGS='-buildmode=pie -trimpath -modcacherw -mod=readonly'
+  go build -o "${_bin}" -ldflags "-w -s -linkmode=external" ./cmd/plugin
+}
+
+package() {
+  cd "${_pkgname}-v${pkgver}"
+  install -Dm755 ${_bin} -t "${pkgdir}/usr/bin"
+  install -Dm644 docs/kubectl-plugin.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+}

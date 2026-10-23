@@ -1,0 +1,21 @@
+pkgbase = python-langcodes
+	pkgdesc = Tools for labeling human languages with IETF language tags
+	pkgver = 3.5.1
+	pkgrel = 1
+	url = https://github.com/georgkrause/langcodes
+	arch = any
+	license = MIT
+	checkdepends = python-language-data
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	optdepends = python-language-data: language names and population data
+	source = git+https://github.com/georgkrause/langcodes.git#tag=v3.5.1
+	sha512sums = 1e00121c947e30036dcab8e2615030bc51ffcf0f042efea99d5197594dec3cc05887a592b933efb3a1163de766007ba4ffde9bb339ee16dae404180749f0f21f
+
+pkgname = python-langcodes

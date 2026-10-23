@@ -1,0 +1,67 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-asgi-lifespan
+pkgver=2.1.0
+pkgrel=1
+pkgdesc="Programmatic startup/shutdown of ASGI apps"
+arch=(any)
+url="https://github.com/florimondmanca/asgi-lifespan"
+license=(MIT)
+depends=(
+  python
+  python-sniffio
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(
+  python-httpx
+  python-pytest
+  python-pytest-asyncio
+  python-pytest-cov
+  python-pytest-trio
+  python-starlette
+  python-trio
+)
+source=("git+https://github.com/florimondmanca/asgi-lifespan.git#tag=$pkgver")
+b2sums=('68b9dfa8958b16e077b89c8255499bd99c1d0772e4c1f556b084e9ebd06d6609f7f7c52bc4966d52c759a0384cf20c2ec95986d22b8e5351046e93a1bf1b143c')
+
+prepare() {
+  cd asgi-lifespan
+  # Fix tests with Starlette 1.0.
+  # https://github.com/florimondmanca/asgi-lifespan/commit/07ea43859af71d87a60d94f2c65f46549c3c870c
+  git cherry-pick -n 07ea43859af71d87a60d94f2c65f46549c3c870c
+  # Fix tests with httpx >= 0.28.
+  # https://github.com/florimondmanca/asgi-lifespan/commit/1840de1fcddb64536b1b349ce32fadf540b521d1
+  git cherry-pick -n 1840de1fcddb64536b1b349ce32fadf540b521d1
+  # Fix tests with newer Trio exception grouping.
+  # https://github.com/florimondmanca/asgi-lifespan/commit/cc82b8367cb942222a4184dbd36cf2496efe66b7
+  git cherry-pick -n cc82b8367cb942222a4184dbd36cf2496efe66b7
+  # Match nested Trio exception groups more precisely.
+  # https://github.com/florimondmanca/asgi-lifespan/commit/b686bb2269a30eec7eec506f088684713b072c66
+  git cherry-pick -n b686bb2269a30eec7eec506f088684713b072c66
+  # Accept Trio exception groups in remaining failure-path tests.
+  # https://github.com/florimondmanca/asgi-lifespan/commit/7ca65451c37fe90debb79808b525cee4d7045389
+  git cherry-pick -n 7ca65451c37fe90debb79808b525cee4d7045389
+}
+
+build() {
+  cd asgi-lifespan
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd asgi-lifespan
+  PYTHONPATH=src python -m pytest
+}
+
+package() {
+  cd asgi-lifespan
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

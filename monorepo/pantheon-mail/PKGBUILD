@@ -1,0 +1,55 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Filipe Laíns (FFY00) <filipe.lains@gmail.com>
+# Contributor: Riley Trautman <asonix@tamu.edu>
+
+pkgname=pantheon-mail
+pkgver=8.0.1
+pkgrel=2
+pkgdesc='Mail app designed for elementary OS'
+arch=(x86_64)
+url=https://github.com/elementary/mail
+license=(GPL-3.0-or-later)
+groups=(pantheon)
+depends=(
+  glib2
+  gtk3
+  libcamel-1.2.so
+  libedataserver-1.2.so
+  libedataserverui-1.2.so
+  libfolks.so
+  libgranite.so
+  libhandy-1.so
+  libportal-gtk3
+  webkit2gtk-4.1
+)
+makedepends=(
+  git
+  intltool
+  meson
+  vala
+)
+source=(
+  pantheon-mail::git+https://github.com/elementary/mail.git#tag=${pkgver}
+  0001-Adapt-to-libcamel-API-changes-in-3.57.1.patch
+)
+b2sums=('fe4702d38a158e54b1eb4abd76943b9035d84ebda8e697cc5262b115a7768f933ddd8c97ca7d235d55f1dae1600236b5fd265ad7c71b8f0bef127b5e27c0c226'
+        'c9281c7626d2ac66e5274ce729650aa5e5998d1c9a9edc163c6c105a890a335f0a0fbeedb8c6ecc08cd8d7e2cdb57f9ecaa8dbd0a12f993084c965c4da818aec')
+
+prepare() {
+  cd pantheon-mail
+
+  # Build with evolution-data-server 3.58
+  # https://github.com/elementary/mail/pull/1023
+  git apply -3 ../0001-Adapt-to-libcamel-API-changes-in-3.57.1.patch
+}
+
+build() {
+  arch-meson pantheon-mail build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim: ts=2 sw=2 et:

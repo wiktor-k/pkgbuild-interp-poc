@@ -1,0 +1,30 @@
+pkgbase = river-classic
+	pkgdesc = A dynamic tiling wayland compositor
+	pkgver = 0.3.17
+	pkgrel = 2
+	url = https://codeberg.org/river/river-classic
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = scdoc
+	makedepends = wayland-protocols
+	makedepends = zig
+	makedepends = clang
+	depends = glibc
+	depends = libevdev
+	depends = libinput
+	depends = libxkbcommon
+	depends = mesa
+	depends = pixman
+	depends = sh
+	depends = wayland
+	depends = wlroots0.20
+	depends = xorg-xwayland
+	optdepends = polkit: access seat through systemd-logind
+	provides = wayland-compositor
+	conflicts = river
+	source = git+https://codeberg.org/river/river-classic.git#tag=v0.3.17?signed
+	validpgpkeys = 5FBDF84DD2278DB2B8AD8A5286DED400DDFD7A11
+	sha256sums = af6f536e0c1d049316e17f46941d07b92b035632cfbf38ae6ac6182917d8da13
+
+pkgname = river-classic

@@ -1,0 +1,49 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=rise
+pkgname=jupyterlab-rise
+pkgver=0.43.1
+pkgrel=3
+pkgdesc="RISE: \"Live\" Reveal.js JupyterLab Slideshow Extension"
+arch=(any)
+url="https://github.com/jupyterlab-contrib/rise"
+license=(BSD-3-Clause)
+depends=(
+  jupyterlab
+)
+makedepends=(
+  npm
+  python-build
+  python-hatch-jupyter-builder
+  python-hatch-nodejs-version
+  python-hatchling
+  python-installer
+  python-jupyter-packaging
+  python-setuptools
+  python-wheel
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  install.json
+)
+b2sums=('ef54516fbd2c43125bbf1148d44f05ae6f88febe630001789f2bdb308652377838c5cb9de8d71cf24c3ce430e56074dae04dac38e641c36ab7d76b81ba636c9a'
+        'a849d0bd6eba693967e11f7b793a4f0beddcffde045ac61bb58bf0e50f1f1b1841f988a7d75c3f60f9c135203ea115199772af78f38f2acc264127492c29141b')
+
+prepare() {
+  cd $_name-$pkgver
+
+  # Replace uninstallation instructions with Arch-specific ones.
+  cp ../install.json .
+}
+
+build() {
+  cd $_name-$pkgver
+  python -m build --no-isolation --wheel --skip-dependency-check
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  mv "$pkgdir"/usr/etc "$pkgdir"
+  install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+}

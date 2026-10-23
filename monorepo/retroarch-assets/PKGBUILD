@@ -1,0 +1,45 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgbase=retroarch-assets
+pkgname=(
+  retroarch-assets-glui
+  retroarch-assets-ozone
+  retroarch-assets-xmb
+)
+pkgver=20260813.223050.g73106363e14e
+pkgrel=1
+epoch=1
+pkgdesc='UI/UX assets for RetroArch'
+arch=(any)
+url=http://www.libretro.com/
+license=(CC-BY-4.0)
+groups=(libretro)
+depends=(retroarch)
+makedepends=(git)
+source=(git+https://github.com/libretro/retroarch-assets.git#commit=${pkgver##*.g})
+b2sums=('25622d04c10cc5334af80055ed7b90d109f31fe4094cb3d55922abdbff4d64f4b30d73292aa4eb5ea9dd25fea9461681a5108befe55e1a5d3dffa88737b02aff')
+
+package_retroarch-assets-glui() {
+  depends+=(retroarch-assets-xmb)
+  pkgdesc="GLUI ${pkgdesc}"
+  cd retroarch-assets
+
+  install -dm 755 "${pkgdir}"/usr/share/retroarch/assets
+  cp -dr --no-preserve=ownership glui "${pkgdir}"/usr/share/retroarch/assets/
+}
+
+package_retroarch-assets-ozone() {
+  depends+=(retroarch-assets-xmb)
+  pkgdesc="Ozone ${pkgdesc}"
+  cd retroarch-assets
+
+  install -dm 755 "${pkgdir}"/usr/share/retroarch/assets
+  cp -dr --no-preserve=ownership ozone "${pkgdir}"/usr/share/retroarch/assets/
+}
+
+package_retroarch-assets-xmb() {
+  cd retroarch-assets
+  pkgdesc="XMB ${pkgdesc}"
+  install -dm 755 "${pkgdir}"/usr/share/retroarch/assets
+  cp -dr --no-preserve=ownership xmb "${pkgdir}"/usr/share/retroarch/assets/
+}

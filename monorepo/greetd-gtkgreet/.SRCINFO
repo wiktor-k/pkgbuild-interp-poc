@@ -1,0 +1,25 @@
+pkgbase = greetd-gtkgreet
+	pkgdesc = GTK based greeter for greetd
+	pkgver = 0.8
+	pkgrel = 3
+	url = https://git.sr.ht/~kennylevinsen/gtkgreet
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = meson
+	makedepends = scdoc
+	depends = cairo
+	depends = libcairo.so
+	depends = gdk-pixbuf2
+	depends = libgdk_pixbuf-2.0.so
+	depends = glib2
+	depends = libglib-2.0.so
+	depends = glibc
+	depends = gtk-layer-shell
+	depends = gtk3
+	depends = json-c
+	source = gtkgreet-0.8.tar.gz::https://git.sr.ht/~kennylevinsen/gtkgreet/archive/0.8.tar.gz
+	source = greetd-gtkgreet-fix-build.patch
+	sha256sums = e5c70219da191a60e2e009412603e05c36cee15bbbf7657dbbeaa1d21a692873
+	sha256sums = 2bd9cb623961d1885e3857b688324cdf68b4dfedeb987edf3680ddf50d8dae41
+
+pkgname = greetd-gtkgreet

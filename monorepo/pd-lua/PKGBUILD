@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=pd-lua
+pkgver=0.12.23
+pkgrel=2
+pkgdesc="LUA embedding for pd"
+arch=(x86_64)
+url="https://github.com/agraef/pd-lua"
+license=(GPL-2.0-or-later)
+groups=(
+  pd-externals
+  pro-audio
+)
+depends=(
+  glibc
+  lua54
+  pd
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgver.tar.gz
+  $pkgname-0.12.23-lua54.patch
+  $pkgname-0.12.23-pd-renamed-functions.patch
+)
+sha512sums=('527c2cb5fb1ccd01dc3f3bc5bcdb340512e6cf5bc5bd99ce6ef3065b0b0982323d206776ce6ea805d0bdd314f69c1d0b2d311e0f8908e04ec68d13955d20c557'
+            'ab13726c380a4f01eb226c5bc492e6821ae5679ffacb3de0d14adf83e6ff570c996c69124ed94aaf80f182492cf667cc53fed769ff525e967215543d9e4f214e'
+            'b809b4039b8329b55f2be747ea979f270ccb509353364ace95fa1a4ec04a3d6337b5aa5f4e2fb71240f69965a5a37566fc92fd1f8711d1d0d9b38de0ae814012')
+b2sums=('18f9ae2e17a8f7845bf9a85e62215081a93e831ceba8678d51bcd181d9be66bb79da393f407436afc3f752afa0642250f3b0f186080b153c1803e32e7e69c51c'
+        'c78badda54ad2cb3af50f928aad6cb59cec47240668f2974c56861bdb4f59accd80ac24eb973237556bad7e6484b68a533544b95092b77526bb6ff88a603c2ff'
+        'de62d9a41d7c78a891a00a15f9936a78797f2a84319dee284406fcf42252a7c11a517b83bac2ecad63980d05d746a18954a34702ef159749c5dfbf920762ba89')
+
+prepare() {
+  # pd has renamed some functions.
+  # backport of https://github.com/agraef/pd-lua/pull/76
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-0.12.23-pd-renamed-functions.patch
+  # pd-lua is currently only compatible with lua 5.4: https://github.com/agraef/pd-lua/issues/86
+  patch -Np1 -d $pkgname-$pkgver -i ../$pkgname-0.12.23-lua54.patch
+}
+
+build() {
+  make LDFLAGS="$LDFLAGS" CFLAGS="$CFLAGS" -C $pkgname-$pkgver
+}
+
+package() {
+  make DESTDIR="$pkgdir/" PDLIBDIR=/usr/lib/pd/extra prefix=/usr install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/README -t "$pkgdir/usr/share/doc/$pkgname/"
+}

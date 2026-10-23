@@ -1,0 +1,25 @@
+pkgbase = crunch64
+	pkgdesc = A library for handling common N64 compression formats
+	pkgver = 0.6.2
+	pkgrel = 1
+	url = https://github.com/decompals/crunch64
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = rust
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-maturin
+	depends = glibc
+	depends = libgcc
+	source = crunch64::git+https://github.com/decompals/crunch64#tag=0.6.2
+	sha512sums = d120adfbbde0986d2a52eab43b6b427273d7834d226fbb6edbb6ce775d9e7746a96eb25cc0b54cd838ad4fbec2d516177d4b86f962018608abf8cb468e3cdd5d
+	b2sums = 964712ab5c70ea5dc47bb62536b36a271f284c660731836625b03f0bd2565e42ffe87bbd1da51c5cac4af323059cf7331cb02fe9b98795a6bb2ae3fc1ee939f2
+
+pkgname = crunch64
+
+pkgname = python-crunch64
+	pkgdesc = A library for handling common N64 compression formats - Python bindings
+	depends = glibc
+	depends = libgcc
+	depends = python

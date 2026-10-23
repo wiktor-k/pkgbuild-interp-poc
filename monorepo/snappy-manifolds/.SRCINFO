@@ -1,0 +1,28 @@
+pkgbase = snappy-manifolds
+	pkgdesc = A package for studying the topology and geometry of 3-manifolds, with a focus on hyperbolic structures
+	pkgver = 3.3.2
+	pkgrel = 1
+	url = https://snappy.computop.org/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cython
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	depends = glibc
+	depends = ipython
+	depends = libgcc
+	depends = libstdc++
+	depends = python
+	depends = python-cypari2
+	depends = python-fxrays
+	depends = python-low-index
+	depends = python-plink
+	depends = python-snappy-manifolds
+	depends = python-spherogram
+	depends = python-tkinter-gl
+	source = git+https://github.com/3-manifolds/SnapPy#tag=3.3.2_as_released
+	sha256sums = fbbb60c3049d93239d37789affbd4b11bc109a49826ce6ca587fe726130d9018
+
+pkgname = snappy-manifolds

@@ -1,0 +1,29 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Muges <git@muges.fr>
+# Contributor: Alexis "Horgix" Chotad <alexis.horgix.chotard@gmail.com>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Jonas Heinrich <onny@project-insanity.org>
+# Contributor: Markus Golser <elmargol@googlemail.com>
+
+_pkgname=mygpoclient
+pkgname=python-mygpoclient
+pkgver=1.10
+pkgrel=1
+pkgdesc='Python client Library for the gpodder.net web service'
+arch=('any')
+url='https://github.com/gpodder/mygpoclient'
+license=('GPL-3.0-or-later')
+depends=('python')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("https://github.com/gpodder/$_pkgname/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('00e8b9fc990aafd7427411bb7b8e7878cd4e364ccf405691070ff924985c70b5')
+
+build() {
+  cd $_pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

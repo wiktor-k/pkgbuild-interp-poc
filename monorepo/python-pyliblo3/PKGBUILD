@@ -1,0 +1,56 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-pyliblo3
+_name=${pkgname#python-}
+pkgver=0.16.3
+pkgrel=2
+pkgdesc="Fork of the original bindings for liblo"
+arch=(x86_64)
+url="https://github.com/gesellkammer/pyliblo3"
+license=(LGPL-2.1-or-later)
+depends=(
+  glibc
+  liblo
+  python
+)
+makedepends=(
+  cython
+  liblo
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  $pkgname-0.16.3-cython3.patch
+)
+sha512sums=('3271b563a98d4da268c40b96c67595b0b5c835c17d69c39aa4f32ad6f4ec77fa91be9ad58552b69b5092a6ac6a3ad83a33391506ed57075aaa30a9ac3a89fb16'
+            'e111865b106cb341a52cce485547b021906461a10fdd75a4eea8576e04b147a4510fe07efbf3f0989502e53ce7100b1eb537b016c71f68a9fb6aa29c6ff2bb9f')
+b2sums=('4c617483e32ac6760bfcd29af8c936ceff6b4ad0c34dd3bb0b39f4e6b5f58cb5f297d3c61276e280a39c1c523521d2a2bb6e7917841037bb89fe17587e62c18c'
+        '22180d5b899cea415c8594ce63159093cb8846ecafed3c72341e3c5917aa51c278209d0134a7ad22703456f29bb7b1ffe5e2880aefd968a175e8be9dc16c5a93')
+
+prepare() {
+  # Patch for cython > 3.1 support
+  patch -Np1 -d $_name-$pkgver -i ../$pkgname-0.16.3-cython3.patch
+}
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  # install to temporary location, as importlib is used
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+  python test/unit.py
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

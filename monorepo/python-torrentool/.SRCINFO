@@ -1,0 +1,22 @@
+pkgbase = python-torrentool
+	pkgdesc = The tool to work with torrent files
+	pkgver = 1.2.0
+	pkgrel = 4
+	url = https://github.com/idlesign/torrentool
+	arch = any
+	license = BSD-3-Clause
+	checkdepends = python-pytest
+	checkdepends = python-pytest-datafixtures
+	checkdepends = python-pytest-responsemock
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	optdepends = python-click: for torrentool
+	optdepends = python-requests: for some torrentool subcommands
+	source = python-torrentool-1.2.0.tar.gz::https://github.com/idlesign/torrentool/archive/refs/tags/v1.2.0.tar.gz
+	sha512sums = 9f90b9c899befd829e489260e8c62814c8a0e9a9933394d780a80c6cb501a084dfba529a0daa8a028ec2f79f0b3c16127e71fc4f5fd750ee334751eef80b3872
+	b2sums = d50fb009e54731774a012d6d3ec39e431c67ff82c2adbe178b14ebd1d22ab242d6b11b69a014c160e255eca0c4cb7a8617a313655bf0d28042e493c2efebc4c9
+
+pkgname = python-torrentool

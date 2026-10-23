@@ -1,0 +1,25 @@
+pkgbase = alpm-repo-db
+	pkgdesc = Command line interfaces for the handling of alpm-repo-db files
+	pkgver = 0.2.0
+	pkgrel = 1
+	url = https://alpm.archlinux.page/alpm-repo-db/
+	arch = x86_64
+	groups = alpm
+	license = Apache-2.0 OR MIT
+	license = CC-BY-SA-4.0
+	makedepends = git
+	makedepends = just
+	makedepends = lowdown
+	makedepends = rust
+	makedepends = rust-script
+	depends = glibc
+	depends = libgcc
+	optdepends = alpm-docs: for additional specifications
+	source = alpm::git+https://gitlab.archlinux.org/archlinux/alpm/alpm.git?signed#tag=alpm-repo-db/0.2.0
+	validpgpkeys = 991F6E3F0765CF6295888586139B09DA5BF0D338
+	sha512sums = 91b0cfe86ac0866c2f008f8e6982f88cf4ca5fa63d191940458f9ed92285376189031654dd96f7516d559870c48fd8de8e747f8e863a85a641d8e120475426db
+	b2sums = 4a28bdbaa6edfe1594e4d8e1b259ddf33f20234dabe50168015f0f2da4a927d6fb0e0b9a42be7a8c3cf23ef0409f63e76c628c384d1b10e18448c6eb1da5462e
+
+pkgname = alpm-repo-db
+	conflicts = alpm-files
+	replaces = alpm-files

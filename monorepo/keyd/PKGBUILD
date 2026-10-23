@@ -1,0 +1,48 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: eNV25
+
+pkgname=keyd
+pkgver=2.6.0
+pkgrel=5
+pkgdesc="A key remapping daemon for linux"
+arch=(x86_64)
+url="https://github.com/rvaiya/keyd"
+license=('MIT')
+optdepends=(
+    "python: Required for use with keyd-application-mapper utility"
+    "perl: For using the optional dump-xkb-config script"
+)
+source=(
+    "$pkgname-$pkgver::https://github.com/rvaiya/keyd/archive/refs/tags/v$pkgver.tar.gz"
+    keyd.sysusers
+)
+sha256sums=('697089681915b89d9e98caf93d870dbd4abce768af8a647d54650a6a90744e26'
+            'b3fa546c31f61be824a84a33af5c723692e2cedd4e5f87ff655e90f33227395d')
+
+build() {
+    cd "$pkgname-$pkgver"
+    # https://gitlab.archlinux.org/archlinux/packaging/packages/keyd/-/issues/3
+    make PREFIX=/usr
+}
+
+check() {
+    cd "$pkgname-$pkgver"
+    make test-io
+}
+
+package() {
+    cd "$pkgname-$pkgver"
+    make PREFIX=/usr DESTDIR="$pkgdir/" FORCE_SYSTEMD=1 install
+
+    # Delete the test-io binary produced during check()
+    # https://gitlab.archlinux.org/archlinux/packaging/packages/keyd/-/issues/4
+    rm -fv "$pkgdir/usr/bin/test-io"
+
+    install -Dm644 ../keyd.sysusers "$pkgdir/usr/lib/sysusers.d/keyd.conf"
+    install -Dm755 scripts/dump-xkb-config -t "$pkgdir/usr/share/keyd/"
+    install -Dm755 scripts/generate_xcompose -t "$pkgdir/usr/share/keyd/"
+
+    install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/keyd"
+    install -Dm644 README.md -t "$pkgdir/usr/share/doc/keyd/"
+}

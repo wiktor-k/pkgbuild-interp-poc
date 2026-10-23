@@ -1,0 +1,25 @@
+pkgbase = haskell-isomorphism-class
+	pkgdesc = Isomorphism typeclass solving the conversion problem
+	pkgver = 0.1.1
+	pkgrel = 168
+	url = https://github.com/nikita-volkov/isomorphism-class
+	arch = x86_64
+	license = MIT
+	makedepends = ghc
+	makedepends = uusi
+	makedepends = haskell-quickcheck
+	makedepends = haskell-quickcheck-instances
+	makedepends = haskell-rebase
+	makedepends = haskell-tasty
+	makedepends = haskell-tasty-quickcheck
+	depends = ghc-libs
+	depends = haskell-hashable
+	depends = haskell-primitive
+	depends = haskell-unordered-containers
+	depends = haskell-vector
+	source = https://hackage.haskell.org/packages/archive/isomorphism-class/0.1.1/isomorphism-class-0.1.1.tar.gz
+	source = haskell-isomorphism-class-quickcheck-instances-0.3.32.patch::https://github.com/nikita-volkov/isomorphism-class/commit/eadf18f469a40c0531f5750cbd73acc454a3b6d4.patch
+	sha256sums = d32e2f1a1cf9f748a7b8594a72f71479ad79b5d93517d73eed372b5dd14407c3
+	sha256sums = 0a22ff1126c65adfd7e650396ba1b3ea4d928dfba67184162569132d36764a5d
+
+pkgname = haskell-isomorphism-class

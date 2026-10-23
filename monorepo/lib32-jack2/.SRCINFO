@@ -1,0 +1,36 @@
+pkgbase = lib32-jack2
+	pkgdesc = The JACK low-latency audio server (32 bit)
+	pkgver = 1.9.22
+	pkgrel = 2
+	url = https://github.com/jackaudio/jack2
+	arch = x86_64
+	license = GPL2
+	license = LGPL2.1
+	makedepends = git
+	makedepends = lib32-alsa-lib
+	makedepends = lib32-dbus
+	makedepends = lib32-expat
+	makedepends = lib32-libsamplerate
+	makedepends = waf
+	depends = lib32-gcc-libs
+	depends = lib32-glibc
+	depends = lib32-opus
+	depends = jack2=1.9.22
+	provides = lib32-jack
+	provides = libjack.so
+	provides = libjackserver.so
+	provides = libjacknet.so
+	conflicts = lib32-jack
+	source = git+https://github.com/jackaudio/jack2#tag=80149e552b56d6d57d754dc04d119b8170d27313?signed
+	validpgpkeys = 62B11043D2F6EB6672D93103CDBAA37ABC74FBA0
+	sha512sums = SKIP
+
+pkgname = lib32-jack2
+	depends = lib32-gcc-libs
+	depends = lib32-glibc
+	depends = lib32-opus
+	depends = jack2=1.9.22
+	depends = alsa-lib
+	depends = libasound.so
+	depends = libsamplerate
+	depends = libsamplerate.so

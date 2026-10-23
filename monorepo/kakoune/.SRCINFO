@@ -1,0 +1,24 @@
+pkgbase = kakoune
+	pkgdesc = Multiple-selection, UNIX-flavored modal editor
+	pkgver = 2026.05.21
+	pkgrel = 2
+	url = https://kakoune.org/
+	arch = x86_64
+	license = custom:unlicense
+	makedepends = git
+	depends = libgcc
+	depends = libstdc++
+	optdepends = aspell: spell check, correct text
+	optdepends = clang: error reporting and diagnostics, completion
+	optdepends = editorconfig-core-c: set formatting options project-wide
+	optdepends = git: display and cycle through hunks, blame lines, handle file status
+	optdepends = kakoune-lsp: Language Server Protocol (LSP) client
+	optdepends = tmux: split windows, spawn tabs
+	optdepends = xdotool: X11 window management
+	optdepends = xorg-xmessage: print detailed crash information in a separate window
+	source = https://github.com/mawww/kakoune/releases/download/v2026.05.21/kakoune-2026.05.21.tar.bz2
+	source = custom-libexecdir.patch
+	b2sums = 37563490b775b518f71401fb1802e816add3421d7a8a9944395ad66d2d2ebb773bd4407df2d1fb0ff5f10f41f62e938a5c01cd8fb7c02f9624a3c1ea3ea777d7
+	b2sums = 2c97785427851a01503bb99e2d0b725e4c11a42411669454f8bdfece00196d63c8dcd84e978840a2a83deed594b0c198e76d964fe8adcf21b6fe4eedb9c987e2
+
+pkgname = kakoune

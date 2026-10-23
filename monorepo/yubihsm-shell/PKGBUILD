@@ -1,0 +1,189 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=yubihsm-shell
+pkgname=(
+  libyubihsm
+  libykhsmauth
+  yubihsm-auth
+  yubihsm-pkcs11
+  yubihsm-shell
+  yubihsm-wrap
+)
+pkgver=2.8.0
+pkgrel=2
+pkgdesc=""
+arch=(x86_64)
+url="https://github.com/Yubico/yubihsm-shell/"
+license=(Apache-2.0)
+makedepends=(
+  curl
+  cmake
+  gengetopt
+  glibc
+  help2man
+  libedit
+  libusb
+  openssl
+  pcsclite
+  zlib
+)
+checkdepends=(bats)
+source=(
+  "$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/$pkgver.tar.gz"
+  0001-Prevent-clash-of-_FORTIFY_SOURCE-definition-with-dis.patch
+)
+sha512sums=('cab1653c0c21b95744d95cd858e3ef33d3939cfc5c07513a1680ede39113dcc50ca2797d059a9cc68a645e33bfbd544a9c284ce915604111165502c8c7a94f45'
+            '2dbdbc3e69a091ab14ee49d9b0e81b7d46d50d6745fa0c65221c23dd65736bd5992da0fa78099a85105b01fcc95be337f247d432b9fcef9a2cf80b4f2739722e')
+b2sums=('0eca6b5583d636aea152762fc1c558a6a453aa24ae5a180566a4070a3de6e6b1875a2548420c02e7cdd01ff909aca0dcdc5232c371e84b5448059e59f9a00066'
+        '4d6e0f9d8f31365e1e278cb0e3a9658a3fb3de1bc754dffe4476f51798a7e7acfc12096f0aaac003d0de5dc5415e5c790177c443180126ab394c2d6ffc49e5c8')
+
+prepare() {
+  # we define `-D_FORTIFY_SOURCE=3` ourselves
+  patch -Np1 -d $pkgbase-$pkgver -i ../0001-Prevent-clash-of-_FORTIFY_SOURCE-definition-with-dis.patch
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgbase-$pkgver
+    -W no-author
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  # NOTE: Most tests require a physical YubiHSM2 being connected, so we need to skip them.
+  local excluded_tests="(attest|generate_ec|generate_hmac|import_authkey|import_rsa|info|wrap|wrap_data|yubico_otp|echo|asym_auth|import_ec|generate_rsa|logs|ssh|decrypt_rsa|decrypt_ec|import_ed|change_authkey|encrypt_aes|pkcs11test|aes_encrypt_test|ecdh_derive_test|ecdh_sp800_test|rsa_enc_test|pss_sign_test|asym_wrap_test|bash_tests|wrapped_tests)"
+  local ctest_flags=(
+    --test-dir build
+    --output-on-failure
+    --parallel "$(nproc)"
+    --exclude-regex "$excluded_tests"
+    --verbose
+  )
+
+  ctest "${ctest_flags[@]}"
+}
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+_install_common_docs() {
+  install -vDm 644 $pkgbase-$pkgver/LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $pkgbase-$pkgver/CHANGELOG -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+package_libyubihsm() {
+  pkgdesc="C library to expose low- and high-level functions to interact with a YubiHSM"
+  depends=(
+    curl libcurl.so
+    glibc
+    openssl libcrypto.so
+    libusb libusb-1.0.so
+    zlib libz.so
+  )
+  optdepends=('yubihsm-udev-rules: for accessing YubiHSM2 devices over USB using the _yubihsm2 group membership')
+  provides=(libyubihsm.so)
+
+  DESTDIR="$pkgdir" cmake --install build
+
+  (
+    cd "$pkgdir"
+    _pick libykhsmauth usr/include/ykhsmauth.h
+    _pick libykhsmauth usr/lib/libykhsmauth*
+    _pick libykhsmauth usr/share/pkgconfig/ykhsmauth.pc
+    _pick yubihsm-auth usr/bin/yubihsm-auth
+    _pick yubihsm-auth usr/share/man/man1/yubihsm-auth*
+    _pick yubihsm-pkcs11 usr/include/pkcs11/
+    _pick yubihsm-pkcs11 usr/lib/pkcs11/
+    _pick yubihsm-shell usr/bin/yubihsm-shell
+    _pick yubihsm-shell usr/share/man/man1/yubihsm-shell*
+    _pick yubihsm-wrap usr/bin/yubihsm-wrap
+    _pick yubihsm-wrap usr/share/man/man1/yubihsm-wrap*
+  )
+
+  _install_common_docs
+}
+
+package_libykhsmauth() {
+  pkgdesc="C library for using the YubiKey HSM Auth application"
+  depends=(
+    glibc
+    pcsclite libpcsclite.so
+    openssl # required via pkgconfig
+  )
+  provides=(libykhsmauth.so)
+
+  mv -v "$pkgname"/* "$pkgdir"
+
+  _install_common_docs
+}
+
+package_yubihsm-auth() {
+  pkgdesc="Command-line tool to use the YubiKey HSM Auth application"
+  depends=(
+    glibc
+    libykhsmauth libykhsmauth.so
+    openssl libcrypto.so
+  )
+
+  mv -v "$pkgname"/* "$pkgdir"
+
+  _install_common_docs
+}
+
+package_yubihsm-pkcs11() {
+  pkgdesc="PKCS#11 module using libyubihsm"
+  depends=(
+    glibc
+    libykhsmauth libykhsmauth.so
+    libyubihsm libyubihsm.so
+    openssl libcrypto.so
+  )
+  optdepends=('yubihsm-udev-rules: for accessing YubiHSM2 devices over USB using the _yubihsm2 group membership')
+
+  mv -v "$pkgname"/* "$pkgdir"
+
+  _install_common_docs
+}
+
+package_yubihsm-shell() {
+  pkgdesc="Interactive and command-line interface to a YubiHSM"
+  depends=(
+    glibc
+    libedit libedit.so
+    libykhsmauth libykhsmauth.so
+    libyubihsm libyubihsm.so
+    openssl libcrypto.so
+  )
+  optdepends=('yubihsm-udev-rules: for accessing YubiHSM2 devices over USB using the _yubihsm2 group membership')
+
+  mv -v "$pkgname"/* "$pkgdir"
+
+  _install_common_docs
+}
+
+package_yubihsm-wrap() {
+  pkgdesc="Command-line tool to create encrypted objects (wraps) that can be imported in the YubiHSM"
+  depends=(
+    glibc
+    libyubihsm libyubihsm.so
+    openssl libcrypto.so
+  )
+  optdepends=('yubihsm-udev-rules: for accessing YubiHSM2 devices over USB using the _yubihsm2 group membership')
+
+  mv -v "$pkgname"/* "$pkgdir"
+
+  _install_common_docs
+}

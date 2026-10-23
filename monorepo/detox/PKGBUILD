@@ -1,0 +1,38 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=detox
+pkgver=3.0.1
+pkgrel=1
+pkgdesc="An utility designed to clean up filenames by replacing characters with standard equivalents"
+arch=('x86_64')
+url="https://github.com/dharple/detox"
+license=('BSD-3-Clause')
+depends=('glibc')
+makedepends=('check')
+backup=('etc/detox/detoxrc')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha256sums=('15dc32ca5856a3edc2fff237c8cbcb29979a25292aac738a272181d2152699ea')
+
+prepare() {
+  cd $pkgname-$pkgver
+  sed -i 's/-D_FORTIFY_SOURCE=2//' src/Makefile.am tests/unit/Makefile.am
+}
+
+build() {
+  cd $pkgname-$pkgver
+  autoreconf --install
+  ./configure --prefix=/usr --sysconfdir=/etc/detox --with-check
+  make
+}
+
+check() {
+  cd $pkgname-$pkgver
+  make check
+}
+
+package() {
+  cd $pkgname-$pkgver
+  make DESTDIR="$pkgdir" install
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

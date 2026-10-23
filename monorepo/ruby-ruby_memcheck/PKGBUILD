@@ -1,0 +1,75 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-ruby_memcheck
+pkgver=3.0.1
+pkgrel=1
+pkgdesc='Use Valgrind memcheck without going crazy'
+arch=(any)
+url='https://github.com/Shopify/ruby_memcheck'
+license=(MIT)
+depends=(
+  ruby
+  ruby-nokogiri
+  valgrind
+)
+makedepends=(
+  git
+)
+checkdepends=(
+  ruby-bundler
+  ruby-minitest
+  ruby-racc
+  ruby-rake
+  ruby-rake-compiler
+  ruby-rspec-core
+)
+options=(!emptydirs)
+source=(git+https://github.com/Shopify/ruby_memcheck.git#tag=$pkgver)
+sha256sums=('7c4775e81c5e48f572e2973518bceee549ba28bd10d3689de6b945eaa43e4b1f')
+
+prepare() {
+  cd ruby_memcheck
+  # Ruby 3.4's free-at-exit mode intentionally reports native Init_* leaks;
+  # remove the artificial test fixture leaks so unrelated checks remain useful.
+  sed -i '/Memory leaks in the Init functions should be ignored\./,+1d' \
+    test/ruby_memcheck/ext/ruby_memcheck_c_test_one.c \
+    test/ruby_memcheck/ext/ruby_memcheck_c_test_two.c
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd ruby_memcheck
+  gem build ruby_memcheck.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    ruby_memcheck-$pkgver.gem
+  find "tmp_install/$_gemdir/gems/" \
+    -type f \
+    \( \
+        -iname "*.o" -o \
+        -iname "*.c" -o \
+        -iname "*.so" -o \
+        -iname "*.time" -o \
+        -iname "gem.build_complete" -o \
+        -iname "Makefile" \
+    \) \
+    -delete
+  rm -r tmp_install/$_gemdir/cache
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd ruby_memcheck
+  GEM_HOME="tmp_install/$_gemdir" rake
+}
+
+package() {
+  cd ruby_memcheck
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 LICENSE.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

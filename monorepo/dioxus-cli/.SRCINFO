@@ -1,0 +1,21 @@
+pkgbase = dioxus-cli
+	pkgdesc = CLI tool for developing, testing, and publishing Dioxus apps
+	pkgver = 0.7.10
+	pkgrel = 1
+	url = https://github.com/DioxusLabs/dioxus
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	depends = glibc
+	depends = libgcc
+	depends = bzip2
+	depends = zlib
+	depends = openssl
+	depends = xz
+	provides = dx
+	options = !lto
+	source = dioxus-cli-0.7.10.tar.gz::https://github.com/DioxusLabs/dioxus/archive/v0.7.10.tar.gz
+	b2sums = 2316b7d13edd09ff75801f35bf4da2a6671b53bb4e10a0fb5a5a19d82bf43af41c498d1334eb360ebea8f9b7feed4c7d0d8d7b83b8560b9428b4330cd2d51281
+
+pkgname = dioxus-cli

@@ -1,0 +1,24 @@
+pkgbase = xiphos
+	pkgdesc = A Bible study tool for GTK3
+	pkgver = 4.5.0
+	pkgrel = 1
+	url = https://xiphos.org
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = appstream
+	makedepends = cmake
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = itstool
+	depends = biblesync
+	depends = icu
+	depends = libbiblesync.so
+	depends = libicui18n.so
+	depends = libspeechd
+	depends = minizip
+	depends = sword
+	depends = webkit2gtk-4.1
+	source = git+https://github.com/crosswire/xiphos.git#tag=4.5.0
+	sha256sums = a3c10eafeeea9d352507f53e48e2fc98255ed66e6533b517316ffb4afb928793
+
+pkgname = xiphos

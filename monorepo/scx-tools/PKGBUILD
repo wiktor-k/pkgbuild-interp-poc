@@ -1,0 +1,56 @@
+# Maintainer: Peter Jung ptr1337 <admin@ptr1337.dev>
+# Maintainer: Piotr Górski <lucjan.lucjanov@gmail.com>
+
+pkgname=scx-tools
+_gitname=scx-loader
+pkgver=1.1.3
+pkgrel=1
+pkgdesc='scx_loader: A DBUS Interface for Managing sched_ext Schedulers'
+url='https://github.com/sched-ext/scx-loader'
+arch=('x86_64')
+license=('GPL-2.0-only')
+depends=(
+  libgcc
+  glibc
+  polkit
+  scx-scheds
+)
+makedepends=(
+  cargo
+  clang
+  git
+  llvm
+  llvm-libs
+)
+options=(!lto)
+source=("git+https://github.com/sched-ext/scx-loader#tag=v$pkgver")
+sha256sums=('da3033733b7bf7d5a9729e31aec2328ebc97d45318726633ed8f83af840f0339')
+
+prepare() {
+  cd $_gitname
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_gitname
+  cargo build --release --frozen --all-features --workspace
+}
+
+check() {
+  cd $_gitname
+  cargo test frozen --all-features --workspace
+}
+
+package() {
+  cd $_gitname
+
+  # Install all built executables (skip .so and .d files)
+  find target/release \
+    -maxdepth 1 -type f -executable ! -name '*.so' ! -name 'xtask' \
+    -exec install -Dm755 -t "$pkgdir/usr/bin/" {} +
+
+  # Install runtime assets via xtask
+  # (systemd units, D-Bus services, configs, sample files)
+  ./target/release/xtask install --destdir "$pkgdir"
+}

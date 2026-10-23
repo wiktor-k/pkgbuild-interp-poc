@@ -1,0 +1,28 @@
+pkgbase = isd
+	pkgdesc = An interactive systemd TUI
+	pkgver = 0.6.2
+	pkgrel = 1
+	url = https://kainctl.github.io/isd/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	makedepends = python-editables
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = systemd
+	depends = python
+	depends = python-xdg-base-dirs
+	depends = python-pfzy
+	depends = python-textual
+	depends = python-pydantic
+	depends = python-pydantic-settings
+	depends = python-rich
+	depends = hicolor-icon-theme
+	source = isd::git+https://github.com/kainctl/isd#tag=v0.6.2
+	sha512sums = c7565b95aaa4f2470a74317299610153dbeab6864be14c947b6fa18789ba23d6641930569c2f77ea869da4a3fa7882625e86e3d0227bb3b2d71a2fedec7eb225
+	b2sums = 23fdd7f8a447b8391fa244f59193aca2fee726c6b86136a23f1be9f6219cdfdf27afa216aa739dd00e7d5f198f42f8a48f5eef509a6218cbe8936d351293bf58
+
+pkgname = isd

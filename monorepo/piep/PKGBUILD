@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=piep
+pkgdesc='Bringing the power of python to stream editing'
+pkgver=0.10.0
+pkgrel=6
+arch=("any")
+url="https://github.com/gfxmonk/piep"
+license=("GPL-3.0-or-later")
+depends=('python-pygments')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("git+https://github.com/gfxmonk/piep.git#tag=version-$pkgver")
+sha512sums=('63bbab14141671a23d36adbea7a8a4fc1945a457e37d8c5a9a3630e8ce78d16518896471e796f6a19d13f88e87f263e2860d23039ba214cf187e66eafd790fd6')
+
+build() {
+  cd piep
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd piep
+  python -m unittest discover -vs .
+}
+
+package() {
+  cd piep
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set ts=2 sw=2 et:

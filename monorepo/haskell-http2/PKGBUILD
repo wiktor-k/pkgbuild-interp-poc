@@ -1,0 +1,65 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=http2
+pkgname=haskell-http2
+pkgver=5.2.3
+pkgrel=17
+pkgdesc="HTTP/2 library"
+url="https://github.com/kazu-yamamoto/http2"
+license=('BSD-3-Clause')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-async' 'haskell-case-insensitive' 'haskell-http-types'
+         'haskell-http-semantics' 'haskell-network' 'haskell-network-byte-order'
+         'haskell-network-control' 'haskell-time-manager' 'haskell-unix-time' 'haskell-unliftio'
+         'haskell-utf8-string')
+makedepends=('ghc')
+checkdepends=('haskell-aeson' 'haskell-aeson-pretty' 'haskell-base16-bytestring'
+              'haskell-crypton' 'haskell-glob' 'haskell-hspec' 'haskell-hspec-discover'
+              'haskell-network-run' 'haskell-random' 'haskell-typed-process'
+              'haskell-unordered-containers' 'haskell-vector')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('28da7bb872a1cf5b38f91b47ee0f01cfba2a9ce95ead60255f52987a0aa02b044a5146981fd91053b3374b7728df1b24b5fe485b4f16365b4c074b979a3b17ab')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    # Choose another port to bind, 8080 is too easy to conflict with build host
+    sed -i 's/"8080"/"59824"/' test2/ServerSpec.hs test/HTTP2/ServerSpec.hs
+    # network-run 0.4 also exports defaultSettings, which collides with http2's client settings.
+    sed -i 's/import Network.Run.TCP/import Network.Run.TCP hiding (defaultSettings)/' test/HTTP2/ClientSpec.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+
+    if (( CHECKFUNC )); then
+        _opts=('--enable-tests')
+    else
+        _opts=('--disable-tests')
+    fi
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname "${_opts[@]}" \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-devel
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

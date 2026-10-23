@@ -1,0 +1,24 @@
+pkgbase = anubis
+	pkgdesc = Reverse proxy to protect against scraper bots
+	pkgver = 1.28.1
+	pkgrel = 1
+	url = https://anubis.techaro.lol/
+	arch = x86_64
+	license = MIT
+	makedepends = binaryen
+	makedepends = brotli
+	makedepends = esbuild
+	makedepends = git
+	makedepends = go
+	makedepends = gzip
+	makedepends = npm
+	makedepends = rust-wasm
+	makedepends = zstd
+	depends = glibc
+	options = !lto
+	backup = etc/anubis/default.env
+	source = git+https://github.com/TecharoHQ/anubis?signed#tag=v1.28.1
+	validpgpkeys = 833F64161167B501058C394756375DA2DF02ABFF
+	b2sums = 57a5d430215c229c7b95607ef9c74c610dc33a0b0369bf048f3425f3d690de1c61b398c42f4b369cf097d6d28f111eed207c485d6d77e4c532e41d7c4dc77e21
+
+pkgname = anubis

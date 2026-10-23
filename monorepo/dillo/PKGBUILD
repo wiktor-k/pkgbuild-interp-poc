@@ -1,0 +1,66 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: dorphell <dorphell@archlinux.org>
+
+pkgname=dillo
+pkgver=3.3.0
+pkgrel=1
+pkgdesc="A small, fast graphical web browser built on FLTK"
+arch=(x86_64)
+url="https://dillo-browser.org/"
+license=('GPL-3.0-or-later')
+depends=(
+  'brotli'
+  'fltk1.3'
+  'glibc'
+  'hicolor-icon-theme'
+  'libjpeg-turbo'
+  'libpng'
+  'libstdc++'
+  'libwebp'
+  'libx11'
+  'openssl'
+  'perl'
+  'zlib'
+)
+makedepends=(
+  git
+)
+backup=(
+  etc/dillo/dillorc
+  etc/dillo/domainrc
+  etc/dillo/dpidrc
+  etc/dillo/keysrc
+)
+source=(
+  "git+https://git.dillo-browser.org/dillo?signed#tag=v$pkgver"
+)
+sha512sums=('d833191b3877f225f5fe90f9fa9cffa2402854700eb9e66bcc223da77da15890bd7ce60ece16fd8b6d07b9f565868516a70f9286704c24a5f95373305c88cfcc')
+validpgpkeys=('32E65EC501A1B6FDF8190D293EE6BA977EB2A253') # Rodrigo Arias Mallo <rodarima@gmail.com>
+
+prepare() {
+  cd $pkgname
+
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure --prefix=/usr --sysconfdir=/etc \
+    --enable-cookies \
+    --enable-tls \
+    --enable-ipv6
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+  install -vDm644 -t "$pkgdir/usr/share/pixmaps" icons/128x128/dillo.png
+  install -vDm644 -t "$pkgdir/usr/share/applications" dillo.desktop
+}

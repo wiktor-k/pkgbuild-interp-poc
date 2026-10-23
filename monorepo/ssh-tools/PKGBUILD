@@ -1,0 +1,64 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Sven Wick <sven.wick@gmx.de>
+
+pkgname=ssh-tools
+pkgver=1.9
+pkgrel=1
+pkgdesc='A collection of tools making SSH more convenient'
+arch=(x86_64)
+url='https://codeberg.org/vaporup/ssh-tools'
+license=(GPL-3.0-only)
+depends=(glibc openssh bash perl)
+makedepends=(git go)
+optdepends=('colordiff: colors for ssh-diff')
+source=("$pkgname::git+$url.git#tag=v$pkgver")
+sha512sums=('aa541b95dc354bc9d2e0fc1bcea451e5b880e202cb6140cc2f77bada892221332e38f84a42c15d9ce49672583704578a6af159f2a3ac9c26387a7f51bc06bba9')
+b2sums=('b45c5ea5801b0279181784a8d63223e970f4cd3ba55c79ca7f957d8987f142dc2d7f90f35f81d004ea4bf9af2760da302c516339eb827085d328ef23e54e5410')
+
+prepare() {
+  cd "$pkgname"
+
+  # create directory for build output
+  mkdir build
+
+  # download dependencies
+  export GOPATH="${srcdir}"
+  go mod download
+}
+
+build() {
+  cd "$pkgname"
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export GOPATH="${srcdir}"
+
+  go build -v \
+    -buildmode=pie \
+    -mod=readonly \
+    -modcacherw \
+    -ldflags "-compressdwarf=false \
+    -linkmode external \
+    -extldflags '${LDFLAGS}'" \
+    -o build \
+    ./cmd/go/...
+}
+
+package() {
+  cd "$pkgname"
+
+  # scripts
+  install -vDm755 \
+    -t "$pkgdir/usr/bin" \
+    build/* \
+    ./cmd/bash/*/ssh-* \
+    ./cmd/perl/*/ssh-*
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" man/*
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

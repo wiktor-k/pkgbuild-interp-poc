@@ -1,0 +1,25 @@
+pkgbase = gitea-runner
+	pkgdesc = Official runner for Gitea
+	pkgver = 5.2.0
+	pkgrel = 1
+	url = https://gitea.com/gitea/runner
+	install = gitea-runner.install
+	arch = x86_64
+	license = MIT
+	makedepends = go
+	depends = glibc
+	depends = git
+	optdepends = docker: To run runners in containers
+	provides = act_runner
+	replaces = act_runner
+	backup = etc/gitea-runner/config.yaml
+	source = gitea-runner-5.2.0.tar.gz::https://gitea.com/gitea/runner/archive/v5.2.0.tar.gz
+	source = gitea-runner.service
+	source = gitea-runner.sysusers
+	source = gitea-runner.tmpfiles
+	sha256sums = ebf3f24bad167b0e70af9a60b8e8d2fa343b59b588033c3a7040024117f22775
+	sha256sums = 84f1d7c8f6311689b935ab16037d9b1bb6fae0155a54a6a19d3edabe8856e5cf
+	sha256sums = d7d0ec932b3efd2c5a98b2084d6f13baa74ec458ed244aaa48053cee6628c89d
+	sha256sums = 476e49e002f64e996c1d7d5b0c46a1f850c52273e6f974496eaa71b4446d7f37
+
+pkgname = gitea-runner

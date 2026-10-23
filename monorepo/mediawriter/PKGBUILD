@@ -1,0 +1,38 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=mediawriter
+pkgver=5.3.2
+pkgrel=1
+pkgdesc='Fedora Media Writer - write Fedora images to portable media'
+arch=(x86_64)
+url='https://github.com/FedoraQt/MediaWriter'
+license=(GPL-2.0-or-later)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-base
+  qt6-declarative
+  qt6-svg
+  udisks2
+  xz
+)
+makedepends=(
+  cmake
+  git
+  ninja
+)
+source=("git+https://github.com/FedoraQt/MediaWriter.git#tag=$pkgver")
+b2sums=(46081edfbebe75d8986c7d7cce571970c217bdfd2cdfd613f2e541593c34f224deaea1fa4fe03d7377d0ec1e16d1a79cbea3f6267bc68a81806f6e9e3b82e725)
+
+build() {
+  cmake -S MediaWriter -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_INSTALL_LIBEXECDIR=/usr/lib
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

@@ -1,0 +1,34 @@
+pkgbase = dsp
+	pkgdesc = An audio processing program with an interactive mode
+	pkgver = 2.0
+	pkgrel = 3
+	url = https://github.com/bmc0/dsp
+	arch = x86_64
+	groups = ladspa-plugins
+	license = ISC
+	makedepends = git
+	makedepends = ladspa
+	depends = libmad
+	depends = libtool
+	depends = ffmpeg
+	depends = libavcodec.so
+	depends = libavformat.so
+	depends = libavutil.so
+	depends = alsa-lib
+	depends = libasound.so
+	depends = fftw
+	depends = libfftw3.so
+	depends = libao
+	depends = libao.so
+	depends = libpulse
+	depends = libpulse.so
+	depends = libpulse-simple.so
+	depends = libsndfile
+	depends = libsndfile.so
+	depends = zita-convolver
+	depends = libzita-convolver.so
+	optdepends = ladspa-host: For the LADSPA plugin.
+	source = dsp::git+https://github.com/bmc0/dsp.git#commit=2ad23d135cc9cdc75a5f67b954a5cbb20cf91c42
+	sha256sums = 6a30f9681fc8ea16bc26c44124eeb32cf663fc9d198f4cbc4e0dab59c919da5d
+
+pkgname = dsp

@@ -1,0 +1,18 @@
+pkgbase = eslint
+	pkgdesc = An AST-based pattern checker for JavaScript
+	pkgver = 10.13.0
+	pkgrel = 1
+	url = https://eslint.org
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = jq
+	makedepends = npm
+	makedepends = python
+	depends = acorn
+	depends = nodejs
+	options = !emptydirs
+	source = git+https://github.com/eslint/eslint.git#tag=v10.13.0
+	b2sums = d1b7c28015d09394e3625ff038f104932916a74ee1fd084b48d1db4813fa90108965cb7e0a59f705b5eb5c80e6d73dafddaea924bf17d5bfbe83e4494bfb224d
+
+pkgname = eslint

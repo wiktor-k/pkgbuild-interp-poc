@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=docparser
+pkgver=1.0.26
+pkgrel=1
+pkgdesc='A document parser library ported from document2html'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/docparser"
+license=('LGPL-3.0-or-later' 'MIT' 'BSD-2-Clause')
+depends=('poppler' 'libzip' 'pugixml' 'freetype2' 'libxml2' 'util-linux-libs' 'tinyxml2' 'file'
+         'expat' 'minizip' 'zlib')
+makedepends=('git' 'cmake')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/docparser.git#tag=$pkgver")
+b2sums=('7e9841dc645487af7617a7f820a45ec83a81c6f7f1cb2bec1ee886e2899abcdb89707289b47138cd74c15bff6e05dfedf69f6389bd8d50a1aacaccea085a6e33')
+
+prepare() {
+  cd docparser
+  sed -i 's/add_link_options(-z noexecstack -pie -fPIC)/add_link_options(-z noexecstack)/' CMakeLists.txt
+}
+
+build() {
+  cd docparser
+  cmake -B build -S . \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DBUILD_TESTS=OFF
+  cmake --build build
+}
+
+package() {
+  cd docparser
+  DESTDIR="$pkgdir" cmake --install build
+}

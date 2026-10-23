@@ -1,0 +1,17 @@
+pkgbase = zk
+	pkgdesc = A command-line tool helping you to maintain a Zettelkasten or personal wiki
+	pkgver = 0.15.7
+	pkgrel = 1
+	url = https://github.com/zk-org/zk
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = go
+	depends = sqlite
+	source = zk::git+https://github.com/zk-org/zk.git#tag=v0.15.7
+	sha512sums = 37da7bb0c761d6c5760878e6dc80b13d6c8e8f0f7a2abc20df49e1ea031b97bbfddfa26a124607a560cf44c762b1805070e6793088fa6b0f9b32b9354bf51da7
+	b2sums = 5c263fe9ad20a5d5549b50e09ace84914bcae7ec814f390449ea4a5c8909971b7e4ea3527ecd724ae02a1a3e54cfdb7600b7fa39777130f47921a7cdfaaf1f9b
+
+pkgname = zk
+	depends = sqlite
+	depends = glibc

@@ -1,0 +1,74 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=alpm-repo-db
+_upstream=alpm
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Command line interfaces for the handling of alpm-repo-db files"
+arch=(x86_64)
+url="https://alpm.archlinux.page/alpm-repo-db/"
+_url="https://gitlab.archlinux.org/archlinux/alpm/alpm.git"
+license=(
+  'Apache-2.0 OR MIT'
+  CC-BY-SA-4.0
+)
+groups=(alpm)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(
+  git
+  just
+  lowdown
+  rust
+  rust-script
+)
+optdepends=(
+  'alpm-docs: for additional specifications'
+)
+source=($_upstream::git+$_url?signed#tag=$pkgname/$pkgver)
+sha512sums=('91b0cfe86ac0866c2f008f8e6982f88cf4ca5fa63d191940458f9ed92285376189031654dd96f7516d559870c48fd8de8e747f8e863a85a641d8e120475426db')
+b2sums=('4a28bdbaa6edfe1594e4d8e1b259ddf33f20234dabe50168015f0f2da4a927d6fb0e0b9a42be7a8c3cf23ef0409f63e76c628c384d1b10e18448c6eb1da5462e')
+validpgpkeys=(991F6E3F0765CF6295888586139B09DA5BF0D338)  # David Runge <dvzrv@archlinux.org>
+
+prepare() {
+  cd $_upstream
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream
+  cargo build --frozen --release --features cli --package $pkgname
+  just generate shell_completions $pkgname
+  just generate manpages $pkgname
+  just generate specifications $pkgname
+}
+
+check() {
+  cd $_upstream
+  cargo test --frozen --package $pkgname
+}
+
+package() {
+  conflicts=(alpm-files)
+  replaces=(alpm-files)
+
+  local bins=(
+    alpm-repo-desc
+    alpm-repo-files
+  )
+
+  cd $_upstream
+  for _bin in "${bins[@]}"; do
+    install -vDm 755 target/release/$_bin -t "$pkgdir/usr/bin/"
+    install -vDm 644 output/shell_completions/$_bin.bash "$pkgdir/usr/share/bash-completion/completions/$_bin"
+    install -vDm 644 output/shell_completions/$_bin.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+    install -vDm 644 output/shell_completions/_$_bin -t "$pkgdir/usr/share/zsh/site-functions/"
+  done
+
+  install -vDm 644 output/manpages/*.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 output/manpages/*.5 -t "$pkgdir/usr/share/man/man5/"
+  install -vDm 644 output/manpages/*.7 -t "$pkgdir/usr/share/man/man7/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

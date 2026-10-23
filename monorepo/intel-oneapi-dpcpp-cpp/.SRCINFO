@@ -1,0 +1,24 @@
+pkgbase = intel-oneapi-dpcpp-cpp
+	pkgdesc = Intel oneAPI DPC++/C++ Compiler
+	pkgver = 2026.0.0_947
+	pkgrel = 1
+	url = https://software.intel.com/content/www/us/en/develop/tools/oneapi.html
+	arch = x86_64
+	license = LicenseRef-Intel-EULA-Developer-Tools
+	depends = intel-oneapi-compiler-dpcpp-cpp-common
+	depends = intel-oneapi-compiler-dpcpp-cpp-runtime
+	depends = intel-oneapi-compiler-shared-runtime
+	depends = intel-oneapi-compiler-shared
+	depends = intel-oneapi-tbb
+	depends = intel-oneapi-dev-utilities
+	depends = intel-oneapi-common
+	depends = gcc-libs
+	depends = glibc
+	depends = bash
+	depends = zlib
+	conflicts = intel-oneapi-basekit
+	noextract = intel-oneapi-dpcpp-cpp-2026.0-2026.0.0-947_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-dpcpp-cpp-2026.0-2026.0.0-947_amd64.deb
+	b2sums = a4307b1ba59fce43483755eb9d1070ebf1a4b86cb21bba084a65f711b1b2b76315141ab03c4b288d1626ccf8a75a87a985b07ccce4bd694836b2eabc12e96b0b
+
+pkgname = intel-oneapi-dpcpp-cpp

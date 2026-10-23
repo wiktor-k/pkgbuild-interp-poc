@@ -1,0 +1,42 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+# Contributor: Nico Huber <nico.h@gmx.de>
+
+pkgname=flashprog
+pkgver=1.6
+pkgrel=1
+pkgdesc='A utility which can be used to detect, read, erase, or write BIOS chips (DIP, PLCC, SPI)'
+arch=('x86_64')
+url='https://flashprog.org/'
+license=(GPL-2.0-or-later)
+depends=(
+  libftdi
+  libgpiod
+  libjaylink
+  libusb
+  pciutils
+)
+makedepends=(
+  git
+  meson
+)
+optdepends=(
+  'dmidecode: for SMBIOS/DMI table decoder support'
+)
+source=(git+https://review.sourcearcade.org/flashprog.git?signed#tag=v${pkgver})
+b2sums=('d104e104be481d773b8cdb7681d8c1aaa97dc56cadaf8e671d10d93138192c95283e57e7b847ebc664ce8908900a4525ea122fb71da70e41b72ed024bcecb3c5')
+validpgpkeys=('2853079C9C66AB7E82C64966A5C163B7E557CAEB')
+
+prepare() {
+  sed -i 's#GROUP="plugdev"#TAG+="uaccess"#g' flashprog/util/50-flashprog.rules
+}
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "${pkgdir}"
+  install -Dm644 flashprog/util/50-flashprog.rules "${pkgdir}"/usr/lib/udev/rules.d/50-flashprog.rules
+}
+

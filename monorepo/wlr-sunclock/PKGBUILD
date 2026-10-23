@@ -1,0 +1,23 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Senan Kelly <senan@senan.xyz>
+
+pkgname=wlr-sunclock
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="Displays a sunclock desktop widget using the layer shell protocol"
+url="https://github.com/sentriz/wlr-sunclock"
+arch=('x86_64')
+license=('LGPL-3.0-only')
+depends=('gtk4' 'gtk4-layer-shell' 'gobject-introspection' 'librsvg' 'wayland')
+makedepends=('git' 'meson')
+source=("git+${url}.git#tag=v${pkgver}")
+sha256sums=('8009b41aacfce8341dc26d724657b98eac6a13598ab5099717ddc8ed18d39621')
+
+build() {
+	arch-meson "${pkgname}" build
+	meson compile -C build
+}
+
+package() {
+	meson install -C build --destdir "${pkgdir}"
+}

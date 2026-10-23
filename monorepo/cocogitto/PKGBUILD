@@ -1,0 +1,57 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=cocogitto
+_pkgname=cog
+pkgver=7.0.0
+pkgrel=3
+pkgdesc='Set of CLI tools for the conventional commit and semver specifications'
+arch=(x86_64)
+url="https://github.com/$pkgname/$pkgname"
+license=(MIT)
+depends=(git
+         glibc # libc.so libm.so
+         libgcc # libgcc_s.so
+         libgit2
+         zlib)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/$pkgver/$_archive.tar.gz")
+sha256sums=('cc00dacf1dd12b63976b0ca3c4ec383f902a95ed148968ccd35d9a174f66966f')
+
+prepare() {
+	cd "$_archive"
+	cargo fetch --locked --target host-tuple
+	mkdir {completions,man}
+}
+
+build() {
+	cd "$_archive"
+	CFLAGS+=" -ffat-lto-objects"
+	cargo build --frozen --release
+	local compgen="target/release/$_pkgname generate-completions"
+	local mangen="target/release/$_pkgname generate-manpages"
+	$compgen bash > "completions/$_pkgname"
+	$compgen fish > "completions/$_pkgname.fish"
+	$compgen zsh  > "completions/_$_pkgname"
+	$mangen man/
+}
+
+check() {
+	cd "$_archive"
+	# Test suite is not atomic, relies on user environment such as git user configs
+	# cargo test --frozen
+}
+
+package() {
+	depends+=(libgit2.so
+	          libz.so)
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$_pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/bash-completion/completions/" "completions/$_pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "completions/$_pkgname.fish"
+	install -Dm0644 -t "$pkgdir/usr/share/zsh/site-functions/" "completions/_$_pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+	install -Dm0644 -t "$pkgdir/usr/share/man/man1" man/*.1
+}

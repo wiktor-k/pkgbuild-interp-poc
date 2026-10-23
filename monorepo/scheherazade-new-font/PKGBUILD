@@ -1,0 +1,27 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Munzir Taha <munzirtaha at gmail.com>
+# Contributor: Wyegu <bsdazs17 at gmail dot com>
+# Contributor: Firmicus <firmicus at gmx dot net>
+
+pkgbase=scheherazade-new-font
+_fname=ScheherazadeNew
+pkgname=ttf-${pkgbase%-font}
+pkgver=4.500
+pkgrel=1
+pkgdesc='An Arabic Naskh-style Unicode typeface'
+arch=(any)
+url="https://software.sil.org/${pkgbase/-*}"
+license=(OFL-1.0-RFN)
+provides=(ttf-sil-scheherazade)
+replaces=(ttf-sil-scheherazade)
+_archive="$_fname-$pkgver"
+source=("https://software.sil.org/downloads/r/${pkgbase%%-*}/$_archive.zip")
+sha256sums=('49c789c21305bed13d90d7500877b50d62db1e8e4d6f7715178e556319ddbda9')
+
+package_ttf-scheherazade-new() {
+	cd "$_archive"
+	provides=("$pkgbase=$pkgver")
+	install -Dm0644 -t "$pkgdir/usr/share/fonts/TTF/" *.ttf
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" OFL.txt
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.txt FONTLOG.txt documentation/pdf/*
+}

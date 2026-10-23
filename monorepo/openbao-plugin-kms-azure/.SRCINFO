@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-kms-azure
+	pkgdesc = OpenBao Plugin - Auto Unseal KMS using Azure Key Vault
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://openbao.org/docs/next/configuration/seal/azurekeyvault/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-kms-azure::git+https://github.com/openbao/openbao-plugins.git#tag=kms-azure-v0.1.0
+	sha256sums = af5bc40b0c9b4af955a8a3bfee101c77a05692609af83cffa4d754b385c40c7e
+
+pkgname = openbao-plugin-kms-azure

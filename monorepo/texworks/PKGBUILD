@@ -1,0 +1,42 @@
+# Maintainer: Torsten Keßler <tpkessler@archlinux.org>
+# Contributor Jonas Witschel <diabonas@archlinux.org>
+
+pkgname=texworks
+pkgver=0.6.11
+pkgrel=2
+pkgdesc='Unicode-based, TeX-aware editor with integrated PDF viewer'
+arch=('x86_64')
+url='https://www.tug.org/texworks/'
+license=('GPL')
+depends=('hunspell' 'libsynctex' 'poppler-qt6' 'qt6-base' 'qt6-declarative' 'qt6-tools' 'qt6-5compat' 'libpoppler-qt6.so')
+makedepends=('cmake' 'lua' 'python')
+checkdepends=('gsfonts' 'poppler-data')
+optdepends=('gsfonts: correctly display PDF files without embedded fonts'
+            'lua: Lua scripts support'
+            'poppler-data: correctly display certain CJK documents'
+            'python: Python scripts support'
+            'texlive-basic: typeset TeX documents')
+source=("https://github.com/TeXworks/texworks/archive/release-$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('f281001fa28bb9b9d4d633d234b844f94b1d019dcdb8f9ea6794d5baa4844dffb663a43cc84db7bc0f2f60babcd0562c752e0ce198d1a2241ac58754f1dd962e')
+validpgpkeys=('8740ED04AF6A4FCC6BC51C426806F10000582F84'
+              '21BC42D38D1B03BE59F7A8F15016D150EA64A3D9') # Stefan Löffler (TeXworks) <st.loeffler@gmail.com>
+
+build() {
+	cmake -B build \
+	      -S "$pkgname-release-$pkgver" \
+	      -DCMAKE_BUILD_TYPE=None \
+	      -DCMAKE_INSTALL_PREFIX=/usr \
+	      -DTW_BUILD_ID='Arch Linux' \
+	      -DWITH_PYTHON=ON \
+              -DQT_DEFAULT_MAJOR_VERSION=6
+	cmake --build build
+}
+
+check() {
+	cd build
+	QT_QPA_PLATFORM=offscreen ctest --output-on-failure
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}

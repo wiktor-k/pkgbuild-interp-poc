@@ -1,0 +1,42 @@
+# Maintainer: Johannes Löthberg <johannes@kyriasis.com>
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Moritz Lipp <mlq@pwmt.org>
+
+pkgname=zathura-pdf-mupdf
+pkgver=2026.07.18
+pkgrel=5
+pkgdesc="PDF support for Zathura (MuPDF backend) (Supports PDF, ePub, and OpenXPS)"
+url="https://pwmt.org/projects/zathura-pdf-mupdf/"
+arch=('x86_64')
+license=('Zlib')
+conflicts=('zathura-pdf-poppler')
+depends=('cairo' 'gumbo-parser' 'jbig2dec' 'libjpeg-turbo' 'libmupdf' 'openjpeg2' 'openssl' 'zathura')
+makedepends=('meson' 'ninja' 'git' 'appstream' 'desktop-file-utils')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/pwmt/${pkgname}/archive/refs/tags/${pkgver}.tar.gz"
+        0001-Remove-mupdf-linking-detection.patch)
+sha512sums=('cec5771582475d2379507e91ea571b203a8fbd4861d86754108746603e4ec58a441442e0b5e6c9c707c8c8f45a05571b0535acc0bc2023631c8955e1112dda0d'
+            '5b8df69e68b4117b0363927b3efc7f07daeeb6ac72d24c14fae9417800ab28f9e786f92589bbeb4b4df4007832addf74bc313576cde6a14533316ffc6bf03824')
+
+prepare() {
+        cd "${pkgname}-${pkgver}"
+        patch -p1 < "${srcdir}/0001-Remove-mupdf-linking-detection.patch"
+}
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        arch-meson build
+        ninja -C build
+}
+
+check() {
+	cd "${pkgname}-${pkgver}"
+	meson test -C build --print-errorlogs
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+        DESTDIR="${pkgdir}" ninja -C build install
+        install -Dm 664 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

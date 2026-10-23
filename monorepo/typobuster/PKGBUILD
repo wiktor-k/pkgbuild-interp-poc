@@ -1,0 +1,29 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+
+pkgname=typobuster
+pkgver=1.0.0
+pkgrel=2
+pkgdesc="Lightweight editor with text transformations and auto-correction"
+url="https://github.com/nwg-piotr/typobuster"
+arch=('any')
+license=('GPL-3.0-only')
+depends=('glib2' 'gtk3' 'gtksourceview4' 'python' 'python-cairo' 'python-gobject')
+makedepends=('python-build' 'python-installer' 'python-wheel' 'python-setuptools')
+optdepends=('gspell: for spell checking plugin'
+            'hunspell-en_us: for spell checking, American English')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('0c098645c0db6836c3c5021782c991b2ee1cd1bef3da09534db582d6b46a67c0')
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        python -m build --wheel --no-isolation
+}
+
+package() {
+        cd "${pkgname}-${pkgver}"
+        python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 644 "${pkgname}.svg" "${pkgdir}/usr/share/pixmaps/${pkgname}.svg"
+	install -Dm 644 "${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

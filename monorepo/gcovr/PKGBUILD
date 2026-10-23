@@ -1,0 +1,40 @@
+# Maintainer: Jelle van der Waa <jelle@vdwaa.nl>
+
+pkgname=gcovr
+pkgver=8.7
+pkgrel=1
+pkgdesc='provides a utility for managing the use of the GNU gcov utility'
+arch=(any)
+url="https://gcovr.com/"
+license=(BSD-3-Clause)
+depends=('python' 'python-jinja' 'python-lxml' 'gcc' 'python-colorlog' 'python-pygments')
+makedepends=('python-hatchling' 'python-hatch-vcs' 'python-hatch-fancy-pypi-readme'
+             'python-build' 'python-installer' 'python-wheel' 'git')
+checkdepends=('python-pytest')
+source=("git+https://github.com/gcovr/gcovr.git#tag=${pkgver}")
+sha256sums=('abd3db2070fb4c6d9114b02757edb0a6c0e9a57fcb52ee3be7e90ac3dee31bc2')
+
+prepare() {
+  cd ${pkgname}
+  # Remove unnecessary dependency version pinning
+  sed -i 's/hatchling==1.27.0/hatchling/' pyproject.toml
+  sed -i 's/hatch-fancy-pypi-readme==24.1.0/hatch-fancy-pypi-readme/' pyproject.toml
+  sed -i 's/hatch-vcs==0.4.0/hatch-vcs/' pyproject.toml
+}
+
+build() {
+  cd ${pkgname}
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd ${pkgname}
+  # requires pyutillib, ply
+  #pytest gcovr
+}
+
+package() {
+  cd ${pkgname}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -D -m644 LICENSE.txt "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE.txt
+}

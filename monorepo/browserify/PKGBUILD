@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=browserify
+pkgdesc='browser-side require() the node way'
+pkgver=17.0.1
+pkgrel=1
+arch=('any')
+url='http://browserify.org/'
+license=('MIT' 'BSD')
+depends=('nodejs' 'acorn')
+makedepends=('npm' 'git')
+source=(https://registry.npmjs.org/$pkgname/-/$pkgname-$pkgver.tgz)
+noextract=($pkgname-$pkgver.tgz)
+install=browserify.install
+sha512sums=('a71853d345b7ca5321087c06e727eab598cd9c5b97e61d8825d6817d2a380a169a06c229f552eb10c4356c757e5ebd6e2cf5ee3430ccd46949923962d2a911b3')
+
+package() {
+  npm install -g --prefix "$pkgdir"/usr "$srcdir"/$pkgname-$pkgver.tgz
+  mkdir -p "$pkgdir/usr/share/licenses/$pkgname"
+  ln -s "../../../lib/node_modules/$pkgname/LICENSE" "$pkgdir/usr/share/licenses/$pkgname/"
+
+  # Experimental dedup
+  cd "$pkgdir"/usr/lib/node_modules/$pkgname/node_modules
+  for dep in acorn; do
+    rm -r $dep;
+  done
+
+  # Non-deterministic race in npm gives 777 permissions to random directories.
+  # See https://github.com/npm/npm/issues/9359 for details.
+  chmod -R u=rwX,go=rX "$pkgdir"
+
+  # npm installs package.json owned by build user
+  # https://bugs.archlinux.org/task/63396
+  chown -R root:root "$pkgdir"
+}

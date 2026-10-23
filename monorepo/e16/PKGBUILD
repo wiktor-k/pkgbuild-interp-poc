@@ -1,0 +1,71 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgname=e16
+pkgver=1.0.32
+pkgrel=1
+pkgdesc='Fast, flexible and extensible window manager (Enlightenment DR16)'
+arch=(x86_64)
+url='https://www.enlightenment.org/e16'
+license=(MIT-advertising)
+depends=(
+  bash
+  dbus
+  glib2
+  glibc
+  imlib2
+  libice
+  libpulse
+  libsm
+  libsndfile
+  libx11
+  libxcomposite
+  libxdamage
+  libxext
+  libxfixes
+  libxft
+  libxinerama
+  libxrandr
+  libxrender
+  pango
+  python
+  ttf-font
+)
+makedepends=(
+  asciidoc
+  git
+)
+conflicts=(enlightenment16)
+replaces=(enlightenment16)
+source=("git+https://git.enlightenment.org/e16/e16.git#tag=v$pkgver")
+b2sums=(88f0a5e62ae0e2c48d9ea2659316b888cc4d8344d2f673a718290038d1d6097ace582ceda6e45ce4ef15263510e1402593fd4872d018ce278a57891b46f2340f)
+
+prepare() {
+  cd e16
+  autoreconf -fiv
+}
+
+build() {
+  cd e16
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-sound-pulse
+  make
+}
+
+package() {
+  cd e16
+  make DESTDIR="$pkgdir" install
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" COPYING
+
+  # Unbundle fonts
+  rm -r "$pkgdir/usr/share/e16/fonts/"
+
+  # Custom GNOME and KDE sessions are not supported a long time ago
+  rm -r "$pkgdir"/usr/share/xsessions/e16-{gnome*,kde}-session.desktop "$pkgdir"/usr/share/gnome-session/
+
+  # Hide desktop entry
+  echo 'NoDisplay=true' >> "$pkgdir/usr/share/applications/e16.desktop"
+}

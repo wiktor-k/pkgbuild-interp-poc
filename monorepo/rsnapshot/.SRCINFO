@@ -1,0 +1,23 @@
+pkgbase = rsnapshot
+	pkgdesc = A remote filesystem snapshot utility
+	pkgver = 1.5.1
+	pkgrel = 1
+	url = https://www.rsnapshot.org
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = openssh
+	depends = perl
+	depends = perl-lchown
+	depends = rsync
+	backup = etc/rsnapshot.conf
+	source = git+https://github.com/rsnapshot/rsnapshot.git#tag=1.5.1
+	source = rsnapshot.logrotate
+	source = 0001-added-missing-back.patch
+	source = pod-fix.patch
+	sha256sums = 31e392f0217cb13ac0d2355d1d6bd8992e068c298e6d6e741b4eb53c8ff9eb0f
+	sha256sums = ab98a605b8c8fe3d99dcd6c5d74ec3bc3c19dcf95766290ae697594fa881122f
+	sha256sums = 8b89cb048b5b52b2fe748ec14e9d092e79fc2bd24e9cd5c0877bac535466cc8e
+	sha256sums = 9f89badd3c3dbea6c03883ae269f7759b869a3c981eff699353dce7d19becb47
+
+pkgname = rsnapshot

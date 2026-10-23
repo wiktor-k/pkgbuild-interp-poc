@@ -1,0 +1,17 @@
+pkgbase = ruby-build
+	pkgdesc = A tool to download, compile, and install Ruby on Unix-like systems
+	pkgver = 20260924
+	pkgrel = 1
+	url = https://github.com/rbenv/ruby-build
+	arch = any
+	license = MIT
+	checkdepends = bats
+	makedepends = git
+	depends = bash
+	optdepends = git: install ruby from git
+	optdepends = libyaml: install recent versions of mri
+	optdepends = rust: install ruby with YJIT enabled
+	source = git+https://github.com/rbenv/ruby-build.git#tag=v20260924
+	b2sums = 46ae190bc11d3ec13e10882136bb98f93228a751eda65190d5ce889c06667ea52251143f499a58b0e0f91f5d0cd79db3b0cdb8e8d8a76ee4eba06af24dafed61
+
+pkgname = ruby-build

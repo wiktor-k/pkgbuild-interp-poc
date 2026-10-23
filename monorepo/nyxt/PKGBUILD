@@ -1,0 +1,53 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Dct Mei <dctxmei@yandex.com>
+# Contributor: Eric S. Londres <elondres@stevens.edu>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Cillian Berragan <cjberragan@gmail.com>
+# Contributor: Felix Golatofski <contact@xdfr.de>
+
+pkgname=nyxt
+pkgver=3.12.0
+pkgrel=1
+pkgdesc='A keyboard-driven web browser designed for power users'
+arch=('x86_64')
+url='https://nyxt.atlas.engineer'
+license=('BSD-3-Clause' 'CC-BY-SA-3.0')
+depends=(
+  'glibc'
+  'hicolor-icon-theme'
+  'enchant'
+  'glib-networking'
+  'gobject-introspection-runtime'
+  'gsettings-desktop-schemas'
+  'libfixposix'
+  'webkit2gtk-4.1'
+  'zstd'
+)
+# If someday Nyxt works with other Lisps, replace 'sbcl' with 'common-lisp'.
+# NOTE: sbcl provides both common-lisp and cl-asdf.
+makedepends=(
+  'git'
+  'sbcl'
+  'cl-asdf'
+)
+optdepends=(
+  'gstreamer: for HTML5 audio/video'
+  'gst-plugins-base: for HTML5 audio/video'
+  'gst-plugins-good: for HTML5 audio/video'
+  'gst-plugins-bad: for HTML5 audio/video'
+  'gst-plugins-ugly: for HTML5 audio/video'
+)
+options=('!strip' '!makeflags')
+source=("$pkgname-$pkgver.tar.xz::https://github.com/atlas-engineer/nyxt/releases/download/$pkgver/nyxt-$pkgver-source-with-submodules.tar.xz")
+sha512sums=('186c040dd3b4bf8fedcb6c27c35ba13bca2693881c41211af368f6ca6463609f4ba7926eea77dbba63047264d209498afe1ab35737de6274d93cc15ea64a56db')
+b2sums=('873f06abfb5305fd795edf062957c4c5b61c770799bd01608c84371ca3433211a6654dc90157461edbbc5558d14a570175a7df6df8c456b1b66c55b03dda8c7e')
+
+build() {
+  make all
+}
+
+package() {
+  make PREFIX=/usr DESTDIR="$pkgdir" install
+
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" licenses/*
+}

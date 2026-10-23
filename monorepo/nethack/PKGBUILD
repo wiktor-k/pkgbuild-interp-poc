@@ -1,0 +1,121 @@
+# Maintainer: Ivy Foster <iff@archlinux.org>
+# Contributor: schuay <jakob.gruber@gmail.com>
+# Contributor: kevin <kevin@archlinux.org>
+# Contributor: Christian Schmidt <mucknert@gmx.net>
+# Contributor: Markus Meissner <markus@meissna.de>
+# Contributor: Nick Erdmann <erdmann@date.upb.de>
+
+pkgname=nethack
+pkgver=5.0.0
+pkgrel=1
+pkgdesc='A single player dungeon exploration game'
+arch=(x86_64)
+url='https://www.nethack.org'
+license=(NGPL)
+depends=(filesystem ncurses gzip lua54)
+makedepends=(git)
+backup=(etc/nethack/sysconf)
+source=(
+  "$pkgname::git+https://github.com/NetHack/NetHack#tag=NetHack-${pkgver}_Released"
+  use-system-lua54.patch
+  tmpfiles.conf
+)
+sha512sums=('e6479bfbd8a7954a2fda3043e45e1781667a0c2ded79ae3b7409aabca77313ca1fa5663ab682d1f78a3e7881d9b05212210a2cadd9ce0f9406295b2370068440'
+            '4588e5f4065b307bcd61e0c5df487e6f5cae98aa3ff4743302bbd178f90b5aeb002f3017e70d903d71cbe757c64b1e6557e3b90aaa0c607a2558a1e750e4a4d7'
+            '6cd65520b019bf6bff8575b621f876d6afb9aca0d6fe4f02eda161d9b2df6a5b64b865cb47ca7192dfd626de0af327585baa6eebb206a756873616938620b926')
+b2sums=('3947d6bf5d00895909dcecce3fb2bb6426ed9bdb910156aba36a4677d59fb217fa7d0dabdfb25a0eec705ea8833f535ae62b2404cb1a90e04964efa78ca1d1fe'
+        '4e7d454af1ca049e18afcd8aa6f41dba984628e59c5cf8197dfa938622c87a640016b8320205e711e31e40f1406b13a2860e1382f5e3542d345d1a44c1873b18'
+        'd6e89c878857c129bd48bd04a8bfa0247d3662406882954bfc8c6d3b1ff4bfc8ee0c8e19144427cf7ba8cef3a65e314cb867bcc36970b6dead28085b9ca4748d')
+
+prepare() {
+  cd "$pkgname"
+
+  patch -p1 -i "$srcdir/use-system-lua54.patch"
+
+	sed -e 's|^/\* \(#define LINUX\) \*/|\1|' \
+		-e 's|^/\* \(#define TIMED_DELAY\) \*/|\1|' \
+		-i include/unixconf.h
+
+	# we are setting up for setgid games, so modify all necessary permissions
+	# to allow full access for groups
+
+	# With thanks to bugtracker user loqs for the CFLAGS and LDFLAGS adjustments
+	sed -e '/^HACKDIR/ s|/games/lib/\$(GAME)dir|/var/games/nethack/|' \
+		-e '/^SHELLDIR/ s|/games|/usr/bin|' \
+		-e '/^VARDIRPERM/ s|0755|0775|' \
+		-e '/^VARFILEPERM/ s|0600|0664|' \
+		-e '/^GAMEPERM/ s|0755|02755|' \
+		-e '/-DTIMED_DELAY/d' \
+		-e 's|\(DSYSCF_FILE=\)\\"[^"]*\\"|\1\\"/var/games/nethack/sysconf\\"|' \
+		-e 's|CFLAGS=-g -O -I../include -DNOTPARMDECL|CFLAGS+= $(CPPFLAGS) -I../include -DNOTPARMDECL|' \
+		-e 's/LFLAGS=-rdynamic/LFLAGS=$(LDFLAGS) -rdynamic/' \
+		-e 's|\(DHACKDIR=\)\\"[^"]*\\"|\1\\"/var/games/nethack/\\"|' \
+		-i sys/unix/hints/linux.500
+
+	# Fix the way they disable __warn_unused_result__
+	sed '/^#define __warn_unused_result__/ s,/\*empty\*/,__unused__,' \
+		-i include/tradstdc.h
+
+	sed -e 's|^#GAMEUID.*|GAMEUID = root|' \
+		-e 's|^#GAMEGRP.*|GAMEGRP = games|' \
+		-e '/^FILEPERM\s*=/ s|0644|0664|' \
+		-e '/^DIRPERM\s*=/ s|0755|0775|' \
+		-i sys/unix/Makefile.top
+
+	sed -e "/^MANDIR\s*=/s|/usr/man/man6|$pkgdir/usr/share/man/man6|" \
+		-i sys/unix/Makefile.doc
+
+  # run setup scripts
+  sh sys/unix/setup.sh sys/unix/hints/linux.500
+}
+
+build(){
+  cd "$pkgname"
+
+	make
+}
+
+package() {
+  depends+=(
+    glibc
+    sh
+    util-linux-libs
+  )
+
+  # systemd integration
+	install -vDm 644 tmpfiles.conf "${pkgdir}/usr/lib/tmpfiles.d/nethack.conf"
+
+  cd "$pkgname"
+
+  # ensure required directories are created
+	install -dm755 "$pkgdir"/usr/share/{man/man6,doc/nethack}
+	install -dm775 "$pkgdir"/var/games/nethack
+	install -dm775 "$pkgdir"/etc/nethack
+
+  local makeflags=(
+    PREFIX="$pkgdir"
+    MANDIR="$pkgdir/usr/share/man/man6"
+    VARDIR="$pkgdir/var/games/nethack"
+    HACKDIR="$pkgdir/usr/lib/nethack"
+    -j1 # Multi-threaded builds fail.
+  )
+
+	make "${makeflags[@]}" install manpages
+
+  mv "$pkgdir/usr/lib/nethack/"{nhdat,symbols} "$pkgdir/var/games/nethack"
+  mv "$pkgdir/usr/lib/nethack/sysconf" "$pkgdir/etc/nethack"
+
+  # HACK/HACKDIR manipulation
+	sed -e "s|HACKDIR=$pkgdir/|HACKDIR=/|" \
+		-e 's|HACK=$HACKDIR|HACK=/usr/lib/nethack|' \
+		-i "$pkgdir"/usr/bin/nethack
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" doc/Guidebook.txt
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" dat/license
+
+	cd "$pkgdir/var/games/nethack/"
+	chmod o+w logfile perm record
+}

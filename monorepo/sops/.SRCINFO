@@ -1,0 +1,23 @@
+pkgbase = sops
+	pkgdesc = Editor of encrypted files that supports YAML, JSON, ENV, INI and BINARY formats
+	pkgver = 3.13.3
+	pkgrel = 1
+	url = https://github.com/getsops/sops
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	options = !lto
+	source = sops::git+https://github.com/getsops/sops.git?signed#tag=v3.13.3
+	source = bash_autocomplete
+	source = zsh_autocomplete
+	validpgpkeys = 1CBD23A64DD703A808AF66E71E60B8598833B166
+	sha512sums = 4b71df0680c77f63d01fe0b89736591dd0929f0a6d132c21fbfd411682adab8f67191a150d09325da6aec94ed4680d4b40eecf9d1a23cf50103e445c7b39ed60
+	sha512sums = 400d27eee15924f95b4f69dde47b4c3fdc2b960375aedf109263409747d2c0cddd4dabbe88c01aea26f2ea8302aa57f9bfd4a9a252987c64db0cf031029480c8
+	sha512sums = 36f02d5dd149451b48d2a60c7113b246054d5e0d3d7a0ceb484688249b9532d6ee7a6b33e25d80fd4dbead0feb93f04c7c74352a92b05cef8586c34bb3ab4170
+	b2sums = 4c2c6262a1d6ffd62269ad9f0c40e38e4086bba3549580abc66f7d37a7c8d9551e1fe4a98e01901ee83d0772740c6abb623fdbc56458bf4bfa5696966cb25001
+	b2sums = 94a26823efc9c7accb71e93651ef9040d5ea1d0c16d45f160d84b44056fd02acacf1a78438cdf50742bfbc8b5745696832eb8699e6549afab6b802c9083bf1d2
+	b2sums = 518f1ed0db2be9fd230818abc47e0b4c6a989a92c98635f3d848a6d5ffe54b3843bcd29e7de19c6e93b67adc536c9fcadd7f8778349670e99e77193d8395772f
+
+pkgname = sops

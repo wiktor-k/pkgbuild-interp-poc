@@ -1,0 +1,95 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Techlive Zheng <techlivezheng at gmail dot com>
+# Contributor: peace4all <markspost at rocketmail dot com>
+
+pkgname=dnscrypt-proxy
+pkgver=2.1.19
+pkgrel=1
+pkgdesc="A flexible DNS proxy, with support for encrypted DNS protocols"
+arch=(x86_64)
+url="https://github.com/DNSCrypt/dnscrypt-proxy"
+license=(ISC)
+depends=(glibc)
+makedepends=(
+  git
+  go
+)
+optdepends=('python-urllib3: for generate-domains-blocklist')
+backup=(
+  etc/$pkgname/$pkgname.toml
+  etc/$pkgname/allowed-ips.txt
+  etc/$pkgname/allowed-names.txt
+  etc/$pkgname/blocked-ips.txt
+  etc/$pkgname/blocked-names.txt
+  etc/$pkgname/captive-portals.txt
+  etc/$pkgname/cloaking-rules.txt
+  etc/$pkgname/forwarding-rules.txt
+)
+# NOTE: LTO breaks reproducibility :(
+options=(!lto)
+source=(
+  git+$url#tag=$pkgver?signed
+  $pkgname.service
+  $pkgname.socket
+  # https://github.com/dvzrv/dnscrypt-proxy/releases/tag/2.1.18.arch1
+  0001-Make-configuration-file-hierarchy-compliant.patch
+)
+sha512sums=('4ffb4aea7ce70d5a7e7031cf5de9ec076a5257d5b1d78cb994a9f5d0fd08d67cf384af041dc5ffd791adb225b283c4b3efd77dc249aeabc8d326137a86ec93f2'
+            '50e6c878115c96e72f6118008e92871957a699d89bd0b85c80af45e6880a30b0832995e4718ab585b086049cc64e2b0759f8f4263ef814d74929933534403f92'
+            '9f9deeb55b32ea7c289fc17e12c353dcb955b695259311ab20a0ff6c22cbd7a22ef4de1e06a4260b8923721f98754520316669191e69869dce3b69d1329e5c36'
+            '518fb95e3a04dedf78fc6714a1ea94cc73c44a2c871792073cf86f97893c4250eabea20187be9186baf8af9c5d5b9dcd7e4eeb5ad6993e050ebb9121f67dd544')
+b2sums=('7e6f8431f8ed58d191d989e6f6f2cc85794b55e560a9b21a9390dff9be86a5e187780345eee5f0806bbba4a58f2266f463ef924ed6150cd1d1431b84c9f697d2'
+        '2f882cf27591e180cdda4f5267f13356eaff965f4c18c3bd36bf68582a3e8605660b6f292cd20a337fda49e8608719869df3a579150c811f8a402c6afb585afd'
+        '5d057d0512bbfdb97b9033fd93a60259764b3b0dde5f8e1320cedd67b7cf9cb524a8b8df8142ca6071fcd5c17cd12467a79712219851e772d893f33109277623'
+        '59b1b77d04bd0a4cbaf7518e64ecb032222f353f0aac2f02c6ea53a5f79387366665168d28f4ca3bff883b3fdb213f7ff24289ba0116d445b615c308e27345e9')
+validpgpkeys=('54A2B8892CC3D6A597B92B6C210627AABA709FE1') # Frank Denis (Jedi/Sector One) <pgp@pureftpd.org
+
+prepare() {
+  cd $pkgname
+  # Make configuration FHS compliant:
+  patch -Np1 -i ../0001-Make-configuration-file-hierarchy-compliant.patch
+
+  export GOPATH="$srcdir"
+  go mod download -modcacherw
+}
+
+build() {
+  cd $pkgname/$pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOPATH="$srcdir"
+  export GOFLAGS="-buildmode=pie -mod=readonly -modcacherw"
+
+  go build -ldflags "-compressdwarf=false -linkmode external" .
+}
+
+check() {
+  cd $pkgname
+  go test ./...
+}
+
+package() {
+  local _config
+
+  cd $pkgname
+  # executable
+  install -vDm 755 $pkgname/$pkgname -t "$pkgdir/usr/bin/"
+  # config files
+  install -vDm 644 $pkgname/example-$pkgname.toml "$pkgdir/etc/$pkgname/$pkgname.toml"
+  for _config in {{allowed,blocked}-{ips,names},{cloaking,forwarding}-rules,captive-portals}.txt; do
+    install -vDm 644 $pkgname/example-$_config "$pkgdir/etc/$pkgname/$_config"
+  done
+  # utils
+  install -vDm 644 utils/generate-domains-blocklist/*.{conf,txt} -t "$pkgdir/usr/share/$pkgname/utils/generate-domains-blocklist"
+  install -vDm 755 utils/generate-domains-blocklist/generate-domains-blocklist.py "$pkgdir/usr/bin/generate-domains-blocklist"
+  # systemd service/socket
+  install -vDm 644 ../$pkgname.{service,socket} -t "$pkgdir/usr/lib/systemd/system/"
+  # license
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  # docs
+  install -vDm 644 {ChangeLog,README.md} -t "$pkgdir/usr/share/doc/$pkgname"
+}
+# vim:set ts=2 sw=2 et:

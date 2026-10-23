@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-turbo
+pkgver=0.0.9
+pkgrel=1
+pkgdesc='A daemon that helps to launch applications faster'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-turbo"
+license=('GPL-3.0-or-later')
+depends=('dtkwidget' 'dtkdeclarative' 'qt5-declarative')
+makedepends=('git' 'cmake' 'ninja')
+groups=('deepin')
+source=("git+https://github.com/linuxdeepin/deepin-turbo.git#tag=$pkgver")
+sha512sums=('7f58c9a3451edd7702280bc2e3bd9d66a2a2de74885a81c6b8a00bf288075dafb2bb5f1bb433fbe48fa3b3a9ec2f71f18e21d59bb18901ae838eedf1765aaab9')
+
+prepare() {
+  cd deepin-turbo
+
+  # Arch ships unversioned DTK CMake package names
+  sed -i 's/DtkWidget5\.5/DtkWidget/g; s/DtkGui5\.5/DtkGui/g; s/DtkWidget5\.5_LIBRARIES/DtkWidget_LIBRARIES/g; s/DtkGui5\.5_LIBRARIES/DtkGui_LIBRARIES/g' src/booster-dtkwidget/CMakeLists.txt
+
+  # Fix build with current dtkdeclarative DAppLoader API
+  git cherry-pick -n d4eacda0951e4c4b5696e1fd3487b8f286cf4602
+}
+
+build() {
+  cd deepin-turbo
+  cmake -GNinja -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_POLICY_VERSION_MINIMUM=3.5 .
+  ninja
+}
+
+package() {
+  cd deepin-turbo
+  DESTDIR="$pkgdir" ninja install
+}

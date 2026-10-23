@@ -1,0 +1,42 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=python-caldav
+pkgver=3.5.0
+pkgrel=1
+pkgdesc='CalDAV (RFC4791) client library for Python'
+arch=(any)
+url='https://github.com/python-caldav/caldav'
+license=('Apache-2.0 OR GPL-3.0-or-later')
+depends=(
+  python
+  python-dateutil
+  python-dnspython
+  python-icalendar
+  python-icalendar-searcher
+  python-lxml
+  python-recurring-ical-events
+  python-requests
+  python-vobject
+  python-yaml
+)
+makedepends=(
+  git
+  python-build
+  python-hatch-vcs
+  python-hatchling
+  python-installer
+  python-wheel
+)
+source=("git+https://github.com/python-caldav/caldav.git?signed#tag=v$pkgver")
+b2sums=(89848a5780d5d1f494f42e0e68c07167d11c6ff79f33e1b4f5721cf5c29cf9f6902ba471035c1871b866e918958fb95e9aeeafc1f13cbe012cc9dd25fe8310c2)
+validpgpkeys=(CC67B0D4A21A344811DD5B54A8591F23C40DEF4E) # Tobias Brox <tobias@redpill-linpro.com>
+
+build() {
+  cd caldav
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd caldav
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

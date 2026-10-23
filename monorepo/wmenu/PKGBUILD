@@ -1,0 +1,39 @@
+# Maintainer: Brett Cornwall <ainola@archlinux.org>
+# Contributor: nullcoder
+
+pkgname=wmenu
+pkgver=0.2.0
+pkgrel=1
+pkgdesc="Efficient dynamic menu for Wayland and wlroots based Wayland compositors"
+arch=('x86_64')
+url="https://codeberg.org/adnano/wmenu"
+license=('MIT')
+makedepends=(
+	'meson'
+	'ninja'
+	'scdoc'
+	'wayland-protocols'
+)
+depends=(
+	'libcairo.so'
+	'libxkbcommon.so'
+	'libpango-1.0.so'
+	'libwayland-client.so'
+)
+source=(
+	"$pkgname-$pkgver.tar.gz::https://codeberg.org/adnano/wmenu/archive/$pkgver.tar.gz"
+)
+b2sums=('e3a382013ba94f2468b9585d47d30fe85c643ec618b6df8c23b59e7012aab6ba87317bba94c8420e27c98e02b961a2fee0bccbd12a908315dcf44bca9c3e7417')
+
+build() {
+	cd wmenu
+	arch-meson build
+	ninja -C build
+}
+
+package() {
+	cd wmenu
+	DESTDIR="$pkgdir" ninja -C build install
+	install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}
+

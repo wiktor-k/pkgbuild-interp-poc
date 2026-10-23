@@ -1,0 +1,48 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=wai-extra
+pkgname=haskell-wai-extra
+pkgver=3.1.18
+pkgrel=157
+pkgdesc="Provides some basic WAI handlers and middleware."
+url="https://github.com/yesodweb/wai"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-aeson' 'haskell-ansi-terminal' 'haskell-base64-bytestring'
+         'haskell-case-insensitive' 'haskell-cookie' 'haskell-data-default' 'haskell-fast-logger'
+         'haskell-http-types' 'haskell-iproute' 'haskell-network' 'haskell-resourcet'
+         'haskell-streaming-commons' 'haskell-vault' 'haskell-wai' 'haskell-wai-logger'
+         'haskell-warp' 'haskell-word8' 'haskell-hunit' 'haskell-call-stack')
+makedepends=('ghc' 'haskell-hspec' 'haskell-hspec-discover' 'haskell-temporary' 'haskell-zlib')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz")
+sha512sums=('ebe1368124e2ea0bdc573564f66aab8c4757b98ed242dc6d1d855d705b5540ff827ca4cee5436f635905ed711d2b3d8b8430ca719cc1978c5ef20492249290f3')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+            -f-build-example
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

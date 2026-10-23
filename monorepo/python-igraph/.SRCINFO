@@ -1,0 +1,21 @@
+pkgbase = python-igraph
+	pkgdesc = Python bindings for the igraph library
+	pkgver = 1.0.0
+	pkgrel = 2
+	url = https://igraph.org/python/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = glibc
+	depends = igraph
+	depends = python
+	depends = python-numpy
+	depends = python-texttable
+	source = git+https://github.com/igraph/python-igraph#tag=1.0.0
+	sha256sums = f80f95a5925db7cd09ce1470e01f06a91928850f827f8706f8674383faf7dd90
+
+pkgname = python-igraph

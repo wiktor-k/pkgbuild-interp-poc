@@ -1,0 +1,169 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: "Amhairghin" Oscar Garcia Amor (https://ogarcia.me)
+# Contributor: Tiago "Marmita" de Paula <tiagodepalves@gmail.com>
+
+
+pkgbase=tela-circle-icon-theme
+_pkgbase="${pkgbase^}"
+pkgname=('tela-circle-icon-theme-all' 'tela-circle-icon-theme-standard' 'tela-circle-icon-theme-black' 'tela-circle-icon-theme-blue' 'tela-circle-icon-theme-brown' 'tela-circle-icon-theme-green' 'tela-circle-icon-theme-grey' 'tela-circle-icon-theme-orange' 'tela-circle-icon-theme-pink' 'tela-circle-icon-theme-purple' 'tela-circle-icon-theme-red' 'tela-circle-icon-theme-yellow' 'tela-circle-icon-theme-manjaro' 'tela-circle-icon-theme-ubuntu' 'tela-circle-icon-theme-dracula' 'tela-circle-icon-theme-nord')
+pkgver=2026_07_07
+_pkgver="${pkgver//_/-}"
+pkgrel=1
+pkgdesc="A flat colorful design icon theme"
+url="https://github.com/vinceliuice/Tela-circle-icon-theme"
+arch=('any')
+license=('GPL-3.0-or-later')
+depends=('hicolor-icon-theme')
+source=("${pkgbase}-${pkgver}.tar.gz::${url}/archive/${_pkgver}.tar.gz"
+        "do_not_generate_cache_files.patch")
+sha256sums=('0a8aee6e95f19ff96cc497d804c75e2af4271a5e6472c55891fb8ac5b099b59b'
+            'f046c202a44ff3d9ee7bc32fdbaa9ff80845d06aceb4485a88c88789c88435b4')
+options=(!strip)
+
+prepare() {
+	cd "${_pkgbase}-${_pkgver}"
+	# Do not generate cache files during build
+	# This is already handled by the `gtk-update-icon-cache.hook` pacman hook (shipped by the `gtk4` package)
+	patch -Np1 -i "${srcdir}/do_not_generate_cache_files.patch"
+}
+
+package_tela-circle-icon-theme-all() {
+	pkgdesc="${pkgdesc} - all variants"
+	depends=('tela-circle-icon-theme-standard' 'tela-circle-icon-theme-black' 'tela-circle-icon-theme-blue' 'tela-circle-icon-theme-brown' 'tela-circle-icon-theme-green' 'tela-circle-icon-theme-grey' 'tela-circle-icon-theme-orange' 'tela-circle-icon-theme-pink' 'tela-circle-icon-theme-purple' 'tela-circle-icon-theme-red' 'tela-circle-icon-theme-yellow' 'tela-circle-icon-theme-manjaro' 'tela-circle-icon-theme-ubuntu' 'tela-circle-icon-theme-dracula' 'tela-circle-icon-theme-nord')
+	provides=("${pkgbase}")
+}
+
+package_tela-circle-icon-theme-standard() {
+	pkgdesc="${pkgdesc} - standard variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" standard
+}
+
+package_tela-circle-icon-theme-black() {
+	pkgdesc="${pkgdesc} - black variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" black
+}
+
+package_tela-circle-icon-theme-blue() {
+	pkgdesc="${pkgdesc} - blue variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" blue
+}
+
+package_tela-circle-icon-theme-brown() {
+	pkgdesc="${pkgdesc} - brown variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" brown
+}
+
+package_tela-circle-icon-theme-green() {
+	pkgdesc="${pkgdesc} - green variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" green
+}
+
+package_tela-circle-icon-theme-grey() {
+	pkgdesc="${pkgdesc} - grey variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" grey
+}
+
+package_tela-circle-icon-theme-orange() {
+	pkgdesc="${pkgdesc} - orange variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" orange
+}
+
+package_tela-circle-icon-theme-pink() {
+	pkgdesc="${pkgdesc} - pink variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" pink
+}
+
+package_tela-circle-icon-theme-purple() {
+	pkgdesc="${pkgdesc} - purple variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" purple
+}
+
+package_tela-circle-icon-theme-red() {
+	pkgdesc="${pkgdesc} - red variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" red
+}
+
+package_tela-circle-icon-theme-yellow() {
+	pkgdesc="${pkgdesc} - yellow variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" yellow
+}
+
+package_tela-circle-icon-theme-manjaro() {
+	pkgdesc="${pkgdesc} - manjaro variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" manjaro
+}
+
+package_tela-circle-icon-theme-ubuntu() {
+	pkgdesc="${pkgdesc} - ubuntu variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" ubuntu
+}
+
+package_tela-circle-icon-theme-dracula() {
+	pkgdesc="${pkgdesc} - dracula variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" dracula
+}
+
+package_tela-circle-icon-theme-nord() {
+	pkgdesc="${pkgdesc} - nord variant"
+	provides=("${pkgbase}")
+
+	cd "${_pkgbase}-${_pkgver}"
+	install -dm 755 "${pkgdir}/usr/share/icons"
+	./install.sh -d "${pkgdir}/usr/share/icons" nord
+}

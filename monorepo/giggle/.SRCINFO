@@ -1,0 +1,30 @@
+pkgbase = giggle
+	pkgdesc = Git repository viewer
+	pkgver = 0.7
+	pkgrel = 15
+	url = https://wiki.gnome.org/Apps/giggle
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = glib2-devel
+	makedepends = intltool
+	makedepends = yelp-tools
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = git
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = gtksourceview4
+	depends = hicolor-icon-theme
+	depends = pango
+	depends = vte3
+	source = git+https://gitlab.gnome.org/Archive/giggle.git#tag=0.7
+	source = giggle.appdata.xml
+	source = giggle-incompatible-pointer.patch
+	source = giggle-gtksourceview4.patch
+	b2sums = 855d0c15e0a6c432eecd48f589ba6085c5404d54b4c489ba41c2a09e97a654af784e280648d991d7afec670ff8f50725fef4942a8887fd3e596039e229e9b466
+	b2sums = d1042daa97d169bc9fae44df7e985dbdd5e0ceaf9561da9e8983cf97c507d1a72f233beb886bd7590c8b174f51f1708f42fafbbdd27d486f0e91fb2d5192e88d
+	b2sums = 63d42ba50cd9545ede5c370cff61783e2fbdb4b90e55f6a0504e02f2fd6064b257a2483c26fea20fa007e1cca239f179c1c1e297bdd1f74072cbb7fd1fbd87b5
+	b2sums = 0f49888255bd28bca61ca0545db2c7c51f3d49bf36dbcc95c13f68892f1ed0e6595e5970faaf4802a3914a74c20514a2fb089bd0e37f7c32b0ab3a87a9203767
+
+pkgname = giggle

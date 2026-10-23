@@ -1,0 +1,25 @@
+pkgbase = etckeeper
+	pkgdesc = Collection of tools to let /etc be stored in a git, hg or bzr repository
+	pkgver = 1.18.23
+	pkgrel = 3
+	url = https://etckeeper.branchable.com/
+	install = etckeeper.install
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = mercurial
+	makedepends = breezy
+	makedepends = python-setuptools
+	depends = git
+	depends = diffutils
+	depends = sed
+	optdepends = mercurial: use mercurial for version control
+	optdepends = breezy: use bazaar for version control
+	backup = etc/etckeeper/etckeeper.conf
+	source = git+https://git.kitenet.net/git/etckeeper.git#tag=1.18.23?signed
+	source = 0001-breezy.patch
+	validpgpkeys = E85A5F63B31D24C1EBF0D81CC910D9222512E3C7
+	sha256sums = 04af86bd4da93f877665e14c4d2319708df24609b51917d6a0348dac161b98ee
+	sha256sums = fbfce54167828db00a2dcec02cf75c5df32302fae5411fd68dfb1a521675be6c
+
+pkgname = etckeeper

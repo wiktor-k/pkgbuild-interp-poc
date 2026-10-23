@@ -1,0 +1,37 @@
+# Maintainer: Justin Kromlinger <hashworks@archlinux.org>
+
+pkgname='opensearch-cli'
+pkgver=1.2.0
+pkgrel=2
+pkgdesc="A full-featured command line interface (CLI) for OpenSearch"
+url='https://opensearch.org/docs/latest/clients/cli/'
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc')
+makedepends=('go')
+source=(
+  "${pkgname}-${pkgver}.tar.gz::https://github.com/opensearch-project/opensearch-cli/archive/refs/tags/v${pkgver}.tar.gz")
+sha512sums=('62672f4bcddeca5cff9e472e42e691507847d0aed9c25b56ed02c4953c9da401316e8568acc86e029239fda02ccaae99b1fd37fdbf502c8b39af2a780fd2e692')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  go mod vendor
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw -ldflags=-linkmode=external"
+  go build -v -o ${pkgname} .
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm644 "LICENSE.txt" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.txt"
+  install -Dm755 ${pkgname} -t "${pkgdir}"/usr/bin/
+}
+
+# vim: ts=2 sw=2 et:

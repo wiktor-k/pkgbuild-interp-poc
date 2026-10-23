@@ -1,0 +1,36 @@
+# Maintainer: Konstantin Gizdov <arch at kge dot pw>
+# Maintainer: Baptiste Jonglez <baptiste--aur at jonglez dot org>
+pkgname='radcli'
+pkgver=2.0.1
+pkgrel=1
+pkgdesc='Client library for writing Radius clients in C or C++'
+arch=('x86_64')
+url='https://radcli.github.io/radcli/'
+license=('BSD')
+depends=('nettle' 'gnutls')
+makedepends=('meson')
+source=("https://github.com/${pkgname}/${pkgname}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.xz"{,.sig}
+         nettle-4.patch)
+sha512sums=('2a0af8b1b14a465e392786c0dd983366de896dcd027e6cde62d963ee98aad99bdda21097108eb91dc4911e81e87b1f973bf7777ecfeb392ba94171fdc8937f2e'
+            'SKIP'
+            '1d963ea7a96754f06a8998ce96206e9a6e16915142b18ac883b646e8573be46fb63901a22f698de00c062cf5049ea8f9e8741e78a5d1007e32d507069ee918b0')
+validpgpkeys=('1F42418905D8206AA754CCDC29EE58B996865171'  # Nikos Mavrogiannopoulos <nmav@gnutls.org>
+              '59FBB55CA7F3A8AB0C503773D81C4887F1679A65'  # Nikos Mavrogiannopoulos <n.mavrogiannopoulos@gmail.com>
+              '56EE7FA9E8173B19FE86268D763712747F343FA7') # Nikos Mavrogiannopoulos <nmav@redhat.com>
+
+prepare() {
+  cd $pkgname-$pkgver
+#  patch -p1 -i ../nettle-4.patch
+}
+
+build() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  arch-meson build . -Ddocs=disabled
+  meson compile -C build
+}
+
+package() {
+  cd "${srcdir}/${pkgname}-${pkgver}"
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 COPYRIGHT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

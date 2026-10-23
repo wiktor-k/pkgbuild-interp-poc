@@ -1,0 +1,31 @@
+pkgbase = opensmtpd
+	pkgdesc = Free implementation of the server-side SMTP protocol
+	pkgver = 7.9.0p0
+	pkgrel = 1
+	url = https://www.opensmtpd.org
+	install = opensmtpd.install
+	arch = x86_64
+	license = custom
+	makedepends = git
+	depends = libevent
+	depends = libxcrypt
+	depends = openssl
+	depends = pam
+	depends = systemd
+	depends = zlib
+	optdepends = opensmtpd-filter-rspamd: rspamd integration
+	provides = smtp-server
+	provides = smtp-forwarder
+	conflicts = smtp-server
+	conflicts = smtp-forwarder
+	options = emptydirs
+	backup = etc/smtpd/smtpd.conf
+	backup = etc/smtpd/aliases
+	source = git+https://github.com/OpenSMTPD/OpenSMTPD.git#tag=7.9.0p0
+	source = opensmtpd.sysusers
+	source = smtpd.service
+	sha256sums = 795e32516ebb590954873231b5b0432b61568d6f971aa7b399362339d1288da4
+	sha256sums = 955e25043dbbc266a496db10c5d5f25f70d5342bba0550915932c04068a4ca01
+	sha256sums = abf5baeb2a87c60d668ad18ea41cc08cab7a4f76339dd6df05de15cdaadaf922
+
+pkgname = opensmtpd

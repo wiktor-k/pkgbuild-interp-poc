@@ -1,0 +1,66 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=subtitlecomposer
+pkgver=0.8.2
+pkgrel=6
+pkgdesc='Video subtitle editor'
+arch=(x86_64)
+url='https://subtitlecomposer.kde.org/'
+license=(GPL-2.0-or-later)
+depends=(
+  ffmpeg
+  glibc
+  hicolor-icon-theme
+  icu
+  kcodecs
+  kcompletion
+  kconfig
+  kconfigwidgets
+  kcoreaddons
+  ki18n
+  kio
+  ktextwidgets
+  kwidgetsaddons
+  kxmlgui
+  libstdc++
+  openal
+  openssl
+  qt6-5compat
+  qt6-base
+  qt6-declarative
+  sonnet
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  git
+  ninja
+)
+source=("git+https://invent.kde.org/multimedia/subtitlecomposer.git?signed#tag=v$pkgver")
+b2sums=(fb73579ebaebf33772585475ec16b7aff5fc0e5fac01ceedb84f45310b664719b6d58e099616e39f7ce4c84adf13131d7c89b87d89316ba09b2a18402cc94a19)
+validpgpkeys=(76F79007A54A4B68F1547928E2418746EF9D9B26) # Mladen Milinkovic <maxrd2@smoothware.net>
+
+prepare() {
+  cd $pkgname
+
+  # Fix build with FFmpeg 8
+  git cherry-pick -n 0043f4434886c5aabe99705d40bd7f633b8b73e7
+
+  # Fix build with Qt 6.10
+  git cherry-pick -n 1e11d53565ab6df3ba8329072e7b4b12f9f88d72
+
+  # Fix build with gcc 16
+  git cherry-pick -n 866d496bf7db586de3594aa9ce6d551b7e42d39c
+}
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None \
+    -D QT_MAJOR_VERSION=6
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

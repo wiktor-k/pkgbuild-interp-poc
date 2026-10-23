@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: ComixHe <heyuming@deepin.org>
+
+pkgname=dtk6systemsettings
+pkgver=6.0.2
+pkgrel=2
+pkgdesc='Qt-based development library for system settings on Deepin.'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/dtk6systemsettings"
+license=('LGPL-3.0-or-later')
+depends=('dtk6core' 'glibc' 'libgcc' 'libstdc++' 'libxcrypt' 'qt6-base')
+makedepends=('git' 'qt6-tools' 'qt6-base' 'ninja' 'cmake' 'doxygen' 'graphviz')
+source=("git+https://github.com/linuxdeepin/dtk6systemsettings.git#tag=$pkgver")
+sha512sums=('d2f22265c2ed13e01c56275c0454ebd0cca1a8f0b6468a380bed771fbe065d1974629d2d892262a19cf16db9cde967258ae7202739e2ae482a6e8981f045d248')
+
+build() {
+  cd dtk6systemsettings
+  cmake . \
+    -GNinja \
+    -DMKSPECS_INSTALL_DIR=lib/qt6/mkspecs/modules \
+    -DBUILD_DOCS=ON \
+    -DBUILD_EXAMPLES=OFF \
+    -DQCH_INSTALL_DESTINATION=share/doc/qt \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DDTK_VERSION=$pkgver
+  ninja
+}
+
+package() {
+  cd dtk6systemsettings
+  DESTDIR="$pkgdir" ninja install
+}

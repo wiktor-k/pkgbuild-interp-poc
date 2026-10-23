@@ -1,0 +1,93 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Dario Klingenberg <dario.klingenberg@web.de>
+# Contributor: Kaare Jenssen <kaare@jenssen.it>
+# Contributor: Julian DeMille <julian.demille@demilletech.net>
+# Contributor: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: Chris Dunder <cdunder@gmail.com>
+# Contributor: M Rawash <mrawash@gmail.com>
+# Contributor: olvar <beren.olvar@gmail.com>
+# Contributor: Andrew Antle <andrew.antle@gmail.com>
+# Contributor: joyfulgirl <joyfulgirl@archlinux.us>
+# Contributor: Jonathan Friedman <jonf@gojon.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: sidereus <francesco.serafin.3@gmail.com>
+
+
+pkgname=stumpwm
+pkgver=24.11
+_sbclver=2.6.9
+pkgrel=18
+pkgdesc='Tiling, keyboard-driven window manager written in Common Lisp'
+arch=(x86_64)
+url='https://stumpwm.github.io/'
+license=(GPL-2.0-only)
+depends=(
+  glibc
+  zstd
+  "sbcl=$_sbclver"
+  cl-ppcre
+  cl-clx
+  cl-alexandria
+)
+makedepends=(
+  git
+  texlive-bin
+  texlive-plaingeneric
+)
+optdepends=(
+  'emacs: edit and eval stumpwm code with M-x stumpwm-mode'
+  'stumpwm-contrib: extension modules for StumpWM'
+)
+options=(!strip !makeflags)
+source=(
+  "$pkgname::git+https://github.com/stumpwm/stumpwm#tag=$pkgver"
+  stumpwm.desktop
+)
+sha512sums=('4e421e14a1fbdd3fb594e087aefc44840361a5eeebec746e71aaf7cb52594445836329169cd57db34246b33ba6457d6a1610e9ccc07dad2521538127726cc1c2'
+            '22675c90aaec9c7d754e2d3c5e08c3afe8eb627e0bbd3d3b35443d291602024effb565d6a564a7015313beeeda8e623ff4fc8ccf0bc392acde4f3afc3b3975db')
+b2sums=('e6b904fa46cbc3fae312c9d681949487b8a785abc7f15d1a115f6392d51216eb649500777daf354f545278967a286ac8869d14b329e26943900de6ddaf6d90c3'
+        'a6bf8083d300854c4252046937e18bea935b4bd496677b8bcf0ca74c3af91f37dcd0f7ce766b23ac0b22a9fbbec40d55ca2804c8ecf46db087cc1842116d8f6c')
+
+pkgver() {
+  cd "$pkgname"
+
+  git describe --tags | sed -e 's/^v//' -e 's/-/.r/' -e 's/-/./g'
+}
+
+prepare() {
+  cd "$pkgname"
+
+  # explicitly require uiop, backport from upstream
+  # https://github.com/stumpwm/stumpwm/commit/f0ef15330ee2fbc57a95ef9262dce52446f8a104
+  git cherry-pick --no-commit f0ef15330ee2fbc57a95ef9262dce52446f8a104
+}
+
+build() {
+  cd "$pkgname"
+
+  autoconf
+
+  ./configure \
+    --prefix=/usr \
+    --with-module-dir=/usr/share/stumpwm/contrib
+
+  make
+
+  # generate html/pdf documentation
+  makeinfo --pdf stumpwm.texi
+  makeinfo --html stumpwm.texi
+}
+
+package() {
+  cd "$pkgname"
+
+  make destdir="$pkgdir" install
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" \
+    sample-stumpwmrc.lisp README.md stumpwm.pdf
+  cp -vr stumpwm_html "$pkgdir/usr/share/doc/$pkgname/html"
+
+  # desktop file
+  install -vDm644 -t "$pkgdir/usr/share/xsessions" ../stumpwm.desktop
+}

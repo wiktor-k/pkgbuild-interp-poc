@@ -1,0 +1,22 @@
+pkgbase = awww
+	pkgdesc = An Answer to your Wayland Wallpaper Woes
+	pkgver = 0.12.1
+	pkgrel = 1
+	url = https://codeberg.org/LGFae/awww
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cargo
+	makedepends = scdoc
+	makedepends = wayland
+	makedepends = wayland-protocols
+	depends = dav1d
+	depends = glibc
+	depends = libgcc
+	depends = lz4
+	provides = swww
+	replaces = swww
+	options = !lto
+	source = awww-0.12.1.tar.gz::https://codeberg.org/LGFae/awww/archive/v0.12.1.tar.gz
+	b2sums = 496a0893a6f6d73d0f01c7d8ca7a44f0fd659f75d752f755b089230a020c925880d9bc008a0c198f2d0deb2edba9c2663c3226348540d885def925c17ac675b5
+
+pkgname = awww

@@ -1,0 +1,18 @@
+pkgbase = xfce4-indicator-plugin
+	pkgdesc = Plugin to display information from applications in the Xfce4 panel
+	pkgver = 2.5.0
+	pkgrel = 1
+	url = https://docs.xfce.org/panel-plugins/xfce4-indicator-plugin/start
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = xfce4-dev-tools
+	depends = hicolor-icon-theme
+	depends = libayatana-indicator
+	depends = xfce4-panel
+	depends = xdg-utils
+	source = git+https://gitlab.xfce.org/panel-plugins/xfce4-indicator-plugin.git#tag=xfce4-indicator-plugin-2.5.0
+	sha256sums = 963a9c538883c2917b6e8814b6bb0280cbbf910d6af0e35d45d6f65b8ef8aec1
+
+pkgname = xfce4-indicator-plugin

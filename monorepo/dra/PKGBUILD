@@ -1,0 +1,46 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=dra
+pkgver=0.10.3
+pkgrel=1
+pkgdesc="A command line tool to download assets from GitHub releases"
+arch=('x86_64')
+url="https://github.com/devmatteini/dra"
+license=('MIT')
+depends=('xz' 'zlib' 'bzip2')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('b0642ad4ca2c1fbf62bef4a045943a1f7a220152c02396c7dc003e24c7e049114f2f28b8aaf86147323d28c638087e626f3541012960855d9141cba4a7f3542b')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir -p completions
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  local _completion="target/release/$pkgname completion"
+  $_completion bash > "completions/$pkgname"
+  $_completion fish > "completions/$pkgname.fish"
+  $_completion zsh  > "completions/_$pkgname"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen --bins
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$pkgname" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions/"
+}
+
+# vim: ts=2 sw=2 et:

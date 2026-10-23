@@ -1,0 +1,36 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Adrian Groh <adrian[dot]groh[at]t[dash]online[dot]de>
+
+pkgname=pfetch-rs
+pkgver=3.0.2
+pkgrel=1
+pkgdesc="A rewrite of the pfetch system information tool in Rust"
+url="https://github.com/Gobidev/pfetch-rs"
+license=('MIT')
+arch=('x86_64')
+depends=('glibc' 'libgcc' 'sqlite')
+makedepends=('cargo' 'git')
+provides=('pfetch')
+conflicts=('pfetch')
+source=("git+$url#tag=v$pkgver")
+sha256sums=('1a21950e034a1b54b43bdef3eda1cbcd863b1ca8c7d7c42a7fe15b33ac6b6247')
+
+prepare() {
+	cd $pkgname
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	cd $pkgname
+
+	# default features include bundled sqlite, but upstream was so nice and made it opt-out.
+	# https://github.com/Gobidev/pfetch-rs/issues/79
+	cargo build --frozen --release --no-default-features
+}
+
+package() {
+	cd $pkgname
+	install -Dm755 target/release/pfetch -t "$pkgdir/usr/bin"
+	install -Dm644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+	install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

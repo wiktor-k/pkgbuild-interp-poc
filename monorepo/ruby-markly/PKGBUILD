@@ -1,0 +1,100 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=ruby-markly
+pkgver=0.19.0
+pkgrel=1
+pkgdesc='CommonMark parser and renderer. Written in C, wrapped in Ruby.'
+arch=(x86_64)
+url='https://github.com/socketry/markly'
+license=(MIT)
+depends=(
+  ruby
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-bake
+  ruby-bake-test
+  ruby-build-files
+  ruby-covered
+  ruby-kramdown
+  ruby-redcarpet
+  ruby-sus
+)
+options=(!emptydirs)
+source=(git+https://github.com/socketry/markly.git#tag=v$pkgver
+        socketry-cmarkly::git+https://github.com/socketry/cmarkly.git)
+sha256sums=('4563d64e8721d3074c52c4bdead69f4e33759e532d3110bd0061420d327d042b'
+            'SKIP')
+
+prepare() {
+  cd markly
+  git submodule init
+  git submodule set-url cmarkly ../socketry-cmarkly
+  git -c protocol.file.allow=always submodule update
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended \
+    --expression 's|~>|>=|g' \
+    --expression '/signing_key/d' \
+    markly.gemspec
+
+  sed --in-place \
+    --expression '/group :maintenance/,/end/d' \
+    --expression '/rubocop/d' \
+    gems.rb
+}
+
+build() {
+  local _gemdir="$(gem env gemdir)"
+  cd markly
+  gem build markly.gemspec
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "tmp_install/$_gemdir" \
+    --bindir "tmp_install/usr/bin" \
+    markly-$pkgver.gem
+
+  # remove unreproducible files
+  rm --force --recursive --verbose \
+    "tmp_install${_gemdir}/cache/" \
+    "tmp_install${_gemdir}/gems/${_gemname}-${pkgver}/vendor/" \
+    "tmp_install${_gemdir}/doc/${_gemname}-${pkgver}/ri/ext/"
+
+  find "tmp_install${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  local _gemdir="$(gem env gemdir)"
+  cd markly
+  GEM_HOME="tmp_install/$_gemdir" sus
+}
+
+package() {
+  cd markly
+  cp -a tmp_install/* "$pkgdir"/
+  install -Dm644 license.md -t "$pkgdir/usr/share/licenses/$pkgname"
+}

@@ -1,0 +1,34 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Xavion <Xavion (dot) 0 (at) Gmail (dot) com>
+# Contributor: damir <damir@archlinux.org>
+
+pkgname=zsync
+pkgver=0.6.6
+pkgrel=1
+pkgdesc="A file transfer program that's able to connect to rsync servers"
+arch=("x86_64")
+url="https://zsync.moria.org.uk/"
+depends=("glibc" "openssl")
+license=("LicenseRef-Artistic")
+source=(https://${pkgname}.moria.org.uk/download/${pkgname}-${pkgver}.tar.bz2)
+sha512sums=('c596a4b24a31f8da944dd7ef9613c8d458fc1155fb319e92fdccd411dc3b5cc041c32e0809d4846bba9f27c0c919faa80369c613819466f6acdef328670fd9ea')
+
+prepare() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+  autoreconf -fiv
+}
+
+build() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}"/${pkgname}-${pkgver}
+
+  make prefix="${pkgdir}"/usr install
+  install -d "$pkgdir/usr/share/licenses/$pkgname"
+  mv "$pkgdir/usr/share/doc/zsync/COPYING" "$pkgdir/usr/share/licenses/$pkgname/"
+}

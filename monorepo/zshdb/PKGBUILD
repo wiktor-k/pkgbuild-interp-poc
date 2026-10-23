@@ -1,0 +1,29 @@
+# Maintainer: Lukas Fleischer <lfleischer@archlinux.org>
+# Contributor: noonov <noonov@gmail.com>
+
+pkgname=zshdb
+pkgver=1.1.4
+pkgrel=2
+pkgdesc='A debugger for zsh scripts'
+arch=('any')
+url='https://github.com/rocky/zshdb/'
+license=('GPL')
+depends=('zsh' 'coreutils')
+optdepends=('python-pygments: for syntax highlighting')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/rocky/$pkgname/archive/$pkgver.tar.gz")
+sha512sums=('d39816f23d3e607b3d6725dff5ce9b6c9e2c79c6d9d8730bfb4119b3fc19f3c1e166265bcd629217cf1d698f98ffaa4e19c047f6cf5853d5bafc22f85624a991')
+b2sums=('8115c896a1202e31d3e27c5e507e9d96705be973e0ca3313bc6912f7e8d5c9f3b7d4d7d9bd4fc805bb5f77e6fb8b8f48675a9fcc2e906b31fca218a6efa021d2')
+
+build() {
+  cd "$pkgname-$pkgver"
+
+  ./autogen.sh
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  make DESTDIR="$pkgdir" install
+}

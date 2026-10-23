@@ -1,0 +1,15 @@
+pkgbase = keyd
+	pkgdesc = A key remapping daemon for linux
+	pkgver = 2.6.0
+	pkgrel = 5
+	url = https://github.com/rvaiya/keyd
+	arch = x86_64
+	license = MIT
+	optdepends = python: Required for use with keyd-application-mapper utility
+	optdepends = perl: For using the optional dump-xkb-config script
+	source = keyd-2.6.0::https://github.com/rvaiya/keyd/archive/refs/tags/v2.6.0.tar.gz
+	source = keyd.sysusers
+	sha256sums = 697089681915b89d9e98caf93d870dbd4abce768af8a647d54650a6a90744e26
+	sha256sums = b3fa546c31f61be824a84a33af5c723692e2cedd4e5f87ff655e90f33227395d
+
+pkgname = keyd

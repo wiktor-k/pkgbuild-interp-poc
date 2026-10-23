@@ -1,0 +1,27 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+
+pkgname=perl-test-perltidy
+pkgver=20260110
+pkgrel=1
+pkgdesc="CPAN Test::PerlTidy module"
+arch=('any')
+url='https://search.cpan.org/dist/Test-PerlTidy-20130104/'
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+depends=('perl' 'perl-text-diff' 'perl-path-tiny' 'perl-tidy')
+options=('!emptydirs')
+source=(https://cpan.metacpan.org/authors/id/S/SH/SHLOMIF/Test-PerlTidy-$pkgver.tar.gz)
+sha256sums=('671d9cf8d8eb74b6a043254ea3b644b91eafb3a6d1e58377cdd3ab70e685c129')
+
+build() {
+  cd "${srcdir}"/Test-PerlTidy-$pkgver
+
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL installdirs=vendor
+  make
+}
+
+package() {
+  cd "${srcdir}"/Test-PerlTidy-$pkgver
+
+  make install DESTDIR="${pkgdir}"
+
+}

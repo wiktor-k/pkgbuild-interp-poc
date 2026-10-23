@@ -1,0 +1,27 @@
+pkgbase = pantheon-terminal
+	pkgdesc = The Pantheon Terminal Emulator
+	pkgver = 8.1.0
+	pkgrel = 2
+	url = https://github.com/elementary/terminal
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = appstream
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	makedepends = xorg-server-xvfb
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = granite7
+	depends = gtk4
+	depends = libadwaita
+	depends = libgee
+	depends = pango
+	depends = vte4
+	source = pantheon-terminal::git+https://github.com/elementary/terminal.git#tag=8.1.0
+	b2sums = 60a4b2bc951ebfffb85a3d7fd4b5f08714eca9523d3a0a9d14b6a5bfe3a6167e6ddeab518f4561221c6f7938d4848bcb6d70ddafcfed70507fafbd21d82fbbf5
+
+pkgname = pantheon-terminal

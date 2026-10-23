@@ -1,0 +1,44 @@
+# Maintainer: Jakub Klinkovský <lahwaacz@archlinux.org>
+
+_name=nsight
+pkgname=python-$_name
+pkgver=1.1.0
+pkgrel=1
+pkgdesc="Python kernel profiling interface based on NVIDIA Nsight Tools"
+arch=(any)
+url="https://docs.nvidia.com/nsight-python/index.html"
+license=(Apache-2.0)
+depends=(
+  nsight-compute  # ncu binary and ncu_report Python module
+  python
+  python-cuda-core
+  python-deepdiff
+  python-matplotlib
+  python-numpy
+  python-nvidia-ml-py
+  python-nvtx
+  python-pandas
+)
+makedepends=(
+  python-build
+  python-hatchling
+  python-hatch-vcs
+  python-installer
+  python-wheel
+)
+source=(
+  $pkgname-$pkgver.tar.gz::https://github.com/NVIDIA/nsight-python/archive/refs/tags/v$pkgver.tar.gz
+)
+b2sums=('5ca356f0d878d103bf431be4d3f71c981db316fed20f753f3fb43eea1a4b52b121ed4f971619ec908a52398bd73b64a839f5921463479783e68c36dcefacd9d4')
+
+build() {
+  cd $_name-python-$pkgver
+  SETUPTOOLS_SCM_PRETEND_VERSION=$pkgver \
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $_name-python-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

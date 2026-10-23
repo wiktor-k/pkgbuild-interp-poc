@@ -1,0 +1,44 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+_upstream_name=cyclonedx-rust-cargo
+pkgname=cargo-cyclonedx
+pkgver=0.5.9
+pkgrel=1
+pkgdesc="Creates CycloneDX Software Bill of Materials (SBOM) from Rust (Cargo) projects"
+arch=(x86_64)
+url="https://github.com/CycloneDX/cyclonedx-rust-cargo"
+license=(Apache-2.0)
+depends=(
+  cargo
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/$pkgname-$pkgver.tar.gz
+)
+sha512sums=('65e1f61e42089e33cd447d27421289fe74c2d125d3399a16814659d5bf48cd3096e265a84c2bf179627fa2f7b694791c6164a1057ee6f1c8088775b50d255108')
+b2sums=('3828c665dc42971e78f771827b9d8f39b9a2542ff211fee145f7f5142a9e4b213ee6325acbc86b0a7997b73cbd43fa224cb64406f45c9261d8b147f2f8b59caf')
+
+prepare() {
+  cd $_upstream_name-$pkgname-$pkgver
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $_upstream_name-$pkgname-$pkgver
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  cd $_upstream_name-$pkgname-$pkgver
+  # NOTE: use different target dir to have reproducible executable
+  export CARGO_TARGET_DIR=target_test
+  cargo test --frozen --all-features --workspace
+}
+
+package() {
+  cd $_upstream_name-$pkgname-$pkgver
+  install -vDm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin/"
+  install -vDm 644 $pkgname/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+}

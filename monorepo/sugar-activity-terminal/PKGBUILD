@@ -1,0 +1,41 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=sugar-activity-terminal
+_pkgname=terminal-activity
+pkgver=47
+pkgrel=5
+pkgdesc='Terminal emulator for Sugar'
+arch=(any)
+url='https://github.com/sugarlabs/terminal-activity'
+license=(GPL-3.0-or-later)
+groups=(sugar-fructose)
+depends=(
+  glib2
+  gtk3
+  pango
+  python
+  python-gobject
+  sugar-toolkit-gtk3
+  vte3
+)
+makedepends=(git)
+source=("git+https://github.com/sugarlabs/$_pkgname.git#tag=v$pkgver")
+b2sums=(31b54c74230c9893250e18b538a2e88b6df3e35f5dbd9db92655d8d242075eccab401018f8e63d9e2b04d429cf66a9f14bbb18f33000d032b93f0d9d19620b77)
+
+prepare() {
+  cd $_pkgname
+
+  # Replace deprecated ConfigParser readfp with read_file
+  sed -i 's/conf.readfp/conf.read_file/' terminal.py
+
+  # Fix for VTE API change
+  sed -i 's/text, attr_ = page.vt.get_text(is_selected, None)/text = page.vt.get_text_format(Vte.Format.TEXT)/' terminal.py
+
+  # Use standard icon name
+  sed -i "s/icon_name='add'/icon_name='list-add'/" widgets.py
+}
+
+package() {
+  cd $_pkgname
+  python setup.py install --prefix "$pkgdir/usr" --skip-install-desktop-file
+}

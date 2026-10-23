@@ -1,0 +1,90 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Kr1ss $(echo \<kr1ss+x-yandex+com\>|sed s/\+/./g\;s/\-/@/)
+# Contributor: ccorn
+
+pkgname=git-delta
+pkgver=0.20.1
+pkgrel=1
+pkgdesc='Syntax-highlighting pager for git and diff output'
+arch=(x86_64)
+url='https://dandavison.github.io/delta/'
+_url='https://github.com/dandavison/delta'
+license=(MIT)
+depends=(
+  glibc # libc.so libm.so ld-linux-x86-64.so
+  libgcc libgcc_s.so
+  libgit2 libgit2.so
+  oniguruma # libonig.so
+)
+makedepends=(
+  git
+  rust
+)
+source=("$pkgname::git+$_url#tag=$pkgver")
+sha512sums=('5672b4d8f97eee1e9dffede6f71646285c88329fc677f5790157752ef6bbeae0b0d687cf6917af5727922f4b971ce1536a0ec67e0e1a81d73ce4622c05c26589')
+b2sums=('d9edfcdb80f9bba696874d97096a543cd65658346f72ac1a43f7197ca8ed2bbb38a31ef3b050e81b8e31f9950deb7a02e58e80d06ac56d20fcae718e56363886')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  # Devendor (has trouble with LTO anyway)
+  export RUSTONIG_DYNAMIC_LIBONIG=1
+
+  # Avoid fallback to vendoring if our version isn't accepted
+  export LIBGIT2_NO_VENDOR=1
+
+  # https://github.com/dandavison/delta/issues/2122
+  export CARGO_PROFILE_RELEASE_LTO=true
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+
+  # Build with debug symbols, will be stripped to debug package
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+
+  # binary
+  cargo build --frozen --release --all-features
+
+  # generate shell completions
+  for shell in bash elvish fish zsh; do
+    target/release/delta --generate-completion="$shell" > "${shell}-completion"
+  done
+}
+
+check() {
+  cd "$pkgname"
+
+  # some tests hang for 60+ seconds, find out why
+  # took my machine ~ 470 seconds
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  local _bin=target/release/delta
+  install -vDm755 -t "$pkgdir/usr/bin/" $_bin
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # shell completions
+  install -vDm644 bash-completion \
+    "$pkgdir/usr/share/bash-completion/completions/delta"
+  install -vDm644 elvish-completion \
+    "$pkgdir/usr/share/elvish/lib/delta.elv"
+  install -vDm644 fish-completion \
+    "$pkgdir/usr/share/fish/vendor_completions.d/delta.fish"
+  install -vDm644 zsh-completion \
+    "$pkgdir/usr/share/zsh/site-functions/_delta"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+}

@@ -1,0 +1,23 @@
+pkgbase = fuseiso
+	pkgdesc = FUSE module to mount ISO filesystem images
+	pkgver = 20070708
+	pkgrel = 9
+	url = https://sourceforge.net/projects/fuseiso/
+	arch = x86_64
+	license = GPL
+	makedepends = pkgconfig
+	depends = fuse2
+	depends = glib2
+	depends = zlib
+	source = https://ubiz.ru/dm/fuseiso-20070708.tar.bz2
+	source = 00-support_large_iso.patch
+	source = 01-fix_typo.patch
+	source = 02-prevent-buffer-overflow.patch
+	source = 03-prevent-integer-overflow.patch
+	sha256sums = 8b242e077d66cd20900c59c905ff90b4c934b0613dd5a20facb0b1260ac5fd88
+	sha256sums = 6555b67208a455740ea3a2d7872ab68b3e46909ad774bddbe0432d2bcb35cdcc
+	sha256sums = afa848227abf6ea061ee298b621c670c04431a1080616548fb7182305f2a1d2c
+	sha256sums = def5dd8dc20ad44ec659c20472744db6329684fc1d53f451e28bae655c799a8f
+	sha256sums = 520e01cd544d21e6400c5d63bcaf57e344fbb59406a6a61636dc0d4cb6447bd1
+
+pkgname = fuseiso

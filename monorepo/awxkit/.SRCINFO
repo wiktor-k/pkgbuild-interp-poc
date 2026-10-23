@@ -1,0 +1,34 @@
+pkgbase = awxkit
+	pkgdesc = The official command line interface for Ansible AWX
+	pkgver = 24.6.1
+	pkgrel = 6
+	url = https://github.com/ansible/awx
+	arch = any
+	license = Apache-2.0
+	checkdepends = jq
+	checkdepends = python-pytest
+	checkdepends = python-cryptography
+	checkdepends = python-websocket-client
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	makedepends = python-wheel
+	depends = python
+	depends = python-pytest
+	depends = python-pyyaml
+	depends = python-requests
+	depends = python-setuptools
+	depends = python-websocket-client
+	optdepends = jq: for formatting
+	optdepends = python-cryptography: for cryptography support
+	options = !emptydirs
+	source = awx::git+https://github.com/ansible/awx#tag=94e5795dfc37b95c576d61f3e3b4e936c021548c
+	source = 0001-Replace-pkg_resources-with-importlib.metadata-15441.patch
+	source = 0002-cli-fix-TypeError-in-HelpfulArgumentParser-for-pytho.patch
+	sha512sums = b59d1710e5cfdeb19c194af77d5e9045c2ab1201b4f55fdb3b446de80dceb0d3a01de34b73dcfe009e71cf4610e95b63be1ae4b8b998a771ebc0b3c2764621ea
+	sha512sums = 899bfa5f2727758f3f0c1ec8caefe5b251e6faba8668920e733b4331f2b2a0a2b77dc2f6bad8a90028e53947ce290d2a0a644c3a6e94baf2496d6e78b2c90260
+	sha512sums = 4c097a0d197111bdd3de1006d3b78d0765c5ad9802bd5500619bbefa3dfb62e218b026d2d42082e3ce6feffcf6fa906ccce64da95264deaac1dd9bb012573c6b
+
+pkgname = awxkit

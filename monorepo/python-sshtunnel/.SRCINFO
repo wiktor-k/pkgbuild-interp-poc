@@ -1,0 +1,31 @@
+pkgbase = python-sshtunnel
+	pkgdesc = Pure python SSH tunnels
+	pkgver = 0.4.0
+	pkgrel = 9
+	url = https://github.com/pahaz/sshtunnel
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	checkdepends = openssh
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-paramiko
+	makedepends = python-setuptools
+	makedepends = python-sphinx
+	makedepends = python-wheel
+	source = python-sshtunnel::git+https://github.com/pahaz/sshtunnel#commit=58a46ef8b66be5eded29cd9bda4dccedb46ec586
+	source = 0001-Use-unittest.mock-on-Python-3.3.patch
+	source = paramiko-4.patch
+	sha512sums = c19ead822f4734a4f228b19263ee9477bb4fdf39ceb5b91f43cecd3b56d26c0e20de88b50c1f74e9afead09177b43725ab1669bc270c471dc709ae04d8e0731f
+	sha512sums = eb1f52abc18e12b82f55cf0576fe45c0eb211a94e4c86c3e7eb86a0005b8cef41f3b6014067a49bf93bbffd58c4fdd5c4d48098083db3b91a441360292337cf3
+	sha512sums = 429999684f7ef66da6568024622605561b0847ee8cd596455a8d089d6dbe087a345a4c5ee7e185323ccf7861aef07063025608ae127f9098b14c650fd3204436
+
+pkgname = sshtunnel
+	pkgdesc = Pure python SSH tunnels (CLI)
+	depends = python
+	depends = python-sshtunnel
+
+pkgname = python-sshtunnel
+	depends = python
+	depends = python-paramiko

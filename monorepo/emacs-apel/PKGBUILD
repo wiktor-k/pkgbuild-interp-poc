@@ -1,0 +1,25 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Ismael Barros (RazZziel) <razielmine@gmail.com>
+
+pkgname=emacs-apel
+pkgver=10.8.20250531
+_commit=2383abfd3a27c094ae9095b05103167cf810379b
+pkgrel=1
+pkgdesc="A library for making portable Emacs Lisp programs."
+arch=(any)
+url="https://github.com/wanderlust/apel"
+license=('GPL')
+depends=('emacs')
+makedepends=('git')
+source=("apel-$pkgver::git+https://github.com/wanderlust/apel#commit=${_commit}")
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir"/apel-$pkgver
+  make
+}
+
+package() {
+  cd "$srcdir"/apel-$pkgver
+  make install PREFIX="$pkgdir"/usr
+}

@@ -1,0 +1,40 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Angel 'angvp' Velasquez <angvp[at]archlinux.com.ve>
+
+pkgname=python-pycurl
+pkgver=7.48.0
+pkgrel=1
+pkgdesc="A Python 3.x interface to libcurl"
+arch=('x86_64')
+url="https://github.com/pycurl/pycurl"
+license=('LGPL-2.1-only' 'MIT')
+depends=('curl' 'glibc' 'openssl' 'python')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-flaky' 'python-flask' 'python-numpy' 'python-paramiko' 'python-pyflakes' 'python-pytest' 'python-pytest-run-parallel' 'python-pytest-timeout' 'python-websockets' 'vsftpd')
+source=("git+https://github.com/pycurl/pycurl.git#tag=REL_${pkgver//./_}")
+sha512sums=('6855ab052b9097799ccf9bc13b113dfbb4a1f78dc397148ad78df416aef250fddfe6c1e6be309c6b494fde92b489f48e65eea75fced9390688c36345e528048e')
+
+build() {
+  cd pycurl
+  # the unified source release builds (see PYCURL_RELEASE=1 in Makefile) do not work with tests
+  python -m build --wheel --no-isolation
+  # needed for tests
+  make -C tests/fake-curl/libcurl
+}
+
+check() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd pycurl
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="$PWD/test_dir/$site_packages:$PYTHONPATH"
+  PYCURL_VSFTPD_PATH=vsftpd ./tests/run.sh -vv
+}
+
+package() {
+  cd pycurl
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 COPYING-MIT -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

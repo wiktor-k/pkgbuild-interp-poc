@@ -1,0 +1,18 @@
+pkgbase = cl-trivial-backtrace
+	pkgdesc = Portable API to work with backtraces in Common Lisp
+	pkgver = 1.1.0.r20.g6eb65bd
+	pkgrel = 2
+	url = https://github.com/gwkkwg/trivial-backtrace
+	arch = any
+	license = MIT
+	checkdepends = sbcl
+	checkdepends = cl-lift
+	makedepends = git
+	depends = common-lisp
+	depends = cl-asdf
+	source = cl-trivial-backtrace::git+https://github.com/gwkkwg/trivial-backtrace#commit=6eb65bde7229413040c81d42ea22f0e4c9c8cfc9
+	source = run-tests.lisp
+	b2sums = SKIP
+	b2sums = c74cd6f9e7da7e0b1a89076de170f44c28b4746fca0a2bbd6489f5cd01ea8fb12a8636a3a212b71a132cc5a7856e119a1cd7679790f3d0fc341a9657cb6453c3
+
+pkgname = cl-trivial-backtrace

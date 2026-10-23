@@ -1,0 +1,26 @@
+pkgbase = logwatch
+	pkgdesc = Logwatch is a customizable log analysis system.
+	pkgver = 7.15
+	pkgrel = 1
+	url = https://sourceforge.net/projects/logwatch/files/
+	arch = any
+	license = custom
+	depends = perl
+	depends = perl-html-parser
+	optdepends = cron
+	optdepends = perl-date-manip: human readable dates
+	backup = etc/logwatch/conf/logwatch.conf
+	backup = etc/logwatch/conf/ignore.conf
+	backup = etc/logwatch/conf/override.conf
+	source = https://downloads.sourceforge.net/project/logwatch/logwatch-7.15/logwatch-7.15.tar.gz
+	source = cron.conf
+	source = maillog.conf
+	source = messages.conf
+	source = secure.conf
+	sha256sums = 5913783d52fe02a18fd796acee2335eeca43cb17e913eca33e2f211e64f2fcdb
+	sha256sums = 41b9ec84fc825545f43080064ffaa9612cd037c10bb24c0810341e01d63f7a75
+	sha256sums = 9a614822b5f25d9d473a00abdd2e93751d86685608bd6ca0770e2954c3c97f0e
+	sha256sums = 59466406f306b4b377616943e8737f522cff713dd1fc968045cba57eeb0acbc2
+	sha256sums = a4c78442968abf363729e96bfd9ed379eb0718967deb60950c201d40f8aaa461
+
+pkgname = logwatch

@@ -1,0 +1,24 @@
+pkgbase = pantheon-onboarding
+	pkgdesc = Onboarding app for new users
+	pkgver = 8.1.0
+	pkgrel = 1
+	url = https://github.com/elementary/onboarding
+	arch = x86_64
+	groups = pantheon
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = intltool
+	makedepends = meson
+	makedepends = vala
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita-1.so
+	depends = libgranite-7.so
+	depends = pantheon-wayland
+	source = pantheon-onboarding::git+https://github.com/elementary/onboarding.git#tag=8.1.0
+	b2sums = 5fff6800795f74c2cfda39bd0e0f4fbe3453e868c4778139413a38c3c71348fafa66b3a59cf30af1d102fd29e27b2e9502017fef2bf25e836d0fce9f9666e5e5
+
+pkgname = pantheon-onboarding

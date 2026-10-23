@@ -1,0 +1,64 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+_pkgname=nox
+pkgname=python-$_pkgname
+pkgver=2026.02.09
+pkgrel=1
+pkgdesc='Flexible test automation for Python'
+arch=(any)
+url='https://github.com/wntrblm/nox'
+license=(Apache-2.0)
+depends=(
+  python
+  python-argcomplete
+  python-attrs
+  python-colorlog
+  python-dependency-groups
+  python-humanize
+  python-packaging
+  python-virtualenv
+)
+makedepends=(
+  python-build
+  python-installer
+  python-hatchling
+)
+checkdepends=(
+  python-pytest
+  python-jinja
+  python-tox
+  uv
+)
+optdepends=(
+  'python-jinja: tox_to_nox'
+  'python-tox: tox_to_nox'
+  'uv: uv backend'
+)
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('3ae5901f7f001e5cc607e99d8360697343dd8c7717f2f5b55937b2a759617d0493b37779672cefa0f18153529f46945b10db6a8352e222b0508bc683fc6fbd3f')
+
+build() {
+  cd $_pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $_pkgname-$pkgver
+  local pytest_options=(
+    -vv
+    # subprocess.CalledProcessError: Command '['uv', 'pip', 'install', 'nox @ git+https://github.com/wntrblm/nox.git@2024.10.09']' returned non-zero exit status 1.
+    --deselect tests/test_main.py::test_noxfile_script_mode_url_req
+  )
+
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  test-env/bin/python -m pytest "${pytest_options[@]}"
+}
+
+package() {
+  cd $_pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}
+
+# vim:set ts=2 sw=2 et:

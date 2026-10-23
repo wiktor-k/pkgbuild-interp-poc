@@ -1,0 +1,44 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Daichi Shinozaki <dsdseg@gmail.com>
+# Contributor: Dwight Schauer <dschauer@gmail.com>
+# Contributor: Stefan Husmann <stefan-husmann@t-online.de>
+# Contributor: Christoph Zeiler <archNOSPAM_at_moonblade.dot.org>
+# Contributor: Michael 'manveru' Fellinger <m.fellinger@gmail.com>
+# Contributor: Caleb McCombs <erdrick016+aur@gmail.com>
+# Contributor: Christian Hesse <arch@eworm.de>
+
+pkgname=neko
+pkgver=2.4.1
+pkgrel=7
+pkgdesc='High-level dynamically typed programming language'
+url='https://nekovm.org/'
+license=(MIT)
+arch=(x86_64)
+depends=(gc glibc gtk3 mariadb-libs mbedtls3 pcre2 sqlite zlib)
+makedepends=(apache apr cmake git)
+optdepends=('apache: for extending Apache with mod_neko')
+options=(!strip)
+source=("git+https://github.com/HaxeFoundation/neko#tag=v${pkgver//./-}")
+b2sums=('6062a1232314a3de960968618ffb95b69178e0a53d5658ea780afb0ae1289d9bb2b79f080ec46761f9a1317e0a2a9261bdf2e2e7dac33888bb47d585e67a456a')
+
+prepare() {
+  sed -i '/xlocale.h/d' $pkgname/libs/std/sys.c
+}
+
+build() {
+  cmake \
+    -B build \
+    -D CMAKE_C_FLAGS="$CFLAGS -w" \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D MBEDTLS_INCLUDE_DIR=/usr/include/mbedtls3 \
+    -D MBEDTLS_ROOT=/usr/lib/mbedtls3 \
+    -D MbedTLS_ROOT=/usr/lib/mbedtls3 \
+    -D RUN_LDCONFIG=OFF \
+    -S $pkgname
+  make -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" make -C build install
+  install -Dm644 $pkgname/LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

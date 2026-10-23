@@ -1,0 +1,22 @@
+pkgbase = lightsoff
+	pkgdesc = Turn off all the lights
+	pkgver = 50.0
+	pkgrel = 1
+	url = https://wiki.gnome.org/Apps/Lightsoff
+	arch = x86_64
+	groups = gnome-extra
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	makedepends = yelp-tools
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	source = git+https://gitlab.gnome.org/GNOME/lightsoff.git#tag=50.0
+	b2sums = a5f13c318c7dfe5dcfb3d3d62f0db8beaa71ddccf87e2d42cabf1034922246384f4db1b63c8dea1eab245ad11ab6a74b86e6ca2c8f2aab10da9a3ceb6a3f33c9
+
+pkgname = lightsoff

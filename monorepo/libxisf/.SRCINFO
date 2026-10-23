@@ -1,0 +1,20 @@
+pkgbase = libxisf
+	pkgdesc = Library to load and write XISF format from PixInsight
+	pkgver = 0.2.14
+	pkgrel = 1
+	url = https://gitea.nouspiro.space/nou/libXISF
+	arch = x86_64
+	license = GPL-3.0-only
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = lz4
+	depends = pugixml
+	depends = zlib
+	depends = zstd
+	source = git+https://gitea.nouspiro.space/nou/libXISF#tag=v0.2.14
+	sha256sums = 8f3aa999f0160e9d26bce26e4d6ef1d59b8a4f46d06b140a1676d909ad6b37e0
+
+pkgname = libxisf

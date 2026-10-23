@@ -1,0 +1,20 @@
+pkgbase = python-pytube
+	pkgdesc = A lightweight, dependency-free Python library (and command-line utility) for downloading YouTube Videos
+	pkgver = 15.0.0
+	pkgrel = 6
+	url = https://github.com/pytube/pytube
+	arch = any
+	license = Unlicense
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	source = git+https://github.com/pytube/pytube.git#tag=v15.0.0
+	source = get_throttling_function_name.patch
+	sha256sums = ef6e1b6c0413cfeceb85aff8dff8fe8a1d06b790e7741a9d6b0b8a1212e664d1
+	sha256sums = 3b3d42817b4e654a97a8f749c96fb3e9263cb4aa3a53f544877362ad26dc1676
+
+pkgname = python-pytube

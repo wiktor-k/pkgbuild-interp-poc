@@ -1,0 +1,88 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=paperwork
+pkgver=2.2.5
+pkgrel=5
+pkgdesc='Personal document manager to manage scanned documents and PDFs'
+arch=(any)
+url='https://openpaper.work/'
+license=(GPL-3.0-or-later)
+depends=(
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  libhandy
+  libinsane
+  libnotify
+  pango
+  poppler-glib
+  python
+  python-cairo
+  python-distro
+  python-fabulous
+  python-gobject
+  python-numpy
+  python-pillow
+  python-pillowfight
+  python-psutil
+  python-pycountry
+  python-pydbus
+  python-pyocr
+  python-pyxdg
+  python-rich
+  python-scikit-learn
+  python-scipy
+  python-whoosh
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools-scm
+  python-wheel
+)
+source=("git+https://gitlab.gnome.org/World/OpenPaperwork/paperwork.git#tag=$pkgver")
+b2sums=(f2a01e06382aee7d9dd4f1b2d53e4b5ad0ec5e29d074078c84a7fdbcccf8c33d8b4e51caea2cfea8b222fd93bb709b77ed495307c51c182c59bea73f94974e90)
+
+prepare() {
+  cd $pkgname
+  curl -s "https://download.openpaper.work/data/paperwork/master_$(git rev-parse --short HEAD)/data.tar.gz" | tar -xvz
+
+  # Add back l10n_compile targets
+  # https://gitlab.gnome.org/World/OpenPaperwork/paperwork/-/merge_requests/862
+  git cherry-pick -n b8e2633ace0f3d9d57e68c27db8f594b8a5ddd7e
+
+  # Fix fallback to the English help files
+  # https://gitlab.gnome.org/World/OpenPaperwork/paperwork/-/merge_requests/867
+  git cherry-pick -n eff17cb90e74149b1536ba5e2acfa6b5c2c6619e
+
+  # Replace pkg_resources with importlib.resources
+  # https://gitlab.gnome.org/World/OpenPaperwork/paperwork/-/merge_requests/871
+  git cherry-pick -n ab244d9c483b23f53e2548b73236d7fe4b94cb3f
+}
+
+build() {
+  cd $pkgname
+  make l10n_compile
+
+  for dir in openpaperwork-{core,gtk} paperwork-{backend,shell,gtk}; do
+    pushd "$dir"
+    python -m build --wheel --no-isolation
+    popd
+  done
+}
+
+package() {
+  cd $pkgname
+  for dir in openpaperwork-{core,gtk} paperwork-{backend,shell,gtk}; do
+    pushd "$dir"
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    popd
+  done
+
+  PYTHONPATH="$pkgdir"$(python -c 'import site; print(site.getsitepackages()[0])') \
+    "$pkgdir"/usr/bin/paperwork-gtk install \
+      --icon_base_dir="$pkgdir/usr/share/icons" \
+      --data_base_dir="$pkgdir/usr/share"
+}

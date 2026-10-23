@@ -1,0 +1,54 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: Matthias Ellmer <ellmer.matthias@gmail.com>
+# Contributor: Julien Morin <jmorin@cp.dias.ie>
+
+pkgbase=python-basemap
+pkgname=('python-basemap' 'python-basemap-common')
+pkgver=2.0.0
+pkgrel=3
+arch=('x86_64')
+url="https://matplotlib.org/basemap/"
+license=('MIT')
+makedepends=('cython' 'python-setuptools' 'python-matplotlib' 'geos' 'shapelib'
+             'python-numpy' 'python-pyproj' 'python-build' 'python-installer'
+             'python-wheel')
+source=($pkgname-$pkgver.tar.gz::https://github.com/matplotlib/basemap/archive/v${pkgver}.tar.gz)
+sha256sums=('192ee1c63291d7d1af98fab798c45239ea27e6ca31041afa8c42c8b697e44596')
+
+prepare() {
+  pushd "${srcdir}"/basemap-${pkgver}/
+  sed -i "s/lib64/lib/g" setup.py
+  # Remove upper bound on dependencies
+  sed -i 's/\, <.*"/"/' pyproject.toml
+  popd
+}
+
+build() {
+  cd "${srcdir}"/basemap-${pkgver}/
+  python -m build --wheel --no-isolation
+  cd "${srcdir}"/basemap-${pkgver}/data/basemap_data
+  python -m build --wheel --no-isolation
+}
+
+package_python-basemap() {
+  pkgdesc="Toolkit for plotting data on map projections"
+  depends=('python-basemap-common' 'python-matplotlib' 'geos' 'shapelib' 'python-numpy' 'python-pyproj')
+  optdepends=('python-owslib: needed for the BaseMap.wmsimage function'
+              'python-pillow: needed for Basemap warpimage, bluemarble, shadedrelief and etop methods')
+
+  cd "${srcdir}"/basemap-${pkgver}/
+
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm644 LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+}
+
+package_python-basemap-common() {
+  pkgdesc="Data files for python-basemap"
+  license=('GPL2')
+
+  cd "${srcdir}"/basemap-${pkgver}/data/basemap_data
+
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  install -Dm644 ../../LICENSE "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+}

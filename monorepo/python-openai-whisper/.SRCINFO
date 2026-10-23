@@ -1,0 +1,26 @@
+pkgbase = python-openai-whisper
+	pkgdesc = Robust speech recognition via large-scale weak supervision
+	pkgver = 20250625
+	pkgrel = 3
+	url = https://github.com/openai/whisper
+	arch = any
+	license = MIT
+	checkdepends = ffmpeg
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-more-itertools
+	depends = python-numba
+	depends = python-numpy
+	depends = python-pytorch
+	depends = python-regex
+	depends = python-tiktoken
+	depends = python-tqdm
+	source = git+https://github.com/openai/whisper#tag=v20250625
+	sha256sums = 43ba12fdb0ceba5c72e223b36b84a06cd4279d9feda1d1c1c6a060e6bcd7f2f9
+
+pkgname = python-openai-whisper

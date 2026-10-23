@@ -1,0 +1,37 @@
+pkgbase = gnome-connections
+	pkgdesc = Remote desktop client for the GNOME desktop environment
+	pkgver = 51.0
+	pkgrel = 1
+	url = https://apps.gnome.org/Connections/
+	arch = x86_64
+	groups = gnome
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = itstool
+	makedepends = meson
+	makedepends = vala
+	depends = cairo
+	depends = dconf
+	depends = freerdp
+	depends = fuse3
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk-vnc
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libhandy
+	depends = libsecret
+	depends = libxml2
+	depends = spice-gtk
+	source = git+https://gitlab.gnome.org/GNOME/gnome-connections.git?signed#tag=51.0
+	source = git+https://gitlab.gnome.org/GNOME/gtk-frdp.git
+	source = 0001-Use-GApplication-to-parse-command-line-options.patch
+	validpgpkeys = F55CDAB508C3ACBCB1C8B930C910F152653B1688
+	b2sums = 0cf61f7e82dec11cb3d923dfea83fe9dd5379ae2a962896c4e2e8402b508fb7daa247e09fbe4fd909845970dc935120d153f2f6db145407aded86bb4333d08cc
+	b2sums = SKIP
+	b2sums = 5c4026d67d6f5771b7ace9d2c5b4a73d5f4980dcf8ca1b50f9266fe3c110f53d6d08a32373611eae81f2b3fbfd56a91a47445bccb4700e757ddd852d61f2e8e7
+
+pkgname = gnome-connections

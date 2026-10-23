@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=nautilus-image-converter
+pkgver=0.4.0
+pkgrel=2
+pkgdesc='Nautilus extension to rotate/resize image files'
+arch=(x86_64)
+url='https://gitlab.gnome.org/coreyberla/nautilus-image-converter'
+license=(GPL-2.0-or-later)
+depends=(
+  glib2
+  glibc
+  gtk4
+  imagemagick
+  libnautilus-extension
+  nautilus
+)
+makedepends=(
+  git
+  meson
+)
+source=(
+  "git+https://gitlab.gnome.org/coreyberla/$pkgname.git#tag=$pkgver"
+  nautilus-image-converter-valid-charset.patch
+)
+b2sums=(
+  d5b69ac8bef0bce67889f7e95758108243124c744a3635b04231b634296c585fd3988c10097e77d5b8c7fae244853a7058d1aedfcc984a4c3212cf34ec3b1d34
+  e57ce2e35eb0b3bb6efd663f5136b66f096c2b018cc6cf657eccf53d71e80808b500587cbe690662a03a587d0de89403e5f56301c69af6b1d051e39109950b38
+)
+
+prepare() {
+  cd $pkgname
+
+  # Update translations
+  git cherry-pick -n e643b6328fb14605db0c298b937d6bf583fbaa55
+
+  # https://gitlab.gnome.org/coreyberla/nautilus-image-converter/-/merge_requests/3
+  git apply -3 ../nautilus-image-converter-valid-charset.patch
+}
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}

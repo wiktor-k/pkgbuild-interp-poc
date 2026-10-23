@@ -1,0 +1,53 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Guillaume Alaux <guillaume@archlinux.org>
+# Contributor: Vitaliy Berdinskikh <ur6lad@i.ua>
+
+pkgname=tomcat-native
+pkgver=2.0.16
+pkgrel=1
+pkgdesc='Optional component for Tomcat to use certain native resources for performance, compatibility'
+arch=(x86_64)
+url=https://tomcat.apache.org/native-doc/
+license=(Apache-2.0)
+depends=(
+  apr
+  openssl
+)
+makedepends=(
+  git
+  java-environment
+  python
+)
+options=(!emptydirs)
+source=(
+  git+https://github.com/apache/tomcat-native.git#tag=${pkgver}
+  tomcat-native-buildconf.patch
+)
+b2sums=('4deeb07cb224dba851e9c419d98f0dd4290b5f7b4395d0959dce37c2383f3ad2a09eeb9297a737b638cd9d4f1ccd13119f29befed2f5e44c8442aa6ac2480d71'
+        'd3603079626b908644331c193452088ef3ce89e92c775c60b232d16d04b8c49d40106d55c76f81c87daea93d335868140df0046c7102796d92b08431ac8749a4')
+
+
+
+prepare() {
+  cd tomcat-native/native
+  patch -Np2 -i ../../tomcat-native-buildconf.patch
+  automake --add-missing --copy --force-missing || true
+  ./buildconf \
+    --with-apr=/usr/share/apr-1
+}
+
+build() {
+  cd tomcat-native/native
+  ./configure \
+    --prefix=/usr \
+    --with-apr=/usr/bin/apr-1-config \
+    --with-java-home=/usr/lib/jvm/default \
+    --with-ssl=/usr
+  make
+}
+
+package() {
+  make DESTDIR="${pkgdir}" -C tomcat-native/native install
+}
+
+# vim: ts=2 sw=2 et:

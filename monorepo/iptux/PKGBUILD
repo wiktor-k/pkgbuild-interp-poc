@@ -1,0 +1,90 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Kevin Guan <KevinGuan.gm@gmail.com>
+
+pkgname=iptux
+pkgver=0.9.4
+pkgrel=2
+pkgdesc='LAN messenger and file sender, an IP Messenger client'
+arch=(x86_64)
+url='https://github.com/iptux-src/iptux/'
+license=(GPL-2.0-or-later)
+depends=(
+  gdk-pixbuf2
+  gflags
+  glib2
+  glibc
+  google-glog
+  gtk3
+  hicolor-icon-theme
+  jsoncpp
+  libappindicator
+  libgcc
+  libsigc++
+  libstdc++
+  pango
+)
+makedepends=(
+  appstream
+  git
+  meson
+)
+checkdepends=(xorg-server-xvfb)
+options=(!lto)
+source=(
+  "git+https://github.com/iptux-src/iptux.git#tag=v$pkgver"
+  iptux-window-icon.patch
+  iptux-prgname.patch
+  iptux-present-window.patch
+  iptux-window-size.patch
+  iptux-hide-on-close.patch
+)
+b2sums=(
+  e8b06e0f18a70f5ece5135a2fcef5a5c18d46d8219edf814680fe092209d828433793264139051cafe72eacaf70268e356cbd601d5fcf6ba3a44b24d17580a00
+  e5b00a5301e7f737de67ae027a6d1cfb972f112ee3dfb22d29e6fc7b5462eec4b28aa44d31a328d7d0d9dea633a09943ac7c853bc00c41cded02deec10587430
+  9e3b4eec36dbe17f8a28d22d7c188e02b566af4d690bf2883c06a1c9ed28c2fcbbd8d6dfd31638291e3a5c1239c1209478edf346f3758b3200400c4c0b751b67
+  6d93f9d8c4173691a1211eaa23c5f2d1e7d1c5a475e64c4483597e988be688ca955ca7c7f6ffb6b37871f0ebcc60c3ec8de270ecc46d1c8837c41cbfe763d982
+  420a3c1d71068c8d017ef3bff9173bc5b63e862e9eb8aa4e112af67b7d3f87d063b30f8e71f9b3bb684853495e6e3382708a9c8dac338568b0b2fe62002de5f3
+  5d6804a5123efb7122a1d22faa9b0a8cd12eff40953da3505b10a8de18e28d919dbda7219ecca039cdae9b7c9bceebfa3305f353a8865cdfbc473b03cdecedb2
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix window icon name
+  # https://github.com/iptux-src/iptux/pull/737
+  git apply -3 ../iptux-window-icon.patch
+
+  # Set prgname to application ID
+  # https://github.com/iptux-src/iptux/pull/738
+  git apply -3 ../iptux-prgname.patch
+
+  # Present window on activation
+  # https://github.com/iptux-src/iptux/pull/739
+  git apply -3 ../iptux-present-window.patch
+
+  # Fix window size growing with client-side decorations
+  # https://github.com/iptux-src/iptux/pull/740
+  git apply -3 ../iptux-window-size.patch
+
+  # Add option to hide on close
+  # https://github.com/iptux-src/iptux/pull/741
+  git apply -3 ../iptux-hide-on-close.patch
+
+  # Use libappindicator
+  sed -i 's/ayatana-appindicator/appindicator/' src/meson.build src/iptux/AppIndicator.cpp
+}
+
+build() {
+  # Fix build with glog 0.7
+  CXXFLAGS+=" -DGLOG_USE_GLOG_EXPORT -DGLOG_USE_GFLAGS" \
+    arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  xvfb-run meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

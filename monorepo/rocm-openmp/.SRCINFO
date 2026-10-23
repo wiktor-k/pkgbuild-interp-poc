@@ -1,0 +1,30 @@
+pkgbase = rocm-openmp
+	pkgdesc = Radeon Open Compute - OpenMP host runtime and GPU target offloading
+	pkgver = 7.2.4
+	pkgrel = 1
+	url = https://rocm.docs.amd.com/en/latest/reference/rocmcc.html
+	arch = x86_64
+	license = Apache-2.0 WITH LLVM-exception
+	makedepends = git
+	makedepends = cmake
+	makedepends = ninja
+	makedepends = python
+	makedepends = perl
+	makedepends = rocm-cmake
+	depends = rocm-core
+	depends = rocm-llvm
+	depends = rocm-device-libs
+	depends = hsa-rocr
+	depends = glibc
+	depends = gcc-libs
+	depends = zlib
+	depends = zstd
+	depends = libffi
+	depends = libxml2
+	depends = ncurses
+	options = staticlibs
+	options = !lto
+	source = rocm-openmp::git+https://github.com/ROCm/llvm-project#tag=rocm-7.2.4
+	sha256sums = SKIP
+
+pkgname = rocm-openmp

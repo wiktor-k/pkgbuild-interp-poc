@@ -1,0 +1,21 @@
+pkgbase = cdemu-client
+	pkgdesc = Simple command-line client for controlling cdemu-daemon
+	pkgver = 3.3.1
+	pkgrel = 1
+	url = https://cdemu.sourceforge.io/
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = bash-completion
+	makedepends = cmake
+	makedepends = git
+	makedepends = intltool
+	makedepends = ninja
+	depends = cdemu-daemon
+	depends = glib2
+	depends = python
+	depends = python-gobject
+	conflicts = cdemu
+	source = cdemu-code::git+https://git.code.sf.net/p/cdemu/code#tag=cdemu-client-3.3.1
+	b2sums = 1d5e5f44025144161fa31d71991150091ab989327360bba47309eaadc855b18116d8bde56e28c9d3eb8339f919a71d5795045dc9a4eae15c0cace0ef86ad72ac
+
+pkgname = cdemu-client

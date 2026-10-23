@@ -1,0 +1,29 @@
+# Maintainer: T.J. Townsend <blakkheim@archlinux.org>
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Contributor: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=kernel-hardening-checker
+pkgver=0.6.17.1
+pkgrel=2
+pkgdesc='Tool for checking the security hardening options of the Linux kernel'
+url="https://github.com/a13xp0p0v/kernel-hardening-checker"
+arch=(any)
+license=(GPL-3.0-only)
+depends=(python)
+makedepends=(git python-setuptools python-build python-installer python-wheel)
+replaces=(kconfig-hardened-check)
+conflicts=(kconfig-hardened-check)
+source=("git+https://github.com/a13xp0p0v/kernel-hardening-checker.git#tag=v${pkgver}")
+sha256sums=('d706d59081e577cefe9764020498216004e1c99d8654f87a2b70cc6f18d93b23')
+b2sums=('051e83d0e336f59a3834af9f4b05bbf88e5fb819e3f05599717254ba8fdc9f07c6b538d6b10cd801ca5038aec51264e2ee4c6798a9327df956fb45db766b601a')
+
+build() {
+  cd "$pkgname"
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}

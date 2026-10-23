@@ -1,0 +1,71 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=cartridges
+pkgver=2.13.1
+pkgrel=2
+pkgdesc='Simple game launcher written in Python using GTK4 and Libadwaita'
+arch=(any)
+url='https://codeberg.org/kramo/cartridges'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  pango
+  python
+  python-gobject
+  python-pillow
+  python-requests
+  python-urllib3
+  python-yaml
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+)
+source=(
+  "git+https://codeberg.org/kramo/cartridges.git#tag=v$pkgver"
+  cartridges-save-cover.patch
+  cartridges-dbus-activatable.patch
+)
+b2sums=(
+  bcf1452524d58755503fe48d18906f7f6d44235006c8bddafd718b0dfdaf37ea043e0d3090429908b5ce847ed027aa62fb651a95f5ed9eb4fc243e0f63edcdc2
+  c5e201f051b5257d6332537a04fd15fbf7699a5740d643b48031a9c0dc4ca3ee3081e511aa93514beff55fab2dab210e84ae24e23eb630cbcfeb7d0fb0c84b68
+  71e83a7e0d7da0263c25811d2bf737ae9c51403cea62cb3de76fa4f98a551c97b6b06f02c56fabd064b6e9f8f513d0f28784b68a2fe4705c1d78b961ac95c453
+)
+
+prepare() {
+  cd $pkgname
+
+  # Fix crash caused by missing conversion of game count to string
+  git cherry-pick -n cfcf72cc75a2df7809d149920e92154fdc3411a9
+
+  # Save covers directly into covers dir
+  # https://codeberg.org/kramo/cartridges/pulls/306
+  git apply -3 ../cartridges-save-cover.patch
+
+  # Add D-Bus service file
+  git apply -3 ../cartridges-dbus-activatable.patch
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D tiff_compression=jpeg
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+
+  python -m compileall -d /usr/lib "$pkgdir/usr/lib"
+  python -O -m compileall -d /usr/lib "$pkgdir/usr/lib"
+}

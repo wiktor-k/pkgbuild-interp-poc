@@ -1,0 +1,35 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-screensaver-pp
+pkgver=0.0.4
+pkgrel=4
+pkgdesc='Optional PP screensaver resource for deepin screensaver'
+arch=('any')
+url="https://github.com/zccrs/screensaver-pp"
+license=('GPL-3.0-only')
+depends=('deepin-screensaver' 'qt6-5compat' 'qt6-declarative')
+makedepends=('git' 'qt6-tools')
+groups=('deepin-extra')
+source=("git+$url.git#tag=$pkgver")
+sha512sums=('0886c7f7ada50ca4047a1b7fa2c8a370201a927e88701ec08cdef66322cbaacb258b40799d46b94e6073934504aaaf5bf2606ce0674a15a965111d02ab43fad8')
+
+prepare() {
+  cd screensaver-pp
+  # Apply the PR base commit so the Qt 6 port cherry-picks cleanly:
+  # https://github.com/zccrs/screensaver-pp/commit/2ebbb1e510226dd47d11da55c38f091e29158618
+  git cherry-pick -n 2ebbb1e510226dd47d11da55c38f091e29158618
+  # Port the screensaver resource to Qt 6:
+  # https://github.com/zccrs/screensaver-pp/pull/3
+  git cherry-pick -n b5e176210268b4ac01fd9a02b7faeb5281fbe20f
+}
+
+build(){
+  cd screensaver-pp
+  qmake6 PREFIX=/usr
+  make
+}
+
+package() {
+  cd screensaver-pp
+  make INSTALL_ROOT="$pkgdir" install
+}

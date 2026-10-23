@@ -1,0 +1,86 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+_name=jekyll-feed
+pkgname=ruby-$_name
+pkgver=0.18.0
+pkgrel=1
+pkgdesc='A Jekyll plugin to generate an Atom feed of your Jekyll posts'
+arch=('any')
+url='https://github.com/jekyll/jekyll-feed'
+license=('MIT')
+depends=('ruby' 'ruby-jekyll')
+checkdepends=(
+  ruby-nokogiri
+  ruby-rspec
+  ruby-rss
+  ruby-typhoeus
+)
+source=(${pkgname}-${pkgver}.tar.gz::https://github.com/jekyll/$_name/archive/v${pkgver}.tar.gz)
+sha256sums=('e89a598ac5baa091bfb116c499a5b7dc11d3881757e5d7b6530645056cd2784c')
+
+prepare() {
+  cd "${_name}-${pkgver}"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_name}.gemspec"
+}
+
+build() {
+  cd "${_name}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build "${_name}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_name}-${pkgver}.gem"
+
+  # remove unrepreducible files
+  rm --force --recursive --verbose \
+    "tmp_install/${_gemdir}/cache/" \
+    "tmp_install/${_gemdir}/gems/${_name}-${pkgver}/vendor/" \
+    "tmp_install/${_gemdir}/doc/${_name}-${pkgver}/ri/ext/"
+
+  find "tmp_install/${_gemdir}/gems/" \
+    -type f \
+    \( \
+      -iname "*.o" -o \
+      -iname "*.c" -o \
+      -iname "*.so" -o \
+      -iname "*.time" -o \
+      -iname "gem.build_complete" -o \
+      -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/${_gemdir}/extensions/" \
+    -type f \
+    \( \
+      -iname "mkmf.log" -o \
+      -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "${_name}-${pkgver}"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install/${_gemdir}" rspec
+}
+
+package() {
+  cd "${_name}-${pkgver}"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 LICENSE.txt --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 *.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: tabstop=2 shiftwidth=2 expandtab:

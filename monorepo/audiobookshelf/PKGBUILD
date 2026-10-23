@@ -1,0 +1,69 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=audiobookshelf
+pkgver=2.37.1
+pkgrel=1
+pkgdesc='Self-hosted audiobook and podcast server'
+arch=(x86_64)
+url='https://www.audiobookshelf.org/'
+license=(GPL-3.0-only)
+depends=(
+  glibc
+  libnusqlite3
+  ffmpeg
+  nodejs
+)
+makedepends=(
+  git
+  npm
+)
+backup=(etc/audiobookshelf.env)
+source=(
+  "$pkgname::git+https://github.com/advplyr/audiobookshelf#tag=v$pkgver"
+  systemd.service
+  sysusers.conf
+  tmpfiles.conf
+  config.env
+)
+sha512sums=('9ac96596a708eb3e669831f86a2be51f79c0b60d3c27f14f397642cb581ea21d867f033d5caa0f894fd7ba86d5769bf76664303056237a0940d8566054d4ad1d'
+            '281e79851836c3f42d77b1f5bd766fae1da66d918b774f46404b523b95bb6444c02cef1fca2e3e38d7e8af771815909e04c15cafae37d15bcd7fbd87809cd8f8'
+            '486df6f20ed873b20734109774e235a4e9c02d40e5cd8be75eedd9b45ad79747ef0d0c13e26299e4e1fe871593f31e21bdf6754483e15c6e0e1974d2f894c86d'
+            '69ebe29f0fd9fd98493a9be2c102ecd5617cd8581ebb634b60c4981954566cb0967c7606ff876a1866f82e4fc96c0f8b3c9f92bf9e089df36432e971f80d3f9a'
+            'c7453ed1ffb8d617622a004a05d36d9188a5dd6c98e53a4d58af8e8505ba849ad9c089d9ef3794da3df73b0993187aed255eee4dcb6b77faffea8e0634364e07')
+b2sums=('92ea90d7b5efc89c89bc7a6b9620509cd69dd3a2bd4d628f99a6883ae971afd2ed7abd105c60bc3db4e6a8bd0bcf74f41650924fc03f90f9d5c2aca8047dcede'
+        '71aff47174d76e5a6b0a4456e8631d36896d6cb2a8a0efc10fd36339b8638fc4f6f49d7d1b160f78a00388be6b1a075d4e4ce0f14a9487628168b33898d82879'
+        '2a16dbea57c9971bba24bc027e867990c22f6bd3adc573ee52599f235b19d48df8c36f73e341ed2950c399e50accc781f625b0976ebb96bb1bf56f4c3e24704b'
+        '9057d9e4e984ba465c7e9fc1271e7c975120a896e3125cd443df25747a6f7ee560a58f95e2c0d0e956c63be09476d0384cdb8915a7d689fb683280f6bd8531a8'
+        '6f310976b2a8f98b7db5bae1ff92b71c8f31429e6c4ac74fe5dc70321c33222e097ca2a7479f910277cb741333105eae1a5680fdcc8cf61cfbb7fff93082a51c')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  npm install
+}
+
+build() {
+  cd "$pkgname"
+
+  npm run client
+  npm ci --omit=dev
+}
+
+package() {
+  # systemd integration
+  install -vDm640 config.env "$pkgdir/etc/$pkgname.env"
+  install -vDm644 systemd.service "$pkgdir/usr/lib/systemd/system/$pkgname.service"
+  install -vDm644 sysusers.conf "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+  install -vDm644 tmpfiles.conf "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+
+  cd "$pkgname"
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" readme.md
+
+  # application
+  install -vDm644 -t "$pkgdir/usr/lib/$pkgname" ./*.json index.js
+  find {client/dist,server,node_modules} -type f |
+    xargs -I {} install -vDm644 {} "$pkgdir/usr/lib/$pkgname/"{}
+}

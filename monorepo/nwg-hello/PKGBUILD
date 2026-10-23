@@ -1,0 +1,55 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-hello
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="GTK3-based greeter for greetd written in python"
+url="https://github.com/nwg-piotr/nwg-hello"
+arch=('any')
+license=('MIT')
+depends=('greetd' 'python' 'python-gobject' 'gtk3' 'gtk-layer-shell' 'gnome-themes-extra')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+optdepends=("sway: Wayland compositor nwg-hello has been made for"
+            "hyprland: Wayland compositor nwg-hello has been made for"
+            "niri: Wayland compositor nwg-hello has been made for"
+            "mangowm: Wayland compositor nwg-hello has been made for"
+            "mugshot: for user avatar support"
+            "nwg-look: to set login sound"
+            "gsound: for login sound playback support"
+            "sound-theme-freedesktop: default system login sound theme")
+backup=("etc/${pkgname}/hyprland.conf"
+        "etc/${pkgname}/sway-config")
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz"
+        "${pkgname}.tmpfiles")
+sha256sums=('0c0c9ef5c6e8943b7b5d09766a3d5a8b4180a68b0ab3da96c748fe3a0f3c54d6'
+            '59ea4bf133561976d228cdae5cc9e6092027ca45e1328e8afe4d919ac4edb053')
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 644 "${pkgname}-default.json" "${pkgdir}/etc/${pkgname}/${pkgname}-default.json"
+	install -Dm 644 "${pkgname}-default.css" "${pkgdir}/etc/${pkgname}/${pkgname}-default.css"
+	install -Dm 644 README "${pkgdir}/etc/${pkgname}/README"
+
+	install -Dm 644 sway-config "${pkgdir}/etc/${pkgname}/sway-config"
+	install -Dm 644 hyprland.conf "${pkgdir}/etc/${pkgname}/hyprland.conf"
+	install -Dm 644 niri.kdl "${pkgdir}/etc/${pkgname}/niri.kdl"
+	install -Dm 644 mango.conf "${pkgdir}/etc/${pkgname}/mango.conf"
+
+	install -Dm 644 img/* -t "${pkgdir}/usr/share/${pkgname}/"
+	install -Dm 644 nwg.jpg "${pkgdir}/usr/share/${pkgname}/nwg.jpg"
+
+	install -Dm 644 cache.json "${pkgdir}/var/cache/${pkgname}/cache.json"
+	install -Dm 644 sound.json "${pkgdir}/var/cache/${pkgname}/sound.json"
+	install -Dm 644 "${srcdir}/${pkgname}.tmpfiles" "${pkgdir}/usr/lib/tmpfiles.d/${pkgname}.conf"
+
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

@@ -1,0 +1,46 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Fangrui Song <i at maskray.me>
+
+pkgname=ccls
+pkgver=0.20261004
+pkgrel=1
+pkgdesc='C/C++/ObjC language server supporting cross references, hierarchies, completion and semantic highlighting'
+arch=('x86_64')
+url='https://github.com/MaskRay/ccls'
+license=('Apache-2.0')
+depends=(
+  'clang'
+  'libstdc++'
+  'libgcc'
+  'glibc'
+  'llvm-libs'
+)
+makedepends=(
+  'cmake'
+  'llvm'
+  'ninja'
+  'rapidjson'
+)
+source=("$url/archive/$pkgver/$pkgname-$pkgver.tar.gz")
+sha512sums=('5870399133554c38fe8497f24aef7bc455d3692a32eaf8e393106ea3a0b171456ec17c6a878de3636445e8042754802e2b861b417912e30976f544a3ed473d73')
+
+build() {
+  local cmake_options=(
+    -B build -S "$pkgname-$pkgver"
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -W no-dev
+    -G Ninja
+    -D CMAKE_CXX_COMPILER=clang++
+    -D CLANG_LINK_CLANG_DYLIB=ON
+    -D CCLS_VERSION="$pkgver"
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

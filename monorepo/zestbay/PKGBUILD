@@ -1,0 +1,67 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: lemonxah <lemonxah@gmail.com>
+
+pkgname=zestbay
+pkgver=0.8.6
+pkgrel=1
+pkgdesc='A PipeWire patchbay and audio routing manager with integrated LV2/VST3/CLAP plugin hosting'
+arch=(x86_64)
+url='https://github.com/lemonxah/zestbay'
+license=(MIT)
+depends=(
+  hicolor-icon-theme
+  libstdc++
+  libgcc
+  glib2
+  glibc
+  serd
+  libpipewire
+  qt6-base
+  qt6-declarative
+  lilv
+  lv2
+  libx11
+  dbus
+)
+makedepends=(
+  git
+  rust
+  clang
+  cmake
+  suil
+)
+optdepends=(
+  'suil: LV2 UI toolkit wrapping for GTK-based plugin UIs'
+)
+options=(!lto !debug)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('834e3fc77b387155b3aa14e2a54a25123acbb43cd9ea05745f2ba13373b900ae444c1e9b7a0d0f314c9e57aac517f9280320b2c1e54d5412b9d4b25d63d8654b')
+b2sums=('cb916b25c05cb1716585a270230a02da6948c574fc6b3776f4470beb1286b26272d03e8f0173d1d1aa409221c95808632490b8c5685f9a27e0a5625e10145fdd')
+
+prepare() {
+  cd "$pkgname"
+
+  # download dependencies
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --workspace --frozen --release --all-features
+}
+
+package() {
+  cd "$pkgname"
+
+  # binaries
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/zestbay{,-ui-bridge}
+
+  # desktop files
+  install -vDm644 -t "$pkgdir/usr/share/applications" zestbay.desktop
+  install -vDm644 images/zesticon.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/zestbay.png"
+  install -vDm644 images/zesttray.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/zestbay-tray.png"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

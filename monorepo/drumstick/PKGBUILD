@@ -1,0 +1,74 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: speps <speps at aur dot archlinux dot org>
+# Contributor: Dany Martineau <dany.luc.martineau@gmail.com>
+
+pkgname=drumstick
+pkgver=2.11.1
+pkgrel=1
+pkgdesc="MIDI libraries for Qt6/C++"
+arch=(x86_64)
+url="https://drumstick.sourceforge.io/"
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  hicolor-icon-theme
+  libgcc
+  libstdc++
+  qt6-5compat
+  qt6-base
+)
+makedepends=(
+  alsa-lib
+  cmake
+  doxygen
+  docbook-xsl
+  fluidsynth
+  graphviz
+  libpulse
+  libpipewire
+  qt6-tools
+  sonivox
+)
+provides=(
+  libdrumstick-alsa.so
+  libdrumstick-file.so
+  libdrumstick-rt.so
+  libdrumstick-widgets.so
+)
+source=(https://downloads.sourceforge.net/$pkgname/$pkgver/$pkgname-$pkgver.tar.bz2)
+sha512sums=('793254b4b57a9288b0f15347b4356a7547dd236d1b5e7dcc127831a0e00eccee46e3c08c66b6cc69110e94604e8e0e3bee23cd020136e0122b9305514a7c80be')
+b2sums=('04529fcc00328b758e2889c348d03599c4fe306bc7fa10e84b8305cc2babf2299229f36cbaf036991142aac628e9be60d410f48ca0ed7bb9a74dd1a2dcaa40ff')
+
+build() {
+  local cmake_options=(
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -S $pkgname-$pkgver
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+  cmake --build build --verbose
+}
+
+check() {
+  # some tests fail due to insufficient system privileges, hence only run those
+  # that make sense in the build environment
+  # https://sourceforge.net/p/drumstick/bugs/24/
+  make test -C build/tests/fileTest1
+  make test -C build/tests/fileTest2
+}
+
+package() {
+  depends+=(
+    alsa-lib libasound.so
+    fluidsynth libfluidsynth.so
+    libpulse libpulse.so libpulse-simple.so
+    libpipewire libpipewire-0.3.so
+    sonivox libsonivox.so
+  )
+
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 $pkgname-$pkgver/{AUTHORS,ChangeLog,NEWS,readme.md,TODO} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

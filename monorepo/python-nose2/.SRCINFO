@@ -1,0 +1,23 @@
+pkgbase = python-nose2
+	pkgdesc = The next generation of nicer testing for python
+	pkgver = 0.16.0
+	pkgrel = 1
+	url = https://github.com/nose-devs/nose2
+	arch = any
+	license = BSD-2-Clause
+	license = BSD-3-Clause
+	checkdepends = python-coverage
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	optdepends = python-coverage: for coverage_plugin
+	optdepends = python-setuptools: for eggdiscovery plugin
+	optdepends = python-sphinx: for doc
+	optdepends = python-sphinx_rtd_theme: for doc
+	source = nose2-0.16.0.tar.gz::https://github.com/nose-devs/nose2/archive/refs/tags/0.16.0.tar.gz
+	sha512sums = 0991e3ad18b04c1ecbb909270bfaa37b1bba38e31fd33753cff2d81f485fc8e11e13a0305a84bd76052a90b084b4f2d4b8ca2497015398d7d0232d68a1a26235
+	b2sums = 7538a914ece48bfb0deb08d8e39f337e2739939d17231f21285896c4cbf837b1bd9432f48e068b43c9215456dedee2c43cfbd6b30ad183e4311ec55671551254
+
+pkgname = python-nose2

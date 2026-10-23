@@ -1,0 +1,41 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Nevar <psi.neamf@gmail.com>
+
+pkgname=nautilus-share
+pkgver=0.7.5
+pkgrel=5
+pkgdesc='Nautilus extension to share folder using Samba'
+arch=(x86_64)
+url='https://gitlab.gnome.org/coreyberla/nautilus-share'
+license=(GPL-2.0-or-later)
+depends=(
+  glib2
+  glibc
+  gtk4
+  libnautilus-extension
+  nautilus
+  samba
+)
+makedepends=(
+  git
+  meson
+)
+source=("git+https://gitlab.gnome.org/coreyberla/$pkgname.git#tag=$pkgver")
+b2sums=(0d4c8bdcdd8ae4eb41f40a4f0d25611e4a1a0fe6f9f65fd632f61b506f7e1c2a678c6f8705e3b9f6722f828fe2e8c70f66b383ebd221f570a23e3ac7b4b9eb5a)
+
+prepare() {
+  cd $pkgname
+
+  # Fix missing translations
+  git cherry-pick -n abf29e42de94bf6380d4071b9ac6a9ab0a078c7c
+}
+
+build() {
+  arch-meson $pkgname build \
+    --datadir=share/nautilus-share
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir="$pkgdir"
+}

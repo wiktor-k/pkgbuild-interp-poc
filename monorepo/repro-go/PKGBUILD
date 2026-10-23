@@ -1,0 +1,50 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=repro-go
+pkgver=0.1.1
+pkgrel=1
+pkgdesc="Reproducible Builds, Binary hardening, Debug symbols - Minimal Go build system"
+url='https://github.com/kpcyrd/repro-go'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'gcc-libs'
+  'glibc'
+  'go'
+)
+makedepends=(
+  'cargo'
+)
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('0313f51749f8ffefefa7297bced196be3a94c01ed49369e61e7a3040166a4372')
+b2sums=('329b6b4cdc25025e4dcca750e1ffd39b4e5b99679d20f8d5d372b9c90384976d327c790475cf689df5af118fc6a59a4014bd887286ead19da2083a744f4267dd')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+  # Don't pass through build flags as they may get flagged
+  make \
+    CFLAGS= CGO_CFLAGS= \
+    CPPFLAGS= CGO_CPPFLAGS= \
+    CXXFLAGS= CGO_CXXFLAGS= \
+    LDFLAGS= CGO_LDFLAGS=
+  ./example
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/repro-go
+}
+
+# vim: ts=2 sw=2 et:

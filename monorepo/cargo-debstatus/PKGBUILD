@@ -1,0 +1,45 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+
+pkgname=cargo-debstatus
+pkgver=0.6.6
+pkgrel=1
+pkgdesc="cargo-tree for Debian packaging"
+url='https://github.com/kpcyrd/cargo-debstatus'
+arch=('x86_64')
+license=('(MIT OR Apache-2.0) AND GPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('f7fb6e5a5a3b692e9ec34f4aa7b28f1f783c4358ae7729e5ea3c5b21fcb27728')
+b2sums=('26fa9676a02c1b0e8d09355e08f024a355728ad803c399d2ab81c2310bfb34405a38dd766c1c7581f4560d9bc5ca2afb2f59c000ac71c377293419ea8a056b8c')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  cargo build --frozen --release
+}
+
+check() {
+  cd ${pkgname}-${pkgver}
+  cargo test --frozen
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    "target/release/${pkgname}"
+
+  install -Dm 644 LICENSE-* -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

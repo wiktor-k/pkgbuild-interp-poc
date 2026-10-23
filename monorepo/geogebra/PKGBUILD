@@ -1,0 +1,39 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Evgeniy Alekseev <arcanis at archlinux dot org>
+# Contributor: Bartłomiej Piotrowski <bpiotrowski at archlinux dot org>
+# Contributor: Felipe Hommen <felibank at gmail dot com>
+# Contributor: moostik <mooostik at gmail dot com>
+
+pkgname=geogebra
+pkgver=5.4.933.1
+pkgrel=1
+epoch=1
+pkgdesc='Dynamic mathematics software with interactive graphics, algebra and spreadsheet'
+arch=(any)
+url='https://www.geogebra.org/'
+license=(LicenseRef-GeoGebra)
+depends=('java-runtime>=11'
+         sh)
+source=(https://download.geogebra.org/installers/${pkgver%.*.*}/GeoGebra-Linux-Portable-${pkgver//./-}.tar.bz2
+        geogebra
+        geogebra.svg
+        geogebra.desktop
+        geogebra-mime.xml)
+sha256sums=('f78296b8ae72c7bcab44274a445385e52f6670f3ede95fdf7f76fbfa3a7a7db5'
+            '990b826d7c1d038747bac6803d5e48b6c13247ba838f826f9a23b81198c4a39d'
+            'd81270ac2a7702246633fe11f448bd809e9250e2057077195eeabdc32b64ac46'
+            'ecefc6070049fed03c196a632ce7714838e50ecec8f012566f67c844437179dc'
+            '100dd83e61057b9a104630ea39a84d967475d459ab38e29783a7587b3acfb6a4')
+
+package() {
+  cd GeoGebra-Linux-Portable-${pkgver//./-}
+
+  install -dm755 "$pkgdir"/usr/lib
+  cp -dpr --no-preserve=ownership geogebra "$pkgdir"/usr/lib
+  chmod +x "$pkgdir"/usr/lib/geogebra/geogebra
+  install -Dm755 ../geogebra -t "$pkgdir"/usr/bin
+
+  install -Dm644 ../geogebra.desktop -t "$pkgdir"/usr/share/applications/
+  install -Dm644 ../geogebra.svg -t "$pkgdir"/usr/share/icons/hicolor/scalable/apps/
+  install -Dm644 ../geogebra-mime.xml "$pkgdir"/usr/share/mime/packages/geogebra.xml
+}

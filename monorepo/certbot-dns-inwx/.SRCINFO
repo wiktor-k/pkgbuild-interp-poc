@@ -1,0 +1,24 @@
+pkgbase = certbot-dns-inwx
+	pkgdesc = INWX DNS authenticator plugin for certbot
+	pkgver = 3.0.3
+	pkgrel = 2
+	url = https://github.com/oGGy990/certbot-dns-inwx
+	arch = any
+	license = Apache
+	checkdepends = python-dnspython
+	checkdepends = python-pytest
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = certbot
+	depends = python
+	depends = python-inwx-domrobot
+	optdepends = python-dnspython: needed for CNAME redirects
+	optdepends = python-idna: support of internationalized domain names
+	backup = etc/letsencrypt/inwx.cfg
+	source = https://github.com/oGGy990/certbot-dns-inwx/archive/v3.0.3/certbot-dns-inwx-3.0.3.tar.gz
+	sha512sums = 6195f0f42ecffcec45e9447edfa5c76382d8ffb22f5b5b012780f9cf44c83c52467a14ac23ec99f7a7348377655723b70415cff55911497701ceb3e8085c9a31
+	b2sums = e525e5c5cdf8d90ba662716e99103dec6d392ccab7c2dff8face450fb8f4dfd3945da1f332ddb1f1aefaeb2a3d7b73b0df7aea41c591d00e250c66d44a48d50e
+
+pkgname = certbot-dns-inwx

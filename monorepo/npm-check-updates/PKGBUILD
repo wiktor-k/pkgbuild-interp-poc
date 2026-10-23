@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=npm-check-updates
+pkgdesc='Find newer versions of dependencies than what your package.json allows'
+pkgver=23.1.1
+pkgrel=1
+arch=('any')
+url='https://github.com/raineorshine/npm-check-updates'
+license=('Apache-2.0')
+depends=('npm')
+source=(https://registry.npmjs.org/$pkgname/-/$pkgname-$pkgver.tgz)
+noextract=($pkgname-$pkgver.tgz)
+sha512sums=('533603befb10464997479f60f52aac431ca0629ec0845a5f11c38e18e25a07f3fba45fd795aa8860b2b75235067cc1c7d7e692da766f251688b24da7934cf96a')
+
+package() {
+  npm install -g --prefix "$pkgdir"/usr "$srcdir"/$pkgname-$pkgver.tgz
+
+  # Non-deterministic race in npm gives 777 permissions to random directories.
+  # See https://github.com/npm/npm/issues/9359 for details.
+  chmod -R u=rwX,go=rX "$pkgdir"
+
+  # npm installs package.json owned by build user
+  # https://bugs.archlinux.org/task/63396
+  chown -R root:root "$pkgdir"
+}

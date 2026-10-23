@@ -1,0 +1,33 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: grawity <grawity@gmail.com>
+
+pkgname=pkcs11-provider
+pkgver=1.3.0
+pkgrel=1
+pkgdesc="A pkcs#11 provider for OpenSSL 3.0+"
+url="https://github.com/latchset/pkcs11-provider"
+arch=('x86_64')
+license=('Apache-2.0')
+depends=('glibc' 'openssl>=3.0.7' 'p11-kit')
+makedepends=('git' 'meson')
+checkdepends=('expect' 'gnutls' 'nss' 'opensc' 'softhsm' 'xxd')
+source=("git+${url}.git#tag=v${pkgver}?signed")
+sha256sums=('cb208cf31a8c15ad1a69475b80943ae1cc0aac78eeecc992b5cad4b71c652d18')
+validpgpkeys=('7C7BD146943B206BB645B64594EAD67E004B65AB')
+
+build() {
+	cd "${pkgname}"
+	meson setup build --wipe --prefix=/usr --sysconfdir=/etc
+	meson compile -C build
+}
+
+check() {
+	cd "${pkgname}"
+	meson test -C build
+}
+
+package() {
+	cd "${pkgname}"
+	meson install -C build --destdir="${pkgdir}"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}

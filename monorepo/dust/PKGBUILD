@@ -1,0 +1,67 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Knut Ahlers <knut at ahlers dot me>
+
+pkgname=dust
+pkgver=1.2.6
+pkgrel=1
+pkgdesc='A more intuitive version of du in rust'
+arch=(x86_64)
+url='https://github.com/bootandy/dust'
+license=(Apache-2.0)
+depends=(glibc # libc.so
+         libgcc)
+makedepends=(git rust)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('5f5ad20ee9f9d7294ea2feb97b1e207c4e95e3dd0651f56121f8e8f41ff60b4214de6e1fd17246bbdecbc0f7858e29796b89d2a1a69a416d880b436a4fc81082')
+b2sums=('3ff5dd31bca63551a95b619fe4b2ec8502055165d6f7d38f802db2234ec3a8b090c34a42d6448703bf3a2de8426dcaf5ac488952910d7718c6b1f7a023e49fc7')
+
+_srcenv() {
+  cd "$pkgname"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  _srcenv
+  cargo build --frozen --release --all-features
+}
+
+check() {
+  _srcenv
+  cargo test --frozen --all-features
+}
+
+package() {
+  depends+=(libgcc_s.so)
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" "target/release/$pkgname"
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # shell completions
+  install -vDm644 "completions/$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm644 -t "$pkgdir/usr/share/elvish/lib/" "completions/$pkgname.elv"
+  install -vDm644 -t "$pkgdir/usr/share/fish/vendor_completions.d/" "completions/$pkgname.fish"
+  install -vDm644 -t "$pkgdir/usr/share/zsh/site-functions/" "completions/_$pkgname"
+
+  # manpage
+  install -vDm644 -t "$pkgdir/usr/share/man/man1/" man-page/$pkgname.1
+}
+
+# vim:set ts=2 sw=2 et:

@@ -1,0 +1,40 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=git-graph
+pkgver=0.8.0
+pkgrel=1
+pkgdesc='show clear git graphs arranged following different branching model'
+arch=(x86_64)
+url="https://github.com/mlange-42/$pkgname"
+license=(MIT)
+depends=(glibc # libc.so
+         libgcc # libgcc_s.so
+         libgit2 libgit2.so
+         zlib libz.so)
+makedepends=(cargo)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/v$pkgver/$_archive.tar.gz")
+sha256sums=('129880bcf23a15653c72fbaa831c326a9009fff94892173fc1b281ef63f59beb')
+
+prepare() {
+	cd "$_archive"
+	cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+	cd "$_archive"
+	CFLAGS+=' -ffat-lto-objects'
+	export LIBGIT2_NO_VENDOR=1
+	cargo build --frozen --release
+}
+
+check() {
+	cd "$_archive"
+	cargo test --frozen
+}
+
+package() {
+	cd "$_archive"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

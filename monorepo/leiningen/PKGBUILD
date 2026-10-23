@@ -1,0 +1,37 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Marcel Campello <tucho@prafrentex.com.br>
+
+pkgname=leiningen
+pkgver=2.13.0
+pkgrel=1
+pkgdesc='Automate Clojure projects'
+arch=(any)
+url='https://codeberg.org/leiningen/leiningen'
+license=(EPL-2.0)
+depends=(java-environment java-runtime)
+makedepends=(git leiningen)
+optdepends=('rlwrap: for readline support')
+noextract=("$pkgname-$pkgver-standalone.jar")
+source=("git+$url#tag=$pkgver")
+b2sums=('c76bd542d75d8fef60ff52a95b5af450a5a75175274cdf50929353de90c14c812df095004472e4c45e6132f2d58fd4e0a65af0b0f82b4e33e94494f2af2fa136')
+
+prepare() {
+  cd $pkgname/$pkgname-core
+  lein bootstrap
+}
+
+build() {
+  cd $pkgname
+  chmod +x bin/lein
+  bin/lein uberjar
+  bin/lein pom
+}
+
+package() {
+  cd $pkgname
+  install -Dm755 bin/lein "$pkgdir/usr/bin/lein-standalone"
+  install -Dm755 bin/lein-pkg "$pkgdir/usr/bin/lein"
+  install -Dm644 doc/lein.1 "$pkgdir/usr/share/man/man1/lein.1"
+  install -Dm644 target/$pkgname-$pkgver-standalone.jar \
+    "$pkgdir/usr/share/java/$pkgname-$pkgver-standalone.jar"
+}

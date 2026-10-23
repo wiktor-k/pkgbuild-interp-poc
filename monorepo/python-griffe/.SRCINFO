@@ -1,0 +1,37 @@
+pkgbase = python-griffe
+	pkgdesc = Signatures for entire Python programs
+	pkgver = 2.4.0
+	pkgrel = 1
+	url = https://mkdocstrings.github.io/griffe
+	arch = any
+	license = ISC
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-hatchling
+	source = python-griffe::git+https://github.com/mkdocstrings/griffe#tag=2.4.0
+	source = simple-version.patch
+	sha512sums = aa8222ceb1d7049919c2d53f17f4a788b662c1797aec18eb014054b102ae1656e54928a7c578d7368f4c9ad5229946a9ec096d5c81d1f065e5b750ff9803f4a7
+	sha512sums = cfc9a0fb1742711dd82ed612241a8553cd4d65d64aadf1f3f6cc716d2318fb2b9860e1a8ce6be23d76a69909ddea85b85b180cd502f2c8e80a8f54907b9ad2f9
+	b2sums = 175ef628aee67b664a90a9b8ce539a94d1cc81318d765ef13d348d44b9c733b3bbab752e9d0d4acf39155f776ca229460f936bfc24b095b7beb559a2ca018eba
+	b2sums = 45e007f8858f4e18ca0767bf99116e9b69946081543bfdd2395dfd52d7ac16d92721a5763a6dcd02e620005b7ba4b61ebf51ee3a79f94f248bc480716eb5572a
+
+pkgname = python-griffe
+	depends = python
+	depends = python-griffelib
+	depends = python-griffecli
+
+pkgname = python-griffelib
+	pkgdesc = Signatures for entire Python programs (library package)
+	depends = python
+	depends = python-griffecli
+	depends = python-typing_extensions
+	depends = python-platformdirs
+	depends = python-pip
+	depends = python-wheel
+
+pkgname = python-griffecli
+	pkgdesc = Signatures for entire Python programs (cli package)
+	depends = python
+	depends = python-griffelib
+	depends = python-colorama

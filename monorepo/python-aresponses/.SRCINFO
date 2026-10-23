@@ -1,0 +1,19 @@
+pkgbase = python-aresponses
+	pkgdesc = Asyncio http mocking. Similar to the responses library used for 'requests'
+	pkgver = 3.0.0
+	pkgrel = 7
+	url = https://github.com/aresponses/aresponses
+	arch = any
+	license = MIT
+	checkdepends = python-pytest
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python-aiohttp
+	depends = python-pytest-asyncio
+	source = git+https://github.com/aresponses/aresponses.git#tag=3.0.0
+	sha512sums = acf60278b6848a7af88c2bbd62450fc4892da8f8d7e2f7c08c1831d18252e7fb0623ae753a934b14ee88b83a04012f60adcebf63ac2f9a3329ee7f6e656f88c5
+
+pkgname = python-aresponses

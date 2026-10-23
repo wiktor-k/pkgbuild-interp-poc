@@ -1,0 +1,52 @@
+# Maintainer: Tim Meusel <tim@bastelfreak.de>
+# Maintainer: Hyacinthe Cartiaux <hyacinthe@archlinux.org>
+# Contributor: farawayer <farwayer@gmail.com>
+
+_gemname='colored2'
+pkgname="ruby-${_gemname}"
+pkgver=4.0.3
+pkgrel=1
+pkgdesc='Simple gem that adds various colour methods to String class'
+arch=('any')
+url='https://github.com/kigster/colored2'
+license=('MIT')
+makedepends=('ruby-rdoc')
+checkdepends=('ruby-rspec')
+depends=('ruby')
+source=("${url}/archive/v${pkgver}/${pkgname}-v${pkgver}.tar.gz")
+options=("!emptydirs")
+sha512sums=('c5641e784c7f7dce259d947b9522b61410cfbef7195445198eb9bcef4f059b9f6ba202f4c738929cf9b36453d36cbfd993169bf5ae0ae3f7abfbb0b910c61dee')
+
+prepare() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+
+  # update the gemspec to allow newer dependency versions
+  sed --in-place 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # disable coverage reporting to the cloud
+  sed --in-place '/codeclimate-test-reporter/d' "${_gemname}.gemspec"
+  sed --in-place '/simplecov/Id' spec/spec_helper.rb
+}
+
+build() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  gem build "${_gemname}.gemspec"
+}
+
+check() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  rspec
+}
+
+package() {
+  cd "${srcdir}/${_gemname}-${pkgver}"
+  local _gemdir="$(gem env gemdir)"
+  gem install --verbose --ignore-dependencies --no-user-install --install-dir "${pkgdir}/${_gemdir}" --bindir "${pkgdir}/usr/bin" "${_gemname}-${pkgver}.gem"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}/"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+  rm -rf "${pkgdir}/${_gemdir}/cache"
+}
+
+# vim: ts=2 sw=2 et:

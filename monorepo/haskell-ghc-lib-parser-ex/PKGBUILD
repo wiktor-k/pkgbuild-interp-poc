@@ -1,0 +1,43 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=ghc-lib-parser-ex
+pkgname=haskell-ghc-lib-parser-ex
+pkgver=9.6.0.2
+pkgrel=71
+pkgdesc="Algorithms on GHC parse trees"
+url="https://github.com/shayne-fletcher/ghc-lib-parser-ex"
+license=('BSD')
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-uniplate' 'haskell-ghc')
+makedepends=('ghc' 'haskell-extra' 'haskell-tasty' 'haskell-tasty-hunit' 'haskell-uniplate')
+source=(https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz)
+sha512sums=('d1b8e9940afc0e3de148f2320f19310cb0c02be469895ee7a2afb11b98107816e461b429fe4973eb93a6ec9c16c0fa97f204a2f70d8174c4aab0211e619f09aa')
+
+build() {
+    cd $_hkgname-$pkgver
+
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        -fauto
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

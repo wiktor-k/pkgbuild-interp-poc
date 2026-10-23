@@ -1,0 +1,68 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+
+pkgname=gnome-initial-setup
+pkgver=51.1
+pkgrel=1
+pkgdesc='Helps you to set up your OS when you boot for the first time'
+url='https://gitlab.gnome.org/GNOME/gnome-initial-setup'
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  accountsservice
+  fontconfig
+  gdk-pixbuf2
+  gdm
+  geoclue
+  geocode-glib-2
+  glib2
+  glibc
+  gnome-control-center
+  gnome-desktop-4
+  gsettings-desktop-schemas
+  gtk4
+  harfbuzz
+  json-glib
+  krb5
+  libadwaita
+  libgcc
+  libgdm
+  libgweather-4
+  libibus
+  libmalcontent
+  libnm
+  libnma-gtk4
+  libpwquality
+  libsecret
+  malcontent
+  pango
+  polkit
+  tecla
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-initial-setup.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('d060cb9f804907e08ebcdbed9773d472366a062f4b70967be3f550177d8c298134a58519ea8d78eef68417a12841886f8c8150c69b9e54e9781013035e608662')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D webkitgtk=disabled
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}

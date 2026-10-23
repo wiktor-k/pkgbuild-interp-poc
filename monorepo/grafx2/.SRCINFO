@@ -1,0 +1,21 @@
+pkgbase = grafx2
+	pkgdesc = Pixelart-oriented painting program
+	pkgver = 2.9
+	pkgrel = 2
+	url = http://grafx2.chez.com/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = jq
+	depends = fontconfig
+	depends = hicolor-icon-theme
+	depends = lua
+	depends = sdl2_image
+	depends = sdl2_ttf
+	options = !emptydirs
+	source = https://sourceforge.net/projects/recoil/files/recoil/6.4.4/recoil-6.4.4.tar.gz
+	source = git+https://gitlab.com/GrafX2/grafX2.git#commit=7237d93b08d9fdc47a1a86a28b11124671502e90
+	b2sums = da0fbb63b4afbd1f4ca0af82f537db1ed730bd591a4d8238cf5be837b12a13b2dbaa2cef7ef93d26d1fb2e5419d6fe84610489851b7ba17a3463652802c7a1de
+	b2sums = 31bda0177672395af85887e11ea49f854dd7f64bf6a43cd3b6c738bf0bdf460d5d03e2c55b86bf75ab0ff5140b467eb9a44a54602873fddbc160e4035a2ff1f3
+
+pkgname = grafx2

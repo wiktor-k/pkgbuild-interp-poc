@@ -1,0 +1,51 @@
+pkgbase = kid3
+	pkgdesc = An MP3, Ogg/Vorbis and FLAC tag editor
+	pkgver = 3.10.2
+	pkgrel = 1
+	url = https://kid3.kde.org/
+	changelog = kid3.changelog
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = extra-cmake-modules
+	makedepends = chromaprint
+	makedepends = python
+	makedepends = taglib
+	makedepends = libmp4v2
+	makedepends = qt6-tools
+	makedepends = clang
+	makedepends = qt6-declarative
+	makedepends = qt6-multimedia
+	makedepends = kdoctools
+	makedepends = kxmlgui
+	makedepends = kio
+	source = https://prdownloads.sourceforge.net/kid3/kid3-3.10.2.tar.gz
+	source = https://prdownloads.sourceforge.net/kid3/kid3-3.10.2.tar.gz.sig
+	validpgpkeys = 7D09794C2812F62194B081C14CAD34426E354DD2
+	sha256sums = a9bef0e4f90cf5d5626658ac4b34f6cac23c3b2749b3a91470ad506864316104
+	sha256sums = SKIP
+
+pkgname = kid3-common
+	pkgdesc = An MP3, Ogg/Vorbis and FLAC tag editor, CLI version and common files
+	depends = chromaprint
+	depends = flac
+	depends = libmp4v2
+	depends = libvorbis
+	depends = qt6-base
+	depends = taglib
+	optdepends = qt6-declarative: GUI support library
+	optdepends = qt6-multimedia: GUI support library
+
+pkgname = kid3-qt
+	pkgdesc = An MP3, Ogg/Vorbis and FLAC tag editor, Qt version
+	depends = kid3-common=3.10.2
+	depends = qt6-declarative
+	depends = qt6-multimedia
+
+pkgname = kid3
+	pkgdesc = An MP3, Ogg/Vorbis and FLAC tag editor, KDE version
+	depends = kid3-common=3.10.2
+	depends = kxmlgui
+	depends = qt6-declarative
+	depends = qt6-multimedia
+	depends = kio

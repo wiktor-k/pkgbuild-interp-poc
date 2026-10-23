@@ -1,0 +1,37 @@
+# Maintainer:
+# Contributor: Mark Wagie
+
+pkgname=xdg-desktop-portal-xapp
+pkgver=1.1.3
+pkgrel=2
+pkgdesc='A backend implementation for xdg-desktop-portal using GTK and various pieces of Cinnamon/MATE/Xfce4 infrastructure'
+arch=(x86_64)
+url='https://github.com/linuxmint/xdg-desktop-portal-xapp'
+license=(LGPL-2.1-or-later)
+depends=(
+  gcc-libs
+  glib2
+  glibc
+  gtk3
+  xapp
+  xapp-symbolic-icons
+  xdg-desktop-portal
+  xdg-desktop-portal-gtk
+)
+makedepends=(
+  git
+  glib2-devel
+  meson
+)
+provides=(xdg-desktop-portal-impl)
+source=("git+https://github.com/linuxmint/xdg-desktop-portal-xapp.git#tag=$pkgver")
+b2sums=(a2b1623d741a00adc8519d7794de1e3b5887a5d03ea93bcd80865bc77c780630d29b306b2c32845c8e209e04f0c7fa38072c23da89f668717d797b3394bd7d70)
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}

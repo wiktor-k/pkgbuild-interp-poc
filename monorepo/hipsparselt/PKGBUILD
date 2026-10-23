@@ -1,0 +1,115 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+# Contributor: Felix Richter <judge@felixrichter.tech>
+
+pkgname=hipsparselt
+pkgver=7.2.4
+pkgrel=1
+pkgdesc='SPARSE marshalling library with AMD GPU backend'
+arch=('x86_64')
+url='https://rocm.docs.amd.com/projects/hipSPARSELt/en/latest/'
+license=('MIT')
+depends=(
+  'glibc'
+  'hip-runtime-amd'
+  'hipsparse'
+  'lapack'
+  'libgcc'
+  'msgpack-cxx'
+  'rocm-core'
+  'rocm-smi-lib'
+  'rocminfo'
+  'roctracer'
+)
+makedepends=(
+  'git'
+  'cmake'
+  'ninja'
+  'gtest'
+  'gcc-fortran'
+  'rocm-cmake'
+  'rocm-toolchain'
+  'rocm-llvm'
+  'python'
+  'python-setuptools'
+  'python-joblib'
+  'python-pyyaml'
+  'python-msgpack'
+)
+_git='https://github.com/ROCm/rocm-libraries'
+_tensilelite='https://github.com/ROCm/hipBLASLt'
+# https://github.com/ROCm/rocm-libraries/blob/rocm-7.1.0/projects/hipsparselt/tensilelite_tag.txt
+_commit='25c46a44a79d748394622b0b0c7b7acf7574619a'
+source=("rocm-libraries::git+$_git.git#tag=rocm-$pkgver"
+        "$pkgname-tensilelite-$pkgver.tar.gz::$_tensilelite/archive/$_commit/hipBLASLt-$_commit.tar.gz")
+sha256sums=('b476acbcd0f4017c800e4b05533e6dfb875bde32242729c8df557d4624379623'
+            'e2b3c6b584e12853474315393789d0a4f2a813a2eb003560adbde735ce4140bd')
+_dirname="rocm-libraries/projects/$pkgname"
+
+prepare() {
+  cd hipBLASLt-$_commit
+  # Fixes from https://src.fedoraproject.org/rpms/hipsparselt/blob/rawhide/f/hipsparselt.spec
+  # Remove venv
+  # Use PATH to find where TensileGetPath and other tensile bins are
+  sed -i -e 's@${Tensile_PREFIX}/bin/TensileGetPath@TensileGetPath@g' tensilelite/Tensile/cmake/TensileConfig.cmake
+  # Do not use virtualenv_install
+  sed -i -e 's@virtualenv_install@#virtualenv_install@' CMakeLists.txt
+  # Fixes from https://src.fedoraproject.org/rpms/hipsparselt/blob/rawhide/f/hipsparselt.spec
+  sed -i -e 's@${Tensile_PREFIX}/bin/TensileGetPath@TensileGetPath@g' tensilelite/Tensile/cmake/TensileConfig.cmake
+  sed -i -e 's@set(CMAKE_INSTALL_LIBDIR@#set(CMAKE_INSTALL_LIBDIR@' CMakeLists.txt
+  # Add more names to msgpack include
+  sed -i -e 's@find_package(msgpack REQUIRED)@find_package(msgpack REQUIRED NAMES msgpackc msgpack-cxx msgpack-c)@' tensilelite/Tensile/Source/lib/CMakeLists.txt
+
+  cd ../$_dirname
+  # Prevent the virtualenv install from cmake
+  sed -i -e 's@virtualenv_install@#virtualenv_install@' CMakeLists.txt
+}
+
+build() {
+  cd hipBLASLt-$_commit/tensilelite
+  local tensile_path=$PWD
+  python setup.py install --root "$tensile_path"
+
+  cd ../..
+
+  # -fcf-protection is not supported by HIP, see
+  # https://rocm.docs.amd.com/projects/llvm-project/en/latest/reference/rocmcc.html#support-status-of-other-clang-options
+  CXXFLAGS+=" -fcf-protection=none"
+  local sitedir="$(python -c 'import site; print(site.getsitepackages()[0])')"
+  export PATH="$tensile_path/bin":$PATH
+  export PYTHONPATH="$tensile_path/$sitedir":$PYTHONPATH
+  export Tensile_DIR="$tensile_path/$sitedir/Tensile"
+  local cmake_args=(
+    -Wno-dev
+    -S "$_dirname"
+    -G Ninja
+    -B build
+    -D CMAKE_BUILD_TYPE=None
+    -D CMAKE_C_COMPILER=amdclang
+    -D CMAKE_CXX_COMPILER=amdclang++
+    -D CMAKE_PREFIX_PATH=/opt/rocm/lib
+    -D CMAKE_Fortran_COMPILER=gfortran
+    -D CMAKE_VERBOSE_MAKEFILE=ON
+    -D HIP_PLATFORM=amd
+    -D BUILD_WITH_TENSILE=ON
+    -D HIPSPARSELT_BUILD_TESTING=OFF
+    -D HIPSPARSELT_ENABLE_BENCHMARKS=OFF
+    -D HIPSPARSELT_ENABLE_SAMPLES=OFF
+    -D msgpack_DIR=/usr/lib/cmake/msgpack-c
+    -D Tensile_ROOT="$tensile_path/Tensile"
+    -D Tensile_COMPILER=amdclang++
+    -D Tensile_LIBRARY_FORMAT=msgpack
+    -D VIRTUALENV_BIN_DIR=/usr/bin
+    # tensililte keeps an explicit allowlist of allowed values for GPU_TARGET
+    # https://github.com/ROCm/rocm-libraries/blob/rocm-7.1.0/projects/hipblaslt/cmake/tensilelite_supported_architectures.cmake#L14-L33
+    -D GPU_TARGET="gfx908;gfx90a;gfx942;gfx950;gfx1100;gfx1101;gfx1103;gfx1150;gfx1151;gfx1200;gfx1201;gfx908:xnack+;gfx908:xnack-;gfx90a:xnack+;gfx90a:xnack-"
+  )
+  cmake "${cmake_args[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+
+  install -Dm644 "$_dirname/LICENSE.md" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

@@ -1,0 +1,88 @@
+# Maintainer: Jiachen Yang <farseerfc@gmail.com>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: NicoHood <archlinux {cat} nicohood {dog} de>
+# Contributor: Grayhatter
+# Contributor: Vlad M. <vlad@archlinux.net>
+# Contributor: Håvard Pettersson <mail@haavard.me>
+# Contributor: Madotsuki <madotsuki at cock dot li>
+
+pkgname=utox
+_pkgname=uTox
+pkgver=0.18.1
+pkgrel=8
+pkgdesc='Lightweight Tox client'
+arch=('x86_64')
+url="https://github.com/uTox/uTox"
+license=('MIT')
+depends=(
+  'dbus'
+  'fontconfig'
+  'freetype2'
+  'glibc'
+  'hicolor-icon-theme'
+  'libfilteraudio'
+  'libvpx'
+  'libx11'
+  'libxext'
+  'libxrender'
+  'openal'
+  'toxcore'
+  'v4l-utils'
+)
+makedepends=(
+  'check'
+  'cmake'
+  'findutils'
+  'git'
+  'gtk3'
+  'libdbus'
+)
+optdepends=(
+  'gtk3: GTK file picker'
+  'libdbus: Notification support'
+)
+source=(
+  "https://github.com/$_pkgname/$_pkgname/releases/download/v$pkgver/$_pkgname-$pkgver-full.tar.gz"
+  "https://github.com/$_pkgname/$_pkgname/releases/download/v$pkgver/$_pkgname-$pkgver-full.tar.gz.asc"
+  "$pkgname-remove-hardcoded-cflags.patch"
+)
+sha512sums=('8c3c7016b73dd59d154e781eee2e9d7a05b889460900703e1850cace7796c4f89cd5b1be0421b6becd8d908e46839c87786c782d07be38efb5bbdbdecb8afe2a'
+            'SKIP'
+            '0d63f414c82c295759fe304710a5e87b695b70d0796ddbb9d6df0dd6015cab53ee87ad0f4e137248de07b8bdfe4bf2c9e38a462fa06fb908e2171cc82fac0ce6')
+# PGP keys used by upstream taken from:
+# https://github.com/uTox/uTox/blob/develop/README.md#team
+validpgpkeys=(
+  "B7008FF12C079BF6E6EA19D1601A604B7E605776"
+  "A25156FC7AFB5C0365A0407E6F5DD1C5371DE665"
+)
+
+prepare() {
+  cd $_pkgname
+  # All files in the released archive have weird permissions (600), fix that.
+  find . -type f -exec chmod 644 {} \;
+
+  patch -Np1 -i ../$pkgname-remove-hardcoded-cflags.patch
+}
+
+build() {
+  cd $_pkgname
+  export CMAKE_POLICY_VERSION_MINIMUM=3.5
+  cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -Wno-dev \
+    -DENABLE_ASAN=OFF \
+    -DENABLE_TESTS=ON
+  cmake --build build
+}
+
+check() {
+  cd $_pkgname
+  ctest --test-dir build --output-on-failure
+}
+
+package() {
+  cd $_pkgname
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

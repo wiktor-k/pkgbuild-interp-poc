@@ -1,0 +1,46 @@
+# Maintainer: AndyRTR <andyrtr@archlinux.org>
+
+pkgname=mythes-en
+_pkgver=2026-09-01
+pkgver=${_pkgver//-}
+pkgrel=1
+pkgdesc="English thesaurus"
+arch=('any')
+url="https://extensions.libreoffice.org/en/extensions/show/english-dictionaries"
+license=('LGPL-2.1-or-later')
+makedepends=('libmythes')
+optdepends=('libmythes: offers thesaurus library functions')
+source=("https://extensions.libreoffice.org/assets/downloads/41/1788231883/dict-en-$pkgver.oxt")
+sha256sums=('da9aa9a2cb7907be3bc4c97edefb387f1604eac231ab3cc7577173b0cdc3dd8f')
+
+package() {
+  cd $srcdir
+  
+  install -dm755 "${pkgdir}"/usr/share/mythes
+  cp -p th_en_US_v2.* "$pkgdir"/usr/share/mythes
+
+  pushd "$pkgdir"/usr/share/mythes/
+  # create sorted index *.idx file from structured thesaurus file 
+  for lang in `find -type f -name "*.dat" -printf '%P\n'`; do
+    cat "${lang}" | /usr/bin/th_gen_idx.pl > "${lang/.dat/}".idx
+  done
+
+  en_US_aliases="en_AG en_AU en_BS en_BW en_BZ en_CA en_DK en_GB en_GH en_IE en_IN en_JM en_NA en_NG en_NZ en_PH en_SG en_TT en_ZA en_ZW"
+  for lang in $en_US_aliases; do
+        ln -s th_en_US_v2.idx th_"$lang"_v2.idx
+        ln -s th_en_US_v2.dat th_"$lang"_v2.dat
+  done
+  popd
+
+  # the symlinks
+  install -dm755 "${pkgdir}"/usr/share/myspell/dicts
+  pushd "$pkgdir"/usr/share/myspell/dicts
+    for file in "$pkgdir"/usr/share/mythes/*; do
+      ln -sv /usr/share/mythes/$(basename $file) .
+    done
+  popd
+  
+  # docs
+  install -dm755 "${pkgdir}"/usr/share/doc/$pkgname
+  cp -p {README_thesaurus.txt,changelog.txt} "$pkgdir"/usr/share/doc/$pkgname
+}

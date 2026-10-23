@@ -1,0 +1,172 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Eric Bélanger <eric@archlinux.org>
+
+pkgbase=freeciv
+pkgname=(
+  freeciv-common
+  freeciv-gtk3
+  freeciv-gtk4
+  freeciv-qt
+)
+pkgver=3.2.6
+pkgrel=1
+pkgdesc="A multiuser clone of the famous Microprose game of Civilization"
+arch=('x86_64')
+url="https://www.freeciv.org/"
+license=('GPL-2.0-or-later')
+depends=(
+  'glibc'
+  'lua54'
+  'sqlite'
+)
+makedepends=(
+  'bzip2'
+  'cairo'
+  'curl'
+  'gdk-pixbuf2'
+  'git'
+  'glib2'
+  'gtk3'
+  'gtk4'
+  'hicolor-icon-theme'
+  'icu'
+  'meson'
+  'pango'
+  'python'
+  'qt6-base'
+  'readline'
+  'sdl2'
+  'sdl2_mixer'
+  'xz'
+  'zlib'
+  'zstd'
+)
+conflicts=('freeciv<3.2.2-2')
+source=("git+https://github.com/freeciv/freeciv.git#tag=R${pkgver//./_}")
+b2sums=('6941ff19d93718fefb581ca108498a1cf4b493e3fe94612cef9f0afcc67eb0cceb7c2f6d35419a69ac8a9f2286759c32528ba9ef612a609cdb775bcabcdf6e7f')
+
+build() {
+  arch-meson $pkgbase build \
+    -Dsyslua=true \
+    -Dclients=gtk4,gtk3.22,qt \
+    -Dfcmp=gtk4,gtk3,qt,cli
+  meson compile -C build
+}
+
+check() {
+  meson test -C build
+}
+
+_pick() {
+  local dest="$1"
+  shift
+  for obj in "$@"; do
+    mkdir -p "$dest/$(dirname "$obj")/"
+    mv -v -t "$dest/$(dirname "$obj")/" "$obj"
+  done
+}
+
+package_freeciv-common() {
+  pkgdesc+=" (common files)"
+  depends+=(
+    'bzip2'
+    'curl'
+    'hicolor-icon-theme'
+    'icu'
+    'readline'
+    'xz'
+    'zlib'
+    'zstd'
+  )
+  backup=('etc/freeciv/database.lua')
+
+  meson install -C build --destdir="$pkgdir"
+
+  cd "$pkgdir"
+  _pick "$srcdir/freeciv-gtk3" \
+    usr/bin/freeciv-gtk3.22 \
+    usr/bin/freeciv-mp-gtk3 \
+    usr/share/applications/org.freeciv.gtk3.mp.desktop \
+    usr/share/applications/org.freeciv.gtk322.desktop \
+    usr/share/freeciv/gtk3.22_menus.xml \
+    usr/share/freeciv/themes/gtk3.22 \
+    usr/share/metainfo/org.freeciv.gtk3.mp.metainfo.xml \
+    usr/share/metainfo/org.freeciv.gtk322.metainfo.xml
+  _pick "$srcdir/freeciv-gtk4" \
+    usr/bin/freeciv-gtk4 \
+    usr/bin/freeciv-mp-gtk4 \
+    usr/share/applications/org.freeciv.gtk4.desktop \
+    usr/share/applications/org.freeciv.gtk4.mp.desktop \
+    usr/share/freeciv/themes/gtk4 \
+    usr/share/metainfo/org.freeciv.gtk4.metainfo.xml \
+    usr/share/metainfo/org.freeciv.gtk4.mp.metainfo.xml
+  _pick "$srcdir/freeciv-qt" \
+    usr/bin/freeciv-mp-qt \
+    usr/bin/freeciv-qt \
+    usr/bin/freeciv-ruledit \
+    usr/share/applications/org.freeciv.qt.desktop \
+    usr/share/applications/org.freeciv.qt.mp.desktop \
+    usr/share/applications/org.freeciv.ruledit.desktop \
+    usr/share/freeciv/themes/gui-qt \
+    usr/share/metainfo/org.freeciv.qt.metainfo.xml \
+    usr/share/metainfo/org.freeciv.qt.mp.metainfo.xml \
+    usr/share/metainfo/org.freeciv.ruledit.metainfo.xml
+  rm -vr "$pkgdir/usr/share/freeciv/themes" # Remove empty dir
+}
+
+package_freeciv-gtk3() {
+  pkgdesc+=" (GTK3 client)"
+  depends+=(
+    'freeciv-common'
+
+    'cairo'
+    'gdk-pixbuf2'
+    'glib2'
+    'gtk3'
+    'pango'
+    'sdl2'
+    'sdl2_mixer'
+  )
+  provides=('freeciv')
+  replaces=('freeciv<3.2.2-2')
+
+  cp -va -t "$pkgdir" "$pkgname/"*
+}
+
+package_freeciv-gtk4() {
+  pkgdesc+=" (GTK4 client)"
+  depends+=(
+    'freeciv-common'
+
+    'cairo'
+    'gdk-pixbuf2'
+    'glib2'
+    'gtk4'
+    'pango'
+    'sdl2'
+    'sdl2_mixer'
+  )
+  provides=('freeciv')
+  replaces=('freeciv<3.2.2-2')
+
+  cp -va -t "$pkgdir" "$pkgname/"*
+}
+
+package_freeciv-qt() {
+  pkgdesc+=" (Qt client)"
+  depends+=(
+    'freeciv-common'
+
+    'libgcc'
+    'libstdc++'
+    'qt6-base'
+    'readline'
+    'sdl2'
+    'sdl2_mixer'
+  )
+  provides=('freeciv')
+  replaces=('freeciv<3.2.2-2')
+
+  cp -va -t "$pkgdir" "$pkgname/"*
+}

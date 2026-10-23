@@ -1,0 +1,20 @@
+pkgbase = skopeo
+	pkgdesc = A command line utility for various operations on container images and image repositories.
+	pkgver = 1.24.1
+	pkgrel = 1
+	url = https://github.com/containers/skopeo
+	arch = x86_64
+	license = Apache-2.0
+	makedepends = go
+	makedepends = go-md2man
+	makedepends = btrfs-progs
+	makedepends = git
+	makedepends = systemd
+	depends = gpgme
+	depends = device-mapper
+	depends = containers-common
+	depends = sqlite
+	source = git+https://github.com/containers/skopeo#tag=v1.24.1
+	sha256sums = 8adffa50e4ea8134e5abf4154b769db04af170315860f901e0b834a314506160
+
+pkgname = skopeo

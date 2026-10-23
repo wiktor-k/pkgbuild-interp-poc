@@ -1,0 +1,26 @@
+pkgbase = ucarp
+	pkgdesc = Userspace implementation of the CARP protocol
+	pkgver = 1.5.2
+	pkgrel = 9
+	url = https://www.pureftpd.org/project/ucarp
+	arch = x86_64
+	license = BSD-4-Clause
+	license = ISC
+	depends = glibc
+	depends = libpcap
+	optdepends = iproute2
+	source = https://download.pureftpd.org/pub/ucarp/ucarp-1.5.2.tar.gz
+	source = https://download.pureftpd.org/pub/ucarp/ucarp-1.5.2.tar.gz.sig
+	source = ucarp.service
+	source = ucarp.8
+	source = 01-fix-getopt.patch
+	source = 02-fix-downscript-on-error.patch
+	validpgpkeys = 54A2B8892CC3D6A597B92B6C210627AABA709FE1
+	sha256sums = f3cc77e28481fd04f62bb3d4bc03104a97dd316c80c0ed04ad7be24b544112f3
+	sha256sums = SKIP
+	sha256sums = d2a23244843e69ab5086ce74843fbe5617eae8405a4e09a904223735370c53c4
+	sha256sums = c26325bfcf517a35e7c2cc11ee87b88e587035a172229532315cb194bef560eb
+	sha256sums = 6f36263ee665d36ea60a23808b15dccea411f0dcd8cd4be2d22d65eb20a287c9
+	sha256sums = 09188616b0be6799165789fbbc6c74b84eb9f097f1449c0f5715caf1f951b03e
+
+pkgname = ucarp

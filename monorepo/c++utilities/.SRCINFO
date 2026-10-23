@@ -1,0 +1,25 @@
+pkgbase = c++utilities
+	pkgdesc = Common C++ classes and routines such as argument parser, IO and conversion utilities
+	pkgver = 5.37.0
+	pkgrel = 1
+	url = https://github.com/Martchus/cpp-utilities
+	arch = x86_64
+	license = GPL-2.0-or-later
+	checkdepends = cppunit
+	makedepends = cmake
+	makedepends = doxygen
+	makedepends = graphviz
+	makedepends = ninja
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	source = c++utilities-5.37.0.tar.gz::https://github.com/Martchus/cpp-utilities/archive/v5.37.0.tar.gz
+	sha256sums = 9e212e8c873b2de410bb9e23a7fcf65ddbae3ba5484cd52992ed66eefa30e608
+
+pkgname = c++utilities
+	optdepends = c++utilities-doc: for API documentation
+	provides = libc++utilities.so
+
+pkgname = c++utilities-doc
+	pkgdesc = Common C++ classes and routines such as argument parser, IO and conversion utilities - API documentation
+	depends = 

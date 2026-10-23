@@ -1,0 +1,48 @@
+# Maintainer: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Contributor: sulaweyo <sledge.sulaweyo@gmail.com>
+# Contributor: Francois Menning <f.menning@pm.me>
+
+pkgname=gerbera
+pkgver=3.3.0
+pkgrel=1
+pkgdesc="UPnP Media Server (Based on MediaTomb)"
+arch=(x86_64)
+url="https://github.com/gerbera/gerbera"
+license=('GPL-2.0-or-later')
+depends=('curl' 'duktape' 'exiv2' 'ffmpeg' 'ffmpegthumbnailer' 'file' 'fmt' 'glibc' 'icu' 'jsoncpp' 'libebml'
+	'libexif' 'libgcc' 'libmatroska' 'libstdc++' 'libupnp' 'pugixml' 'spdlog' 'sqlite' 'systemd-libs'
+	'taglib' 'util-linux-libs')
+makedepends=('cmake')
+install=gerbera.install
+options=('emptydirs')
+source=("$pkgname-$pkgver.tar.gz::https://github.com/gerbera/gerbera/archive/v$pkgver.tar.gz"
+	gerbera.sysusers
+	gerbera.tmpfiles)
+sha256sums=('79db1b4d9fcfafe5cb6a30eb29174f912f1b2c04a644bd5fe5075bccad10eb97'
+            'be1ec625fb2f69b7194a3a5523db5d5e560084050427ad4a8f386863b541e104'
+            '452f5d4b5661e0262cb4a48d62a54f5f26d53c6d3aebf502cde072214a8b30d8')
+
+build() {
+	local cmake_options=(
+		-B build
+		-D CMAKE_BUILD_TYPE=None
+		-D CMAKE_INSTALL_PREFIX=/usr
+		-D WITH_AVCODEC=ON
+		-D WITH_FFMPEGTHUMBNAILER=ON
+		-D WITH_ZIP=OFF
+		-S $pkgname-$pkgver
+		-W no-dev
+	)
+
+	cmake "${cmake_options[@]}"
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+
+	install -dm0755 "${pkgdir}"/var/lib/gerbera
+	install -dm0755 "${pkgdir}"/etc/gerbera
+	install -Dm0644 "${pkgname}".tmpfiles "${pkgdir}"/usr/lib/tmpfiles.d/${pkgname}.conf
+	install -Dm0644 "${pkgname}".sysusers "${pkgdir}"/usr/lib/sysusers.d/${pkgname}.conf
+}

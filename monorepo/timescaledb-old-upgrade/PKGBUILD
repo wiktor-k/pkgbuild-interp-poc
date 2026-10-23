@@ -1,0 +1,88 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+
+_pkgname=timescaledb
+pkgname=timescaledb-old-upgrade
+_current_pg_version=18
+_old_pg_version=$(( _current_pg_version - 1 ))
+# limit to last 5 releases
+declare -gA _commits=(
+  [2.29.2]=165b77b9670b8f13103f9d3da733559d27ca4293
+  [2.30.0]=408d332699185d19653c2038b90d70c35ccda5ba
+  [2.30.1]=ed2354e444afe2f761850b906597f33620940303
+  [2.30.2]=b0977bf2d3a5014ee870247be09bc19d3e9f7a5f
+  [2.31.0]=4fa2a7c6b579171a1a8966fd87a0d4189ebab43b
+)
+pkgver=2.31.0
+pkgrel=1
+pkgdesc='TimescaleDB build for migrating between major versions of PostgreSQL'
+arch=(x86_64)
+url='https://www.timescale.com/'
+license=(Apache-2.0 LicenseRef-Timescale)
+depends=(
+  glibc
+  openssl
+  "postgresql-old-upgrade<$_current_pg_version"
+  "postgresql-old-upgrade>=$_old_pg_version"
+  "timescaledb=$pkgver"
+)
+makedepends=(gcc cmake git)
+source=("$_pkgname::git+https://github.com/timescale/timescaledb#commit=${_commits[$pkgver]}")
+sha512sums=('d938ff81dbb60a2f0e1780ddbbcce35055ff6ca9546cf729aeb652b67d296ef963b6a4fce32e56f5add3c26dbaaa67f0dc76ce5a2487cb5fab8382e876be9ecc')
+b2sums=('e3915bf32d0978f40e7059d7649ac789f7cc71fb6e3f1b9fc2fa4e236afb052e4d3ee931d8770f7a2e6d58acf4a2acf846120b1f307985e1f4afb412c5599301')
+
+prepare() {
+  mkdir -p build
+}
+
+build() {
+  local version
+  for version in "${!_commits[@]}"; do
+    cd "$srcdir/$_pkgname"
+
+    git checkout "${_commits[$version]}"
+
+    BUILD_DIR="$srcdir/build/$version" ./bootstrap \
+      -DWARNINGS_AS_ERRORS=OFF \
+      -DREGRESS_CHECKS=OFF \
+      -DTAP_CHECKS=OFF \
+      -DPG_PATH="/opt/pgsql-${_old_pg_version}"
+
+    # build package or past shared library
+    cd "$srcdir/build/$version"
+
+    # ensure reproducible builds (value from `lsb_release -r`)
+    # TODO: resolve https://github.com/timescale/timescaledb/issues/3480
+    sed \
+      -e "s:BUILD_OS_VERSION \".*\"$:BUILD_OS_VERSION \"rolling\":" \
+      -i src/config.h
+
+    if [[ $version == $pkgver ]]; then
+      make
+    else
+      make timescaledb timescaledb-tsl sqlfile
+    fi
+  done
+}
+
+package() {
+  cd "$_pkgname"
+  # install licenses from latest version
+  git checkout "${_commits[$pkgver]}"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" \
+    LICENSE LICENSE-APACHE tsl/LICENSE-TIMESCALE
+
+  # install package or past shared library
+  local version
+  for version in "${!_commits[@]}"; do
+    cd "$srcdir/build/$version"
+    if [[ $version == $pkgver ]]; then
+      make DESTDIR="$pkgdir/" install
+    else
+      install -vDm755 -t "$pkgdir/opt/pgsql-${_old_pg_version}/lib" \
+        "src/$_pkgname-$version.so" \
+        "tsl/src/$_pkgname-tsl-$version.so"
+      install -Dm644 -t "$pkgdir/opt/pgsql-${_old_pg_version}/share/extension" \
+        "sql/timescaledb--$version.sql"
+    fi
+  done
+}

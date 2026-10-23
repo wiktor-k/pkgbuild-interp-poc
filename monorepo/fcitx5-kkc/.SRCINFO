@@ -1,0 +1,17 @@
+pkgbase = fcitx5-kkc
+	pkgdesc = KKC Wrapper for Fcitx5
+	pkgver = 5.1.11
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-kkc
+	arch = x86_64
+	license = GPL-3.0-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	depends = fcitx5-qt
+	depends = libkkc
+	depends = libkkc-data
+	source = git+https://github.com/fcitx/fcitx5-kkc.git#tag=5.1.11?signed
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 1eacf127830f807269ac27400d0e9621ee70bd3d4b488ebf0e1e4c95a426fd4c3e39aee8f83a1bb06d7ed73fa376356a353e2536a7ed3f21817099815382cc10
+
+pkgname = fcitx5-kkc

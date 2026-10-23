@@ -1,0 +1,24 @@
+pkgbase = maude
+	pkgdesc = High-level Specification Language
+	pkgver = 3.5.1
+	pkgrel = 1
+	url = http://maude.cs.illinois.edu
+	arch = x86_64
+	license = GPL
+	makedepends = flex
+	makedepends = bison
+	makedepends = git
+	depends = buddy
+	depends = cvc4
+	depends = libtecla
+	depends = gmp
+	depends = libsigsegv
+	depends = yices
+	source = git+https://github.com/SRI-CSL/Maude.git#tag=Maude3.5.1
+	source = git+https://github.com/maude-team/full-maude.git#commit=96be01c059d7f0fb1cbea15e2f0818350fb66eb8
+	source = maude.sh
+	sha512sums = 79e23d945d18f2df9a5fb67c1f86d12b1889e69fb049118782c7a0f6c82bbe5a0c392f9f82ef2076d7a603406cd7872190d90bf27f065ade236831bb92de3cfc
+	sha512sums = d5557f729f0bd0059ea88f53dcc9606a8d1ab0684e8116e52625fb294b90984566195ebb480d69909fb97f9082f9c8de5ff7c1b53c443b7b7edfc5d3175e1015
+	sha512sums = f62e1709d035e996c9f9a887840492527415f157990cc2d52355d8a7fe9382a757c06bed95f97e298f8eea0dd2a846bf7efb8fb84987784a4a797820807be12e
+
+pkgname = maude

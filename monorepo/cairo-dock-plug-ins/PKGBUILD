@@ -1,0 +1,77 @@
+# Maintainer: George Hu <integral@archlinux.org>
+# Contributor: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Tofe <chris.chapuis@gmail.com>
+# Contributor: zhuqin <zhuqin83@gmail.com>
+# Contributor: tri1976 <trile7@gmail.com>
+# Contributor: snoopy33 <snoopy33@no-log.org>
+
+pkgname=cairo-dock-plug-ins
+pkgver=3.6.2
+pkgrel=3
+pkgdesc="Plugins for Cairo-Dock"
+arch=('x86_64')
+url="https://github.com/Cairo-Dock/${pkgname}"
+license=('GPL-3.0-or-later')
+depends=(
+	'cairo-dock'
+	'python'
+	'python-dbus'
+	'python-gobject'
+	'ruby'
+	'cairo'
+	'pango'
+	'librsvg'
+	'dbus-glib'
+	'libxml2'
+	'glib2'
+	'gtk3'
+	'gdk-pixbuf2'
+	'alsa-lib'
+	'libetpan'
+	'gnome-menus'
+	'gvfs'
+	'libxklavier'
+	'libxrandr'
+	'libx11'
+	'libxxf86vm'
+	'upower'
+	'zeitgeist'
+	'libexif'
+	'vte3'
+	'lm_sensors'
+	'curl'
+	'wget'
+	'libdbusmenu-glib'
+	'libdbusmenu-gtk3'
+	'libayatana-indicator'
+	'ayatana-ido'
+	'libical'
+	'libpulse'
+	'fftw'
+	'json-c'
+)
+makedepends=('cmake' 'vala')
+replaces=('cairo-dock-plugins')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/${pkgver}.tar.gz"
+         libical-4.patch)
+sha256sums=('a93700e9633d7562f34af83b5f0a0a97b24915dd2ae908c2e627acec2e4b295e'
+            'dc306f7995e8668cac82419af73c361a286911e097d487cfa70e6e61f257fa90')
+
+prepare() {
+	cd $pkgname-$pkgver
+	patch -p1 -i ../libical-4.patch # Fix build with libical 4
+}
+
+build() {
+	cmake -B build \
+		-S "${pkgname}-${pkgver}" \
+		-D CMAKE_BUILD_TYPE=None \
+		-D CMAKE_PREFIX_PATH=/usr \
+		-D WITH_VALA_SRC=yes
+
+	cmake --build build
+}
+
+package() {
+	DESTDIR="${pkgdir}" cmake --install build
+}

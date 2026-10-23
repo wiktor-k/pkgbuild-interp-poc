@@ -1,0 +1,18 @@
+pkgbase = pacquery
+	pkgdesc = A CLI tool to get JSON output of pacman packages from the system's syncdb
+	pkgver = 0.0.4
+	pkgrel = 1
+	url = https://github.com/jelly/pacquery
+	arch = x86_64
+	groups = archlinux-tools
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libalpm.so
+	source = git+https://github.com/jelly/pacquery.git#tag=v0.0.4?signed
+	validpgpkeys = E499C79F53C96A54E572FEE1C06086337C50773E
+	sha512sums = 9bc90e0053d038d743b72eaf49934cb1d806ba3667da79bd94dbc2f61e642f463200fc0cb30740e11d93c50d396ec90493182e4b55821aa57fe401a63fc9374a
+
+pkgname = pacquery

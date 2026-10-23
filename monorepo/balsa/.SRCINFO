@@ -1,0 +1,37 @@
+pkgbase = balsa
+	pkgdesc = An e-mail client for GNOME
+	pkgver = 2.6.5
+	pkgrel = 3
+	url = https://pawsa.fedorapeople.org/balsa/
+	changelog = balsa.changelog
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = yelp-tools
+	depends = cairo
+	depends = enchant
+	depends = fribidi
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gmime3
+	depends = gnutls
+	depends = gpgme
+	depends = gtk3
+	depends = gtksourceview4
+	depends = krb5
+	depends = libcanberra
+	depends = libical
+	depends = libldap
+	depends = libsecret
+	depends = pango
+	depends = sqlite
+	depends = webkit2gtk-4.1
+	source = git+https://gitlab.gnome.org/GNOME/balsa.git?signed#tag=2.6.5
+	source = libical-4.patch
+	validpgpkeys = 59BD313DE82B3659B822664FEA43CEFB339B833A
+	b2sums = cbdc7a00fbf25274b2b311f08cd90458a845112ef62941471506ba9286149ad6f0afb640bc46c7c3fef8a8ccd87b6fa1e6f0780acfe23272dde90439b758712f
+	b2sums = 914827324761437ed1ec972779f039fe589812e985107e0fa3eb16943fe3ff09eb424eeced05dd8b39ec35715b887b5378cfd820a65078013ca4cde24c024965
+
+pkgname = balsa

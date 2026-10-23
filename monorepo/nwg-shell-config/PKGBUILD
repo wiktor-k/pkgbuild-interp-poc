@@ -1,0 +1,31 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Piotr Miller <nwg.piotr@gmail.com>
+
+pkgname=nwg-shell-config
+pkgver=0.5.65
+pkgrel=1
+pkgdesc="nwg-shell configuration utility"
+url="https://github.com/nwg-piotr/nwg-shell-config"
+arch=('any')
+license=('MIT')
+depends=('pacman-contrib' 'python' 'python-gobject' 'python-i3ipc' 'python-geopy' 'python-requests' 'playerctl' 'gtklock' 'noto-fonts' 'wlsunset')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('fe032bfe84f0aa9781818a0247baf4a2aea7074586abba3fb4791736b576b921')
+
+build() {
+        cd "${pkgname}-${pkgver}"
+        python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	install -Dm 755 nwg-system-update "${pkgdir}/usr/bin/nwg-system-update"
+	install -Dm 644 "${pkgname}.desktop" "${pkgdir}/usr/share/applications/${pkgname}.desktop"
+	install -Dm 644 *.svg -t "${pkgdir}/usr/share/pixmaps/"
+	install -Dm 644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	install -Dm 644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+}
+

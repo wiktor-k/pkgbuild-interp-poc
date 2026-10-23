@@ -1,0 +1,37 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=caligula
+pkgver=0.5.0
+pkgrel=1
+pkgdesc="A user-friendly, lightweight TUI for disk imaging"
+arch=('x86_64')
+url="https://github.com/ifd3f/caligula"
+license=('GPL-3.0-only')
+depends=('glibc' 'libgcc' 'xz')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('ab29874cfbc7257e32ac879005f5cc83316d233447c1b8ac7035480c5f3aaafb4b87b496e4578ced7f29a4bfc3e87aa8f4a187b1a657f7eb36b3e4d1313fb1be')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  sed -i '/^xz2 =/s/"static"//' Cargo.toml
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

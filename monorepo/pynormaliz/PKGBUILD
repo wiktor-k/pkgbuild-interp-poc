@@ -1,0 +1,34 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgbase=pynormaliz
+pkgname=(python-pynormaliz)
+pkgver=2.24
+pkgrel=2
+pkgdesc='A Python interface to Normaliz'
+arch=(x86_64)
+url='https://github.com/Normaliz/PyNormaliz'
+license=(GPL-2.0-or-later)
+depends=(glibc
+         libgcc
+         libstdc++
+         normaliz
+         python)
+makedepends=(boost
+             git
+             python-build
+             python-installer
+             python-setuptools
+             python-wheel)
+source=(git+https://github.com/Normaliz/PyNormaliz#tag=v$pkgver)
+sha256sums=('165d7673f03636abe8801f530312c7aed605927233bee2c08b76a7b068435a4e')
+
+build() {
+  cd PyNormaliz
+  python -m build --wheel --no-isolation
+}
+
+package_python-pynormaliz() {
+  cd PyNormaliz
+  
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

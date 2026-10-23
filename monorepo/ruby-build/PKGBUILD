@@ -1,0 +1,42 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Saghm Rossi <saghmrossi@gmail.com>
+# Contributor: Peter Hoeg <first name at last name dot com>
+# Contributer: Vincent Demeester <vincent@sbr.io>
+# Contributer: Alex Ogier <alex.ogier@gmail.com>
+
+pkgname=ruby-build
+pkgver=20260924
+pkgrel=1
+pkgdesc="A tool to download, compile, and install Ruby on Unix-like systems"
+arch=('any')
+url="https://github.com/rbenv/ruby-build"
+license=('MIT')
+depends=('bash')
+makedepends=('git')
+checkdepends=('bats')
+optdepends=(
+  'git: install ruby from git'
+  'libyaml: install recent versions of mri'
+  'rust: install ruby with YJIT enabled'
+)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('46ae190bc11d3ec13e10882136bb98f93228a751eda65190d5ce889c06667ea52251143f499a58b0e0f91f5d0cd79db3b0cdb8e8d8a76ee4eba06af24dafed61')
+
+prepare() {
+  cd $pkgname
+  # The unstub openssl function fails for some reason, tests pass without it.
+  sed -i '/unstub openssl/d' test/build.bats
+}
+
+check() {
+  cd $pkgname
+  bats test
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" bin/*
+  install -vDm644 -t "$pkgdir/usr/share/$pkgname" share/$pkgname/*
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" share/man/man1/*
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

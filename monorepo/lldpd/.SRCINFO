@@ -1,0 +1,30 @@
+pkgbase = lldpd
+	pkgdesc = 802.1ab implementation (LLDP) to help you locate neighbors
+	pkgver = 1.0.22
+	pkgrel = 1
+	url = https://vincentbernat.github.io/lldpd/
+	arch = x86_64
+	license = custom:ISC
+	license = GPL
+	makedepends = git
+	makedepends = systemd
+	depends = glibc
+	depends = libevent
+	depends = libbsd
+	depends = zlib
+	depends = openssl
+	depends = pciutils
+	depends = perl
+	depends = libxml2
+	depends = net-snmp
+	depends = jansson
+	backup = etc/lldpd.conf
+	source = git+https://github.com/lldpd/lldpd.git#tag=1.0.22
+	source = 0001-create-a-fully-locked-system-account.patch
+	source = lldpd.tmpfiles
+	validpgpkeys = AEF2348766F371C689A7360095A42FE8353525F9
+	sha256sums = b8203c9b4b74a6c069d3c402599be726cafdd3ca845d4be350a5088e417ff857
+	sha256sums = 1347be34f137cac2838a834b9ec9a8e111f73dbc5c27a2c6556920f1787619bc
+	sha256sums = df64ebadacb832c4a9dcbdd531848ae70c21d67d309c7397163ba8db7e31248b
+
+pkgname = lldpd

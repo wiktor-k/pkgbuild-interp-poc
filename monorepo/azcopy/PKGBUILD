@@ -1,0 +1,71 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Xuanrui Qi <me@xuanruiqi.com>
+# Contributor: Fabio 'Lolix' Loli <lolix@disroot.org>
+# Contributor: Jens Heremans <jensheremans[at]gmail[dot]com>
+# Contributor: Jonas Heinrich <onny@project-insanity.org>
+
+pkgname=azcopy
+pkgver=10.32.8
+pkgrel=1
+pkgdesc="A command-line utility designed for copying data to/from Microsoft Azure"
+arch=('x86_64')
+url="https://github.com/Azure/azure-storage-azcopy"
+license=('MIT')
+depends=('glibc')
+makedepends=(
+  'go'
+  'git'
+)
+options=('!lto')
+source=("$pkgname::git+$url#tag=v$pkgver")
+b2sums=('a452881c40eb5ebd9a816fcb164ffeeb4c08860f2065d02452aa02c8a86b09c6e395786aa18eed930d4a1e7743d5a9bb39adcdf91fdfac70005ce0f9cadf80ce')
+
+prepare() {
+  cd $pkgname
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+
+  local ld_flags="-compressdwarf=false -linkmode=external"
+  go build -v -ldflags="$ld_flags" -o build/
+}
+
+check() {
+  cd $pkgname
+  # Skip packages with tests that require Azure credentials or have upstream bugs:
+  # - azcopy: TestValidateProtocolCompatibility has nil pointer dereference bug
+  # - cmd, common, ste: require ACCOUNT_NAME/ACCOUNT_KEY env vars for Azure
+  # - e2etest: full E2E tests requiring Azure infrastructure
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/Azure/azure-storage-azcopy/v10/azcopy$ \
+      | grep -v github.com/Azure/azure-storage-azcopy/v10/cmd$ \
+      | grep -v github.com/Azure/azure-storage-azcopy/v10/common$ \
+      | grep -v github.com/Azure/azure-storage-azcopy/v10/e2etest \
+      | grep -v github.com/Azure/azure-storage-azcopy/v10/ste$
+  )
+  # shellcheck disable=SC2086
+  go test $unit_tests
+}
+
+package() {
+  cd $pkgname
+  # Completions
+  ./build/azure-storage-azcopy completion bash \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/bash-completion/completions/azcopy"
+  ./build/azure-storage-azcopy completion fish \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/fish/vendor_completions.d/azcopy.fish"
+  ./build/azure-storage-azcopy completion zsh \
+    | install -vDm644 /dev/stdin "$pkgdir/usr/share/zsh/site-functions/_azcopy"
+
+  install -vDm755 build/azure-storage-azcopy "$pkgdir/usr/bin/azcopy"
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

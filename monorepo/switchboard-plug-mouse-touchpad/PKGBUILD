@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-mouse-touchpad
+pkgver=8.1.0
+pkgrel=1
+pkgdesc='Switchboard Mouse & Touchpad Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-mouse-touchpad
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  glib2
+  glibc
+  gtk4
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+  libxml2
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=0309d2bc29ce40922987e62cf53d780fceff8235
+source=(git+https://github.com/elementary/switchboard-plug-mouse-touchpad.git#tag=${_tag})
+b2sums=('80c0fbab1fa6a83e5ed054f09db306b89d90389908fd31b299d22fda88edb4ff3477333c2f5ed9e1fab11a5caac28906e0d6c832b27ae4f84a4c51cf4d187430')
+
+pkgver() {
+  cd switchboard-plug-mouse-touchpad
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-mouse-touchpad build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

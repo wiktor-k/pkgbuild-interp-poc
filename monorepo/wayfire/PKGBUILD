@@ -1,0 +1,88 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Adrian Perez de Castro <aperez@igalia.com>
+
+pkgname=wayfire
+pkgver=0.11.0
+pkgrel=1
+pkgdesc='3D Wayland compositor, inspired by Compiz and based on wlroots'
+arch=(x86_64)
+url='https://wayfire.org/'
+license=(MIT)
+depends=(
+  cairo
+  glib2
+  glibc
+  libevdev
+  libgcc
+  libglvnd
+  libgomp
+  libinput
+  libjpeg-turbo
+  libpng
+  libstdc++
+  libxcb
+  libxkbcommon
+  pango
+  pixman
+  python
+  systemd-libs
+  wayland
+  "wf-config>=${pkgver%.*}.0"
+  wlroots0.20
+  yyjson
+)
+makedepends=(
+  doctest
+  git
+  glm
+  meson
+  vulkan-headers
+  wayland-protocols
+)
+checkdepends=(xorg-xwayland)
+source=(
+  "git+https://github.com/WayfireWM/wayfire.git#tag=v$pkgver"
+  git+https://github.com/WayfireWM/wf-config.git
+  git+https://github.com/WayfireWM/wf-utils.git
+  git+https://github.com/WayfireWM/wf-touch.git
+  git+https://github.com/WayfireWM/wf-json.git
+  wlroots-vkfx::git+https://gitlab.freedesktop.org/ammen99/wlroots.git
+)
+b2sums=(
+  e647a8c659fdcad29dfdc3fdbf0041607030c79ba176e6eea6fcdca533feb56411ec7d86b12cc1372849c594e416b9a162d0466a553013827e3cfffa06db2e33
+  SKIP
+  SKIP
+  SKIP
+  SKIP
+  SKIP
+)
+
+prepare() {
+  cd $pkgname
+
+  git submodule init
+  git config submodule.subprojects/wlroots.update none
+  git submodule set-url subprojects/wf-config "$srcdir/wf-config"
+  git submodule set-url subprojects/wf-utils "$srcdir/wf-utils"
+  git submodule set-url subprojects/wf-touch "$srcdir/wf-touch"
+  git submodule set-url subprojects/wf-json "$srcdir/wf-json"
+  git submodule set-url subprojects/wlroots-vkfx "$srcdir/wlroots-vkfx"
+  git -c protocol.file.allow=always submodule update
+
+  sed -i 's|/usr/libexec/xdg-desktop-portal|/usr/lib/xdg-desktop-portal|' wayfire.ini
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname" $pkgname/wayfire.ini
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname" $pkgname/LICENSE
+}

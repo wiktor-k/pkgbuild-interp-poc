@@ -1,0 +1,24 @@
+pkgbase = mivisionx
+	pkgdesc = Set of comprehensive computer vision and machine intelligence libraries
+	pkgver = 7.2.4
+	pkgrel = 1
+	url = https://rocm.docs.amd.com/projects/MIVisionX/en/latest/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = half
+	makedepends = rocm-cmake
+	makedepends = rocm-llvm
+	depends = ffmpeg
+	depends = hip-runtime-amd
+	depends = miopen-hip
+	depends = opencv
+	depends = protobuf
+	depends = rocblas
+	depends = rocm-core
+	depends = rpp
+	options = !lto
+	source = mivisionx-7.2.4.tar.gz::https://github.com/ROCm/MIVisionX/archive/rocm-7.2.4.tar.gz
+	sha256sums = 2e2c979275651bd848e4d2a9d50ef71a8c435c2c73605896936770d9992edfca
+
+pkgname = mivisionx

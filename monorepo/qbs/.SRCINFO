@@ -1,0 +1,20 @@
+pkgbase = qbs
+	pkgdesc = Cross platform build tool
+	pkgver = 3.3.1
+	pkgrel = 1
+	url = https://wiki.qt.io/Qbs
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-5compat
+	source = git+https://code.qt.io/qbs/qbs#tag=v3.3.1
+	source = qt-6.10.patch
+	sha256sums = a8da288699897592fd376b06fda8d2802d6dae2325b33cfe89603221b7ae276a
+	sha256sums = 463fc358c4693048b7db61ad5f6ba2801c54e1ead5daa4f8fc4ca8d70558088b
+
+pkgname = qbs

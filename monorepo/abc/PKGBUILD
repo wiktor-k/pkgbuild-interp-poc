@@ -1,0 +1,56 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=abc
+pkgver=0.0.0.20260511
+_commit=c61f1a04e9db42db9cea876c1127bfd8f3eab040
+pkgrel=1
+pkgdesc="System for Sequential Logic Synthesis and Formal Verification"
+arch=("x86_64")
+license=("MIT")
+url="https://github.com/berkeley-abc/abc"
+depends=('readline')
+makedepends=('cmake' 'git')
+checkdepends=('gtest')
+source=(
+  git+https://github.com/berkeley-abc/abc.git#commit=$_commit
+  cmake.patch
+)
+sha512sums=('b9394e2f920c8235ec52d8aeb863be7e0b3f64241cfba9994437c7a127cb32028d9dccf956b534ff613d91b2ab14f1ceecf6f8898729d671d066c568f307decf'
+            '38d2f03ba1d60dde3ac00529ed9f87899e79bf159bf5f79faaada3b7cdc990e805caa257452d96e44da40138e0187c0d459d2260a81fa82ec2d62e4734dbb289')
+
+prepare() {
+  cd $pkgname
+  patch -Np1 -i "$srcdir"/cmake.patch
+}
+
+build() {
+  cd $pkgname
+  cmake \
+    -Wno-dev \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -B build
+  cmake --build build
+}
+
+check() {
+  cd $pkgname
+
+  # ctest
+  (cd build && ctest --output-on-failure)
+
+  # Test with demo
+  ## Executable
+  ./build/abc -c "r i10.aig; b; ps; b; rw -l; rw -lz; b; rw -lz; b; ps; cec"
+  ## Library
+  gcc -Wall -c src/demo.c -o demo.o
+  g++ -o demo demo.o build/libabc.so -lm -ldl -lreadline -lpthread
+  LD_LIBRARY_PATH=./build/ ./demo i10.aig
+}
+
+package() {
+  cd $pkgname
+  DESTDIR="$pkgdir" cmake --install build
+  install -Dm644 copyright.txt -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

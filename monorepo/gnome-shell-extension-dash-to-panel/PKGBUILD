@@ -1,0 +1,44 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Benoit Brummer < trougnouf at gmail dot com >
+# Contributor: Carl George < arch at cgtx dot us >
+
+pkgname=gnome-shell-extension-dash-to-panel
+_pkgname=dash-to-panel
+pkgver=74
+pkgrel=1
+pkgdesc='Extension for GNOME Shell to combine the dash and main panel'
+arch=(any)
+url='https://github.com/home-sweet-gnome/dash-to-panel'
+license=(GPL-2.0-or-later)
+depends=(gnome-shell)
+makedepends=(git)
+source=(
+  "git+https://github.com/home-sweet-gnome/dash-to-panel.git#tag=v$pkgver"
+  gnome-shell-extension-dash-to-panel-fix-crash-on-close.patch
+  gnome-shell-extension-dash-to-panel-fix-crash-on-shutdown.patch
+)
+b2sums=(
+  7d16cf1e2ad0f0a54cdebab317c0df31997f8c701618053bfc16de1ee162df41622223a1931e07e58e39ecd2c14fea14dbc43a59b4aec990afdc967e723243c5
+  45ffabd2e1a44635ded780c99809202d423713b7977b6bf9f354214605944a4bb032cfd342601ed1578ed7e25c140fcc178cc3c4723fb0f5eb787454a1815149
+  abdefe9de059329ffbb9ddcbc1064e63de47a89c732eb7537c9e4b16ec884bedb850a1b3e3ffbbf969b1d5891dcc095841a29c99cf8d6e00c1eb82dbb90dcfab
+)
+
+prepare() {
+  cd $_pkgname
+
+  # https://github.com/home-sweet-gnome/dash-to-panel/pull/1969
+  git apply -3 ../gnome-shell-extension-dash-to-panel-fix-crash-on-close.patch
+
+  # https://github.com/home-sweet-gnome/dash-to-panel/pull/2134
+  git apply -3 ../gnome-shell-extension-dash-to-panel-fix-crash-on-shutdown.patch
+}
+
+build() {
+  cd $_pkgname
+  make
+}
+
+package() {
+  cd $_pkgname
+  make VERSION="$pkgver" DESTDIR="$pkgdir" install
+}

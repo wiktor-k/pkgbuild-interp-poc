@@ -1,0 +1,47 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=nvidia-ml-py
+pkgname=python-$_name
+pkgver=13.615.71
+pkgrel=1
+pkgdesc='Python bindings for the NVIDIA Management Library (NVML)'
+arch=(any)
+url='https://pypi.org/project/nvidia-ml-py'
+license=(BSD-3-Clause)
+depends=(
+  nvidia-utils
+  python
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=(https://files.pythonhosted.org/packages/source/${_name::1}/$_name/${_name//-/_}-$pkgver.tar.gz)
+b2sums=('bfa25797e3d564260807ffe1582cc0237e13fc9ac6fb836946886bbb99c62c9765cac24e82613da68507699ec88a3d77a3692af64eadfb98a7711bbc624e0ad9')
+
+prepare() {
+  cd ${_name//-/_}-$pkgver
+  # Extract the license which is included at the end of the README.txt file
+  grep -A 999999 "COPYRIGHT" README.txt > LICENSE
+}
+
+build() {
+  cd ${_name//-/_}-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd ${_name//-/_}-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # Install the license
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+
+  # Move example.py to correct location
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -vdm 755 "$pkgdir"/usr/share/doc/$pkgname/
+  mv -v "$pkgdir$site_packages"/example.py "$pkgdir"/usr/share/doc/$pkgname/
+  rm -v "$pkgdir$site_packages"/__pycache__/example.*
+}

@@ -1,0 +1,51 @@
+# Maintainer: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Stéphane Gaudreault <stephane@archlinux.org>
+# Contributor: Thomas Dziedzic < gostrc at gmail >
+# Contributor: Thomas Baechler <thomas@archlinux.org>
+
+pkgname=ginac
+pkgver=1.8.10
+pkgrel=1
+pkgdesc="C++ library for symbolic calculations"
+arch=(x86_64)
+url='https://www.ginac.de/'
+license=(GPL-2.0-or-later)
+depends=(
+  bash
+  cln
+  libgcc
+  libstdc++
+  glibc
+  readline
+)
+makedepends=(
+  cmake
+  doxygen
+  fig2dev
+  git
+  python
+  texlive-bin
+)
+source=(git+https://codeberg.org/ginac/ginac#tag=release_${pkgver//./-})
+sha256sums=('edf1e12b2962f277f91f0b11e7ac0adaf69ca6fd1cd94b09c1df08c3ce7515c7')
+
+prepare() {
+  git -C $pkgname cherry-pick -n 4b8e8987365682e40184f87d5e1030c0081108d0 # Fix asserts
+  git -C $pkgname cherry-pick -n 79be6bd5fd5f7814d36c1db73aec435691cfabe6 # Support CMake 4
+}
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DLIBEXECDIR=lib/ginac \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib/ginac
+  cmake --build build
+}
+
+check() {
+  cmake --build build --target check
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+}

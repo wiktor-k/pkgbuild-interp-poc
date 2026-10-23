@@ -1,0 +1,20 @@
+pkgbase = kernel-hardening-checker
+	pkgdesc = Tool for checking the security hardening options of the Linux kernel
+	pkgver = 0.6.17.1
+	pkgrel = 2
+	url = https://github.com/a13xp0p0v/kernel-hardening-checker
+	arch = any
+	license = GPL-3.0-only
+	makedepends = git
+	makedepends = python-setuptools
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	conflicts = kconfig-hardened-check
+	replaces = kconfig-hardened-check
+	source = git+https://github.com/a13xp0p0v/kernel-hardening-checker.git#tag=v0.6.17.1
+	sha256sums = d706d59081e577cefe9764020498216004e1c99d8654f87a2b70cc6f18d93b23
+	b2sums = 051e83d0e336f59a3834af9f4b05bbf88e5fb819e3f05599717254ba8fdc9f07c6b538d6b10cd801ca5038aec51264e2ee4c6798a9327df956fb45db766b601a
+
+pkgname = kernel-hardening-checker

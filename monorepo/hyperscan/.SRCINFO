@@ -1,0 +1,21 @@
+pkgbase = hyperscan
+	pkgdesc = High-performance regular expression matching library
+	pkgver = 5.4.2
+	pkgrel = 3
+	url = https://www.hyperscan.io
+	arch = x86_64
+	license = BSD-3-Clause
+	makedepends = boost
+	makedepends = cmake
+	makedepends = git
+	makedepends = ninja
+	makedepends = python
+	makedepends = ragel
+	depends = glibc
+	depends = libgcc
+	depends = libstdc++
+	options = !lto
+	source = git+https://github.com/intel/hyperscan.git#tag=bc3b191ab56055e8560c7cdc161c289c4d76e3d2
+	b2sums = 0a7de0065af033f1d40d4f31b16afa307f74bb5b994659182551ab1035356523e46aa7f0bc3521fc05895b0d09996fefecb68fb50a9c6c9b892a96d0215469fa
+
+pkgname = hyperscan

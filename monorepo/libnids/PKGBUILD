@@ -1,0 +1,48 @@
+# Maintainer:
+# Contributor: Essien Ita Essien <essiene@datavibe.net>
+# Contributor: damir <damir@archlinux.org>
+
+pkgname=libnids
+pkgver=1.26
+pkgrel=6
+pkgdesc='An implementation of an E-component of Network Intrusion Detection System.'
+arch=(x86_64)
+url='http://libnids.sourceforge.net/'
+license=(GPL-2.0-only)
+depends=(glibc libnet libpcap glib2 libnsl)
+makedepends=(git pkgconfig)
+source=(
+  "$pkgname::git+https://github.com/MITRECND/libnids#tag=$pkgver"
+  gcc15.patch
+)
+sha512sums=('6aef5fbe378173931246502921a7e25386455c0438c4107364e62ae55be8b0fb490dd3a1d4c70e4305adb23c515880821427fa2332aae6b6d198fa34957fa321'
+            'a65a2790460f8034f1f3d502039c2c2a9b3ae38b018176548e42ca0bdbcd2ae58482616bff17bc1a202c7996ecb628873372cc454d4a6869b8f2e3fe1c088e14')
+b2sums=('bcb60830a48ce1f5ae44f7df5d4e1fd0d4f801c8b641a6091aeb5ad63690d32ea2a179560a34ac66c9d397d820eb94e3299055a86a9b90fbe009774baab42aa5'
+        'd7dc791056891f4e74580c9395f9b1f6e7bd4cffdaeaa0d7fe32cd26098768ae99b97c8adc61f66df287b5b4318ec9489d20250d19e194a89ddc4c82cc561574')
+
+prepare() {
+  cd "$pkgname"
+
+  # honor LDFLAGS
+  git cherry-pick --no-commit 38336d55e45a7cc0d1c88c4694d133b2e30a1683
+
+  # ftbfs with gcc >= 15
+  patch -p1 -i "$srcdir/gcc15.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  ./configure \
+    --prefix=/usr \
+    --man=/usr/share/man \
+    --enable-shared
+
+  make
+}
+
+package() {
+  cd "$pkgname"
+
+  make install_prefix="$pkgdir" install
+}

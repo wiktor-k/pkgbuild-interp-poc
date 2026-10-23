@@ -1,0 +1,82 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=ty
+pkgver=0.0.91
+pkgrel=1
+pkgdesc='Extremely fast Python type checker and language server, written in Rust'
+arch=(x86_64)
+url=https://github.com/astral-sh/ty
+license=(MIT)
+depends=(glibc # libc.so libm.so
+         libgcc
+         python)
+makedepends=(git
+             maturin
+             python-installer)
+checkdepends=(uv)
+source=("git+$url.git#tag=$pkgver"
+        git+https://github.com/astral-sh/ruff.git)
+b2sums=('2bda18ce1ed7679239f87234947cfe73da9c69419f41c8aede1f8f841a3b828c23012700fdf2db2835479285d088f336a65e06204b73f5bfd550d3d98d55ee75'
+        'SKIP')
+
+_srcenv() {
+  cd "$pkgbase"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -fno-lto'
+}
+
+prepare() {
+  _srcenv
+  git submodule init
+  git config submodule.ruff.url ../ruff
+  git -c protocol.file.allow=always submodule update
+  cargo fetch --manifest-path ruff/crates/$pkgname/Cargo.toml --locked --target host-tuple
+}
+
+build() {
+  local target="$(rustc --print host-tuple)"
+  local target_binary="ruff/target/$target/release/$pkgname"
+
+  _srcenv
+  maturin build --locked --release --all-features --target "$target" --strip
+
+  for completion in bash elvish fish nushell zsh; do
+    $target_binary generate-shell-completion $completion > $completion-completions
+  done
+}
+
+check() {
+  _srcenv
+  local skipped=(
+    # our nspawn chroot is detected as an environment, so naturally we don't pass these tests
+    # also the tests are racey...
+    python_environment::ty_environment_and_active_environment
+    python_environment::ty_environment_and_discovered_venv
+    python_environment::ty_environment_is_only_environment
+    python_environment::ty_environment_is_system_not_virtual
+    python_environment::ty_system_environment_and_local_venv
+  )
+  cargo test --manifest-path ruff/crates/$pkgname/Cargo.toml --frozen --all-features -- ${skipped[@]/#/--skip }
+}
+
+package() {
+  depends+=(libgcc_s.so)
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  install -d "$pkgdir"/usr/share/licenses/$pkgname
+  ln -s "$site_packages"/$pkgname-$pkgver.dist-info/licenses/LICENSE \
+    "$pkgdir"/usr/share/licenses/$pkgname
+
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" ruff/target/wheels/*.whl
+  install -Dm644 bash-completions "$pkgdir"/usr/share/bash-completion/completions/$pkgname
+  install -Dm644 elvish-completions "$pkgdir"/usr/share/elvish/lib/$pkgname.elv
+  install -Dm644 fish-completions "$pkgdir"/usr/share/fish/vendor_completions.d/$pkgname.fish
+  install -Dm644 nushell-completions "$pkgdir"/usr/share/nushell/vendor/autoload/$pkgname.nu
+  install -Dm644 zsh-completions "$pkgdir"/usr/share/zsh/site-functions/_$pkgname
+}

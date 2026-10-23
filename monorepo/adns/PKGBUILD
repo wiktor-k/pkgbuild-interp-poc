@@ -1,0 +1,29 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: dorphell <dorphell@archlinux.org>
+# Contributor: Tom Newsom <Jeepster@gmx.co.uk>
+
+pkgname=adns
+pkgver=1.7.0
+pkgrel=1
+pkgdesc="An asyncronous replacement resolver library"
+arch=('x86_64')
+url="https://www.chiark.greenend.org.uk/~ian/adns/"
+license=('GPL-3.0-or-later')
+depends=('glibc')
+validpgpkeys=('559AE46C2D6B6D3265E7CBA1E3E3392348B50D39'
+              '41638114D132883B25A20DDD47515757D8002456')
+source=(https://www.chiark.greenend.org.uk/~ian/$pkgname/ftp/$pkgname-$pkgver.tar.gz{,.sig})
+sha512sums=('76b4308d7a6210e282a5d34e52568ddda32d09e8f997806f3ba35ae2a724b86db83a4dc839acee8c833a0573d4ac10675ed55f0b519cbcaa0cd2c65877aff5ce'
+            'SKIP')
+
+build() {
+  cd "$srcdir"/$pkgname-$pkgver
+  ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir"/$pkgname-$pkgver
+  mkdir -p "$pkgdir"/usr/{lib,include,bin}
+  make prefix="$pkgdir"/usr install
+}

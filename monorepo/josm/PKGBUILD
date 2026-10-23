@@ -1,0 +1,47 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jaroslav Lichtblau <svetlemodry@archlinux.org>
+# Contributor: Muflone http://www.muflone.com/contacts/english/
+# Contributor: Michele Schäuble <mschaeuble@swissonline.ch>
+
+pkgname=josm
+pkgver=19613
+pkgrel=1
+pkgdesc='Editor for OpenStreetMap written in Java'
+arch=(any)
+url='https://josm.openstreetmap.de/'
+license=(GPL-2.0-or-later)
+depends=(
+  hicolor-icon-theme
+  'java-runtime>=11'
+  libxtst
+  ttf-font
+)
+makedepends=(
+  ant
+  strip-nondeterminism
+  subversion
+)
+options=(!emptydirs)
+backup=(etc/default/josm)
+source=("$pkgname::svn+https://josm.openstreetmap.de/svn/trunk#revision=$pkgver")
+b2sums=(SKIP)
+
+prepare() {
+  cd $pkgname
+  sed -i 's|/usr/share/|/usr/share/java/|' native/linux/tested/usr/bin/josm
+}
+
+build() {
+  cd $pkgname
+  ant
+
+  # Strip non-deterministic information from jar file (e.g. timestamps)
+  # This is required for reproducible builds
+  find . -name "*.jar" -exec strip-nondeterminism {} +
+}
+
+package() {
+  cd $pkgname
+  cp -r native/linux/tested/{etc,usr} "$pkgdir"
+  install -Dm644 dist/josm-custom.jar "$pkgdir/usr/share/java/$pkgname/$pkgname.jar"
+}

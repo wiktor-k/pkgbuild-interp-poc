@@ -1,0 +1,56 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=railway
+pkgver=2.10.1
+pkgrel=1
+pkgdesc='Look up travel information for many different railways'
+arch=(x86_64)
+url='https://apps.gnome.org/DieBahn/'
+license=(GPL-3.0-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  openssl
+  pango
+)
+makedepends=(
+  appstream
+  blueprint-compiler
+  git
+  meson
+  rust
+)
+options=(!lto)
+source=("git+https://gitlab.com/schmiddi-on-mobile/railway.git#tag=$pkgver")
+b2sums=(88bde8874874b1aedeb2651bce1fec5686c2589e82ca93a01f343278e7bc569d67411ba6a8517d69087a658d5d92eee9500b193ed3d98f89fa0c17ece29d795a)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

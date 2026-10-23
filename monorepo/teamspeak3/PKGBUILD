@@ -1,0 +1,52 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Slash <demodevil5[at]yahoo[dot]com>
+# Contributor: J.W. Birdsong  <jwbirdsongATmailDOTcom>
+
+pkgname=teamspeak3
+pkgver=3.6.2
+pkgrel=6
+pkgdesc="TeamSpeak is software for quality voice communication via the Internet"
+url="http://www.teamspeak.com"
+license=('custom')
+depends=('libxslt' 'libxss' 'nss' 'libc++' 'libxkbcommon' 'xcb-util-keysyms' 'xcb-util-image'
+         'xcb-util-wm' 'xcb-util-renderutil' 'libxml2-legacy')
+optdepends=('libpulse')
+arch=('x86_64')
+source=('teamspeak3.desktop'
+        'teamspeak3.png'
+        'license-from-upstream'
+        "https://files.teamspeak-services.com/releases/client/${pkgver}/TeamSpeak3-Client-linux_amd64-${pkgver}.run")
+sha512sums=('af98cbe6d1f8bd681374512fcc475de700c98de3179b7373344afa496c472b2a2e8bc5d5d73e1c2906c81e3299c768e963ad0de50aafcfcf14a0901d5d68031c'
+            '386bc45ef92d3de1ab0dc2f68c80ed22018326e5a3e92dfdfd30afe907dbf9862e39a2cc52a8e5ccf40cbe94ca16f508fbba10f07e2e99d8a5d520ae42c4f020'
+            'd6d03f1bda86c90390ce0032e4d30e889977f80ff76ba1e5c443109e93cbedbee92c6fc2759f58d23659c15dba4f2ac718861571239ba117dcfe11f136f556dc'
+            '09448086ed3322ba5a37905c5b893fdf0860e5e80852da2713a2d3aceddc071ff6cd7bc213f494759b9448615a027130579da7292f59447b3c31553e151d35eb')
+
+prepare() {
+  mkdir archive && cd archive
+  sh "${srcdir}"/TeamSpeak3-Client-linux_amd64-${pkgver}.run --tar -xf 2>/dev/null
+
+  # Fix permissions
+  find -type d | xargs chmod 755
+  find -type f | xargs chmod 644
+  find -name '*.so*' | xargs chmod 755
+  chmod +x ts3client* package_inst QtWebEngineProcess
+}
+
+package() {
+  install -d "${pkgdir}"/{usr/bin/,opt/teamspeak3}
+
+  cp -r archive/* ${pkgdir}/opt/teamspeak3/
+
+  install -D -m644 "${srcdir}"/teamspeak3.desktop "${pkgdir}"/usr/share/applications/teamspeak3.desktop
+  install -D -m644 "${srcdir}"/teamspeak3.png "${pkgdir}"/usr/share/icons/hicolor/256x256/apps/teamspeak3.png
+  install -D -m644 "${srcdir}"/license-from-upstream "${pkgdir}"/usr/share/licenses/${pkgname}/LICENSE
+  ln -s /opt/teamspeak3/ts3client_runscript.sh "${pkgdir}"/usr/bin/teamspeak3
+
+  # Fix a weird change that TS3 did which broke symlinks.
+  # Check: https://forum.teamspeak.com/threads/134617-Linux-client-not-starting-when-run-though-symlink-since-3-1-8?p=454315#post454315
+  sed -i "s|cd.*|cd /opt/teamspeak3|" "${pkgdir}"/opt/teamspeak3/ts3client_runscript.sh
+
+  # Fix teamspeak3 on wayland (FS#57366)
+  sed -i "s|ts3client_linux_amd64|ts3client_linux_amd64 -platform xcb|" "${pkgdir}"/opt/teamspeak3/ts3client_runscript.sh
+}
+# vim:set ts=2 sw=2 et:

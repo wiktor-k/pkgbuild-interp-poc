@@ -1,0 +1,21 @@
+pkgbase = feishin
+	pkgdesc = A modern self-hosted music player.
+	pkgver = 1.17.0
+	pkgrel = 1
+	url = https://github.com/jeffvli/feishin
+	arch = any
+	license = GPL-3.0-only
+	makedepends = pnpm
+	makedepends = git
+	makedepends = libxcrypt-compat
+	depends = electron43
+	depends = bash
+	depends = hicolor-icon-theme
+	depends = xdg-utils
+	optdepends = mpv: Alternative audio backend
+	source = git+https://github.com/jeffvli/feishin.git#tag=v1.17.0
+	source = feishin.sh
+	sha256sums = 7f266f40a5739dc2d7c94202758c8f906a3119199a9b2e52c579b9b476b25ce4
+	sha256sums = 4ac240aa9678f6a9c638e6e9d03bbdb77507c936c4594a20cdf223e15072697d
+
+pkgname = feishin

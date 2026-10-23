@@ -1,0 +1,62 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Aaron Griffin <aaron@archlinux.org>
+
+pkgname=goffice
+pkgver=0.10.62
+pkgrel=1
+pkgdesc='A GLib/GTK set of document-centric objects and utilities library'
+arch=(x86_64)
+url='https://gitlab.gnome.org/GNOME/goffice'
+license=('GPL-2.0-only OR GPL-3.0-only')
+depends=(
+  at-spi2-core
+  cairo
+  gdk-pixbuf2
+  glib2
+  glibc
+  gtk3
+  lasem
+  libgsf
+  librsvg
+  libspectre
+  libxml2
+  libxslt
+  pango
+)
+makedepends=(
+  git
+  glib2-devel
+  gobject-introspection
+  gtk-doc
+  intltool
+)
+source=("git+https://gitlab.gnome.org/GNOME/goffice.git#tag=GOFFICE_${pkgver//./_}")
+b2sums=(d2a598c290c4e7689a5cd0160cf43264e49a10ad063ed3eeed51295df90d09aaea3dce4b4e13a164f4c76c018b5c21040d9e3c5ea3425257189ac2e873172937)
+
+prepare() {
+  cd $pkgname
+  autoreconf -fiv
+}
+
+build() {
+  cd $pkgname
+  ./configure \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --enable-introspection \
+    --enable-gtk-doc
+  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+  make
+}
+
+check() {
+  cd $pkgname
+  make check
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="$pkgdir" install
+}

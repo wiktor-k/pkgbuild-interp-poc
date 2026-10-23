@@ -1,0 +1,105 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Guillermo Ramos <0xwille at gmail dot com>
+
+pkgname=radare2
+pkgver=6.2.2
+pkgrel=1
+pkgdesc='Open-source tools to disasm, debug, analyze and manipulate binary files'
+arch=('x86_64')
+url='https://radare.org'
+license=('GPL-3.0-only AND LGPL-3.0-only')
+depends=(
+  capstone
+  file
+  glibc
+  libuv
+  libzip
+  lz4
+  sh
+  xxhash
+  zlib
+  zydis
+)
+makedepends=(
+  git
+  meson
+)
+optdepends=(
+  'python-r2pipe: r2pipe scripts (r2sptrace.py)'
+  'r2ghidra: ghidra decompiler plugin'
+)
+options=('!emptydirs')
+_sdb_ver=2.5.2
+_qjs_ver=9d15fb60b67c45fd0de413bb49e48f8dacebac16
+# The testbins commit is not locked upstream but do it here for
+# reproducibility.
+_testbins_ver=71a65843d445ac412afa7afccace03d55eef4362
+source=(
+  "git+https://github.com/radareorg/radare2.git#tag=$pkgver"
+  "git+https://github.com/radareorg/sdb.git#tag=$_sdb_ver"
+  "qjs::git+https://github.com/quickjs-ng/quickjs.git#commit=$_qjs_ver"
+  "git+https://github.com/radareorg/radare2-testbins.git#commit=$_testbins_ver"
+)
+b2sums=('6681111fcf9ffcaa64f31869ea73f55d1eeeeb9c969237ad8f4fd27b99d89dc7806d8d430618e68680a83cce3e10eb0e6aba6bb45de3679352f5784d88739078'
+        'd2fb48477b7ad36af4195714ae93739ca6a76ffd044ae5de82fb46f5359ef76622ca561a04bfe375bba38c06af8ad210ffcc8fcb9e0be975af12cedd9a3a6306'
+        'bf0111950a6c1d7b5add926649088dcddbfdadd8ce827c0cf31e3dabf79702e7530b38cd868c447947bce41cb0e2c96a1073024d59ad44cdb9ecfc531f0d2610'
+        'f042c23f07188b7ef87b68391188c83d770578ce8422db54c7db48232dc563914c3a1c49bece69a363c2e4f56f76cfb7f64e54eea380d06534bcffe4586fbd17')
+
+prepare() {
+  cd $pkgname
+  for subproject in sdb qjs; do
+    local ver_var=_${subproject//-/_}_ver
+    local expected_ver=${!ver_var}
+    grep -q "revision = $expected_ver" subprojects/$subproject.wrap \
+      || { echo "Version mismatch in subproject $subproject"; exit 1; }
+  done
+
+  cp -a ../radare2-testbins test/bins
+}
+
+build() {
+  cd $pkgname
+  export MESON_PACKAGE_CACHE_DIR="$srcdir"
+  arch-meson build \
+    -D use_sys_capstone=true \
+    -D use_capstone_version=v5 \
+    -D use_sys_magic=true \
+    -D use_sys_zip=true \
+    -D use_sys_zlib=true \
+    -D use_sys_lz4=true \
+    -D use_sys_xxhash=true \
+    -D use_sys_zydis=true \
+    -D use_libuv=true \
+    -D use_webui=true
+  meson compile -C build
+}
+
+check() {
+  cd $pkgname
+  export PATH="$PWD/build/binr/radare2:$PATH"
+
+  # Unit tests need radare2's calling-convention database. The meson build never
+  # defines HAVE_GPERF, so it isn't compiled in and is only loaded from an
+  # installed prefix or from XDG_DATA_HOME. Without it x86-64 functions get the
+  # default "reg" callconv instead of "amd64", which disables variadic detection
+  # in libr/anal/fcn.c and fails test_anal_function.
+  export XDG_DATA_HOME="$srcdir/xdg-data"
+  install -vDm644 -t "$XDG_DATA_HOME/radare2/fcnsign" build/libr/anal/d/cc-*.sdb
+
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  depends+=(
+    libcapstone.so
+    libmagic.so
+    libzip.so
+  )
+
+  cd $pkgname
+  meson install -C build --destdir "$pkgdir"
+  install -dm755 "$pkgdir/usr/share/doc/$pkgname"
+  cp -va doc/* "$pkgdir/usr/share/doc/$pkgname"
+  ln -vs /usr/share/man/man1/radare2.1.gz "$pkgdir/usr/share/man/man1/r2.1.gz"
+}

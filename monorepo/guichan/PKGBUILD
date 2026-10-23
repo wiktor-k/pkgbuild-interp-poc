@@ -1,0 +1,37 @@
+# Maintainer: Jaroslav Lichtblau <dragonlord@aur.archlinux.org>
+# Contributor: Mateusz Herych <heniekk@gmail.com>
+# Contributor: Bjørn Lindeijer <bjorn@lindeijer.nl>
+
+pkgname=guichan
+pkgver=0.8.3
+pkgrel=2
+pkgdesc="A portable C++ GUI library designed for games using Allegro, SDL and/or OpenGL."
+arch=('x86_64')
+url="http://guichan.sourceforge.net/"
+license=('BSD-3-Clause')
+depends=('glibc' 'libgcc' 'libstdc++')
+makedepends=('sdl_image' 'allegro4' 'libgl' 'glut')
+options=('!strip')
+source=(https://github.com/darkbitsorg/guichan/releases/download/v$pkgver/$pkgname-$pkgver.tar.gz)
+sha256sums=('2f3b265d1b243e30af9d87e918c71da6c67947978dcaa82a93cb838dbf93529b')
+
+prepare() {
+  cd "${srcdir}"/$pkgname-$pkgver
+  autoreconf -fiv
+}
+
+build() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  CXXFLAGS="-g" ./configure --prefix=/usr
+  make
+}
+
+package() {
+  cd "${srcdir}"/$pkgname-$pkgver
+
+  make prefix="${pkgdir}"/usr install
+
+# Install the license, as required for BSD
+  install -m644 -D COPYING "${pkgdir}"/usr/share/licenses/$pkgname/LICENSE
+}

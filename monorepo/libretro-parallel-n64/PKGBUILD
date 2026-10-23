@@ -1,0 +1,40 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+# Contributor: Thomas Schneider <maxmusterm@gmail.com>
+
+pkgname=libretro-parallel-n64
+pkgver=20260930.000807.g0bd516ee793b
+pkgrel=1
+pkgdesc='Nintendo 64 core'
+arch=(x86_64)
+url=https://github.com/libretro/parallel-n64
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libgl
+  libretro-core-info
+  libstdc++
+)
+makedepends=(
+  git
+  mesa
+  nasm
+)
+source=(libretro-parallel-n64::git+https://github.com/libretro/parallel-n64.git#commit=${pkgver##*.g})
+b2sums=('5a58170213a6844f2ef603f69e209aef772155d4c1c8cc224eced6d945e7a7b7aa60db60903b78aeeaa92a7af4b30d153841990faf0ef19e104277547f880653')
+options=(!lto)
+
+build() {
+  export CFLAGS+=' -Wno-implicit-function-declaration'
+  export CXXFLAGS+=' -Wno-implicit-function-declaration'
+  make -C libretro-parallel-n64 \
+    WITH_DYNAREC=x86_64 \
+    HAVE_PARALLEL=1 \
+    HAVE_PARALLEL_RSP=1 \
+    HAVE_THR_AL=1
+}
+
+package() {
+  install -Dm 644 libretro-parallel-n64/parallel_n64_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}

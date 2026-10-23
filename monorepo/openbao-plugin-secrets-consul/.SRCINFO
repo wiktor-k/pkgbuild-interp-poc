@@ -1,0 +1,16 @@
+pkgbase = openbao-plugin-secrets-consul
+	pkgdesc = OpenBao Plugin - Generate Consul ACL tokens
+	pkgver = 0.1.1
+	pkgrel = 1
+	url = https://openbao.org/docs/plugins/
+	install = openbao-plugin.install
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = go
+	makedepends = go-tools
+	makedepends = git
+	depends = openbao
+	source = openbao-plugin-secrets-consul::git+https://github.com/openbao/openbao-plugins.git#tag=secrets-consul-v0.1.1
+	sha256sums = 85a87eb752b48a7c9e38f45fc62a84469eea588442b50703e2086d904dd212e2
+
+pkgname = openbao-plugin-secrets-consul

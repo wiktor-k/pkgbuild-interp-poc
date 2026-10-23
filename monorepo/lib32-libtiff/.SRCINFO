@@ -1,0 +1,35 @@
+pkgbase = lib32-libtiff
+	pkgdesc = Library for manipulation of TIFF images (32-bit)
+	pkgver = 4.7.2
+	pkgrel = 1
+	url = http://www.simplesystems.org/libtiff/
+	arch = x86_64
+	license = libtiff
+	makedepends = freeglut
+	makedepends = git
+	makedepends = glu
+	makedepends = mesa
+	depends = libtiff=4.7.2
+	depends = lib32-glibc
+	depends = lib32-gcc-libs
+	depends = lib32-libjpeg-turbo
+	depends = lib32-xz
+	depends = lib32-zlib
+	depends = lib32-zstd
+	provides = libtiff.so
+	provides = libtiffxx.so
+	source = git+https://gitlab.com/libtiff/libtiff.git?signed#tag=v4.7.2
+	validpgpkeys = EBDFDB21B020EE8FD151A88DE301047DE1198975
+	validpgpkeys = B1FA7D81EEB8E66399178B9733EBBFC47B3DD87D
+	sha512sums = 07e644950f6e693daa66aca84594b710c85e854175b14a358a1d9d27927b290935f9873e5c09257e0e5b71cfa0710336ec9d83afc29834332f8f01650c66b148
+	b2sums = 1d5b034b62714984eabbc4fc503e06747884126bfd79cace67f29e0017c2b5067cd88f50e53a716f23f0e6d1244939b37a94e86d20118abe1af798a0692c57fa
+
+pkgname = lib32-libtiff
+	depends = libtiff=4.7.2
+	depends = lib32-glibc
+	depends = lib32-gcc-libs
+	depends = lib32-libjpeg-turbo
+	depends = lib32-xz
+	depends = lib32-zlib
+	depends = lib32-zstd
+	depends = libjpeg.so

@@ -1,0 +1,29 @@
+pkgbase = solanum
+	pkgdesc = Pomodoro timer for the GNOME desktop
+	pkgver = 6.0.0
+	pkgrel = 3
+	url = https://apps.gnome.org/Solanum/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gst-plugins-bad-libs
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	depends = gstreamer
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	source = git+https://gitlab.gnome.org/World/Solanum.git?signed#tag=6.0.0
+	validpgpkeys = 173547C8EB86C22FF5B6EF790F974ABB3478DC48
+	b2sums = 734a59e908bd3198d7f1045a00fa32f6ff991ed67951066f6e67d02d6395c070265918ea5c78c91dbb6e7edbb425f6b3ae7c3058ae68df2b5a52a551704fa654
+
+pkgname = solanum

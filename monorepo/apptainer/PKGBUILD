@@ -1,0 +1,114 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Maciej Sieczka <msieczka at sieczka dot org>
+
+pkgname=apptainer
+pkgver=1.5.4
+pkgrel=1
+pkgdesc='Application containers for secure high performance computing'
+arch=(x86_64)
+url='https://apptainer.org/'
+license=(BSD-3-Clause BSD-3-Clause-LBNL)
+depends=(
+  glibc
+  fakeroot
+  fuse2fs
+  fuse-overlayfs
+  shadow
+  squashfs-tools
+  squashfuse
+  libseccomp
+  e2fsprogs
+)
+makedepends=(
+  git
+  go
+  cryptsetup
+)
+optdepends=('gocryptfs: encrypted container support')
+conflicts=(singularity)
+backup=(
+  etc/apptainer/apptainer.conf
+  etc/apptainer/capability.json
+  etc/apptainer/cgroups/cgroups.toml
+  etc/apptainer/dmtcp-conf.yaml
+  etc/apptainer/ecl.toml
+  etc/apptainer/global-pgp-public
+  etc/apptainer/network/00_bridge.conflist
+  etc/apptainer/network/10_ptp.conflist
+  etc/apptainer/network/20_ipvlan.conflist
+  etc/apptainer/network/30_macvlan.conflist
+  etc/apptainer/network/40_fakeroot.conflist
+  etc/apptainer/nvliblist.conf
+  etc/apptainer/remote.yaml
+  etc/apptainer/rocmliblist.conf
+  etc/apptainer/seccomp-profiles/default.json
+)
+options=(!lto !debug)
+source=(
+  "$pkgname::git+https://github.com/apptainer/apptainer.git#tag=v$pkgver"
+  tmpfiles.conf
+  ftbfs-redefined-fortify_source.patch
+)
+sha512sums=('d89b2aa10e6337243cd089897fac72771e913efaf93e1ee1381da76df238fad7cffe2a1f54be7623d01693e0ac8a0a2eb3303c12b0309ed87e8fafc9a4c6f8c2'
+            '5f10f162e7e48d2ca821529906a4ef692fc32cec8f61d8f03ea60361e1a204eacbeca8b6214bea0accd019c765d9c4c15300ca01c83ab3cbbdc44e82c7e4908d'
+            'c0aabd47bb884ea9b81cd196318b3d9c231b87124f74474aed650d6ab3ea635fe8ef69c165d113bf795df6e19144722d04c56d2a2a378aad5d0a40c378ff88fe')
+b2sums=('6cf38457b23006fffe6de71100c204e59c59a7fc87351fcb9d0cbf4e8a1f70314f8c14c0874bafae1e84318e649c68418e16379ac600a327dd3f8ee8ffc1166c'
+        'dc9bfeb268d297b8785348c83f89a68ff760de278c8f101831a930ca0b42d2052d0498d7dd8c66f48b9fef2eb3c901de082939e85b22d0a99f7db4e22744bced'
+        '1abf16207b76c63289358398a26d39a99e5035ea94f6144902cb69ce1b936505d23224f5f31d10b7d686aae30ebf8623a4d92dc46a1cb6d8587a8dd316b2560b')
+
+prepare() {
+  cd "$pkgname"
+
+  # fix bash completion path
+  sed \
+    -e "s|/etc/bash_completion.d|/usr/share/bash-completion/completions|" \
+    -e "s|\$(SYSCONFDIR)/bash_completion.d|/usr/share/bash-completion/completions|" \
+    -i  mlocal/frags/build_cli.mk
+
+  # fix FTBFS due to redefined -D_FORTIFY_SOURCE
+  # arch uses v3, upstream still uses v2
+  patch -p1 -i "$srcdir/ftbfs-redefined-fortify_source.patch"
+}
+
+build() {
+  cd "$pkgname"
+
+  # provide version to build script
+  echo "$pkgver" > VERSION
+
+  # set Go flags
+  export CGO_CPPFLAGS="${CPPFLAGS}"
+  export CGO_CFLAGS="${CFLAGS}"
+  export CGO_CXXFLAGS="${CXXFLAGS}"
+  export CGO_LDFLAGS="${LDFLAGS}"
+  export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
+
+  ./mconfig \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --libexecdir=/usr/lib \
+    --localstatedir=/var/lib \
+    -P release \
+    --without-suid \
+    -v
+
+  make -C builddir
+}
+
+package() {
+  cd "$pkgname"
+
+  # binaries & man pages
+  make -C builddir DESTDIR="$pkgdir" install
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE*
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+
+  # let systemd-tmpfiles generate state directory
+  rm -rf "$pkgdir/var"
+  install -vDm644 "$srcdir/tmpfiles.conf" \
+    "$pkgdir/usr/lib/tmpfiles.d/$pkgname.conf"
+}

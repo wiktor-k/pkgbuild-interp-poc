@@ -1,0 +1,44 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Alessandro Pezzoni <donbex at nerdshack dot com>
+
+pkgbase=pycdio
+pkgname=(python-pycdio)
+pkgver=2.1.1
+pkgrel=9
+pkgdesc="Python OO interface to libcdio (CD Input and Control library)"
+url="https://github.com/rocky/pycdio"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  libcdio
+  python
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+  swig
+)
+source=("git+$url#tag=$pkgver")
+b2sums=('a2c6490ea13e4d790ce9e61005eddce74d58719b544afe44d0f6aaea81ba22d82aadf9cfe69b65bf67e5b91d6ec87601055f53444df65d924e534091e36b6b3b')
+
+prepare() {
+  cd pycdio
+  sed -i 's/PyString_From/PyUnicode_From/g' swig/*
+}
+
+build() {
+  cd pycdio
+  python -m build --wheel --no-isolation
+}
+
+package_python-pycdio() {
+  cd pycdio
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}
+
+# vim:set sw=2 sts=-1 et:

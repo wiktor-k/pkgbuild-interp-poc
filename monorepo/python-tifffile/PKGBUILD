@@ -1,0 +1,60 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+_name=tifffile
+pkgname=python-$_name
+pkgver=2026.10.15
+pkgrel=1
+pkgdesc="Read and write TIFF files"
+arch=(any)
+url="https://github.com/cgohlke/tifffile"
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-numpy
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+)
+checkdepends=(
+  python-fsspec
+  python-lxml
+  python-pytest
+)
+optdepends=(
+  'python-fsspec: for opening ReferenceFileSystem files'
+  'python-imagecodecs: for encoding or decoding LZW, JPEG, etc. compressed segments'
+  'python-lxml: for validating and printing XML'
+  'python-matplotlib: for plotting'
+  'python-zarr: for opening Zarr stores'
+  'tk: for Tkinter file open dialog'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+b2sums=('a8abf343b497a3562710569ce13f7a1e8c11fbf9ccfdffe94548bc90ad0833b8d2207f5469a0e056baa01e21dbf565765787a3a5e6dff14dac5b41862d88c8fc')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local pytest_options=(
+    -vv
+    -W ignore::DeprecationWarning
+  )
+
+  cd $_name-$pkgver
+  python -m venv --system-site-packages test-env
+  test-env/bin/python -m installer dist/*.whl
+  # see https://github.com/cgohlke/tifffile/blob/master/tests/test_tifffile.py for the available env variables
+  SKIP_LARGE=1 SKIP_HTTP=1 \
+  test-env/bin/python -m pytest "${pytest_options[@]}" tests
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  install -vDm 644 README.rst -t "$pkgdir"/usr/share/doc/$pkgname/
+}

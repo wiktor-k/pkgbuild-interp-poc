@@ -1,0 +1,37 @@
+pkgbase = apostrophe
+	pkgdesc = Distraction free Markdown editor
+	pkgver = 3.5
+	pkgrel = 1
+	url = https://apps.gnome.org/Apostrophe/
+	arch = any
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = graphene
+	depends = gtk4
+	depends = gtksourceview5
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libspelling
+	depends = pango
+	depends = python
+	depends = python-chardet
+	depends = python-gobject
+	depends = python-pypandoc
+	depends = python-regex
+	depends = python-weasyprint
+	depends = webkitgtk-6.0
+	optdepends = texlive-bin: Export to LaTeX
+	optdepends = texlive-formatsextra: Export to PDF using XeTeX
+	optdepends = texlive-latex: Inline math preview
+	optdepends = texlive-xetex: Export to PDF using XeTeX
+	source = git+https://gitlab.gnome.org/World/apostrophe.git#tag=v3.5
+	source = apostrophe-weasyprint.patch
+	b2sums = 375e70b56b27358680dd10dcd949b465d38a5bb74081949fa7c49d4f873c2c8be91ab3e925afcbe6121c898ffa21f018db664dcff4422934588e55195113b8b9
+	b2sums = 3dd7601fa9cf45cc0a4088ccdb64c95cf775e8cf236a851ff159320d312cd5c64996fb26ae54ece8f268e71cf28a7454200bc019ffc870853dadb84e5deb65b1
+
+pkgname = apostrophe

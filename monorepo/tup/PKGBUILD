@@ -1,0 +1,44 @@
+# Maintainer: Anatol Pomozov <anatol.pomozov@gmail.com>
+# Contributor: Arvid Norlander <anmaster A_T tele2 d_o_t (ccTLD for Sweden, which is se)>
+# Contributor: Patrick McCarty <pnorcks at gmail dot com>
+
+pkgname=tup
+pkgver=0.8
+pkgrel=4
+pkgdesc='A fast, file-based build system'
+arch=(x86_64)
+url='http://gittup.org/tup/index.html'
+license=(GPL-2.0-only)
+depends=(fuse3 glibc pcre2)
+source=($pkgname-$pkgver.tar.gz::https://github.com/gittup/tup/archive/v$pkgver.tar.gz)
+sha256sums=('45ca35c4c1d140f3faaab7fabf9d68fd9c21074af2af9a720cff4b27cab47d07')
+
+prepare() {
+  cd tup-$pkgver
+
+  # add our distribution flags
+  {
+    echo "CFLAGS += $CFLAGS"
+    echo "LDFLAGS += $LDFLAGS"
+  } >> Tuprules.tup
+}
+
+build() {
+  cd tup-$pkgver
+
+  # Clean environment does not allow to use fuse so ./bootstrap does not work
+  ./build.sh
+  ./build/tup init
+  ./build/tup generate runme.sh
+  ./runme.sh
+}
+
+package() {
+  cd tup-$pkgver
+
+  install -d "$pkgdir"/usr/bin "$pkgdir"/usr/share/man/man1 "$pkgdir"/usr/share/vim/vimfiles/{syntax,ftdetect}
+  install -m755 -t "$pkgdir"/usr/bin tup
+  install -m644 -t "$pkgdir"/usr/share/man/man1 tup.1
+  install -m644 -t "$pkgdir"/usr/share/vim/vimfiles/syntax contrib/syntax/tup.vim
+  echo 'au BufNewFile,BufRead Tupfile,*.tup setf tup' > "$pkgdir"/usr/share/vim/vimfiles/ftdetect/tup.vim
+}

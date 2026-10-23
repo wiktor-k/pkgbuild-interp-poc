@@ -1,0 +1,50 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Contributor: Timothy Redaelli <timothy.redaelli@gmail.com>
+# Contributor: Cedric Girard <girard.cedric@gmail.com>
+# Contributor: foxbunny <bg.branko@gmail.com>
+
+_pkgname=DisplayCAL
+pkgname=displaycal
+pkgver=3.9.17
+pkgrel=5
+pkgdesc="Open Source Display Calibration and Characterization powered by Argyll CMS (Formerly known as dispcalGUI)"
+arch=(x86_64)
+url="https://github.com/eoyilmaz/displaycal-py3"
+license=(GPL-3.0-or-later)
+depends=(argyllcms dbus dbus-python glib2 python-certifi python-distro
+         python-numpy python-pillow python-send2trash python-wxpython
+         python-zeroconf)
+makedepends=(libxrandr libxxf86vm python-build python-installer
+             python-setuptools python-wheel)
+optdepends=('gnome-color-manager: profile installation for GNOME'
+            'colord-kde: profile installation for KDE Plasma')
+source=(${url}/releases/download/${pkgver}/${_pkgname}-${pkgver}.tar.gz
+        python-3.14.patch
+        display-3.19.2-remove-pkg_resources.patch)
+sha256sums=('715f31d47c7e29052138eceac3ff3d420a19f7ef36be1c06ae11b5dcaa44f55c'
+            '89cda094c8ac5555be1bf51b31c2ee3261a95701eaa6a1a691a72777a9a26165'
+            '71b197a876157d0d3727563c0cba9b5c2e5f165a76da9eef276892be640eeb62')
+
+prepare() {
+  cd $pkgname-$pkgver
+  patch -p1 -i ../python-3.14.patch
+  patch -p1 -i ../display-3.19.2-remove-pkg_resources.patch
+
+  # hack to force creating dist/net.displaycal... (missed due pyproject)
+  sed -i -e 's|create_appdata = |create_appdata = True or |' setup.py
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+  # https://github.com/eoyilmaz/displaycal-py3/issues/117
+  install -d "${pkgdir}"/etc/xdg/autostart
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  mv "${pkgdir}"/{$site_packages/build/.config,etc/xdg}/autostart/z-displaycal-apply-profiles.desktop
+  rmdir "${pkgdir}"/$site_packages/build/{.config{/autostart,},}
+}

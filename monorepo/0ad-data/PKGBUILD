@@ -1,0 +1,20 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: t3ddy  <t3ddy1988 "at" gmail {dot} com>
+# Contributor: Adrián Chaves Fernández (Gallaecio) <adriyetichaves@gmail.com>
+pkgname=0ad-data
+_pkgname=0ad
+pkgver=0.28.0
+pkgrel=1
+pkgdesc="Cross-platform, 3D and historically-based real-time strategy game (data files)"
+arch=('any')
+url="http://play0ad.com/"
+license=('CC-BY-NC-SA-3.0')
+source=("https://releases.wildfiregames.com/0ad-${pkgver}-unix-data.tar.xz")
+sha512sums=('5ad4473d42a5dd0780a5e40b08ba580757d8266c459d7e17e48dd760e7bbdd5fda9d7be32cf1fa8c331d19a2f464a2d7f8fd5e1b09387a62ae9445ef675f18c8')
+
+package() {
+  cd "$_pkgname-$pkgver"
+
+  install -d "${pkgdir}/usr/share/${_pkgname}/data"
+  cp -r "binaries/data" "${pkgdir}/usr/share/${_pkgname}"
+}

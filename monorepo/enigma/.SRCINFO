@@ -1,0 +1,21 @@
+pkgbase = enigma
+	pkgdesc = A puzzle game involving falling blocks
+	pkgver = 1.04
+	pkgrel = 8
+	url = https://www.chiark.greenend.org.uk/~sgtatham/enigma/
+	arch = x86_64
+	license = MIT
+	depends = ncurses
+	source = enigma-1.04.tar.gz::https://www.chiark.greenend.org.uk/~sgtatham/enigma/enigma-1.04.tar.gz
+	source = makefile-destdir.patch
+	source = include-string-header.patch
+	sha512sums = a7de38cfae06b82c6b7007167157f65d7dd7cd9da5647896a78aff6ddcc8f4290103e6a9f5eb156fd63c2b763687f12eec0f29f5b9813bd2ca63f8b3ed2fda83
+	sha512sums = ab619c24c5daaef4b9953750cb6119a6f7dabe508aab3dd869c525797db6b4b601f8ae0a73425cf56a1fa85f1fe63534e0e7dc2a0210a48b330fc308eef46da9
+	sha512sums = 76d07532b5ca2429061a877e2f9813b54663c9a64b5d90b4921efe85713a451212e78a33e6452ed3549b0ff43c038fb2d6358b584ae6058a8a901564136605f1
+	b2sums = 23fd4ec372c324c79514febda17dd44be9a153333814e9d9d2916f799407688b04c661e7ecf3773240dffecf1817383d500109514590af618c8d5e5918c64380
+	b2sums = 57e762160a93b36356112571f0026875fe6b2a628fcb5ad19f56422d4957cdae9c305d8684958263a2aa2b7874fda6840282b8ff1c1b306732b79ca058d2cd99
+	b2sums = 2868561fc3291f8f23b7d84de7fbfe5517a29ef3f659430b72327e052292d95c8a70a551c415b3964f0bc93fec9112436356df465d8194cec266dabbb686aec7
+
+pkgname = enigma
+	depends = ncurses
+	depends = glibc

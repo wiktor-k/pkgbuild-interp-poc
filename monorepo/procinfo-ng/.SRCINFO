@@ -1,0 +1,23 @@
+pkgbase = procinfo-ng
+	pkgdesc = Displays useful information from /proc
+	pkgver = 2.0.304
+	pkgrel = 9
+	url = http://procinfo-ng.sourceforge.net/
+	arch = x86_64
+	license = GPL-2.0-only
+	license = LGPL-2.1-only
+	depends = glibc
+	depends = gcc-libs
+	depends = ncurses
+	depends = perl
+	provides = procinfo
+	conflicts = procinfo
+	replaces = procinfo
+	source = https://downloads.sourceforge.net/project/procinfo-ng/procinfo-ng/2.0.304/procinfo-ng-2.0.304.tar.bz2
+	source = https://sources.archlinux.org/other/procinfo-ng/procinfo-18.tar.gz
+	source = fix-build.patch
+	sha512sums = db336d2ff3bb3b31ac83a51a9d273fae8d16d36bd805f548eda06cb501699473fd8e4b4f9b722165fbf685d76c3fc09bfea9e516eabc37a888e2fae7679c08cf
+	sha512sums = 12c4d7983f5d6531be6d4df39f5f1e1ee2ea2394a6eb8fb8df0573f0085499e4b7d43355bfa549a24ddf1ecb09bbfa7b038cef9c483620c74ad5cedc219e35fa
+	sha512sums = 3b7792f48d56b202327c7d5dd59e662e09be6754f65cd10f3b4465237f5173378401eb93133404de45ba16ea5503994da0ddba12d735e54dd0c73e6eeddd7861
+
+pkgname = procinfo-ng

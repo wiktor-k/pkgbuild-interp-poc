@@ -1,0 +1,37 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Allan McRae <allan@archlinux.org>
+# Contributor: Alexander Fehr <pizzapunk@gmail.com>
+
+pkgname=pychess
+pkgver=1.2.0
+pkgrel=1
+pkgdesc="Chess client"
+url="https://pychess.github.io"
+arch=('any')
+license=('GPL-3.0-only')
+depends=('gst-plugins-base' 'gtksourceview4' 'python-cairo' 'python-gobject'
+         'python-ptyprocess' 'python-psutil' 'python-sqlalchemy' 'python-pexpect'
+         'python-websockets')
+makedepends=('python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/pychess/pychess/archive/refs/tags/${pkgver}.tar.gz")
+sha256sums=('da989acb45ebe77fa013ab68a5e6d4202c8d831af68e3533c8b96a9b5e387548')
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+	PYTHONPATH=lib python3 pgn2ecodb.py
+	PYTHONPATH=lib python3 create_theme_preview.py
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"
+	python -m build --wheel --no-isolation
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+
+	# FS#59882
+	find "${pkgdir}" -wholename 'external/pexpect' -type d -delete
+}

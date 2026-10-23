@@ -1,0 +1,55 @@
+# Maintainer: Andreas 'Segaja' Schleifer <segaja at archlinux dot org>
+
+pkgname='certbot-dns-inwx'
+pkgver=3.0.3
+pkgrel=2
+pkgdesc="INWX DNS authenticator plugin for certbot"
+arch=('any')
+url="https://github.com/oGGy990/certbot-dns-inwx"
+license=('Apache')
+depends=(
+  certbot
+  python
+  python-inwx-domrobot
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(
+  python-dnspython
+  python-pytest
+)
+optdepends=(
+  'python-dnspython: needed for CNAME redirects'
+  'python-idna: support of internationalized domain names'
+)
+source=("${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz")
+sha512sums=('6195f0f42ecffcec45e9447edfa5c76382d8ffb22f5b5b012780f9cf44c83c52467a14ac23ec99f7a7348377655723b70415cff55911497701ceb3e8085c9a31')
+b2sums=('e525e5c5cdf8d90ba662716e99103dec6d392ccab7c2dff8face450fb8f4dfd3945da1f332ddb1f1aefaeb2a3d7b73b0df7aea41c591d00e250c66d44a48d50e')
+backup=(
+  'etc/letsencrypt/inwx.cfg'
+)
+
+build() {
+  cd "${pkgname}-${pkgver}"
+
+  python -m build --wheel --skip-dependency-check --no-isolation
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+
+  pytest -vv
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+
+  install --verbose -D --mode=0600 inwx.cfg "${pkgdir}/etc/letsencrypt/inwx.cfg"
+  install --verbose -D --mode=0644 README.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}

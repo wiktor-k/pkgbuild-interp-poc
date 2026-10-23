@@ -1,0 +1,53 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=listenbrainz-mpd
+pkgver=2.6.0
+pkgrel=1
+pkgdesc="A ListenBrainz submission client for MPD"
+arch=(x86_64)
+url="https://codeberg.org/elomatreb/listenbrainz-mpd"
+license=(AGPL-3.0-only)
+depends=(
+  glibc
+  libgcc
+  openssl
+  sqlite
+)
+makedepends=(
+  asciidoctor
+  rust
+)
+optdepends=(
+  'mpd: for using a local mpd instance'
+)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('ebef802f9a32bad8d624bd9d1996a7b502ca62109594b346efc5192037ef69d433f7dd3438847c0951af95fa0a5f5a72c29d7e86f8c70a2b0f3475b6d4e12bcc')
+b2sums=('382bfda67d201b3a481b5aafa116e73fc362e33fd19f6b648fcd5971cd5c2a0477f8be0a04f7eefe1db7c79641a6e9eee670faedbcebc6b831fa2e14b4324ee3')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release --features=shell_completion,systemd
+  asciidoctor --backend=manpage $pkgname.adoc
+}
+
+chetck() {
+  cd $pkgname
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd $pkgname
+  install -vDm 0755 "target/release/$pkgname" -t "$pkgdir/usr/bin/"
+  install -vDm 644 $pkgname.service -t "$pkgdir/usr/lib/systemd/user/"
+  install -vDm 644 $pkgname.1 -t "$pkgdir/usr/share/man/man1/"
+  install -vDm 644 {{CHANGELOG,README}.md,config.toml.sample} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 generated_completions/$pkgname.bash "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -vDm 644 generated_completions/$pkgname.fish -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -vDm 644 generated_completions/_$pkgname -t "$pkgdir/usr/share/zsh/site-functions/"
+  install -vDm 644 LICENSE.txt "$pkgdir/usr/share/licenses/$pkgname/AGPL-3.0-only.txt"
+}

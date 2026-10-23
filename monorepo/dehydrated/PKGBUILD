@@ -1,0 +1,44 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: VVL <me@ivvl.ru>
+# Contributor: Alexander Görtz <aur@nyloc.de>
+# Contributor: Patrick Burroughs (Celti) <celti@celti.name>
+
+pkgname=dehydrated
+pkgver=0.7.2
+pkgrel=2
+pkgdesc='letsencrypt/acme client implemented as a shell-script – just add water'
+arch=(any)
+url=https://dehydrated.io
+license=(MIT)
+depends=(
+  curl
+  diffutils
+  openssl
+)
+makedepends=(git)
+optdepends=('sudo: for the DEHYDRATED_USER option')
+source=(
+  "git+https://github.com/$pkgname-io/$pkgname.git#commit=v$pkgver?signed"
+  "$pkgname".{service,timer}
+)
+b2sums=('6b17d438c6d80f3533f18ad5b6b374d4e41542fea64542f321d6768a1ff45aaee7a5bf392cdfb85390b1958a3076ad2aba6453c2d142899aa0e07c50622ff9a5'
+        'd897cdf34621b377e6f9e6ba6d6a351f3290f6b08fd57fce723a85e44fe73b75003941bfa625e2213f4bb26e0753ab7d3e1f50a2530d0b6c37766b3061bec2ce'
+        'df0d85ae33cbd27502bbbcf3f3055a29b2d38b2863a59dc6ea4fce1c7811b68bea14c404377dfde18ed32b1232331db020ca8d015f471fb6f8e919e7b0a32d2a')
+validpgpkeys=('3C2F2605E078A1E18F4793909C4DBE6CF438F333') # Lukas Schauer <lukas@schauer.so>
+
+prepare() {
+  cd $pkgname
+  # implement workaround for openssl regression
+  git cherry-pick --no-commit 1dbbc64ce947af000b764e806429e3f87cb3a55e
+}
+
+package() {
+  cd $pkgname
+  install -d "$pkgdir"/etc/$pkgname
+  install -Dt "$pkgdir"/usr/bin $pkgname
+  install -Dm644 -t "$pkgdir"/usr/lib/systemd/system ../$pkgname.{service,timer}
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname docs/*.md
+  install -Dm644 -t "$pkgdir"/usr/share/doc/$pkgname/examples docs/examples/*
+  install -Dm644 -t "$pkgdir"/usr/share/man/man1 docs/man/$pkgname.1
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

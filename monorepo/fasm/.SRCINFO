@@ -1,0 +1,15 @@
+pkgbase = fasm
+	pkgdesc = Fast and efficient self-assembling x86 assembler for DOS, Windows and Linux operating systems
+	pkgver = 1.73.35
+	pkgrel = 1
+	url = https://flatassembler.net/
+	arch = x86_64
+	license = LicenseRef-BSD-2-Clause-fasm
+	options = !strip
+	source = https://flatassembler.net/fasm-1.73.35.tgz
+	sha512sums = 245cd4a7e8aeae72713e0c7b496e7554aba3900b480c1e1a98c4d92b82eaf3342c8d4acc298a99e7d68b9eb2312f86cdc8c30dcc94be0555ac241819a86000d4
+	b2sums = b4de2101acad973548855d36467ac2c696ae7f84f20fb30feea0f7639c7390ad8b6dd4d005b139cf71831e68170ff1fddb32a322443adc59680ce2462808fd3e
+	depends_x86_64 = lib32-glibc
+	depends_x86_64 = lib32-gcc-libs
+
+pkgname = fasm

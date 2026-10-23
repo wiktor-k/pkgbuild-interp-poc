@@ -1,0 +1,30 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+# Contributor: Streetwalrus <streetwalrus@codewalr.us>
+
+pkgname=gitprompt-rs
+pkgver=0.4.1
+pkgrel=2
+pkgdesc='Simple Git prompt'
+arch=(x86_64)
+url=https://github.com/9ary/gitprompt-rs
+license=(0BSD)
+depends=(git glibc libgcc)
+makedepends=(git rust)
+source=("git+https://github.com/9ary/gitprompt-rs.git#tag=$pkgver")
+b2sums=('a10a9fb2d59fd54bdfcb8bbe92142dba2d23e1f4124798738cbfb0a0c526fb4dce68c869b1647f0ce3c311447077b91a38ec7b934808ea846a71d500e705f18d')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd $pkgname
+  cargo build --release --locked --offline
+}
+
+package() {
+  cd $pkgname
+  install -Dt "$pkgdir"/usr/bin target/release/$pkgname
+  install -Dt "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

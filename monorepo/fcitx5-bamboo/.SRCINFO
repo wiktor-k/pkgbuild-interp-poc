@@ -1,0 +1,18 @@
+pkgbase = fcitx5-bamboo
+	pkgdesc = Bamboo (Vietnamese Input Method) engine support for Fcitx
+	pkgver = 1.0.11
+	pkgrel = 1
+	url = https://github.com/fcitx/fcitx5-bamboo
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = git
+	makedepends = extra-cmake-modules
+	makedepends = go
+	depends = fcitx5
+	source = git+https://github.com/fcitx/fcitx5-bamboo.git#tag=1.0.11?signed
+	source = git+https://github.com/BambooEngine/bamboo-core.git
+	validpgpkeys = 2CC8A0609AD2A479C65B6D5C8E8B898CBF2412F9
+	sha512sums = 45a0d003c3099c7d0dc5f92f8dee129c62f8baeddb7de12d9c9079bb29a539a025749db8db942e151eb6f7c5cfbde3ec18f67881c81e614a6123ec4d73c64fea
+	sha512sums = SKIP
+
+pkgname = fcitx5-bamboo

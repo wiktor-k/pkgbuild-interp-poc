@@ -1,0 +1,50 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=cargo-public-api
+pkgver=0.52.0
+pkgrel=1
+pkgdesc="List and diff the public API of Rust library crates"
+arch=('x86_64')
+url="https://github.com/cargo-public-api/cargo-public-api"
+license=('MIT')
+depends=('curl' 'glibc' 'libgcc')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('730a80841546433438a0eecd47d452d8932d0a58bae557bfa8e200c1fd22f6ecb069397abf0494fb655f2b710c31a5ba4d6d823923e75709739e42e868b3d523')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+  mkdir -p completions
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  local compgen="target/release/$pkgname completions"
+  $compgen bash > "completions/$pkgname"
+  $compgen fish > "completions/$pkgname.fish"
+  $compgen zsh  > "completions/_$pkgname"
+}
+
+# tests require nightly
+#check() {
+#  cd "$pkgname-$pkgver"
+#  cargo test --frozen
+#}
+
+package() {
+  cd "$pkgname-$pkgver"
+  depends+=('libcurl.so')
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$pkgname" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions/"
+  depends+=('rustup')
+}
+
+# vim: ts=2 sw=2 et:

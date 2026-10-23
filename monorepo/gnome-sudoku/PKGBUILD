@@ -1,0 +1,56 @@
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+
+pkgname=gnome-sudoku
+pkgver=51.0.1
+pkgrel=1
+pkgdesc="Test your logic skills in this number grid puzzle"
+url="https://gitlab.gnome.org/GNOME/gnome-sudoku/-/wikis/home"
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+depends=(
+  cairo
+  dconf
+  glib2
+  glibc
+  gtk4
+  hicolor-icon-theme
+  json-glib
+  libadwaita
+  libgcc
+  libgee
+  libstdc++
+  pango
+  qqwing
+)
+makedepends=(
+  blueprint-compiler
+  git
+  meson
+  vala
+  yelp-tools
+)
+groups=(gnome-extra)
+source=(
+  "git+https://gitlab.gnome.org/GNOME/gnome-sudoku.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('431aaa2abb1e8444a81df84244845f20b94878a0e7a4c761bbdb08a65478776b44f615cda4d7d38d2c7eb00ad43879f68046c4b9d295678b5835d2c3022a4eaa')
+
+prepare() {
+  cd $pkgname
+}
+
+build() {
+  arch-meson $pkgname build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

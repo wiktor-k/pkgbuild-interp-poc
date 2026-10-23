@@ -1,0 +1,58 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=pim-data-exporter
+pkgver=26.08.2
+pkgrel=1
+pkgdesc='Import and export KDE PIM settings'
+arch=(x86_64)
+url='https://apps.kde.org/pimdataexporter/'
+license=(GPL-2.0-or-later)
+depends=(akonadi
+         akonadi-mime
+         glibc
+         karchive
+         kcalendarcore
+         kconfig
+         kconfigwidgets
+         kcontacts
+         kcoreaddons
+         kcrash
+         kdbusaddons
+         ki18n
+         kiconthemes
+         kidentitymanagement
+         kio
+         kitemviews
+         kmailtransport
+         kmime
+         kstatusnotifieritem
+         ktextaddons
+         kuserfeedback
+         kwidgetsaddons
+         kxmlgui
+         libgcc
+         libstdc++
+         mailcommon
+         pimcommon
+         qt6-base)
+makedepends=(extra-cmake-modules
+             kdoctools)
+groups=(kde-applications
+        kde-pim)
+source=(https://download.kde.org/stable/release-service/$pkgver/src/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('d4c7d9966e53cc7318d31cfcb447f22bc43fdd4186ef0c2b66229a4b9ea9e4bc'
+            'SKIP')
+validpgpkeys=(CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7  # Albert Astals Cid <aacid@kde.org>
+              F23275E4BF10AFC1DF6914A6DBD2CE893E2D1C87  # Christoph Feck <cfeck@kde.org>
+              D81C0CB38EB725EF6691C385BB463350D6EF31EF) # Heiko Becker <heiko.becker@kde.org>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

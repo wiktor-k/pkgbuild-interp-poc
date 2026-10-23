@@ -1,0 +1,33 @@
+pkgbase = gitfourchette
+	pkgdesc = The comfortable Git UI
+	pkgver = 1.11.0
+	pkgrel = 1
+	url = https://gitfourchette.org
+	arch = any
+	license = GPL-3.0-only
+	checkdepends = python-pytest
+	checkdepends = python-pytest-qt
+	checkdepends = python-pytest-cov
+	checkdepends = python-pytest-xdist
+	checkdepends = python-ruff
+	makedepends = git
+	makedepends = libicns
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-pygit2
+	depends = python-pyqt6
+	depends = python-pygments
+	depends = hicolor-icon-theme
+	optdepends = python-psutil: memory indicator
+	optdepends = python-mfusepy: mount git tree as fuse filesystem
+	source = gitfourchette::git+https://github.com/jorio/gitfourchette#tag=v1.11.0
+	source = reproducible-metadata.patch
+	sha512sums = 904632a0c50ea2603125ea026868d303e3ec43381053a284470b6f0234c884305f4636c24348c99310f84549be3a4f763d7ca6e6f72b537188b1d3dc6aaa35e4
+	sha512sums = 93674636c7d6847e8f4e8b4cfbb4fb4fd934c51c082eb185c1cfef9faff2f96a6d89a5f152c8ef25ba051202379684db5ef5fbd7eda63810d1f54fbe1621d5ab
+	b2sums = c9f9f32d95eb676c5e12a6842484e60620e8c53ff0c141faf93c8eab84fe408b0249101ac223ff9252927e89135f3efef59af07dc5c487c0c29977395096bacd
+	b2sums = 548ab1749858ab5da2c0812b0209c3705fd8411477da1c95b857f25e4706d88a213f3f19942e5d66a44be285dc343db41589b70fb556782bd4c6b93e972b0178
+
+pkgname = gitfourchette

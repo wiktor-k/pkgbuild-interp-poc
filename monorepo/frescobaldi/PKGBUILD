@@ -1,0 +1,58 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=frescobaldi
+pkgver=4.0.7
+pkgrel=1
+pkgdesc='A LilyPond sheet music text editor'
+arch=(any)
+url='https://www.frescobaldi.org/'
+_url='https://github.com/frescobaldi/frescobaldi'
+license=(GPL-2.0-only)
+depends=(lilypond
+         python
+         python-ly
+         python-pygame
+         python-pyqt6
+         python-pyqt6-sip
+         python-pyqt6-webengine
+         python-qpageview
+         qt6-base
+         qt6-svg)
+makedepends=(python-{build,installer,wheel}
+             python-hatchling)
+optdepends=('python-pycups: printing to a CUPS server'
+            'hyphen-de: hyphenation patterns for German'
+            'hyphen-en: hyphenation patterns for English'
+            'hyphen-es: hyphenation patterns for Spanish'
+            'hyphen-fr: hyphenation patterns for French'
+            'hyphen-hu: hyphenation patterns for Hungarian'
+            'hyphen-it: hyphenation patterns for Italian'
+            'hyphen-nl: hyphenation patterns for Dutch')
+_archive="$pkgname-$pkgver"
+source=("$_url/releases/download/v$pkgver/$_archive.tar.gz")
+sha256sums=('7e3e635f39d447398e4b5ed6963c03740b35e42479c370a36a27200a80e859ee')
+
+_appid=org.frescobaldi.Frescobaldi
+
+prepare() {
+	cd "$_archive"
+	# Provided by hyphen-*
+	rm -f frescobaldi/hyphdicts/hyph_*.dic
+	rm -f frescobaldi/hyphdicts/README*
+}
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/applications/" linux/$_appid.desktop
+	install -Dm0644 -t "$pkgdir/usr/share/metainfo/" linux/$_appid.metainfo.xml
+	pushd "$pkgdir/$(python -c "import site; print(site.getsitepackages()[0])")/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" "icons/$_appid.svg"
+	# rm -rf "icons/Tango"
+}

@@ -1,0 +1,19 @@
+pkgbase = ruby-bake
+	pkgdesc = A replacement for rake with a simpler syntax
+	pkgver = 0.25.0
+	pkgrel = 1
+	url = https://github.com/ioquatix/bake
+	arch = any
+	license = MIT
+	checkdepends = ruby-covered
+	checkdepends = ruby-sus
+	makedepends = git
+	depends = ruby
+	depends = ruby-bigdecimal
+	depends = ruby-samovar
+	options = !emptydirs
+	source = git+https://github.com/ioquatix/bake.git#tag=v0.25.0
+	sha512sums = 1c008ba955a4e001e6487cf53dd88382d918b65a05e390a2eef62512dea65a2205010dc59bc68d51baf794a79450255b0afbbb6bf296be541194c0494faac814
+	b2sums = 9a6b7b08ca8ac6a0861bced86ae06d0394c5309edfbf538ce630b1505e5bbe5d7380852959aa3d3c80ff03e7247427c3ea81e75f1d3d048820f11592c902cc46
+
+pkgname = ruby-bake

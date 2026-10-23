@@ -1,0 +1,41 @@
+pkgbase = libloc
+	pkgdesc = IPFire Location Database - Determine the location of someone on the Internet
+	pkgver = 0.9.19
+	pkgrel = 1
+	url = https://git.ipfire.org/?p=location/libloc.git;a=summary
+	arch = x86_64
+	license = LGPL-2.1-or-later
+	makedepends = asciidoc
+	makedepends = intltool
+	makedepends = openssl
+	makedepends = libcrypto.so
+	makedepends = lua
+	makedepends = python
+	makedepends = systemd
+	source = https://source.ipfire.org/releases/libloc/libloc-0.9.19.tar.gz
+	sha256sums = ada280f045010baaef2204470c688f4aa515accfba9bfbcef2e554facb631609
+	b2sums = 1eb8cc427bfe7cf5c52640d725d3c564b61fab85190ac516f7ac6245ac05f3202841f9059b62acc9f68ba8c63687b03dc636ea58e0f2341b76e815445c0f347e
+
+pkgname = libloc
+	depends = glibc
+	depends = libcrypto.so
+	depends = libloc-database
+	provides = libloc.so
+
+pkgname = libloc-database
+	pkgdesc = IPFire Location Database - Determine the location of someone on the Internet (Database files)
+	install = libloc-database.install
+	license = CC-BY-SA-4.0
+
+pkgname = lua-location
+	pkgdesc = IPFire Location Database - Determine the location of someone on the Internet (Lua bindings)
+	depends = glibc
+	depends = libloc.so
+	depends = lua
+
+pkgname = python-location
+	pkgdesc = IPFire Location Database - Determine the location of someone on the Internet (Python tooling)
+	depends = glibc
+	depends = libloc.so
+	depends = python
+	depends = python-psycopg

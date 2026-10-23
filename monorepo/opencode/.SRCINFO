@@ -1,0 +1,22 @@
+pkgbase = opencode
+	pkgdesc = The open source coding agent
+	pkgver = 2.1.3
+	pkgrel = 1
+	url = https://github.com/anomalyco/opencode
+	arch = x86_64
+	license = MIT
+	makedepends = bun
+	makedepends = git
+	depends = curl
+	depends = glibc
+	depends = icu
+	depends = ripgrep
+	depends = tar
+	optdepends = wl-clipboard: clipboard support on Wayland
+	optdepends = xclip: clipboard support on X11
+	options = !debug
+	options = !strip
+	source = git+https://github.com/anomalyco/opencode.git#tag=v2.1.3
+	b2sums = 6b75cc2d17bb6cfdf0acc114669d795cf90a6afd12b49043b5bdb996e94c880e79134399e67ed2f8ddf06259c91383a4d61e82343963b9b28c13d7c414c4ccb9
+
+pkgname = opencode

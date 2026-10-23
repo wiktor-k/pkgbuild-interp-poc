@@ -1,0 +1,54 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=bustle
+pkgver=0.14.0
+pkgrel=1
+pkgdesc='Draw sequence diagrams of D-Bus traffic'
+arch=(x86_64)
+url='https://apps.gnome.org/Bustle/'
+license=(LGPL-2.1-or-later)
+groups=(gnome-circle)
+depends=(
+  dconf
+  glib2
+  glibc
+  graphene
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+  pango
+)
+makedepends=(
+  appstream
+  git
+  meson
+  rust
+)
+source=("git+https://gitlab.gnome.org/World/bustle.git#tag=$pkgver")
+b2sums=(a9e8ed2e2ac9dbe349590262d6ee4faada413e7b4bb455f1ea12fc8df30e943f5a423949e04e47cfc26590d058cd150a9e02d7149802e1a01b60e6ef0b621132)
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs --no-rebuild
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir" --no-rebuild
+}

@@ -1,0 +1,197 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Muflone http://www.muflone.com/contacts/english/
+# Contributor: Francois Boulogne <fboulogne@april.org>
+# Contributor: TDY <tdy@gmx.com>
+
+pkgname=spyder
+pkgver=6.1.7
+pkgrel=1
+pkgdesc="The Scientific Python Development Environment"
+arch=(any)
+url="https://www.spyder-ide.org/"
+license=(MIT)
+depends=(
+  autopep8
+  flake8
+  hicolor-icon-theme
+  ipython
+  jupyter-nbconvert
+  jupyter-nbformat
+  python
+  python-aiohttp
+  python-asyncssh
+  python-atomicwrites
+  python-bcrypt
+  python-chardet
+  python-cloudpickle
+  python-cookiecutter
+  python-dateutil
+  python-diff-match-patch
+  python-docutils
+  python-intervaltree
+  python-ipython-pygments-lexers
+  python-jedi
+  python-jellyfish
+  python-jinja
+  python-jsonschema
+  python-jupyter-client
+  python-jupyter-core
+  python-keyring
+  python-lsp-black
+  python-lsp-server
+  python-numpydoc
+  python-packaging
+  python-parso
+  python-pexpect
+  python-pickleshare
+  python-pillow
+  python-psutil
+  python-pycodestyle
+  python-pydocstyle
+  python-pyflakes
+  python-pygithub
+  python-pygments
+  python-pylint
+  python-pylint-venv
+  python-pyls-spyder
+  python-pyqt6
+  python-pyqt6-webengine
+  python-pyuca
+  python-pyxdg
+  python-pyzmq
+  python-qdarkstyle
+  python-qstylizer
+  python-qtawesome
+  python-qtconsole
+  python-qtpy
+  python-requests
+  python-rope
+  python-rtree
+  python-setuptools
+  python-sphinx
+  python-spyder-kernels
+  python-superqt
+  python-textdistance
+  python-three-merge
+  python-tornado
+  python-traitlets
+  python-typing_extensions
+  python-watchdog
+  python-whatthepatch
+  python-yarl
+  qt6-svg
+  yapf
+)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools-scm
+  python-wheel
+)
+checkdepends=(
+  cython
+  python-flaky
+  python-matplotlib
+  python-pandas
+  python-pillow
+  python-pytest
+  python-pytest-lazy-fixture
+  python-pytest-mock
+  python-pytest-order
+  python-pytest-qt
+  python-pytest-timeout
+  python-scipy
+  python-sympy
+  tk
+  xorg-server-xvfb
+)
+optdepends=(
+  'cython: run Cython files in the IPython Console'
+  'python-matplotlib: 2D/3D plotting in the IPython Console'
+  'python-numpy: support for N-dimensional arrays in the Variable Explorer'
+  'python-pandas: support for DataFrames and Series in the Variable Explorer'
+  'python-scipy: support for Matlab workspace in the Variable Explorer'
+  'python-sympy: symbolic mathematics in the IPython Console'
+)
+source=(
+  "git+https://github.com/spyder-ide/spyder#tag=v$pkgver"
+)
+b2sums=('989c336d42ca4c3d5411220d614fff3022e2b46dc5517bc3b0f945e7c66b31a8e40b74103d86d9eaa3f6ba8ae8bec700ba211380450c6cd9e06e5af154b874d8')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname
+  sed -e 's|if not os.environ.get("CI")|if True|' -i conftest.py
+
+  local pytest_args=(
+    # pytestqt.exceptions.TimeoutError
+    --deselect='spyder/plugins/completion/providers/languageserver/tests/test_client.py'
+    --deselect='spyder/plugins/completion/tests/test_plugin.py'
+    --deselect='spyder/plugins/editor/widgets/codeeditor'
+    --deselect='spyder/plugins/editor/widgets/editorstack'
+    --deselect='spyder/plugins/editor/widgets/tests/test_editorsplitter.py'
+    --deselect='spyder/plugins/editor/widgets/tests/test_formatting.py'
+    --deselect='spyder/utils/tests/test_programs.py::test_run_python_script_in_terminal'
+    --deselect='spyder/utils/tests/test_programs.py::test_run_python_script_in_terminal_blank_wdir'
+    --deselect='spyder/utils/tests/test_programs.py::test_run_python_script_in_terminal_with_wdir_empty'
+
+    # AssertionError
+    --deselect='spyder/app/tests/test_find_plugins.py::test_find_external_plugins'
+    --deselect='spyder/utils/tests/test_programs.py::test_is_valid_interpreter'
+    --deselect='spyder/plugins/variableexplorer/widgets/objectexplorer/tests/test_objectexplorer.py::test_objectexplorer_types[params0]'
+    --deselect='spyder/plugins/variableexplorer/widgets/objectexplorer/tests/test_objectexplorer.py::test_objectexplorer_collection_types[params3]'
+    --deselect='spyder/plugins/variableexplorer/widgets/objectexplorer/tests/test_objectexplorer.py::test_objectexplorer_collection_types[params5]'
+
+    # NotImplementedError: Pandas Categorical.__setstate__ incompatible with
+    # Python 3.14's copy module
+    --deselect='spyder/widgets/tests/test_collectioneditor.py::test_edit_nonsettable_objects'
+
+    # AttributeError: 'NoneType' object has no attribute 'isFinished'
+    --deselect='spyder/plugins/updatemanager/tests/test_update_manager.py::test_updates'
+
+    # Kills pytest for some reason
+    --deselect='spyder/plugins/ipythonconsole/tests/test_ipythonconsole.py::test_run_script'
+
+    # KeyError: 'Conda: spytest-ž'
+    --deselect='spyder/plugins/ipythonconsole/tests/test_ipythonconsole.py::test_kernel_kill[True]'
+
+    # PermissionError: os.chown not allowed in build chroot
+    --deselect='spyder/utils/tests/test_encoding.py::test_file_gid'
+
+    # Failed: DID NOT RAISE <class 'spyder.utils.vcs.ActionToolNotFound'>
+    --deselect='spyder/utils/tests/test_vcs.py::test_vcs_tool'
+
+    # Doesn't clean up QThread, causing segfault when tests finish:
+    # QThread: Destroyed while thread is still running
+    --deselect='spyder/plugins/ipythonconsole/tests/test_ipythonconsole.py'
+
+    # Qt6: Freezes
+    --deselect='spyder/plugins/explorer/widgets/tests/test_explorer.py::test_delete_file'
+
+    # Qt6: Doesn't clean up QThread, causing segfault when tests finish:
+    # QThread: Destroyed while thread is still running
+    --deselect='spyder/plugins/pythonpath/widgets/tests/test_pathmanager.py'
+    --deselect='spyder/plugins/application/tests/test_container.py'
+    --deselect='spyder/plugins/application/tests/test_plugin.py'
+    --deselect='spyder/utils/tests/test_environ.py'
+    --deselect='spyder/widgets/tests/test_dependencies.py'
+    --deselect='spyder/plugins/editor/tests/test_plugin.py'
+  )
+  export PYTEST_QT_API="pyqt6"
+  export CI=true
+  xvfb-run pytest "${pytest_args[@]}" -vv
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.txt
+  install -vDm644 -t "$pkgdir/usr/share/icons/hicolor/scalable/apps/" \
+    spyder/images/spyder.svg
+}

@@ -1,0 +1,39 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=gnome-user-docs
+pkgver=51.0
+pkgrel=1
+pkgdesc="User documentation for GNOME"
+url="https://gitlab.gnome.org/GNOME/gnome-user-docs"
+arch=(any)
+license=(CC-BY-3.0)
+depends=(yelp)
+makedepends=(
+  git
+  meson
+  yelp-tools
+)
+groups=(gnome)
+source=("git+$url.git#tag=${pkgver/[a-z]/.&}")
+b2sums=('5fa3e38367c5c4ff6131118f86dc7bd2f06208aa754923c46edf147b19632b78c5d48d54440ca70f1e07d5a7fe4a4f0f8fdfc8be807666d5efd10d59c7b51695')
+
+prepare() {
+  cd ${pkgname}
+}
+
+build() {
+  arch-meson ${pkgname} build
+  meson compile -C build
+}
+
+check() (
+  meson test -C build --print-errorlogs ||:
+)
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

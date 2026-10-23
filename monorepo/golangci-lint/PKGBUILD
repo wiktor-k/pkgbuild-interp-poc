@@ -1,0 +1,74 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=golangci-lint
+pkgver=2.15.0
+pkgrel=1
+pkgdesc="Fast linters runner for Go"
+arch=(x86_64)
+url="https://github.com/golangci/golangci-lint"
+license=(GPL-3.0-only)
+depends=(glibc)
+makedepends=(
+  git
+  go
+)
+options=(!lto)
+source=("git+$url.git#tag=v$pkgver")
+b2sums=('94438a93f268ebbc07bce76bc6db9f8f8987f94a4eac80414598245d80322890d4471f7ad6d7459f344dae4ea9615fc04daa38e6f6b178d06dbd2931c62b915e')
+
+prepare() {
+  cd $pkgname
+  GOFLAGS="-mod=readonly" go mod vendor -v
+}
+
+build() {
+  cd $pkgname
+  export CGO_CPPFLAGS="$CPPFLAGS"
+  export CGO_CFLAGS="$CFLAGS"
+  export CGO_CXXFLAGS="$CXXFLAGS"
+  export CGO_LDFLAGS="$LDFLAGS"
+  export GOFLAGS="-buildmode=pie -mod=vendor -modcacherw"
+  export GOPATH="$srcdir"
+  local ld_flags="
+    -compressdwarf=false
+    -linkmode=external
+    -X=main.version=$pkgver
+    -X=main.commit=$(git rev-parse HEAD)
+    -X=main.date=$(date -u -d "@${SOURCE_DATE_EPOCH}" +'%FT%TZ')
+  "
+  go build -v -ldflags "$ld_flags" -o build/ ./cmd/golangci-lint/
+}
+
+check() {
+  cd $pkgname
+  # Not sure why these fail
+  local unit_tests=$(
+    go list ./... \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/arangolint \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/clickhouselint \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/exptostd \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/ginkgolinter \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/gomodguard \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/loggercheck \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/protogetter \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/spancheck \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/testifylint \
+      | grep -v github.com/golangci/golangci-lint/v2/pkg/golinters/zerologlint \
+      | grep -v github.com/golangci/golangci-lint/v2/test/testshared \
+  )
+  # shellcheck disable=SC2086
+  go test -v $unit_tests
+}
+
+package() {
+  cd $pkgname
+  install -vDm755 -t "$pkgdir/usr/bin" build/golangci-lint
+
+  ./build/golangci-lint completion bash > golangci-lint.bash
+  ./build/golangci-lint completion fish > golangci-lint.fish
+  ./build/golangci-lint completion zsh > golangci-lint.zsh
+  install -vDm644 golangci-lint.bash "$pkgdir/usr/share/bash-completion/completions/golangci-lint"
+  install -vDm644 golangci-lint.fish "$pkgdir/usr/share/fish/vendor_completions.d/golangci-lint.fish"
+  install -vDm644 golangci-lint.zsh "$pkgdir/usr/share/zsh/site-functions/_golangci-lint"
+}

@@ -1,0 +1,40 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+pkgname=afl-utils
+pkgver=1.35a
+pkgrel=5
+pkgdesc='Utilities for automated crash sample processing/analysis, easy afl-fuzz job management and corpus optimization'
+url='https://gitlab.com/rc0r/afl-utils'
+arch=('any')
+license=('Apache-2.0')
+depends=('afl' 'coreutils' 'python' 'rsync')
+optdepends=('sqlite: database support'
+            'screen: interactive/screen mode support'
+            'gdb: gdb script execution support')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel')
+source=(${pkgname}-${pkgver}.tar.gz::https://gitlab.com/rc0r/afl-utils/-/archive/v${pkgver}/afl-utils-v${pkgver}.tar.gz fix-dependencies.patch)
+sha256sums=('c547e6100366e5def49e75fd3aa5b19e62d07581f80f404b00ee7fac76b8e439'
+            '343d1c6db64e70f87524ff47c4733819b3ed519bf7ee30f8e43baa64b2ac8f3f')
+sha512sums=('c0410ea13df61e37f103a1dd09c0dc2bd35b8b769a1b3a22155893dd128d50fe6847a8e4c93518546d668fa43974a8b8a1007b9c00ac7cacaa0721b5664da802'
+            '6a4c4df1715716709515a57fcc64d53e8b63363f49a643368afc76cca023a1fd79bee3482839e38680fd9f78f2b4e14879c95577b5f5db8aca4dae113ddf1a97')
+
+prepare() {
+  cd ${pkgname}-v${pkgver}
+  # https://gitlab.com/rc0r/afl-utils/-/issues/65
+  patch -Np1 -i ${srcdir}/fix-dependencies.patch
+}
+
+build() {
+  cd ${pkgname}-v${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd ${pkgname}-v${pkgver}
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  rm -rf "${pkgdir}"/usr/lib/python*/site-packages/tests
+  install -Dm 644 README.md docs/CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 config/* -t "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

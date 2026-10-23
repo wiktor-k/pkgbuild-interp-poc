@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+_hkgname=hiedb
+pkgname=haskell-hiedb
+pkgver=0.4.3.0
+pkgrel=204
+pkgdesc="Generates a references DB from .hie files"
+url="https://github.com/wz1000/HieDb"
+license=("BSD")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-algebraic-graphs' 'haskell-ansi-terminal' 'haskell-extra' 'haskell-ghc'
+         'haskell-ghc-paths' 'haskell-hie-compat' 'haskell-lucid' 'haskell-optparse-applicative'
+	 'haskell-sqlite-simple' 'haskell-terminal-size')
+makedepends=('ghc' 'uusi' 'haskell-hspec' 'haskell-temporary')
+source=("https://hackage.haskell.org/packages/archive/$_hkgname/$pkgver/$_hkgname-$pkgver.tar.gz")
+sha512sums=('3f800b4706d4a3658d089198546cbb6f5012e4db719bda9aa71872b8b5a4e26f134bc7ee6bf4f3aa0f2707a671832e7e5906c736134d417e2f38575a50263af9')
+
+prepare() {
+  cd hiedb-$pkgver
+  sed -i 's/callProcess hc args/callProcess hc (["-dynamic"] ++ args)/' test/Main.hs
+
+  # algebraic-graphs 0.7
+  sed -i 's/dfs vs m/dfs m vs/' src/HieDb/Query.hs
+
+  uusi -u algebraic-graphs -u base
+}
+
+build() {
+  cd hiedb-$pkgver
+
+  runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+    --prefix=/usr --docdir=/usr/share/doc/$pkgname --datasubdir=$pkgname --enable-tests \
+    --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+    --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+    --ghc-option='-pie'
+
+  runhaskell Setup build $MAKEFLAGS
+  runhaskell Setup register --gen-script
+  runhaskell Setup unregister --gen-script
+  sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+  sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+  cd hiedb-$pkgver
+  # disable due to https://github.com/wz1000/HieDb/issues/46
+  #PATH="$PWD/dist/build/hiedb:$PATH" LD_LIBRARY_PATH="$PWD/dist/build" runhaskell Setup test --show-details=direct
+}
+
+package() {
+  cd hiedb-$pkgver
+
+  install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+  install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+  runhaskell Setup copy --destdir="$pkgdir"
+  install -D -m644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+  rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

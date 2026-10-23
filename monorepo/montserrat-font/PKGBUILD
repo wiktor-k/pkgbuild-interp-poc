@@ -1,0 +1,32 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgbase=montserrat-font
+_name=Montserrat
+pkgname=({otf,ttf}-montserrat)
+pkgver=9.000
+pkgrel=1
+pkgdesc="The Montserrat project"
+arch=(any)
+url="https://github.com/JulietaUla/Montserrat"
+license=(OFL-1.1)
+source=($_name-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('3d5ca0751cf77760d3d560f30f7f5b8041ef8b0300f8e035495369aa8ce09954d107a1f75b8defe2d8a875030ef69275ab0bebb02d5361e0c856f987aef78648')
+b2sums=('8134a19cae52fe02999d5f5fa71910f5628547c042c49a3e1a6889348aad6d26eaee52d7142ddad1adc2bae5a32399ca39eb15d3fb141ad03c7be1c011308d2d')
+
+package_otf-montserrat() {
+  pkgdesc+=" - OTF"
+  conflicts=(montserrat-otf)
+  replaces=(montserrat-otf)
+  install -vDm 644 $_name-$pkgver/fonts/otf/*.otf -t "$pkgdir/usr/share/fonts/OTF/"
+  install -vDm 644 $_name-$pkgver/OFL.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name-$pkgver/{{AUTHORS,CONTRIBUTORS}.txt,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}
+
+package_ttf-montserrat() {
+  pkgdesc+=" - TTF"
+  conflicts=(montserrat-ttf)
+  replaces=(montserrat-ttf)
+  install -vDm 644 $_name-$pkgver/fonts/ttf/*.ttf -t "$pkgdir/usr/share/fonts/TTF/"
+  install -vDm 644 $_name-$pkgver/OFL.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 $_name-$pkgver/{{AUTHORS,CONTRIBUTORS}.txt,README.md} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

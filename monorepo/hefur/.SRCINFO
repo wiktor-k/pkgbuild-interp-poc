@@ -1,0 +1,36 @@
+pkgbase = hefur
+	pkgdesc = A standalone and lightweight BitTorrent tracker
+	pkgver = 1.0
+	pkgrel = 44
+	url = https://github.com/abique/hefur
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	depends = abseil-cpp
+	depends = glibc
+	depends = gnutls
+	depends = libgcc
+	depends = libstdc++
+	depends = nettle
+	depends = protobuf
+	depends = xz
+	depends = zlib
+	source = git+https://github.com/abique/hefur.git#tag=1.0
+	source = git+https://github.com/abique/mimosa.git
+	source = https://github.com/protocolbuffers/protobuf/archive/v36.1/protobuf-36.1.tar.gz
+	source = hefurd.service
+	source = sysusers.conf
+	source = tmpfiles.conf
+	source = 010-hefur-fix-install.patch::https://github.com/abique/hefur/commit/5136250a567a290f41507f607d2c590f1a14eb2f.patch
+	source = 020-hefur-fix-invalid-port-set-for-https.patch::https://github.com/abique/hefur/commit/f8b0fe6295257a6bfd7da00b1bd9cd4da966ddeb.patch
+	sha256sums = d6db02ee070102c6da4374edaf50f558e47559268eb4c1491bdc44a7bb4c8e04
+	sha256sums = SKIP
+	sha256sums = 7a7baff8207a57f3fe5c233d432a09eba67bdfb55a3145839d0817cae8e807a4
+	sha256sums = 3d8b0a716f35798f6aa25d6ee6a032d8a142811b920338bcb398c24beb1c8b43
+	sha256sums = 2e87fa1d1662d13103e4b84bc52c4f97507b06cd9982e0e9d1fec24ac495327a
+	sha256sums = 7d39eec7c9f004a8651de95d11d32422f0a506f0fe21d5fdf37a407a05d4de0f
+	sha256sums = def46ba311fc4df1c039cddec69f23c19ba4f5a362acbc128084c38df6c3ba50
+	sha256sums = 05cd1f9630f3bbd4ff9f60d7d4d93603eb839450141e7aeff6cef57763421c2b
+
+pkgname = hefur

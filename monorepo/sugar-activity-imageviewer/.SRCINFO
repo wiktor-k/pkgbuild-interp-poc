@@ -1,0 +1,23 @@
+pkgbase = sugar-activity-imageviewer
+	pkgdesc = Image viewer for Sugar
+	pkgver = 65
+	pkgrel = 5
+	epoch = 1
+	url = https://github.com/sugarlabs/imageviewer-activity
+	arch = any
+	groups = sugar-fructose
+	license = GPL-3.0-or-later
+	makedepends = git
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = gtk3
+	depends = python
+	depends = python-cairo
+	depends = python-dbus
+	depends = python-gobject
+	depends = sugar-toolkit-gtk3
+	depends = telepathy-glib
+	source = git+https://github.com/sugarlabs/imageviewer-activity.git#tag=v65
+	b2sums = acee90b3bc080b741ca07514484eb81302cd915443fbfd22763ff874217dd0053818433f6ffd12e45c8c1c165bf0a5452b0603870314635a65e1b0ab9334397d
+
+pkgname = sugar-activity-imageviewer

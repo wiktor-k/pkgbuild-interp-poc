@@ -1,0 +1,32 @@
+# Maintainer: Daniel M. Capella <polyzen@archlinux.org>
+
+pkgname=zsh-autocomplete
+pkgver=26.08.04
+pkgrel=1
+pkgdesc='Real-time type-ahead completion for Zsh'
+arch=(any)
+url=https://github.com/marlonrichert/zsh-autocomplete
+license=(MIT)
+depends=(zsh)
+makedepends=(git)
+checkdepends=(clitest)
+source=("git+$url.git#tag=$pkgver")
+b2sums=('7a8396996cd09dfafcb1eb918a6639422c20b9c35e82abb079d56bec68276441a047c2ef401b4031b291d73fea90cb97c39e22573f306da673b114d7c4913a6b')
+
+prepare() {
+  cd $pkgname
+  sed -i 's,clitest/,=,' run-tests.zsh
+}
+
+check() {
+  cd $pkgname
+  ./run-tests.zsh
+}
+
+package() {
+  cd $pkgname
+  install -d "$pkgdir"/usr/share/zsh/plugins/$pkgname
+  cp -r Completions Functions z-async zsh-autocomplete.plugin.zsh \
+    "$pkgdir"/usr/share/zsh/plugins/$pkgname
+  install -Dm644 -t "$pkgdir"/usr/share/licenses/$pkgname LICENSE
+}

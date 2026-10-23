@@ -1,0 +1,19 @@
+pkgbase = nunicode
+	pkgdesc = A i18n library implementing Unicode 13.0
+	pkgver = 1.18
+	pkgrel = 1
+	url = https://bitbucket.org/alekseyt/nunicode
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = cmake
+	makedepends = sqlite
+	source = nunicode::git+https://bitbucket.org/alekseyt/nunicode#tag=1.18
+	sha512sums = 9f4e440f22fac308f041bc744efbeb4e7b6716671d260fd88740042ea91981e68e9503d358716e00c280413faddb20dad63ece55cfe6c6807c30de7055386f8b
+	b2sums = 126962a63a525b996179b5b21168dde46d55599deafa6d92decb59a47d7251803c45680676c801ff0748070c1025cd836add72129c408aee631cb372525b340f
+
+pkgname = libnu
+
+pkgname = libnusqlite3
+	pkgdesc = A i18n library implementing Unicode 13.0 - SQLite extension
+	depends = glibc

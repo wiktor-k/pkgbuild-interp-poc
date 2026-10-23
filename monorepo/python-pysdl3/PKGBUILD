@@ -1,0 +1,51 @@
+# Maintainer: Martin Rys <https://rys.rs/contact>
+
+pkgname=python-pysdl3
+pkgver=0.9.12b1
+pkgrel=1
+pkgdesc="Python ctypes wrapper around SDL3"
+arch=("x86_64")
+url="https://github.com/Aermoss/PySDL3"
+license=("MIT")
+depends=(
+	"alsa-lib"
+	"freetype2"
+	"python-aiohttp"
+	"python-packaging"
+	"python-requests"
+	"sdl3")
+makedepends=(
+	"git"
+	"python-build"
+	"python-installer")
+optdepends=(
+	"sdl3_image"
+	#"sdl3_mixer"
+	#"sdl3_net"
+	#"sdl3_rtf"
+	"sdl3_ttf"
+	)
+install="${pkgname}.install"
+source=("${pkgname}-${pkgver}::git+https://github.com/Aermoss/PySDL3.git#tag=v${pkgver}")
+sha256sums=('d9d02c5f267d200afb9155e1c27af8ea40ec8015644585f985e13c9cf681af4e')
+
+
+build() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	python -m build
+	# Generate docs
+	# Metadata is disabled to prevent downloading prebuilt SDL .so files
+	python -c 'import os; os.environ["SDL_DISABLE_METADATA"] = "1"; import sdl3'
+}
+
+package() {
+	cd "${srcdir}/${pkgname}-${pkgver}"
+	_PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+
+	python -m installer --destdir="${pkgdir}" dist/*.whl
+	#cp -r sdl3/bin "${pkgdir}/usr/lib/python${_PYTHON_VERSION}/site-packages/sdl3/"
+	# https://github.com/Aermoss/PySDL3/issues/27
+	install -d "${pkgdir}/usr/lib/python${_PYTHON_VERSION}/site-packages/sdl3/bin"
+	cp -r sdl3/__doc__.py "${pkgdir}/usr/lib/python${_PYTHON_VERSION}/site-packages/sdl3/"
+	install -Dm644 "${srcdir}/${pkgname}-${pkgver}/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}

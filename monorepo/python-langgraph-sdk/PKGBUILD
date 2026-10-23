@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=python-langgraph-sdk
+pkgver=0.4.8
+pkgrel=1
+pkgdesc="SDK for interacting with LangGraph API"
+arch=('any')
+url="https://github.com/langchain-ai/langgraph/tree/main/libs/sdk-py"
+license=('MIT')
+depends=(
+  'python'
+  'python-httpx'
+  'python-langchain-core'
+  'python-langchain-protocol'
+  'python-orjson'
+  'python-typing_extensions'
+  'python-websockets'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-hatchling'
+  'python-installer'
+  'python-wheel'
+)
+checkdepends=(
+  'python-anyio'
+  'python-langgraph'
+  'python-pydantic'
+  'python-pytest'
+  'python-pytest-asyncio'
+  'python-starlette'
+)
+source=("git+https://github.com/langchain-ai/langgraph.git")
+sha512sums=('SKIP')
+
+prepare() {
+  cd langgraph
+
+  # makepkg's git fragment parser treats "=" inside tag values as separators.
+  git checkout -q "sdk==$pkgver"
+}
+
+build() {
+  cd langgraph/libs/sdk-py
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd langgraph/libs/sdk-py
+  python -m pytest
+}
+
+package() {
+  cd langgraph/libs/sdk-py
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE -t "$pkgdir"/usr/share/licenses/$pkgname/
+}

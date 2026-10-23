@@ -1,0 +1,58 @@
+# Maintainer: dbgbgtf <dudududumaxver@outlook.com>
+# Maintainer: RocketDev <ma2014119@outlook.com>
+pkgname=ceccomp
+pkgver=4.3.1
+pkgrel=1
+pkgdesc="A C-based seccomp analysis tool"
+arch=(x86_64)
+url="https://github.com/ceccomp/ceccomp"
+license=(GPL-3.0-or-later)
+depends=(
+  glibc
+  libseccomp
+  libbpf
+)
+makedepends=(
+  asciidoctor # for doc generation
+  gettext # for i18n/l10n
+  git
+  python # for configure
+  util-linux # for flock to display a progress
+
+  bpf # for bpftool
+  linux-headers # provided vmlinux.h
+  clang # BPF compiler
+  llvm # for llvm-strip
+)
+checkdepends=(
+  python-pytest
+)
+
+source=("$pkgname"::git+$url.git#tag=v${pkgver}?signed)
+b2sums=('62e054416b3c3220b5709c12a30f40a24e47a10b3f50a98aeaee05ef2905300b3ae1ccb13772c8e2dde97c1f8046283e1bb347a52f5932a9d42a13bfc2c81214')
+
+validpgpkeys=(
+  '0816A179BB09248F30468BD6542A0969B5CEDCDB' # dbgbgtf1 <dudududumaxver@outlook.com>
+  'A7ACCC386C15E3C554D34B3EAB08F98092A456BB' # RocketDev <ma2014119@outlook.com>
+)
+
+build() {
+  cd "$pkgname"
+  # extract file-prefix-map from CFLAGS as BPF_CC write file name into BPF object
+  _mapflag=$(grep -o -- '-ffile-prefix-map=[^[:space:]]*' <<< "$CFLAGS") || _mapflag=
+  BPF_CFLAGS="$_mapflag" ./configure --destdir="$pkgdir" --prefix=/usr
+  make
+}
+
+check() {
+  cd "$pkgname"
+  make test
+  python -m pytest test
+}
+
+package() {
+  cd "$pkgname"
+  make install
+}
+
+# vim: ts=2 sw=2 et:

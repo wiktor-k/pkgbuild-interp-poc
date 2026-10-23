@@ -1,0 +1,27 @@
+pkgbase = goocanvas
+	pkgdesc = Cairo canvas widget for GTK
+	pkgver = 3.0.0
+	pkgrel = 10
+	url = https://wiki.gnome.org/Projects/GooCanvas
+	arch = x86_64
+	license = LGPL-2.0-only
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = gobject-introspection
+	makedepends = gtk-doc
+	makedepends = python-gobject
+	depends = at-spi2-core
+	depends = cairo
+	depends = gdk-pixbuf2
+	depends = glib2
+	depends = glibc
+	depends = gtk3
+	depends = pango
+	source = git+https://gitlab.gnome.org/Archive/goocanvas.git#tag=3.0.0
+	source = goocanvas-fix-docs.patch
+	source = goocanvas-incompatible-pointer.patch
+	b2sums = 923af31727c2c7144df958f37c53ab7dc5e38ef06557dab1e8d83640b279c0adabc173bce795233b25db04c65a1443058f5cf2595ebdb842cf1fec7c2611cc90
+	b2sums = b60ecc4bb08f935b4fe03d8052947108fd83ecc38b9f9db0f80764a7ef1d770abab766482955938a1a8d82c1e4dd1d3fe14457e8a42c8670f32f6a23ae7d618a
+	b2sums = f663817c987cd02011b5325808d8c40144d49bac1f51998929530d64c5056cd14681476b0d0c302b82f1eb9fd220d53e784c433e80ef83f7aabe677e96ee9589
+
+pkgname = goocanvas

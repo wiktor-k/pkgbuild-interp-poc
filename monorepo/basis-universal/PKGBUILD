@@ -1,0 +1,67 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=basis-universal
+pkgver=2.1.0
+pkgrel=2
+pkgdesc='Basis Universal GPU Texture Codec'
+arch=(x86_64)
+url='https://github.com/BinomialLLC/basis_universal'
+license=(Apache-2.0)
+depends=(
+  glibc
+  libgcc
+  libstdc++
+  zstd
+)
+makedepends=(
+  git
+  cmake
+  ninja
+)
+source=(
+  "$pkgname::git+$url#tag=v${pkgver//./_}"
+  strip-rpath.patch
+  use-system-zstd.patch
+)
+sha512sums=('669078d52063559f382ad3ba74a372abbaa41ea23767e638c9aa338feef3a56214094815ee2d0e4183c7ea037fc25a823681a7f4caa94f33dc070d764a1dd4c0'
+            'f9289521eaa0a5df1731d1ccb0531e629ca037d3265b77c856bcb48143d0765e3a220da14f94da20e359142b22d6979a9bd780c4a857c767ace0509aaddc8b59'
+            '79f58be5820188967e835551f0cdd0b12845c70a99ad0e99dcc377dc54548b8ee6c0aa04e354753f147f6cfb6ad039fc9c1367f99eb203bf4519df55ac6f2083')
+b2sums=('482ab9b11a83918a1d8b0b56557a7f0b987138f641b5a83c4fec287175b2e9a81b31b9a2f3dce3d33e176f9a3c3397849631cdc00e615d14f738f48128f78fbd'
+        'd940513002f1d1c47345b1d78dc5eb1a02adeb7442139d40a9cf313959a461773652ee7bae4d6aed4aa70b6fd68a335c1324c5b417b7fe12725df738afec3121'
+        'a619e3ff335407bd6d64393361601708a3048374c038f59126e3566b6456458cebfa492de91089490843cfbb6251f98b1468325ed2acb25f28c9b583e809a651')
+
+prepare() {
+  cd "$pkgname"
+
+  # cmake install support
+  # https://github.com/BinomialLLC/basis_universal/pull/420
+  git cherry-pick --no-commit 8c4c65b6ed079a3a012a895b10d044fd9452dea5
+
+  patch -p1 -i "$srcdir/use-system-zstd.patch"
+
+  patch -p1 -i "$srcdir/strip-rpath.patch"
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "$pkgname"
+    -G Ninja
+    -D CMAKE_BUILD_TYPE=Release
+    -D CMAKE_INSTALL_PREFIX=/usr
+    -D BASISU_SSE=ON
+    -D BASISU_ZSTD=ON
+    -D BASISU_SYSTEM_ZSTD=ON
+    -D CMAKE_CXX_FLAGS="$CXXFLAGS -ffat-lto-objects"
+    -D CMAKE_C_FLAGS="$CFLAGS -ffat-lto-objects"
+    -W no-dev
+  )
+
+  cmake "${cmake_options[@]}"
+
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

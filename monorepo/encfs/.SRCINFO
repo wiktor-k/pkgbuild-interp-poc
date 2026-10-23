@@ -1,0 +1,18 @@
+pkgbase = encfs
+	pkgdesc = Encrypted filesystem in user-space
+	pkgver = 1.9.5
+	pkgrel = 10
+	url = https://vgough.github.io/encfs/
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = cmake
+	depends = openssl
+	depends = fuse2
+	depends = tinyxml2
+	source = https://github.com/vgough/encfs/releases/download/v1.9.5/encfs-1.9.5.tar.gz
+	source = https://github.com/vgough/encfs/releases/download/v1.9.5/encfs-1.9.5.tar.gz.asc
+	validpgpkeys = FFF3E01444FED7C316A3545A895F5BC123A02740
+	sha256sums = 4709f05395ccbad6c0a5b40a4619d60aafe3473b1a79bafb3aa700b1f756fd63
+	sha256sums = SKIP
+
+pkgname = encfs

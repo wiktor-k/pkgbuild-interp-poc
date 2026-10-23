@@ -1,0 +1,76 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: alexiobash < me (at) alexiobash (dot) com >
+
+pkgname=wpscan
+pkgver=4.1.0
+pkgrel=1
+epoch=1
+pkgdesc='Black box WordPress vulnerability scanner'
+url='https://wpscan.org'
+arch=('x86_64')
+license=('custom:WPScan')
+depends=(
+  curl
+  libxml2
+  libxslt
+  libyaml
+  ruby
+  ruby-bundler
+  ruby-erb
+)
+makedepends=(
+  findutils
+  coreutils
+)
+optdepends=(
+  metasploit
+)
+options=('!strip' '!emptydirs')
+install=wpscan.install
+source=(https://github.com/wpscanteam/wpscan/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('c688664c9439418115f381134042e1c87ef03991805213187ec833bd9cf5d579db14dee9d9ce8ea8e88d67b8a620530e9e722e9b4d44d3fcd29435a1f5c0f838')
+b2sums=('3e2ba2718f571fe1eecdce5013f813da8b025a024e499ed05dc324d818ac0125030e93af8711d454beb66822d905373d8036425f8309a93a4064ccd804558d49')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  sed -i '/bundler/ s|~>|>=|g' $pkgname.gemspec
+  bundle config build.nokogiri --use-system-libraries
+  bundle config set --local path vendor/bundle
+  bundle config set --local without development test
+  bundle config set --local force_ruby_platform true
+}
+
+build() {
+  cd ${pkgname}-${pkgver}
+  CFLAGS+=" -I/usr/include/libxml2"
+  bundle install -j"$(nproc)"
+  # reproducible builds: don't leak jobs count
+  sed '/BUNDLE_JOBS/d' -i .bundle/config
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+
+  install -d "${pkgdir}/opt/${pkgname}"
+  cp -ra --no-preserve=owner . "${pkgdir}/opt/${pkgname}"
+
+  install -d "${pkgdir}/usr/bin"
+  cat > "${pkgdir}/usr/bin/${pkgname}" << EOF
+#!/bin/sh
+BUNDLE_GEMFILE=/opt/${pkgname}/Gemfile bundle exec ruby /opt/wpscan/bin/wpscan "\$@"
+EOF
+  chmod 755 "${pkgdir}/usr/bin/${pkgname}"
+
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+  install -Dm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+
+  rm -rf "${pkgdir}"/opt/wpscan/spec
+  cd "${pkgdir}"/opt/wpscan/vendor/bundle/ruby/*
+  rm -rf cache gems/*/{ext,lib/*/*.so} \
+    extensions/*/*/*/{mkmf.log,gem_make.out}
+  # there are some insane world writable 777 dirs in sys-proctable
+  find . -type d -exec chmod 755 {} \;
+}
+
+# vim: ts=2 sw=2 et:

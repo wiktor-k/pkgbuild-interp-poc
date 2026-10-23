@@ -1,0 +1,40 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=drawy
+pkgver=1.0.2
+pkgrel=1
+pkgdesc='Handy, infinite brainstorming tool'
+arch=(x86_64)
+license=(GPL-3.0-or-later)
+url='https://apps.kde.org/drawy/'
+depends=(glibc
+         kcolorscheme
+         kconfig
+         kconfigwidgets
+         kcoreaddons
+         kcrash
+         ki18n
+         kiconthemes
+         kwidgetsaddons
+         kxmlgui
+         libgcc
+         libstdc++
+         qt6-base
+         syntax-highlighting
+         zstd)
+makedepends=(extra-cmake-modules
+             kdoctools)
+source=(https://download.kde.org/stable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('5ffaddefa967a6dad6f904c87ff85084c9013f5d1a0a0d87665759880d7c6d6f'
+            'SKIP')
+validpgpkeys=(B8212431183046C0264854849C1E90CA507E162F) # Prayag Jain <prayagjain2@gmail.com>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

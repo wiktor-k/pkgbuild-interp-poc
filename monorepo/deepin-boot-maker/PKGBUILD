@@ -1,0 +1,30 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=deepin-boot-maker
+pkgver=6.0.21
+pkgrel=1
+pkgdesc='Tool to create a bootable usb stick quick and easy'
+arch=('x86_64')
+url="https://github.com/linuxdeepin/deepin-boot-maker"
+license=('CC-BY-4.0' 'CC0-1.0' 'GPL-3.0-only' 'GPL-3.0-or-later')
+depends=('dtk6core' 'dtk6gui' 'dtk6widget' 'qt6-base' 'qt6-svg' '7zip' 'cdrtools' 'dosfstools' 'mtools' 'polkit-qt6' 'syslinux' 'udisks2')
+makedepends=('git' 'qt6-tools' 'python' 'gtest')
+groups=('deepin-extra')
+source=("git+https://github.com/linuxdeepin/deepin-boot-maker.git#tag=$pkgver")
+sha512sums=('be43c55f8ee8188efa4ce89bb266d6e13103f733c1aa29a47ed8be5f372219e8ec1c2737ad71a33c25dc7f85947b8dc38ef4c0dde6e4a9615a4c08981be63f78')
+
+prepare() {
+  cd deepin-boot-maker
+  sed -i '/resources_big/d' src/app/app.pro
+}
+
+build() {
+  cd deepin-boot-maker
+  qmake6 PREFIX=/usr
+  make
+}
+
+package() {
+  cd deepin-boot-maker
+  make INSTALL_ROOT="$pkgdir" install
+}

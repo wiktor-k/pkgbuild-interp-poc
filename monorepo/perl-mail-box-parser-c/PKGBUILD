@@ -1,0 +1,28 @@
+# Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Maintainer: Charles Mauch <cmauch@gmail.com>
+
+pkgname=perl-mail-box-parser-c
+pkgver=4.01
+pkgrel=2
+pkgdesc="Perl/CPAN Module Mail::Box::Parser::C : extends MailBox with the speed of C"
+arch=("x86_64")
+url="https://search.cpan.org/dist/Mail-Box-Parser-C"
+license=("GPL" "PerlArtistic")
+options=('!emptydirs')
+source=("https://www.cpan.org/authors/id/M/MA/MARKOV/Mail-Box-Parser-C-${pkgver}.tar.gz")
+sha256sums=('b5f371d80a19ca6f38359794715b749c7fd6a9eaee0aaf9dc59d8e5e4de531ac')
+
+build() {
+  cd Mail-Box-Parser-C-${pkgver}
+
+  PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor
+
+  make
+}
+
+package() {
+  cd Mail-Box-Parser-C-${pkgver}
+
+  make install DESTDIR="$pkgdir"
+
+}

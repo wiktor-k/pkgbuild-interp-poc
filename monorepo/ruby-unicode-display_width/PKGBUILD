@@ -1,0 +1,48 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=ruby-unicode-display_width
+_pkgname="${pkgname#ruby-}"
+pkgver=3.3.0
+pkgrel=1
+pkgdesc='Determines the monospace display width of a string in Ruby'
+arch=(any)
+url='https://github.com/janlelis/unicode-display_width'
+license=(MIT)
+depends=(ruby ruby-unicode-emoji)
+makedepends=(git ruby-rdoc)
+checkdepends=(ruby-rake ruby-rspec)
+options=(!emptydirs)
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('8c08bf3f335f12954da25fb749c523b8696a9db19647a16cd2af41faf1cafd2ae23cc782ce56499357cf1405526dde4cd5a272044666b00438aa14b2fe3f2e82')
+b2sums=('71b161435b999f55425800341fbc6d9d65ef44ba47f6f2e5e51ceea1a4404220d5e58576c084b14762ed03ca5caa445519c5e57a68df8df743b3db7f17cef47c')
+
+build() {
+  cd "$pkgname"
+
+  gem build "$_pkgname.gemspec"
+}
+
+check() {
+  cd "$pkgname"
+
+  rake test
+}
+
+package() {
+  cd "$pkgname"
+
+  local _gemdir="$(ruby -e'puts Gem.default_dir')"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --install-dir "$pkgdir/$_gemdir" \
+    --bindir "$pkgdir/usr/bin" \
+    "$_pkgname-$pkgver.gem"
+
+  # license
+  install -vd "$pkgdir/usr/share/licenses/$pkgname"
+  ln -sf "$_gemdir/gems/$_pkgname-$pkgver/MIT-LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname"
+}

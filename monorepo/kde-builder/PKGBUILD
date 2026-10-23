@@ -1,0 +1,28 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=kde-builder
+pkgver=26.10
+pkgrel=1
+pkgdesc='A tool to streamline the process of setting up and maintaining a development environment for KDE software'
+arch=(x86_64)
+url='https://invent.kde.org/sdk/kde-builder'
+license=(GPL-2.0-or-later)
+depends=(python)
+makedepends=(git
+             python-build
+             python-hatch-vcs
+             python-hatchling
+             python-installer)
+optdepends=('python-jeepney: performance profiling')
+source=(git+https://invent.kde.org/sdk/kde-builder#tag=v$pkgver)
+sha256sums=('08e78906dfd36b3a427ed42e53a2e8f21d80c8c0438d5cae13d11b32bb620cac')
+
+build() {
+  cd $pkgname
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd $pkgname
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=kdl-lsp
+pkgver=6.7.1
+pkgrel=2
+pkgdesc="LSP Server for the KDL Document Language"
+arch=(x86_64)
+url="https://github.com/kdl-org/kdl-rs/"
+license=(Apache-2.0)
+depends=(
+  glibc
+  libgcc
+)
+makedepends=(rust)
+source=("$pkgname-$pkgver.tar.gz::${url}archive/refs/tags/$pkgname-v$pkgver.tar.gz")
+sha512sums=('f635defb5363bb26f59dbd1e61f944b2fbbd8fe2e9ab91ca537c446b7916ec34c2c6dcf74bfa8ea311759ff21bdd3e416d1469d1ab76c37a2aedd8fcf9a021bd')
+b2sums=('a50268d0699dc700ebe7461d09ad4efc8ec41a1461f454e376c2e4fc023366d9e42f9fcd942eee4ebc8dcbf68d8e31e19f7fdc61b7339e1f9b9b8b7d1362885d')
+_dir="kdl-rs-$pkgname-v$pkgver"
+
+prepare() {
+  cd "$_dir"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$_dir"
+  cargo build --frozen --release --package "$pkgname"
+}
+
+check() {
+  cd "$_dir"
+  cargo test --frozen
+}
+
+package() {
+  cd "$_dir"
+  install -vDm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin/"
+  install -vDm 644 tools/$pkgname/README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

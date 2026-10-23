@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=optiimage
+pkgver=1.0.0
+pkgrel=4
+pkgdesc='A useful image compressor that supports PNG, JPEG, WebP and SVG file types'
+arch=(x86_64)
+license=(LGPL-2.1-only
+         LGPL-3.0-only)
+url='https://apps.kde.org/optiimage/'
+depends=(glibc
+         jpegoptim
+         kconfig
+         kcoreaddons
+         kcrash
+         ki18n
+         kiconthemes
+         kio
+         kirigami
+         kirigami-addons
+         libstdc++
+         libwebp-utils # cwebp
+         oxipng
+         qcoro
+         qqc2-desktop-style
+         qt6-base
+         qt6-declarative
+         scour)
+makedepends=(extra-cmake-modules)
+source=(https://download.kde.org/stable/$pkgname/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('05ef948c0fbf2b80dfa8f1f5a42457f8fd39e1b988b8af99679348e401c5f515'
+            'SKIP')
+validpgpkeys=(39FFA93CAE9C6AFC212AD00202325448204E452A) # Carl Schwan <carl@carlschwan.eu>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

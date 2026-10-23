@@ -1,0 +1,36 @@
+# Maintainer: Filipe Laíns (FFY00) <lains@archlinux.org>
+
+pkgname=python-pymeta3
+pkgver=0.5.1
+pkgrel=10
+pkgdesc='A pattern-matching language based on Python'
+arch=(any)
+url='https://github.com/wbond/pymeta3'
+license=(MIT)
+depends=(python)
+makedepends=(
+  git
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('657fb5640baf47e6154aa2c5df7413dcaf88cfbc54909b230d519dcb02bffb21ecae5e0ac7b27dcfab85995ae4b18357603b7359e6fb84d6ddedc521faab3436')
+b2sums=('54ed9958d8ebe9cb89c902354cbef5b77f8ed951b332d9b1e9b3479d3eba0642b0f3bcd1f3bc5ef50793b085ae7aa735abe88138c9e2177d7b8258161e2caeb9')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}
+# vim:set ts=2 sw=2 et:

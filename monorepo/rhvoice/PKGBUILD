@@ -1,0 +1,481 @@
+# Maintainer: Alexander Epaneshnikov <alex19ep@archlinux.org>
+
+_langs=(Albanian Brazilian-Portuguese Croatian Czech English Esperanto Georgian Kyrgyz Macedonian
+        Polish Russian Serbian Slovak Spanish Tatar Ukrainian Uzbek)
+_voices=(alan aleksandr aleksandr-hq alicja anatol anna arina artemiy azamat
+         bdl cezary clb dilnavoz dragana elena evgeniy-eng evgeniy-rus hana irina islom jasietka karmela kiko ksp Leticia-F123
+         lyubov magda marianna Mateo michal mikhail natalia natan natia nazgul ondro pavel radek seva sevinch slt spomenka
+         suze talgat tatiana timofey umka victoria vitaliy vitaliy-ng volodymyr vsevolod yuriy zdenek)
+declare -A _voice_lang=(
+	[alan]=english
+	[aleksandr]=russian
+	[aleksandr-hq]=russian
+	[alicja]=polish
+	[anatol]=ukrainian
+	[anna]=russian
+	[arina]=russian
+	[artemiy]=russian
+	[azamat]=kyrgyz
+	[bdl]=english
+	[cezary]=polish
+	[clb]=english
+	[dilnavoz]=uzbek
+	[dragana]=serbian
+	[elena]=russian
+	[evgeniy-eng]=english
+	[evgeniy-rus]=russian
+	[hana]=albanian
+	[irina]=russian
+	[islom]=uzbek
+	[jasietka]=slovak
+	[karmela]=croatian
+	[kiko]=macedonian
+	[ksp]=english
+	[Leticia-F123]=brazilian-portuguese
+	[lyubov]=english
+	[magda]=polish
+	[marianna]=ukrainian
+	[Mateo]=spanish
+	[michal]=polish
+	[mikhail]=russian
+	[natalia]=ukrainian
+	[natan]=polish
+	[natia]=georgian
+	[nazgul]=kyrgyz
+	[ondro]=slovak
+	[pavel]=russian
+	[radek]=czech
+	[seva]=russian
+	[sevinch]=uzbek
+	[slt]=english
+	[spomenka]=esperanto
+	[suze]=macedonian
+	[talgat]=tatar
+	[tatiana]=russian
+	[timofey]=russian
+	[umka]=russian
+	[victoria]=russian
+	[vitaliy]=russian
+	[vitaliy-ng]=russian
+	[volodymyr]=ukrainian
+	[vsevolod]=russian
+	[yuriy]=russian
+	[zdenek]=czech
+)
+pkgbase=rhvoice
+pkgname=(rhvoice)
+for l in "${_langs[@]}"; do
+	pkgname+=(rhvoice-language-${l,,})
+done
+for v in "${_voices[@]}"; do
+	pkgname+=(rhvoice-voice-${v,,})
+done
+pkgver=1.16.5
+pkgrel=1
+pkgdesc="Free and open source speech synthesizer for Russian and other languages"
+arch=('x86_64')
+url="https://github.com/RHVoice/RHVoice"
+license=('GPL-3.0-or-later')
+depends=('speech-dispatcher' 'libpulse' 'portaudio' 'libsonic')
+makedepends=('scons' 'libao' 'git' 'boost' 'utf8cpp' 'tclap')
+source=("${pkgname}::git+https://github.com/RHVoice/RHVoice.git#tag=$pkgver"
+
+        "third-party.patch"
+        "cstdint.patch"
+
+        "${pkgname}-evgeniy-rus::git+https://github.com/rhvoice/evgeniy-rus.git"
+  "${pkgname}-victoria-rus::git+https://github.com/rhvoice/victoria-rus.git"
+  "${pkgname}-evgeniy-eng::git+https://github.com/rhvoice/evgeniy-eng.git"
+  "${pkgname}-lyubov-eng::git+https://github.com/rhvoice/lyubov-eng.git"
+  "${pkgname}-volodymyr-ukr::git+https://github.com/rhvoice/volodymyr-ukr.git"
+  "${pkgname}-aleksandr-hq-rus::git+https://github.com/rhvoice/aleksandr-hq-rus.git"
+  "${pkgname}-yuriy-rus::git+https://github.com/rhvoice/yuriy-rus.git"
+  "${pkgname}-marianna-ukr::git+https://github.com/rhvoice/marianna-ukr.git"
+  "${pkgname}-tatiana-rus::git+https://github.com/rhvoice/tatiana-rus.git"
+  "${pkgname}-Polish::git+https://github.com/RHVoice/Polish.git"
+  "${pkgname}-mikhail-rus::git+https://github.com/rhvoice/mikhail-rus.git"
+  "${pkgname}-vitaliy-rus::git+https://github.com/rhvoice/vitaliy-rus.git"
+  "${pkgname}-magda-pol::git+https://github.com/RHVoice/magda-pol.git"
+  "${pkgname}-natan-pol::git+https://github.com/RHVoice/natan-pol.git"
+  "${pkgname}-Albanian::git+https://github.com/RHVoice/Albanian.git"
+  "${pkgname}-Brazilian-Portuguese::git+https://github.com/RHVoice/Brazilian-Portuguese.git"
+  "${pkgname}-Croatian::git+https://github.com/RHVoice/croatian-bin.git"
+  "${pkgname}-Czech::git+https://github.com/RHVoice/Czech.git"
+  "${pkgname}-English::git+https://github.com/RHVoice/English.git"
+  "${pkgname}-Georgian::git+https://github.com/RHVoice/Georgian.git"
+  "${pkgname}-Macedonian::git+https://github.com/RHVoice/Macedonian.git"
+  "${pkgname}-suze-mkd::git+https://github.com/RHVoice/suze-mkd.git"
+  "${pkgname}-Russian::git+https://github.com/RHVoice/Russian.git"
+  "${pkgname}-Serbian::git+https://github.com/RHVoice/Serbian-bin.git"
+  "${pkgname}-Slovak::git+https://github.com/RHVoice/Slovak.git"
+  "${pkgname}-Spanish::git+https://github.com/rhvoice/spanish-bin"
+  "${pkgname}-Ukrainian::git+https://github.com/RHVoice/Ukrainian.git"
+  "${pkgname}-Uzbek::git+https://github.com/RHVoice/Uzbek-bin.git"
+  "${pkgname}-Kyrgyz::git+https://github.com/RHVoice/Kyrgyz.git"
+  "${pkgname}-anatol-ukr::git+https://github.com/RHVoice/anatol-ukr.git"
+  "${pkgname}-Tatar::git+https://github.com/RHVoice/Tatar.git"
+  "${pkgname}-alan-eng::git+https://github.com/RHVoice/alan-eng.git"
+  "${pkgname}-aleksandr-rus::git+https://github.com/RHVoice/aleksandr-rus.git"
+  "${pkgname}-anna-rus::git+https://github.com/RHVoice/anna-rus.git"
+  "${pkgname}-azamat-kir::git+https://github.com/RHVoice/azamat-kir.git"
+  "${pkgname}-bdl-eng::git+https://github.com/RHVoice/bdl-eng.git"
+  "${pkgname}-clb-eng::git+https://github.com/RHVoice/clb-eng.git"
+  "${pkgname}-cezary-pol::git+https://github.com/RHVoice/cezary-pol.git"
+  "${pkgname}-dilnavoz-uzb::git+https://github.com/RHVoice/dilnavoz-uzb.git"
+  "${pkgname}-dragana-srp::git+https://github.com/RHVoice/dragana-srp.git"
+  "${pkgname}-elena-rus::git+https://github.com/RHVoice/elena-rus.git"
+  "${pkgname}-hana-sqi::git+https://github.com/RHVoice/hana-sqi.git"
+  "${pkgname}-kiko-mkd::git+https://github.com/RHVoice/kiko-mkd.git"
+  "${pkgname}-irina-rus::git+https://github.com/RHVoice/irina-rus.git"
+  "${pkgname}-islom-uzb::git+https://github.com/RHVoice/islom-uzb.git"
+  "${pkgname}-jasietka-slk::git+https://github.com/RHVoice/jasietka-slk.git"
+  "${pkgname}-karmela-hrv::git+https://github.com/RHVoice/karmela-hrv.git"
+  "${pkgname}-ksp-eng::git+https://github.com/RHVoice/ksp-eng.git"
+  "${pkgname}-leticia-f123-pt-br::git+https://github.com/RHVoice/leticia-f123-pt-br.git"
+  "${pkgname}-natia-kat::git+https://github.com/RHVoice/natia-kat.git"
+  "${pkgname}-nazgul-kir::git+https://github.com/RHVoice/nazgul-kir.git"
+  "${pkgname}-natalia-ukr::git+https://github.com/RHVoice/natalia-ukr.git"
+  "${pkgname}-slt-eng::git+https://github.com/RHVoice/slt-eng.git"
+  "${pkgname}-Esperanto::git+https://github.com/RHVoice/Esperanto.git"
+  "${pkgname}-talgat-tat::git+https://github.com/RHVoice/talgat-tat.git"
+  "${pkgname}-spomenka-epo::git+https://github.com/RHVoice/spomenka-epo.git"
+  "${pkgname}-artemiy-rus::git+https://github.com/RHVoice/artemiy-rus.git"
+  "${pkgname}-ondro-slk::git+https://github.com/RHVoice/ondro-slk.git"
+  "${pkgname}-pavel-rus::git+https://github.com/RHVoice/pavel-rus.git"
+  "${pkgname}-radek-cze::git+https://github.com/RHVoice/radek-cze.git"
+  "${pkgname}-seva-rus::git+https://github.com/RHVoice/seva-rus.git"
+  "${pkgname}-sevinch-uzb::git+https://github.com/RHVoice/Sevinch-uzb.git"
+  "${pkgname}-arina-rus::git+https://github.com/RHVoice/arina-rus.git"
+  "${pkgname}-vitaliy-ng-rus::git+https://github.com/rhvoice/vitaliy-ng-rus"
+  "${pkgname}-vsevolod-rus::git+https://github.com/RHVoice/vsevolod-rus.git"
+  "${pkgname}-umka-rus::git+https://github.com/rhvoice/umka-rus"
+  "${pkgname}-zdenek-cze::git+https://github.com/RHVoice/zdenek-cze.git"
+  "${pkgname}-michal-pol::git+https://github.com/RHVoice/michal-pol.git"
+  "${pkgname}-mateo-spa::git+https://github.com/RHVoice/mateo-spa.git"
+  "${pkgname}-alicja-pol::git+https://github.com/RHVoice/alicja-pol.git"
+  "${pkgname}-timofey-rus::git+https://github.com/rhvoice/timofey-rus")
+sha512sums=('95c4695c5e2632db98c8cf04cba566f6a4f620aa02bd883f4a4fc115d49c8fbc302dec4b0d997294e52ff6d43b96e167b4fd5464ebe5a658c113a1649fe83af2'
+            '271dcf3bee920deceb0b8a056bff90b82be525108a8a586e22b85b37e7c92a555fa68ccd30b8896fc73fb5a5007d92d953d707ad7d0fe7fbea342988618cef20'
+            '016ccf2f7b852b96a15b04003d68c154d2e6c2f6af497c0c905e0736e92621be7dfa1a81b20be12e49bc3250710ee7568af806ff891f019ce84eedcd46eedfb0'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+	cd "${pkgname}"
+
+	# use system boost and libsonic from debian
+	patch -p 1 -i ../third-party.patch
+	# fix compile error
+	patch -p 1 -i ../cstdint.patch
+
+	git submodule init
+	git config submodule.external/libs/sonic.active false
+	git config submodule.src/third-party/cldr.active false
+	git config submodule.cmake/thirdparty/sanitizers.active false
+	git config submodule."cmake/thirdParty/CCache".active false
+	git config submodule."cmake/thirdParty/sanitizers".active false
+	git config submodule."bin/msi".active false
+	git config submodule."data/voices/victoria".url "${srcdir}/${pkgname}"-victoria-rus
+	git config submodule."data/voices/evgeniy-rus".url "${srcdir}/${pkgname}"-evgeniy-rus
+	git config submodule."data/voices/evgeniy-eng".url "${srcdir}/${pkgname}"-evgeniy-eng
+	git config submodule."data/voices/aleksandr-hq".url "${srcdir}/${pkgname}"-aleksandr-hq-rus
+	git config submodule."data/voices/yuriy".url "${srcdir}/${pkgname}"-yuriy-rus
+	git config submodule."data/voices/volodymyr".url "${srcdir}/${pkgname}"-volodymyr-ukr
+	git config submodule."data/voices/tatiana".url "${srcdir}/${pkgname}"-tatiana-rus
+	git config submodule."data/voices/mikhail".url "${srcdir}/${pkgname}"-mikhail-rus
+	git config submodule."data/voices/marianna".url "${srcdir}/${pkgname}"-marianna-ukr
+	git config submodule."data/voices/lyubov".url "${srcdir}/${pkgname}"-lyubov-eng
+	git config submodule."data/voices/vitaliy".url "${srcdir}/${pkgname}"-vitaliy-rus
+	git config submodule."data/languages/Polish".url "${srcdir}/${pkgname}"-Polish
+	git config submodule."data/voices/magda".url "${srcdir}/${pkgname}"-magda-pol
+	git config submodule."external/libs/boost/libs/align".active false
+	git config submodule."external/libs/boost/libs/assert".active false
+	git config submodule."external/libs/boost/libs/config".active false
+	git config submodule."external/libs/boost/libs/container".active false
+	git config submodule."external/libs/boost/libs/container_hash".active false
+	git config submodule."external/libs/boost/libs/core".active false
+	git config submodule."external/libs/boost/libs/detail".active false
+	git config submodule."external/libs/boost/libs/exception".active false
+	git config submodule."external/libs/boost/libs/integer".active false
+	git config submodule."external/libs/boost/libs/interprocess".active false
+	git config submodule."external/libs/boost/libs/intrusive".active false
+	git config submodule."external/libs/boost/libs/io".active false
+	git config submodule."external/libs/boost/libs/json".active false
+	git config submodule."external/libs/boost/libs/move".active false
+	git config submodule."external/libs/boost/libs/mp11".active false
+	git config submodule."external/libs/boost/libs/predef".active false
+	git config submodule."external/libs/boost/libs/preprocessor".active false
+	git config submodule."external/libs/boost/libs/smart_ptr".active false
+	git config submodule."external/libs/boost/libs/static_assert".active false
+	git config submodule."external/libs/boost/libs/system".active false
+	git config submodule."external/libs/boost/libs/throw_exception".active false
+	git config submodule."external/libs/boost/libs/tuple".active false
+	git config submodule."external/libs/boost/libs/type_traits".active false
+	git config submodule."external/libs/boost/libs/unordered".active false
+	git config submodule."external/libs/boost/libs/utility".active false
+	git config submodule."external/libs/boost/libs/variant2".active false
+	git config submodule."external/libs/boost/libs/winapi".active false
+	git config submodule."external/libs/boost/libs/tokenizer".active false
+	git config submodule."external/libs/boost/libs/lexical_cast".active false
+	git config submodule."external/libs/boost/libs/algorithm".active false
+	git config submodule."external/libs/boost/libs/nowide".active false
+	git config submodule."external/libs/boost/libs/optional".active false
+	git config submodule."external/libs/boost/libs/date_time".active false
+	git config submodule."external/libs/boost/libs/range".active false
+	git config submodule."external/libs/boost/libs/iterator".active false
+	git config submodule."external/libs/boost/libs/mpl".active false
+	git config submodule."external/libs/boost/libs/concept_check".active false
+	git config submodule."external/libs/boost/libs/numeric_conversion".active false
+	git config submodule."external/libs/boost/libs/array".active false
+	git config submodule."external/libs/boost/libs/bind".active false
+	git config submodule."external/libs/boost/libs/function".active false
+	git config submodule."external/libs/boost/libs/type_index".active false
+	git config submodule."src/scripts/Croatian".active false
+	git config submodule."src/scripts/Serbian".active false
+	git config submodule."src/scripts/Spanish".active false
+	git config submodule."src/scripts/Uzbek".active false
+	git config submodule."data/voices/natan".url "${srcdir}/${pkgname}"-natan-pol
+	git config submodule."data/voices/suze".url "${srcdir}/${pkgname}"-suze-mkd
+	git config submodule."data/languages/Albanian".url "${srcdir}/${pkgname}"-Albanian
+	git config submodule."data/languages/Brazilian-Portuguese".url "${srcdir}/${pkgname}"-Brazilian-Portuguese
+	git config submodule."data/languages/Czech".url "${srcdir}/${pkgname}"-Czech
+	git config submodule."data/languages/English".url "${srcdir}/${pkgname}"-English
+	git config submodule."data/languages/Esperanto".url "${srcdir}/${pkgname}"-Esperanto
+	git config submodule."data/languages/Georgian".url "${srcdir}/${pkgname}"-Georgian
+	git config submodule."data/languages/Kyrgyz".url "${srcdir}/${pkgname}"-Kyrgyz
+	git config submodule."data/languages/Macedonian".url "${srcdir}/${pkgname}"-Macedonian
+	git config submodule."data/languages/Russian".url "${srcdir}/${pkgname}"-Russian
+	git config submodule."data/languages/Serbian".url "${srcdir}/${pkgname}"-Serbian
+	git config submodule."data/languages/Slovak".url "${srcdir}/${pkgname}"-Slovak
+	git config submodule."data/languages/Spanish".url "${srcdir}/${pkgname}"-Spanish
+	git config submodule."data/languages/Tatar".url "${srcdir}/${pkgname}"-Tatar
+	git config submodule."data/languages/Ukrainian".url "${srcdir}/${pkgname}"-Ukrainian
+	git config submodule."data/languages/Uzbek".url "${srcdir}/${pkgname}"-Uzbek
+	git config submodule."data/voices/alan".url "${srcdir}/${pkgname}"-alan-eng
+	git config submodule."data/voices/aleksandr".url "${srcdir}/${pkgname}"-aleksandr-rus
+	git config submodule."data/voices/anatol".url "${srcdir}/${pkgname}"-anatol-ukr
+	git config submodule."data/voices/anna".url "${srcdir}/${pkgname}"-anna-rus
+	git config submodule."data/voices/azamat".url "${srcdir}/${pkgname}"-azamat-kir
+	git config submodule."data/voices/bdl".url "${srcdir}/${pkgname}"-bdl-eng
+	git config submodule."data/voices/cezary".url "${srcdir}/${pkgname}"-cezary-pol
+	git config submodule."data/voices/clb".url "${srcdir}/${pkgname}"-clb-eng
+	git config submodule."data/voices/dilnavoz".url "${srcdir}/${pkgname}"-dilnavoz-uzb
+	git config submodule."data/voices/dragana".url "${srcdir}/${pkgname}"-dragana-srp
+	git config submodule."data/voices/elena".url "${srcdir}/${pkgname}"-elena-rus
+	git config submodule."data/voices/hana".url "${srcdir}/${pkgname}"-hana-sqi
+	git config submodule."data/voices/irina".url "${srcdir}/${pkgname}"-irina-rus
+	git config submodule."data/voices/islom".url "${srcdir}/${pkgname}"-islom-uzb
+	git config submodule."data/voices/jasietka".url "${srcdir}/${pkgname}"-jasietka-slk
+	git config submodule."data/voices/karmela".url "${srcdir}/${pkgname}"-karmela-hrv
+	git config submodule."data/voices/kiko".url "${srcdir}/${pkgname}"-kiko-mkd
+	git config submodule."data/voices/ksp".url "${srcdir}/${pkgname}"-ksp-eng
+	git config submodule."data/voices/Leticia-F123".url "${srcdir}/${pkgname}"-leticia-f123-pt-br
+	git config submodule."data/voices/Mateo".url "${srcdir}/${pkgname}"-mateo-spa
+	git config submodule."data/voices/natalia".url "${srcdir}/${pkgname}"-natalia-ukr
+	git config submodule."data/voices/natia".url "${srcdir}/${pkgname}"-natia-kat
+	git config submodule."data/voices/nazgul".url "${srcdir}/${pkgname}"-nazgul-kir
+	git config submodule."data/voices/ondro".url "${srcdir}/${pkgname}"-ondro-slk
+	git config submodule."data/voices/slt".url "${srcdir}/${pkgname}"-slt-eng
+	git config submodule."data/voices/spomenka".url "${srcdir}/${pkgname}"-spomenka-epo
+	git config submodule."data/voices/talgat".url "${srcdir}/${pkgname}"-talgat-tat
+	git config submodule."data/voices/arina".url "${srcdir}/${pkgname}"-arina-rus
+	git config submodule."data/voices/artemiy".url "${srcdir}/${pkgname}"-artemiy-rus
+	git config submodule."data/voices/pavel".url "${srcdir}/${pkgname}"-pavel-rus
+	git config submodule."data/voices/radek".url "${srcdir}/${pkgname}"-radek-cze
+	git config submodule."data/voices/seva".url "${srcdir}/${pkgname}"-seva-rus
+	git config submodule."data/voices/sevinch".url "${srcdir}/${pkgname}"-sevinch-uzb
+	git config submodule."data/voices/vitaliy-ng".url "${srcdir}/${pkgname}"-vitaliy-ng-rus
+	git config submodule."data/voices/umka".url "${srcdir}/${pkgname}"-umka-rus
+	git config submodule."data/voices/timofey".url "${srcdir}/${pkgname}"-timofey-rus
+	git config submodule."data/voices/michal".url "${srcdir}/${pkgname}"-michal-pol
+	git config submodule."data/voices/alicja".url "${srcdir}/${pkgname}"-alicja-pol
+	git config submodule."data/voices/vsevolod".url "${srcdir}/${pkgname}"-vsevolod-rus
+	git config submodule."data/voices/zdenek".url "${srcdir}/${pkgname}"-zdenek-cze
+
+	git -c protocol.file.allow=always submodule update
+
+	# clean packaged dependences
+	#rm -vr src/third-party/{tclap,utf8}
+}
+
+build() {
+	cd "${pkgname}"
+	jobs=$(expr "$MAKEFLAGS" : '.*\(-j[0-9]*\).*') || true
+	scons prefix="/usr" sysconfdir="/etc" CPPFLAGS="$CPPFLAGS" CFLAGS="$CFLAGS" \
+	      CXXFLAGS="$CXXFLAGS"  LINKFLAGS="$LDFLAGS" $jobs
+}
+
+package_rhvoice() {
+	backup=('etc/RHVoice/RHVoice.conf')
+	groups=('rhvoice')
+	install=rhvoice.install
+	optdepends=('libao: for ao backend')
+	optdepends+=("${_rhvoice_optdepends[@]}")
+	cd "${pkgname}"
+	jobs=$(expr "$MAKEFLAGS" : '.*\(-j[0-9]*\).*') || true
+	scons install DESTDIR="${pkgdir}" prefix="/usr" sysconfdir="/etc" \
+	      CPPFLAGS="$CPPFLAGS" CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" \
+	      LINKFLAGS="$LDFLAGS" $jobs
+	# remove split data
+	rm -vr "${pkgdir}/usr/share/"
+}
+
+# package functions for languages
+for l in "${_langs[@]}"; do
+	eval "
+package_rhvoice-language-${l,,}() {
+	pkgdesc=\"Rhvoice ${l,,} language\"
+	depends=('rhvoice')
+	groups=('rhvoice')
+	optdepends=()
+
+	cd \"${pkgbase}\"
+	if [[ -d data/languages/$l/userdict ]]; then
+		install -vDm644 data/languages/$l/userdict/src/*.txt -t \"\${pkgdir}/usr/share/RHVoice/languages/$l/userdict/src\"
+	fi
+	if [[ $l == Macedonian || $l == Croatian || $l == Serbian ]]; then
+		license=(\"AGPL-3.0\")
+	elif [[ $l == Slovak || $l == Spanish || $l == Uzbek ]]; then
+		license=(\"LGPL-2.1\")
+	fi
+	install -vDm644 data/languages/$l/*.* -t \"\${pkgdir}/usr/share/RHVoice/languages/$l\"
+}
+    "
+done
+
+# package functions for voices
+for v in "${_voices[@]}"; do
+	_rhvoice_optdepends+=(rhvoice-voice-${v,,})
+	_voicelang=${_voice_lang[${v}]}
+	if [[ -z ${_voicelang} ]]; then
+		echo "Missing voice language mapping for ${v}"
+		exit 1
+	fi
+	eval "
+package_rhvoice-voice-${v,,}() {
+	pkgdesc=\"Rhvoice ${v,,} voice for ${_voicelang,,} language\"
+	depends=(rhvoice-language-${_voicelang,,})
+	groups=('rhvoice')
+	optdepends=()
+	if [[ $v == arina || $v == artemiy || $v == cezary || $v == evgeniy-eng \
+	      || $v == evgeniy-rus || $v == lyubov || $v == magda || $v == marianna \
+	      || $v == mikhail || $v == natan || $v == pavel || $v == seva || $v == suze || $v == victoria \
+	      || $v == vitaliy || $v == tatiana || $v == timofey || $v == umka || $v == victoria || $v == vitaliy || $v == vitaliy-ng || $v == volodymyr || $v == vsevolod || $v == yuriy ]]; then
+		license=('CC-BY-NC-ND-4.0')
+	elif [[ $v == kiko || $v == hana || $v == dilnavoz || $v == islom || $v == sevinch ]]; then
+		license=('CC-BY-NC-SA-4.0')
+	elif [[ $v == aleksandr-hq || Leticia-F123 ]]; then
+		license=('CC-BY-SA-4.0')
+	elif [[ $v == alicja ]]; then
+		license=('CC-BY-4.0')
+	elif [[ $v == dragana || $v == jasietka || $v == karmela || $v == michal || $v == ondro \
+	        || $v == radek || $v == zdenek ]]; then
+		license=('CC0-1.0')
+	elif [[ $v == anatol ]]; then
+		license=('LGPL-2.1')
+	elif [[ $v == Mateo ]]; then
+		license=('Unlicense')
+	elif [[ $v == natia || $v == talgat ]]; then
+		license=('custom')
+	fi
+
+	_voicelang_data=\$(grep \"language\" \$pkgbase/data/voices/$v/voice.info | sed 's/^.*=//')
+	if [[ ${_voicelang} != \"\${_voicelang_data,,}\" ]]; then
+		error \"Declared language for voice does not match rhvoice data, expected: ${_voicelang}, actual: \${_voicelang_data,,}\"
+		exit 1
+	fi
+
+	cd \"${pkgbase}\"
+	install -vDm644 data/voices/$v/16000/* -t \"\${pkgdir}/usr/share/RHVoice/voices/$v/16000\"
+	install -vDm644 data/voices/$v/24000/* -t \"\${pkgdir}/usr/share/RHVoice/voices/$v/24000\"
+	install -vDm644 data/voices/$v/{voice.info,voice.params} -t \"\${pkgdir}/usr/share/RHVoice/voices/$v\"
+	case \$license in
+	'custom:CC-BY-NC-ND-4.0')
+		install -vDm644 licenses/by-nc-nd-4.0.txt \"\${pkgdir}/usr/share/licenses/\${pkgname}/license\"
+	;;
+	'custom:CC-BY-NC-SA-4.0')
+		install -vDm644 licenses/by-nc-sa-4.0.txt \"\${pkgdir}/usr/share/licenses/\${pkgname}/license\"
+	;;
+	'custom:CC-BY-SA-4.0')
+		install -vDm644 licenses/by-sa-4.0.txt \"\${pkgdir}/usr/share/licenses/\${pkgname}/license\"
+	;;
+	'custom')
+	if [[ $v == natia ]]; then
+		install -vDm644 licenses/voices/natia/license-eng.txt \"\${pkgdir}/usr/share/licenses/\${pkgname}/license\"
+	elif [[ $v == talgat ]]; then
+		install -vDm644 licenses/voices/talgat/license-eng.txt \"\${pkgdir}/usr/share/licenses/\${pkgname}/license\"
+	fi
+	;;
+esac
+}
+    "
+done

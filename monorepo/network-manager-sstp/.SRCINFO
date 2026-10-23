@@ -1,0 +1,46 @@
+pkgbase = network-manager-sstp
+	pkgdesc = NetworkManager VPN plugin for SSTP
+	pkgver = 1.3.2
+	pkgrel = 7
+	url = https://networkmanager.dev/docs/vpn/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = glib2-devel
+	makedepends = libnma-gtk4
+	makedepends = ppp
+	makedepends = python
+	makedepends = sstp-client
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = gnutls
+	depends = gtk3
+	depends = libnm
+	depends = libnma
+	depends = libsecret
+	source = git+https://gitlab.gnome.org/GNOME/network-manager-sstp.git?signed#tag=release-1.3.2-1
+	validpgpkeys = 3F3D68F38ECEA1682671D2B0E102CBD4F22E37E8
+	b2sums = ac702cd905c79d652374ce71bf2afe51e7c4238f7738b982ec0d452022c533623ecb0b954ec534d8dfc357a2e682d2cd2aae02807e22ca0ba3d591c2e8dadc98
+
+pkgname = network-manager-sstp
+	pkgdesc = NetworkManager VPN plugin for SSTP (with GUI)
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = gnutls
+	depends = gtk3
+	depends = libnm
+	depends = libnma
+	depends = libsecret
+	depends = networkmanager-vpn-plugin-sstp=1.3.2-7
+	optdepends = libnma-gtk4: GUI support (GTK 4)
+
+pkgname = networkmanager-vpn-plugin-sstp
+	pkgdesc = NetworkManager VPN plugin for SSTP (VPN plugin only)
+	depends = libgcc
+	depends = glib2
+	depends = glibc
+	depends = libnm
+	depends = ppp
+	depends = sstp-client

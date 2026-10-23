@@ -1,0 +1,53 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+# Contributor: razvandimescu <razvan@dimescu.com>
+
+pkgname=numa
+pkgver=0.24.1
+pkgrel=1
+pkgdesc="Portable DNS resolver with ODoH support"
+url='https://github.com/razvandimescu/numa'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+)
+makedepends=(
+  'cargo'
+)
+backup=('etc/numa.toml')
+source=(https://github.com/razvandimescu/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('55b0b62c0a31953a1e9ecd644da09b9f0d79b94046fe1bd31cdea4834fe125ff')
+b2sums=('932c24ae17ccec63e0e0b46a252b6cd920941faa701143c9ed8855c728310b7861a4ef7d024cb43509eca13b089bf633c6ae1605dee355697889bc0673ce95ae')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen -- \
+    --skip failover_skips_bad_srtt_primary_when_fallback_exists
+  target/release/numa --help
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -Dm 755 -t "${pkgdir}/usr/bin" \
+    target/release/numa
+
+  sed 's|{{exe_path}}|/usr/bin/numa /etc/numa.toml|g' numa.service > numa.service.patched
+  install -Dm 644 numa.service.patched "${pkgdir}/usr/lib/systemd/system/numa.service"
+
+  install -Dm 644 numa.toml -t "${pkgdir}/etc"
+  install -Dm 644 LICENSE -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

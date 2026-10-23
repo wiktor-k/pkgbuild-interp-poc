@@ -1,0 +1,58 @@
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=hussh
+pkgver=0.2.3
+pkgrel=1
+pkgdesc='Memory-safe SSH daemon for restricted TCP forwarding'
+url='https://github.com/kpcyrd/hussh'
+arch=('x86_64')
+license=('GPL-3.0-or-later')
+depends=(
+  'glibc'
+  'libgcc' 'libgcc_s.so'
+)
+makedepends=(
+  'cargo'
+  'scdoc'
+)
+backup=('etc/hussh.conf')
+source=(https://github.com/kpcyrd/${pkgname}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha256sums=('4ed7f8b2cd9ae464a571759f485cfa196782937bb4df62063f38f1e9778db808')
+b2sums=('37082adc29e80e4dc9fad9421ce256b78b14f334720702da0a6053052a595480e74d6abe1f8bec3e910605b209412ef99284f4bfc9d9c819142595b565c8f7cf')
+
+prepare() {
+  cd "${pkgname}-${pkgver}"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "${pkgname}-${pkgver}"
+  CFLAGS+=' -ffat-lto-objects'
+  cargo build --frozen --release
+  make docs
+}
+
+check() {
+  cd "${pkgname}-${pkgver}"
+  cargo test --frozen
+}
+
+package() {
+  cd "${pkgname}-${pkgver}"
+  install -vDm 755 -t "${pkgdir}/usr/bin" \
+    target/release/hussh
+
+  # install configs
+  install -vDm 644 contrib/hussh.conf -t "${pkgdir}/etc"
+
+  # install systemd configs
+  install -vDm 644 -t "${pkgdir}/usr/lib/systemd/system" \
+    contrib/hussh.service
+
+  # install docs
+  install -vDm 644 README.md -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm 644 -t "${pkgdir}/usr/share/man/man1" \
+    contrib/hussh.1
+}
+
+# vim: ts=2 sw=2 et:

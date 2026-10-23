@@ -1,0 +1,35 @@
+# Maintainer: Bert Peters <bertptrs@archlinux.org>
+# Contributor: Dylan Delgado <dylan1496 at live dot com>
+# Contributor: Ronald van Haren <ronald.archlinux.org>
+# Contributor: Dmitry N. Shilov <stormblast@land.ru>
+
+pkgname=sakura
+pkgver=3.8.9
+pkgrel=1
+pkgdesc="A terminal emulator based on GTK and VTE"
+arch=('x86_64')
+url="https://launchpad.net/sakura"
+license=('GPL-2.0-or-later')
+depends=('glib2' 'gtk3' 'vte3' 'libx11')
+makedepends=('cmake')
+source=("https://launchpad.net/sakura/trunk/${pkgver}/+download/${pkgname}-${pkgver}.tar.bz2")
+sha256sums=('53b41c9b5dd62802d172c78f8af302768192e438af0dc0d65871d04a330b0a27')
+
+prepare() {
+  cd "$srcdir/"
+
+  # Set default font size a bit smaller
+  sed -i 's|#define DEFAULT_FONT "Bitstream Vera Sans Mono 14"|#define DEFAULT_FONT "Bitstream Vera Sans Mono 10"|g' "${pkgname}-${pkgver}/src/sakura.c"
+}
+
+build() {
+  cmake -B build -S "$pkgname-$pkgver" \
+        -DCMAKE_BUILD_TYPE='None' \
+        -DCMAKE_INSTALL_PREFIX='/usr' \
+        -Wno-dev
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

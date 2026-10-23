@@ -1,0 +1,67 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: TheDL98 <ahmed at thedl98 dot com>
+# Contributor: solarbaron
+# Contributor: Dlani
+
+pkgname=feishin
+pkgver=1.17.0
+pkgrel=1
+pkgdesc='A modern self-hosted music player.'
+arch=('any')
+url='https://github.com/jeffvli/feishin'
+license=('GPL-3.0-only')
+_electron='electron43'
+depends=($_electron 'bash' 'hicolor-icon-theme' 'xdg-utils')
+makedepends=('pnpm' 'git' 'libxcrypt-compat')
+optdepends=('mpv: Alternative audio backend')
+source=(
+	"git+$url.git#tag=v$pkgver"
+	"$pkgname.sh"
+)
+sha256sums=('7f266f40a5739dc2d7c94202758c8f906a3119199a9b2e52c579b9b476b25ce4'
+            '4ac240aa9678f6a9c638e6e9d03bbdb77507c936c4594a20cdf223e15072697d')
+
+prepare() {
+	sed -i "s|@ELECTRON@|$_electron|" $pkgname.sh
+	cd $pkgname
+	sed -i 's|Exec=.*|Exec=/usr/bin/feishin %U|' feishin.desktop.tmpl
+	sed -i 's|TryExec=.*|TryExec=/usr/bin/feishin|' feishin.desktop.tmpl
+	sed -i 's|Icon=.*|Icon=feishin|' feishin.desktop.tmpl
+	sed -i 's|org.jeffvli.feishin.desktop|feishin.desktop|' org.jeffvli.feishin.metainfo.xml
+
+	export ELECTRON_SKIP_BINARY_DOWNLOAD=1
+	pnpm install
+}
+
+build() {
+	cd $pkgname
+	pnpm run build:electron
+	./node_modules/.bin/electron-builder --linux --x64 --dir \
+		-c.electronDist=/usr/lib/$_electron/ \
+		-c.electronVersion=$(cat /usr/lib/$_electron/version)
+}
+
+check() {
+	cd $pkgname
+	app_electron=$(grep -oP '"electron": "\^\K\d+' package.json)
+	system_electron=$(cat /usr/lib/$_electron/version | cut -d. -f1)
+	if [ "$app_electron" != "$system_electron" ]; then
+		echo "Electron version mismatch: app requires $app_electron, but system has $system_electron"
+		exit 1
+	fi
+}
+
+package() {
+	install -Dm755 $pkgname.sh "$pkgdir/usr/bin/$pkgname"
+
+	cd $pkgname
+	install -Dm644 dist/linux-unpacked/resources/app.asar -t "$pkgdir/usr/lib/$pkgname"
+	cp -r dist/linux-unpacked/resources/assets "$pkgdir/usr/lib/$pkgname/"
+	install -Dm644 feishin.desktop.tmpl "$pkgdir/usr/share/applications/$pkgname.desktop"
+	install -Dm644 org.jeffvli.feishin.metainfo.xml -t "$pkgdir/usr/share/metainfo/"
+
+	for size in 16 24 32 48 64 72 96 128 256 512; do
+		install -d "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps"
+		ln -s /usr/lib/$pkgname/assets/icons/${size}x${size}.png "$pkgdir/usr/share/icons/hicolor/${size}x${size}/apps/${pkgname}.png"
+	done
+}

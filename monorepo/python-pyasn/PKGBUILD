@@ -1,0 +1,52 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=python-pyasn
+pkgver=1.6.2
+pkgrel=2
+pkgdesc='Python IP address to Autonomous System Number lookup module'
+arch=('x86_64')
+url='https://github.com/hadiasghari/pyasn'
+license=('MIT' 'BSD-4-Clause')
+# namcap complains about ordereddict, but this is only for Python 2
+# it also complains about urllib2, let's ignore that too
+depends=(
+  'python'
+  'python-ujson'
+)
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-wheel'
+  'python-setuptools'
+)
+checkdepends=('python-pytest')
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('cbf2d82f43e144022cc41def7ce930fabc70194db033fee3b27c54a2e7f17fef74d7c1b1c449aca1b952e27bdd708739d690670bcdf88fb4caef97ba8d7dd171')
+b2sums=('ce5a0e5a2f8124f3f1bf8091c75406e9b4523277e5620fadccc6f138a786643fa1242a761543359ff6a11917d31c1679e7eca20b7e354babff86d441a8b6b3f6')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd "$pkgname"
+
+  # temporary install so pytest can pick up the compiled extension
+  python -m installer --destdir="$(pwd)/tmp" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+  export PYTHONPATH="$(pwd)/tmp/$site_packages"
+
+  pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

@@ -1,0 +1,19 @@
+pkgbase = vcsh
+	pkgdesc = Version Control System for $HOME that manages multiple Git repositories
+	pkgver = 2.0.10
+	pkgrel = 2
+	url = https://github.com/RichiH/vcsh
+	arch = any
+	license = GPL-2.0-only
+	checkdepends = perl
+	checkdepends = perl-shell-command
+	checkdepends = perl-test-most
+	depends = git
+	optdepends = myrepos: manage multiple vcsh repos through mr
+	source = https://github.com/RichiH/vcsh/releases/download/v2.0.10/vcsh-2.0.10.tar.zst
+	source = https://github.com/RichiH/vcsh/releases/download/v2.0.10/vcsh-2.0.10.tar.zst.asc
+	validpgpkeys = 9F377DDB6D3153A48EB3EB1E63CC496475267693
+	sha256sums = 6ed8f4eee683f2cc8f885b31196fdc3b333f86ebc3110ecd1bcd60dfac64c0b4
+	sha256sums = SKIP
+
+pkgname = vcsh

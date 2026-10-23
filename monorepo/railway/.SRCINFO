@@ -1,0 +1,27 @@
+pkgbase = railway
+	pkgdesc = Look up travel information for many different railways
+	pkgver = 2.10.1
+	pkgrel = 1
+	url = https://apps.gnome.org/DieBahn/
+	arch = x86_64
+	groups = gnome-circle
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	makedepends = rust
+	depends = dconf
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libgcc
+	depends = openssl
+	depends = pango
+	options = !lto
+	source = git+https://gitlab.com/schmiddi-on-mobile/railway.git#tag=2.10.1
+	b2sums = 88bde8874874b1aedeb2651bce1fec5686c2589e82ca93a01f343278e7bc569d67411ba6a8517d69087a658d5d92eee9500b193ed3d98f89fa0c17ece29d795a
+
+pkgname = railway

@@ -1,0 +1,42 @@
+# Maintainer: Torsten Keßler <tpkessler at archlinux dot org>
+# Maintainer: Christian Heusel <gromit@archlinux.org>
+
+pkgname=rocm-dbgapi
+pkgver=7.2.4
+pkgrel=1
+pkgdesc="Support library necessary for a debugger of AMD's GPUs"
+arch=('x86_64')
+url="https://rocm.docs.amd.com/projects/ROCdbgapi/en/latest/"
+license=('MIT')
+depends=(
+    'comgr'
+    'glibc'
+    'hsa-rocr'
+    'libgcc'
+    'libstdc++'
+    'rocm-core'
+)
+makedepends=('cmake' 'rocm-cmake')
+_git='https://github.com/ROCm/ROCdbgapi'
+source=("$pkgname-$pkgver.tar.gz::$_git/archive/rocm-$pkgver.tar.gz")
+sha256sums=('25d5a1bc8a2bc9ce95c95d2c4230250fac71088bb927d4dcaf6c857090a93d4f')
+_dirname=$(basename "$_git")-$(basename "${source[0]}" ".tar.gz")
+
+build() {
+    local cmake_args=(
+        -Wno-dev
+        -B build
+        -S "$_dirname"
+        -D CMAKE_BUILD_TYPE=None
+        -D CMAKE_INSTALL_PREFIX=/opt/rocm
+        # GCC 16 added -Wsfinae-incomplete and upstream hasn't fixed this yet
+        -D CMAKE_CXX_FLAGS="${CXXFLAGS} -Wno-error=sfinae-incomplete"
+    )
+    cmake "${cmake_args[@]}"
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm644 "$srcdir/$_dirname/LICENSE.txt" "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

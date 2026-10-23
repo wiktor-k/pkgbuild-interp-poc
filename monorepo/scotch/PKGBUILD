@@ -1,0 +1,109 @@
+# Maintainer: Jakub Klinkovský <lahwaacz at archlinux dot org>
+
+pkgbase=scotch
+pkgname=(scotch scotch-metis)
+pkgver=7.0.17
+pkgrel=1
+pkgdesc="Package for graph and mesh/hypergraph partitioning, graph clustering, and sparse matrix ordering"
+arch=(x86_64)
+url="https://gitlab.inria.fr/scotch/scotch"
+license=(CECILL-C)
+depends=(
+  bzip2
+  glibc
+  openmpi
+  xz
+  zlib
+)
+makedepends=(
+  gcc-fortran
+  cmake
+  ninja
+)
+source=(
+  $url/-/archive/v$pkgver/$pkgbase-v$pkgver.tar.gz
+  fortify-source.patch
+  scotchconfig.patch
+)
+b2sums=('32afe6cd0d59f9d8d3b0ef6ee9067c73d2dd1f27b329e21ef8465f7af79fa92670eb50dba5ddd95bcb6a2a1eac898996d742833fdd2445b096928b72ffa4a2c7'
+        '1db11c73877dd796702ee8ef00d47f3a1c694ddd32ba93d855dc7ae3e594711da58a0b9091629e013aa13c4fe41fd97610cb05f7e067b2103f08171e1bc1ab92'
+        '17bb27bc700badecd7d6cc409e57fdfb4051212c370c8ecd56eb781fcad2a102ec5d67f9d0b1d26fcbc2c34dec3d0ffeb278a5300b0c083dc58980ed27d9b036')
+
+_pick() {
+  local p="$1" f d; shift
+  for f; do
+    d="$srcdir/$p/${f#$pkgdir/}"
+    mkdir -p "$(dirname "$d")"
+    mv "$f" "$d"
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$f")"
+  done
+}
+
+prepare(){
+  cd $pkgbase-v$pkgver
+
+  # do not add -U_FORTIFY_SOURCE to CMAKE_C_FLAGS
+  patch -p1 -i ../fortify-source.patch
+
+  # make SCOTCHConfig.cmake.in compatible with package splitting
+  patch -p1 -i ../scotchconfig.patch
+}
+
+build() {
+  # _FORTIFY_SOURCE=3 causes problems with Scotch
+  CFLAGS=${CFLAGS/-D_FORTIFY_SOURCE=3/-D_FORTIFY_SOURCE=2}
+
+  local cmake_options=(
+    -B build
+    -S $pkgbase-v$pkgver
+    -G Ninja
+    -W no-dev
+    -DCMAKE_BUILD_TYPE=None
+    -DCMAKE_INSTALL_PREFIX=/usr
+    # install in private include directory to avoid conflict with metis and parmetis (metis.h and parmetis.h)
+    -DCMAKE_INSTALL_INCLUDEDIR=include/scotch
+    -DBUILD_SHARED_LIBS=ON
+    -DPTHREAD_AFFINITY_LINUX_OK=ON
+    # Explicitly link against internal error libraries to avoid users having to link them manually
+    # (the build skips them because of the "--as-needed" linker flag).
+    # See https://gitlab.archlinux.org/archlinux/packaging/packages/scotch/-/work_items/2
+    -DLIBSCOTCHERR=scotcherr
+    -DLIBPTSCOTCHERR=ptscotcherr
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+check() {
+  ctest --test-dir build --output-on-failure
+}
+
+package_scotch() {
+  DESTDIR="$pkgdir" cmake --install build
+  install -vDm 644 -t "$pkgdir"/usr/share/licenses/$pkgname/ $pkgbase-v$pkgver/doc/CeCILL-C_V1-*.txt
+
+  # avoid conflict with extra/gpart
+  mv "$pkgdir"/usr/bin/gpart{,_scotch}
+
+  # move scotchmetis files to separate package
+  cd "$pkgdir"
+  _pick $pkgbase-metis usr/include/scotch/*metis*
+  _pick $pkgbase-metis usr/lib/*metis*
+  _pick $pkgbase-metis usr/lib/cmake/scotch/*metis*
+  _pick $pkgbase-metis usr/bin/adm2dgr  # depends on libptscotchparmetis
+}
+
+package_scotch-metis() {
+  pkgdesc="libScotchMeTiS compatibility library: MeTiS interface implemented using Scotch"
+  # NOTE: provides would cause problems because the interface is not fully compatible
+  # https://gitlab.inria.fr/scotch/scotch/-/issues/55
+  #provides=(metis parmetis)
+  depends=(
+    glibc
+    openmpi
+    scotch
+  )
+
+  mv -v $pkgname/* "$pkgdir"
+  install -vDm 644 -t "$pkgdir"/usr/share/licenses/$pkgname/ $pkgbase-v$pkgver/doc/CeCILL-C_V1-*.txt
+}

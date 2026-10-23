@@ -1,0 +1,25 @@
+pkgbase = cryfs
+	pkgdesc = Cryptographic filesystem for the cloud
+	pkgver = 1.0.3
+	pkgrel = 6
+	url = https://www.cryfs.org
+	arch = x86_64
+	license = LGPL-3.0-only
+	makedepends = boost
+	makedepends = cmake
+	makedepends = git
+	makedepends = python
+	makedepends = range-v3
+	depends = boost-libs
+	depends = fmt
+	depends = fuse2
+	depends = glibc
+	depends = libgcc
+	depends = libgomp
+	depends = libstdc++
+	depends = spdlog
+	source = git+https://github.com/cryfs/cryfs#tag=1.0.3
+	validpgpkeys = 5D5EC7BC6F1443EC2AF7177A9E6C996C991D25E1
+	sha256sums = d2d24bafdddd60ea36857547cd59eab03482d766e450cd2517faf09dafe6f5e9
+
+pkgname = cryfs

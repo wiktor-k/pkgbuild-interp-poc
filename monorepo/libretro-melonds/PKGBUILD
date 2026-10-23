@@ -1,0 +1,33 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=libretro-melonds
+pkgver=20260719.185838.g66b5d2634cd0
+pkgrel=1
+pkgdesc='Nintendo DS core'
+arch=(x86_64)
+url=https://github.com/libretro/melonDS
+license=(GPL-2.0-only)
+groups=(libretro)
+depends=(
+  glibc
+  libgcc
+  libgl
+  libstdc++
+  libretro-core-info
+)
+makedepends=(
+  git
+  libglvnd
+)
+source=(libretro-melonds::git+https://github.com/libretro/melonDS.git#commit=${pkgver##*.g})
+b2sums=('30348f684424b60fa96249847b4c89a93f66dc2ce017513440ffe09d1674823326e159e753584a05e269d464ecf9c1fe65028fe4d4f99247992282fc5c8dfabf')
+
+build() {
+  export LDFLAGS="$LDFLAGS -lpthread"
+
+  make -C libretro-melonds
+}
+
+package() {
+  install -Dm 644 libretro-melonds/melonds_libretro.so -t "${pkgdir}"/usr/lib/libretro/
+}

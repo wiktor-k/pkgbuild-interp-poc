@@ -1,0 +1,51 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=git-cliff
+pkgver=2.14.2
+pkgrel=1
+pkgdesc="A highly customizable changelog generator"
+arch=('x86_64')
+url="https://github.com/orhun/git-cliff"
+license=('MIT' 'Apache-2.0')
+depends=('glibc' 'libgcc' 'libgit2' 'zlib')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('e7d9995794bb62703a95c28a12669a6912a97bf007961558df64b52d3110fd027b72ebd79352b3d1ceb12b800d9202b35f44e06b1e46038d2244cfd3d69490eb')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  mkdir -p completions/
+  mkdir -p man/
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  CFLAGS+=' -ffat-lto-objects'
+  export LIBGIT2_NO_VENDOR=1
+  local _features="--no-default-features \
+    --features github --features gitlab --features bitbucket --features gitea"
+  cargo build --release --frozen $_features
+  OUT_DIR=completions/ "./target/release/$pkgname-completions"
+  OUT_DIR=man/ "./target/release/$pkgname-mangen"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen -- --skip "repo::test"
+}
+
+package() {
+  depends+=(libgit2.so libz.so)
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm 644 "completions/$pkgname.bash" "$pkgdir/usr/share/bash-completion/completions/$pkgname"
+  install -Dm 644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d"
+  install -Dm 644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions"
+  install -Dm 644 "man/$pkgname.1" -t "$pkgdir/usr/share/man/man1"
+}
+
+# vim: ts=2 sw=2 et:

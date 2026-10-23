@@ -1,0 +1,49 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+
+pkgname=jwt-cli
+_pkgname=jwt
+pkgver=6.2.0
+pkgrel=1
+pkgdesc="A super fast CLI tool to decode and encode JWTs"
+arch=('x86_64')
+url="https://github.com/mike-engel/jwt-cli"
+license=('MIT')
+depends=('gcc-libs')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz")
+sha512sums=('f71eefb91dd01203b6d781c85b66a26bb39f621e151b041401c5ebf0c79f2905e4888af340cf1daba43d296a34d0e8ace8e9c7b288e24a4c662f5d282bb2152c')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+  mkdir completions/
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+  local compgen="target/release/$_pkgname completion"
+  $compgen bash >"completions/$pkgname"
+  $compgen elvish >"completions/$pkgname.elv"
+  $compgen fish >"completions/$pkgname.fish"
+  $compgen zsh >"completions/_$pkgname"
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$_pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE.md -t "$pkgdir/usr/share/licenses/$pkgname"
+  install -Dm644 "completions/$pkgname" -t "$pkgdir/usr/share/bash-completion/completions/"
+  install -Dm644 "completions/$pkgname.elv" -t "$pkgdir/usr/share/elvish/lib/"
+  install -Dm644 "completions/$pkgname.fish" -t "$pkgdir/usr/share/fish/vendor_completions.d/"
+  install -Dm644 "completions/_$pkgname" -t "$pkgdir/usr/share/zsh/site-functions/"
+}
+
+# vim: ts=2 sw=2 et:

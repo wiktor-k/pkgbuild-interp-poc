@@ -1,0 +1,19 @@
+pkgbase = qalculate-qt
+	pkgdesc = Qt frontend for libqalculate
+	pkgver = 5.13.0
+	pkgrel = 1
+	url = https://qalculate.github.io/
+	arch = x86_64
+	license = GPL-2.0-only
+	makedepends = git
+	makedepends = qt6-tools
+	depends = glibc
+	depends = libgcc
+	depends = libqalculate
+	depends = libstdc++
+	depends = qt6-base
+	depends = qt6-svg
+	source = git+https://github.com/Qalculate/qalculate-qt#tag=v5.13.0
+	sha256sums = e418df85282423509f9664528744384a401221d0760e7a284f7e15dc34a180f1
+
+pkgname = qalculate-qt

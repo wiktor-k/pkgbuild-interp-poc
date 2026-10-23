@@ -1,0 +1,25 @@
+# Maintainer: Bruno Pagani <archange@archlinux.org>
+
+_pkg=qpageview
+pkgname=python-${_pkg}
+pkgver=1.0.5
+pkgrel=1
+pkgdesc="Page based document viewer widget for PyQt"
+arch=(any)
+url="https://qpageview.org/"
+license=(GPL3)
+depends=(python python-pyqt6 qt6-svg)
+makedepends=(python-build python-installer python-hatchling)
+optdepends=('python-pycups: printing support')
+source=(https://files.pythonhosted.org/packages/source/${_pkg::1}/${_pkg}/${_pkg}-${pkgver}.tar.gz)
+sha256sums=('78a74a7ea499cb5b1a6027c0f8e0e99f52820acbb8b1fe6fea8c502436942fc5')
+
+build() {
+  cd ${_pkg}-${pkgver}
+  python -m build --wheel --no-isolation
+}
+
+package() {
+  cd ${_pkg}-${pkgver}
+  python -m installer --destdir="${pkgdir}" dist/*.whl
+}

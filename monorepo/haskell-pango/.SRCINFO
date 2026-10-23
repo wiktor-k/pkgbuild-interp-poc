@@ -1,0 +1,21 @@
+pkgbase = haskell-pango
+	pkgdesc = Binding to the pango library for Gtk2Hs.
+	pkgver = 0.13.12.0
+	pkgrel = 8
+	url = https://hackage.haskell.org/package/pango
+	arch = x86_64
+	license = LGPL-2.1-only
+	makedepends = ghc
+	makedepends = haskell-gtk2hs-buildtools
+	makedepends = mesa
+	depends = ghc-libs
+	depends = pango
+	depends = haskell-glib
+	depends = haskell-cairo
+	provides = gtk2hs-pango
+	conflicts = gtk2hs-pango
+	replaces = gtk2hs-pango
+	source = https://hackage.haskell.org/packages/archive/pango/0.13.12.0/pango-0.13.12.0.tar.gz
+	sha512sums = 070f1266c0f1d34bd2e73b49878746b6e4bcd59c6af578ba6f2ce03f62d6bd4df52753d23f2831ca090c819fe145bcf9c61b0436f453d314e3d4e0fa010aa9ba
+
+pkgname = haskell-pango

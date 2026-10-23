@@ -1,0 +1,18 @@
+pkgbase = libredefender
+	pkgdesc = Light-weight antivirus scanner for Linux
+	pkgver = 0.7.0
+	pkgrel = 2
+	url = https://github.com/kpcyrd/libredefender
+	arch = x86_64
+	license = GPL2
+	makedepends = cargo
+	makedepends = clang
+	depends = libclamav.so
+	depends = hicolor-icon-theme
+	source = https://github.com/kpcyrd/libredefender/archive/v0.7.0/libredefender-0.7.0.tar.gz
+	source = https://github.com/kpcyrd/libredefender/releases/download/v0.7.0/libredefender-0.7.0.tar.gz.asc
+	validpgpkeys = 64B13F7117D6E07D661BBCE0FE763A64F5E54FD6
+	b2sums = f9fd4e36737f849b39bbe250a5a67da493d9ad7881bc020a8b252dbe5c679202993d6dd0b2cbfa5eb78f5c16c31dd2af72093a1acdfe8b211e6e390c2124d186
+	b2sums = SKIP
+
+pkgname = libredefender

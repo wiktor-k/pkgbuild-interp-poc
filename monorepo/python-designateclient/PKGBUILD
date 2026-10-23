@@ -1,0 +1,33 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Daniel Wallace <danielwallace at gtmanfred dot com>
+
+pkgname=python-designateclient
+pkgver=7.0.0
+pkgrel=1
+pkgdesc="OpenStack DNS-as-a-Service - Client"
+arch=('any')
+url="https://docs.openstack.org/python-designateclient/latest/"
+license=('Apache-2.0')
+depends=('python-cliff' 'python-jsonschema' 'python-osc-lib' 'python-oslo-serialization'
+         'python-oslo-utils' 'python-pbr' 'python-keystoneauth1' 'python-requests'
+         'python-stevedore' 'python-debtcollector')
+makedepends=('git' 'python-build' 'python-installer' 'python-setuptools' 'python-wheel')
+checkdepends=('python-oslo-config' 'python-oslotest' 'python-requests-mock'
+              'python-stestr')
+source=("git+https://github.com/openstack/python-designateclient.git#tag=$pkgver")
+sha512sums=('720d54fa9272a808fed9c34bc0cc464c43d68eeec81d9ef2748abcea72f23bee431e7d59213fece6824cee966a4498130de9b62d6109789d7170a42a258b31c4')
+
+build() {
+  cd python-designateclient
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd python-designateclient
+  stestr run
+}
+
+package() {
+  cd python-designateclient
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

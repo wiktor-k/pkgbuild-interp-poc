@@ -1,0 +1,63 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Lev Lybin <lev.lybin@gmail.com>
+# Contributor: lagrange <flkazemakase@gmail.com>
+# Contributor: mid-kid <esteve.varela@gmail.com>
+
+pkgname=python-kivy
+pkgver=2.3.1
+pkgrel=2
+pkgdesc="A software library for rapid development of hardware-accelerated multitouch applications."
+arch=('x86_64')
+url="https://kivy.org/"
+license=('MIT')
+depends=('python-docutils' 'gstreamer' 'sdl2_ttf' 'sdl2_mixer' 'sdl2_image' 'python-requests' 'python-filetype')
+makedepends=('python-setuptools' 'python-build' 'python-installer' 'python-wheel' 'cython' 'dos2unix' 'git')
+optdepends=('python-oscpy: for TUIO provider')
+checkdepends=('python-pytest' 'python-pytest-benchmark' 'python-gobject' 'xorg-server-xvfb' 'opencv' 'python-pyenchant'
+              'git' 'mtdev' 'xclip' 'xsel' 'gtk3' 'gst-plugins-base'
+              'gst-plugins-good' 'gst-libav' 'dbus-python' 'python-responses')
+source=(git+https://github.com/kivy/kivy#tag=$pkgver)
+sha512sums=('7780ac6574e763871732a42655ffe2c1acb796173b730f21816ac723132c23f0b87966549b25d07fc0dd8a1146a15e2f47d84d3a03fbf4b10998cb018885273e')
+
+prepare() {
+  cd kivy
+
+  # Fix source using CRLF for some reason ??? ­- Was the sdist built in Windows?
+  find -type f -exec dos2unix {} \;
+
+  # Do not use certifi
+  sed -e '/import certifi/d;s|certifi.where()|"/etc/ssl/certs/ca-certificates.crt"|' -i kivy/network/urlrequest.py -i kivy/loader.py \
+    -i kivy/tests/test_urlrequest/test_urlrequest_urllib.py -i kivy/tests/test_urlrequest/test_urlrequest_requests.py
+
+  # Fix build with cython 3.1
+  git cherry-pick -n 5a1b27d7d3bdee6cedb55440bfae9c4e66fb3c68
+
+  # Drop cython version limitation
+  sed -i -e 's/cython.*/cython",/' \
+         -e 's/setuptools.*/setuptools",/' \
+         -e 's/wheel.*/wheel",/' \
+         -e 's/packaging.*/packaging",/' pyproject.toml
+
+  git cherry-pick -n 4b20740cb63b03fdfb65b782f1ce3de42bd6e7b3 # python 3.14 support
+}
+
+build() {
+  cd kivy
+  USE_X11=1 USE_WAYLAND=1 \
+  python -m build --wheel --no-isolation \
+    -C--global-option=build_ext \
+    -C--global-option=--inplace
+}
+
+check() {
+  cd kivy
+
+  xvfb-run -s "-screen 0 1280x720x24 -ac +extension GLX" python -m pytest kivy/tests \
+    -k 'not test_urlrequest_urllib.py::test_auth_header and not test_urlrequest_urllib.py::test_auth_auto' # flaky tests that depend on network access
+}
+
+package() {
+  cd kivy
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}

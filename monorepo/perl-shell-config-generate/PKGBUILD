@@ -1,0 +1,29 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+
+pkgname=perl-shell-config-generate
+pkgver=0.36
+pkgrel=1
+pkgdesc="Portably generate config for any shell"
+arch=('any')
+license=('GPL-1.0-or-later' 'Artistic-1.0-Perl')
+url="https://metacpan.org/release/Shell-Config-Generate"
+depends=('perl-shell-guess')
+options=('!emptydirs')
+source=("https://cpan.metacpan.org/authors/id/P/PL/PLICEASE/Shell-Config-Generate-$pkgver.tar.gz")
+sha512sums=('8f2c6cae282d560b078eaaba0c27c6f875227cdedb71ad6cd5f3348a0866c332304150a1b395745ec74754dfeaef6f7e9811426d62bd33282976c216ba44e213')
+
+build() {
+  cd Shell-Config-Generate-$pkgver
+  perl Makefile.PL INSTALLDIRS=vendor
+  make
+}
+
+check() {
+  cd Shell-Config-Generate-$pkgver
+  make test
+}
+
+package() {
+  cd Shell-Config-Generate-$pkgver
+  make DESTDIR="$pkgdir" install
+}

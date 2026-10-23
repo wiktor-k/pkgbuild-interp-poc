@@ -1,0 +1,27 @@
+pkgbase = libinfinity
+	pkgdesc = Library to build collaborative text editors. Includes the infinoted server
+	pkgver = 0.7.2
+	pkgrel = 5
+	url = https://gobby.github.io/
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	makedepends = git
+	makedepends = gobject-introspection
+	makedepends = gtk-doc
+	depends = avahi
+	depends = cairo
+	depends = glib2
+	depends = glibc
+	depends = gnutls
+	depends = gsasl
+	depends = gtk3
+	depends = hicolor-icon-theme
+	depends = libdaemon
+	depends = libxml2
+	depends = pam
+	depends = systemd-libs
+	source = git+https://github.com/gobby/libinfinity.git?signed#tag=0.7.2
+	validpgpkeys = 728834F3B8D552ED25CC1B1FB1C71544BF1D92C7
+	b2sums = 4262c085b37318aae720e8985999248cb60f021e035fc7c63bea86dc3d75d9c0be2b87f7608258c7d55ef18ac5631e2e3102fc1eceb2abbe7b8bea2c48697a11
+
+pkgname = libinfinity

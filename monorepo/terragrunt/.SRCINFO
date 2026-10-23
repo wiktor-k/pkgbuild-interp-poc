@@ -1,0 +1,17 @@
+pkgbase = terragrunt
+	pkgdesc = Thin wrapper for Terraform and OpenTofu for working with multiple modules
+	pkgver = 1.1.6
+	pkgrel = 1
+	url = https://github.com/gruntwork-io/terragrunt
+	arch = x86_64
+	license = MIT
+	makedepends = git
+	makedepends = go
+	depends = glibc
+	depends = terragrunt-iac-provider
+	options = !lto
+	source = git+https://github.com/gruntwork-io/terragrunt.git#tag=v1.1.6
+	sha512sums = e68a9bde93b8d48a2b136c1d9a6deee81b139b8daf403a38941492c2c00706fa5482445612bf0e61c670d198417303376cd361a2d0bfddcc319d02bf3273ae94
+	b2sums = 97277bc0ba2b08cfbd555b05094ea3fd0c5d33879af64dca85c2ed7f37babba9617f2c076ebe339375c82bca3acbb974c9a747eb267430868a0ce4e10536b7f2
+
+pkgname = terragrunt

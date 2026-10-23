@@ -1,0 +1,53 @@
+# Maintainer: George Rawlinson <george@rawlinson.net.nz>
+
+pkgname=python-managesieve
+pkgver=0.8.1
+pkgrel=2
+pkgdesc='A managesieve client for remotely managing sieve scripts'
+arch=('any')
+url='https://gitlab.com/htgoebel/managesieve'
+license=('GPL-3.0-only' 'PSF-2.0')
+depends=('python')
+makedepends=(
+  'git'
+  'python-build'
+  'python-installer'
+  'python-setuptools'
+  'python-wheel'
+  'python-sphinx'
+  'python-sphinx_rtd_theme'
+)
+checkdepends=('python-pytest')
+source=("$pkgname::git+$url#tag=v$pkgver")
+sha512sums=('f974d082adb0243cda0a9f534ccfd3eabf889228b0973dba04c6208c18c0da61b2601330f70b52a2382efd8d70ae6884fbfa46b59392975c8e3866ca5d5ed80a')
+b2sums=('242a94744aeacb283e5808f5cb8cdba55b109bdda6c3b76cda7437b29213b2c3c05e2129720580fc6964dce2e1b39dce98324a3b4d72f98c9fda9653b777be30')
+
+build() {
+  cd "$pkgname"
+
+  python -m build --wheel --no-isolation
+
+  # install to temporary directory
+  python -m installer --destdir="$PWD/tmp_install" dist/*.whl
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  PYTHONPATH="$PWD/tmp_install$site_packages" make -C docs html
+}
+
+check() {
+  cd "$pkgname"
+
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  PYTHONPATH="$PWD/tmp_install$site_packages" pytest -v
+}
+
+package() {
+  cd "$pkgname"
+
+  python -m installer --destdir="$pkgdir" dist/*.whl
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.rst
+  cp -vr docs/_build/html/* "$pkgdir/usr/share/doc/$pkgname"
+}

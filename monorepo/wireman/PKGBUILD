@@ -1,0 +1,41 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Contributor: Blair Noctis <ncts@nightsail.net>
+
+pkgname=wireman
+pkgver=0.3.8
+pkgrel=1
+pkgdesc='A gRPC client for the terminal'
+arch=('x86_64')
+url="https://github.com/preiter93/wireman"
+license=('MIT')
+depends=(
+  'libgcc'
+)
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz")
+sha512sums=('7551251e4e561bcc884107cb73fca02b7898f3608b57e94c2f93ef3c62edf27bef1f3db856bdd038052856bcff9a2511fa2f3c57068da8dcc4bf27d092d38c9b')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 LICENSE.md -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim: ts=2 sw=2 et:

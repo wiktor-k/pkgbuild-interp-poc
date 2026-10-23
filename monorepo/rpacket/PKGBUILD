@@ -1,0 +1,40 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=rpacket
+pkgver=0.1.5
+pkgrel=2
+pkgdesc="Low-level OpenPGP packet operations based on rPGP"
+arch=(x86_64)
+url="https://codeberg.org/heiko/rpacket"
+license=('Apache-2.0 OR MIT')
+groups=(openpgp-tools)
+depends=(
+  libgcc
+  glibc
+)
+makedepends=(rust)
+source=($pkgname-$pkgver.tar.gz::$url/archive/v$pkgver.tar.gz)
+sha512sums=('86c80c53fd73fd4485746f9efef8686318cae9c02b00559f0f407ee2072ea69078df296c88ee09c24bb8b90b7906cf20b58b0cfaba75e6445700bb7389720acc')
+b2sums=('946bc19a2e9b98b78f605847eb210080d20d61ce9e4eace7fe3b2a05f016bae201f3da54e4cb30833f3f2479c62db6ddd656fc7c9b92484359c289af7429ef60')
+
+prepare() {
+  cd $pkgname
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd $pkgname
+  cargo build --frozen --release
+}
+
+check() {
+  cd $pkgname
+  cargo test --frozen
+}
+
+package() {
+  cd $pkgname
+  install -vDm 755 target/release/$pkgname -t "$pkgdir/usr/bin/"
+  install -vDm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSES/*.txt -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

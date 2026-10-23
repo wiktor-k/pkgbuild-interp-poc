@@ -1,0 +1,57 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: kpcyrd <kpcyrd[at]archlinux[dot]org>
+
+pkgname=arti
+pkgver=2.7.0
+pkgrel=1
+pkgdesc="An implementation of Tor in Rust"
+arch=('x86_64')
+url="https://gitlab.torproject.org/tpo/core/arti"
+license=('MIT' 'Apache-2.0')
+depends=(
+  'glibc'
+  'libgcc'
+  'openssl' 'libssl.so'
+  'sqlite' 'libsqlite3.so'
+  'xz' 'liblzma.so'
+)
+makedepends=('cargo')
+backup=('etc/arti.d/arti.toml')
+options=('!lto')
+source=("$pkgname-$pkgver.tar.gz::$url/-/archive/$pkgname-v$pkgver/$pkgname-$pkgname-v$pkgver.tar.gz")
+sha256sums=('d4fbf50fd72fa4b4a4c957db04dcd18277b42ee70bc99d8a9074deb3bdea08d3')
+b2sums=('eca6268acad37fff560e78cf7940766f6121b982d7e5e5288536d4738cdb046eb8a8a7926fe5591adad47317b32890ea705d3c4661db262ff7917c65b216e0a1')
+
+prepare() {
+  mv "$pkgname-$pkgname-v$pkgver" "$pkgname-$pkgver"
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --release --frozen --features full -p arti
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  cargo test --frozen
+  "target/release/$pkgname" --help
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+
+  # config
+  install -Dm 640 crates/arti/src/arti-example-config.toml "$pkgdir/etc/arti.d/arti.toml"
+
+  # docs
+  install -Dm 644 -t "$pkgdir/usr/share/doc/$pkgname" \
+    README.md \
+    crates/arti/src/arti-example-config.toml
+
+  install -Dm 644 LICENSE-MIT -t "$pkgdir/usr/share/licenses/$pkgname"
+}
+
+# vim:set ts=2 sw=2 et:

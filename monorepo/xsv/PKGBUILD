@@ -1,0 +1,46 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Aaron DeVore <aaron.devore@gmail.com>
+
+pkgname=xsv
+pkgver=0.13.0
+pkgrel=4
+pkgdesc='A CLI for indexing, slicing, analyzing, splitting and joining CSV files'
+arch=(x86_64)
+url='https://github.com/BurntSushi/xsv'
+license=(Unlicense MIT)
+depends=(glibc libgcc)
+makedepends=(git rust)
+source=("$pkgname::git+$url#tag=$pkgver")
+sha512sums=('2e3eebc29183a64b5e4f59c0b84504358bda2b2e402754f10e20e1f76793a02216c177319b0bf197e1d785408088c86c4ad5c8569540359e5d4f48e6f9d22381')
+b2sums=('d4344f12b24d9e8dd44200a008a9bb9308a5c01fb2e216e4029dd69ef681210f5cd11dedf2e6ec9913fdeaeaf24c5ed834c0d3e358f04afef804c22e94c63691')
+
+prepare() {
+  cd "$pkgname"
+
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd "$pkgname"
+
+  cargo build --frozen --release
+}
+
+check() {
+  cd "$pkgname"
+
+  cargo test --frozen --release
+}
+
+package() {
+  cd "$pkgname"
+
+  # binary
+  install -vDm755 -t "$pkgdir/usr/bin" target/release/xsv
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" README.md
+  # licenses
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" ./*LICENSE*
+}

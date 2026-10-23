@@ -1,0 +1,94 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+# Contributor: Maxime Gauduin <alucryd@gmail.com>
+# Contributor: Emiliano Vavassori <syntaxerrormmm@gmail.com>
+# Contributor: Alexsandr Pavlov <kidoz@mail.ru>
+
+_gemname=mail
+pkgname=ruby-mail
+pkgver=2.9.1
+pkgrel=1
+pkgdesc='A really Ruby Mail handler'
+arch=(any)
+url='https://github.com/mikel/mail'
+license=(MIT)
+depends=(
+  ruby-mini_mime
+  ruby-net-imap
+  ruby-net-pop
+  ruby-net-smtp
+)
+makedepends=(
+  git
+  ruby-rdoc
+)
+checkdepends=(
+  ruby-activesupport
+  ruby-bundler
+  ruby-rake
+  ruby-rspec
+)
+options=(!emptydirs)
+source=(
+  "$pkgname::git+$url#tag=$pkgver"
+  remove-build-tag.patch
+)
+sha512sums=('315176413fac13365e08feb85d8b4d10a1175ed32f3a4c0b89f7c1e5e93426259e53c775382b93bc288f475cad40678dee75cf2cc05259e6959b2a27c8bb195c'
+            '98ce1d8b126c9aa7b9803cad6bd0268869939dae879741400ee494e2b96048483a6417cfeb0ee035dc5f42cebea2e4b13aa81e8301045a29f112215aa731c363')
+b2sums=('5829694f5e10601079db76c5942f7db67e9d8fb5fd5a0754d033719de4e9d2294ae097b7b4e69516033ebe1335f96c8896035938560c43e3603f3aa5e9b71d6a'
+        '7abe569c6a0ef9ad0792d15561805bd7a65108008bfa7dc40095a33749fd75919d6684369d4d1d1b662aac441efd04f96adefb276216d721cf2c52152d03b368')
+
+prepare() {
+  cd "$pkgname"
+
+  # stupid ruby making network calls, why can't this be disabled
+  patch -p1 -i "$srcdir/remove-build-tag.patch"
+
+  # update gemspec/Gemfile to allow newer version of the dependencies
+  sed --in-place --regexp-extended 's|~>|>=|g' "${_gemname}.gemspec"
+
+  # Remove unpackaged development dependencies
+  sed --in-place '/rspec-benchmark/d;/rufo/d' "${_gemname}.gemspec"
+
+  # Do not use git checkout of activesupport
+  sed --in-place 's/, :git.*//' Gemfile
+
+  # Do not require byebug
+  sed --in-place '/byebug/d' Gemfile
+
+  # Remove benchmarking
+  sed --in-place '/[Bb]enchmark/d' spec/spec_helper.rb
+}
+
+build() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  gem build --verbose "${_gemname}.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --build-root "tmp_install" \
+    "${_gemname}-${pkgver}.gem"
+}
+
+check() {
+  cd "$pkgname"
+
+  local _gemdir="$(gem env gemdir)"
+
+  GEM_HOME="tmp_install/${_gemdir}" rake spec
+}
+
+package() {
+  cd "$pkgname"
+
+  cp --archive --verbose tmp_install/* "${pkgdir}"
+
+  install --verbose -D --mode=0644 MIT-LICENSE --target-directory "${pkgdir}/usr/share/licenses/${pkgname}"
+  install --verbose -D --mode=0644 README.md --target-directory "${pkgdir}/usr/share/doc/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

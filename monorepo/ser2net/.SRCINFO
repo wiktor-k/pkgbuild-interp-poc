@@ -1,0 +1,16 @@
+pkgbase = ser2net
+	pkgdesc = A proxy that allows telnet/tcp connections to be made to serial ports
+	pkgver = 4.6.8
+	pkgrel = 1
+	url = https://sourceforge.net/projects/ser2net
+	arch = x86_64
+	license = GPL
+	depends = gensio
+	depends = libyaml
+	backup = etc/ser2net/ser2net.yaml
+	source = ser2net-4.6.8.tar.gz::https://github.com/cminyard/ser2net/archive/v4.6.8.tar.gz
+	source = ser2net.service
+	sha256sums = 066790a7ed75534808a139d69840a89647e355b887be383b4b1704e2305601a8
+	sha256sums = aac37d4122ec4ed4efbbe0ee59b02b0a988429a5302c98409f87e88289de8fac
+
+pkgname = ser2net

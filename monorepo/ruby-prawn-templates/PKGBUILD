@@ -1,0 +1,88 @@
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+# Contributor: Anatoly Bashmakov <anatoly at posteo dot net>
+
+pkgname=ruby-prawn-templates
+_pkgname=${pkgname#ruby-}
+pkgver=0.1.2
+pkgrel=11
+pkgdesc="Experimental extraction of template features from Prawn"
+arch=(any)
+url="https://github.com/prawnpdf/prawn-templates"
+license=('GPL-2.0-only OR GPL-3.0-only OR Ruby')
+depends=(
+  ruby
+  ruby-pdf-reader
+  ruby-prawn
+)
+makedepends=(rubygems)
+checkdepends=(
+  ruby-pdf-inspector
+  ruby-rspec
+)
+options=(!emptydirs)
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/$pkgver.tar.gz"
+  "remove-failing-tests.patch"
+)
+sha256sums=(
+  '116c18d2977db506cadc1e168cbb2ee7fb5d9f9abc9fd25d4a2265f9404c554a'
+  '9c095ca8b0aa4c033e1eda6a2c750386ee2d2b3ed018e97464d2994a003d6395'
+)
+
+prepare() {
+  cd "$_pkgname-$pkgver"
+  sed -i -E 's|~>|>=|g' "$_pkgname.gemspec"
+  patch --forward --strip=1 --input="$srcdir/remove-failing-tests.patch"
+  sed -i '/bundler/Id' spec/spec_helper.rb
+}
+
+build() {
+  cd "$_pkgname-$pkgver"
+  local gemdir="$(gem env gemdir)"
+
+  gem build "$_pkgname.gemspec"
+
+  gem install \
+    --local \
+    --verbose \
+    --ignore-dependencies \
+    --no-user-install \
+    --build-root "tmp_install" \
+    "$_pkgname-$pkgver.gem"
+
+  rm --force --recursive --verbose \
+    "tmp_install/$gemdir/cache/" \
+    "tmp_install/$gemdir/gems/$_pkgname-$pkgver/vendor/" \
+    "tmp_install/$gemdir/doc/$_pkgname-$pkgver/ri/ext/"
+
+  find "tmp_install/$gemdir/gems/" \
+    -type f \
+    \( \
+    -iname "*.o" -o \
+    -iname "*.c" -o \
+    -iname "*.so" -o \
+    -iname "*.time" -o \
+    -iname "gem.build_complete" -o \
+    -iname "Makefile" \
+    \) \
+    -delete
+
+  find "tmp_install/$gemdir/extensions/" \
+    -type f \
+    \( \
+    -iname "mkmf.log" -o \
+    -iname "gem_make.out" \
+    \) \
+    -delete
+}
+
+check() {
+  cd "$_pkgname-$pkgver"
+  GEM_HOME="tmp_install/$(gem env gemdir)" rspec
+}
+
+package() {
+  cd "$_pkgname-$pkgver"
+  cp -a -t "$pkgdir" tmp_install/*
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+}

@@ -1,0 +1,88 @@
+pkgbase = aida-x
+	pkgdesc = An Amp Model Player leveraging AI
+	pkgver = 1.1.0
+	pkgrel = 2
+	url = https://github.com/AidaDSP/AIDA-X
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = lv2lint
+	makedepends = alsa-lib
+	makedepends = cmake
+	makedepends = dbus
+	makedepends = libglvnd
+	makedepends = libx11
+	makedepends = libxext
+	makedepends = python
+	source = https://github.com/AidaDSP/AIDA-X/releases/download/1.1.0/AIDA-X-1.1.0-src.tar.xz
+	sha512sums = 6725501a9335bac0829550289509d2ef22bcc8f70fb65ba5ac845c430c4bfef47000e47162427ff0699a28468f1988fdc6cf0bc6a8ffbe7f53daaaead8433478
+	b2sums = 86a4ddd9b37519ca6ed9ad6a36c2916c473e22eacfd724e6c95f301df2e03ca507ae0a247c4e0026478d79a5cd69a7793f52f05e0ebec1b41d7f94a6e8fd8711
+
+pkgname = aida-x
+	depends = aida-x-clap=1.1.0
+	depends = aida-x-lv2=1.1.0
+	depends = aida-x-standalone=1.1.0
+	depends = aida-x-vst=1.1.0
+	depends = aida-x-vst3=1.1.0
+
+pkgname = aida-x-clap
+	pkgdesc = An Amp Model Player leveraging AI - CLAP plugin
+	groups = clap-plugins
+	groups = pro-audio
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = clap-host
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+
+pkgname = aida-x-lv2
+	pkgdesc = An Amp Model Player leveraging AI - LV2 plugin
+	groups = lv2-plugins
+	groups = pro-audio
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = lv2-host
+
+pkgname = aida-x-standalone
+	pkgdesc = An Amp Model Player leveraging AI - standalone
+	depends = alsa-lib
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+
+pkgname = aida-x-vst
+	pkgdesc = An Amp Model Player leveraging AI - VST plugin
+	groups = pro-audio
+	groups = vst-plugins
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = vst-host
+
+pkgname = aida-x-vst3
+	pkgdesc = An Amp Model Player leveraging AI - VST3 plugin
+	groups = pro-audio
+	groups = vst3-plugins
+	depends = dbus
+	depends = glibc
+	depends = libgcc
+	depends = libglvnd
+	depends = libstdc++
+	depends = libx11
+	depends = libxext
+	depends = vst3-host

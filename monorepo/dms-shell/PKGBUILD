@@ -1,0 +1,71 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=dms-shell
+_pkg1=DankMaterialShell
+_pkg2=dank-qml-common
+pkgver=1.6.3
+pkgrel=2
+pkgdesc='A Quickshell-based desktop shell with Material 3 design principles'
+arch=(x86_64 aarch64)
+url="https://github.com/AvengeMedia/$_pkg1"
+license=(MIT)
+depends=(accountsservice
+         quickshell)
+optdepends=('cava: Audio visualizer'
+            'cups-pk-helper: Printer Management'
+            'i2c-tools: External monitor brightness control'
+            'iwd: Required for network managementa via iwd'
+            'matugen: Dynamic wallpaper-based theming'
+            'networkmanager: Required for network managementa via networkmanager'
+            'power-profiles-daemon: Set power profile'
+            'qt6-multimedia: Sound effect support'
+            'qt6ct: Qt6 application theming'
+            'systemd: Required for network managementa via systemd-networkd'
+            'wtype: Paste from clipboard history and plugins')
+makedepends=(git
+             go)
+replaces=($pkgname-bin
+          dms-shell-hyprland
+          dms-shell-niri)
+source=("git+$url.git#tag=v$pkgver"
+        "git+${url/$_pkg1/$_pkg2}")
+sha256sums=('a404f657e0f5109d1606797e268ac452989836bfa53e244532ca0c4ea567f71d'
+            'SKIP')
+
+prepare() {
+	cd "$_pkg1"
+	git submodule init
+	git config submodule.$_pkg2.url ../$_pkg2
+	git -c protocol.file.allow=always submodule update
+	sed -i \
+		-e '/@update-desktop-database/d' \
+		-e '/@gtk-update-icon-cache/d' \
+		-e '/^install:/s/install-shell //' \
+		Makefile
+	pushd core
+	make sync-shell
+
+}
+
+build() {
+	cd "$_pkg1/core"
+	export CGO_CPPFLAGS="$CPPFLAGS"
+	export CGO_CFLAGS="$CFLAGS"
+	export CGO_CXXFLAGS="$CXXFLAGS"
+	go build -v \
+		-tags distro_binary \
+		-tags withshell \
+		-trimpath \
+		-buildmode=pie \
+		-mod=readonly \
+		-modcacherw \
+		-ldflags="-s -w -linkmode=external -extldflags \"${LDFLAGS}\" -X main.Version=v$pkgver" \
+		-o bin/dms ./cmd/dms
+}
+
+package() {
+	cd "$_pkg1"
+	make DESTDIR="$pkgdir" PREFIX="/usr" SYSTEMD_USER_DIR="$pkgdir/usr/lib/systemd/user" install
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	cp -r "docs/"* "$pkgdir/usr/share/doc/$pkgname/"
+}

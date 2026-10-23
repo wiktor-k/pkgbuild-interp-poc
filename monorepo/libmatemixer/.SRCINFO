@@ -1,0 +1,19 @@
+pkgbase = libmatemixer
+	pkgdesc = Mixer library for MATE Desktop
+	pkgver = 1.28.0
+	pkgrel = 3
+	url = https://github.com/mate-desktop/libmatemixer
+	arch = x86_64
+	license = LGPL-2.0-or-later
+	makedepends = git
+	makedepends = gtk-doc
+	makedepends = mate-common
+	depends = alsa-lib
+	depends = glib2
+	depends = glibc
+	depends = libpulse
+	depends = systemd-libs
+	source = git+https://github.com/mate-desktop/libmatemixer.git#tag=v1.28.0
+	b2sums = c58a061454d6e8c74f725f2811de51f0fde44cb4e2baba2186b06ec999512cfee4e427418a4889d40b51f5615f9128000db873fc32b210335cba2effbec60c6b
+
+pkgname = libmatemixer

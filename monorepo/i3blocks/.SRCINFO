@@ -1,0 +1,19 @@
+pkgbase = i3blocks
+	pkgdesc = Define blocks for your i3bar status line
+	pkgver = 1.5
+	pkgrel = 4
+	url = https://github.com/vivien/i3blocks
+	install = i3blocks.install
+	arch = x86_64
+	groups = i3
+	license = GPL3
+	makedepends = git
+	depends = glibc
+	backup = etc/i3blocks.conf
+	source = i3blocks-1.5::git+https://github.com/vivien/i3blocks#tag=1.5?signed
+	source = i3blocks-1.5-fix-Makefile-bash-completion-dependency.patch
+	validpgpkeys = 44C919BDF206CFDC49C7101A66C63FBDFD79670A
+	sha512sums = SKIP
+	sha512sums = d3d21b200f71559156c994f94f2e05f92c61b807e7d4916f474730ad8e8769b813ecc1073b6cf7ab8ee5e6b13eed12c9d94d7d23d3c3bbb44943ebea28e504fd
+
+pkgname = i3blocks

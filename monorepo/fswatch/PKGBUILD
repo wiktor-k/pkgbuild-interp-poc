@@ -1,0 +1,32 @@
+# Maintainer: Jonathan Grotelüschen <tippfehlr@archlinux.org>
+# Contributor: Andrew Rabert <ar@nullsum.net>
+# Contributor: Flaviu Tamas <aur@flaviutamas.com>
+
+pkgname=fswatch
+pkgver=1.22.0
+pkgrel=2
+pkgdesc="A cross-platform file change monitor with multiple backends"
+arch=('x86_64')
+url="https://emcrisostomo.github.io/fswatch/"
+license=('GPL-3.0-or-later OR Apache-2.0')
+depends=('glibc' 'libgcc' 'libstdc++')
+makedepends=('git')
+source=("git+https://github.com/emcrisostomo/fswatch.git#tag=$pkgver")
+sha256sums=('01908ba774317a7e2e6e4c947965d186a1463ece889de40848215c4460e2ef2d')
+
+build() {
+	cd $pkgname
+	./autogen.sh --force
+	./configure --prefix=/usr
+	make
+}
+
+check() {
+	cd $pkgname
+	make -k check
+}
+
+package() {
+	cd $pkgname
+	make DESTDIR="$pkgdir/" install
+}

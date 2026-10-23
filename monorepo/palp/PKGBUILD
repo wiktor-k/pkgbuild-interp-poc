@@ -1,0 +1,29 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+
+pkgname=palp
+epoch=1
+pkgver=2.21
+pkgrel=4
+pkgdesc='A Package for analyzing Lattice Polytopes'
+arch=(x86_64)
+url='http://hep.itp.tuwien.ac.at/~kreuzer/CY/CYpalp.html'
+license=(GPL-3.0-only)
+depends=(glibc)
+makedepends=(git)
+source=(git+https://gitlab.com/stringstuwien/PALP#tag=v$pkgver)
+sha256sums=('6d198252f03de53a0949d10c5b90af80daa1bc0f9030ea879ac12c6f0d50839f')
+
+build() {
+  cd PALP
+  make all-dims
+}
+
+package() {
+  cd PALP
+  for _exe in *.x; do
+    install -Dm755 $_exe -t "$pkgdir"/usr/bin
+  done
+  for _file in poly class cws nef mori; do
+    ln -sf $_file-6d.x "$pkgdir"/usr/bin/$_file.x
+  done
+}

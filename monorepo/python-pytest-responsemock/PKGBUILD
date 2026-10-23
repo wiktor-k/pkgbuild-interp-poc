@@ -1,0 +1,46 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=python-pytest-responsemock
+_name="${pkgname#python-}"
+pkgver=1.1.1
+pkgrel=6
+pkgdesc="Simplified requests calls mocking for pytest"
+arch=(any)
+url="https://github.com/idlesign/pytest-responsemock"
+license=(BSD-3-Clause)
+depends=(
+  python
+  python-pytest
+  python-responses
+)
+makedepends=(
+  python-build
+  python-installer
+  python-setuptools
+  python-wheel
+)
+checkdepends=(python-requests)
+source=($pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz)
+sha512sums=('b52b45b2cc89e4e463ee83f497e30e713034ff9ab393acbf30c4ab84fe13e1abe32b6f006cf9c01e6cc6829e257d04dfcead13937d1a138f410a6a019b8eed30')
+b2sums=('8930bd8feb042ea04e9b4403215ac60263c6a25539c26d8e9aec877830ccdb633a9bc3df1cd852cb7946b459d409a4f3696b6adbf31846dac077be0958f263c5')
+
+build() {
+  cd $_name-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  local site_packages=$(python -c "import site; print(site.getsitepackages()[0])")
+
+  cd $_name-$pkgver
+  python -m installer --destdir=test_dir dist/*.whl
+  export PYTHONPATH="test_dir/$site_packages:$PYTHONPATH"
+  pytest -v -k "not test_bypass"
+}
+
+package() {
+  cd $_name-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -vDm 644 {AUTHORS,CHANGELOG,README.rst} -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE -t "$pkgdir/usr/share/licenses/$pkgname/"
+}

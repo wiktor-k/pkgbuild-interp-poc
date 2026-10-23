@@ -1,0 +1,38 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+# Maintainer: Carl Smedstad <carsme@archlinux.org>
+
+pkgname=hcxtools
+pkgver=7.1.2
+pkgrel=1
+pkgdesc='Portable solution for capturing wlan traffic and conversion to hashcat and John the Ripper formats'
+url='https://github.com/ZerBea/hcxtools'
+arch=('x86_64')
+license=('MIT')
+depends=(
+  'curl' 'libcurl.so'
+  'glibc'
+  'openssl'
+  'zlib'
+)
+source=(
+  "${url}/archive/${pkgver}/${pkgname}-${pkgver}.tar.gz"
+  "${url}/releases/download/${pkgver}/${pkgname}-${pkgver}.tar.gz.asc"
+)
+sha512sums=('d691155bafee4eddb788dbba8bdfc82f06e7f339a43d844a74b97fa1f28ac1eb64773db8b7ebfa71c1c7e8ff47a811e718558ff19ff4486cb857a580c74c12e7'
+            'SKIP')
+validpgpkeys=('5920CE1C567948AFD2C0A9B7375516A45DB88630') # ZeroBeat <ZeroBeat@gmx.de>
+
+build() {
+  cd ${pkgname}-${pkgver}
+  CFLAGS+=" $LDFLAGS" \
+  make PRODUCTION=1
+}
+
+package() {
+  cd ${pkgname}-${pkgver}
+  make DESTDIR="${pkgdir}" PREFIX=/usr PRODUCTION=1 install
+  install -vDm 644 README.md changelog -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -vDm 644 license.txt -t "${pkgdir}/usr/share/licenses/${pkgname}"
+}
+
+# vim: ts=2 sw=2 et:

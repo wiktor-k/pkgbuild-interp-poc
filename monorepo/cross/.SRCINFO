@@ -1,0 +1,21 @@
+pkgbase = cross
+	pkgdesc = 'Zero setup' cross compilation and 'cross testing' of Rust crates
+	pkgver = 0.2.5
+	pkgrel = 3
+	url = https://github.com/rust-embedded/cross
+	arch = x86_64
+	license = Apache-2.0
+	license = MIT
+	makedepends = rust
+	depends = glibc
+	depends = libgcc
+	optdepends = docker: provide container
+	optdepends = podman: provide container
+	source = cross-0.2.5.tar.gz::https://github.com/cross-rs/cross/archive/refs/tags/v0.2.5.tar.gz
+	sha256sums = 8dfcad7aa8eb0b9ce18423c386fc03bc709e8c9ad2d7bcb1a77f9d1d1cd6fd2e
+	b2sums = 1e2d5d27bfc13aed3132cbcc054e466ff10ca782a72d7c9cacea35a08e3afa88c3cf8d09a55b29a59fa2d11601e62baefdbdac5c1bfe0fecdf0ee6cfb92d4820
+
+pkgname = cross
+	depends = glibc
+	depends = libgcc
+	depends = rustup

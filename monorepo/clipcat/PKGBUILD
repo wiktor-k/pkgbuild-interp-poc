@@ -1,0 +1,68 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: Carl Smedstad <carl.smedstad at protonmail dot com>
+# Contributor:  Po-An,Yang(Antonio) <yanganto gmail.com>
+
+pkgname=clipcat
+pkgver=0.26.0
+pkgrel=1
+pkgdesc="A clipboard manager"
+arch=('x86_64')
+url="https://github.com/xrelkd/clipcat"
+license=('GPL-3.0-only')
+depends=('glibc' 'libgcc' 'libgit2')
+makedepends=('cargo' 'protobuf')
+source=(
+  "$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz"
+  'libgit2.pc'
+)
+sha256sums=('3d20e3bbe7b5b7ac478e10e1892d3978a99f4573ed118574b4d441820cff3d7f'
+            'f0b4952bd7ac83d19e11b491af6debc6cce1263070943a886726915f8c4283df')
+options=('!lto')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+_force_libgit19() {
+  # Force compilation against libgit2 1.9
+  export PKG_CONFIG_PATH="$srcdir"
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  cargo build --frozen --release --all-features
+  _force_libgit19
+  for cmd in clipcatd clipcatctl clipcat-menu clipcat-notify; do
+    "target/release/$cmd" completions bash > "$cmd.bash"
+    "target/release/$cmd" completions zsh > "$cmd.zsh"
+    "target/release/$cmd" completions fish > "$cmd.fish"
+  done
+}
+
+check() {
+  cd "$pkgname-$pkgver"
+  _force_libgit19
+  cargo test --frozen --all-features
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+
+  install -Dm755 -t "$pkgdir/usr/bin" \
+    target/release/clipcat-menu \
+    target/release/clipcat-notify \
+    target/release/clipcatctl \
+    target/release/clipcatd
+
+  for cmd in clipcatd clipcatctl clipcat-menu clipcat-notify; do
+    install -Dm644 "$cmd.bash" "$pkgdir/usr/share/bash-completion/completions/$cmd"
+    install -Dm644 "$cmd.zsh" "$pkgdir/usr/share/zsh/site-functions/_$cmd"
+    install -Dm644 "$cmd.fish" "$pkgdir/usr/share/fish/vendor_completions.d/$cmd.fish"
+  done
+
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname" ./*.md
+}
+
+# vim:set ts=2 sw=2 et:

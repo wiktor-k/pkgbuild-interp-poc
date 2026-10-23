@@ -1,0 +1,58 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Arch Haskell Team <arch-haskell@haskell.org>
+
+_hkgname=http-client-tls
+pkgname=haskell-http-client-tls
+pkgver=0.3.6.4
+pkgrel=230
+pkgdesc="http-client backend using the connection package and tls library"
+url="https://github.com/snoyberg/http-client"
+license=("MIT")
+arch=('x86_64')
+depends=('ghc-libs' 'haskell-case-insensitive' 'haskell-crypton' 'haskell-crypton-connection'
+         'haskell-data-default' 'haskell-http-client' 'haskell-http-types' 'haskell-memory'
+         'haskell-network' 'haskell-network-uri' 'haskell-tls')
+makedepends=('ghc' 'uusi' 'haskell-hspec')
+source=("https://hackage.haskell.org/packages/archive/${_hkgname}/${pkgver}/${_hkgname}-${pkgver}.tar.gz"
+        $pkgname-tls-2.0.patch::https://github.com/snoyberg/http-client/commit/e36f74123bcc18c5cbda50c6749aace324dfe3f1.patch)
+sha512sums=('1c0c2079c19e57d35a7ca8f21a0be381963858aa0af2abbe9124bbd5aafc851b9a3f3fa06a125dd080b59ea46a22e76551621975b3437eb0aaf5b2fc5e4abe92'
+            '3f8ab59d31ec9220b20573782792489b333b708006997a4f05d0a40fdcbb0faeda2c55b5e7e03c3dd9c8937af687d450bdc21d7fab04fbae18ad2e592369d806')
+
+prepare() {
+    cd $_hkgname-$pkgver
+    # crypton-connection 0.4 & tls 2.0
+    patch -p2 -i ../$pkgname-tls-2.0.patch
+
+    # httpbin.org is very unstable
+    sed -i 's|httpbin.org|ddosgan.com|' test/Spec.hs
+}
+
+build() {
+    cd $_hkgname-$pkgver
+    
+    runhaskell Setup configure -O --enable-shared --enable-debug-info --enable-executable-dynamic --disable-library-vanilla \
+        --prefix=/usr --docdir="/usr/share/doc/$pkgname" --enable-tests \
+        --dynlibdir=/usr/lib --libsubdir=\$compiler/site-local/\$pkgid \
+        --ghc-option=-optl-Wl\,-z\,relro\,-z\,now \
+        --ghc-option='-pie'
+    runhaskell Setup build $MAKEFLAGS
+    runhaskell Setup register --gen-script
+    runhaskell Setup unregister --gen-script
+    sed -i -r -e "s|ghc-pkg.*update[^ ]* |&'--force' |" register.sh
+    sed -i -r -e "s|ghc-pkg.*unregister[^ ]* |&'--force' |" unregister.sh
+}
+
+check() {
+    cd $_hkgname-$pkgver
+    runhaskell Setup test --show-details=direct
+}
+
+package() {
+    cd $_hkgname-$pkgver
+    
+    install -D -m744 register.sh "$pkgdir"/usr/share/haskell/register/$pkgname.sh
+    install -D -m744 unregister.sh "$pkgdir"/usr/share/haskell/unregister/$pkgname.sh
+    runhaskell Setup copy --destdir="$pkgdir"
+    install -D -m644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+    rm -f "$pkgdir"/usr/share/doc/$pkgname/LICENSE
+}

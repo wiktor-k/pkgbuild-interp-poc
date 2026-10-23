@@ -1,0 +1,18 @@
+pkgbase = kde-builder
+	pkgdesc = A tool to streamline the process of setting up and maintaining a development environment for KDE software
+	pkgver = 26.10
+	pkgrel = 1
+	url = https://invent.kde.org/sdk/kde-builder
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-hatch-vcs
+	makedepends = python-hatchling
+	makedepends = python-installer
+	depends = python
+	optdepends = python-jeepney: performance profiling
+	source = git+https://invent.kde.org/sdk/kde-builder#tag=v26.10
+	sha256sums = 08e78906dfd36b3a427ed42e53a2e8f21d80c8c0438d5cae13d11b32bb620cac
+
+pkgname = kde-builder

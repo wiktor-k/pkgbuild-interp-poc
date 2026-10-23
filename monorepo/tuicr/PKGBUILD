@@ -1,0 +1,33 @@
+# Maintainer: Sven-Hendrik Haase <svenstaro@archlinux.org>
+# Contributor: Anas Elgarhy <anas.elgarhy.dev@gmail.com>
+pkgname=tuicr
+pkgver=0.27.0
+pkgrel=1
+pkgdesc='A code review TUI with vim keybindings'
+arch=('x86_64' 'aarch64' 'riscv64')
+url='https://github.com/agavra/tuicr'
+license=('MIT')
+options=('!lto')
+depends=('libgit2' 'glibc' 'libgcc' 'oniguruma')
+makedepends=('cargo')
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('420f72b7ffc6e40db50383719dbec162fa712130c7a7d83c21cd07d504dd59e7')
+
+prepare() {
+  cd "$pkgname-$pkgver"
+  cargo fetch --locked --target host-tuple
+}
+
+build() {
+  cd "$pkgname-$pkgver"
+  RUSTONIG_DYNAMIC_LIBONIG=1 cargo build --frozen --release
+}
+
+package() {
+  cd "$pkgname-$pkgver"
+  install -Dm0755 target/release/tuicr "$pkgdir/usr/bin/tuicr"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+}
+
+# vim: ts=2 sw=2 et:

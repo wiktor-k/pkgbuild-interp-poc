@@ -1,0 +1,40 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+# Contributor: int <int [ate] arcor [dot] de>
+# Contributor: John D Jones III AKA jnbek <jnbek1972 -_AT_- g m a i l -_Dot_- com>
+
+pkgname=perl-devel-cover
+_pkgname=Devel-Cover
+pkgver=1.52
+pkgrel=2
+pkgdesc='Perl/CPAN Module Devel::Cover: Code coverage metrics for Perl'
+arch=(x86_64 i686)
+license=(PerlArtistic GPL)
+options=(!emptydirs)
+depends=(perl
+         perl-html-parser)
+checkdepends=(perl-b-debug-cpan)
+url="https://metacpan.org/release/$_pkgname"
+_archive="$_pkgname-$pkgver"
+source=("http://search.cpan.org/CPAN/authors/id/P/PJ/PJCJ/$_archive.tar.gz")
+sha256sums=('9d90b44ab602ca373fa221255708de4d19df86026f4d7110bef608846eed44fb')
+
+build() {
+	cd "$_archive"
+	unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+	export PERL_MM_USE_DEFAULT=1 PERL_AUTOINSTALL=--skipdeps
+	/usr/bin/perl Makefile.PL
+	make
+}
+
+check() {
+	cd "$_archive"
+	unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+	export PERL_MM_USE_DEFAULT=1
+	make test
+}
+
+package() {
+	cd "$_archive"
+	unset PERL5LIB PERL_MM_OPT PERL_LOCAL_LIB_ROOT
+	make install INSTALLDIRS=vendor DESTDIR="$pkgdir"
+}

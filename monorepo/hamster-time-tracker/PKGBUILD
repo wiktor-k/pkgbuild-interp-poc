@@ -1,0 +1,55 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+# Contributor: Jan de Groot <jgc@archlinux.org>
+# Contributor: Georg Vogetseder <georg.vogetseder@gmail.com>
+
+pkgname=hamster-time-tracker
+pkgver=3.0.3
+pkgrel=7
+pkgdesc='Time tracking application that helps you to keep track on how much time you have spent during the day on activities you choose to track'
+arch=(any)
+url='https://github.com/projecthamster/hamster'
+license=(GPL-3.0-or-later)
+depends=(
+  dconf
+  gdk-pixbuf2
+  glib2
+  gtk3
+  hicolor-icon-theme
+  pango
+  python
+  python-cairo
+  python-dbus
+  python-gobject
+)
+makedepends=(
+  git
+  glib2-devel
+  intltool
+  itstool
+  waf
+)
+source=("git+https://github.com/projecthamster/hamster.git?signed#tag=v$pkgver")
+b2sums=(a3f2b51c1cc2d9947232f0d3598c37b4f1638a34efeaf0d5555d18e24a60c43f7a52d4fbe0ebbc7093fea60b3a95ac7ef4391e338dbaafb71ec963d697bebcdd)
+validpgpkeys=(E7D0C6A75BEE6D84D638F60A3798AF15A1565658) # Matthijs Kooijman <matthijs@stdin.nl>
+
+prepare() {
+  cd hamster
+
+  # Unbundle waf
+  rm -r waf waflib
+}
+
+build() {
+  cd hamster
+  waf configure \
+    --prefix=/usr \
+    --libexecdir=/usr/lib \
+    --skip-icon-cache-update
+  waf build
+}
+
+package() {
+  cd hamster
+  waf install --destdir="$pkgdir"
+  rm "$pkgdir/usr/share/glib-2.0/schemas/gschemas.compiled"
+}

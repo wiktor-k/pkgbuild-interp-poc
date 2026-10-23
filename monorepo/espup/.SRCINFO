@@ -1,0 +1,25 @@
+pkgbase = espup
+	pkgdesc = Tool for installing and maintaining ESP Rust ecosystem
+	pkgver = 0.18.0
+	pkgrel = 1
+	url = https://github.com/esp-rs/espup
+	arch = x86_64
+	license = MIT
+	license = Apache-2.0
+	makedepends = cargo
+	depends = git
+	depends = glibc
+	depends = ldproxy
+	depends = libgcc
+	depends = pkg-config
+	depends = python
+	depends = python-pip
+	depends = udev
+	depends = xz
+	depends = liblzma.so
+	options = !lto
+	source = https://github.com/esp-rs/espup/archive/v0.18.0/espup-0.18.0.tar.gz
+	sha256sums = 29bf7261c2eacb467889c28eab6a803747147d75391d66ca3b84391403fc7019
+	b2sums = 0aaeb331070f116c872bdf00b1bc4a84fd005f8ba9c85d5d6ac653319d2d5b38d8bb2c8bf1ca1140f5a4433685dfa060adcee25e2cb09c54802819bc369a61d1
+
+pkgname = espup

@@ -1,0 +1,22 @@
+pkgbase = bashburn
+	pkgdesc = CD burning shell script
+	pkgver = 4.0.0
+	pkgrel = 1
+	url = https://sites.google.com/view/bashburn/home
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = bash
+	depends = cdrdao
+	depends = cdrtools
+	optdepends = cdparanoia: Ripping audio CDs
+	optdepends = dvd+rw-tools: support for burning DVDs
+	optdepends = flac: Flac-Support
+	optdepends = mpg123: MP3-Support
+	optdepends = sudo: For missing permissions
+	optdepends = vorbis-tools: Vorbis-Support
+	optdepends = wavegain: Audio normalization
+	source = bashburn::git+https://codeberg.org/aelinden/BashBurn.git#tag=4.0.0
+	b2sums = 29bf1261635a07c7f0e25d6330b40c1c2e4ae588f2b1e65abfddbb013aedf47a1b7ee34c418d33b16cad9c1c16d877de924bf16980be84549347faa24cde8731
+
+pkgname = bashburn

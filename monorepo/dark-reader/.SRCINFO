@@ -1,0 +1,20 @@
+pkgbase = dark-reader
+	pkgdesc = Inverts brightness of web pages and aims to reduce eyestrain while browsing the web
+	pkgver = 4.9.130
+	pkgrel = 1
+	url = https://darkreader.org/
+	arch = any
+	license = MIT
+	makedepends = git
+	makedepends = npm
+	source = git+https://github.com/darkreader/darkreader.git#tag=v4.9.130
+	b2sums = 2c557fdb5c59c91d4ad8f442b7136ce3a83c733a9334700548e59230c20e549f4e67ab32e0befc3079031488ec965cc5f60b316517f223a5aefef3428cbcc065
+
+pkgname = dark-reader
+	pkgdesc = Inverts brightness of web pages and aims to reduce eyestrain while browsing the web (unpacked webextension)
+
+pkgname = firefox-dark-reader
+	groups = firefox-addons
+
+pkgname = thunderbird-dark-reader
+	groups = thunderbird-addons

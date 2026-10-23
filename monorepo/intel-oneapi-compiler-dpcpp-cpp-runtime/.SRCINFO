@@ -1,0 +1,36 @@
+pkgbase = intel-oneapi-compiler-dpcpp-cpp-runtime
+	pkgver = 2026.0.0_947
+	pkgrel = 2
+	url = https://software.intel.com/content/www/us/en/develop/tools/oneapi.html
+	arch = x86_64
+	license = LicenseRef-Intel-EULA-Developer-Tools
+	noextract = intel-oneapi-compiler-dpcpp-cpp-runtime-2026.0-2026.0.0-947_amd64.deb
+	noextract = intel-oneapi-compiler-dpcpp-cpp-common-2026.0-2026.0.0-947_all.deb
+	noextract = intel-oneapi-compiler-dpcpp-eclipse-cfg-2026.0.0-947_all.deb
+	noextract = intel-oneapi-icc-eclipse-plugin-cpp-2026.0-2026.0.0-947_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-compiler-dpcpp-cpp-runtime-2026.0-2026.0.0-947_amd64.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-compiler-dpcpp-cpp-common-2026.0-2026.0.0-947_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-compiler-dpcpp-eclipse-cfg-2026.0.0-947_all.deb
+	source = https://apt.repos.intel.com/oneapi/pool/main/intel-oneapi-icc-eclipse-plugin-cpp-2026.0-2026.0.0-947_all.deb
+	b2sums = fa1c078b1208099a094774d89347912f1473778df620607a972624d11b4366ca57ea9b1330df8cbc333b625270e92d5c3ab18fc7343dca01e299c07c684dc34b
+	b2sums = fde65a9390d6b32126f1a33aa0087451862ea1fbcf03402c40efcd34e5617e60d4bbc01d099bfcada588d0d6de2377081d6e7845adab78a79a01c1655ec56529
+	b2sums = 330657bb757a4a3ba1728e1c52114b863426ea12f43679878c8f0c27766be9778164300591f483b77baabf1d70c82314dedf10be48581b42dc2571b48d30e57a
+	b2sums = 0ed06eee7b766af122a44a0410081a9324fe24f8654513913977403e64dd7a1db7df8784696405bc5af37acc83c594bd241d133055f55e12c823214d7ad78c27
+
+pkgname = intel-oneapi-compiler-dpcpp-cpp-runtime
+	pkgdesc = Intel oneAPI Data Parallel C++ compiler: Full runtime libraries and header files
+	depends = intel-oneapi-compiler-shared-runtime
+	depends = intel-oneapi-compiler-dpcpp-cpp-runtime-libs
+	depends = intel-oneapi-common
+	provides = intel-oneapi-compiler-dpcpp-cpp-common
+	provides = intel-oneapi-compiler-dpcpp-eclipse-cfg
+	provides = intel-oneapi-icc-eclipse-plugin-cpp
+	conflicts = intel-oneapi-basekit
+
+pkgname = intel-oneapi-compiler-dpcpp-cpp-runtime-libs
+	pkgdesc = Intel oneAPI Data Parallel C++ compiler: Minimal runtime libraries
+	depends = intel-oneapi-compiler-shared-runtime-libs
+	depends = intel-oneapi-umf
+	depends = intel-oneapi-tbb
+	depends = intel-oneapi-common
+	conflicts = intel-oneapi-basekit

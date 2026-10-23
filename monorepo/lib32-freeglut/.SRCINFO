@@ -1,0 +1,25 @@
+pkgbase = lib32-freeglut
+	pkgdesc = Free OpenGL Utility Toolkit (32-bit)
+	pkgver = 3.8.0
+	pkgrel = 2
+	url = https://freeglut.sourceforge.net/
+	arch = x86_64
+	license = X11
+	makedepends = cmake
+	makedepends = git
+	makedepends = lib32-mesa
+	makedepends = ninja
+	depends = freeglut
+	depends = lib32-glibc
+	depends = lib32-glu
+	depends = lib32-libgl
+	depends = lib32-libx11
+	depends = lib32-libxi
+	depends = lib32-libxrandr
+	depends = lib32-libxxf86vm
+	provides = lib32-glut
+	conflicts = lib32-glut
+	source = git+https://github.com/FreeGLUTProject/freeglut#tag=v3.8.0
+	b2sums = 2681b876d8867c6fb1f5a4242068434575c0c5ea14ce62b4754f1656bb5297821a95ce24eb14f326acccc929675211e908e6c702796a6d8c72b0f96e6503fbc0
+
+pkgname = lib32-freeglut

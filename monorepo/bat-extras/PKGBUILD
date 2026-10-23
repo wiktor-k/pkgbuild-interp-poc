@@ -1,0 +1,85 @@
+# Maintainer: George Rawlinson <grawlinson@archlinux.org>
+
+pkgname=bat-extras
+pkgver=2024.08.24
+pkgrel=1
+pkgdesc='Bash scripts that integrate bat with various command line tools'
+arch=('any')
+url='https://github.com/eth-p/bat-extras'
+license=('MIT')
+depends=(
+  'bat'
+  'bash'
+  'git'
+  'ripgrep'
+  'man'
+)
+makedepends=('shfmt')
+checkdepends=('fish')
+optdepends=(
+  'ncurses: optional for batdiff script'
+  'git-delta: optional for batdiff script'
+  'fzf: optional for batman script'
+  'exa: optional for batpipe script'
+  'entr: optional for batwatch script'
+  'prettier: various code formatting for prettybat script'
+  'shfmt: bash formatting for prettybat script'
+  'rustfmt: Rust formatting for prettybat script'
+  'clang: C / C++ / Objective-C formatting for prettybat script'
+  'python-black: Python formatting for prettybat script'
+)
+source=(
+  "git+https://github.com/eth-p/bat-extras.git#tag=v$pkgver"
+  'github.com-eth-p-best::git+https://github.com/eth-p/best.git'
+  'github.com-eth-p-best-tests::git+https://github.com/eth-p/best-tests.git'
+)
+sha512sums=('ce28038d7ad318e0c3aa26189da8a1a3e49016cc242326d158358c6f33311426ba35050b9c241cdca5bcc7349d8c4be327067ffbe3831b754ff5f9c2fa517f92'
+            'SKIP'
+            'SKIP')
+b2sums=('588fff19f9527fa05f38bd7373f9cd41ceccdfbe361d24dd58d2b56addeba9fd130d73d525a59ae241dcf6ec3b253669bcb970527b6d970d5f9f3dcc2eeee584'
+        'SKIP'
+        'SKIP')
+
+prepare(){
+  cd "$pkgname"
+
+  # setup submodules
+  git submodule init
+  git config submodule.best.url "$srcdir/github.com-eth-p-best"
+  git -c protocol.file.allow=always submodule update
+
+  pushd .test-framework
+  git submodule init
+  git config submodule.best-tests.url "$srcdir/github.com-eth-p-best-tests"
+  git -c protocol.file.allow=always submodule update
+  popd
+
+  # fix incorrect version string using commit date
+  # https://github.com/eth-p/bat-extras/issues/68
+  git show --no-patch --format=%cd --date=format:%Y.%m.%d > version.txt
+}
+
+check() {
+  cd "$pkgname"
+
+  ./test.sh --verbose --strict --snapshot:show
+}
+
+package() {
+  cd "$pkgname"
+
+  # scripts
+  ./build.sh \
+    --prefix="$pkgdir/usr" \
+    --install
+
+  # documentation
+  install -vDm644 -t "$pkgdir/usr/share/doc/$pkgname" \
+    CONTRIBUTING.md README.md doc/*
+
+  # man pages
+  install -vDm644 -t "$pkgdir/usr/share/man/man1" man/*
+
+  # license
+  install -vDm644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE.md
+}

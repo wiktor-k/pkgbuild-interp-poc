@@ -1,0 +1,54 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=gfold
+pkgver=2026.9.0
+pkgrel=1
+pkgdesc="A CLI tool to help keep track of Git repositories"
+arch=('x86_64')
+url="https://github.com/nickgerace/gfold"
+license=('Apache-2.0')
+depends=('glibc' 'libgcc' 'libgit2')
+makedepends=('cargo' 'clang' 'git')
+source=("git+$url.git#tag=$pkgver")
+sha256sums=('19a723ecd6a89725e2005a81f4b2c1b893f512447876538b33a573b8856e2962')
+
+_srcenv() {
+  cd "$pkgname"
+  export CARGO_HOME="$srcdir"
+  export CARGO_PROFILE_RELEASE_DEBUG=2
+  export CARGO_PROFILE_RELEASE_STRIP=false
+  export CARGO_PROFILE_RELEASE_LTO=thin
+  export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+  export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+  CFLAGS+=' -ffat-lto-objects'
+  export LIBGIT2_NO_VENDOR=1
+  # Drop when devtools fixes the ICF snafu
+  export RUSTFLAGS='-C force-frame-pointers=yes'
+}
+
+prepare() {
+  _srcenv
+  cargo fetch --locked --target host-tuple
+  mkdir man/
+}
+
+build() {
+  _srcenv
+  cargo build --release --frozen
+  "target/release/$pkgname" --generate-man >"man/$pkgname.1"
+}
+
+check() {
+  _srcenv
+  cargo test --frozen
+}
+
+package() {
+  cd "$pkgname"
+  install -Dm 755 "target/release/$pkgname" -t "$pkgdir/usr/bin"
+  install -Dm 644 README.md -t "$pkgdir/usr/share/doc/$pkgname"
+  install -Dm 644 "man/$pkgname.1" "$pkgdir/usr/share/man/man1/$pkgname.1"
+}
+
+# vim: ts=2 sw=2 et:

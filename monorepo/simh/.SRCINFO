@@ -1,0 +1,18 @@
+pkgbase = simh
+	pkgdesc = simulator for assorted historical computers, from Altair to VAX
+	pkgver = 3.12.5
+	pkgrel = 2
+	url = http://simh.trailing-edge.com
+	install = simh.install
+	arch = x86_64
+	license = BSD
+	makedepends = linux-api-headers
+	depends = libpcap
+	source = http://simh.trailing-edge.com/sources/simhv312-5.zip
+	source = build-fix.patch
+	source = license-from-upstream
+	sha512sums = 6c70f3155b73b669d4b87ede7f0e7e116cebbc5063646a7f17bdca6fd6e6fcf9ed0833b2b2fc0bb345e37284c73c809f4ab0a8b1bd9459b24ee12387487af92b
+	sha512sums = 34d75e24dd07aaf6e45aff91b9fef9d1881ac27a6178069cde13f7c5463dc834606170adafd687c4006d4977bb3e0bc21c98e68544a8ac1c9e29260a4906a44e
+	sha512sums = 084faf8a66c95cb337bca19a6116c916aa04fc23ec5d57d5d8c2fc168231272123a705e83f8da2bf38f404da51727a69db68ffd87b36028e0cde52b54b92b2dd
+
+pkgname = simh

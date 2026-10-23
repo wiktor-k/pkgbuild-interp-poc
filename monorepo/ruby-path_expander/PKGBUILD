@@ -1,0 +1,42 @@
+# Maintainer: Levente Polyak <anthraxx[at]archlinux[dot]org>
+
+_gemname=path_expander
+pkgname=ruby-${_gemname}
+pkgver=2.0.1
+pkgrel=1
+pkgdesc='Helps pre-process command-line arguments expanding directories into their constituent file'
+url='https://github.com/seattlerb/path_expander'
+arch=('any')
+license=('MIT')
+depends=('ruby')
+makedepends=('ruby-rdoc' 'ruby-rake' 'ruby-hoe')
+checkdepends=('ruby-minitest')
+options=('!emptydirs')
+source=(${url}/archive/v${pkgver}/${pkgname}-${pkgver}.tar.gz)
+sha512sums=('c6f2575ea6388c2f5895bfe4185bfa9672495e8278c1cb80456e83f144f50462b7424e474633de460715226d47074f2b99f489fee2191bda0e67a571227578f3')
+b2sums=('30676740b189d54538de424b8e964627cee1d12bc762af35eb6ade6d7749b71c4da1b30b7f9edd241c13ce6e34415e9ae8fbb447ff7eb23ebd8dfb7dbf5f26a7')
+
+build() {
+  cd ${_gemname}-${pkgver}
+  sed -r 's|~>|>=|g' -i Rakefile
+  rake gem
+}
+
+check() {
+  cd ${_gemname}-${pkgver}
+  rake test
+}
+
+package() {
+  cd ${_gemname}-${pkgver}
+  local _gemdir="$(gem env gemdir)"
+  gem install --ignore-dependencies --no-user-install -i "${pkgdir}${_gemdir}" \
+    -n "${pkgdir}/usr/bin" pkg/${_gemname}-${pkgver}.gem
+
+  install -Dm 644 README.rdoc History.rdoc -t "${pkgdir}/usr/share/doc/${pkgname}"
+  install -Dm 644 README.rdoc -t "${pkgdir}/usr/share/licenses/${pkgname}"
+
+  rm -r "${pkgdir}/${_gemdir}/"{cache,gems/${_gemname}-${pkgver}/test}
+}
+
+# vim: ts=2 sw=2 et:

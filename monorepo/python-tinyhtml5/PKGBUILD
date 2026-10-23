@@ -1,0 +1,33 @@
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=python-tinyhtml5
+_pyname=${pkgname#python-}
+pkgver=2.1.0
+pkgrel=1
+pkgdesc='HTML parser based on the WHATWG HTML specification'
+arch=(any)
+url="https://github.com/CourtBouillon/$_pyname"
+license=(MIT)
+depends=(python-webencodings)
+makedepends=(python-{build,installer,wheel}
+             python-flit-core)
+checkdepends=(python-pytest)
+_archive="$_pyname-$pkgver"
+source=("$url/archive/refs/tags/$pkgver/$_archive.tar.gz")
+sha256sums=('f9a94d1b0463bb109d6035e1c41dfebac1c4de8ebfe99701c473729944498706')
+
+build() {
+	cd "$_archive"
+	python -m build -wn
+}
+
+check() {
+	cd "$_archive"
+	pytest
+}
+
+package() {
+	cd "$_archive"
+	python -m installer -d "$pkgdir" dist/*.whl
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname" LICENSE
+}

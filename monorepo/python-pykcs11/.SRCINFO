@@ -1,0 +1,23 @@
+pkgbase = python-pykcs11
+	pkgdesc = PKCS#11 Wrapper for Python
+	pkgver = 1.5.20
+	pkgrel = 1
+	url = https://github.com/LudovicRousseau/PyKCS11
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = softhsm
+	makedepends = swig
+	depends = libgcc
+	depends = libstdc++
+	depends = glibc
+	depends = opensc
+	depends = python
+	source = git+https://github.com/LudovicRousseau/PyKCS11.git/?signed#tag=1.5.20
+	validpgpkeys = F5E11B9FFE911146F41D953D78A1B4DFE8F9C57E
+	b2sums = 57e4a44f9d0b7d64ca4a9aa2e83483f39165b0a4b02445c906142dd26d92fb48bb635f3ac8c2720e5e01bfc9532766e54e6215e426f81d65c7ead933a8304225
+
+pkgname = python-pykcs11

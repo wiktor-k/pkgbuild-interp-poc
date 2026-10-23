@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-sharing
+pkgver=8.0.3
+pkgrel=1
+pkgdesc='Switchboard Sharing Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-sharing
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  glib2
+  glibc
+  gnome-user-share
+  gtk4
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=8ac4bd21132251924a3d4ad83e3be0fae087b624
+source=(git+https://github.com/elementary/switchboard-plug-sharing.git#tag=${_tag})
+b2sums=('34824f57d4dbc9fe68502374c85fa3ecad2b09c567fa4c5427b9d7cd1c4b2ed92fbd87a400167755098321804fedf5f67d98c4e351b725e06331f00212953199')
+
+pkgver() {
+  cd switchboard-plug-sharing
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-sharing build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

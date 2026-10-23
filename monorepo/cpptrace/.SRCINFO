@@ -1,0 +1,24 @@
+pkgbase = cpptrace
+	pkgdesc = Simple, portable, and self-contained stacktrace library for C++11 and newer
+	pkgver = 1.0.4
+	pkgrel = 2
+	url = https://github.com/jeremy-rifkin/cpptrace
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = git
+	depends = glibc
+	depends = libdwarf
+	depends = libdwarf.so
+	depends = libgcc
+	depends = libgcc_s.so
+	depends = libunwind
+	depends = libunwind.so
+	depends = libstdc++
+	depends = libstdc++.so
+	depends = zstd
+	provides = libcpptrace.so
+	source = git+https://github.com/jeremy-rifkin/cpptrace.git#tag=v1.0.4
+	sha256sums = 765dc193d6281b627d7c228762f3c585e71cb2e9c7d586c1fc93cc358ed8ca9c
+
+pkgname = cpptrace

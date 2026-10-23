@@ -1,0 +1,43 @@
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
+
+pkgname=switchboard-plug-display
+pkgver=8.0.3
+pkgrel=1
+pkgdesc='Switchboard Display Plug'
+arch=(x86_64)
+url=https://github.com/elementary/switchboard-plug-display
+license=(GPL-3.0-only)
+groups=(pantheon)
+depends=(
+  glib2
+  glibc
+  gtk4
+  libadwaita-1.so
+  libgee
+  libgranite-7.so
+  libswitchboard-3.so
+)
+makedepends=(
+  git
+  meson
+  vala
+)
+_tag=dfc173e07e023ae19f19f96aa8e40fe5ef44f593
+source=(git+https://github.com/elementary/switchboard-plug-display.git#tag=${_tag})
+b2sums=('619fcc64607e8cd1e69c1b899d7c3303b8447036b36b20d77bd5b50c5e9e3030241d7ed9c694ece608352d953920833c5e09d5c422e3d77399e86a3939d52871')
+
+pkgver() {
+  cd switchboard-plug-display
+  git describe --tags
+}
+
+build() {
+  arch-meson switchboard-plug-display build
+  ninja -C build
+}
+
+package() {
+  DESTDIR="${pkgdir}" ninja -C build install
+}
+
+# vim: ts=2 sw=2 et:

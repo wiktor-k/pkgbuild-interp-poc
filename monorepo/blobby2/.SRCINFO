@@ -1,0 +1,24 @@
+pkgbase = blobby2
+	pkgdesc = A beach ball game with blobs of goo
+	pkgver = 1.1.1
+	pkgrel = 3
+	url = http://sourceforge.net/projects/blobby/
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = cmake
+	makedepends = boost
+	makedepends = mesa
+	makedepends = zip
+	makedepends = strip-nondeterminism
+	depends = glibc
+	depends = libgl
+	depends = libgcc
+	depends = libstdc++
+	depends = physfs
+	depends = sdl2
+	source = https://downloads.sourceforge.net/blobby/blobby2-linux-1.1.1.tar.gz
+	source = 0001-support-for-clang19.patch
+	sha512sums = 4061de21586ed8404c1cfb5284820e5e0835d10270de12d5e336c1fd9bb080f27a732d9d6cd3a98cbf1eb9d674791d028692f8031b56a9e0be09fcadb2e64c03
+	sha512sums = d381235dc7fb73105dc4eeb71897d2a2b798374a3c1c5603252f15fa7f4c7e9704efe2a76541b7e66e6a773acdbe4c52dd8be35b77a99d1fad5563facf311bf2
+
+pkgname = blobby2

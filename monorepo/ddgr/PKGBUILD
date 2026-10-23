@@ -1,0 +1,24 @@
+# Maintainer: Robin Candau <antiz@archlinux.org>
+# Contributor: Pablo Arias <pabloariasal[at]gmail[dot]com>
+# Contributor: John Jenkins <twodopeshaggy[at]gmail[dot]com>
+
+pkgname=ddgr
+pkgver=2.2
+pkgrel=2
+pkgdesc="DuckDuckGo from the terminal"
+arch=('any')
+url="https://github.com/jarun/ddgr"
+license=('GPL3')
+depends=('python')
+source=("${pkgname}-${pkgver}.tar.gz::${url}/archive/v${pkgver}.tar.gz")
+sha256sums=('a858e0477ea339b64ae0427743ebe798a577c4d942737d8b3460bce52ac52524')
+
+package() {
+	cd "${pkgname}-${pkgver}"
+
+	make PREFIX=/usr DESTDIR="${pkgdir}" install
+
+	install -Dm 644 "auto-completion/fish/${pkgname}.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/${pkgname}.fish"
+	install -Dm 644 "auto-completion/bash/${pkgname}-completion.bash" "${pkgdir}/usr/share/bash-completion/completions/${pkgname}"
+	install -Dm 644 "auto-completion/zsh/_${pkgname}" "${pkgdir}/usr/share/zsh/site-functions/_${pkgname}"
+}

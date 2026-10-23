@@ -1,0 +1,20 @@
+pkgbase = libgnome-games-support-2
+	pkgdesc = Code shared between GNOME games
+	pkgver = 2.0.2
+	pkgrel = 1
+	url = https://gitlab.gnome.org/GNOME/libgnome-games-support
+	arch = x86_64
+	license = LGPL-3.0-or-later
+	makedepends = git
+	makedepends = meson
+	makedepends = vala
+	depends = glib2
+	depends = glibc
+	depends = gtk4
+	depends = libgee
+	provides = libgnome-games-support-2.so
+	source = git+https://gitlab.gnome.org/GNOME/libgnome-games-support.git#tag=2.0.2
+	validpgpkeys = EF033B6B1044EEE7F743A1737F71B64279363298
+	b2sums = a1291f218e492a87ffe03a41c0346e434763dfe5f39da387cc7f486b346cb50770d65835ae52adab5de2c5aacedeb6cb388311afb6bf0b280cfb1de91d83997c
+
+pkgname = libgnome-games-support-2

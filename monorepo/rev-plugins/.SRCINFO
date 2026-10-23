@@ -1,0 +1,22 @@
+pkgbase = rev-plugins
+	pkgdesc = LADSPA stereo and ambisonic reverb plugin based on zita-rev1
+	pkgver = 0.8.1
+	pkgrel = 4
+	url = https://kokkinizita.linuxaudio.org/linuxaudio/ladspa/
+	arch = x86_64
+	groups = ladspa-plugins
+	groups = pro-audio
+	license = GPL-3.0-or-later
+	makedepends = ladspa
+	depends = glibc
+	depends = ladspa-host
+	depends = libgcc
+	depends = libstdc++
+	source = https://kokkinizita.linuxaudio.org/linuxaudio/downloads/REV-plugins-0.8.1.tar.bz2
+	source = rev-plugins-0.8.1-makefile.patch
+	sha512sums = 1c5732099f1f7b345f0ba509aebc4820bdd93e7a5a8bf54c010da34b89f95a1a5d1aff1447020c0f52c5de05f11b1c8381adcf034d68a17b90235229ad6bcad6
+	sha512sums = d3184a8d195cb1883827d36a757e81ff31fc5afacc8267ccc2dca35050321995564bb2ea8bce301d8aa4694d74c8501757851baaafd0ead1870dfe853a6b52b0
+	b2sums = 01bad9b663fa3b4f49209a174486758c03945b8e97e455e01269213be885167fbec33e6ada251c6c18e03d78573494bd67ec3ad6d2860f7f159e73bb72bc4635
+	b2sums = 51219951ad0a452a6ab6dfb5c37f4615d7ff3f28c82d704359d5bc4b895426c454bcd9ec85df7c7c08f2de3f83cb294573aa130639ae915da58665e8af7cfe83
+
+pkgname = rev-plugins

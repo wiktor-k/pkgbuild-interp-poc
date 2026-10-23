@@ -1,0 +1,56 @@
+# Maintainer: Christian Hesse <mail@eworm.de>
+
+pkgname=yubikey-personalization
+_shortname=ykpers
+pkgver=1.20.0
+pkgrel=5
+pkgdesc='Yubico YubiKey Personalization library and tool'
+arch=('x86_64')
+url='https://github.com/Yubico/yubikey-personalization'
+license=('BSD')
+depends=('libusb' 'json-c' 'yubico-c-client')
+# We need systemd to be installed for udev version check
+makedepends=('systemd')
+provides=('ykpers')
+conflicts=('ykpers')
+validpgpkeys=('0A3B0262BCA1705307D5FF06BCA00FD4B2168C0A') # Klas Lindfors <klas@yubico.com>
+source=("https://developers.yubico.com/${pkgname}/Releases/${_shortname}-${pkgver}.tar.gz"{,.sig}
+        '0001-fix-boolean-value-with-json-c-0.14.patch::https://github.com/Yubico/yubikey-personalization/commit/0aa2e2cae2e1777863993a10c809bb50f4cde7f8.patch'
+        '0002-make-header-declarations-extern.patch::https://github.com/Yubico/yubikey-personalization/commit/09ea16d9e2030e4da6ad00c1e5147e962aa7ff84.patch')
+sha256sums=('0ec84d0ea862f45a7d85a1a3afe5e60b8da42df211bb7d27a50f486e31a79b93'
+            'SKIP'
+            '4dbf77fded5a39d5b8938ba890c21663b0a5be983095dec3789a560da95f6ffa'
+            'e99639fa176a260fab08cfa8ed10dd90a0b44c579aaf448e16cd63c52e6eafab')
+
+prepare() {
+  cd "${_shortname}-${pkgver}"
+
+  patch -Np1 < ../0001-fix-boolean-value-with-json-c-0.14.patch
+  patch -Np1 < ../0002-make-header-declarations-extern.patch
+
+  autoreconf -fvi
+}
+
+build() {
+  cd "${_shortname}-${pkgver}"
+
+  ./configure \
+    --prefix=/usr \
+    --with-udevrulesdir=/usr/lib/udev/rules.d/
+  make
+}
+
+check() {
+  cd "${_shortname}-${pkgver}"
+
+  make check
+}
+
+package() {
+  cd "${_shortname}-${pkgver}"
+
+  install -D -m0644 COPYING "${pkgdir}/usr/share/licenses/yubikey-personalization/COPYING"
+  install -D -m0644 README "${pkgdir}/usr/share/doc/yubikey-personalization/README"
+  make DESTDIR="${pkgdir}/" install
+}
+

@@ -1,0 +1,25 @@
+pkgbase = python-internetarchive
+	pkgdesc = A Python and Command-Line Interface to Archive.org
+	pkgver = 5.11.1
+	pkgrel = 1
+	url = https://github.com/jjjake/internetarchive
+	arch = any
+	license = AGPL-3.0-or-later
+	checkdepends = python-pytest
+	checkdepends = python-responses
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-wheel
+	depends = python
+	depends = python-jsonpatch
+	depends = python-requests
+	depends = python-tqdm
+	depends = python-urllib3
+	optdepends = cython: speedups
+	optdepends = python-gevent: concurrent downloads
+	optdepends = python-ujson: faster json parsing
+	source = https://github.com/jjjake/internetarchive/archive/v5.11.1/python-internetarchive-5.11.1.tar.gz
+	b2sums = 4717ced157d45e8dbd2a5ea156901f42631d76934f80677b126f2e3c5b2e759469454d4b8fdaee8f6ec25779c1785ecb4a67857c3710379f247cb2d55699221f
+
+pkgname = python-internetarchive

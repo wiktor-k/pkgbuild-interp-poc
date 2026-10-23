@@ -1,0 +1,30 @@
+pkgbase = vulkan-docs
+	pkgdesc = Vulkan and Vulkan SC API Documentation
+	pkgver = 1.4.363
+	pkgrel = 1
+	epoch = 1
+	url = https://www.vulkan.org/
+	arch = any
+	groups = vulkan-devel
+	license = Apache-2.0 OR MIT
+	license = LicenseRef-KhronosSpecCopyright
+	makedepends = cmake
+	makedepends = dblatex
+	makedepends = gdk-pixbuf2
+	makedepends = ghostscript
+	makedepends = git
+	makedepends = graphicsmagick
+	makedepends = jbigkit
+	makedepends = ninja
+	makedepends = nodejs
+	makedepends = npm
+	makedepends = pango
+	makedepends = python-pyparsing
+	makedepends = python3
+	makedepends = rubygems
+	makedepends = source-highlight
+	source = git+https://github.com/KhronosGroup/Vulkan-Docs#tag=v1.4.363
+	b2sums = f8a6fe49e73339f88923826554bfd7fb6b67c9fb5f0531817a47657bbc61488f734edf6a26016cfe3f259614f506f90fcd80792137a6935b9e585600e8bc85d7
+
+pkgname = vulkan-html-docs
+	pkgdesc = Vulkan and Vulkan SC API Documentation - HTML

@@ -1,0 +1,19 @@
+pkgbase = vue-language-tools
+	pkgdesc = Language server for Vue
+	pkgver = 3.3.13
+	pkgrel = 1
+	url = https://github.com/vuejs/language-tools/tree/master/packages/language-server
+	arch = any
+	license = MIT
+	checkdepends = npm
+	makedepends = git
+	makedepends = pnpm
+	depends = nodejs
+	optdepends = typescript-language-server: provides a typescript lsp
+	provides = vue-typescript-plugin
+	replaces = vue-typescript-plugin
+	options = !emptydirs
+	source = vue-language-tools::git+https://github.com/vuejs/language-tools.git#tag=v3.3.13
+	b2sums = 1c4fddc40e53cdf57b9dc1d5878d1a9ef704873f184ec7160b82a10a0700a1997424926120d932a9a109a9bb23743ae3da3e26072c731ad216283e1658482816
+
+pkgname = vue-language-server

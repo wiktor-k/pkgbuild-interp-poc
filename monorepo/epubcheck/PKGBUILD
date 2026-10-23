@@ -1,0 +1,59 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+
+pkgname=epubcheck
+pkgver=5.4.0
+pkgrel=1
+pkgdesc="The conformance checker for EPUB publications"
+arch=(any)
+url="https://github.com/w3c/epubcheck"
+license=(BSD-3-Clause)
+_java_version=21
+depends=(
+  bash
+  java-runtime=$_java_version
+)
+makedepends=(
+  maven
+  strip-nondeterminism
+)
+source=(
+  $pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz
+  $pkgname.sh
+  LICENSE
+)
+sha512sums=('0e5f014d070fbe6efed5c3c03106e95da420143994bfa770663003582cc97b67b847e672786932bf1075d3822d42968a1e11acf4c4e5163df4a240e75e7d98df'
+            'bbb278800c7729c8c99f25b90b4138b489e65d6f8556fb09f50e3c49b33458838ff0e29c98aa767f0e838c9de7a677e7198d2d78cc89d09aa8c3fee4a11531c8'
+            'a33658d9271e5c537ccd41bf540b463ad2a5eca4a060c80486ff42a736f0aa042d10436e7177c34d792177cb11285243dee1f31c4df54fb0bfaabbc306406930')
+b2sums=('c17f7c3b26cd1152fd2008012c84f00c0c4bb51bf965241a46b88668652426e552b28e7972e6a4e4d402981c17c9ef8ca4f963222d3e8807570e04c6c73a7e84'
+        'da868aa7f6dfefd788d1d3378ca1107025ee0ea0b915fe0238f9c3777af40916817b0497e791379e96b3a7c2f19523be71fc248dfc491733bfe77fea473a19fc'
+        'a29664104e1ee73ca0aee1d633e9095d92a57c92787f8d8740bdb7211ba3205782ed8677f539bdb8cae3dd75a3694be3132e185fa3fc4b3f401e1f88eb776101')
+
+prepare() {
+  sed -e "s/JAVA_VERSION/$_java_version/" $pkgname.sh > $pkgname
+}
+
+build() {
+  local maven_options=(
+    clean
+    package
+    -D maven.test.skip=true  # tests fail on trying to use deprecated features
+    -D maven.repo.local="./"
+  )
+
+  cd $pkgname-$pkgver
+  mvn "${maven_options[@]}"
+
+  # Strip non-deterministic information from the jar file (e.g. timestamps and filesystem ordering)
+  # Required for reproducible builds
+  find . -name "$pkgname.jar" -exec strip-nondeterminism {} +
+}
+
+package() {
+  cd $pkgname-$pkgver
+  install -vDm 755 "../$pkgname" -t "$pkgdir/usr/bin/"
+  install -vDm 644 target/$pkgname.jar -t "$pkgdir/usr/share/java/$pkgname/"
+  install -vDm 644 target/lib/*.jar -t "$pkgdir/usr/share/java/$pkgname/lib/"
+  install -vDm 644 {CHANGELOG,README}.md -t "$pkgdir/usr/share/doc/$pkgname/"
+  install -vDm 644 LICENSE.md -t "$pkgdir/usr/share/licenses/$pkgname/"
+  install -vDm 644 ../LICENSE "$pkgdir/usr/share/licenses/$pkgname/0BSD.txt"
+}

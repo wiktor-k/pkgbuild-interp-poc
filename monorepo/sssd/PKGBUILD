@@ -1,0 +1,137 @@
+# Maintainer: Massimiliano Torromeo <massimiliano.torromeo@gmail.com>
+# Maintainer: Mantas M. <grawity@gmail.com>
+
+pkgname=sssd
+pkgver=2.13.1
+pkgrel=1
+pkgdesc="System Security Services Daemon"
+arch=('x86_64')
+url="https://github.com/SSSD/sssd"
+license=('GPL-3.0-or-later')
+depends=(
+  'bind'          # for nsupdate
+  'c-ares'
+  'cyrus-sasl-gssapi'
+  'ding-libs'
+  'libnl'
+  'libunistring'
+  'smbclient'     # for libndr-nbt
+  'nfsidmap'
+  'jansson'
+  'jose'
+  'libtevent.so'
+  'libldb.so'
+  'curl'
+  'pcre2'
+  'libfido2'      # for passkeys
+)
+makedepends=(
+  'docbook-xsl'
+  'doxygen'
+  'python'
+  'samba'         # for libndr-nbt headers
+  'systemd'
+  'tevent'
+  'ldb'
+  'bc'
+  'python-setuptools'
+)
+checkdepends=(
+  'check'
+  'cmocka'
+  'libfaketime'
+  'openssh'
+  'softhsm'
+  'valgrind'
+)
+options=('!lto')
+install=sssd.install
+backup=('etc/logrotate.d/sssd')
+source=("https://github.com/SSSD/$pkgname/releases/download/$pkgver/$pkgname-$pkgver.tar.gz"{,.asc}
+        "sssd-perms.tmpfile")
+sha512sums=('c1c00ada7e95bee7dceb55210643cc50c60ad6a930ef1662bf27cb641df0bace8e9f99d2ea9d2cae1681e3221d3bb1ad1635850593e0a87d8b2eb9826b67d574'
+            'SKIP'
+            '21646ea5900340c1b0a69c79fc72b0d3e360d56e04dc0daf7947024a420d214a931365e684e8f7cfd37c959327e6909ad4c0d6c3a8186153bca870f508dad486')
+validpgpkeys=('C13CD07FFB2DB1408E457A3CD3D21B2910CF6759')
+
+prepare() {
+  cd "$srcdir/$pkgname-$pkgver"
+  for f in "${source[@]}"; do
+    f=$(basename "$f")
+    if [[ $f == *.patch ]]; then
+      patch -p1 < "$srcdir/$f"
+    fi
+  done
+
+  sed -i 's#/var/run/#/run/#' src/examples/logrotate
+  sed -i 's#^u #u! #' contrib/sssd.sysusers
+
+  # Fix issue with autoconf 2.70+
+  sed '/AM_PROG_CC_C_O/ i AC_PROG_CPP' -i configure.ac
+
+  # dbus policy files in /usr/share/dbus-1
+  sed -i 's/^dbuspolicydir = $(sysconfdir)/dbuspolicydir = $(datadir)/' Makefile.in
+
+  # remove flaky network test
+  sed '/fail_over-tests/d' -i Makefile.am
+  autoreconf -fiv
+}
+
+build() {
+  cd "$srcdir/$pkgname-$pkgver"
+  ./configure \
+    --prefix=/usr                                 \
+    --sbindir=/usr/bin                            \
+    --sysconfdir=/etc                             \
+    --localstatedir=/var                          \
+    --runstatedir=/run                            \
+    --libexecdir=/usr/lib/sssd                    \
+    --datadir=/usr/share                          \
+    --enable-pammoddir=/usr/lib/security          \
+    --enable-pac-responder                        \
+    --with-initscript=systemd                     \
+    --with-os=fedora                              \
+    --without-python2-bindings                    \
+    --with-python3-bindings                       \
+    --with-syslog=journald                        \
+    --with-sssd-user=sssd                         \
+    --with-subid                                  \
+    --with-passkey                                \
+    --without-selinux                             \
+    --with-tmpfilesdir=/usr/lib/tmpfiles.d        \
+    --with-systemdunitdir=/usr/lib/systemd/system \
+    --with-ldb-lib-dir=/usr/lib/samba/ldb \
+    ;
+  sed -i '/\<HAVE_KRB5_SET_TRACE_CALLBACK\>/d' config.h
+  make
+}
+
+check() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make check
+}
+
+package() {
+  cd "$srcdir/$pkgname-$pkgver"
+  make -j1 DESTDIR="$pkgdir/" install
+  rm -rf "$pkgdir"/etc/rc.d
+  rm -rf "$pkgdir"/lib
+  rm -rf "$pkgdir"/run
+  rm -f "$pkgdir"/usr/lib/ldb/modules/ldb/memberof.la
+  find "$pkgdir"/usr -depth -type d \
+    -exec rmdir --ignore-fail-on-non-empty {} \;
+
+  install -Dm0644 src/examples/logrotate "$pkgdir"/etc/logrotate.d/sssd
+  install -Dm0644 contrib/sssd.sysusers "$pkgdir"/usr/lib/sysusers.d/sssd.conf
+  install -Dm0644 "$srcdir"/sssd-perms.tmpfile "$pkgdir"/usr/lib/tmpfiles.d/sssd-perms.conf
+
+  setcap cap_dac_read_search,cap_setgid,cap_setuid=p "$pkgdir"/usr/lib/sssd/sssd/krb5_child
+  setcap cap_dac_read_search=p "$pkgdir"/usr/lib/sssd/sssd/ldap_child
+  setcap cap_dac_read_search=p "$pkgdir"/usr/lib/sssd/sssd/sssd_pam
+
+  cd "$srcdir"
+  rm -rf "$pkgdir/etc/systemd" # remove the drop-in
+  rm -rf "$pkgdir/var/run"
+}
+
+# vim: ts=2:sw=2:et:nowrap

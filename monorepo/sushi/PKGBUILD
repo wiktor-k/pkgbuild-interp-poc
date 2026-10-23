@@ -1,0 +1,64 @@
+# Maintainer: Fabian Bornschein <fabiscafe@archlinux.org>
+# Maintainer: Jan Alexander Steffens (heftig) <heftig@archlinux.org>
+# Contributor: Ionut Biru <ibiru@archlinux.org>
+
+pkgname=sushi
+pkgver=51.2
+pkgrel=1
+pkgdesc="A quick previewer for Nautilus"
+url="https://gitlab.gnome.org/GNOME/sushi"
+arch=(x86_64)
+license=(GPL-2.0-or-later)
+depends=(
+  cairo
+  freetype2
+  fribidi
+  gjs
+  glib2
+  glibc
+  glycin-gtk4
+  gst-plugins-base-libs
+  gstreamer
+  gtk4
+  harfbuzz
+  libgcc
+  libx11
+  pango
+  papers
+)
+makedepends=(
+  blueprint-compiler
+  git
+  gobject-introspection
+  meson
+  webkitgtk-6.0
+)
+optdepends=(
+  'libreoffice: OpenDocument formats'
+  'webkitgtk-6.0: Render HTML files'
+)
+groups=(gnome)
+# sushi tags use SSH signatures which makepkg doesn't understand
+source=(
+  "git+$url.git#tag=${pkgver/[a-z]/.&}"
+)
+b2sums=('f911a6ad955c7cf5e409779051e36c7d6f08e5d65773355bd34b72db245aad7c2316cc4748229f10b2497c8bd46b02d581c3ae86cd0e9129fd90eec63682f7ba')
+
+prepare() {
+  cd sushi
+}
+
+build() {
+  arch-meson sushi build
+  meson compile -C build
+}
+
+check() {
+  meson test -C build --print-errorlogs
+}
+
+package() {
+  meson install -C build --no-rebuild --destdir "$pkgdir"
+}
+
+# vim:set sw=2 sts=-1 et:

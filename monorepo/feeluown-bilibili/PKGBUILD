@@ -1,0 +1,25 @@
+# Maintainer: Felix Yan <felixonmars@archlinux.org>
+# Contributor: Bruce Zhang <zttt183525594@gmail.com>
+
+pkgname=feeluown-bilibili
+pkgver=0.5.5
+pkgrel=1
+pkgdesc="Bilibili provider for FeelUOwn"
+arch=('any')
+url="https://github.com/feeluown/feeluown-bilibili"
+license=('GPL-3.0-only')
+depends=('feeluown' 'python-cachetools' 'python-beautifulsoup4' 'python-pycryptodome')
+makedepends=('git' 'python-build' 'python-installer' 'python-poetry-core')
+groups=('feeluown-full')
+source=("git+https://github.com/feeluown/feeluown-bilibili.git#tag=v$pkgver")
+sha512sums=('eabf4a07bdcfc1debdc7e7814df202da4b2ebffe9eb8b393604295de0a436692b7281bdc83be3c97895b1b261c639519f98cd06d411d83803893a5c915f46f0c')
+
+build() {
+  cd feeluown-bilibili
+  python -m build -nw
+}
+
+package() {
+  cd feeluown-bilibili
+  python -m installer --destdir="$pkgdir" dist/*.whl
+}

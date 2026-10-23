@@ -1,0 +1,22 @@
+pkgbase = ruby-irb
+	pkgdesc = Interactive Ruby command-line tool for REPL (Read Eval Print Loop).
+	pkgver = 1.15.0
+	pkgrel = 1
+	url = https://github.com/ruby/irb
+	arch = any
+	license = RUBY
+	license = BSD-2-Clause
+	checkdepends = ruby-debug
+	checkdepends = ruby-rake
+	checkdepends = ruby-test-unit
+	checkdepends = ruby-test-unit-ruby-core
+	checkdepends = ruby-tracer
+	makedepends = ruby-bundler
+	depends = ruby
+	depends = ruby-rdoc
+	depends = ruby-reline
+	options = !emptydirs
+	source = https://github.com/ruby/irb/archive/v1.15.0/ruby-irb-1.15.0.tar.gz
+	sha512sums = 0df3d4d942833ffddae8cde197d3bbc0171b8e3b9a9699d59450050b19cb4ebdbe9d042bcbb9cb9d1051fc63e4051f645a0c36866d6a89158be48fa591b2d362
+
+pkgname = ruby-irb

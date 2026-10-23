@@ -1,0 +1,25 @@
+pkgbase = refine
+	pkgdesc = Tweak various aspects of GNOME
+	pkgver = 0.8.0
+	pkgrel = 1
+	url = https://tesk.page/refine/
+	arch = any
+	license = GPL-3.0-or-later
+	makedepends = appstream
+	makedepends = blueprint-compiler
+	makedepends = git
+	makedepends = meson
+	depends = dconf
+	depends = glib2
+	depends = gtk4
+	depends = hicolor-icon-theme
+	depends = libadwaita
+	depends = libportal
+	depends = pango
+	depends = python
+	depends = python-gobject
+	source = git+https://gitlab.gnome.org/TheEvilSkeleton/Refine.git?signed#tag=0.8.0
+	validpgpkeys = 78EA2EFEF2F55C87D776F0BAFA9B0DB2217599CA
+	b2sums = 23e79d7092ec2077aff2a5c6f1bf7e0a6bc5fc68c42d29d3e56a9a29ef27530fb6485f2372cc1aae366704db129661a49d9dd0f118f7bff896364eefc6d92724
+
+pkgname = refine

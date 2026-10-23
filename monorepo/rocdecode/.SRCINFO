@@ -1,0 +1,21 @@
+pkgbase = rocdecode
+	pkgdesc = High performance video decode SDK for AMD hardware
+	pkgver = 7.2.4
+	pkgrel = 2
+	url = https://rocm.docs.amd.com/projects/rocDecode/en/latest/
+	arch = x86_64
+	license = MIT
+	makedepends = cmake
+	makedepends = rocm-cmake
+	makedepends = rocm-llvm
+	depends = ffmpeg
+	depends = glibc
+	depends = hip-runtime-amd
+	depends = libgcc
+	depends = libva
+	depends = mesa
+	depends = rocm-core
+	source = rocdecode-7.2.4.tar.gz::https://github.com/ROCm/rocDecode/archive/refs/tags/rocm-7.2.4.tar.gz
+	sha256sums = 3ddeeea3418683673b95f81a4e72ba594daa4fbbfeb5260844994dfbbd12d0dd
+
+pkgname = rocdecode

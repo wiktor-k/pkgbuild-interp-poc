@@ -1,0 +1,59 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=glide
+pkgver=0.6.9
+pkgrel=1
+pkgdesc='Simple and minimalistic media player based on GStreamer and GTK'
+arch=(x86_64)
+url='https://philn.github.io/glide/'
+license=(MIT)
+depends=(
+  glib2
+  glibc
+  graphene
+  gst-plugins-bad
+  gst-plugins-bad-libs
+  gst-plugins-base
+  gst-plugins-base-libs
+  gst-plugins-good
+  gstreamer
+  gtk4
+  hicolor-icon-theme
+  libadwaita
+  libgcc
+)
+makedepends=(
+  git
+  meson
+  rust
+)
+optdepends=(
+  'gst-libav: Extra media codecs'
+  'gst-plugins-ugly: Extra media codecs'
+)
+source=("git+https://github.com/philn/glide.git?signed#tag=$pkgver")
+b2sums=(c00c359f7e53f1bf6166f8d9b3de4b8410f8082736bb583bd7595fdfca989b6f1dff4b982131336c5734489fe2b29cb64e76a4dd418abc788fdd79c025cad031)
+validpgpkeys=(814AB0089155A90597F4EB0ADB1624C7A2F2A94B) # Philippe Normand <phil@base-art.net>
+
+prepare() {
+  cd $pkgname
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  arch-meson $pkgname build
+
+  CARGO_HOME="$srcdir/build/cargo-home" \
+    CARGO_PROFILE_RELEASE_LTO=true \
+    CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1 \
+    CARGO_PROFILE_RELEASE_DEBUG=2 \
+    CARGO_PROFILE_RELEASE_STRIP=false \
+    meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  install -Dm644 -t "$pkgdir/usr/share/licenses/$pkgname/" $pkgname/LICENSE
+}

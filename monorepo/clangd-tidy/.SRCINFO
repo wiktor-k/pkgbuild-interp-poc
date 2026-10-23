@@ -1,0 +1,21 @@
+pkgbase = clangd-tidy
+	pkgdesc = A faster alternative to clang-tidy
+	pkgver = 1.1.1
+	pkgrel = 1
+	url = https://github.com/lljbash/clangd-tidy
+	arch = any
+	license = MIT
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-setuptools
+	makedepends = python-setuptools-scm
+	depends = clang
+	depends = python
+	depends = python-attrs
+	depends = python-cattrs
+	depends = python-typing_extensions
+	optdepends = python-tqdm: for progress bar support
+	source = clangd-tidy-1.1.1.tar.gz::https://github.com/lljbash/clangd-tidy/archive/refs/tags/v1.1.1.tar.gz
+	b2sums = 98ce32d44a2c511f461f656c410961cafb821b85d053161e8b5e3df30e6d17000ed9e558f8cff446dcf5e441590a36066fe26f9716f2f5a44e4e428220404341
+
+pkgname = clangd-tidy

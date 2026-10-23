@@ -1,0 +1,42 @@
+# Maintainer: Balló György <ballogyor+arch at gmail dot com>
+
+pkgname=hana
+pkgver=1.0.0
+pkgrel=4
+pkgdesc='Application to capture thumbnails from video files'
+arch=(x86_64)
+url='https://apps.kde.org/hana/'
+license=(GPL-3.0-or-later)
+depends=(
+  ffmpeg
+  glibc
+  hicolor-icon-theme
+  kconfig
+  kcoreaddons
+  ki18n
+  kio
+  kirigami
+  libstdc++
+  qt6-base
+  qt6-declarative
+)
+makedepends=(
+  cmake
+  extra-cmake-modules
+  git
+  ninja
+)
+source=("git+https://invent.kde.org/multimedia/hana.git?signed#tag=v$pkgver")
+b2sums=(a4d0ee293d89e84dc3af999e366985d160cc576718737f78a98eb5f3186b01e749f5eded60e9d8a456e7f0a9e1d86322e00b71e21735ba47a69ce59e331d60f7)
+validpgpkeys=(4E421C6554B89766DF9B7A37E12AB207C8755905) # George Florea Bănuș <georgefb899@gmail.com>
+
+build() {
+  cmake -S $pkgname -B build -G Ninja \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

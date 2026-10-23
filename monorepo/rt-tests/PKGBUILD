@@ -1,0 +1,34 @@
+# Maintainer: David Runge <dvzrv@archlinux.org>
+# Contributor: Joakim Hernberg <jhernberg at alchemy dot lu>
+
+pkgname=rt-tests
+pkgver=2.11
+pkgrel=1
+pkgdesc="A collection of latency testing tools for the linux(-rt) kernel"
+arch=(x86_64)
+url="https://git.kernel.org/pub/scm/utils/rt-tests/rt-tests.git/"
+license=(GPL-2.0-or-later)
+groups=(realtime)
+depends=(glibc)
+makedepends=(
+  numactl
+  python-setuptools
+)
+optdepends=(
+  'bash: for determine_maximum_mpps.sh'
+  'numactl: for cyclictest, oslat and signaltest'
+  'python: for get_cyclictest_snapshot and hwlatdetect'
+)
+source=($url/snapshot/$pkgname-$pkgver.tar.gz)
+sha512sums=('3daa699ee75493fe5debaf964a3f458ef042e0f4e1e69d3e94e3c319a28ad4dacef7d22f86e898d1d1141edce553ca5de1402bca2f10dfc0bc39dff29595de88')
+b2sums=('355424ce87cd41dbdbafaee6c46f86efdfcfc657b8a7a4458f9e460fe44296334815c1eee5fb99bc9498eb860068840739ca3dfd4e748ffb977424b4fa0b3b60')
+
+build() {
+  export PYLIB=$(python -c 'import distutils.sysconfig;  print(distutils.sysconfig.get_python_lib())')
+  make -C $pkgname-$pkgver
+}
+
+package() {
+  make prefix=/usr DESTDIR="$pkgdir" install -C $pkgname-$pkgver
+  install -vDm 644 $pkgname-$pkgver/{MAINTAINERS,README.markdown} -t "$pkgdir/usr/share/doc/$pkgname/"
+}

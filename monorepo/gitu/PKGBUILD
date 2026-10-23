@@ -1,0 +1,52 @@
+# Maintainer: Orhun Parmaksız <orhun@archlinux.org>
+# Maintainer: Caleb Maclennan <caleb@alerque.com>
+
+pkgname=gitu
+pkgver=0.43.0
+pkgrel=2
+pkgdesc='A TUI Git client inspired by Magit'
+arch=(x86_64)
+url="https://github.com/altsem/$pkgname"
+license=(MIT)
+depends=(glibc # libc.so libm.so
+         libgcc libgcc_s.so
+         libgit2 libgit2.so)
+makedepends=(cargo)
+checkdepends=(git)
+_archive="$pkgname-$pkgver"
+source=("$url/archive/refs/tags/v$pkgver/$_archive.tar.gz")
+sha256sums=('4cc89732b2fa4fee07b2db5ce4cf325577fd195995e70e11c86b9bc1a6a2e114')
+
+_srcenv() {
+	cd "$_archive"
+	export CARGO_PROFILE_RELEASE_DEBUG=2
+	export CARGO_PROFILE_RELEASE_STRIP=false
+	export CARGO_HOME="$srcdir"
+	export CARGO_PROFILE_RELEASE_LTO=true
+	export CARGO_PROFILE_RELEASE_CODEGEN_UNITS=1
+	export CARGO_PROFILE_RELEASE_OPT_LEVEL=3
+	CFLAGS+=' -ffat-lto-objects'
+	export LIBGIT2_NO_VENDOR=1
+}
+
+prepare() {
+	_srcenv
+	cargo fetch --locked --target host-tuple
+}
+
+build() {
+	_srcenv
+	cargo build --frozen --release
+}
+
+# check() {
+# 	_srcenv
+# 	cargo test --frozen
+# }
+
+package() {
+	cd "$pkgname-$pkgver"
+	install -Dm0755 -t "$pkgdir/usr/bin/" "target/release/$pkgname"
+	install -Dm0644 -t "$pkgdir/usr/share/doc/$pkgname/" README.md
+	install -Dm0644 -t "$pkgdir/usr/share/licenses/$pkgname/" LICENSE
+}

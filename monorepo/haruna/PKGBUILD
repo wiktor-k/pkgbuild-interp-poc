@@ -1,0 +1,49 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: prg <prg _at_ xannode _dot_ com>
+# Contributor: Nico <d3sox at protonmail dot com>
+# Contributor: Caltlgin Stsodaat <contact@fossdaily.xyz>
+
+pkgname=haruna
+pkgver=1.8.1
+pkgrel=2
+pkgdesc='Video player built with Qt/QML on top of libmpv'
+arch=(x86_64)
+url='https://apps.kde.org/haruna/'
+license=(GPL-3.0-or-later)
+depends=(ffmpeg
+         glibc
+         hicolor-icon-theme
+         kcolorscheme
+         kconfig
+         kcoreaddons
+         kcrash
+         kdeclarative
+         kdsingleapplication
+         kfilemetadata
+         ki18n
+         kio
+         kirigami
+         kitemmodels # QML
+         kservice
+         kwindowsystem
+         libstdc++
+         mpvqt
+         qqc2-desktop-style
+         qt6-5compat
+         qt6-base
+         qt6-declarative)
+makedepends=(extra-cmake-modules)
+optdepends=('yt-dlp: YouTube support')
+source=(https://download.kde.org/stable/$pkgname/$pkgver/$pkgname-$pkgver.tar.xz{,.sig})
+sha256sums=('01f154e3161292da606899c3017f863362e00bb2402a2796be5e8d6849fc4b4b'
+            'SKIP')
+validpgpkeys=(4E421C6554B89766DF9B7A37E12AB207C8755905) # George Florea Bănuș <georgefb899@gmail.com>
+
+build() {
+  cmake -B build -S $pkgname-$pkgver
+  cmake --build build
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

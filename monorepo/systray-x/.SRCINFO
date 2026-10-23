@@ -1,0 +1,33 @@
+pkgbase = systray-x
+	pkgdesc = A system tray extension for Thunderbird
+	pkgver = 0.9.12
+	pkgrel = 1
+	url = https://github.com/Ximi1970/systray-x
+	arch = x86_64
+	license = MPL-2.0
+	makedepends = git
+	makedepends = zip
+	makedepends = unzip
+	makedepends = libx11
+	makedepends = kstatusnotifieritem
+	makedepends = strip-nondeterminism
+	depends = qt6-base
+	depends = thunderbird
+	source = systray-x-0.9.12.tar.gz::https://github.com/Ximi1970/systray-x/archive/0.9.12.tar.gz
+	source = Makefile.patch
+	source = binary_path.patch
+	sha256sums = d67f70251f6eadad45ebfe8b46b5a817405a2c0e6478a58ff55ae241ad5322cb
+	sha256sums = 62affd86e6dbad6e9cf851768d99fd79f76f65ac2fd5e45ef5e89c5dcb63dbab
+	sha256sums = aa0a5a7e8b062452416ec9b4472ee4d1a9d7d17fd5ecf94698c557cd504514da
+
+pkgname = systray-x-common
+	pkgdesc = A system tray extension for Thunderbird - Common version
+	optdepends = gnome-shell-extension-appindicator: Gnome integration
+	provides = systray-x
+	conflicts = systray-x
+
+pkgname = systray-x-kde
+	pkgdesc = A system tray extension for Thunderbird - KDE version
+	depends = kstatusnotifieritem
+	provides = systray-x
+	conflicts = systray-x

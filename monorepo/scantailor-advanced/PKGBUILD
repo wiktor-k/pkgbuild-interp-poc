@@ -1,0 +1,31 @@
+# Maintainer: Sergej Pupykin <arch+pub@sergej.pp.ru>
+# Previous maintainer: Martin Hasoň <martin.hason@gmail.com>
+
+pkgname=scantailor-advanced
+pkgver=1.2.1
+pkgrel=1
+pkgdesc="An interactive post-processing tool for scanned pages."
+arch=("x86_64")
+url="https://github.com/ScanTailor-Advanced/scantailor-advanced"
+license=("GPL3")
+depends=("qt6-base" "qt6-svg" "hicolor-icon-theme" "libpng>=1.0.0" "libtiff>=4.0.0" "boost-libs")
+makedepends=("cmake>=3.9.0" "qt6-tools" "boost>=1.0.0" "vulkan-headers")
+conflicts=("scantailor")
+replaces=("scantailor")
+source=("https://github.com/ScanTailor-Advanced/scantailor-advanced/archive/v$pkgver/$pkgname-$pkgver.tar.gz")
+sha256sums=('9eb20238378151e32055f8f5c6d67cf0b4c93b77eba3f11266656879c41ac009')
+
+prepare() {
+# Don't build with march=native
+  sed -e '/native/d' -i $pkgname-$pkgver/CMakeLists.txt
+}
+
+build() {
+    cmake -B build -S $pkgname-$pkgver \
+     -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir/" cmake --install build
+}

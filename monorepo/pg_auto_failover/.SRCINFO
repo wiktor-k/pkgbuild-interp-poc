@@ -1,0 +1,22 @@
+pkgbase = pg_auto_failover
+	pkgdesc = extension and service for PostgreSQL that monitors and manages automated failover for a Postgres cluster.
+	pkgver = 2.2
+	pkgrel = 2
+	url = https://github.com/citusdata/pg_auto_failover
+	arch = x86_64
+	license = PostgreSQL
+	makedepends = clang
+	makedepends = llvm
+	depends = postgresql
+	depends = ncurses
+	depends = postgresql-libs
+	depends = glibc
+	optdepends = python-pygments: /usr/share/doc/pg_auto_failover/conf.py
+	optdepends = python-sphinx: /usr/share/doc/pg_auto_failover/conf.py
+	options = !buildflags
+	source = pg_auto_failover-2.2.tar.gz::https://github.com/citusdata/pg_auto_failover/archive/refs/tags/v2.2.tar.gz
+	source = postgresql-18.patch
+	sha256sums = 0f4018564e620592fcfb43d52ea2bc3ccba33bd824352fa9c7e55eb2ba0a4f6c
+	sha256sums = 4cc70efadef112356d8acf0153739bfdaf106f3585d4e7478f07f35e1667b01d
+
+pkgname = pg_auto_failover

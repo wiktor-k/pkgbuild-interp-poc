@@ -1,0 +1,32 @@
+# Maintainer: Alexander F. Rødseth <xyproto@archlinux.org>
+# Contributor: Tesx <tesfabpel@gmail.com>
+
+pkgname=goxel
+pkgver=0.15.1
+pkgrel=1
+pkgdesc='3D program for creating voxel volumes'
+arch=(x86_64)
+url='https://goxel.xyz/'
+license=(GPL-3.0-only)
+depends=(glfw gtk3)
+makedepends=(git scons)
+source=("git+https://github.com/guillaumechereau/goxel#tag=v$pkgver")
+b2sums=('81f36b157d75e57cc285cf5e4a39d6a5419999a9ea350abe65c05df2e29244e214ecc696c53e076255a1338853b0ded497562cbf680aa75f2ff8208db691e97c')
+
+prepare() {
+  cd $pkgname
+  sed -i 's|\${SNAP}/icon.png|goxel|;s|Name=goxel|Name=Goxel|' snap/gui/goxel.desktop
+  sed -i 's|/share/applications/goxel.desktop|/share/applications/io.github.guillaumechereau.Goxel.desktop|g' Makefile
+}
+
+build() {
+  # Use _FORTIFY_SOURCE=2 because goxel uses malloc_usable_size
+  export CFLAGS="${CFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  export CXXFLAGS="${CXXFLAGS/_FORTIFY_SOURCE=3/_FORTIFY_SOURCE=2}"
+  cd $pkgname
+  scons mode=release werror=n
+}
+
+package() {
+  make -C $pkgname DESTDIR="$pkgdir" PREFIX=/usr install
+}

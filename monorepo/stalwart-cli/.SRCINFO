@@ -1,0 +1,17 @@
+pkgbase = stalwart-cli
+	pkgdesc = A schema-driven command line tool for administering Stalwart
+	pkgver = 1.0.13
+	pkgrel = 1
+	url = https://github.com/stalwartlabs/cli
+	arch = x86_64
+	license = AGPL-3.0-only
+	makedepends = git
+	makedepends = rust
+	depends = glibc
+	depends = libgcc_s.so
+	options = !lto
+	source = stalwart-cli::git+https://github.com/stalwartlabs/cli#tag=v1.0.13
+	sha512sums = 31308feb798e526c9df14b73c7ca0a8ffa0e267c790cfbabd6734de16028b79334d1d797083724ae0c4fa071f29c55be9f7b38edb7cde6f66d14cb8ec4381da3
+	b2sums = f09ca399acddfcb4425b0dbbd04c4619e117041697958afd977c6f19958bf2192663337a87b9601f5729a0af24a6a8d430f590960f3217dddeea3d131d6d3330
+
+pkgname = stalwart-cli

@@ -1,0 +1,42 @@
+# Maintainer: Antonio Rojas <arojas@archlinux.org>
+# Contributor: Fazlul Shahriar <fshahriar@gmail.com>
+# Contributor: Denis Zawada <deno@bajtogrod.pl>
+
+pkgname=igraph
+pkgver=1.0.1
+pkgrel=2
+pkgdesc='A library for creating and manipulating (un)directed graphs'
+arch=(x86_64)
+url='https://igraph.org/c/'
+license=(GPL-2.0-only)
+depends=(arpack
+         blas
+         glibc
+         glpk
+         gmp
+         lapack
+         libgcc
+         libgomp
+         libstdc++
+         libxml2
+         plfit)
+makedepends=(cmake
+             git)
+source=(git+https://github.com/igraph/igraph#tag=$pkgver)
+sha256sums=('9973f43e5c3be003d74315c0f5a0671fa44ecf15a1ab76b45de5aa78adca99f8')
+
+build() {
+  cmake -B build -S $pkgname \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=None \
+    -DBUILD_SHARED_LIBS=ON
+  cmake --build build
+}
+
+check() {
+  cmake --build build --target check
+}
+
+package() {
+  DESTDIR="$pkgdir" cmake --install build
+}

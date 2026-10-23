@@ -1,0 +1,30 @@
+# Maintainer: Jelle van der Waa <jelle@archlinux.org>
+
+pkgname=pyupgrade
+pkgver=3.22.0
+pkgrel=1
+pkgdesc="A tool to automatically upgrade syntax for newer versions of the language"
+arch=(any)
+url="https://github.com/asottile/pyupgrade"
+license=(MIT)
+depends=(python python-tokenize-rt)
+makedepends=(python-build python-installer python-setuptools python-wheel)
+checkdepends=(python-pytest)
+source=($pkgname-$pkgver.tar.gz::"https://github.com/asottile/pyupgrade/archive/v$pkgver.tar.gz")
+sha256sums=('81586b5713c767d0b7d17167244a5b27c8ed40b310f12e3ad609338a5358139f')
+
+build() {
+  cd $pkgname-$pkgver
+  python -m build --wheel --no-isolation
+}
+
+check() {
+  cd $pkgname-$pkgver
+  pytest .
+}
+
+package() {
+  cd $pkgname-$pkgver
+  python -m installer --destdir="$pkgdir" dist/*.whl
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

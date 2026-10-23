@@ -1,0 +1,19 @@
+pkgbase = mergiraf
+	pkgdesc = A syntax-aware git merge driver for a growing collection of programming languages and file formats
+	pkgver = 0.20.0
+	pkgrel = 1
+	url = https://mergiraf.org/
+	arch = x86_64
+	license = GPL-3.0-or-later
+	checkdepends = jujutsu
+	makedepends = git
+	makedepends = rust
+	options = !lto
+	source = mergiraf::git+https://codeberg.org/mergiraf/mergiraf#tag=v0.20.0
+	sha512sums = b6dd6672b05eedaaf7de45d1012f0141bdb845f8d1ca81029b11d82251a7d19f3072f2bbd21c521d275d1f373a2a3c49d15c650a5f67bd1a41447efd55dfa7b6
+	b2sums = 62ffc0b42a7a25c3090cd8b11f7e8470bdd8fcbc8e2f848a932553392dec9609bb9a712a437b7260f3f89c60c30c36356ff72312f3001bec4c2ee9f4e468616a
+
+pkgname = mergiraf
+	depends = glibc
+	depends = libgcc
+	depends = libgcc_s.so

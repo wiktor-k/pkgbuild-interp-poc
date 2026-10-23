@@ -1,0 +1,40 @@
+# Maintainer: Frederik Schwan <freswa at archlinux dot org>
+
+pkgname=tbtools
+pkgver=0.8.0
+pkgrel=2
+pkgdesc='Collection of tools for Linux Thunderbolt/USB4 development, debugging and validation'
+arch=('x86_64')
+url='https://github.com/intel/tbtools'
+license=('MIT')
+depends=(
+  'glibc'
+  'libgcc'
+  'systemd-libs'
+)
+makedepends=(
+  'git'
+  'rust'
+)
+source=("git+https://github.com/intel/tbtools.git#tag=v$pkgver")
+b2sums=('436f97b153a459ab76ba5ed7cfdd6cc0a443b4cb4e40085756266642b89997f5e3596c7753b0a75e6a8913fe45245ba5d1a19f751315508e9c2bf3bec85c3c18')
+
+prepare() {
+  cd ${pkgname}
+  cargo fetch --locked --target "$(rustc --print host-tuple)"
+}
+
+build() {
+  cd ${pkgname}
+  cargo build --release --locked 
+}
+
+package() {
+  cargo install --locked --root "${pkgdir}"/usr --path "${srcdir}"/${pkgname}
+  rm "${pkgdir}"/usr/{.crates.toml,.crates2.json}
+  install -Dm644 "${pkgname}"/LICENSE -t "${pkgdir}"/usr/share/licenses/${pkgname}
+
+  # Additional helper scripts
+  install -dm755 "${pkgdir}"/usr/share/tbtools/
+  cp -ar "${pkgname}"/scripts "${pkgdir}"/usr/share/tbtools/
+}

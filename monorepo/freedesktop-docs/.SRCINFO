@@ -1,0 +1,32 @@
+pkgbase = freedesktop-docs
+	pkgdesc = Specifications from freedesktop.org
+	pkgver = 20220526.af8e64a
+	pkgrel = 1
+	url = https://standards.freedesktop.org
+	arch = any
+	license = GPL
+	makedepends = git
+	makedepends = xmlto
+	makedepends = docbook-utils
+	makedepends = docbook-xsl
+	makedepends = docbook-xml
+	makedepends = docbook-sgml
+	makedepends = python-gitpython
+	makedepends = discount
+	options = docs
+	source = git+https://gitlab.freedesktop.org/xdg/xdg-specs.git#commit=af8e64a9670c9eb1689a34eb76470cfbc9d1cea3
+	source = git+https://gitlab.freedesktop.org/xdg/default-icon-theme.git#commit=b3f1207ccff5ce0ab45ead38031f98fc1abe9731
+	source = git+https://gitlab.freedesktop.org/xdg/shared-mime-info.git#commit=fea642e9a88fffc8fb14793a5cbd6c4031d4271b
+	source = git+https://gitlab.freedesktop.org/xdg/sound-theme-spec.git#commit=b38cb3916fbb7243a3f4e78284d5613cc9321c8c
+	source = git+https://gitlab.freedesktop.org/xdg/startup-notification.git#commit=07237ff25d6171e1b548118442ddba4259a53ba5
+	source = git+https://gitlab.freedesktop.org/dbus/dbus.git#commit=b30c2c293d6c599adafca5b82cb7df6351ca2fa1
+	source = git+https://gitlab.freedesktop.org/mpris/mpris-spec.git#commit=51e5848f9f763864568db233bffe98e3cb72bf13
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = freedesktop-docs

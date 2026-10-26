@@ -45,6 +45,11 @@ for f in "${files[@]}"; do
 	if ((rc == 0)); then
 		if [[ ! -f $srcinfo ]]; then
 			status=no-srcinfo detail=''
+			#echo getting src info $f>/dev/stderr
+			#curl --fail -sSL "https://gitlab.archlinux.org/archlinux/packaging/packages/$name/-/raw/main/.SRCINFO?ref_type=heads&inline=false" > "$srcinfo"
+			#sleep 2
+			#curl --fail -sSL "https://gitlab.archlinux.org/archlinux/packaging/packages/$name/-/raw/main/PKGBUILD?ref_type=heads&inline=false" > "$f"
+			#sleep 2
 		elif cmp -s "$out" "$srcinfo"; then
 			status=match detail=''
 		else

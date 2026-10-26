@@ -1,0 +1,23 @@
+pkgbase = xloadimage
+	pkgdesc = An utility to view many different types of images under X11
+	pkgver = 4.1
+	pkgrel = 16
+	url = https://sioseis.com/xloadimage.html
+	arch = x86_64
+	license = MIT
+	makedepends = patch
+	makedepends = imake
+	depends = libtiff
+	depends = libpng
+	depends = libx11
+	depends = libxext
+	source = https://arch.p5n.pp.ru/~sergej/dl/2018/xloadimage.4.1-1.tar.gz
+	source = license.txt
+	source = enable-image-types.patch
+	source = png15-tiff4.patch
+	sha256sums = 0e97ebb57a0666f604bcb29c72018c15ca59b743ddf7d5fdccc05892e52695fb
+	sha256sums = db7d013cfa6cdd8c695e4bbc5152c49a3acc7eab7f5c3e5f5d9d87828658c9a7
+	sha256sums = 54755994f787287b94be156c9e3f82c4214172636488e243039ccf9bdaab2b74
+	sha256sums = 91ddbf7f8575245634f4fbd05fa28c9e9bb941d4067176ca75d85089c07982c8
+
+pkgname = xloadimage

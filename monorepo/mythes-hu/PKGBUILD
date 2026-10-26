@@ -3,36 +3,43 @@
 
 pkgname=mythes-hu
 pkgver=1.0
-pkgrel=3
+pkgrel=4
 epoch=1
 pkgdesc='Hungarian thesaurus'
-arch=('any')
+arch=(any)
 url='https://magyarispell.sourceforge.net/'
-license=('GPL')
-makedepends=('git' 'libmythes')
+license=(GPL-2.0-or-later)
+makedepends=(
+  git
+  libmythes
+)
 optdepends=('libmythes: offers thesaurus library functions')
-_commit=2404521a6c320ae5e307c6c0fed31d81de751a88
-source=("git+https://git.libreoffice.org/dictionaries#commit=$_commit")
-sha256sums=('SKIP')
+_commit=a4473e06b56bfe35187e302754f6baaa8d75e54f
+source=("libreoffice-dictionaries::git+https://git.libreoffice.org/dictionaries#commit=$_commit")
+b2sums=(73ee00045596ce279d8d26bdb60c7bdb9ff4e9c3ac172a0e5d356a69949f60cb496f546fce6b388918fc2e3bd1030de0409553c9cd81d622511210a045469070)
+
+pkgver() {
+  cd libreoffice-dictionaries/hu_HU/
+  sed -n "s/.*Hungarian Thesaurus, version \(.*\) (.*/\1/p" README_th_hu_HU_v2.txt
+}
 
 build() {
-  cd dictionaries/hu_HU/
-  cat th_hu_HU_v2.dat | th_gen_idx.pl > th_hu_HU_v2.idx
+  cd libreoffice-dictionaries/hu_HU/
+  th_gen_idx.pl < th_hu_HU_v2.dat > th_hu_HU_v2.idx
 }
 
 package() {
-  cd dictionaries/hu_HU/
-  install -Dm644 th_hu_HU_v2.dat "$pkgdir/usr/share/mythes/th_hu_HU_v2.dat"
-  install -Dm644 th_hu_HU_v2.idx "$pkgdir/usr/share/mythes/th_hu_HU_v2.idx"
+  cd libreoffice-dictionaries/hu_HU/
+  install -Dm644 -t "$pkgdir/usr/share/mythes/" th_hu_HU_v2.{dat,idx}
 
   # the symlinks
   install -dm755 "$pkgdir/usr/share/myspell/dicts"
   pushd "$pkgdir/usr/share/myspell/dicts"
     for file in "$pkgdir"/usr/share/mythes/*; do
-      ln -sv /usr/share/mythes/$(basename $file) .
+      ln -sv "/usr/share/mythes/$(basename "$file")" .
     done
   popd
 
   # docs
-  install -Dm644 README_th_hu_HU_v2.txt "$pkgdir/usr/share/doc/$pkgname/README_th_hu_HU_v2.txt"
+  install -Dm644 -t "$pkgdir/usr/share/doc/$pkgname/" README_th_hu_HU_v2.txt
 }

@@ -7,24 +7,35 @@ pkgrel=11
 pkgdesc="framework for defining, selecting and indicating XKB keyboard mappings"
 arch=('x86_64')
 url="https://www.meduna.org/sw_xkbsel_en.html"
-license=('GPL')
-depends=('gdbm' 'libxaw')
+license=('GPL-2.0-only')
+depends=('gdbm' 'glibc' 'libx11' 'libxaw' 'libxt')
 makedepends=('patch' 'xkeyboard-config')
 source=(https://www.meduna.org/code/$pkgname-$pkgver.tar.gz
-	build-fix.patch)
+	xkbsel-0.13-autotools.patch
+	xkbsel-0.13-x11xkbdir.patch
+	xkbsel-0.13-install.patch
+	xkbsel-0.13-incompatible-pointer-types.patch
+	xkbsel-0.13-gdbm.patch)
 sha512sums=('2cefeac975335ab07b6b375f7109d8ac8ba733e4024e6a64c8e8a8757cf194882ccd436937c648ce0f3a7a2112208600f1b5ad2d73c82988a7f8c357362ccfc5'
-            '850e9ee70839597b9b7485cec1eecf2f6c05da0392238620ad05397695897faf8a4fec1925f402eb64d61ecbeb1b7d42149db9f8b9436af3eeb27c675a3287fe')
+            'feb64f95e98c28adad1de99caa2c262703e509633bcae4d6a3e2ec8a202dd36a38631dbeb85efd5e96aa8ca8a4616137df82f85b5f7978e58064a2897241ff57'
+            'c6ca296efd4aed99c291202baaa76dc2a288e4459e7e66d2554b814fd36405ff5b1f3a7f4612bc6df93d9c0f47f8cecb4070fe7eaead813ca5e8b483e7c13ccb'
+            '57141842e85efd9184c8333ef4fc483ac7eebf8a93ed995e1086a80ff807aa5eca2a248365d585bffdee18f3ab06959eee2c4ef01b023f519f10648be992710b'
+            '425657ae1299642970597cca2295d97c4dc62ccddfcbf1dfad3183ba82b77cb43ed330fcb38ead1145356f2ce3c9029f96ab7743e6b10528dc243df49ee0cf98'
+            'e9d01d6b08e3323965b19181b82cdb952f8739e70674251458f961a06d20ffac2e734351cd8452f2c16fcbfc45fbe3dcf8f0da9fd9e54872061ee15826b4982c')
 
 prepare() {
   cd "$srcdir"/$pkgname-$pkgver
-  sed -i 's|\${CC-cc}|${CC-cc} -O2 |g' ./configure
-  patch -Np1 <../build-fix.patch
+  patch -Np1 < ../xkbsel-0.13-autotools.patch
+  patch -Np1 < ../xkbsel-0.13-x11xkbdir.patch
+  patch -Np1 < ../xkbsel-0.13-install.patch
+  patch -Np1 < ../xkbsel-0.13-incompatible-pointer-types.patch
+  patch -Np1 < ../xkbsel-0.13-gdbm.patch
+  autoreconf -fiv
 }
 
 build() {
   cd "$srcdir"/$pkgname-$pkgver
-  export CFLAGS="$CFLAGS -I/usr/include/gdbm -DHAVE_NDBM_H -ffat-lto-objects"
-  export LDFLAGS="-lgdbm -lgdbm_compat"
+  export CFLAGS="$CFLAGS -ffat-lto-objects"
   ./configure --prefix=/usr --localstatedir=/var/lib --sysconfdir=/etc/xkbsel \
 		--build=`uname -m` --host=`uname -m` --target=`uname -m` \
 		--mandir=/usr/share/man
@@ -32,6 +43,7 @@ build() {
 }
 
 package() {
+  depends+=('libgdbm_compat.so')
   cd "$srcdir"/$pkgname-$pkgver
   make DESTDIR="$pkgdir" install
 }

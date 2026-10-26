@@ -8,17 +8,20 @@ _commit=3fb908d0d8a4daa26dc770e1f2aa133f93100503
 pkgdesc="A tool for statically checking C programs for security vulnerabilities and coding mistakes"
 arch=('x86_64')
 url="https://repo.or.cz/splint-patched.git"
-license=('GPL')
+license=('GPL-2.0-or-later')
 depends=('flex')
 makedepends=('git')
 options=('!makeflags')
 source=("git+https://repo.or.cz/splint-patched.git#commit=${_commit}"
+	'splint-3.1.2-const-mismatch.patch'
 	'splint.sh')
-sha256sums=('SKIP'
+sha256sums=('e2c8cd19818bd88ad03df8668ca74e5595dedb2536a7fac7e917592866537f65'
+            'c6584d2989fb3f9dfe5dfff279b83dc4c9c63f8ef562aff4b5b50e5c8773d66b'
             'ea90b733037ef1ad25a0a5f39cbb33ca747dabd3b2bfd9d087f3981bc6990b61')
 
 prepare() {
   cd "${srcdir}"/splint-patched
+  patch -Np1 -i ../splint-3.1.2-const-mismatch.patch
   autoreconf -fi
 }
 

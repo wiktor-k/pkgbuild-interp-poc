@@ -4,7 +4,7 @@
 
 pkgname=reaver
 pkgver=1.6.6
-pkgrel=1
+pkgrel=2
 pkgdesc='Brute force attack against Wifi Protected Setup'
 url='https://github.com/t6x/reaver-wps-fork-t6x'
 arch=('x86_64')

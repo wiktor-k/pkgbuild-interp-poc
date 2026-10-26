@@ -5,11 +5,19 @@ pkgver=1.4.10
 pkgrel=5
 pkgdesc="Small program written in C displaying NAT connections, managed by netfilter."
 url="https://tweegy.nl/projects/netstat-nat/"
-license=("GPL")
+license=("GPL-2.0-or-later")
 arch=(x86_64)
 depends=(iptables)
-source=(https://tweegy.nl/download/netstat-nat-$pkgver.tar.gz)
-sha512sums=('2089119b26039e656fbe76701e556f7d766159c96b18968195f255e15072af37972c83a8f05edb0b767a12f0521598975673d10d8ba5e6ed6b754a927d4f069d')
+source=(https://tweegy.nl/download/netstat-nat-$pkgver.tar.gz
+        netstat-nat-1.4.10-gcc14.patch)
+sha512sums=('2089119b26039e656fbe76701e556f7d766159c96b18968195f255e15072af37972c83a8f05edb0b767a12f0521598975673d10d8ba5e6ed6b754a927d4f069d'
+            'f4bee956c74518e01d0285e0af7350eb51c9ced3017087a2d82737d94ed62125a2552d01f7d15ddc654f8866ef98c5187fc32ef63c4ecb6b687b72d76e2a9d47')
+
+prepare() {
+  cd "$srcdir"/$pkgname-$pkgver
+  patch -Np1 -i ../netstat-nat-1.4.10-gcc14.patch
+  autoreconf -fiv
+}
 
 build() {
   cd "$srcdir"/$pkgname-$pkgver

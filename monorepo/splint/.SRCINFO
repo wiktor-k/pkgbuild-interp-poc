@@ -1,0 +1,18 @@
+pkgbase = splint
+	pkgdesc = A tool for statically checking C programs for security vulnerabilities and coding mistakes
+	pkgver = 3.1.2.git20180129
+	pkgrel = 3
+	url = https://repo.or.cz/splint-patched.git
+	arch = x86_64
+	license = GPL-2.0-or-later
+	makedepends = git
+	depends = flex
+	options = !makeflags
+	source = git+https://repo.or.cz/splint-patched.git#commit=3fb908d0d8a4daa26dc770e1f2aa133f93100503
+	source = splint-3.1.2-const-mismatch.patch
+	source = splint.sh
+	sha256sums = e2c8cd19818bd88ad03df8668ca74e5595dedb2536a7fac7e917592866537f65
+	sha256sums = c6584d2989fb3f9dfe5dfff279b83dc4c9c63f8ef562aff4b5b50e5c8773d66b
+	sha256sums = ea90b733037ef1ad25a0a5f39cbb33ca747dabd3b2bfd9d087f3981bc6990b61
+
+pkgname = splint

@@ -1,0 +1,15 @@
+pkgbase = mythes-hu
+	pkgdesc = Hungarian thesaurus
+	pkgver = 1.0
+	pkgrel = 4
+	epoch = 1
+	url = https://magyarispell.sourceforge.net/
+	arch = any
+	license = GPL-2.0-or-later
+	makedepends = git
+	makedepends = libmythes
+	optdepends = libmythes: offers thesaurus library functions
+	source = libreoffice-dictionaries::git+https://git.libreoffice.org/dictionaries#commit=a4473e06b56bfe35187e302754f6baaa8d75e54f
+	b2sums = 73ee00045596ce279d8d26bdb60c7bdb9ff4e9c3ac172a0e5d356a69949f60cb496f546fce6b388918fc2e3bd1030de0409553c9cd81d622511210a045469070
+
+pkgname = mythes-hu

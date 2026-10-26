@@ -1,0 +1,15 @@
+pkgbase = primus
+	pkgdesc = Faster OpenGL offloading for Bumblebee
+	pkgver = 20151110
+	pkgrel = 9
+	url = https://github.com/amonakov/primus
+	arch = x86_64
+	license = custom:ISC
+	makedepends = git
+	depends = bumblebee
+	source = git+https://github.com/amonakov/primus#commit=d1afbf6fce2778c0751eddf19db9882e04f18bfd
+	source = register_cleanup.patch
+	sha1sums = SKIP
+	sha1sums = fd48f89c55c1ad854d7a985781faed2c52c0135f
+
+pkgname = primus

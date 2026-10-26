@@ -1,7 +1,7 @@
 # Maintainer: Sergej Pupykin <pupykin.s+arch@gmail.com>
 
 pkgname=freedesktop-docs
-pkgver=20220526.af8e64a
+pkgver=20250831.04c0447
 pkgrel=1
 pkgdesc="Specifications from freedesktop.org"
 arch=('any')
@@ -9,13 +9,13 @@ url="https://standards.freedesktop.org"
 license=('GPL')
 options=('docs')
 makedepends=('git' 'xmlto' 'docbook-utils' 'docbook-xsl' 'docbook-xml' 'docbook-sgml' 'python-gitpython' 'discount')
-source=("git+https://gitlab.freedesktop.org/xdg/xdg-specs.git#commit=af8e64a9670c9eb1689a34eb76470cfbc9d1cea3"
-	"git+https://gitlab.freedesktop.org/xdg/default-icon-theme.git#commit=b3f1207ccff5ce0ab45ead38031f98fc1abe9731"
-	"git+https://gitlab.freedesktop.org/xdg/shared-mime-info.git#commit=fea642e9a88fffc8fb14793a5cbd6c4031d4271b"
+source=("git+https://gitlab.freedesktop.org/xdg/xdg-specs.git#commit=04c0447d0b437cecde4a4346119237f47d0535cb"
+	"git+https://gitlab.freedesktop.org/xdg/default-icon-theme.git#commit=4dc168322b8b0bc06c521e9e90d66a4fa09816d4"
+	"git+https://gitlab.freedesktop.org/xdg/shared-mime-info.git#commit=46e18022f9d0c10fa6ded740375c37f2ed1e5dcc"
 	"git+https://gitlab.freedesktop.org/xdg/sound-theme-spec.git#commit=b38cb3916fbb7243a3f4e78284d5613cc9321c8c"
-	"git+https://gitlab.freedesktop.org/xdg/startup-notification.git#commit=07237ff25d6171e1b548118442ddba4259a53ba5"
-	"git+https://gitlab.freedesktop.org/dbus/dbus.git#commit=b30c2c293d6c599adafca5b82cb7df6351ca2fa1"
-	"git+https://gitlab.freedesktop.org/mpris/mpris-spec.git#commit=51e5848f9f763864568db233bffe98e3cb72bf13")
+	"git+https://gitlab.freedesktop.org/xdg/startup-notification.git#commit=64eb585315cfb1fb4fe68c8f705956e9fed46545"
+	"git+https://gitlab.freedesktop.org/dbus/dbus.git#commit=1bcf396c7872f317778f3ff5645af1630738d43f"
+	"git+https://gitlab.freedesktop.org/mpris/mpris-spec.git#commit=366b64a24b9db63616500a8942c33b0ebb579ce9")
 sha256sums=('SKIP'
             'SKIP'
             'SKIP'

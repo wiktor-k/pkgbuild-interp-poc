@@ -38,14 +38,14 @@ To check if the interpreter produces values similar to official files a small wr
 Evaluating 12394 PKGBUILDs...
 
 Results for 12394 PKGBUILDs:
-  match         12233   98.7%
+  match         12286   99.1%
   unsupported      75    0.6%
-  no-srcinfo       57    0.5%
   parse-error      18    0.1%
-  mismatch         11    0.1%
+  mismatch         14    0.1%
+  no-srcinfo        1    0.0%
 
-Answered: 12244 of 12394 files (98.8%); the rest were refused or had no .SRCINFO.
-Identical: 12233 of those 12244 answers (99.91%); 11 differ.
+Answered: 12300 of 12394 files (99.2%); the rest were refused or had no .SRCINFO.
+Identical: 12286 of those 12300 answers (99.89%); 14 differ.
 
 Why files were refused (unsupported):
        24 top-level for loop: eval
@@ -62,13 +62,16 @@ Why files were refused (unsupported):
         1 command substitution $(date)
 
 Files with status mismatch:
+  freedesktop-docs  (./minieval-diffs/freedesktop-docs.diff)
   imagemagick  (./minieval-diffs/imagemagick.diff)
   lib32-libxv  (./minieval-diffs/lib32-libxv.diff)
   libxrandr  (./minieval-diffs/libxrandr.diff)
   libxres  (./minieval-diffs/libxres.diff)
   libxt  (./minieval-diffs/libxt.diff)
   libxv  (./minieval-diffs/libxv.diff)
+  netwatch  (./minieval-diffs/netwatch.diff)
   papirus-icon-theme  (./minieval-diffs/papirus-icon-theme.diff)
+  primus  (./minieval-diffs/primus.diff)
   smali  (./minieval-diffs/smali.diff)
   xf86-video-fbdev  (./minieval-diffs/xf86-video-fbdev.diff)
   xorg-appres  (./minieval-diffs/xorg-appres.diff)

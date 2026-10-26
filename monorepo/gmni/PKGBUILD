@@ -2,11 +2,11 @@
 
 pkgname=gmni
 pkgver=1.0
-pkgrel=2
+pkgrel=3
 pkgdesc='A Gemini client'
 arch=('x86_64')
 url='https://git.sr.ht/~sircmpwn/gmni'
-license=('GPL3')
+license=('GPL-3.0-only')
 depends=('bearssl')
 makedepends=('git' 'scdoc')
 _commit='41e5188b6e217a4bfd6d1802b73f49cc49472c17'
@@ -24,8 +24,8 @@ build() {
 
   mkdir build && cd build
 
-  # prevent mangling of static library
-  CFLAGS+=" -ffat-lto-objects"
+  # prevent mangling of static library, disable GCC 14 warning
+  CFLAGS+=" -ffat-lto-objects -Wno-calloc-transposed-args"
 
   ../configure --prefix=/usr
 

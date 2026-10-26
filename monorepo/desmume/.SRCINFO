@@ -1,0 +1,25 @@
+pkgbase = desmume
+	pkgdesc = Nintendo DS emulator
+	pkgver = 0.9.13
+	pkgrel = 2
+	url = https://desmume.org/
+	arch = x86_64
+	license = GPL
+	makedepends = git
+	makedepends = intltool
+	makedepends = mesa
+	makedepends = meson
+	depends = alsa-lib
+	depends = desktop-file-utils
+	depends = glu
+	depends = gtk3
+	depends = libopenal.so
+	depends = libpcap
+	depends = sdl2
+	depends = soundtouch
+	depends = zlib
+	depends = zziplib
+	source = git+https://github.com/TASEmulators/desmume.git#tag=08b6fade0bc95749acc9820cb9688aaf39d00c87
+	b2sums = SKIP
+
+pkgname = desmume

@@ -1,0 +1,18 @@
+pkgbase = mkinitcpio-nfs-utils
+	pkgdesc = ipconfig and nfsmount tools for NFS root support in mkinitcpio
+	pkgver = 0.3
+	pkgrel = 8
+	url = http://www.archlinux.org/
+	arch = x86_64
+	license = GPL2
+	depends = glibc
+	source = https://sources.archlinux.org/other/mkinitcpio/mkinitcpio-nfs-utils-0.3.tar.xz
+	source = nfsmount-fix-wrong-umount-path.patch
+	source = initcpio-install-net
+	source = initcpio-hook-net
+	sha256sums = d290d489844fae100ca7b848b8eef40078124ff373203086bacc07329d1e8939
+	sha256sums = 6edb239f3d541b8ddee816e2d18bfb3ee1d3f5f8827769674cc8bf2a7ce38f21
+	sha256sums = ce9f021763c020b9b62a761974437fd1e9e894df3effc58e71671bf83b061255
+	sha256sums = 29a5a4a9ebd61bfa1afbb8dcaf2187e487ee1f34b1979a85a853fa2acbeb510e
+
+pkgname = mkinitcpio-nfs-utils

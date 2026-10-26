@@ -1,0 +1,16 @@
+pkgbase = dbxtool
+	pkgdesc = Tool for UEFI Secure Boot DBX updates
+	pkgver = 8
+	pkgrel = 1
+	url = https://github.com/rhboot/dbxtool
+	arch = x86_64
+	license = GPL2
+	makedepends = git
+	depends = efivar
+	depends = popt
+	options = !emptydirs
+	source = git+https://github.com/rhboot/dbxtool.git#tag=dbxtool-8?signed
+	validpgpkeys = B00B48BC731AA8840FED9FB0EED266B70F4FEF10
+	sha512sums = SKIP
+
+pkgname = dbxtool

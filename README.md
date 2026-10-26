@@ -38,25 +38,28 @@ To check if the interpreter produces values similar to official files a small wr
 Evaluating 12394 PKGBUILDs...
 
 Results for 12394 PKGBUILDs:
-  match         12098   97.6%
-  unsupported     210    1.7%
+  match         12233   98.7%
+  unsupported      75    0.6%
   no-srcinfo       57    0.5%
   parse-error      18    0.1%
   mismatch         11    0.1%
 
-Answered: 12109 of 12394 files (97.7%); the rest were refused or had no .SRCINFO.
-Identical: 12098 of those 12109 answers (99.91%); 11 differ.
+Answered: 12244 of 12394 files (98.8%); the rest were refused or had no .SRCINFO.
+Identical: 12233 of those 12244 answers (99.91%); 11 differ.
 
 Why files were refused (unsupported):
-      123 command substitution $(...)
-       25 top-level for loop
-       23 top-level if
-       11 top-level case
+       24 top-level for loop: eval
+       17 top-level if
        10 declare -gA
-        9 top-level && or || or pipe
-        3 top-level statement modifiers/redirections
-        3 top-level command shopt
-        3 declare -A
+        8 top-level for loop
+        4 top-level && or || or pipe
+        3 command substitution $(echo | awk)
+        2 top-level for loop: declare with a dynamic name
+        2 command substitution $(printf)
+        2 command substitution $(awk)
+        1 command substitution $(sed)
+        1 command substitution $(perl)
+        1 command substitution $(date)
 
 Files with status mismatch:
   imagemagick  (./minieval-diffs/imagemagick.diff)

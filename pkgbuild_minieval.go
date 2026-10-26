@@ -5,7 +5,10 @@
 // in .SRCINFO form. Anything outside that subset makes it bail out with a
 // reason instead of guessing. It never runs commands.
 //
-// usage: minieval PKGBUILD
+// Usage:
+//
+//	minieval PKGBUILD
+//	minieval DIR        (reads DIR/PKGBUILD, e.g. monorepo/linux)
 //
 // Prints the .SRCINFO that `makepkg --printsrcinfo` would produce and exits 0.
 // If the PKGBUILD uses something outside the supported subset, prints nothing
@@ -20,6 +23,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -29,15 +33,22 @@ import (
 	"mvdan.cc/sh/v3/syntax"
 )
 
-type unsupported struct{ why string }
+// unsupported is raised (as a panic) when the PKGBUILD uses something outside
+// the supported subset. root names the construct; why may add which variable
+// needed it.
+type unsupported struct{ why, root string }
 
-func bail(format string, a ...any) { panic(unsupported{fmt.Sprintf(format, a...)}) }
+func bail(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	panic(unsupported{why: msg, root: msg})
+}
 
 // ---------- variables ----------
 
 type variable struct {
-	arr   map[int]string // indexed array (scalars live at index 0)
-	array bool
+	arr    map[int]string // indexed array (scalars live at index 0)
+	array  bool
+	poison string // if set, the value is unknown because of this unsupported construct
 }
 
 func (v *variable) keys() []int {
@@ -70,9 +81,24 @@ type env struct {
 	funcs map[string]*syntax.FuncDecl
 }
 
-func (e *env) get(name string) (*variable, bool) { v, ok := e.vars[name]; return v, ok }
-func (e *env) scalar(name string) (string, bool) {
+// get returns a variable for reading. Reading a variable whose value is
+// unknown (see poison) gives up, naming the construct that made it unknown.
+func (e *env) get(name string) (*variable, bool) {
 	v, ok := e.vars[name]
+	if ok && v.poison != "" {
+		panic(unsupported{why: fmt.Sprintf("%s (needed for %s)", v.poison, name), root: v.poison})
+	}
+	return v, ok
+}
+
+// poison marks a variable's value as unknown. That is only a problem if
+// something needed for the .SRCINFO reads it later.
+func (e *env) poison(name, why string) {
+	e.vars[name] = &variable{arr: map[int]string{}, poison: why}
+}
+
+func (e *env) scalar(name string) (string, bool) {
+	v, ok := e.get(name)
 	if !ok {
 		return "", false
 	}
@@ -80,13 +106,15 @@ func (e *env) scalar(name string) (string, bool) {
 	return s, ok
 }
 func (e *env) setScalar(name, val string, appendTo bool) {
+	if appendTo {
+		if old, ok := e.get(name); ok {
+			val = old.arr[0] + val
+		}
+	}
 	v, ok := e.vars[name]
-	if !ok {
+	if !ok || v.poison != "" {
 		v = &variable{arr: map[int]string{}}
 		e.vars[name] = v
-	}
-	if appendTo {
-		val = v.arr[0] + val
 	}
 	v.arr[0] = val
 }
@@ -703,7 +731,15 @@ func (e *env) expandParts(parts []syntax.WordPart, f *fields, quoted, split bool
 				}
 			}
 		case *syntax.CmdSubst:
-			bail("command substitution $(...)")
+			out := e.cmdSubst(x)
+			if quoted || !split {
+				f.lit(out)
+			} else {
+				if strings.ContainsAny(out, "*?[") {
+					f.globby = true
+				}
+				f.split(out)
+			}
 		case *syntax.ArithmExp:
 			f.lit(strconv.Itoa(e.arith(x.X)))
 		case *syntax.ProcSubst:
@@ -878,6 +914,361 @@ func braceSeq(be *syntax.BraceExp) []*syntax.Word {
 	return nil
 }
 
+// ---------- command substitution ----------
+
+// cmdSubst evaluates $(...) for the pipelines PKGBUILDs use to reformat
+// versions: echo ... | cut ..., echo ... | sed 's/.../.../'. Only the options
+// those use are supported; anything else is refused.
+func (e *env) cmdSubst(cs *syntax.CmdSubst) string {
+	var cmds []*syntax.CallExpr
+	var names []string
+	ok := len(cs.Stmts) == 1
+	var collect func(st *syntax.Stmt)
+	collect = func(st *syntax.Stmt) {
+		if st.Negated || st.Background || st.Coprocess || len(st.Redirs) > 0 {
+			ok = false
+		}
+		switch x := st.Cmd.(type) {
+		case *syntax.CallExpr:
+			if len(x.Assigns) > 0 || len(x.Args) == 0 {
+				ok = false
+				return
+			}
+			cmds = append(cmds, x)
+			name := x.Args[0].Lit()
+			if name == "" {
+				name = "?"
+			}
+			names = append(names, name)
+		case *syntax.BinaryCmd:
+			if x.Op != syntax.Pipe {
+				ok = false
+			}
+			collect(x.X)
+			collect(x.Y)
+		default:
+			ok = false
+		}
+	}
+	if ok {
+		collect(cs.Stmts[0])
+	}
+	if !ok || len(cmds) == 0 || names[0] != "echo" {
+		if len(names) > 0 {
+			bail("command substitution $(%s)", strings.Join(names, " | "))
+		}
+		bail("command substitution $(...)")
+	}
+	text := ""
+	for i, c := range cmds {
+		var args []string
+		for _, w := range c.Args[1:] {
+			args = append(args, e.expandFields(w)...)
+		}
+		switch {
+		case i == 0: // echo
+			if len(args) > 0 && regexp.MustCompile(`^-[neE]+$`).MatchString(args[0]) {
+				bail("command substitution $(echo %s ...)", args[0])
+			}
+			text = strings.Join(args, " ") + "\n"
+		case names[i] == "cut":
+			text = cut(args, text)
+		case names[i] == "sed":
+			text = sed(args, text)
+		default:
+			bail("command substitution $(%s)", strings.Join(names, " | "))
+		}
+	}
+	return strings.TrimRight(text, "\n") // $(...) drops trailing newlines
+}
+
+// lines splits command output into lines (a final newline ends the last line).
+func lines(text string) []string {
+	if text == "" {
+		return nil
+	}
+	return strings.Split(strings.TrimSuffix(text, "\n"), "\n")
+}
+
+// cut supports -d CHAR and -f LIST (N, N-M, N-, -M, comma-separated).
+func cut(args []string, text string) string {
+	delim, list := "\t", ""
+	for i := 0; i < len(args); i++ {
+		a := args[i]
+		opt, val := a, ""
+		if len(a) > 2 && strings.HasPrefix(a, "-") {
+			opt, val = a[:2], a[2:]
+		} else if i+1 < len(args) {
+			val = args[i+1]
+			i++
+		}
+		switch opt {
+		case "-d":
+			delim = val
+		case "-f":
+			list = val
+		default:
+			bail("command substitution: cut %s", a)
+		}
+	}
+	if len(delim) != 1 || list == "" {
+		bail("command substitution: cut -d %q -f %q", delim, list)
+	}
+	var ranges [][2]int // 1-based, inclusive; 0 = open end
+	for _, r := range strings.Split(list, ",") {
+		lo, hi, isRange := strings.Cut(r, "-")
+		a, errA := strconv.Atoi(lo)
+		b, errB := strconv.Atoi(hi)
+		switch {
+		case !isRange && errA == nil && a > 0:
+			ranges = append(ranges, [2]int{a, a})
+		case isRange && lo == "" && errB == nil && b > 0:
+			ranges = append(ranges, [2]int{1, b})
+		case isRange && hi == "" && errA == nil && a > 0:
+			ranges = append(ranges, [2]int{a, 0})
+		case isRange && errA == nil && errB == nil && a > 0 && b >= a:
+			ranges = append(ranges, [2]int{a, b})
+		default:
+			bail("command substitution: cut -f %s", list)
+		}
+	}
+	var out strings.Builder
+	for _, line := range lines(text) {
+		if !strings.Contains(line, delim) { // no delimiter: line printed as is
+			out.WriteString(line + "\n")
+			continue
+		}
+		fields := strings.Split(line, delim)
+		var picked []string
+		for i, fld := range fields { // in field order, each field once
+			for _, r := range ranges {
+				if i+1 >= r[0] && (r[1] == 0 || i+1 <= r[1]) {
+					picked = append(picked, fld)
+					break
+				}
+			}
+		}
+		out.WriteString(strings.Join(picked, delim) + "\n")
+	}
+	return out.String()
+}
+
+// sedSubst is one s/regex/replacement/[g] command.
+type sedSubst struct {
+	re     *regexp.Regexp
+	repl   string
+	global bool
+}
+
+// sed supports scripts made of s commands: sed SCRIPT, or sed -e SCRIPT [-e SCRIPT]...
+func sed(args []string, text string) string {
+	var scripts []string
+	for i := 0; i < len(args); i++ {
+		switch {
+		case args[i] == "-e" && i+1 < len(args):
+			scripts = append(scripts, args[i+1])
+			i++
+		case strings.HasPrefix(args[i], "-"):
+			bail("command substitution: sed %s", args[i])
+		case len(scripts) == 0 && i == len(args)-1:
+			scripts = append(scripts, args[i])
+		default:
+			bail("command substitution: sed with input files")
+		}
+	}
+	if len(scripts) == 0 {
+		bail("command substitution: sed without a script")
+	}
+	var cmds []sedSubst
+	for _, sc := range scripts {
+		cmds = append(cmds, parseSedScript(sc)...)
+	}
+	var out strings.Builder
+	for _, line := range lines(text) {
+		for _, c := range cmds {
+			line = c.apply(line)
+		}
+		out.WriteString(line + "\n")
+	}
+	return out.String()
+}
+
+func parseSedScript(sc string) []sedSubst {
+	var cmds []sedSubst
+	i := 0
+	for i < len(sc) {
+		switch c := sc[i]; {
+		case c == ';' || c == '\n' || c == ' ' || c == '\t':
+			i++
+			continue
+		case c != 's' || i+1 >= len(sc):
+			bail("command substitution: sed command %q", sc[i:])
+		}
+		delim := sc[i+1]
+		if delim == '\\' || delim == '\n' {
+			bail("command substitution: sed delimiter %q", delim)
+		}
+		i += 2
+		part := func() string { // up to the next unescaped delimiter
+			start := i
+			for i < len(sc) && sc[i] != delim {
+				if sc[i] == '\\' {
+					i++
+				}
+				i++
+			}
+			if i >= len(sc) {
+				bail("command substitution: unterminated sed s command")
+			}
+			p := sc[start:i]
+			i++
+			return p
+		}
+		re, repl := part(), part()
+		global := false
+		for i < len(sc) && sc[i] != ';' && sc[i] != '\n' {
+			if sc[i] != 'g' {
+				bail("command substitution: sed flag %q", sc[i])
+			}
+			global = true
+			i++
+		}
+		rx, err := regexp.Compile(breToRE2(re, delim))
+		if err != nil {
+			bail("command substitution: sed regex %q", re)
+		}
+		rx.Longest() // POSIX leftmost-longest matching, like sed
+		cmds = append(cmds, sedSubst{rx, unescapeDelim(repl, delim), global})
+	}
+	return cmds
+}
+
+// unescapeDelim turns \<delim> into <delim> in a replacement.
+func unescapeDelim(s string, delim byte) string {
+	return strings.ReplaceAll(s, "\\"+string(delim), string(delim))
+}
+
+// breToRE2 translates a POSIX basic regular expression (with the GNU \+ \?
+// \| extensions) into Go regexp syntax. Back-references are refused.
+func breToRE2(bre string, delim byte) string {
+	var b strings.Builder
+	atStart := true // where ^ is an anchor and * is literal
+	for i := 0; i < len(bre); i++ {
+		c := bre[i]
+		start := atStart
+		atStart = false
+		switch {
+		case c == '\\' && i+1 < len(bre):
+			i++
+			d := bre[i]
+			switch {
+			case d == '(':
+				b.WriteString("(")
+				atStart = true
+			case d == ')' || d == '{' || d == '}' || d == '+' || d == '?':
+				b.WriteByte(d)
+			case d == '|':
+				b.WriteByte('|')
+				atStart = true
+			case d >= '1' && d <= '9':
+				bail("command substitution: sed back-reference \\%c", d)
+			case d == 'n':
+				b.WriteString(`\n`)
+			case d == delim || strings.IndexByte(`.*[]^$\/`, d) >= 0:
+				b.WriteString(regexp.QuoteMeta(string(d)))
+			default:
+				bail("command substitution: sed escape \\%c", d)
+			}
+		case c == '[':
+			j := i + 1
+			if j < len(bre) && bre[j] == '^' {
+				j++
+			}
+			if j < len(bre) && bre[j] == ']' {
+				j++
+			}
+			for j < len(bre) && bre[j] != ']' {
+				if bre[j] == '[' && j+1 < len(bre) && (bre[j+1] == ':' || bre[j+1] == '.' || bre[j+1] == '=') {
+					if k := strings.Index(bre[j+2:], string(bre[j+1])+"]"); k >= 0 {
+						j += k + 4
+						continue
+					}
+				}
+				j++
+			}
+			if j >= len(bre) {
+				bail("command substitution: sed bracket expression")
+			}
+			b.WriteString(strings.ReplaceAll(bre[i:j+1], `\`, `\\`)) // backslash is literal in brackets
+			i = j
+		case c == '*' && start:
+			b.WriteString(`\*`)
+		case c == '^' && start:
+			b.WriteByte('^')
+			atStart = true
+		case c == '$' && (i == len(bre)-1 || strings.HasPrefix(bre[i+1:], `\)`) || strings.HasPrefix(bre[i+1:], `\|`)):
+			b.WriteByte('$')
+		case c == '.' || c == '*':
+			b.WriteByte(c)
+		default: // everything else, including ( ) { } + ? | ^ $, is literal in a BRE
+			b.WriteString(regexp.QuoteMeta(string(c)))
+		}
+	}
+	return b.String()
+}
+
+// apply runs the substitution on one line: & is the match, \1-\9 groups,
+// \& and \\ literal, \n a newline.
+func (c sedSubst) apply(line string) string {
+	expand := func(m []int) string {
+		var b strings.Builder
+		for i := 0; i < len(c.repl); i++ {
+			ch := c.repl[i]
+			switch {
+			case ch == '&':
+				b.WriteString(line[m[0]:m[1]])
+			case ch == '\\' && i+1 < len(c.repl):
+				i++
+				d := c.repl[i]
+				switch {
+				case d >= '0' && d <= '9':
+					g := int(d - '0')
+					if 2*g+1 >= len(m) {
+						bail("command substitution: sed group \\%c doesn't exist", d)
+					}
+					if m[2*g] >= 0 {
+						b.WriteString(line[m[2*g]:m[2*g+1]])
+					}
+				case d == 'n':
+					b.WriteByte('\n')
+				default:
+					b.WriteByte(d)
+				}
+			default:
+				b.WriteByte(ch)
+			}
+		}
+		return b.String()
+	}
+	n := 1
+	if c.global {
+		n = -1
+	}
+	matches := c.re.FindAllStringSubmatchIndex(line, n)
+	if matches == nil {
+		return line
+	}
+	var b strings.Builder
+	last := 0
+	for _, m := range matches {
+		b.WriteString(line[last:m[0]])
+		b.WriteString(expand(m))
+		last = m[1]
+	}
+	b.WriteString(line[last:])
+	return b.String()
+}
+
 // ---------- statements ----------
 
 func (e *env) assign(a *syntax.Assign) {
@@ -889,7 +1280,7 @@ func (e *env) assign(a *syntax.Assign) {
 		// Build into a fresh variable and install it at the end: the right-hand
 		// side may refer to the old value (provides=("${provides[@]}")).
 		v := &variable{arr: map[int]string{}, array: true}
-		if old, ok := e.vars[name]; ok && a.Append {
+		if old, ok := e.get(name); ok && a.Append {
 			for k, s := range old.arr {
 				v.arr[k] = s
 			}
@@ -915,7 +1306,7 @@ func (e *env) assign(a *syntax.Assign) {
 	}
 	val := e.expandScalar(a.Value)
 	if a.Index != nil {
-		v, ok := e.vars[name]
+		v, ok := e.get(name)
 		if !ok {
 			v = &variable{arr: map[int]string{}, array: true}
 			e.vars[name] = v
@@ -934,56 +1325,292 @@ func (e *env) assign(a *syntax.Assign) {
 }
 
 func (e *env) runTop(f *syntax.File) {
-	for _, st := range f.Stmts {
-		if st.Negated || st.Background || st.Coprocess || len(st.Redirs) > 0 {
-			bail("top-level statement modifiers/redirections")
+	// Functions defined anywhere in the file: calling one at top level could change anything.
+	defined := map[string]bool{}
+	syntax.Walk(f, func(n syntax.Node) bool {
+		if fd, ok := n.(*syntax.FuncDecl); ok {
+			defined[fd.Name.Value] = true
 		}
+		return true
+	})
+	for _, st := range f.Stmts {
+		e.runStmt(st, defined)
+	}
+}
+
+// tryAssign evaluates a top-level assignment. If the value can't be computed,
+// the variable is marked unknown instead of giving up right away.
+func (e *env) tryAssign(a *syntax.Assign) {
+	if a.Name == nil {
+		bail("assign without name")
+	}
+	if a.Name.Value == "IFS" {
+		bail("IFS assignment") // word splitting always uses the default IFS
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			u, ok := r.(unsupported)
+			if !ok {
+				panic(r)
+			}
+			e.poison(a.Name.Value, u.root)
+		}
+	}()
+	e.assign(a)
+}
+
+func (e *env) runStmt(st *syntax.Stmt, defined map[string]bool) {
+	if !st.Negated && !st.Background && !st.Coprocess && len(st.Redirs) == 0 {
 		switch c := st.Cmd.(type) {
+		case nil:
+			return
+		case *syntax.FuncDecl:
+			e.funcs[c.Name.Value] = c
+			return
 		case *syntax.CallExpr:
 			if len(c.Args) == 0 {
 				for _, a := range c.Assigns {
-					e.assign(a)
+					e.tryAssign(a)
 				}
-				continue
+				return
 			}
-			name := c.Args[0].Lit()
-			switch name {
-			case ":", "true":
-				continue
-			case "unset":
-				for _, a := range c.Args[1:] {
-					n := a.Lit()
-					if strings.HasPrefix(n, "-") {
-						if n == "-f" {
-							bail("unset -f")
+			if len(c.Assigns) == 0 {
+				switch c.Args[0].Lit() {
+				case ":", "true":
+					return
+				case "unset":
+					for _, a := range c.Args[1:] {
+						n := a.Lit()
+						if n == "" {
+							bail("unset with a dynamic name")
 						}
-						continue
+						if strings.HasPrefix(n, "-") {
+							if n == "-f" {
+								bail("unset -f")
+							}
+							continue
+						}
+						delete(e.vars, n)
 					}
-					delete(e.vars, n)
+					return
 				}
-				continue
 			}
-			if name == "" {
-				name = "<dynamic>"
-			}
-			bail("top-level command %s", name)
 		case *syntax.DeclClause:
+			flags := ""
 			for _, a := range c.Args {
 				if a.Name == nil {
-					if l := a.Value.Lit(); strings.ContainsAny(l, "fFpnA") && strings.HasPrefix(l, "-") {
-						bail("%s %s", c.Variant.Value, l)
+					l := a.Value.Lit()
+					if !strings.HasPrefix(l, "-") && !strings.HasPrefix(l, "+") {
+						bail("%s with a dynamic name", c.Variant.Value)
 					}
-					continue
+					flags += l
 				}
-				e.assign(a)
 			}
-		case *syntax.FuncDecl:
-			e.funcs[c.Name.Value] = c
-		case nil:
-		default:
-			bail("top-level %s", strings.TrimPrefix(fmt.Sprintf("%T", c), "*syntax."))
+			switch {
+			case strings.Contains(flags, "n"):
+				bail("%s %s (nameref)", c.Variant.Value, flags)
+			case strings.ContainsAny(flags, "Ailu"):
+				// associative, integer, lower/upper-case attributes: not evaluated
+				for _, a := range c.Args {
+					if a.Name != nil {
+						e.poison(a.Name.Value, c.Variant.Value+" "+flags)
+					}
+				}
+			case strings.ContainsAny(flags, "fFp"):
+				// only prints or exports functions
+			default:
+				for _, a := range c.Args {
+					if a.Name != nil {
+						e.tryAssign(a)
+					}
+				}
+			}
+			return
 		}
 	}
+	e.skip(st, defined)
+}
+
+// Builtins that could change the shell's state in ways skip can't follow.
+var unsafeBuiltins = map[string]bool{
+	"eval": true, "source": true, ".": true, "exec": true, "exit": true, "return": true,
+	"set": true, "alias": true, "unalias": true, "trap": true, "enable": true, "builtin": true,
+	"command": true, "shift": true, "getopts": true, "mapfile": true, "readarray": true,
+}
+
+// skip handles a top-level statement that isn't evaluated (if, for, case, &&,
+// a command, ...). It works out from the code which variables the statement
+// could set and marks them unknown. Statements that could change anything
+// (eval, source, calling one of the file's functions, exit, ...) still give up.
+func (e *env) skip(st *syntax.Stmt, defined map[string]bool) {
+	what := describe(st)
+	writes := map[string]bool{}
+	temporary := map[*syntax.Assign]bool{} // FOO=x cmd: only set for cmd
+	arithTarget := func(x syntax.ArithmExpr) {
+		w, ok := x.(*syntax.Word)
+		name := ""
+		if ok {
+			name, _, _ = strings.Cut(w.Lit(), "[")
+		}
+		if name == "" {
+			bail("%s: arithmetic assignment to a dynamic name", what)
+		}
+		writes[name] = true
+	}
+	syntax.Walk(st, func(n syntax.Node) bool {
+		switch x := n.(type) {
+		case *syntax.Assign:
+			if x.Name == nil { // a declare/local/export flag, or a dynamic name
+				if l := x.Value.Lit(); !strings.HasPrefix(l, "-") && !strings.HasPrefix(l, "+") {
+					bail("%s: declare with a dynamic name", what)
+				}
+				return true
+			}
+			if x.Name.Value == "IFS" && !temporary[x] {
+				bail("%s changes IFS", what)
+			}
+			writes[x.Name.Value] = true
+		case *syntax.BinaryArithm:
+			switch x.Op {
+			case syntax.Assgn, syntax.AddAssgn, syntax.SubAssgn, syntax.MulAssgn, syntax.QuoAssgn,
+				syntax.RemAssgn, syntax.AndAssgn, syntax.OrAssgn, syntax.XorAssgn, syntax.ShlAssgn, syntax.ShrAssgn:
+				arithTarget(x.X)
+			}
+		case *syntax.UnaryArithm:
+			if x.Op == syntax.Inc || x.Op == syntax.Dec {
+				arithTarget(x.X)
+			}
+		case *syntax.DeclClause:
+			for _, a := range x.Args {
+				if a.Name != nil {
+					continue
+				}
+				if l := a.Value.Lit(); strings.HasPrefix(l, "-") && strings.Contains(l, "n") {
+					bail("%s: %s %s (nameref)", what, x.Variant.Value, l)
+				}
+			}
+		case *syntax.WordIter:
+			writes[x.Name.Value] = true
+		case *syntax.FuncDecl:
+			bail("%s defines a function", what)
+		case *syntax.CoprocClause:
+			bail("%s: coproc", what)
+		case *syntax.TestClause:
+			writes["BASH_REMATCH"] = true
+		case *syntax.Redirect:
+			if x.N != nil && strings.HasPrefix(x.N.Value, "{") {
+				bail("%s: {var}> redirection", what)
+			}
+		case *syntax.CallExpr:
+			if len(x.Args) == 0 {
+				return true
+			}
+			for _, a := range x.Assigns {
+				temporary[a] = true
+			}
+			name := x.Args[0].Lit()
+			switch {
+			case name == "":
+				bail("%s: command with a dynamic name", what)
+			case defined[name]:
+				if x == st.Cmd {
+					bail("top-level call to function %s()", name)
+				}
+				bail("%s calls function %s()", what, name)
+			case unsafeBuiltins[name]:
+				bail("%s: %s", what, name)
+			case name == "shopt":
+				if len(x.Args) != 3 || x.Args[2].Lit() != "extglob" {
+					bail("%s: shopt", what)
+				}
+			case name == "printf":
+				for _, a := range x.Args[1:] {
+					if a.Lit() == "-v" {
+						bail("%s: printf -v", what)
+					}
+				}
+			case name == "read":
+				// read [-r] [-a NAME] [-d DELIM] ... [NAME...]: the names get set
+				args, named := x.Args[1:], false
+				for i := 0; i < len(args); i++ {
+					l := args[i].Lit()
+					if l == "" {
+						bail("%s: read with a dynamic argument", what)
+					}
+					if !strings.HasPrefix(l, "-") || l == "-" {
+						writes[l], named = true, true
+						continue
+					}
+					for j := 1; j < len(l); j++ {
+						if !strings.ContainsRune("adinNptu", rune(l[j])) {
+							continue
+						}
+						optarg := l[j+1:]
+						if optarg == "" {
+							if i++; i < len(args) {
+								optarg = args[i].Lit()
+							}
+						}
+						if l[j] == 'a' {
+							if optarg == "" {
+								bail("%s: read -a with a dynamic name", what)
+							}
+							writes[optarg], named = true, true
+						}
+						break
+					}
+				}
+				if !named {
+					writes["REPLY"] = true
+				}
+			case name == "unset":
+				for _, a := range x.Args[1:] {
+					l := a.Lit()
+					if l == "" || l == "-f" {
+						bail("%s: unset", what)
+					}
+					if !strings.HasPrefix(l, "-") {
+						writes[l] = true
+					}
+				}
+			}
+		}
+		return true
+	})
+	for name := range writes {
+		e.poison(name, what)
+	}
+}
+
+// describe names a top-level statement for messages.
+func describe(st *syntax.Stmt) string {
+	switch c := st.Cmd.(type) {
+	case *syntax.IfClause:
+		return "top-level if"
+	case *syntax.ForClause:
+		return "top-level for loop"
+	case *syntax.WhileClause:
+		if c.Until {
+			return "top-level until loop"
+		}
+		return "top-level while loop"
+	case *syntax.CaseClause:
+		return "top-level case"
+	case *syntax.BinaryCmd:
+		return "top-level && or || or pipe"
+	case *syntax.Block, *syntax.Subshell:
+		return "top-level { } or ( )"
+	case *syntax.TestClause:
+		return "top-level [[ ]]"
+	case *syntax.DeclClause:
+		return "top-level " + c.Variant.Value
+	case *syntax.CallExpr:
+		if len(c.Args) > 0 && c.Args[0].Lit() != "" {
+			return "top-level command " + c.Args[0].Lit()
+		}
+		return "top-level command"
+	}
+	return "top-level " + strings.TrimPrefix(fmt.Sprintf("%T", st.Cmd), "*syntax.")
 }
 
 // ---------- .SRCINFO output (mirrors libmakepkg/srcinfo.sh) ----------
@@ -1027,7 +1654,7 @@ func norm(s string) string {
 }
 
 func (e *env) globalAttr(name string, multi bool) ([]string, bool) {
-	v, ok := e.vars[name]
+	v, ok := e.get(name)
 	if !ok {
 		return nil, false
 	}
@@ -1174,10 +1801,13 @@ func (e *env) srcinfo() []section {
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Fprintln(os.Stderr, "usage: minieval PKGBUILD   (prints the .SRCINFO makepkg would generate)")
+		fmt.Fprintln(os.Stderr, "usage: minieval PKGBUILD|DIR   (prints the .SRCINFO makepkg would generate)")
 		os.Exit(2)
 	}
 	path := os.Args[1]
+	if fi, err := os.Stat(path); err == nil && fi.IsDir() {
+		path = filepath.Join(path, "PKGBUILD")
+	}
 	defer func() {
 		if r := recover(); r != nil {
 			if u, ok := r.(unsupported); ok {

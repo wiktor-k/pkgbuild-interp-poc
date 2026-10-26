@@ -85,7 +85,7 @@ if awk -F'\t' '$2 == "unsupported" { found = 1 } END { exit !found }' "$results"
 	echo
 	echo "Why files were refused (unsupported):"
 	awk -F'\t' '$2 == "unsupported" { print $3 }' "$results" |
-		sed -E -e 's/^pathname expansion of .*/pathname expansion (unquoted glob)/' \
+		sed -E -e 's/ \(needed for [^)]*\)$//' -e 's/^pathname expansion of .*/pathname expansion (unquoted glob)/' \
 			-e 's/^top-level ForClause$/top-level for loop/' -e 's/^top-level WhileClause$/top-level while loop/' \
 			-e 's/^top-level IfClause$/top-level if/' -e 's/^top-level CaseClause$/top-level case/' \
 			-e 's/^top-level BinaryCmd$/top-level \&\& or || or pipe/' -e 's/^top-level (Block|Subshell)$/top-level { } or ( )/' |
